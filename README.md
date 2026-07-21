@@ -16,6 +16,7 @@ npm test                # test transformasi build (node:test)
 <html data-theme="light" data-density="comfortable">
 ```
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`).
+- Komponen v0.2: app shell, table, modal (native `<dialog>`), select, checkbox/radio/switch — plus refinement visual "rich".
 
 ## Struktur
 - `tokens/tokens.json` — sumber sejati (edit di sini)

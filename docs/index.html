@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Foundry — Referensi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../dist/foundry.tokens.css">
 <link rel="stylesheet" href="../dist/foundry.css">
 <style>
@@ -23,8 +26,8 @@
 <div class="wrap">
   <div class="bar">
     <h1>Foundry</h1>
-    <button class="fdy-btn fdy-btn--ghost" id="theme">Toggle theme</button>
-    <button class="fdy-btn fdy-btn--ghost" id="density">Toggle density</button>
+    <button class="fdy-btn fdy-btn--ghost" id="theme" aria-pressed="false">Toggle theme</button>
+    <button class="fdy-btn fdy-btn--ghost" id="density" aria-pressed="false">Toggle density</button>
   </div>
 
   <section>
@@ -159,16 +162,60 @@
       <label class="fdy-switch"><input type="checkbox" checked> Aktifkan notifikasi</label>
     </div>
   </section>
+  <section id="showcase-screen">
+    <h2>Contoh: satu layar bisnis</h2>
+    <div class="fdy-app" style="min-height:420px;border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
+      <aside class="fdy-app__sidebar" aria-label="Navigasi">
+        <div class="fdy-app__brand">Foundry</div>
+        <nav class="fdy-nav">
+          <a class="fdy-nav__item" href="#screen" aria-current="page">Faktur</a>
+          <a class="fdy-nav__item" href="#">Pelanggan</a>
+          <a class="fdy-nav__item" href="#">Laporan</a>
+        </nav>
+      </aside>
+      <header class="fdy-app__topbar">
+        <h3 class="fdy-app__title">Faktur</h3>
+        <button class="fdy-btn" id="open-new">+ Faktur baru</button>
+      </header>
+      <main class="fdy-app__main" id="screen">
+        <div class="fdy-table-wrap">
+          <table class="fdy-table">
+            <caption>Daftar faktur</caption>
+            <thead><tr><th scope="col">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
+            <tbody>
+              <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num">1.240.000</td></tr>
+              <tr><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num">290.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+    <dialog class="fdy-modal" id="new-modal" aria-labelledby="new-title">
+      <form method="dialog">
+        <div class="fdy-modal__header"><h3 class="fdy-modal__title" id="new-title">Faktur baru</h3><button class="fdy-modal__close" aria-label="Tutup" value="cancel">&times;</button></div>
+        <div class="fdy-modal__body">
+          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <label class="fdy-field"><span class="fdy-label">Pelanggan</span><input class="fdy-input" placeholder="Nama pelanggan"></label>
+            <label class="fdy-field"><span class="fdy-label">Status</span><select class="fdy-select"><option>Draft</option><option>Tertunda</option><option>Lunas</option></select></label>
+            <label class="fdy-switch"><input type="checkbox" checked> Kirim ke email pelanggan</label>
+          </div>
+        </div>
+        <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" value="cancel">Batal</button><button class="fdy-btn" value="save">Simpan</button></div>
+      </form>
+    </dialog>
+  </section>
 </div>
 <script>
   const root = document.documentElement;
-  document.getElementById('theme').onclick = () =>
-    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
-  document.getElementById('density').onclick = () =>
-    root.dataset.density = root.dataset.density === 'compact' ? 'comfortable' : 'compact';
+  const themeBtn=document.getElementById('theme');
+  themeBtn.onclick=()=>{const d=root.dataset.theme==='dark'?'light':'dark';root.dataset.theme=d;themeBtn.setAttribute('aria-pressed',String(d==='dark'));};
+  const densityBtn=document.getElementById('density');
+  densityBtn.onclick=()=>{const d=root.dataset.density==='compact'?'comfortable':'compact';root.dataset.density=d;densityBtn.setAttribute('aria-pressed',String(d==='compact'));};
   const dlg=document.getElementById('demo-modal');
   document.getElementById('open-modal').onclick=()=>dlg.showModal();
   dlg.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>dlg.close());
+  const nm=document.getElementById('new-modal');
+  document.getElementById('open-new').onclick=()=>nm.showModal();
 </script>
 </body>
 </html>
