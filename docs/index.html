@@ -173,6 +173,14 @@
           <span class="fdy-input-group__addon" aria-hidden="true">🔎</span>
           <input class="fdy-input" type="search" placeholder="Cari pelanggan…" aria-label="Cari pelanggan">
         </div>
+        <label class="fdy-field">
+          <span class="fdy-label">Nominal (error)</span>
+          <div class="fdy-input-group">
+            <span class="fdy-input-group__addon">Rp</span>
+            <input class="fdy-input fdy-input--error" value="-5000" aria-invalid="true" aria-describedby="nom-err">
+          </div>
+          <span class="fdy-help fdy-help--error" id="nom-err">Nominal tidak boleh negatif.</span>
+        </label>
       </div>
     </section>
 
