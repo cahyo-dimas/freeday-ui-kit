@@ -3,242 +3,526 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foundry — Referensi</title>
+<title>Foundry — Design System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../dist/foundry.tokens.css">
 <link rel="stylesheet" href="../dist/foundry.css">
 <style>
-  .wrap { max-width: 960px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
-  .bar { display: flex; gap: var(--space-3); align-items: center; margin-bottom: var(--space-8); }
-  .bar h1 { font-size: var(--text-2xl); margin-right: auto; }
-  section { margin-bottom: var(--space-12); }
-  section > h2 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
-  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: var(--space-2); }
-  .sw { border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-xs); }
-  .sw i { display: block; height: 44px; }
-  .sw span { display: block; padding: var(--space-1) var(--space-2); color: var(--color-text-muted); font-family: var(--font-mono); }
+  html, body { height: 100%; margin: 0; }
+  .doc-hero { padding: var(--space-8) 0 var(--space-6); }
+  .doc-hero h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
+  .doc-hero p { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 46rem; margin: 0; line-height: var(--leading-normal); }
+  .doc-hero .demo { margin-top: var(--space-5); }
+  .doc-section { max-width: 66rem; margin: 0 0 var(--space-12); scroll-margin-top: var(--space-4); }
+  .doc-section > h2 { font-size: var(--text-2xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-1); }
+  .doc-section > .doc-desc { color: var(--color-text-muted); margin: 0 0 var(--space-4); font-size: var(--text-sm); max-width: 46rem; line-height: var(--leading-normal); }
+  .doc-demo { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: flex-start; padding: var(--space-6); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-2); }
+  .doc-demo--block { display: block; }
+  .doc-demo--stack { flex-direction: column; }
   .demo { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .doc-navgroup__label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-text-subtle); padding: var(--space-4) var(--space-3) var(--space-1); font-weight: var(--weight-semibold); }
+  .fdy-app__sidebar { overflow-y: auto; }
+  .fdy-app__main { scroll-behavior: smooth; }
+  .doc-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--space-2); width: 100%; }
+  .doc-sw { border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-xs); background: var(--color-surface); }
+  .doc-sw i { display: block; height: 48px; }
+  .doc-sw span { display: block; padding: var(--space-1) var(--space-2); color: var(--color-text-muted); font-family: var(--font-mono); }
+  .doc-type { margin: 0 0 var(--space-3); }
+  .doc-type--display { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tight); }
+  .doc-type--body { font-family: var(--font-body); font-size: var(--text-base); }
+  .doc-type--mono { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .doc-cardgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); width: 100%; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="bar">
-    <h1>Foundry</h1>
-    <button class="fdy-btn fdy-btn--ghost" id="theme" aria-pressed="false">Toggle theme</button>
-    <button class="fdy-btn fdy-btn--ghost" id="density" aria-pressed="false">Toggle density</button>
-  </div>
+<a class="fdy-skip" href="#main">Lewati ke konten utama</a>
+<div class="fdy-app">
+  <aside class="fdy-app__sidebar" aria-label="Navigasi komponen">
+    <div class="fdy-app__brand">Foundry</div>
+    <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
+      <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
+      <div class="doc-navgroup__label">Dasar</div>
+      <a class="fdy-nav__item" href="#sec-warna">Warna</a>
+      <a class="fdy-nav__item" href="#sec-tipografi">Tipografi</a>
+      <div class="doc-navgroup__label">Aksi &amp; Form</div>
+      <a class="fdy-nav__item" href="#sec-tombol">Tombol</a>
+      <a class="fdy-nav__item" href="#sec-input">Input</a>
+      <a class="fdy-nav__item" href="#sec-select">Select</a>
+      <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
+      <div class="doc-navgroup__label">Feedback</div>
+      <a class="fdy-nav__item" href="#sec-alert">Alert</a>
+      <a class="fdy-nav__item" href="#sec-toast">Toast</a>
+      <a class="fdy-nav__item" href="#sec-tooltip">Tooltip</a>
+      <div class="doc-navgroup__label">Navigasi</div>
+      <a class="fdy-nav__item" href="#sec-tabs">Tabs</a>
+      <a class="fdy-nav__item" href="#sec-breadcrumb">Breadcrumb</a>
+      <a class="fdy-nav__item" href="#sec-pagination">Pagination</a>
+      <div class="doc-navgroup__label">Data</div>
+      <a class="fdy-nav__item" href="#sec-table">Table</a>
+      <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
+      <a class="fdy-nav__item" href="#sec-states">States</a>
+      <div class="doc-navgroup__label">Tampilan</div>
+      <a class="fdy-nav__item" href="#sec-card">Card</a>
+      <a class="fdy-nav__item" href="#sec-badge">Badge</a>
+      <a class="fdy-nav__item" href="#sec-avatar">Avatar</a>
+      <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
+      <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
+      <div class="doc-navgroup__label">Layout</div>
+      <a class="fdy-nav__item" href="#sec-modal">Modal</a>
+      <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
+    </nav>
+  </aside>
 
-  <section>
-    <h2>Warna semantic</h2>
-    <div class="swatches">
-      <label class="sw"><i style="background:var(--color-primary)"></i><span>primary</span></label>
-      <label class="sw"><i style="background:var(--color-accent)"></i><span>accent</span></label>
-      <label class="sw"><i style="background:var(--color-surface-2)"></i><span>surface-2</span></label>
-      <label class="sw"><i style="background:var(--color-success)"></i><span>success</span></label>
-      <label class="sw"><i style="background:var(--color-warning)"></i><span>warning</span></label>
-      <label class="sw"><i style="background:var(--color-danger)"></i><span>danger</span></label>
-      <label class="sw"><i style="background:var(--color-info)"></i><span>info</span></label>
-    </div>
-  </section>
+  <header class="fdy-app__topbar">
+    <h1 class="fdy-app__title">Komponen</h1>
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="theme" aria-pressed="false">Tema</button>
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="density" aria-pressed="false">Kerapatan</button>
+  </header>
 
-  <!-- Component showcase sections ditambahkan di Task 4-7 -->
-  <section id="showcase-button">
-    <h2>Button</h2>
-    <div class="demo">
-      <button class="fdy-btn">Primary</button>
-      <button class="fdy-btn fdy-btn--ghost">Ghost</button>
-      <button class="fdy-btn fdy-btn--danger">Danger</button>
-      <button class="fdy-btn fdy-btn--sm">Small</button>
-      <button class="fdy-btn fdy-btn--lg">Large</button>
-      <button class="fdy-btn" disabled>Disabled</button>
-    </div>
-  </section>
-  <section id="showcase-input">
-    <h2>Input</h2>
-    <div class="demo" style="align-items:flex-start">
-      <label class="fdy-field">
-        <span class="fdy-label">Nama pelanggan</span>
-        <input class="fdy-input" placeholder="cth. PT Sumber Makmur" aria-describedby="cust-help">
-        <span class="fdy-help" id="cust-help">Nama sesuai dokumen.</span>
-      </label>
-      <label class="fdy-field">
-        <span class="fdy-label">Email</span>
-        <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
-        <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
-      </label>
-    </div>
-  </section>
-  <section id="showcase-card">
-    <h2>Card</h2>
-    <div class="demo" style="align-items:stretch">
-      <div class="fdy-card" style="width:280px">
-        <div class="fdy-card__body">
-          <h3 class="fdy-card__title">Faktur INV-1042</h3>
-          <p class="fdy-card__desc">Jatuh tempo 30 Juli 2026. Total tagihan Rp 1.240.000.</p>
-        </div>
-        <div class="fdy-card__footer">
-          <button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Detail</button>
-          <button class="fdy-btn fdy-btn--sm">Bayar</button>
+  <main class="fdy-app__main" id="main">
+    <section class="doc-section doc-hero" id="sec-ikhtisar">
+      <h1>Foundry Design System</h1>
+      <p>Token-driven &amp; framework-agnostic. Satu sumber kebenaran untuk warna, tipografi, spasi, dan komponen — siap dirakit jadi layar bisnis nyata. Semua kontras lolos WCAG AA di terang &amp; gelap, ARIA native-first.</p>
+      <div class="demo">
+        <button class="fdy-btn">Mulai</button>
+        <button class="fdy-btn fdy-btn--ghost">Dokumentasi</button>
+        <span class="fdy-badge fdy-badge--success">v0.3</span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-warna">
+      <h2>Warna</h2>
+      <p class="doc-desc">Peran semantic (Tier-2). Komponen hanya menyentuh peran ini, tak pernah ramp mentah.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-swatches">
+          <label class="doc-sw"><i style="background:var(--color-primary)"></i><span>primary</span></label>
+          <label class="doc-sw"><i style="background:var(--color-primary-strong)"></i><span>primary-strong</span></label>
+          <label class="doc-sw"><i style="background:var(--color-accent)"></i><span>accent</span></label>
+          <label class="doc-sw"><i style="background:var(--color-success)"></i><span>success</span></label>
+          <label class="doc-sw"><i style="background:var(--color-warning)"></i><span>warning</span></label>
+          <label class="doc-sw"><i style="background:var(--color-danger)"></i><span>danger</span></label>
+          <label class="doc-sw"><i style="background:var(--color-info)"></i><span>info</span></label>
+          <label class="doc-sw"><i style="background:var(--color-surface-2)"></i><span>surface-2</span></label>
+          <label class="doc-sw"><i style="background:var(--color-surface-3)"></i><span>surface-3</span></label>
+          <label class="doc-sw"><i style="background:var(--color-border-strong)"></i><span>border-strong</span></label>
         </div>
       </div>
-      <div class="fdy-card fdy-card--elevated" style="width:280px">
-        <div class="fdy-card__body">
-          <h3 class="fdy-card__title">Elevated</h3>
-          <p class="fdy-card__desc">Varian dengan shadow, tanpa border.</p>
+    </section>
+
+    <section class="doc-section" id="sec-tipografi">
+      <h2>Tipografi</h2>
+      <p class="doc-desc">Display <strong>Sora</strong> · body <strong>IBM Plex Sans</strong> · data <strong>JetBrains Mono</strong>.</p>
+      <div class="doc-demo doc-demo--block">
+        <p class="doc-type doc-type--display">Faktur &amp; laporan yang rapi</p>
+        <p class="doc-type doc-type--body">Teks isi memakai IBM Plex Sans — nyaman dibaca untuk paragraf, label, dan tabel data bisnis sehari-hari.</p>
+        <p class="doc-type doc-type--mono">INV-1042 · Rp 1.240.000 · 2026-07-30</p>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-tombol">
+      <h2>Tombol</h2>
+      <p class="doc-desc">Gradient gelap-ke-bawah + colored-glow. Satu aksi primer per layar; sisanya ghost.</p>
+      <div class="doc-demo">
+        <button class="fdy-btn">Primary</button>
+        <button class="fdy-btn fdy-btn--ghost">Ghost</button>
+        <button class="fdy-btn fdy-btn--danger">Danger</button>
+        <button class="fdy-btn fdy-btn--sm">Small</button>
+        <button class="fdy-btn fdy-btn--lg">Large</button>
+        <button class="fdy-btn" disabled>Disabled</button>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-input">
+      <h2>Input</h2>
+      <p class="doc-desc">Inner-shadow + focus glow. Error pakai <code>aria-invalid</code> + <code>aria-describedby</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <label class="fdy-field">
+          <span class="fdy-label">Nama pelanggan</span>
+          <input class="fdy-input" placeholder="cth. PT Sumber Makmur" aria-describedby="cust-help">
+          <span class="fdy-help" id="cust-help">Nama sesuai dokumen.</span>
+        </label>
+        <label class="fdy-field">
+          <span class="fdy-label">Email</span>
+          <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
+          <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-select">
+      <h2>Select (combobox)</h2>
+      <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>foundry-select.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <div class="fdy-field">
+          <span class="fdy-label" id="lbl-status">Status faktur</span>
+          <div class="fdy-combo" data-fdy-combo data-value="tertunda">
+            <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
+              <span class="fdy-combo__value" id="val-status">Tertunda</span>
+            </button>
+            <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-status" hidden>
+              <li class="fdy-combo__option" role="option" data-value="semua" aria-selected="false"><span class="fdy-combo__check"></span>Semua</li>
+              <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
+              <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="true"><span class="fdy-combo__check">✓</span>Tertunda</li>
+              <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="false"><span class="fdy-combo__check"></span>Draft</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-  <section id="showcase-badge">
-    <h2>Badge</h2>
-    <div class="demo">
-      <span class="fdy-badge">Baru</span>
-      <span class="fdy-badge fdy-badge--success">Lunas</span>
-      <span class="fdy-badge fdy-badge--warning">Tertunda</span>
-      <span class="fdy-badge fdy-badge--danger">Batal</span>
-      <span class="fdy-badge fdy-badge--info">Draft</span>
-      <span class="fdy-badge fdy-badge--outline">Arsip</span>
-    </div>
-  </section>
-  <section id="showcase-shell">
-    <h2>App shell</h2>
-    <div class="fdy-app" style="min-height:320px;border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
-      <a class="fdy-skip" href="#shell-main">Lewati ke konten utama</a>
-      <aside class="fdy-app__sidebar" aria-label="Navigasi utama">
-        <div class="fdy-app__brand">Foundry</div>
-        <nav class="fdy-nav">
-          <a class="fdy-nav__item" href="#" aria-current="page">Dashboard</a>
-          <a class="fdy-nav__item" href="#">Faktur</a>
-          <a class="fdy-nav__item" href="#">Pelanggan</a>
+    </section>
+
+    <section class="doc-section" id="sec-pilihan">
+      <h2>Checkbox · Radio · Switch</h2>
+      <p class="doc-desc">Native <code>&lt;input&gt;</code> distyle — Space, asosiasi label, <code>:focus-visible</code> tetap native.</p>
+      <div class="doc-demo" style="gap:var(--space-5)">
+        <label class="fdy-check"><input type="checkbox" checked> Kirim salinan email</label>
+        <span class="demo" style="gap:var(--space-4)">
+          <label class="fdy-radio"><input type="radio" name="term" checked> 30 hari</label>
+          <label class="fdy-radio"><input type="radio" name="term"> 60 hari</label>
+        </span>
+        <label class="fdy-switch"><input type="checkbox" checked> Aktifkan notifikasi</label>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-alert">
+      <h2>Alert</h2>
+      <p class="doc-desc">Pesan inline. Varian danger memakai <code>role="alert"</code>.</p>
+      <div class="doc-demo doc-demo--stack" style="gap:var(--space-3)">
+        <div class="fdy-alert fdy-alert--info">
+          <div class="fdy-alert__body"><span class="fdy-alert__title">Info</span><span class="fdy-alert__text">Sinkronisasi terakhir 5 menit lalu.</span></div>
+        </div>
+        <div class="fdy-alert fdy-alert--success">
+          <div class="fdy-alert__body"><span class="fdy-alert__title">Berhasil</span><span class="fdy-alert__text">Faktur INV-1042 disimpan.</span></div>
+        </div>
+        <div class="fdy-alert fdy-alert--warning">
+          <div class="fdy-alert__body"><span class="fdy-alert__title">Perhatian</span><span class="fdy-alert__text">Stok barang menipis di 3 gudang.</span></div>
+        </div>
+        <div class="fdy-alert fdy-alert--danger" role="alert">
+          <div class="fdy-alert__body"><span class="fdy-alert__title">Gagal</span><span class="fdy-alert__text">Koneksi ke server SAP terputus.</span></div>
+          <button class="fdy-alert__close" aria-label="Tutup">&times;</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-toast">
+      <h2>Toast</h2>
+      <p class="doc-desc">Notifikasi sekilas di live-region. Panggil <code>Foundry.toast({variant,title,message})</code>.</p>
+      <div class="doc-demo">
+        <button class="fdy-btn" onclick="Foundry.toast({variant:'success',title:'Tersimpan',message:'Faktur INV-1042 berhasil disimpan.'})">Toast sukses</button>
+        <button class="fdy-btn fdy-btn--ghost" onclick="Foundry.toast({variant:'info',title:'Info',message:'Sinkronisasi berjalan di latar belakang.'})">Toast info</button>
+        <button class="fdy-btn fdy-btn--danger" onclick="Foundry.toast({variant:'danger',title:'Gagal',message:'Tidak bisa terhubung ke server.'})">Toast error</button>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-tooltip">
+      <h2>Tooltip</h2>
+      <p class="doc-desc">Muncul saat hover/focus. Asosiasi via <code>aria-describedby</code>.</p>
+      <div class="doc-demo">
+        <span class="fdy-tooltip-wrap">
+          <button class="fdy-btn fdy-btn--ghost" aria-describedby="tip-1">Arahkan / fokus</button>
+          <span class="fdy-tooltip" role="tooltip" id="tip-1">Ekspor ke Excel (.xlsx)</span>
+        </span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-tabs">
+      <h2>Tabs</h2>
+      <p class="doc-desc">Pola APG — panah ←/→, Home/End, roving tabindex. Butuh <code>foundry-tabs.js</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-tabs" data-fdy-tabs>
+          <div class="fdy-tabs__list" role="tablist" aria-label="Detail faktur">
+            <button class="fdy-tabs__tab" role="tab" id="tab-ringkasan" aria-controls="panel-ringkasan" aria-selected="true">Ringkasan</button>
+            <button class="fdy-tabs__tab" role="tab" id="tab-item" aria-controls="panel-item" aria-selected="false" tabindex="-1">Item</button>
+            <button class="fdy-tabs__tab" role="tab" id="tab-riwayat" aria-controls="panel-riwayat" aria-selected="false" tabindex="-1">Riwayat</button>
+          </div>
+          <div class="fdy-tabs__panel" role="tabpanel" id="panel-ringkasan" aria-labelledby="tab-ringkasan" tabindex="0">Total tagihan Rp 1.240.000, jatuh tempo 30 Juli 2026.</div>
+          <div class="fdy-tabs__panel" role="tabpanel" id="panel-item" aria-labelledby="tab-item" tabindex="0" hidden>3 item barang, 1 jasa.</div>
+          <div class="fdy-tabs__panel" role="tabpanel" id="panel-riwayat" aria-labelledby="tab-riwayat" tabindex="0" hidden>Dibuat 21 Juli, dikirim 22 Juli.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-breadcrumb">
+      <h2>Breadcrumb</h2>
+      <div class="doc-demo doc-demo--block">
+        <nav class="fdy-breadcrumb" aria-label="Breadcrumb">
+          <ol class="fdy-breadcrumb__list">
+            <li class="fdy-breadcrumb__item"><a class="fdy-breadcrumb__link" href="#">Dashboard</a></li>
+            <li class="fdy-breadcrumb__sep" aria-hidden="true">/</li>
+            <li class="fdy-breadcrumb__item"><a class="fdy-breadcrumb__link" href="#">Faktur</a></li>
+            <li class="fdy-breadcrumb__sep" aria-hidden="true">/</li>
+            <li class="fdy-breadcrumb__item" aria-current="page">INV-1042</li>
+          </ol>
         </nav>
-      </aside>
-      <header class="fdy-app__topbar"><h3 class="fdy-app__title">Dashboard</h3><button class="fdy-btn fdy-btn--sm">Baru</button></header>
-      <main class="fdy-app__main" id="shell-main"><p style="color:var(--color-text-muted)">Konten utama…</p></main>
-    </div>
-  </section>
-  <section id="showcase-table">
-    <h2>Table</h2>
-    <div class="fdy-table-wrap">
-      <table class="fdy-table">
-        <caption>Faktur terbaru</caption>
-        <thead><tr><th scope="col" aria-sort="ascending">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
-        <tbody>
-          <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num">1.240.000</td></tr>
-          <tr><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num">290.000</td></tr>
-          <tr><td>INV-1044</td><td>Toko Amanah</td><td><span class="fdy-badge fdy-badge--info">Draft</span></td><td class="fdy-table__num">0</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-  <section id="showcase-modal">
-    <h2>Modal</h2>
-    <button class="fdy-btn" id="open-modal">Buka modal</button>
-    <dialog class="fdy-modal" id="demo-modal" aria-labelledby="demo-modal-title">
-      <div class="fdy-modal__header">
-        <h3 class="fdy-modal__title" id="demo-modal-title">Hapus faktur?</h3>
-        <button class="fdy-modal__close" aria-label="Tutup" data-close>&times;</button>
       </div>
-      <div class="fdy-modal__body"><p style="margin:0;color:var(--color-text-muted)">Faktur INV-1042 akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p></div>
-      <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" data-close>Batal</button><button class="fdy-btn fdy-btn--danger" data-close>Hapus</button></div>
-    </dialog>
-  </section>
-  <section id="showcase-select">
-    <h2>Select (combobox)</h2>
-    <div class="fdy-field">
-      <span class="fdy-label" id="lbl-status">Status</span>
-      <div class="fdy-combo" data-fdy-combo data-value="tertunda">
-        <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
-          <span class="fdy-combo__value" id="val-status">Tertunda</span>
-        </button>
-        <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-status" hidden>
-          <li class="fdy-combo__option" role="option" data-value="semua" aria-selected="false"><span class="fdy-combo__check"></span>Semua</li>
-          <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
-          <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="true"><span class="fdy-combo__check">✓</span>Tertunda</li>
-          <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="false"><span class="fdy-combo__check"></span>Draft</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-  <section id="showcase-selection">
-    <h2>Checkbox · Radio · Switch</h2>
-    <div class="demo" style="gap:var(--space-5);flex-wrap:wrap">
-      <label class="fdy-check"><input type="checkbox" checked> Kirim salinan email</label>
-      <span class="demo" style="gap:var(--space-4)">
-        <label class="fdy-radio"><input type="radio" name="term" checked> 30 hari</label>
-        <label class="fdy-radio"><input type="radio" name="term"> 60 hari</label>
-      </span>
-      <label class="fdy-switch"><input type="checkbox" checked> Aktifkan notifikasi</label>
-    </div>
-  </section>
-  <section id="showcase-screen">
-    <h2>Contoh: satu layar bisnis</h2>
-    <div class="fdy-app" style="min-height:420px;border:1px solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
-      <a class="fdy-skip" href="#screen">Lewati ke konten utama</a>
-      <aside class="fdy-app__sidebar" aria-label="Navigasi">
-        <div class="fdy-app__brand">Foundry</div>
-        <nav class="fdy-nav">
-          <a class="fdy-nav__item" href="#screen" aria-current="page">Faktur</a>
-          <a class="fdy-nav__item" href="#">Pelanggan</a>
-          <a class="fdy-nav__item" href="#">Laporan</a>
+    </section>
+
+    <section class="doc-section" id="sec-pagination">
+      <h2>Pagination</h2>
+      <div class="doc-demo doc-demo--block">
+        <nav class="fdy-pagination" aria-label="Paginasi">
+          <ul class="fdy-pagination__list">
+            <li><span class="fdy-pagination__link" aria-disabled="true" aria-label="Sebelumnya">‹</span></li>
+            <li><span class="fdy-pagination__link" aria-current="page">1</span></li>
+            <li><button type="button" class="fdy-pagination__link">2</button></li>
+            <li><button type="button" class="fdy-pagination__link">3</button></li>
+            <li><span class="fdy-pagination__ellipsis">…</span></li>
+            <li><button type="button" class="fdy-pagination__link">9</button></li>
+            <li><button type="button" class="fdy-pagination__link" aria-label="Berikutnya">›</button></li>
+          </ul>
         </nav>
-      </aside>
-      <header class="fdy-app__topbar">
-        <h3 class="fdy-app__title">Faktur</h3>
-        <button class="fdy-btn" id="open-new">+ Faktur baru</button>
-      </header>
-      <div class="fdy-app__main" id="screen" tabindex="-1">
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-table">
+      <h2>Table</h2>
+      <p class="doc-desc">Tabel semantik statis — <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, angka tabular kanan.</p>
+      <div class="doc-demo doc-demo--block">
         <div class="fdy-table-wrap">
           <table class="fdy-table">
-            <caption>Daftar faktur</caption>
+            <caption>Faktur terbaru</caption>
             <thead><tr><th scope="col">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
             <tbody>
               <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num">1.240.000</td></tr>
               <tr><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num">290.000</td></tr>
+              <tr><td>INV-1044</td><td>Toko Amanah</td><td><span class="fdy-badge fdy-badge--info">Draft</span></td><td class="fdy-table__num">0</td></tr>
             </tbody>
           </table>
         </div>
       </div>
-    </div>
-    <dialog class="fdy-modal" id="new-modal" aria-labelledby="new-title">
-      <form method="dialog">
-        <div class="fdy-modal__header"><h3 class="fdy-modal__title" id="new-title">Faktur baru</h3><button class="fdy-modal__close" aria-label="Tutup" value="cancel">&times;</button></div>
-        <div class="fdy-modal__body">
-          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
-            <label class="fdy-field"><span class="fdy-label">Pelanggan</span><input class="fdy-input" placeholder="Nama pelanggan"></label>
-            <div class="fdy-field"><span class="fdy-label" id="lbl-new-status">Status</span>
-              <div class="fdy-combo" data-fdy-combo data-value="draft">
-                <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-new-status val-new-status">
-                  <span class="fdy-combo__value" id="val-new-status">Draft</span>
-                </button>
-                <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-new-status" hidden>
-                  <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="true"><span class="fdy-combo__check">✓</span>Draft</li>
-                  <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="false"><span class="fdy-combo__check"></span>Tertunda</li>
-                  <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
-                </ul>
-              </div>
-            </div>
-            <label class="fdy-switch"><input type="checkbox" checked> Kirim ke email pelanggan</label>
+    </section>
+
+    <section class="doc-section" id="sec-datatable">
+      <h2>Data table</h2>
+      <p class="doc-desc">Interaktif: cari, urutkan (klik judul kolom), pilih baris, paginasi. Butuh <code>foundry-table.js</code>. Coba ketik di kotak cari atau klik header.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-datatable" data-fdy-table data-page-size="5">
+          <div class="fdy-table-toolbar">
+            <input class="fdy-input fdy-table-toolbar__search" type="search" placeholder="Cari faktur / pelanggan…" data-fdy-table-search aria-label="Cari di tabel">
+            <span class="fdy-table-toolbar__spacer"></span>
+            <span class="fdy-table-toolbar__count" data-fdy-table-count aria-live="polite"></span>
+          </div>
+          <div class="fdy-table-scroll">
+            <table class="fdy-table">
+              <caption class="fdy-visually-hidden">Daftar faktur (interaktif)</caption>
+              <thead>
+                <tr>
+                  <th class="fdy-table__selcol" scope="col"><input type="checkbox" class="fdy-checkbox" data-fdy-select-all aria-label="Pilih semua baris"></th>
+                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Faktur</button></th>
+                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Pelanggan</button></th>
+                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Status</button></th>
+                  <th scope="col" class="fdy-table__num"><button type="button" class="fdy-table__sortbtn" data-fdy-sort="number">Nilai</button></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1042"></td><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num" data-sort-value="1240000">1.240.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1043"></td><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num" data-sort-value="290000">290.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1044"></td><td>INV-1044</td><td>Toko Amanah</td><td><span class="fdy-badge fdy-badge--info">Draft</span></td><td class="fdy-table__num" data-sort-value="0">0</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1045"></td><td>INV-1045</td><td>UD Maju Terus</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num" data-sort-value="4750000">4.750.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1046"></td><td>INV-1046</td><td>PT Cahaya Abadi</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num" data-sort-value="820000">820.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1047"></td><td>INV-1047</td><td>Koperasi Sejahtera</td><td><span class="fdy-badge fdy-badge--danger">Batal</span></td><td class="fdy-table__num" data-sort-value="150000">150.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1048"></td><td>INV-1048</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num" data-sort-value="3120000">3.120.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1049"></td><td>INV-1049</td><td>Toko Amanah</td><td><span class="fdy-badge fdy-badge--info">Draft</span></td><td class="fdy-table__num" data-sort-value="67000">67.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1050"></td><td>INV-1050</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num" data-sort-value="1990000">1.990.000</td></tr>
+                <tr><td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Pilih INV-1051"></td><td>INV-1051</td><td>PT Cahaya Abadi</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num" data-sort-value="540000">540.000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fdy-table-footer">
+            <span class="fdy-table-footer__info" data-fdy-table-info></span>
+            <nav class="fdy-pagination" aria-label="Paginasi tabel" data-fdy-table-pagination></nav>
           </div>
         </div>
-        <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" value="cancel">Batal</button><button class="fdy-btn" value="save">Simpan</button></div>
-      </form>
-    </dialog>
-  </section>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-states">
+      <h2>States</h2>
+      <p class="doc-desc">Placeholder kosong / error untuk area data.</p>
+      <div class="doc-demo doc-cardgrid">
+        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state"><div class="fdy-state__icon" aria-hidden="true">🗂️</div><div class="fdy-state__title">Belum ada faktur</div><div class="fdy-state__text">Faktur yang kamu buat akan muncul di sini.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--sm">Buat faktur</button></div></div></div></div>
+        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state fdy-state--danger"><div class="fdy-state__icon" aria-hidden="true">⚠️</div><div class="fdy-state__title">Gagal memuat</div><div class="fdy-state__text">Tidak bisa mengambil data dari server.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Coba lagi</button></div></div></div></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-card">
+      <h2>Card</h2>
+      <div class="doc-demo doc-cardgrid">
+        <div class="fdy-card">
+          <div class="fdy-card__body">
+            <h3 class="fdy-card__title">Faktur INV-1042</h3>
+            <p class="fdy-card__desc">Jatuh tempo 30 Juli 2026. Total tagihan Rp 1.240.000.</p>
+          </div>
+          <div class="fdy-card__footer">
+            <button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Detail</button>
+            <button class="fdy-btn fdy-btn--sm">Bayar</button>
+          </div>
+        </div>
+        <div class="fdy-card fdy-card--interactive">
+          <div class="fdy-card__body">
+            <h3 class="fdy-card__title">Interactive</h3>
+            <p class="fdy-card__desc">Arahkan kursor — kartu terangkat (hover-lift).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-badge">
+      <h2>Badge</h2>
+      <div class="doc-demo">
+        <span class="fdy-badge">Baru</span>
+        <span class="fdy-badge fdy-badge--success">Lunas</span>
+        <span class="fdy-badge fdy-badge--warning">Tertunda</span>
+        <span class="fdy-badge fdy-badge--danger">Batal</span>
+        <span class="fdy-badge fdy-badge--info">Draft</span>
+        <span class="fdy-badge fdy-badge--outline">Arsip</span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-avatar">
+      <h2>Avatar</h2>
+      <div class="doc-demo">
+        <span class="fdy-avatar fdy-avatar--sm">SM</span>
+        <span class="fdy-avatar">BJ</span>
+        <span class="fdy-avatar fdy-avatar--lg">TA</span>
+        <span class="fdy-avatar-group" aria-label="3 anggota">
+          <span class="fdy-avatar">SM</span>
+          <span class="fdy-avatar">BJ</span>
+          <span class="fdy-avatar">TA</span>
+        </span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-progress">
+      <h2>Progress &amp; Spinner</h2>
+      <div class="doc-demo doc-demo--stack" style="gap:var(--space-4)">
+        <div class="fdy-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="Unggah" style="width:100%;max-width:24rem"><div class="fdy-progress__bar" style="width:64%"></div></div>
+        <div class="fdy-progress fdy-progress--indeterminate" role="progressbar" aria-label="Memuat" style="width:100%;max-width:24rem"><div class="fdy-progress__bar"></div></div>
+        <div class="demo"><span class="fdy-spinner fdy-spinner--sm" role="status" aria-label="Memuat"></span><span class="fdy-spinner" role="status" aria-label="Memuat"></span><span class="fdy-spinner fdy-spinner--lg" role="status" aria-label="Memuat"></span></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-skeleton">
+      <h2>Skeleton</h2>
+      <div class="doc-demo doc-demo--block" style="max-width:24rem">
+        <div class="fdy-skeleton fdy-skeleton--title"></div>
+        <div class="fdy-skeleton fdy-skeleton--text"></div>
+        <div class="fdy-skeleton fdy-skeleton--text" style="width:80%"></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-modal">
+      <h2>Modal</h2>
+      <p class="doc-desc">Native <code>&lt;dialog&gt;</code> — focus-trap, Esc, backdrop gratis dari browser.</p>
+      <div class="doc-demo">
+        <button class="fdy-btn" id="open-modal">Buka modal</button>
+        <dialog class="fdy-modal" id="demo-modal" aria-labelledby="demo-modal-title">
+          <div class="fdy-modal__header">
+            <h3 class="fdy-modal__title" id="demo-modal-title">Hapus faktur?</h3>
+            <button class="fdy-modal__close" aria-label="Tutup" data-close>&times;</button>
+          </div>
+          <div class="fdy-modal__body"><p style="margin:0;color:var(--color-text-muted)">Faktur INV-1042 akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p></div>
+          <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" data-close>Batal</button><button class="fdy-btn fdy-btn--danger" data-close>Hapus</button></div>
+        </dialog>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-screen">
+      <h2>Contoh: satu layar bisnis</h2>
+      <p class="doc-desc">Semua komponen dirakit jadi layar faktur nyata.</p>
+      <div class="doc-demo doc-demo--block" style="padding:0;background:transparent;border:0">
+        <div class="fdy-app" style="min-height:440px;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
+          <a class="fdy-skip" href="#screen-main">Lewati ke konten utama</a>
+          <aside class="fdy-app__sidebar" aria-label="Navigasi contoh">
+            <div class="fdy-app__brand">Foundry</div>
+            <nav class="fdy-nav">
+              <a class="fdy-nav__item" href="#sec-screen" aria-current="page">Faktur</a>
+              <a class="fdy-nav__item" href="#sec-screen">Pelanggan</a>
+              <a class="fdy-nav__item" href="#sec-screen">Laporan</a>
+            </nav>
+          </aside>
+          <header class="fdy-app__topbar">
+            <h3 class="fdy-app__title">Faktur</h3>
+            <button class="fdy-btn" id="open-new">+ Faktur baru</button>
+          </header>
+          <div class="fdy-app__main" id="screen-main" tabindex="-1">
+            <nav class="fdy-breadcrumb" aria-label="Breadcrumb" style="margin-bottom:var(--space-4)">
+              <ol class="fdy-breadcrumb__list">
+                <li class="fdy-breadcrumb__item"><a class="fdy-breadcrumb__link" href="#sec-screen">Dashboard</a></li>
+                <li class="fdy-breadcrumb__sep" aria-hidden="true">/</li>
+                <li class="fdy-breadcrumb__item" aria-current="page">Faktur</li>
+              </ol>
+            </nav>
+            <div class="fdy-table-wrap">
+              <table class="fdy-table">
+                <caption>Daftar faktur</caption>
+                <thead><tr><th scope="col">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
+                <tbody>
+                  <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num">1.240.000</td></tr>
+                  <tr><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num">290.000</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <dialog class="fdy-modal" id="new-modal" aria-labelledby="new-title">
+          <form method="dialog">
+            <div class="fdy-modal__header"><h3 class="fdy-modal__title" id="new-title">Faktur baru</h3><button class="fdy-modal__close" aria-label="Tutup" value="cancel">&times;</button></div>
+            <div class="fdy-modal__body">
+              <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+                <label class="fdy-field"><span class="fdy-label">Pelanggan</span><input class="fdy-input" placeholder="Nama pelanggan"></label>
+                <div class="fdy-field"><span class="fdy-label" id="lbl-new-status">Status</span>
+                  <div class="fdy-combo" data-fdy-combo data-value="draft">
+                    <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-new-status val-new-status">
+                      <span class="fdy-combo__value" id="val-new-status">Draft</span>
+                    </button>
+                    <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-new-status" hidden>
+                      <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="true"><span class="fdy-combo__check">✓</span>Draft</li>
+                      <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="false"><span class="fdy-combo__check"></span>Tertunda</li>
+                      <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
+                    </ul>
+                  </div>
+                </div>
+                <label class="fdy-switch"><input type="checkbox" checked> Kirim ke email pelanggan</label>
+              </div>
+            </div>
+            <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" value="cancel">Batal</button><button class="fdy-btn" value="save">Simpan</button></div>
+          </form>
+        </dialog>
+      </div>
+    </section>
+  </main>
 </div>
+
 <script src="../dist/foundry-select.js"></script>
+<script src="../dist/foundry-tabs.js"></script>
+<script src="../dist/foundry-table.js"></script>
+<script src="../dist/foundry-toast.js"></script>
 <script>
   const root = document.documentElement;
-  const themeBtn=document.getElementById('theme');
-  themeBtn.onclick=()=>{const d=root.dataset.theme==='dark'?'light':'dark';root.dataset.theme=d;themeBtn.setAttribute('aria-pressed',String(d==='dark'));};
-  const densityBtn=document.getElementById('density');
-  densityBtn.onclick=()=>{const d=root.dataset.density==='compact'?'comfortable':'compact';root.dataset.density=d;densityBtn.setAttribute('aria-pressed',String(d==='compact'));};
-  const dlg=document.getElementById('demo-modal');
-  document.getElementById('open-modal').onclick=()=>dlg.showModal();
-  dlg.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>dlg.close());
-  const nm=document.getElementById('new-modal');
-  document.getElementById('open-new').onclick=()=>nm.showModal();
+  const themeBtn = document.getElementById('theme');
+  themeBtn.onclick = () => { const d = root.dataset.theme === 'dark' ? 'light' : 'dark'; root.dataset.theme = d; themeBtn.setAttribute('aria-pressed', String(d === 'dark')); };
+  const densityBtn = document.getElementById('density');
+  densityBtn.onclick = () => { const d = root.dataset.density === 'compact' ? 'comfortable' : 'compact'; root.dataset.density = d; densityBtn.setAttribute('aria-pressed', String(d === 'compact')); };
+  const dlg = document.getElementById('demo-modal');
+  document.getElementById('open-modal').onclick = () => dlg.showModal();
+  dlg.querySelectorAll('[data-close]').forEach(b => b.onclick = () => dlg.close());
+  const nm = document.getElementById('new-modal');
+  document.getElementById('open-new').onclick = () => nm.showModal();
+  // Sidebar: reflect scroll position as aria-current on the matching nav item.
+  const navItems = [...document.querySelectorAll('#doc-nav .fdy-nav__item[href^="#sec-"]')];
+  const byId = new Map(navItems.map(a => [a.getAttribute('href').slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(a => a.removeAttribute('aria-current'));
+        const a = byId.get(e.target.id);
+        if (a) a.setAttribute('aria-current', 'page');
+      }
+    });
+  }, { rootMargin: '-10% 0px -80% 0px' });
+  document.querySelectorAll('.doc-section[id]').forEach(s => obs.observe(s));
 </script>
 </body>
 </html>
