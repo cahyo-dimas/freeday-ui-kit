@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { flatten, resolveValue, buildTokensCss } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss } from '../tokens/build.mjs';
 
 test('resolveValue: alias -> var()', () => {
   assert.equal(resolveValue('{indigo.600}'), 'var(--indigo-600)');
@@ -37,4 +37,10 @@ test('buildTokensCss: emits root, primitive, semantic-as-var, dark, density', ()
   assert.match(css, /prefers-color-scheme:\s*dark/);
   assert.match(css, /\[data-theme="dark"\][\s\S]*--color-primary:\s*var\(--indigo-500\)/);
   assert.match(css, /\[data-density="compact"\][\s\S]*--control-h:\s*2rem/);
+});
+
+test('bundleCss: concatenates parts in order with header', () => {
+  const out = bundleCss(['.a{color:red}', '.b{color:blue}']);
+  assert.match(out, /GENERATED/);
+  assert.ok(out.indexOf('.a{') < out.indexOf('.b{'), 'urutan dipertahankan');
 });
