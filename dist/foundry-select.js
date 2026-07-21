@@ -144,7 +144,7 @@
           if (isOpen()) close();
           break;
         default:
-          if (e.key.length === 1 && /\S/.test(e.key)) {
+          if (e.key.length === 1 && /\S/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
             typed += e.key.toLowerCase();
             clearTimeout(typedTimer);
             typedTimer = setTimeout(function () { typed = ''; }, 500);

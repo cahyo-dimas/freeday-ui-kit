@@ -91,6 +91,7 @@ a { color: var(--color-primary); }
 .fdy-combo__option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;white-space:nowrap;}
 .fdy-combo__option.is-highlighted{background:var(--color-surface-3);}
 .fdy-combo__option[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
+.fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
 .fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary-strong);}
 @media (prefers-reduced-motion:no-preference){.fdy-combo__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 @keyframes fdy-combo-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
