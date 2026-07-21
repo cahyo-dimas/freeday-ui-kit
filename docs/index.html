@@ -53,6 +53,7 @@
       <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
       <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
       <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
+      <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -285,6 +286,26 @@
       </dialog>
 
       <p class="doc-desc" style="margin-top:var(--space-4)">Single-select commit saat klik baris (tanpa "OK"). Keyboard: ketik untuk mencari, <kbd class="fdy-kbd">↓</kbd> masuk daftar, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> navigasi, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Fokus kembali ke tombol pemicu saat ditutup. Baris = <em>server state</em>: di app nyata, jadikan komponen terkontrol (callback <code>fetchPage</code> + cache), bukan store global.</p>
+    </section>
+
+    <section class="doc-section" id="sec-datepicker">
+      <h2>Date picker</h2>
+      <p class="doc-desc">Trigger bergaya input + kalender popover — konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>foundry-datepicker.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
+        <div class="fdy-field">
+          <span class="fdy-label">Tanggal faktur</span>
+          <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal faktur"></div>
+        </div>
+        <div class="fdy-field" style="max-width:26rem">
+          <span class="fdy-label">Periode laporan</span>
+          <div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Rentang tanggal laporan">
+            <div data-fdy-datepicker data-role="from" data-placeholder="Dari" data-label="Tanggal mulai"></div>
+            <span class="fdy-daterange__sep" aria-hidden="true">–</span>
+            <div data-fdy-datepicker data-role="to" data-placeholder="Sampai" data-label="Tanggal akhir"></div>
+          </div>
+          <span class="fdy-help">Akhir tak boleh mendahului awal.</span>
+        </div>
+      </div>
     </section>
 
     <section class="doc-section" id="sec-select">
@@ -696,6 +717,7 @@
 <script src="../dist/foundry-table.js"></script>
 <script src="../dist/foundry-toast.js"></script>
 <script src="../dist/foundry-cfl.js"></script>
+<script src="../dist/foundry-datepicker.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
