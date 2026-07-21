@@ -42,6 +42,7 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 ## Aksesibilitas (wajib)
 - Kontras **WCAG AA** di light & dark. `:focus-visible` selalu terlihat (outline 2px `--focus-ring`).
 - Status jangan hanya lewat warna. Hormati `prefers-reduced-motion`.
+- **ARIA:** HTML native dulu ("no ARIA is better than bad ARIA"); komponen interaktif ikut **kontrak spec §11.3** (role/aria/keyboard, pola WAI-ARIA APG). Markup di `docs/` = versi aksesibel, bukan hanya visual. Contoh: input error → `aria-invalid` + `aria-describedby`; modal → `role="dialog"` + `aria-modal` + focus trap; toast → `role="status"`/`aria-live`.
 
 ## Struktur
 ```

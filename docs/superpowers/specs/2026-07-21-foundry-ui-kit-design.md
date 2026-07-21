@@ -274,12 +274,57 @@ foundry/
 
 ## 11. Aksesibilitas (wajib)
 
-- Kontras teks memenuhi **WCAG AA** (≥ 4.5:1 teks normal, ≥ 3:1 teks besar/UI) di light & dark.
+### 11.1 WCAG (visual)
+- Kontras teks **WCAG AA** (≥ 4.5:1 teks normal, ≥ 3:1 teks besar/UI) di light & dark.
 - `:focus-visible` selalu terlihat (outline 2px `--focus-ring`, offset 2px).
 - Target interaktif ≥ 32px (compact, `--control-h` 2rem) / 40px (comfortable, 2.5rem) — memenuhi & melampaui WCAG 2.2 target minimum (24px).
-- Status tidak hanya lewat warna — sertakan ikon/teks (mis. badge status).
+- Status tidak hanya lewat warna — sertakan ikon/teks.
 - `prefers-reduced-motion` dihormati.
-- Semua button primary sudah dipilih agar teks putih lolos AA.
+- Button primary dipilih agar teks putih lolos AA.
+
+### 11.2 Kebijakan ARIA
+**ARIA** (Accessible Rich Internet Applications) = atribut `role` + `aria-*` yang memberi tahu teknologi bantu (screen reader) **apa** sebuah elemen, **keadaannya**, dan **hubungannya** — saat HTML biasa belum cukup. Tiga jenis: **role** (mis. `role="dialog"`), **property** (relatif tetap, mis. `aria-label`, `aria-describedby`), **state** (dinamis, mis. `aria-expanded`, `aria-invalid`, `aria-busy`).
+
+Aturan Foundry:
+1. **HTML semantik dulu — _"no ARIA is better than bad ARIA."_** Pakai `<button>`, `<input>`, `<nav>`, `<table>` native; ARIA hanya mengisi celah, bukan mengganti elemen native.
+2. **Setiap komponen interaktif mengikuti pola baku WAI-ARIA APG** (role, state, keyboard, fokus) — lihat kontrak §11.3. Sumber: W3C ARIA Authoring Practices Guide → https://www.w3.org/WAI/ARIA/apg/patterns/
+3. **Docs menampilkan markup yang benar-benar aksesibel** (bukan hanya tampilan) agar siapa pun yang menyalin ikut mendapat ARIA + keyboard yang benar. Ini requirement docs, bukan opsional.
+4. **Focus management** wajib untuk overlay (modal/dialog): perangkap fokus saat terbuka, kembalikan fokus ke pemicu saat tutup.
+5. **Live region** untuk pesan dinamis: alert = `role="alert"`, toast = `role="status"` / `aria-live="polite"`.
+
+### 11.3 Kontrak Aksesibilitas per komponen
+Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/input/table) sebagian besar "gratis"; komponen custom (modal/tabs/combobox/datepicker) adalah tempat ARIA paling kritis.
+
+| Komponen | Basis / role | ARIA kunci | Keyboard | Rilis |
+|---|---|---|---|---|
+| Button | `<button>` native | icon-only → `aria-label`; loading → `aria-busy`; toggle → `aria-pressed`; disabled → atribut `disabled` native | Enter / Space | v0.1 |
+| Input / Field | `<input>` + `<label for>` (atau `<label>` membungkus) | error → `aria-invalid="true"` + `aria-describedby` ke pesan; wajib → `aria-required` | native | v0.1 |
+| Card | container (`<article>`/`<section>`) + heading | jika seluruh card klikable → satu `<a>`/`<button>` di dalam, bukan `onclick` pada div | native | v0.1 |
+| Badge / Tag | teks (`<span>`) | umumnya dekoratif; status dinamis → bungkus `role="status"`; tag removable → tombol `aria-label="Hapus …"` | — | v0.1 |
+| Checkbox / Radio | `<input type>` native | native `checked`; grup radio dalam `<fieldset>`+`<legend>` | Space (checkbox), ↑↓ (grup radio) | v0.2 |
+| Switch | `role="switch"` (atau checkbox) | `aria-checked` | Space / Enter | v0.2 |
+| Select / Combobox | `role="combobox"` + `role="listbox"` | `aria-expanded`, `aria-controls`, `aria-activedescendant`, opsi `aria-selected` | ↑↓ Enter Esc, type-ahead | v0.3 |
+| Datepicker | `role="dialog"` + `role="grid"` | `aria-modal`, grid `aria-label` bulan, hari `aria-selected` | panah, PageUp/Down, Esc | v0.3 |
+| Choose-from-list dialog | `role="dialog"` + `role="listbox"` | `aria-modal`, `aria-labelledby`; multi → `aria-multiselectable` | listbox + dialog | v0.3 |
+| File upload | `<input type=file>` + dropzone | dropzone `aria-label`; instruksi via `aria-describedby` | native | v0.3 |
+| Table | `<table>` semantik | `<caption>`, `<th scope>`; kolom tersortir → `aria-sort="ascending\|descending"` | — | v0.2 |
+| Data grid (interaktif) | `role="grid"` | `aria-rowcount`/`aria-colcount`, `aria-sort`, fokus sel (roving tabindex) | panah, Home/End, PageUp/Down | v0.3 |
+| Pagination | `<nav aria-label="Paginasi">` + list | halaman aktif `aria-current="page"` | Tab / Enter | v0.3 |
+| Tabs | `role="tablist"` / `tab` / `tabpanel` | `aria-selected`, tab `aria-controls`, panel `aria-labelledby` | ← → Home/End | v0.3 |
+| Breadcrumb | `<nav aria-label="Breadcrumb">` + `<ol>` | item terakhir `aria-current="page"` | — | v0.3 |
+| Modal / Dialog | `role="dialog"` | `aria-modal="true"`, `aria-labelledby`, `aria-describedby`; **focus trap + return focus** | Esc menutup, Tab siklik | v0.2 |
+| Alert | `role="alert"` (implicit `aria-live="assertive"`) | — | — | v0.2 |
+| Toast | region `aria-live="polite"`, tiap toast `role="status"` | `aria-atomic="true"`; tombol tutup fokusable | tombol tutup di-Tab | v0.2 |
+| Tooltip | `role="tooltip"` | pemicu `aria-describedby` ke tooltip | Esc menutup; muncul saat hover **dan** focus | v0.4 |
+| Avatar | `<img alt>` atau inisial teks | `alt` deskriptif; jika dekoratif → `aria-hidden="true"` | — | v0.4 |
+| Progress | `role="progressbar"` | `aria-valuenow`/`min`/`max`, `aria-label` | — | v0.4 |
+| Wizard / Stepper | `<nav>` + `<ol>` | langkah aktif `aria-current="step"` | — | v0.4 |
+| App shell | landmark `<header>`/`<nav aria-label>`/`<main>`/`<aside>` | nav item aktif `aria-current="page"` | Skip-link ke `<main>` | v0.2 |
+
+### 11.4 Testing aksesibilitas
+- **Keyboard-only:** setiap alur dapat dioperasikan tanpa mouse; urutan Tab logis; fokus tidak terjebak (kecuali modal yang memang memerangkap lalu melepas saat ditutup).
+- **Screen reader smoke test:** VoiceOver (macOS: `Cmd+F5`) untuk komponen interaktif — nama, role, dan state terbaca benar.
+- **Otomatis (opsional, roadmap):** axe-core / Lighthouse a11y bila CI ditambahkan.
 
 ---
 
@@ -291,6 +336,7 @@ foundry/
 4. `tokens.json` valid sebagai W3C DTCG.
 5. Audit kontras AA lolos untuk semua komponen inti (light & dark).
 6. `docs/index.html` menampilkan seluruh komponen v0.1 dalam kedua tema & kedua density.
+7. Setiap komponen interaktif memenuhi **kontrak aksesibilitas §11.3** (role/aria/keyboard) dan lolos uji keyboard-only + smoke test VoiceOver. Markup di docs adalah versi yang aksesibel (bukan hanya visual).
 
 ---
 
