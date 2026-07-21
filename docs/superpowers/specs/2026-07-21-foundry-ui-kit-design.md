@@ -343,8 +343,8 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 1. Satu layar bisnis penuh (list + filter bar + data grid + form + modal) bisa dirakit **hanya** dari Foundry.
 2. Re-brand cukup mengubah mapping token **primitive → semantic**, tanpa menyentuh CSS komponen.
 3. Dark mode cukup re-definisi token **semantic**.
-4. `tokens.json` valid sebagai W3C DTCG.
-5. Audit kontras AA lolos untuk semua komponen inti (light & dark).
+4. `tokens.json` memakai format **DTCG-lite** (subset: `$value` + alias `{...}`; ekstensi non-standar `$dark`/`$compact`). `$type` + pemodelan mode standar DTCG = target v0.2.
+5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info (v0.1). **Terbuka:** foreground *soft badge* di light (3.0–4.24:1) & label primary button di dark (4.41:1) belum 4.5 — keputusan kebijakan menyusul (§13).
 6. `docs/index.html` menampilkan seluruh komponen v0.1 dalam kedua tema & kedua density.
 7. Setiap komponen interaktif memenuhi **kontrak aksesibilitas §11.3** (role/aria/keyboard) dan lolos uji keyboard-only + smoke test VoiceOver. Markup di docs adalah versi yang aksesibel (bukan hanya visual).
 
@@ -357,6 +357,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 - Component library ter-*compile* per framework (Vue/React/Blazor package).
 - SAP B1 *extension pack* (matrix/grid ala UI API, form dokumen header+baris, badge approval).
 - Ikon set (dipilih/di-embed) — di v1 pakai ikon inline seperlunya.
+- **Kontras soft-badge & dark-primary (temuan audit v0.1):** teks *soft badge* di light 3.0–4.24:1 (di bawah 4.5) & label primary button di dark 4.41:1. Akar masalah: token semantic dwiperan (satu warna dipakai sebagai **teks** *dan* **background**). Perlu keputusan kebijakan: (a) pertegas — teks lebih gelap / tambah token `--color-*-strong` untuk teks badge + token bg khusus tombol; atau (b) klasifikasikan soft badge sebagai elemen UI (target 3:1). Juga: `warning` dark memakai `amber.500` (#f59e0b, lolos) alih-alih `#eab308` di §5.3 — selaraskan bila perlu.
 ```
 
 ---
