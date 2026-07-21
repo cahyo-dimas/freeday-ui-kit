@@ -79,6 +79,13 @@ export function main() {
     .map(f => readFileSync(join(compDir, f), 'utf8'));
   writeFileSync(join(root, 'dist/foundry.css'), bundleCss([base, ...components]));
   console.log('Wrote dist/foundry.css');
+
+  // Copy optional JS enhancers (authored in src/, shipped as-is) to dist.
+  const jsFiles = readdirSync(join(root, 'src')).filter(f => f.endsWith('.js')).sort();
+  for (const f of jsFiles) {
+    writeFileSync(join(root, 'dist', f), readFileSync(join(root, 'src', f), 'utf8'));
+    console.log('Wrote dist/' + f);
+  }
 }
 
 if (fileURLToPath(import.meta.url) === resolve(process.argv[1])) main();

@@ -145,11 +145,21 @@
     </dialog>
   </section>
   <section id="showcase-select">
-    <h2>Select</h2>
-    <label class="fdy-field">
-      <span class="fdy-label">Status</span>
-      <select class="fdy-select"><option>Semua</option><option>Lunas</option><option>Tertunda</option><option>Draft</option></select>
-    </label>
+    <h2>Select (combobox)</h2>
+    <div class="fdy-field">
+      <span class="fdy-label" id="lbl-status">Status</span>
+      <div class="fdy-combo" data-fdy-combo data-value="tertunda">
+        <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
+          <span class="fdy-combo__value" id="val-status">Tertunda</span>
+        </button>
+        <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-status" hidden>
+          <li class="fdy-combo__option" role="option" data-value="semua" aria-selected="false"><span class="fdy-combo__check"></span>Semua</li>
+          <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
+          <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="true"><span class="fdy-combo__check">✓</span>Tertunda</li>
+          <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="false"><span class="fdy-combo__check"></span>Draft</li>
+        </ul>
+      </div>
+    </div>
   </section>
   <section id="showcase-selection">
     <h2>Checkbox · Radio · Switch</h2>
@@ -197,7 +207,18 @@
         <div class="fdy-modal__body">
           <div style="display:flex;flex-direction:column;gap:var(--space-4)">
             <label class="fdy-field"><span class="fdy-label">Pelanggan</span><input class="fdy-input" placeholder="Nama pelanggan"></label>
-            <label class="fdy-field"><span class="fdy-label">Status</span><select class="fdy-select"><option>Draft</option><option>Tertunda</option><option>Lunas</option></select></label>
+            <div class="fdy-field"><span class="fdy-label" id="lbl-new-status">Status</span>
+              <div class="fdy-combo" data-fdy-combo data-value="draft">
+                <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-new-status val-new-status">
+                  <span class="fdy-combo__value" id="val-new-status">Draft</span>
+                </button>
+                <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-new-status" hidden>
+                  <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="true"><span class="fdy-combo__check">✓</span>Draft</li>
+                  <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="false"><span class="fdy-combo__check"></span>Tertunda</li>
+                  <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
+                </ul>
+              </div>
+            </div>
             <label class="fdy-switch"><input type="checkbox" checked> Kirim ke email pelanggan</label>
           </div>
         </div>
@@ -206,6 +227,7 @@
     </dialog>
   </section>
 </div>
+<script src="../dist/foundry-select.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn=document.getElementById('theme');

@@ -16,11 +16,22 @@ npm test                # test transformasi build (node:test)
 <html data-theme="light" data-density="comfortable">
 ```
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`).
-- Komponen v0.2: app shell, table, modal (native `<dialog>`), select, checkbox/radio/switch — plus refinement visual "rich".
+- Komponen v0.2: app shell, table, modal (native `<dialog>`), **dropdown `fdy-combo`** (combobox berdesain penuh, WAI-ARIA APG), checkbox/radio/switch — plus refinement visual "rich".
+
+### Dropdown `fdy-combo` (butuh JS opsional)
+Dropdown yang popup-nya bisa didesain **wajib** JavaScript. Foundry menyediakan enhancer
+vanilla tanpa-dependency `dist/foundry-select.js` (di-copy dari `src/foundry-select.js` saat build):
+```html
+<link rel="stylesheet" href="dist/foundry.css">
+<script src="dist/foundry-select.js" defer></script>  <!-- auto-init semua [data-fdy-combo] -->
+```
+Di app Vue/React/Blazor, bind sendiri lewat state framework-mu (skrip ini implementasi rujukan,
+bukan keharusan). Markup mengikuti pola APG `role="combobox"`/`listbox`/`option`; enhancer
+memancarkan event `fdy-change` (`detail.value`) saat pilihan berubah.
 
 ## Struktur
 - `tokens/tokens.json` — sumber sejati (edit di sini)
 - `tokens/build.mjs` — generator
-- `src/` — base + komponen (`fdy-*`)
-- `dist/` — hasil build (di-commit)
+- `src/` — base + komponen (`fdy-*`) + enhancer JS opsional (`foundry-select.js`)
+- `dist/` — hasil build (di-commit): `*.css` + `*.js` (JS di-copy apa adanya dari `src/`)
 - `docs/index.html` — referensi hidup
