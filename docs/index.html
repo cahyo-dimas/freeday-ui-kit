@@ -676,6 +676,7 @@
 
     <section class="doc-section" id="sec-badge">
       <h2>Badge</h2>
+      <p class="doc-desc">Inline untuk status; <strong>overlay</strong> untuk angka/dot yang menempel di sudut ikon, tombol, atau teks.</p>
       <div class="doc-demo">
         <span class="fdy-badge">Baru</span>
         <span class="fdy-badge fdy-badge--success">Lunas</span>
@@ -683,6 +684,25 @@
         <span class="fdy-badge fdy-badge--danger">Batal</span>
         <span class="fdy-badge fdy-badge--info">Draft</span>
         <span class="fdy-badge fdy-badge--outline">Arsip</span>
+      </div>
+      <p class="doc-desc" style="margin-top:var(--space-4)">Overlay — angka, “99+”, ikon, atau titik di sudut. Warna ber-teks AA (default gelap · primary · danger); titik untuk accent/info/success/warning.</p>
+      <div class="doc-demo" style="gap:var(--space-8);align-items:center">
+        <span class="fdy-badge-wrap" aria-label="Pesan — 3 belum dibaca">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted)" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          <span class="fdy-badge-ov" aria-hidden="true">3</span>
+        </span>
+        <span class="fdy-badge-wrap" aria-label="Pesan — lebih dari 99 belum dibaca">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="color:var(--color-text-muted)" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m3 7 9 6 9-6"></path></svg>
+          <span class="fdy-badge-ov fdy-badge-ov--primary" aria-hidden="true">99+</span>
+        </span>
+        <span class="fdy-badge-wrap">
+          <button class="fdy-btn fdy-btn--danger">Security Issues</button>
+          <span class="fdy-badge-ov fdy-badge-ov--danger" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></span>
+        </span>
+        <span class="fdy-badge-wrap">
+          <span style="color:var(--color-text);font-weight:var(--weight-medium)">Bug Reports</span>
+          <span class="fdy-badge-ov fdy-badge-ov--info fdy-badge-ov--dot" aria-hidden="true"></span>
+        </span>
       </div>
     </section>
 
