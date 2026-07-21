@@ -130,6 +130,7 @@
   --color-info: var(--blue-600);
   --color-info-soft: var(--blue-100);
   --focus-ring: var(--indigo-600);
+  --focus-ring-width: 2px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
