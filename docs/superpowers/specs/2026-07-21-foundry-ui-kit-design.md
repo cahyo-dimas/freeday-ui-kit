@@ -193,6 +193,15 @@ Hormati `prefers-reduced-motion: reduce` → matikan transisi non-esensial.
 --bw         1px (global border width)
 ```
 
+### 5.10 Token tambahan (dari implementasi v0.1)
+Ditambahkan saat build v0.1 agar tak ada nilai mentah pada warna/outline:
+```
+--focus-ring-width  2px            (lebar & offset outline :focus-visible)
+--color-on-danger   #ffffff        (light) | #4a0f0f (dark)
+                    teks tombol danger; dark dibuat gelap agar AA di atas
+                    --color-danger yang menjadi merah-muda (#f87171) di dark.
+```
+
 ---
 
 ## 6. Theming Model — 3 sumbu via `data-*` di `<html>`
