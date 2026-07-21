@@ -1,0 +1,16 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# NOTE: dist/ is intentionally committed so projects can import
+# foundry.tokens.css / foundry.css directly without running a build.
