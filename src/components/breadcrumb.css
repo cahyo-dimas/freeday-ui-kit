@@ -1,0 +1,9 @@
+/* Foundry — Breadcrumb */
+.fdy-breadcrumb{font-size:var(--text-sm);}
+.fdy-breadcrumb__list{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);list-style:none;margin:0;padding:0;}
+.fdy-breadcrumb__item{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--color-text-muted);}
+.fdy-breadcrumb__link{color:var(--color-text-muted);text-decoration:none;border-radius:var(--radius-sm);}
+.fdy-breadcrumb__link:hover{color:var(--color-primary-strong);text-decoration:underline;}
+.fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
+.fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}

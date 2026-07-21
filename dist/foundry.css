@@ -61,6 +61,16 @@ a { color: var(--color-primary); }
 .fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
+/* Foundry — Breadcrumb */
+.fdy-breadcrumb{font-size:var(--text-sm);}
+.fdy-breadcrumb__list{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);list-style:none;margin:0;padding:0;}
+.fdy-breadcrumb__item{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--color-text-muted);}
+.fdy-breadcrumb__link{color:var(--color-text-muted);text-decoration:none;border-radius:var(--radius-sm);}
+.fdy-breadcrumb__link:hover{color:var(--color-primary-strong);text-decoration:underline;}
+.fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
+.fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}
+
 /* Foundry — Button */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);
@@ -140,6 +150,15 @@ a { color: var(--color-primary); }
 @media (prefers-reduced-motion:no-preference){.fdy-modal[open]{animation:fdy-modal-in var(--dur-base) var(--ease-spring);}}
 @keyframes fdy-modal-in{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
 
+/* Foundry — Pagination */
+.fdy-pagination__list{display:flex;align-items:center;gap:var(--space-1);list-style:none;margin:0;padding:0;}
+.fdy-pagination__link{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 var(--space-2);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);background:transparent;border:var(--bw) solid transparent;text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-pagination__link:hover{background:var(--color-surface-2);border-color:var(--color-border);}
+.fdy-pagination__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-pagination__link[aria-current="page"]{background:var(--color-primary);color:var(--color-on-primary);}
+.fdy-pagination__link[aria-disabled="true"],.fdy-pagination__link:disabled{opacity:.45;pointer-events:none;}
+.fdy-pagination__ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;color:var(--color-text-subtle);}
+
 /* Foundry — Selection controls */
 .fdy-check,.fdy-radio,.fdy-switch{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}
 .fdy-check input,.fdy-radio input{appearance:none;-webkit-appearance:none;width:1.15rem;height:1.15rem;margin:0;border:1.5px solid var(--color-border-strong);background:var(--color-surface);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
@@ -167,6 +186,15 @@ a { color: var(--color-primary); }
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+
+/* Foundry — Tabs (WAI-ARIA APG) */
+.fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
+.fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-tabs__tab:hover{color:var(--color-text);}
+.fdy-tabs__tab[aria-selected="true"]{color:var(--color-primary-strong);border-bottom-color:var(--color-primary);}
+.fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-tabs__panel{padding:var(--space-5) 0;}
+.fdy-tabs__panel[hidden]{display:none;}
 
 /* Foundry — Toast (transient notification) */
 .fdy-toast-region{position:fixed;z-index:200;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));pointer-events:none;}
