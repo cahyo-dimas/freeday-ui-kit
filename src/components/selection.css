@@ -1,0 +1,14 @@
+/* Foundry — Selection controls */
+.fdy-check,.fdy-radio,.fdy-switch{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}
+.fdy-check input,.fdy-radio input{appearance:none;-webkit-appearance:none;width:1.15rem;height:1.15rem;margin:0;border:1.5px solid var(--color-border-strong);background:var(--color-surface);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-check input{border-radius:var(--radius-sm);}
+.fdy-radio input{border-radius:50%;}
+.fdy-check input::before{content:"";width:.62rem;height:.62rem;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);}
+.fdy-radio input::before{content:"";width:.55rem;height:.55rem;border-radius:50%;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);}
+.fdy-check input:checked,.fdy-radio input:checked{background:var(--color-primary);border-color:var(--color-primary);}
+.fdy-check input:checked::before,.fdy-radio input:checked::before{transform:scale(1);}
+.fdy-check input:focus-visible,.fdy-radio input:focus-visible,.fdy-switch input:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-switch input{appearance:none;-webkit-appearance:none;position:relative;width:2.4rem;height:1.35rem;margin:0;border-radius:var(--radius-full);background:var(--color-border-strong);cursor:pointer;transition:background var(--dur-base) var(--ease-standard);}
+.fdy-switch input::before{content:"";position:absolute;top:2px;left:2px;width:calc(1.35rem - 4px);height:calc(1.35rem - 4px);border-radius:50%;background:#fff;box-shadow:var(--shadow-1);transition:transform var(--dur-base) var(--ease-spring);}
+.fdy-switch input:checked{background:var(--color-primary);}
+.fdy-switch input:checked::before{transform:translateX(1.05rem);}
