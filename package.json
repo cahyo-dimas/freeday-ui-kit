@@ -1,0 +1,12 @@
+{
+  "name": "foundry",
+  "version": "0.1.0",
+  "description": "Foundry — token-driven UI KIT (design source-of-truth).",
+  "type": "module",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node tokens/build.mjs",
+    "test": "node --test"
+  }
+}

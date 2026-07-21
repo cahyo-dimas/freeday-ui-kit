@@ -32,7 +32,7 @@
 |---|---|---|
 | 1 | Bentuk KIT | **Design source-of-truth** (framework-agnostic, token file + referensi hidup) |
 | 2 | Strategi build | **Hybrid** — token layer ditulis bersih dari nol, komponen di-port dari Foundation |
-| 3 | Identitas visual | **Baru — "Slate Indigo"** (indigo `#574fd6` + accent teal, netral slate dingin) |
+| 3 | Identitas visual | **Baru — "Azure & Teal"** (azure `#2050d8` + accent teal, netral slate dingin) |
 | 4 | Cakupan komponen | Foundation **+ komponen business-app** (app shell, data grid, master-detail, wizard, filter bar, pagination, states) |
 | 5 | Target konsumsi | **CSS variables + `tokens.json` kanonik (W3C DTCG)**; adapter stack lain on-demand |
 | 6 | Visual styles v1 | **1 gaya utama (`soft`) + dark/light**; gaya lain = roadmap |
@@ -68,8 +68,8 @@ Tier 3 · COMPONENT   opsional, hanya untuk override lokal per komponen
 
 Contoh alur:
 ```
---indigo-600:#574fd6            (Tier 1)
---color-primary:var(--indigo-600)   (Tier 2)
+--azure-600:#2050d8            (Tier 1)
+--color-primary:var(--azure-600)   (Tier 2)
 --fdy-btn-bg:var(--color-primary)   (Tier 3, opsional)
 ```
 
@@ -81,10 +81,10 @@ Contoh alur:
 
 ### 5.1 Primitive — Color ramps
 
-**Indigo (brand)**
+**Azure (brand)**
 ```
-50 #eef0ff · 100 #e0e2ff · 200 #c7c8ff · 300 #a5a3fb · 400 #8781f4 · 500 #6f66ea
-600 #574fd6 · 700 #473fb4 · 800 #3a3491 · 900 #322d74 · 950 #1f1b47
+50 #eff4ff · 100 #dbe6fe · 200 #bdd2fd · 300 #90b3fb · 400 #5c8bf6 · 500 #3467ec
+600 #2050d8 · 700 #1c40b0 · 800 #1c398c · 900 #1c336e · 950 #131e42
 ```
 **Slate (neutral, cool)**
 ```
@@ -106,18 +106,18 @@ Blue    50 #eff6ff · 100 #dbeafe · 500 #3b82f6 · 600 #2563eb · 700 #1d4ed8
 
 ### 5.2 Semantic — Light (default)
 ```
---color-primary        #574fd6      --color-text         #171b26
---color-primary-hover  #473fb4      --color-text-muted   #4d5568
---color-primary-active #3a3491      --color-text-subtle  #6b7488
+--color-primary        #2050d8      --color-text         #171b26
+--color-primary-hover  #1c40b0      --color-text-muted   #4d5568
+--color-primary-active #1c398c      --color-text-subtle  #6b7488
 --color-on-primary     #ffffff      --color-text-onbrand #ffffff
---color-primary-soft   #eef0ff
---color-primary-border #e0e2ff      --color-surface      #ffffff
+--color-primary-soft   #eff4ff
+--color-primary-border #dbe6fe      --color-surface      #ffffff
                                      --color-surface-2    #f7f8fa
 --color-accent         #0d9488      --color-surface-3    #eef0f4
 --color-accent-hover   #0f766e
 --color-on-accent      #ffffff      --color-border       #e0e3ea
                                      --color-border-strong#cbd0da
---focus-ring           #574fd6      --color-border-muted #eef0f4
+--focus-ring           #2050d8      --color-border-muted #eef0f4
 
 --color-success #16a34a  --success-soft #dcfce7
 --color-warning #c2740a  --warning-soft #fef3c7
@@ -127,18 +127,18 @@ Blue    50 #eff6ff · 100 #dbeafe · 500 #3b82f6 · 600 #2563eb · 700 #1d4ed8
 
 ### 5.3 Semantic — Dark (`data-theme="dark"` re-definisi Tier 2 saja)
 ```
---color-primary        #6f66ea      --color-text         #eef0f4
---color-primary-hover  #8781f4      --color-text-muted   #99a1b3
---color-primary-active #a5a3fb      --color-text-subtle  #6b7488
+--color-primary        #3467ec      --color-text         #eef0f4
+--color-primary-hover  #5c8bf6      --color-text-muted   #99a1b3
+--color-primary-active #90b3fb      --color-text-subtle  #6b7488
 --color-on-primary     #ffffff
---color-primary-soft   rgba(87,79,214,.20)
---color-primary-border rgba(135,129,244,.28)
+--color-primary-soft   rgba(32,80,216,.20)
+--color-primary-border rgba(92,139,246,.28)
 
 --color-accent         #24c49d      --color-surface      #0e111a
 --color-accent-hover   #5eead4      --color-surface-2    #171b26
 --color-on-accent      #06231f      --color-surface-3    #262b38
 
---focus-ring           #8781f4      --color-border       #262b38
+--focus-ring           #5c8bf6      --color-border       #262b38
                                      --color-border-strong#3a4152
                                      --color-border-muted #1c2130
 
@@ -191,6 +191,15 @@ Hormati `prefers-reduced-motion: reduce` → matikan transisi non-esensial.
 ```
 --control-h  comfortable 2.5rem | compact 2rem
 --bw         1px (global border width)
+```
+
+### 5.10 Token tambahan (dari implementasi v0.1)
+Ditambahkan saat build v0.1 agar tak ada nilai mentah pada warna/outline:
+```
+--focus-ring-width  2px            (lebar & offset outline :focus-visible)
+--color-on-danger   #ffffff        (light) | #4a0f0f (dark)
+                    teks tombol danger; dark dibuat gelap agar AA di atas
+                    --color-danger yang menjadi merah-muda (#f87171) di dark.
 ```
 
 ---
@@ -256,6 +265,7 @@ foundry/
 - **Pola:** BEM ringkas — `fdy-card`, `fdy-card__title`, `fdy-card--elevated`.
 - **Token semantic:** `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, `--dur-*`, `--ease-*`.
 - **Token component (Tier 3):** `--fdy-<komponen>-<properti>` (mis. `--fdy-btn-bg`).
+- **Nilai mentah (kebijakan pragmatis):** Warna **selalu** token. Spasi yang cocok skala `--space-*` **wajib** pakai token (mis. `.5rem` → `var(--space-2)`). Literal lokal-komponen tanpa padanan token (padding relatif `em`, hairline `1.5px`, spread focus `3px`, `min-height` ad-hoc) boleh sebagai literal. Prinsip §3 "never a raw value" mengikat **warna & spasi berskala**, bukan setiap literal.
 
 ---
 
@@ -333,8 +343,8 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 1. Satu layar bisnis penuh (list + filter bar + data grid + form + modal) bisa dirakit **hanya** dari Foundry.
 2. Re-brand cukup mengubah mapping token **primitive → semantic**, tanpa menyentuh CSS komponen.
 3. Dark mode cukup re-definisi token **semantic**.
-4. `tokens.json` valid sebagai W3C DTCG.
-5. Audit kontras AA lolos untuk semua komponen inti (light & dark).
+4. `tokens.json` memakai format **DTCG-lite** (subset: `$value` + alias `{...}`; ekstensi non-standar `$dark`/`$compact`). `$type` + pemodelan mode standar DTCG = target v0.2.
+5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info + palet Azure (primary button dark kini **4.89:1**). **Terbuka:** hanya foreground *soft badge* di light (3.0–4.24:1) belum 4.5 — keputusan kebijakan menyusul (§13).
 6. `docs/index.html` menampilkan seluruh komponen v0.1 dalam kedua tema & kedua density.
 7. Setiap komponen interaktif memenuhi **kontrak aksesibilitas §11.3** (role/aria/keyboard) dan lolos uji keyboard-only + smoke test VoiceOver. Markup di docs adalah versi yang aksesibel (bukan hanya visual).
 
@@ -347,6 +357,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 - Component library ter-*compile* per framework (Vue/React/Blazor package).
 - SAP B1 *extension pack* (matrix/grid ala UI API, form dokumen header+baris, badge approval).
 - Ikon set (dipilih/di-embed) — di v1 pakai ikon inline seperlunya.
+- **Kontras soft-badge (temuan audit v0.1):** teks *soft badge* di light 3.0–4.24:1 (di bawah 4.5). *(Label primary button di dark sudah lolos 4.89:1 sejak palet Azure.)* Akar masalah: token semantic dwiperan (satu warna dipakai sebagai **teks** *dan* **background**). Perlu keputusan: (a) pertegas — teks lebih gelap / tambah token `--color-*-strong` untuk teks badge; atau (b) klasifikasikan soft badge sebagai elemen UI (target 3:1). Juga: `warning` dark memakai `amber.500` (#f59e0b, lolos) alih-alih `#eab308` di §5.3 — selaraskan bila perlu.
 ```
 
 ---
@@ -355,4 +366,4 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 
 - **Source Foundation** ter-ekstrak: `_template.txt` (±226 KB HTML bersih) — sumber port komponen.
 - **Font latin ter-embed** (base64, dari manifest Foundation): IBM Plex Sans (400/500/600/700), Sora (600/700), Manrope (600/700), JetBrains Mono (400/500).
-- **Papan identitas** (artifact) — perbandingan 3 arah, arah A "Slate Indigo" terpilih.
+- **Papan identitas** (artifact) — perbandingan 3 arah, arah A "Azure & Teal" terpilih.

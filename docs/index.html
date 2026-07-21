@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foundry — Referensi</title>
+<link rel="stylesheet" href="../dist/foundry.tokens.css">
+<link rel="stylesheet" href="../dist/foundry.css">
+<style>
+  .wrap { max-width: 960px; margin: 0 auto; padding: var(--space-8) var(--space-6); }
+  .bar { display: flex; gap: var(--space-3); align-items: center; margin-bottom: var(--space-8); }
+  .bar h1 { font-size: var(--text-2xl); margin-right: auto; }
+  section { margin-bottom: var(--space-12); }
+  section > h2 { font-size: var(--text-xl); margin-bottom: var(--space-4); }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: var(--space-2); }
+  .sw { border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-xs); }
+  .sw i { display: block; height: 44px; }
+  .sw span { display: block; padding: var(--space-1) var(--space-2); color: var(--color-text-muted); font-family: var(--font-mono); }
+  .demo { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <h1>Foundry</h1>
+    <button class="fdy-btn fdy-btn--ghost" id="theme">Toggle theme</button>
+    <button class="fdy-btn fdy-btn--ghost" id="density">Toggle density</button>
+  </div>
+
+  <section>
+    <h2>Warna semantic</h2>
+    <div class="swatches">
+      <label class="sw"><i style="background:var(--color-primary)"></i><span>primary</span></label>
+      <label class="sw"><i style="background:var(--color-accent)"></i><span>accent</span></label>
+      <label class="sw"><i style="background:var(--color-surface-2)"></i><span>surface-2</span></label>
+      <label class="sw"><i style="background:var(--color-success)"></i><span>success</span></label>
+      <label class="sw"><i style="background:var(--color-warning)"></i><span>warning</span></label>
+      <label class="sw"><i style="background:var(--color-danger)"></i><span>danger</span></label>
+      <label class="sw"><i style="background:var(--color-info)"></i><span>info</span></label>
+    </div>
+  </section>
+
+  <!-- Component showcase sections ditambahkan di Task 4-7 -->
+  <section id="showcase-button">
+    <h2>Button</h2>
+    <div class="demo">
+      <button class="fdy-btn">Primary</button>
+      <button class="fdy-btn fdy-btn--ghost">Ghost</button>
+      <button class="fdy-btn fdy-btn--danger">Danger</button>
+      <button class="fdy-btn fdy-btn--sm">Small</button>
+      <button class="fdy-btn fdy-btn--lg">Large</button>
+      <button class="fdy-btn" disabled>Disabled</button>
+    </div>
+  </section>
+  <section id="showcase-input">
+    <h2>Input</h2>
+    <div class="demo" style="align-items:flex-start">
+      <label class="fdy-field">
+        <span class="fdy-label">Nama pelanggan</span>
+        <input class="fdy-input" placeholder="cth. PT Sumber Makmur" aria-describedby="cust-help">
+        <span class="fdy-help" id="cust-help">Nama sesuai dokumen.</span>
+      </label>
+      <label class="fdy-field">
+        <span class="fdy-label">Email</span>
+        <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
+        <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
+      </label>
+    </div>
+  </section>
+  <section id="showcase-card">
+    <h2>Card</h2>
+    <div class="demo" style="align-items:stretch">
+      <div class="fdy-card" style="width:280px">
+        <div class="fdy-card__body">
+          <h3 class="fdy-card__title">Faktur INV-1042</h3>
+          <p class="fdy-card__desc">Jatuh tempo 30 Juli 2026. Total tagihan Rp 1.240.000.</p>
+        </div>
+        <div class="fdy-card__footer">
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Detail</button>
+          <button class="fdy-btn fdy-btn--sm">Bayar</button>
+        </div>
+      </div>
+      <div class="fdy-card fdy-card--elevated" style="width:280px">
+        <div class="fdy-card__body">
+          <h3 class="fdy-card__title">Elevated</h3>
+          <p class="fdy-card__desc">Varian dengan shadow, tanpa border.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="showcase-badge">
+    <h2>Badge</h2>
+    <div class="demo">
+      <span class="fdy-badge">Baru</span>
+      <span class="fdy-badge fdy-badge--success">Lunas</span>
+      <span class="fdy-badge fdy-badge--warning">Tertunda</span>
+      <span class="fdy-badge fdy-badge--danger">Batal</span>
+      <span class="fdy-badge fdy-badge--info">Draft</span>
+      <span class="fdy-badge fdy-badge--outline">Arsip</span>
+    </div>
+  </section>
+</div>
+<script>
+  const root = document.documentElement;
+  document.getElementById('theme').onclick = () =>
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.getElementById('density').onclick = () =>
+    root.dataset.density = root.dataset.density === 'compact' ? 'comfortable' : 'compact';
+</script>
+</body>
+</html>
