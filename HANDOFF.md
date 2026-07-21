@@ -4,18 +4,33 @@ Ringkasan kerja semalam (otonom, sesuai izinmu). Semua **commit lokal saja** —
 push/merge/checkout/reset (sesuai batasanmu). Aku tetap di branch `feat/v0.2-rich-refinement`
 dan menandai milestone dengan git tag.
 
-## ⭐ v0.4 — menjawab feedback screenshot + parity Foundation (loop 30 menit, masih jalan)
-Kamu bilang: ikon search CFL jelek (emoji 🔎, di kiri) → harusnya SVG bersih di **kanan**;
-dan table "cuma sort, belum ada filter". Keduanya sudah beres:
-- **Choose-from-list** (`13e381e`): field read-only + tombol kaca-pembesar **SVG di kanan** yang
-  membuka **dialog pencari** (search, hasil dense sticky-header, single commit-saat-klik +
-  multi centang/konfirmasi, empty state, keyboard penuh). Lihat menu **"Choose-from-list"**.
-  Field yang kamu screenshot sekarang jadi CFL sungguhan (kode + nama terisi bareng).
-- **Table filter + bulk** (`815db8a`): tiap kolom punya **corong filter** (teks *berisi*, enum
-  *checklist*, angka *rentang*) + **bar aksi massal** saat baris dipilih. Lihat menu **"Data table"**:
-  klik ikon corong di header Pelanggan/Status/Nilai; centang baris → muncul bar aksi.
-- **Masih berlanjut** (wakeup berikutnya): datepicker, file-upload, poles halaman index, struktur
-  pakai-di-project. Belum di-tag; masih commit-only di branch yang sama. Build deterministik, test 5/5.
+## ⭐ v0.4 — SELESAI (tag `v0.4` @ 02eb769) — parity Foundation + siap-project
+Loop 30-menit menuntaskan semua yang kamu minta. Kamu bilang: ikon CFL jelek (emoji 🔎, kiri) →
+mau SVG bersih di **kanan**; table "cuma sort, belum ada filter"; index kurang; pikirkan struktur
+pakai-di-project. **Semua beres.** Enam iterasi, tiap-tiap di-commit + build deterministik + test:
+
+1. **Choose-from-list** (`13e381e`) — field read-only + tombol kaca-pembesar **SVG di kanan**
+   membuka **dialog pencari** (search, hasil dense sticky-header, single commit-saat-klik +
+   multi centang/konfirmasi, empty state, keyboard penuh). Field yang kamu screenshot kini CFL
+   sungguhan (kode + nama terisi bareng). Menu **"Choose-from-list"**.
+2. **Table filter + bulk** (`815db8a`) — tiap kolom punya **corong filter** (teks *berisi* · enum
+   *checklist* · angka *rentang*) + **bar aksi massal** saat baris dipilih. Menu **"Data table"**.
+3. **Date picker** (`7977704`) — kalender popover, single + **range tertaut** (akhir ≥ awal),
+   locale otomatis (Intl), keyboard penuh. Menu **"Date picker"**.
+4. **File upload** (`3359e74`) — dropzone + state per-berkas (idle/drag/mengunggah/selesai/error).
+   Menu **"File upload"**.
+5. **Index foundations** (`b106047`) — Prinsip, Spasi, Radius & Elevasi, Motion, Aksesibilitas.
+   Index kini kaya seperti Foundation (menjawab "polos banget").
+6. **Struktur project** (`02eb769`) — satu bundel `dist/foundry.js` (semua enhancer, cukup 1
+   `<script>`) + **README ditulis ulang** jadi panduan pakai lengkap (include CSS, JS bundel/per-file,
+   tabel hook/event, theming 3-sumbu, integrasi Vue/React/Blazor, tier token, struktur repo).
+
+**Sekarang: 30 komponen, 7 enhancer, `node --test` 6/6, `dist/` deterministik.** Komponen Foundation
+praktis lengkap. **Cron loop kuhentikan** (tujuan tercapai — tak mau over-polish sia-sia dini hari).
+
+**Opsional yang SENGAJA tak kukerjakan (keputusanmu):** blok "do/don't" usage Foundation, section
+"Extending the system", dan "Reusable Claude design brief" — ini materi dokumentasi/meta, bukan
+komponen. Kalau mau, jalankan `/loop` lagi atau bilang saja.
 
 > Bagian di bawah ini adalah handoff v0.2/v0.3 sebelumnya — tetap berlaku.
 
