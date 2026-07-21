@@ -15,6 +15,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-sem
 a { color: var(--color-primary); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
+.fdy-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
@@ -191,6 +192,14 @@ a { color: var(--color-primary); }
 .fdy-switch input:checked{background:var(--color-primary);}
 .fdy-switch input:checked::before{transform:translateX(1.05rem);}
 
+/* Standalone checkbox (e.g. table row/select-all) — supports :indeterminate */
+.fdy-checkbox{appearance:none;-webkit-appearance:none;width:1.15rem;height:1.15rem;margin:0;border:1.5px solid var(--color-border-strong);border-radius:var(--radius-sm);background:var(--color-surface);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-checkbox::before{content:"";width:.62rem;height:.62rem;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);}
+.fdy-checkbox:checked,.fdy-checkbox:indeterminate{background:var(--color-primary);border-color:var(--color-primary);}
+.fdy-checkbox:checked::before{transform:scale(1);}
+.fdy-checkbox:indeterminate::before{width:.6rem;height:2px;transform:scale(1);clip-path:none;box-shadow:none;background:var(--color-on-primary);}
+.fdy-checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+
 /* Foundry — Skeleton */
 .fdy-skeleton{display:block;border-radius:var(--radius-sm);background:var(--color-surface-3);background-image:linear-gradient(90deg,transparent,color-mix(in srgb,var(--color-surface) 60%,transparent),transparent);background-size:200% 100%;background-repeat:no-repeat;animation:fdy-skeleton 1.4s ease-in-out infinite;}
 .fdy-skeleton--text{height:.8rem;margin:.3rem 0;}
@@ -206,6 +215,15 @@ a { color: var(--color-primary); }
 @keyframes fdy-spin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){.fdy-spinner{animation-duration:2s;}}
 
+/* Foundry — States (empty / loading / error placeholders) */
+.fdy-state{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-2);padding:var(--space-10) var(--space-6);}
+.fdy-state__icon{display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;color:var(--color-text-subtle);}
+.fdy-state__icon svg{width:100%;height:100%;}
+.fdy-state__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text);}
+.fdy-state__text{font-size:var(--text-sm);color:var(--color-text-muted);max-width:24rem;line-height:var(--leading-normal);}
+.fdy-state__actions{margin-top:var(--space-2);display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center;}
+.fdy-state--danger .fdy-state__icon{color:var(--color-danger-strong);}
+
 /* Foundry — Table */
 .fdy-table-wrap{overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
 .fdy-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
@@ -218,6 +236,25 @@ a { color: var(--color-primary); }
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+
+/* Sortable header button (accessible click target inside th) */
+.fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}
+.fdy-table__sortbtn:hover{color:var(--color-text);}
+.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+
+/* Selection column + selected row */
+.fdy-table__selcol{width:1px;white-space:nowrap;}
+.fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
+
+/* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
+.fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
+.fdy-datatable .fdy-table-scroll{overflow-x:auto;}
+.fdy-table-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-table-toolbar__search{max-width:18rem;height:calc(var(--control-h) - var(--space-2));}
+.fdy-table-toolbar__spacer{flex:1;}
+.fdy-table-toolbar__count{font-size:var(--text-sm);color:var(--color-text-muted);white-space:nowrap;}
+.fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}
+.fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
 
 /* Foundry — Tabs (WAI-ARIA APG) */
 .fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}

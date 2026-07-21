@@ -10,3 +10,22 @@
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+
+/* Sortable header button (accessible click target inside th) */
+.fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}
+.fdy-table__sortbtn:hover{color:var(--color-text);}
+.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+
+/* Selection column + selected row */
+.fdy-table__selcol{width:1px;white-space:nowrap;}
+.fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
+
+/* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
+.fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
+.fdy-datatable .fdy-table-scroll{overflow-x:auto;}
+.fdy-table-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-table-toolbar__search{max-width:18rem;height:calc(var(--control-h) - var(--space-2));}
+.fdy-table-toolbar__spacer{flex:1;}
+.fdy-table-toolbar__count{font-size:var(--text-sm);color:var(--color-text-muted);white-space:nowrap;}
+.fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}
+.fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
