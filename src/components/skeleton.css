@@ -1,0 +1,7 @@
+/* Foundry — Skeleton */
+.fdy-skeleton{display:block;border-radius:var(--radius-sm);background:var(--color-surface-3);background-image:linear-gradient(90deg,transparent,color-mix(in srgb,var(--color-surface) 60%,transparent),transparent);background-size:200% 100%;background-repeat:no-repeat;animation:fdy-skeleton 1.4s ease-in-out infinite;}
+.fdy-skeleton--text{height:.8rem;margin:.3rem 0;}
+.fdy-skeleton--title{height:1.2rem;width:40%;}
+.fdy-skeleton--circle{border-radius:var(--radius-full);}
+@keyframes fdy-skeleton{to{background-position:-200% 0;}}
+@media (prefers-reduced-motion:reduce){.fdy-skeleton{animation:none;}}

@@ -1,0 +1,7 @@
+/* Foundry — Progress */
+.fdy-progress{height:.5rem;border-radius:var(--radius-full);background:var(--color-surface-3);overflow:hidden;}
+.fdy-progress__bar{height:100%;border-radius:inherit;background:var(--color-primary);transition:width var(--dur-base) var(--ease-standard);}
+.fdy-progress--indeterminate{position:relative;}
+.fdy-progress--indeterminate .fdy-progress__bar{width:40%;animation:fdy-progress-indet 1.2s var(--ease-standard) infinite;}
+@keyframes fdy-progress-indet{0%{margin-left:-40%;}100%{margin-left:100%;}}
+@media (prefers-reduced-motion:reduce){.fdy-progress--indeterminate .fdy-progress__bar{animation:none;width:100%;opacity:.5;}}
