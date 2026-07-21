@@ -230,8 +230,8 @@ Legenda: **⬆** port dari Foundation · **✦** baru (business-app)
 
 ### Prioritas rilis (token-first)
 - **v0.1 (MVP — token-first)** — `tokens.json` + `build.mjs` + theming (light/dark + density) + `docs/index.html` skeleton + komponen: **button, input, card, badge**. *Tujuan: buktikan pipeline `json → css → komponen → docs` end-to-end, utuh tapi sempit.*
-- **v0.2 (layar bisnis pertama)** — app shell (sidebar+topbar), table, modal, alert/toast, form controls (select/checkbox/radio/switch). *(cukup untuk merakit satu layar bisnis nyata)*
-- **v0.3** — advanced data grid, combobox, datepicker, choose-from-list, file upload, tabs, breadcrumb, filter bar, pagination, data states, skeleton.
+- **v0.2 (polish + layar bisnis pertama)** — **refinement visual "rich"** (default look Foundry mulai v0.2: elevation berlapis/`--shadow-lift`, tombol gradient halus + colored-shadow *glow*, `:active` press, focus ring lebih tegas, teks badge `-strong` **lolos AA**) **+** app shell (sidebar+topbar), table, modal (native `<dialog>`), form controls (select/checkbox/radio/switch); **embed font asli di docs** + **demo "satu layar bisnis"**. Native-first, CSS-first, 0 dependency, JS vanilla minimal (native dialog). *(divalidasi via mockup before/after)*
+- **v0.3** — alert/toast, advanced data grid, combobox, datepicker, choose-from-list, file upload, tabs, breadcrumb, filter bar, pagination, data states, skeleton.
 - **v0.4** — wizard/stepper, master-detail/document form, avatar/tooltip/kbd, progress, + preset gaya tambahan.
 
 ---
@@ -357,7 +357,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 - Component library ter-*compile* per framework (Vue/React/Blazor package).
 - SAP B1 *extension pack* (matrix/grid ala UI API, form dokumen header+baris, badge approval).
 - Ikon set (dipilih/di-embed) — di v1 pakai ikon inline seperlunya.
-- **Kontras soft-badge (temuan audit v0.1):** teks *soft badge* di light 3.0–4.24:1 (di bawah 4.5). *(Label primary button di dark sudah lolos 4.89:1 sejak palet Azure.)* Akar masalah: token semantic dwiperan (satu warna dipakai sebagai **teks** *dan* **background**). Perlu keputusan: (a) pertegas — teks lebih gelap / tambah token `--color-*-strong` untuk teks badge; atau (b) klasifikasikan soft badge sebagai elemen UI (target 3:1). Juga: `warning` dark memakai `amber.500` (#f59e0b, lolos) alih-alih `#eab308` di §5.3 — selaraskan bila perlu.
+- **Kontras soft-badge → dituntaskan di v0.2:** teks soft badge dipertegas ke token baru `--color-*-strong` (light shade -700/-800, dark shade -400) agar lolos **AA 4.5:1**, soft-bg tetap. *(Label primary button dark sudah lolos 4.89:1 sejak palet Azure.)* Sekalian selaraskan `warning` dark (`amber.500` vs `#eab308` §5.3).
 ```
 
 ---
