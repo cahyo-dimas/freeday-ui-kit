@@ -71,6 +71,14 @@
     return node;
   }
 
+  // Pre-create the live region so the FIRST status toast is reliably announced
+  // (some screen readers ignore a live region created in the same tick as its content).
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', ensureRegion);
+  } else {
+    ensureRegion();
+  }
+
   window.Foundry = window.Foundry || {};
   window.Foundry.toast = toast;
 })();
