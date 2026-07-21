@@ -54,6 +54,7 @@
       <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
       <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
       <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
+      <a class="fdy-nav__item" href="#sec-upload">File upload</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -304,6 +305,35 @@
             <div data-fdy-datepicker data-role="to" data-placeholder="Sampai" data-label="Tanggal akhir"></div>
           </div>
           <span class="fdy-help">Akhir tak boleh mendahului awal.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-upload">
+      <h2>File upload</h2>
+      <p class="doc-desc">Drop target yang juga membuka dialog berkas saat klik / Enter. State eksplisit — idle, drag-over, mengunggah (progress), selesai, error — karena "tidak terjadi apa-apa" adalah feedback unggah terburuk. Butuh <code>foundry-upload.js</code>. (Demo ini mensimulasikan progress; di app nyata, sambungkan event <code>fdy-upload-add</code> ke fungsi unggahmu.)</p>
+      <div class="doc-demo doc-demo--col" style="max-width:34rem">
+        <div class="fdy-dropzone" data-fdy-dropzone data-max-size="10485760" data-filelist="#dz-list" data-fdy-upload-simulate role="button" tabindex="0" aria-label="Unggah berkas — jatuhkan di sini atau tekan Enter untuk memilih">
+          <span class="fdy-dropzone__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg></span>
+          <span class="fdy-dropzone__title">Jatuhkan PDF di sini, atau klik untuk pilih</span>
+          <span class="fdy-dropzone__hint">PDF hingga 10 MB per berkas</span>
+          <input type="file" accept=".pdf,application/pdf" multiple hidden>
+        </div>
+        <div class="fdy-filelist" id="dz-list"></div>
+      </div>
+      <p class="doc-desc" style="margin-top:var(--space-2)">Dua state terminal (statis) — terunggah &amp; ditolak:</p>
+      <div class="doc-demo doc-demo--col" style="max-width:34rem">
+        <div class="fdy-filelist">
+          <div class="fdy-file fdy-file--success">
+            <span class="fdy-file__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m8 12 3 3 5-6"></path></svg></span>
+            <div class="fdy-file__meta"><div class="fdy-file__name">PO-48213-acme.pdf</div><div class="fdy-file__sub">248 KB · Terunggah</div></div>
+            <button class="fdy-file__remove" type="button" aria-label="Hapus PO-48213-acme.pdf" onclick="this.closest('.fdy-file').remove()">&times;</button>
+          </div>
+          <div class="fdy-file fdy-file--error">
+            <span class="fdy-file__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg></span>
+            <div class="fdy-file__meta"><div class="fdy-file__name">scan-copy.png</div><div class="fdy-file__sub">Bukan PDF — hanya berkas PDF yang diterima.</div></div>
+            <button class="fdy-file__remove" type="button" aria-label="Hapus scan-copy.png" onclick="this.closest('.fdy-file').remove()">&times;</button>
+          </div>
         </div>
       </div>
     </section>
@@ -718,6 +748,7 @@
 <script src="../dist/foundry-toast.js"></script>
 <script src="../dist/foundry-cfl.js"></script>
 <script src="../dist/foundry-datepicker.js"></script>
+<script src="../dist/foundry-upload.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');

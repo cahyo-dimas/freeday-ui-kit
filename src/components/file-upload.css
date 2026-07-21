@@ -1,0 +1,28 @@
+/* Foundry — File upload (drop target + explicit per-file states).
+ * Enhanced by foundry-upload.js; states: idle · drag-over · uploading · done · error. */
+.fdy-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6);text-align:center;border:2px dashed var(--color-border-strong);border-radius:var(--radius-lg);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
+.fdy-dropzone:hover{border-color:var(--color-text-subtle);}
+.fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
+.fdy-dropzone__icon{color:var(--color-text-subtle);}
+.fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
+.fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
+.fdy-dropzone__title{font-weight:var(--weight-medium);color:var(--color-text);}
+.fdy-dropzone__hint{font-size:var(--text-xs);}
+
+/* File rows (list of added/uploaded/rejected files) */
+.fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);}
+.fdy-file{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:var(--bw) solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);}
+.fdy-file__icon{flex:none;display:inline-flex;color:var(--color-text-muted);}
+.fdy-file__icon svg{display:block;width:1.25rem;height:1.25rem;}
+.fdy-file__meta{flex:1;min-width:0;}
+.fdy-file__name{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fdy-file__sub{font-size:var(--text-xs);color:var(--color-text-muted);}
+.fdy-file__progress{margin-top:var(--space-2);}
+.fdy-file__remove{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
+.fdy-file__remove:hover{background:var(--color-surface-2);color:var(--color-text);}
+.fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-file--success .fdy-file__icon{color:var(--color-success);}
+.fdy-file--error{border-color:color-mix(in srgb,var(--color-danger) 40%,var(--color-border));}
+.fdy-file--error .fdy-file__icon{color:var(--color-danger);}
+.fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}
