@@ -4,6 +4,23 @@ Ringkasan kerja semalam (otonom, sesuai izinmu). Semua **commit lokal saja** —
 push/merge/checkout/reset (sesuai batasanmu). Aku tetap di branch `feat/v0.2-rich-refinement`
 dan menandai milestone dengan git tag.
 
+## ⭐ v0.4 — menjawab feedback screenshot + parity Foundation (loop 30 menit, masih jalan)
+Kamu bilang: ikon search CFL jelek (emoji 🔎, di kiri) → harusnya SVG bersih di **kanan**;
+dan table "cuma sort, belum ada filter". Keduanya sudah beres:
+- **Choose-from-list** (`13e381e`): field read-only + tombol kaca-pembesar **SVG di kanan** yang
+  membuka **dialog pencari** (search, hasil dense sticky-header, single commit-saat-klik +
+  multi centang/konfirmasi, empty state, keyboard penuh). Lihat menu **"Choose-from-list"**.
+  Field yang kamu screenshot sekarang jadi CFL sungguhan (kode + nama terisi bareng).
+- **Table filter + bulk** (`815db8a`): tiap kolom punya **corong filter** (teks *berisi*, enum
+  *checklist*, angka *rentang*) + **bar aksi massal** saat baris dipilih. Lihat menu **"Data table"**:
+  klik ikon corong di header Pelanggan/Status/Nilai; centang baris → muncul bar aksi.
+- **Masih berlanjut** (wakeup berikutnya): datepicker, file-upload, poles halaman index, struktur
+  pakai-di-project. Belum di-tag; masih commit-only di branch yang sama. Build deterministik, test 5/5.
+
+> Bagian di bawah ini adalah handoff v0.2/v0.3 sebelumnya — tetap berlaku.
+
+---
+
 ## 1. Cara lihat hasilnya (paling penting)
 Buka **`docs/index.html`** di browser (butuh internet untuk font Google; tanpa internet tetap
 jalan dengan font fallback). Sekarang docs jadi **demo-site** berbasis app-shell: sidebar nav
