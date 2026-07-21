@@ -248,6 +248,29 @@
         <button class="fdy-btn fdy-btn--lg">Large</button>
         <button class="fdy-btn" disabled>Disabled</button>
       </div>
+
+      <p class="doc-desc" style="margin-top:var(--space-4)">Text + ikon · text-only (emphasis rendah) · icon-only (butuh <code>aria-label</code>).</p>
+      <div class="doc-demo" style="align-items:center">
+        <button class="fdy-btn"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"></path></svg></span>Unduh</button>
+        <button class="fdy-btn fdy-btn--ghost"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg></span>Ubah</button>
+        <button class="fdy-btn fdy-btn--text">Batal</button>
+        <button class="fdy-btn fdy-btn--text"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></span>Tambah baris</button>
+        <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Pengaturan"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg></span></button>
+        <button class="fdy-btn fdy-btn--icon" aria-label="Tambah"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></span></button>
+      </div>
+
+      <p class="doc-desc" style="margin-top:var(--space-4)">Button group (segmented) &amp; FAB (bulat · kecil · extended).</p>
+      <div class="doc-demo" style="align-items:center;gap:var(--space-6)">
+        <div class="fdy-btn-group" role="group" aria-label="Perataan teks">
+          <button class="fdy-btn fdy-btn--ghost">Kiri</button>
+          <button class="fdy-btn fdy-btn--ghost">Tengah</button>
+          <button class="fdy-btn fdy-btn--ghost">Kanan</button>
+        </div>
+        <button class="fdy-fab" aria-label="Tambah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></button>
+        <button class="fdy-fab fdy-fab--sm fdy-fab--accent" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
+        <button class="fdy-fab fdy-fab--danger" aria-label="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
+        <button class="fdy-fab fdy-fab--extended"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg> Faktur baru</button>
+      </div>
     </section>
 
     <section class="doc-section" id="sec-input">
