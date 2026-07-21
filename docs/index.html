@@ -431,7 +431,7 @@
 
     <section class="doc-section" id="sec-datatable">
       <h2>Data table</h2>
-      <p class="doc-desc">Interaktif: cari, urutkan (klik judul kolom), pilih baris, paginasi. Butuh <code>foundry-table.js</code>. Coba ketik di kotak cari atau klik header.</p>
+      <p class="doc-desc">Interaktif: cari global, urutkan (klik judul kolom), <strong>filter per kolom</strong> (ikon corong — teks <em>berisi</em>, enum <em>checklist</em>, angka <em>rentang</em>), pilih baris → <strong>bar aksi massal</strong>, paginasi. Butuh <code>foundry-table.js</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-datatable" data-fdy-table data-page-size="5">
           <div class="fdy-table-toolbar">
@@ -442,6 +442,15 @@
             <span class="fdy-table-toolbar__spacer"></span>
             <span class="fdy-table-toolbar__count" data-fdy-table-count aria-live="polite"></span>
           </div>
+          <div class="fdy-table-bulkbar" data-fdy-table-bulk hidden role="region" aria-label="Aksi massal">
+            <span class="fdy-table-bulkbar__count" data-fdy-table-bulk-count aria-live="polite">0 dipilih</span>
+            <span class="fdy-table-bulkbar__spacer"></span>
+            <div class="fdy-table-bulkbar__actions">
+              <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm">Ekspor</button>
+              <button type="button" class="fdy-btn fdy-btn--danger fdy-btn--sm">Hapus</button>
+              <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" data-fdy-table-bulk-clear>Bersihkan</button>
+            </div>
+          </div>
           <div class="fdy-table-scroll">
             <table class="fdy-table">
               <caption class="fdy-visually-hidden">Daftar faktur (interaktif)</caption>
@@ -449,9 +458,9 @@
                 <tr>
                   <th class="fdy-table__selcol" scope="col"><input type="checkbox" class="fdy-checkbox" data-fdy-select-all aria-label="Pilih semua baris"></th>
                   <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Faktur</button></th>
-                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Pelanggan</button></th>
-                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Status</button></th>
-                  <th scope="col" class="fdy-table__num"><button type="button" class="fdy-table__sortbtn" data-fdy-sort="number">Nilai</button></th>
+                  <th scope="col" data-fdy-filter="text"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Pelanggan</button></th>
+                  <th scope="col" data-fdy-filter="enum"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Status</button></th>
+                  <th scope="col" class="fdy-table__num" data-fdy-filter="number"><button type="button" class="fdy-table__sortbtn" data-fdy-sort="number">Nilai</button></th>
                 </tr>
               </thead>
               <tbody>

@@ -337,6 +337,29 @@ a { color: var(--color-primary); }
 .fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}
 .fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
 
+/* Column filter — funnel button injected into a filterable <th> */
+.fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
+.fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
+.fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table__filterbtn.is-active{color:var(--color-primary-strong);}
+.fdy-table__filterbtn svg{width:.85rem;height:.85rem;}
+
+/* Filter popover (position:fixed, appended to <body> so overflow can't clip it) */
+.fdy-filter{position:fixed;z-index:130;min-width:14rem;max-width:18rem;padding:var(--space-3);background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);text-transform:none;letter-spacing:normal;font-weight:var(--weight-regular);color:var(--color-text);}
+.fdy-filter__title{font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:var(--tracking-wide);margin-bottom:var(--space-2);}
+.fdy-filter__list{display:flex;flex-direction:column;gap:var(--space-1);max-height:12rem;overflow:auto;}
+.fdy-filter__check{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}
+.fdy-filter__range{display:flex;align-items:center;gap:var(--space-2);}
+.fdy-filter__range .fdy-input{width:6rem;}
+.fdy-filter__foot{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-3);}
+
+/* Bulk-action bar — appears above the table body once rows are selected */
+.fdy-table-bulkbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4);background:var(--color-primary-soft);border-bottom:var(--bw) solid var(--color-border);color:var(--color-primary-strong);font-size:var(--text-sm);}
+.fdy-table-bulkbar[hidden]{display:none;}
+.fdy-table-bulkbar__count{font-weight:var(--weight-semibold);white-space:nowrap;}
+.fdy-table-bulkbar__spacer{flex:1;}
+.fdy-table-bulkbar__actions{display:flex;gap:var(--space-2);}
+
 /* Foundry — Tabs (WAI-ARIA APG) */
 .fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
