@@ -115,6 +115,20 @@
       <main class="fdy-app__main" id="shell-main"><p style="color:var(--color-text-muted)">Konten utama…</p></main>
     </div>
   </section>
+  <section id="showcase-table">
+    <h2>Table</h2>
+    <div class="fdy-table-wrap">
+      <table class="fdy-table">
+        <caption>Faktur terbaru</caption>
+        <thead><tr><th scope="col" aria-sort="ascending">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
+        <tbody>
+          <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td><span class="fdy-badge fdy-badge--success">Lunas</span></td><td class="fdy-table__num">1.240.000</td></tr>
+          <tr><td>INV-1043</td><td>CV Berkah Jaya</td><td><span class="fdy-badge fdy-badge--warning">Tertunda</span></td><td class="fdy-table__num">290.000</td></tr>
+          <tr><td>INV-1044</td><td>Toko Amanah</td><td><span class="fdy-badge fdy-badge--info">Draft</span></td><td class="fdy-table__num">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 </div>
 <script>
   const root = document.documentElement;
