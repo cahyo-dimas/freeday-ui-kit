@@ -129,6 +129,18 @@
       </table>
     </div>
   </section>
+  <section id="showcase-modal">
+    <h2>Modal</h2>
+    <button class="fdy-btn" id="open-modal">Buka modal</button>
+    <dialog class="fdy-modal" id="demo-modal" aria-labelledby="demo-modal-title">
+      <div class="fdy-modal__header">
+        <h3 class="fdy-modal__title" id="demo-modal-title">Hapus faktur?</h3>
+        <button class="fdy-modal__close" aria-label="Tutup" data-close>&times;</button>
+      </div>
+      <div class="fdy-modal__body"><p style="margin:0;color:var(--color-text-muted)">Faktur INV-1042 akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.</p></div>
+      <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" data-close>Batal</button><button class="fdy-btn fdy-btn--danger" data-close>Hapus</button></div>
+    </dialog>
+  </section>
 </div>
 <script>
   const root = document.documentElement;
@@ -136,6 +148,9 @@
     root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
   document.getElementById('density').onclick = () =>
     root.dataset.density = root.dataset.density === 'compact' ? 'comfortable' : 'compact';
+  const dlg=document.getElementById('demo-modal');
+  document.getElementById('open-modal').onclick=()=>dlg.showModal();
+  dlg.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>dlg.close());
 </script>
 </body>
 </html>
