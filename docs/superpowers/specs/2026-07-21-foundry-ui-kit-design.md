@@ -256,6 +256,7 @@ foundry/
 - **Pola:** BEM ringkas — `fdy-card`, `fdy-card__title`, `fdy-card--elevated`.
 - **Token semantic:** `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, `--dur-*`, `--ease-*`.
 - **Token component (Tier 3):** `--fdy-<komponen>-<properti>` (mis. `--fdy-btn-bg`).
+- **Nilai mentah (kebijakan pragmatis):** Warna **selalu** token. Spasi yang cocok skala `--space-*` **wajib** pakai token (mis. `.5rem` → `var(--space-2)`). Literal lokal-komponen tanpa padanan token (padding relatif `em`, hairline `1.5px`, spread focus `3px`, `min-height` ad-hoc) boleh sebagai literal. Prinsip §3 "never a raw value" mengikat **warna & spasi berskala**, bukan setiap literal.
 
 ---
 
