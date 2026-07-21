@@ -1,0 +1,8 @@
+/* Foundry — Input group (prefix/suffix addons, e.g. Rp / % / icon) */
+.fdy-input-group{display:flex;align-items:stretch;max-width:22rem;background:var(--color-surface);border:1.5px solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);overflow:hidden;transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
+.fdy-input-group:hover{border-color:var(--color-text-subtle);}
+.fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-input-group .fdy-input{flex:1;min-width:0;border:0;background:transparent;box-shadow:none;border-radius:0;height:calc(var(--control-h) - 3px);}
+.fdy-input-group .fdy-input:focus{box-shadow:none;}
+.fdy-input-group__addon{display:inline-flex;align-items:center;padding:0 var(--space-3);background:var(--color-surface-2);color:var(--color-text-muted);font-size:var(--text-sm);white-space:nowrap;border-right:var(--bw) solid var(--color-border);}
+.fdy-input-group__addon:last-child{border-right:0;border-left:var(--bw) solid var(--color-border);}

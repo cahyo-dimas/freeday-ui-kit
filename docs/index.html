@@ -51,6 +51,7 @@
       <a class="fdy-nav__item" href="#sec-input">Input</a>
       <a class="fdy-nav__item" href="#sec-select">Select</a>
       <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
+      <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -67,11 +68,16 @@
       <a class="fdy-nav__item" href="#sec-card">Card</a>
       <a class="fdy-nav__item" href="#sec-badge">Badge</a>
       <a class="fdy-nav__item" href="#sec-avatar">Avatar</a>
+      <a class="fdy-nav__item" href="#sec-chip">Chip</a>
+      <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
       <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
       <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
       <div class="doc-navgroup__label">Layout</div>
+      <a class="fdy-nav__item" href="#sec-accordion">Accordion</a>
       <a class="fdy-nav__item" href="#sec-modal">Modal</a>
       <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
+      <div class="doc-navgroup__label">Utilitas</div>
+      <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
     </nav>
   </aside>
 
@@ -148,6 +154,25 @@
           <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
           <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
         </label>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-inputgroup">
+      <h2>Input group</h2>
+      <p class="doc-desc">Addon prefix/suffix untuk field mata uang, persen, atau ikon — umum di form bisnis.</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <div class="fdy-input-group">
+          <span class="fdy-input-group__addon">Rp</span>
+          <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Nominal">
+        </div>
+        <div class="fdy-input-group">
+          <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Diskon">
+          <span class="fdy-input-group__addon">%</span>
+        </div>
+        <div class="fdy-input-group">
+          <span class="fdy-input-group__addon" aria-hidden="true">🔎</span>
+          <input class="fdy-input" type="search" placeholder="Cari pelanggan…" aria-label="Cari pelanggan">
+        </div>
       </div>
     </section>
 
@@ -394,6 +419,32 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-chip">
+      <h2>Chip</h2>
+      <p class="doc-desc">Tag / filter aktif yang bisa dihapus.</p>
+      <div class="doc-demo">
+        <span class="fdy-chip">Semua</span>
+        <span class="fdy-chip fdy-chip--primary">Status: Lunas <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Status: Lunas">&times;</button></span>
+        <span class="fdy-chip fdy-chip--primary">Bulan: Juli <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Bulan: Juli">&times;</button></span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-dl">
+      <h2>Detail (key-value)</h2>
+      <p class="doc-desc">Tampilan ringkas untuk halaman detail faktur / pelanggan.</p>
+      <div class="doc-demo doc-cardgrid">
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin-bottom:var(--space-4)">Faktur INV-1042</h3>
+          <dl class="fdy-dl">
+            <dt>Pelanggan</dt><dd>PT Sumber Makmur</dd>
+            <dt>Status</dt><dd><span class="fdy-badge fdy-badge--success">Lunas</span></dd>
+            <dt>Jatuh tempo</dt><dd>30 Juli 2026</dd>
+            <dt>Total</dt><dd>Rp 1.240.000</dd>
+          </dl>
+        </div></div>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-progress">
       <h2>Progress &amp; Spinner</h2>
       <div class="doc-demo doc-demo--stack" style="gap:var(--space-4)">
@@ -409,6 +460,28 @@
         <div class="fdy-skeleton fdy-skeleton--title"></div>
         <div class="fdy-skeleton fdy-skeleton--text"></div>
         <div class="fdy-skeleton fdy-skeleton--text" style="width:80%"></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-accordion">
+      <h2>Accordion</h2>
+      <p class="doc-desc">Native <code>&lt;details&gt;</code> — zero-JS, aksesibel bawaan.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-accordion">
+          <details class="fdy-accordion__item" open><summary>Info pengiriman</summary><div class="fdy-accordion__panel">Dikirim via JNE, estimasi 2–3 hari kerja.</div></details>
+          <details class="fdy-accordion__item"><summary>Metode pembayaran</summary><div class="fdy-accordion__panel">Transfer bank, virtual account, atau kartu kredit.</div></details>
+          <details class="fdy-accordion__item"><summary>Kebijakan retur</summary><div class="fdy-accordion__panel">Retur diterima maksimal 7 hari setelah barang sampai.</div></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-util">
+      <h2>Divider · Kbd</h2>
+      <div class="doc-demo doc-demo--block">
+        <p style="margin:0">Bagian atas</p>
+        <hr class="fdy-divider">
+        <p style="margin:0 0 var(--space-4)">Bagian bawah</p>
+        <p style="margin:0">Simpan cepat dengan <kbd class="fdy-kbd">Ctrl</kbd> + <kbd class="fdy-kbd">S</kbd>, tutup dialog dengan <kbd class="fdy-kbd">Esc</kbd>.</p>
       </div>
     </section>
 
@@ -510,6 +583,11 @@
   dlg.querySelectorAll('[data-close]').forEach(b => b.onclick = () => dlg.close());
   const nm = document.getElementById('new-modal');
   document.getElementById('open-new').onclick = () => nm.showModal();
+  // Removable chips (demo)
+  document.addEventListener('click', (e) => {
+    const rm = e.target.closest('.fdy-chip__remove');
+    if (rm) { const chip = rm.closest('.fdy-chip'); if (chip) chip.remove(); }
+  });
   // Sidebar: reflect scroll position as aria-current on the matching nav item.
   const navItems = [...document.querySelectorAll('#doc-nav .fdy-nav__item[href^="#sec-"]')];
   const byId = new Map(navItems.map(a => [a.getAttribute('href').slice(1), a]));
