@@ -15,15 +15,15 @@ warna/tipografi/spasi berasal. Diturunkan dari `Foundation Design System.html`.
 
 ## Arsitektur token — 3 lapis (jangan dilanggar)
 ```
-Tier 1 PRIMITIVE  ramp mentah (--indigo-600 dst) — TAK PERNAH dipakai di komponen
+Tier 1 PRIMITIVE  ramp mentah (--azure-600 dst) — TAK PERNAH dipakai di komponen
 Tier 2 SEMANTIC   peran (--color-primary, --color-surface…) — berubah saat theme & re-brand
 Tier 3 COMPONENT  --fdy-<komponen>-<properti>, opsional, hanya untuk override lokal
 ```
 **Aturan keras:** komponen hanya menyentuh Tier 2/3. **Jangan pernah menaruh hex/px mentah**
 di CSS komponen. Butuh nilai baru → compose → extend modifier → only then create.
 
-## Identitas (Slate Indigo) — referensi cepat
-- primary `#574fd6` · primary-hover `#473fb4` · accent (teal) `#0d9488`
+## Identitas (Azure & Teal) — referensi cepat
+- primary `#2050d8` · primary-hover `#1c40b0` · accent (teal) `#0d9488`
 - surface `#ffffff` · text `#171b26` · border `#e0e3ea`
 - Fonts: display **Sora** · body **IBM Plex Sans** · data **JetBrains Mono**
 - Nilai lengkap (ramp 50–950, semantic light & dark) ada di spec §5.
