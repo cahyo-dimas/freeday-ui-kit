@@ -111,6 +111,7 @@
   --color-accent: var(--teal-600);
   --color-accent-hover: var(--teal-700);
   --color-on-accent: var(--slate-0);
+  --color-on-danger: var(--slate-0);
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
@@ -147,6 +148,7 @@
   --color-accent: var(--teal-400);
   --color-accent-hover: var(--teal-300);
   --color-on-accent: #06231f;
+  --color-on-danger: #4a0f0f;
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
@@ -182,6 +184,7 @@
   --color-accent: var(--teal-400);
   --color-accent-hover: var(--teal-300);
   --color-on-accent: #06231f;
+  --color-on-danger: #4a0f0f;
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
@@ -216,6 +219,7 @@
   --color-accent: var(--teal-600);
   --color-accent-hover: var(--teal-700);
   --color-on-accent: var(--slate-0);
+  --color-on-danger: var(--slate-0);
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
