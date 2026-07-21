@@ -12,5 +12,8 @@ yarn-error.log*
 .idea/
 *.swp
 
+# Local agent/session state (scheduler locks, etc.)
+.claude/
+
 # NOTE: dist/ is intentionally committed so projects can import
 # foundry.tokens.css / foundry.css directly without running a build.
