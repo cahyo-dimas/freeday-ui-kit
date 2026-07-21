@@ -52,7 +52,21 @@
       <button class="fdy-btn" disabled>Disabled</button>
     </div>
   </section>
-  <section id="showcase-input"></section>
+  <section id="showcase-input">
+    <h2>Input</h2>
+    <div class="demo" style="align-items:flex-start">
+      <label class="fdy-field">
+        <span class="fdy-label">Nama pelanggan</span>
+        <input class="fdy-input" placeholder="cth. PT Sumber Makmur" aria-describedby="cust-help">
+        <span class="fdy-help" id="cust-help">Nama sesuai dokumen.</span>
+      </label>
+      <label class="fdy-field">
+        <span class="fdy-label">Email</span>
+        <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
+        <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
+      </label>
+    </div>
+  </section>
   <section id="showcase-card"></section>
   <section id="showcase-badge"></section>
 </div>
