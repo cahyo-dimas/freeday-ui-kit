@@ -26,6 +26,9 @@ distyle lintas-browser — sama seperti pendekatan Foundation). Semua AA-bersih.
 **v0.3 (tag `v0.3`)** — "business-complete":
 - Komponen baru: **alert, toast, tooltip, tabs, breadcrumb, pagination, avatar, spinner,
   progress, skeleton, states**.
+- Komponen form bisnis: **input-group** (addon Rp/%/ikon, dengan state error), **chip**
+  (removable), **accordion** (native `<details>`), **description-list** (key-value detail),
+  **divider**, **kbd**.
 - **Data table** interaktif: toolbar/cari, sort kolom, paginasi, seleksi baris (select-all
   dengan indeterminate).
 - **4 enhancer JS opsional** (0 dependency, auto-init lewat `data-*`, pola WAI-ARIA APG):
