@@ -24,7 +24,7 @@
 .fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
 .fdy-datatable .fdy-table-scroll{overflow-x:auto;}
 .fdy-table-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
-.fdy-table-toolbar__search{max-width:18rem;height:calc(var(--control-h) - var(--space-2));}
+.fdy-table-toolbar__search{max-width:18rem;}
 .fdy-table-toolbar__spacer{flex:1;}
 .fdy-table-toolbar__count{font-size:var(--text-sm);color:var(--color-text-muted);white-space:nowrap;}
 .fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}

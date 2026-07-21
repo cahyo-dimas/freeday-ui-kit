@@ -1,0 +1,28 @@
+/* Foundry — Choose-from-list dialog (searchable master-data picker).
+ * Built on .fdy-modal: header + search + scrollable results table + footer.
+ * Backs a choose-from-list field (readonly input + .fdy-input-group__btn magnifier). */
+.fdy-modal--cfl{width:min(46rem,calc(100vw - var(--space-8)));}
+.fdy-modal--cfl .fdy-modal__body{padding:0;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+
+/* Search bar — single leading-icon field; Enter/typing filters the results. */
+.fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
+
+/* Results — dense rows, sticky header, its own scroll region. */
+.fdy-cfl__results{overflow:auto;max-height:min(24rem,50vh);}
+.fdy-cfl__results .fdy-table th{position:sticky;top:0;z-index:1;}
+.fdy-cfl__row{cursor:pointer;}
+.fdy-cfl__row:hover{background:var(--color-surface-2);}
+.fdy-cfl__row:focus-visible{outline:none;background:var(--color-primary-soft);box-shadow:inset 2px 0 0 var(--color-primary);}
+.fdy-cfl__row[aria-selected="true"]{background:var(--color-primary-soft);}
+.fdy-cfl__row[aria-selected="true"] td:first-child{font-weight:var(--weight-semibold);}
+.fdy-cfl__check{width:1px;white-space:nowrap;}
+.fdy-cfl__check input{pointer-events:none;}
+
+/* Empty result state. */
+.fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);}
+.fdy-cfl__empty[hidden]{display:none;}
+
+/* Footer — selection count (multi) sits left, actions right. */
+.fdy-modal--cfl .fdy-modal__footer{justify-content:space-between;}
+.fdy-cfl__count{font-size:var(--text-sm);color:var(--color-text-muted);}
+.fdy-cfl__actions{display:flex;gap:var(--space-2);}

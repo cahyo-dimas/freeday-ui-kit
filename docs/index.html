@@ -52,6 +52,7 @@
       <a class="fdy-nav__item" href="#sec-select">Select</a>
       <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
       <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
+      <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -169,9 +170,11 @@
           <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Diskon">
           <span class="fdy-input-group__addon">%</span>
         </div>
-        <div class="fdy-input-group">
-          <span class="fdy-input-group__addon" aria-hidden="true">🔎</span>
-          <input class="fdy-input" type="search" placeholder="Cari pelanggan…" aria-label="Cari pelanggan">
+        <div class="fdy-input-group" data-fdy-cfl="cfl-customer" data-fdy-cfl-display="code">
+          <input class="fdy-input" type="text" placeholder="Pilih pelanggan…" aria-label="Kode pelanggan" readonly>
+          <button class="fdy-input-group__btn" type="button" aria-haspopup="dialog" aria-label="Pilih pelanggan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>
+          </button>
         </div>
         <label class="fdy-field">
           <span class="fdy-label">Nominal (error)</span>
@@ -182,6 +185,106 @@
           <span class="fdy-help fdy-help--error" id="nom-err">Nominal tidak boleh negatif.</span>
         </label>
       </div>
+    </section>
+
+    <section class="doc-section" id="sec-cfl">
+      <h2>Choose-from-list</h2>
+      <p class="doc-desc">Field read-only yang di-<em>backing</em> master data (pelanggan, item, gudang…). Ikon kaca pembesar di kanan membuka dialog pencari; baris yang dipilih mengisi field (kode + nama sekaligus). Nilai selalu <strong>dipilih</strong>, tak pernah diketik. Butuh <code>foundry-cfl.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
+        <div class="fdy-field">
+          <span class="fdy-label" id="lbl-cust">Kode pelanggan</span>
+          <div class="fdy-input-group" id="cfl-cust-field" data-fdy-cfl="cfl-customer" data-fdy-cfl-display="code">
+            <input class="fdy-input" id="cfl-cust-code" type="text" placeholder="Pilih pelanggan…" aria-labelledby="lbl-cust" readonly>
+            <button class="fdy-input-group__btn" type="button" aria-haspopup="dialog" aria-label="Pilih pelanggan">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>
+            </button>
+          </div>
+          <span class="fdy-help">Nilai dipilih, bukan diketik.</span>
+        </div>
+        <div class="fdy-field">
+          <span class="fdy-label"><label for="cfl-cust-name">Nama pelanggan</label></span>
+          <input class="fdy-input" id="cfl-cust-name" type="text" placeholder="—" readonly>
+          <span class="fdy-help">Terisi otomatis dari baris terpilih.</span>
+        </div>
+        <div class="fdy-field">
+          <span class="fdy-label"><label for="cfl-items-field-input">Item (multi)</label></span>
+          <div class="fdy-input-group" data-fdy-cfl="cfl-items" data-fdy-cfl-summary="{n} item dipilih">
+            <input class="fdy-input" id="cfl-items-field-input" type="text" placeholder="Pilih item…" readonly>
+            <button class="fdy-input-group__btn" type="button" aria-haspopup="dialog" aria-label="Pilih item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>
+            </button>
+          </div>
+          <span class="fdy-help">Centang beberapa baris, lalu konfirmasi.</span>
+        </div>
+      </div>
+
+      <!-- Single-select dialog -->
+      <dialog class="fdy-modal fdy-modal--cfl" id="cfl-customer" aria-labelledby="cfl-customer-title">
+        <div class="fdy-modal__header">
+          <h3 class="fdy-modal__title" id="cfl-customer-title">Pilih pelanggan</h3>
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button">+ Baru</button>
+          <button class="fdy-modal__close" aria-label="Tutup" data-close>&times;</button>
+        </div>
+        <div class="fdy-modal__body">
+          <div class="fdy-cfl__search">
+            <div class="fdy-input-group" style="max-width:none">
+              <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+              <input class="fdy-input" type="search" placeholder="Cari kode / nama…" aria-label="Cari pelanggan" data-fdy-cfl-search>
+            </div>
+          </div>
+          <div class="fdy-cfl__results">
+            <table class="fdy-table">
+              <thead><tr><th scope="col">Kode</th><th scope="col">Nama</th><th scope="col">Kota</th><th scope="col" style="text-align:right">Saldo</th></tr></thead>
+              <tbody>
+                <tr class="fdy-cfl__row" data-code="C-1001" data-name="PT Sumber Makmur"><td>C-1001</td><td>PT Sumber Makmur</td><td>Jakarta</td><td class="fdy-table__num">12.400.000</td></tr>
+                <tr class="fdy-cfl__row" data-code="C-1002" data-name="CV Berkah Jaya"><td>C-1002</td><td>CV Berkah Jaya</td><td>Bandung</td><td class="fdy-table__num">3.150.000</td></tr>
+                <tr class="fdy-cfl__row" data-code="C-1003" data-name="UD Cahaya Abadi"><td>C-1003</td><td>UD Cahaya Abadi</td><td>Surabaya</td><td class="fdy-table__num">780.000</td></tr>
+                <tr class="fdy-cfl__row" data-code="C-1004" data-name="PT Mitra Sentosa"><td>C-1004</td><td>PT Mitra Sentosa</td><td>Semarang</td><td class="fdy-table__num">0</td></tr>
+                <tr class="fdy-cfl__row" data-code="C-1005" data-name="Toko Rejeki Makmur"><td>C-1005</td><td>Toko Rejeki Makmur</td><td>Medan</td><td class="fdy-table__num">5.600.000</td></tr>
+              </tbody>
+            </table>
+            <p class="fdy-cfl__empty" data-fdy-cfl-empty hidden>Tidak ada pelanggan yang cocok.</p>
+          </div>
+        </div>
+        <div class="fdy-modal__footer">
+          <span class="fdy-cfl__count">Klik baris untuk memilih</span>
+          <div class="fdy-cfl__actions"><button class="fdy-btn fdy-btn--ghost" type="button" data-close>Tutup</button></div>
+        </div>
+      </dialog>
+
+      <!-- Multi-select dialog -->
+      <dialog class="fdy-modal fdy-modal--cfl" id="cfl-items" data-fdy-cfl-multiple aria-labelledby="cfl-items-title">
+        <div class="fdy-modal__header">
+          <h3 class="fdy-modal__title" id="cfl-items-title">Pilih item</h3>
+          <button class="fdy-modal__close" aria-label="Tutup" data-close>&times;</button>
+        </div>
+        <div class="fdy-modal__body">
+          <div class="fdy-cfl__search">
+            <div class="fdy-input-group" style="max-width:none">
+              <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+              <input class="fdy-input" type="search" placeholder="Cari kode / nama…" aria-label="Cari item" data-fdy-cfl-search>
+            </div>
+          </div>
+          <div class="fdy-cfl__results">
+            <table class="fdy-table">
+              <thead><tr><th class="fdy-cfl__check" scope="col"><span class="fdy-visually-hidden">Pilih</span></th><th scope="col">Kode</th><th scope="col">Nama</th><th scope="col" style="text-align:right">Harga</th></tr></thead>
+              <tbody>
+                <tr class="fdy-cfl__row" aria-selected="false" data-code="ITM-01" data-name="Kertas A4 80gsm"><td class="fdy-cfl__check"><input type="checkbox" tabindex="-1" aria-hidden="true"></td><td>ITM-01</td><td>Kertas A4 80gsm</td><td class="fdy-table__num">52.000</td></tr>
+                <tr class="fdy-cfl__row" aria-selected="false" data-code="ITM-02" data-name="Tinta Printer Hitam"><td class="fdy-cfl__check"><input type="checkbox" tabindex="-1" aria-hidden="true"></td><td>ITM-02</td><td>Tinta Printer Hitam</td><td class="fdy-table__num">185.000</td></tr>
+                <tr class="fdy-cfl__row" aria-selected="false" data-code="ITM-03" data-name="Map Snelhecter"><td class="fdy-cfl__check"><input type="checkbox" tabindex="-1" aria-hidden="true"></td><td>ITM-03</td><td>Map Snelhecter</td><td class="fdy-table__num">3.500</td></tr>
+                <tr class="fdy-cfl__row" aria-selected="false" data-code="ITM-04" data-name="Pulpen Gel 0.5"><td class="fdy-cfl__check"><input type="checkbox" tabindex="-1" aria-hidden="true"></td><td>ITM-04</td><td>Pulpen Gel 0.5</td><td class="fdy-table__num">12.000</td></tr>
+              </tbody>
+            </table>
+            <p class="fdy-cfl__empty" data-fdy-cfl-empty hidden>Tidak ada item yang cocok.</p>
+          </div>
+        </div>
+        <div class="fdy-modal__footer">
+          <span class="fdy-cfl__count" data-fdy-cfl-count>0 dipilih</span>
+          <div class="fdy-cfl__actions"><button class="fdy-btn fdy-btn--ghost" type="button" data-close>Batal</button><button class="fdy-btn" type="button" data-fdy-cfl-confirm>Pilih</button></div>
+        </div>
+      </dialog>
+
+      <p class="doc-desc" style="margin-top:var(--space-4)">Single-select commit saat klik baris (tanpa "OK"). Keyboard: ketik untuk mencari, <kbd class="fdy-kbd">↓</kbd> masuk daftar, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> navigasi, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Fokus kembali ke tombol pemicu saat ditutup. Baris = <em>server state</em>: di app nyata, jadikan komponen terkontrol (callback <code>fetchPage</code> + cache), bukan store global.</p>
     </section>
 
     <section class="doc-section" id="sec-select">
@@ -332,7 +435,10 @@
       <div class="doc-demo doc-demo--block">
         <div class="fdy-datatable" data-fdy-table data-page-size="5">
           <div class="fdy-table-toolbar">
-            <input class="fdy-input fdy-table-toolbar__search" type="search" placeholder="Cari faktur / pelanggan…" data-fdy-table-search aria-label="Cari di tabel">
+            <div class="fdy-input-group fdy-table-toolbar__search">
+              <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+              <input class="fdy-input" type="search" placeholder="Cari faktur / pelanggan…" data-fdy-table-search aria-label="Cari di tabel">
+            </div>
             <span class="fdy-table-toolbar__spacer"></span>
             <span class="fdy-table-toolbar__count" data-fdy-table-count aria-live="polite"></span>
           </div>
@@ -580,17 +686,25 @@
 <script src="../dist/foundry-tabs.js"></script>
 <script src="../dist/foundry-table.js"></script>
 <script src="../dist/foundry-toast.js"></script>
+<script src="../dist/foundry-cfl.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
   themeBtn.onclick = () => { const d = root.dataset.theme === 'dark' ? 'light' : 'dark'; root.dataset.theme = d; themeBtn.setAttribute('aria-pressed', String(d === 'dark')); };
   const densityBtn = document.getElementById('density');
   densityBtn.onclick = () => { const d = root.dataset.density === 'compact' ? 'comfortable' : 'compact'; root.dataset.density = d; densityBtn.setAttribute('aria-pressed', String(d === 'compact')); };
-  const dlg = document.getElementById('demo-modal');
-  document.getElementById('open-modal').onclick = () => dlg.showModal();
-  dlg.querySelectorAll('[data-close]').forEach(b => b.onclick = () => dlg.close());
+  // Any [data-close] closes its nearest <dialog>.
+  document.addEventListener('click', (e) => {
+    const c = e.target.closest('[data-close]');
+    if (c) { const d = c.closest('dialog'); if (d) d.close(); }
+  });
+  document.getElementById('open-modal').onclick = () => document.getElementById('demo-modal').showModal();
   const nm = document.getElementById('new-modal');
   document.getElementById('open-new').onclick = () => nm.showModal();
+  // Choose-from-list: fill the sibling name field from the picked row (controlled pattern).
+  document.getElementById('cfl-cust-field').addEventListener('fdy-cfl-select', (e) => {
+    document.getElementById('cfl-cust-name').value = e.detail.row ? e.detail.row.name : '';
+  });
   // Removable chips (demo)
   document.addEventListener('click', (e) => {
     const rm = e.target.closest('.fdy-chip__remove');
