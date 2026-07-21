@@ -34,6 +34,25 @@
   .doc-type--body { font-family: var(--font-body); font-size: var(--text-base); }
   .doc-type--mono { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
   .doc-cardgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); width: 100%; }
+  .doc-scale { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
+  .doc-scale__row { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .doc-scale__key { width: 8.5rem; flex: none; }
+  .doc-scale__bar { height: 12px; background: var(--color-primary); border-radius: var(--radius-xs); }
+  .doc-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(116px, 1fr)); gap: var(--space-4); width: 100%; }
+  .doc-tile { display: flex; align-items: flex-end; justify-content: center; height: 80px; padding: var(--space-2); background: var(--color-surface); border: var(--bw) solid var(--color-border-strong); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .doc-tile--elev { border-color: transparent; align-items: center; }
+  .doc-motion { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; }
+  .doc-motion__row { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
+  .doc-motion__key { width: 12rem; flex: none; }
+  .doc-motion__track { flex: 1; min-width: 10rem; max-width: 20rem; padding: 4px; background: var(--color-surface); border: var(--bw) solid var(--color-border); border-radius: var(--radius-full); overflow: hidden; }
+  .doc-motion__dot { width: 20px; height: 20px; border-radius: var(--radius-full); background: var(--color-primary); }
+  .doc-motion__track:hover .doc-motion__dot { margin-left: calc(100% - 20px); }
+  .doc-motion__dot--std { transition: margin-left var(--dur-base) var(--ease-standard); }
+  .doc-motion__dot--spring { transition: margin-left var(--dur-slow) var(--ease-spring); }
+  .doc-check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-2) var(--space-6); width: 100%; }
+  .doc-check li { position: relative; padding-left: var(--space-6); font-size: var(--text-sm); color: var(--color-text); line-height: var(--leading-normal); }
+  .doc-check li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--color-success); font-weight: var(--weight-bold); }
+  @media (prefers-reduced-motion: reduce) { .doc-motion__dot { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -43,9 +62,13 @@
     <div class="fdy-app__brand">Foundry</div>
     <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
       <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
-      <div class="doc-navgroup__label">Dasar</div>
+      <div class="doc-navgroup__label">Fondasi</div>
+      <a class="fdy-nav__item" href="#sec-prinsip">Prinsip</a>
       <a class="fdy-nav__item" href="#sec-warna">Warna</a>
       <a class="fdy-nav__item" href="#sec-tipografi">Tipografi</a>
+      <a class="fdy-nav__item" href="#sec-spasi">Spasi</a>
+      <a class="fdy-nav__item" href="#sec-radius">Radius &amp; Elevasi</a>
+      <a class="fdy-nav__item" href="#sec-motion">Motion</a>
       <div class="doc-navgroup__label">Aksi &amp; Form</div>
       <a class="fdy-nav__item" href="#sec-tombol">Tombol</a>
       <a class="fdy-nav__item" href="#sec-input">Input</a>
@@ -81,6 +104,8 @@
       <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
       <div class="doc-navgroup__label">Utilitas</div>
       <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
+      <div class="doc-navgroup__label">Tentang</div>
+      <a class="fdy-nav__item" href="#sec-a11y">Aksesibilitas</a>
     </nav>
   </aside>
 
@@ -97,7 +122,32 @@
       <div class="demo">
         <button class="fdy-btn">Mulai</button>
         <button class="fdy-btn fdy-btn--ghost">Dokumentasi</button>
-        <span class="fdy-badge fdy-badge--success">v0.3</span>
+        <span class="fdy-badge fdy-badge--success">v0.4</span>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-prinsip">
+      <h2>Prinsip</h2>
+      <p class="doc-desc">Empat aturan yang menjaga sistem tetap konsisten seiring pertumbuhannya.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-cardgrid">
+          <div class="fdy-card"><div class="fdy-card__body">
+            <h3 class="fdy-card__title">1 · Semantic saja</h3>
+            <p style="margin:var(--space-2) 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">Komponen hanya menyentuh peran (Tier-2), tak pernah ramp mentah. Re-brand & tema cukup ubah token semantic.</p>
+          </div></div>
+          <div class="fdy-card"><div class="fdy-card__body">
+            <h3 class="fdy-card__title">2 · Grid 4px</h3>
+            <p style="margin:var(--space-2) 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">Semua spasi kelipatan 4px lewat skala <code>--space-*</code>. Tak pernah nilai lepas.</p>
+          </div></div>
+          <div class="fdy-card"><div class="fdy-card__body">
+            <h3 class="fdy-card__title">3 · Satu aksen per layar</h3>
+            <p style="margin:var(--space-2) 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">Satu aksi primer menonjol; sisanya ghost/secondary. Warna status ≠ warna aksen.</p>
+          </div></div>
+          <div class="fdy-card"><div class="fdy-card__body">
+            <h3 class="fdy-card__title">4 · Aksesibel sejak awal</h3>
+            <p style="margin:var(--space-2) 0 0;color:var(--color-text-muted);font-size:var(--text-sm)">Kontras WCAG AA di terang & gelap, fokus selalu terlihat, HTML native dulu sebelum ARIA.</p>
+          </div></div>
+        </div>
       </div>
     </section>
 
@@ -127,6 +177,63 @@
         <p class="doc-type doc-type--display">Faktur &amp; laporan yang rapi</p>
         <p class="doc-type doc-type--body">Teks isi memakai IBM Plex Sans — nyaman dibaca untuk paragraf, label, dan tabel data bisnis sehari-hari.</p>
         <p class="doc-type doc-type--mono">INV-1042 · Rp 1.240.000 · 2026-07-30</p>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-spasi">
+      <h2>Spasi</h2>
+      <p class="doc-desc">Skala kelipatan 4px. Selalu <code>var(--space-N)</code>, tak pernah nilai lepas.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-scale">
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-1 · 4px</span><span class="doc-scale__bar" style="width:var(--space-1)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-2 · 8px</span><span class="doc-scale__bar" style="width:var(--space-2)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-3 · 12px</span><span class="doc-scale__bar" style="width:var(--space-3)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-4 · 16px</span><span class="doc-scale__bar" style="width:var(--space-4)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-5 · 20px</span><span class="doc-scale__bar" style="width:var(--space-5)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-6 · 24px</span><span class="doc-scale__bar" style="width:var(--space-6)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-8 · 32px</span><span class="doc-scale__bar" style="width:var(--space-8)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-10 · 40px</span><span class="doc-scale__bar" style="width:var(--space-10)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-12 · 48px</span><span class="doc-scale__bar" style="width:var(--space-12)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-16 · 64px</span><span class="doc-scale__bar" style="width:var(--space-16)"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-radius">
+      <h2>Radius &amp; Elevasi</h2>
+      <p class="doc-desc">Sudut &amp; bayangan bertingkat — hierarki kedalaman yang konsisten.</p>
+      <div class="doc-demo doc-demo--block" style="display:grid;gap:var(--space-6)">
+        <div>
+          <p class="doc-scale__row" style="margin:0 0 var(--space-3)">Radius</p>
+          <div class="doc-tiles">
+            <div class="doc-tile" style="border-radius:var(--radius-xs)">xs · 4px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-sm)">sm · 6px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-md)">md · 8px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-lg)">lg · 12px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-xl)">xl · 16px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-full)">full</div>
+          </div>
+        </div>
+        <div>
+          <p class="doc-scale__row" style="margin:0 0 var(--space-3)">Elevasi</p>
+          <div class="doc-tiles">
+            <div class="doc-tile doc-tile--elev" style="box-shadow:var(--shadow-1);border-radius:var(--radius-md)">shadow-1</div>
+            <div class="doc-tile doc-tile--elev" style="box-shadow:var(--shadow-2);border-radius:var(--radius-md)">shadow-2</div>
+            <div class="doc-tile doc-tile--elev" style="box-shadow:var(--shadow-3);border-radius:var(--radius-md)">shadow-3</div>
+            <div class="doc-tile doc-tile--elev" style="box-shadow:var(--shadow-4);border-radius:var(--radius-md)">shadow-4</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-motion">
+      <h2>Motion</h2>
+      <p class="doc-desc">Durasi &amp; easing terbatas. Arahkan kursor ke track untuk merasakannya — dinonaktifkan saat <code>prefers-reduced-motion</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-motion">
+          <div class="doc-motion__row"><span class="doc-motion__key">standard · 200ms · ease-standard</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--std"></div></div></div>
+          <div class="doc-motion__row"><span class="doc-motion__key">spring · 320ms · ease-spring</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--spring"></div></div></div>
+        </div>
       </div>
     </section>
 
@@ -737,6 +844,24 @@
             <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" value="cancel">Batal</button><button class="fdy-btn" value="save">Simpan</button></div>
           </form>
         </dialog>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-a11y">
+      <h2>Aksesibilitas</h2>
+      <p class="doc-desc">Kontrak yang dipegang setiap komponen — bukan renungan belakangan.</p>
+      <div class="doc-demo doc-demo--block">
+        <ul class="doc-check">
+          <li>Kontras teks &amp; kontrol lolos WCAG AA di tema terang &amp; gelap.</li>
+          <li><code>:focus-visible</code> selalu terlihat — outline/ring 2–3px.</li>
+          <li>Status tak hanya lewat warna (ikon/teks pendamping).</li>
+          <li>HTML native dulu; ARIA hanya saat native tak cukup.</li>
+          <li>Komponen interaktif ikut pola WAI-ARIA APG (role/aria/keyboard).</li>
+          <li>Modal &amp; dialog: focus-trap, <kbd class="fdy-kbd">Esc</kbd>, fokus kembali ke pemicu.</li>
+          <li>Input error: <code>aria-invalid</code> + <code>aria-describedby</code>.</li>
+          <li>Menghormati <code>prefers-reduced-motion</code>.</li>
+          <li>Target sentuh memadai; label jelas pada tiap kontrol.</li>
+        </ul>
       </div>
     </section>
   </main>
