@@ -634,6 +634,19 @@ a { color: var(--color-primary); }
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}
 
+/* Foundry — Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
+.fdy-timeline{list-style:none;margin:0;padding:0;}
+.fdy-timeline__item{position:relative;padding:0 0 var(--space-5) var(--space-6);border-left:2px solid var(--color-border);}
+.fdy-timeline__item:last-child{border-left-color:transparent;padding-bottom:0;}
+.fdy-timeline__marker{position:absolute;left:0;top:.15rem;transform:translateX(-50%);width:.85rem;height:.85rem;border-radius:var(--radius-full);background:var(--color-primary);border:2px solid var(--color-surface);box-shadow:0 0 0 2px var(--color-border);}
+.fdy-timeline__item--success .fdy-timeline__marker{background:var(--color-success);}
+.fdy-timeline__item--warning .fdy-timeline__marker{background:var(--color-warning);}
+.fdy-timeline__item--danger .fdy-timeline__marker{background:var(--color-danger);}
+.fdy-timeline__item--muted .fdy-timeline__marker{background:var(--color-border-strong);}
+.fdy-timeline__time{font-size:var(--text-xs);color:var(--color-text-subtle);font-variant-numeric:tabular-nums;}
+.fdy-timeline__title{margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-text);}
+.fdy-timeline__text{margin:var(--space-1) 0 0;font-size:var(--text-sm);color:var(--color-text-muted);line-height:var(--leading-normal);}
+
 /* Foundry — Toast (transient notification) */
 .fdy-toast-region{position:fixed;z-index:200;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));pointer-events:none;}
 .fdy-toast{pointer-events:auto;display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-inverse-surface);color:var(--color-inverse-text);box-shadow:var(--shadow-3);}
