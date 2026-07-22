@@ -3,6 +3,17 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.2] — 2026-07-22
+### Fixed
+- **Hover kontrol form tak terlihat** — sejak border resting jadi `--color-control-border`
+  (slate-500) untuk a11y, hover yang menuju `--color-text-subtle` (juga slate-500) tak berubah.
+  Semua kontrol (input, textarea, combo, cascade, time/date picker, input-group, dropzone) kini
+  hover ke `--color-text-muted` (slate-600) → menggelap terlihat.
+- **Split button rusak saat hover** — `translateY(-1px)` per-tombol mengangkat satu paruh saja
+  sehingga jahitan tak sejajar. Kini `.fdy-btn-split` menjadi satu unit: tiap paruh tak
+  mengangkat/berbayang sendiri; split terangkat & berbayang sebagai satu kesatuan, plus garis
+  pemisah tipis antar paruh.
+
 ## [0.9.1] — 2026-07-22
 ### Added
 - **Adapter React** (`foundry/react`) — hook `useFoundry(rootRef?)` yang meng-*hydrate* enhancer

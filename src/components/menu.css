@@ -13,8 +13,16 @@
 @media (prefers-reduced-motion:no-preference){.fdy-menu:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
 /* Split button — main action + attached menu toggle (caret) */
-.fdy-btn-split{position:relative;display:inline-flex;}
+.fdy-btn-split{position:relative;display:inline-flex;border-radius:var(--radius-md);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
+/* One control: the two halves must stay coplanar. Neutralize each segment's own
+   lift + drop-shadow (they would misalign the seam / glow a single half); the
+   split lifts and casts its elevation as a single unit instead. */
+.fdy-btn-split > .fdy-btn{transform:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.26);}
 .fdy-btn-split > .fdy-btn:first-child{border-top-right-radius:0;border-bottom-right-radius:0;}
 .fdy-btn-split__toggle{padding:0 var(--space-2);margin-left:calc(var(--bw) * -1);border-top-left-radius:0;border-bottom-left-radius:0;}
+/* Hairline divider between the halves (outranks the segment rule above). */
+.fdy-btn-split > .fdy-btn-split__toggle{box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(0,0,0,.16);}
+.fdy-btn-split:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
+.fdy-btn-split:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
 .fdy-btn-split__toggle:hover,.fdy-btn-split__toggle:focus-visible{z-index:1;}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
