@@ -1,0 +1,20 @@
+/* Foundry — Time picker (input-styled trigger + scrollable time-list popover).
+ * Built by foundry-timepicker.js from an empty [data-fdy-timepicker] wrapper.
+ * Trigger visual mirrors the date picker for a consistent control family. */
+.fdy-timepicker{position:relative;display:inline-block;width:100%;max-width:11rem;}
+.fdy-timepicker__trigger{display:inline-flex;align-items:center;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
+.fdy-timepicker__trigger:hover{border-color:var(--color-text-subtle);}
+.fdy-timepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-timepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-timepicker__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.fdy-timepicker__value--placeholder{color:var(--color-text-subtle);}
+.fdy-timepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}
+.fdy-timepicker__icon svg{display:block;width:1.05rem;height:1.05rem;}
+
+.fdy-timepicker__panel{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:100%;max-height:15rem;overflow-y:auto;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
+.fdy-timepicker__panel[hidden]{display:none;}
+.fdy-timepicker__panel:focus-visible{outline:none;}
+.fdy-timepicker__opt{display:flex;align-items:center;padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--color-text);font-variant-numeric:tabular-nums;cursor:pointer;white-space:nowrap;}
+.fdy-timepicker__opt:hover,.fdy-timepicker__opt.is-active{background:var(--color-surface-3);}
+.fdy-timepicker__opt[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
+@media (prefers-reduced-motion:no-preference){.fdy-timepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
