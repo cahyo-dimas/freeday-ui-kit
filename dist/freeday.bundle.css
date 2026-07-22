@@ -156,6 +156,16 @@
   --color-warning-strong: var(--amber-800);
   --color-danger-strong: var(--red-700);
   --color-info-strong: var(--blue-700);
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #4a3aa7;
+  --chart-8: #e34948;
+  --chart-grid: var(--slate-200);
+  --chart-tick: var(--slate-400);
   --focus-ring: var(--azure-600);
   --focus-ring-width: 2px;
 }
@@ -204,6 +214,16 @@
   --color-warning-strong: var(--amber-400);
   --color-danger-strong: var(--red-300);
   --color-info-strong: var(--blue-300);
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-6: #008300;
+  --chart-7: #9085e9;
+  --chart-8: #e66767;
+  --chart-grid: var(--slate-800);
+  --chart-tick: var(--slate-600);
   --focus-ring: var(--azure-400);
   }
 }
@@ -251,6 +271,16 @@
   --color-warning-strong: var(--amber-400);
   --color-danger-strong: var(--red-300);
   --color-info-strong: var(--blue-300);
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-6: #008300;
+  --chart-7: #9085e9;
+  --chart-8: #e66767;
+  --chart-grid: var(--slate-800);
+  --chart-tick: var(--slate-600);
   --focus-ring: var(--azure-400);
 }
 :root[data-theme="light"] {
@@ -297,6 +327,16 @@
   --color-warning-strong: var(--amber-800);
   --color-danger-strong: var(--red-700);
   --color-info-strong: var(--blue-700);
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-6: #008300;
+  --chart-7: #4a3aa7;
+  --chart-8: #e34948;
+  --chart-grid: var(--slate-200);
+  --chart-tick: var(--slate-400);
   --focus-ring: var(--azure-600);
 }
 :root[data-density="compact"] {

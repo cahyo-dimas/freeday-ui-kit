@@ -1,18 +1,25 @@
 /* Freeday — chart renderer (optional, zero-dependency, no external chart lib).
  * Renders a sparkline / bar / donut into an element from data attributes. Auto-inits
- * [data-fdy-chart]. Colours reference semantic tokens by name (primary, accent, success,
- * warning, danger, info). Charts are an enhancement — put a table/text fallback inside the
+ * [data-fdy-chart]. Single-series sparkline/bar colour via data-fdy-color reference a
+ * semantic token by name (primary, accent, success, warning, danger, info). The donut's
+ * multi-series default draws from the validated categorical --chart-1..8 palette in fixed
+ * order (never cycled, 8-series cap); pass data-fdy-colors to override with semantic
+ * names instead. Charts are an enhancement — put a table/text fallback inside the
  * element and it will be replaced on render; give the element role="img" + aria-label.
  *
  *  Sparkline: <span data-fdy-chart="sparkline" data-values="4,6,5,8,7,10" data-fdy-color="primary">
  *  Bar:       <div  data-fdy-chart="bar" data-values="12,19,8,15" data-labels="Sen,Sel,Rab,Kam">
- *  Donut:     <div  data-fdy-chart="donut" data-values="45,30,25" data-labels="Lunas,Tertunda,Batal"
- *                   data-fdy-colors="success,warning,danger" data-fdy-center="120">
+ *  Donut:     <div  data-fdy-chart="donut" data-values="45,30,25" data-labels="Lunas,Tertunda,Batal">
+ *  Donut (override): add data-fdy-colors="success,warning,danger" data-fdy-center="120">
  */
 (function () {
   'use strict';
 
-  var PALETTE = ['primary', 'accent', 'success', 'warning', 'danger', 'info'];
+  // Categorical chart palette: 8 validated fixed-order slots (--chart-1..8). Series
+  // index i (0-based) -> slot i+1; series beyond the 8-slot cap reuse --chart-8 (never
+  // cycled — repeating a colour on adjacent slices reads as one category, so beyond 8
+  // series the caller should pre-aggregate or pass explicit data-fdy-colors).
+  function chartSlotVar(i) { return 'var(--chart-' + (i < 8 ? i + 1 : 8) + ')'; }
 
   function nums(el, attr) {
     var v = el.getAttribute(attr);
@@ -116,7 +123,7 @@
     var colors = strs(el, 'data-fdy-colors');
     var total = vals.reduce(function (a, b) { return a + b; }, 0) || 1;
     var stops = [], acc = 0;
-    var colorAt = function (i) { return colorVar(colors[i] || PALETTE[i % PALETTE.length]); };
+    var colorAt = function (i) { return colors[i] ? colorVar(colors[i]) : chartSlotVar(i); };
     vals.forEach(function (v, i) {
       var from = (acc / total) * 360, to = ((acc + v) / total) * 360;
       acc += v;
