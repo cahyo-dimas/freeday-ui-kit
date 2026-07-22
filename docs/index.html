@@ -474,6 +474,15 @@
           <span class="fdy-help">Akhir tak boleh mendahului awal.</span>
         </div>
       </div>
+      <p class="doc-desc" style="margin-top:var(--space-6)">Varian ikon (konvensi kit): <strong>default</strong> (kalender), <strong>tanpa ikon</strong> lewat <code>data-fdy-no-icon</code>, atau <strong>ikon custom</strong> dengan <code>&lt;template data-fdy-icon&gt;</code> di dalam wrapper.</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
+        <div class="fdy-field"><span class="fdy-label">Default</span>
+          <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal default"></div></div>
+        <div class="fdy-field"><span class="fdy-label">Tanpa ikon</span>
+          <div data-fdy-datepicker data-fdy-no-icon data-value="2026-07-21" data-label="Tanggal tanpa ikon"></div></div>
+        <div class="fdy-field"><span class="fdy-label">Ikon custom</span>
+          <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal ikon custom"><template data-fdy-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></template></div></div>
+      </div>
     </section>
 
     <section class="doc-section" id="sec-upload">

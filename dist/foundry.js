@@ -716,11 +716,17 @@
     trigger.setAttribute('aria-label', label);
     var valueSpan = document.createElement('span');
     valueSpan.className = 'fdy-datepicker__value';
-    var icon = document.createElement('span');
-    icon.className = 'fdy-datepicker__icon';
-    icon.innerHTML = CAL_ICON;
     trigger.appendChild(valueSpan);
-    trigger.appendChild(icon);
+    // Icon variants (Foundry convention for JS-built controls): [data-fdy-no-icon] omits the
+    // icon; a [data-fdy-icon] child supplies a custom SVG; otherwise the default calendar.
+    if (!wrap.hasAttribute('data-fdy-no-icon')) {
+      var customIcon = wrap.querySelector('[data-fdy-icon]');
+      var icon = document.createElement('span');
+      icon.className = 'fdy-datepicker__icon';
+      icon.innerHTML = customIcon ? customIcon.innerHTML : CAL_ICON;
+      if (customIcon) customIcon.remove();
+      trigger.appendChild(icon);
+    }
 
     var panel = document.createElement('div');
     panel.className = 'fdy-datepicker__panel';
