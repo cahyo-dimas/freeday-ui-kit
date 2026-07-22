@@ -77,6 +77,7 @@
       <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
       <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
       <a class="fdy-nav__item" href="#sec-timepicker">Time picker</a>
+      <a class="fdy-nav__item" href="#sec-datetimepicker">Datetime picker</a>
       <a class="fdy-nav__item" href="#sec-upload">File upload</a>
       <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
       <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
@@ -503,6 +504,23 @@
           <div data-fdy-timepicker data-fdy-no-icon data-value="14:30" data-label="Waktu tanpa ikon"></div></div>
         <div class="fdy-field"><span class="fdy-label">Ikon custom</span>
           <div data-fdy-timepicker data-value="14:30" data-label="Waktu ikon custom"><template data-fdy-icon><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5 19 19M19 5l-2.5 2.5M7.5 16.5 5 19"></path></svg></template></div></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-datetimepicker">
+      <h2>Datetime picker</h2>
+      <p class="doc-desc">Komposisi <strong>date picker + time picker</strong> jadi satu nilai — reuse dua komponen yang sudah ada, bukan popover monolitik. Composer <code>foundry-datetime.js</code> menyatukan keduanya dan memancarkan satu event <code>fdy-datetime-change</code> (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Varian ikon diwarisi dari tiap picker anak.</p>
+      <div class="doc-demo doc-demo--stack" style="gap:var(--space-6)">
+        <div class="fdy-field"><span class="fdy-label">Jadwal kirim faktur</span>
+          <div data-fdy-datetimepicker data-label="Jadwal kirim">
+            <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal kirim"></div>
+            <div data-fdy-timepicker data-value="09:00" data-step="30" data-label="Jam kirim"></div>
+          </div></div>
+        <div class="fdy-field"><span class="fdy-label">Tanpa ikon</span>
+          <div data-fdy-datetimepicker data-label="Jadwal tanpa ikon">
+            <div data-fdy-datepicker data-fdy-no-icon data-value="2026-07-21" data-label="Tanggal"></div>
+            <div data-fdy-timepicker data-fdy-no-icon data-value="09:00" data-step="30" data-label="Jam"></div>
+          </div></div>
       </div>
     </section>
 
@@ -1283,6 +1301,7 @@
 <script src="../dist/foundry-cfl.js"></script>
 <script src="../dist/foundry-datepicker.js"></script>
 <script src="../dist/foundry-timepicker.js"></script>
+<script src="../dist/foundry-datetime.js"></script>
 <script src="../dist/foundry-upload.js"></script>
 <script src="../dist/foundry-menu.js"></script>
 <script src="../dist/foundry-drawer.js"></script>

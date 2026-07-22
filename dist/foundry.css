@@ -381,6 +381,15 @@ a { color: var(--color-primary); }
 
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
+/* Foundry — Datetime picker (composed: date picker + time picker → one value).
+ * A thin composer (foundry-datetime.js) links a child [data-fdy-datepicker] and
+ * [data-fdy-timepicker] and emits a single combined event. Icon variants come from
+ * the child pickers (data-fdy-no-icon / <template data-fdy-icon>). */
+.fdy-datetimepicker{display:inline-flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
+/* Fixed widths so date + time sit side by side (children default to width:100%). */
+.fdy-datetimepicker .fdy-datepicker{width:12rem;max-width:none;}
+.fdy-datetimepicker .fdy-timepicker{width:8.5rem;max-width:none;}
+
 /* Foundry — Description list (key-value detail view) */
 .fdy-dl{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-5);margin:0;}
 .fdy-dl dt{color:var(--color-text-muted);font-size:var(--text-sm);}
