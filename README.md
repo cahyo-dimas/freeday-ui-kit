@@ -6,13 +6,27 @@ Referensi hidup: buka `docs/index.html` di browser.
 
 ## Build
 ```bash
-node tokens/build.mjs   # tokens.json -> dist/foundry.tokens.css, bundel dist/foundry.css,
-                        #                salinan dist/*.js + bundel dist/foundry.js
-npm test                # test transformasi build (node:test)
+node tokens/build.mjs   # tokens.json -> dist/foundry.tokens.css; bundel dist/foundry.css;
+                        #   dist/foundry.bundle.css (token+komponen); salinan dist/*.js + dist/foundry.js
+npm test                # test transformasi build + kontras WCAG (node:test)
 ```
 `dist/` di-commit — konsumen tak wajib build sendiri.
 
 ## Pakai di project
+
+**Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
+```bash
+npm i github:cahyo-dimas/foundry-ui-kit#v0.8.0
+```
+```js
+import 'foundry/css';   // token + komponen (satu file)
+import 'foundry';       // semua enhancer JS (auto-init [data-fdy-*])
+// granular bila perlu: 'foundry/tokens' · 'foundry/css/components' · 'foundry/enhancers/<nama>'
+```
+Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit → install
+dari git jalan **tanpa build step**; minify diserahkan ke bundler konsumen.
+
+**Atau link file langsung (tanpa build):**
 
 ### 1. Sertakan CSS (wajib)
 ```html
@@ -48,6 +62,8 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 | `foundry-table` | `[data-fdy-table]` (+ `[data-fdy-filter]`, `[data-fdy-table-bulk]`) | `fdy-table-change` · `window.FoundryTable` |
 | `foundry-cfl` | `[data-fdy-cfl]` → `<dialog>` | `fdy-cfl-select` `{row}`/`{rows}` · `window.FoundryCfl` |
 | `foundry-datepicker` | `[data-fdy-datepicker]`, `[data-fdy-daterange]` | `fdy-datepicker-change` `{value,date}` · `window.FoundryDatepicker` |
+| `foundry-timepicker` | `[data-fdy-timepicker]` | `fdy-time-select` `{value}` · `window.FoundryTimepicker` |
+| `foundry-datetime` | `[data-fdy-datetimepicker]` | `fdy-datetime-change` `{date,time,value}` · `window.FoundryDatetime` |
 | `foundry-upload` | `[data-fdy-dropzone]` | `fdy-upload-add`/`-remove` · `window.FoundryUpload` |
 | `foundry-toast` | — | `Foundry.toast({variant,title,message,timeout})` |
 

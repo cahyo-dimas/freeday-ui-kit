@@ -1,6 +1,13 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss } from '../tokens/build.mjs';
+
+test('bundleFullCss: tokens then components, both present', () => {
+  const out = bundleFullCss('/* tok */\n:root{--a:1}', '/* comp */\n.fdy-x{color:var(--a)}');
+  assert.match(out, /:root\{--a:1\}/);
+  assert.match(out, /\.fdy-x\{color:var\(--a\)\}/);
+  assert.ok(out.indexOf(':root{--a:1}') < out.indexOf('.fdy-x'), 'tokens come before components');
+});
 
 test('resolveValue: alias -> var()', () => {
   assert.equal(resolveValue('{indigo.600}'), 'var(--indigo-600)');
