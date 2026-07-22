@@ -65,6 +65,22 @@ a { color: var(--color-primary); }
 .fdy-skip:focus{transform:translateY(0);}
 @media (max-width:720px){.fdy-app{grid-template-columns:1fr;grid-template-areas:"topbar" "main";}.fdy-app__sidebar{display:none;}}
 
+/* Foundry — App bar (standalone top bar: brand · actions · spacer).
+ * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;
+ * sticky / elevated / dense / coloured via modifiers. Pure CSS. */
+.fdy-appbar{display:flex;align-items:center;gap:var(--space-3);height:var(--space-16);padding:0 var(--space-4);background:var(--color-surface);color:var(--color-text);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-appbar--sticky{position:sticky;top:0;z-index:90;}
+.fdy-appbar--elevated{border-bottom:0;box-shadow:var(--shadow-2);}
+.fdy-appbar--dense{height:var(--space-12);}
+.fdy-appbar--primary{background:var(--color-primary);color:var(--color-on-primary);border-bottom-color:transparent;}
+.fdy-appbar__brand{display:inline-flex;align-items:center;gap:var(--space-2);font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:inherit;white-space:nowrap;}
+.fdy-appbar__brand svg{display:block;width:1.5rem;height:1.5rem;}
+.fdy-appbar__spacer{flex:1;}
+.fdy-appbar__actions{display:inline-flex;align-items:center;gap:var(--space-1);}
+/* Controls on a coloured app bar go on-colour (icons stay legible, hover is a light wash) */
+.fdy-appbar--primary .fdy-btn--ghost{background:transparent;border-color:transparent;color:var(--color-on-primary);box-shadow:none;}
+.fdy-appbar--primary .fdy-btn--ghost:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);transform:none;}
+
 /* Foundry — Avatar */
 .fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;user-select:none;}
 .fdy-avatar img{width:100%;height:100%;object-fit:cover;}
