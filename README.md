@@ -143,7 +143,7 @@ dist/                  hasil build (DI-COMMIT):
 docs/index.html        referensi hidup / demo-site
 ```
 
-## Inventaris komponen (v0.4)
+## Inventaris komponen
 - **Fondasi:** warna semantic, tipografi (Sora/IBM Plex Sans/JetBrains Mono), skala spasi 4px,
   radius & elevasi, motion, checklist aksesibilitas.
 - **Aksi & form:** button, input (+error), input-group (Rp/%/ikon), checkbox/radio/switch,

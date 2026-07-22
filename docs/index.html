@@ -52,6 +52,49 @@
   .doc-check li { position: relative; padding-left: var(--space-6); font-size: var(--text-sm); color: var(--color-text); line-height: var(--leading-normal); }
   .doc-check li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--color-success); font-weight: var(--weight-bold); }
   @media (prefers-reduced-motion: reduce) { .doc-motion__dot { transition: none !important; } }
+
+  /* ---- Landing hero ---- */
+  .doc-hero { max-width: none; padding: var(--space-10) 0 var(--space-9); margin-bottom: var(--space-10); border-bottom: var(--bw) solid var(--color-border); }
+  .doc-hero__grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(var(--space-8), 6vw, var(--space-16)); align-items: center; max-width: 74rem; }
+  @media (max-width: 940px) { .doc-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); } }
+  .doc-eyebrow { display: inline-flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-accent); margin: 0 0 var(--space-5); }
+  .doc-eyebrow::before { content: ""; width: var(--space-8); height: 2px; background: var(--color-accent); border-radius: 2px; }
+  .doc-hero h1 { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: 1.04; letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-5); text-wrap: balance; }
+  .doc-hero h1 em { font-style: normal; color: var(--color-primary); }
+  .doc-hero__lead { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 34rem; margin: 0 0 var(--space-6); line-height: var(--leading-normal); }
+  .doc-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-5); }
+  .doc-install { display: inline-flex; align-items: center; gap: var(--space-3); max-width: 100%; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text); background: var(--color-surface-3); border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); overflow-x: auto; }
+  .doc-install b { color: var(--color-accent); font-weight: var(--weight-medium); user-select: none; }
+  /* Hero live sample (dogfood) */
+  .doc-showcase { background: var(--color-surface); border: var(--bw) solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-3); padding: var(--space-6); display: grid; gap: var(--space-4); }
+  .doc-showcase__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .doc-showcase__label { font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-text-subtle); }
+  .doc-showcase__amount { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-3xl); letter-spacing: var(--tracking-tight); }
+  .doc-showcase__row { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .doc-ident { display: inline-flex; gap: var(--space-2); margin-left: auto; }
+  .doc-ident i { width: var(--space-6); height: var(--space-6); border-radius: var(--radius-full); box-shadow: inset 0 0 0 1px rgba(16,14,30,.12); }
+  /* Spec strip */
+  .doc-stats { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 74rem; margin: 0 0 var(--space-12); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+  .doc-stat { padding: var(--space-5); border-left: var(--bw) solid var(--color-border); }
+  .doc-stat:first-child { border-left: 0; }
+  .doc-stat b { display: block; font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-xl); letter-spacing: var(--tracking-tight); margin-bottom: var(--space-1); }
+  .doc-stat span { font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono); }
+  @media (max-width: 760px) { .doc-stats { grid-template-columns: repeat(2, 1fr); } .doc-stat:nth-child(odd) { border-left: 0; } .doc-stat:nth-child(n+3) { border-top: var(--bw) solid var(--color-border); } }
+  /* Framework trio */
+  .doc-fw { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); width: 100%; }
+  @media (max-width: 760px) { .doc-fw { grid-template-columns: 1fr; } }
+  .doc-fw__card { display: block; padding: var(--space-5); background: var(--color-surface); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); text-decoration: none; color: inherit; transition: border-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard); }
+  .doc-fw__card:hover { border-color: var(--color-primary-border); box-shadow: var(--shadow-2); transform: translateY(-2px); }
+  .doc-fw__card:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 40%, transparent); }
+  .doc-fw__k { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-accent); }
+  .doc-fw__card h3 { font-family: var(--font-display); font-size: var(--text-lg); margin: var(--space-2) 0 var(--space-1); }
+  .doc-fw__card p { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-normal); }
+  /* Footer */
+  .doc-footer { max-width: 74rem; margin-top: var(--space-16); padding: var(--space-8) 0 var(--space-10); border-top: var(--bw) solid var(--color-border); display: flex; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; font-size: var(--text-sm); color: var(--color-text-muted); }
+  .doc-footer b { font-family: var(--font-display); color: var(--color-text); }
+  .doc-footer a { color: var(--color-primary-strong); text-decoration: none; }
+  .doc-footer a:hover { text-decoration: underline; }
+  .doc-footer__links { display: flex; gap: var(--space-5); flex-wrap: wrap; }
 </style>
 </head>
 <body>
@@ -61,6 +104,7 @@
     <div class="fdy-app__brand">Foundry</div>
     <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
       <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
+      <a class="fdy-nav__item" href="#sec-integrasi">Integrasi framework</a>
       <div class="doc-navgroup__label">Fondasi</div>
       <a class="fdy-nav__item" href="#sec-prinsip">Prinsip</a>
       <a class="fdy-nav__item" href="#sec-warna">Warna</a>
@@ -134,12 +178,64 @@
 
   <main class="fdy-app__main" id="main">
     <section class="doc-section doc-hero" id="sec-ikhtisar">
-      <h1>Foundry Design System</h1>
-      <p>Token-driven &amp; framework-agnostic. Satu sumber kebenaran untuk warna, tipografi, spasi, dan komponen — siap dirakit jadi layar bisnis nyata. Semua kontras lolos WCAG AA di terang &amp; gelap, ARIA native-first.</p>
-      <div class="demo">
-        <button class="fdy-btn">Mulai</button>
-        <button class="fdy-btn fdy-btn--ghost">Dokumentasi</button>
-        <span class="fdy-badge fdy-badge--success">v0.4</span>
+      <div class="doc-hero__grid">
+        <div>
+          <p class="doc-eyebrow">Design System · v0.9.2</p>
+          <h1>Konsisten dari <em>token</em> sampai layar bisnis.</h1>
+          <p class="doc-hero__lead">Foundry — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
+          <div class="doc-hero__cta">
+            <a class="fdy-btn" href="#sec-tombol">Jelajahi komponen</a>
+            <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi">Integrasi framework</a>
+          </div>
+          <div class="doc-install"><b>$</b>&nbsp;npm i github:cahyo-dimas/foundry-ui-kit#v0.9.2</div>
+        </div>
+        <aside class="doc-showcase" aria-label="Contoh komponen Foundry">
+          <div class="doc-showcase__head">
+            <span class="doc-showcase__label">Faktur · INV-1042</span>
+            <span class="fdy-badge fdy-badge--success">Lunas</span>
+          </div>
+          <div class="doc-showcase__amount">Rp 1.240.000</div>
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Pelanggan</span>
+            <input class="fdy-input" value="PT Sumber Makmur" readonly aria-readonly="true">
+          </label>
+          <div class="doc-showcase__row">
+            <button class="fdy-btn" type="button">Simpan</button>
+            <button class="fdy-btn fdy-btn--ghost" type="button">Batal</button>
+            <span class="doc-ident" aria-hidden="true"><i style="background:var(--color-primary)"></i><i style="background:var(--color-accent)"></i></span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="doc-stats" role="list" aria-label="Ringkasan Foundry">
+      <div class="doc-stat" role="listitem"><b>44</b><span>komponen</span></div>
+      <div class="doc-stat" role="listitem"><b>22</b><span>enhancer · 0-dep</span></div>
+      <div class="doc-stat" role="listitem"><b>3</b><span>adapter framework</span></div>
+      <div class="doc-stat" role="listitem"><b>AA</b><span>kontras · terang &amp; gelap</span></div>
+    </div>
+
+    <section class="doc-section" id="sec-integrasi">
+      <h2>Integrasi framework</h2>
+      <p class="doc-desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-fw">
+          <a class="doc-fw__card" href="../examples/vue-faktur/">
+            <span class="doc-fw__k">foundry/vue</span>
+            <h3>Vue 3</h3>
+            <p>Composable <code>useFoundry()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>.</p>
+          </a>
+          <a class="doc-fw__card" href="../examples/react-faktur/">
+            <span class="doc-fw__k">foundry/react</span>
+            <h3>React 19</h3>
+            <p>Hook <code>useFoundry()</code> — event <code>fdy-*</code> bubbling didengar di root.</p>
+          </a>
+          <a class="doc-fw__card" href="../examples/blazor-faktur/">
+            <span class="doc-fw__k">foundry/blazor</span>
+            <h3>Blazor WASM</h3>
+            <p>Interop <code>window.FoundryBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
+          </a>
+        </div>
       </div>
     </section>
 
@@ -1406,6 +1502,16 @@
         </ul>
       </div>
     </section>
+
+    <footer class="doc-footer">
+      <div><b>Foundry</b> · design system token-driven &amp; framework-agnostic · v0.9.2</div>
+      <nav class="doc-footer__links" aria-label="Tautan">
+        <a href="../README.md">README</a>
+        <a href="../CHANGELOG.md">Changelog</a>
+        <a href="integrations.md">Integrasi</a>
+        <a href="https://github.com/cahyo-dimas/foundry-ui-kit">GitHub</a>
+      </nav>
+    </footer>
   </main>
   </div>
 </div>
