@@ -1,0 +1,14 @@
+/* Foundry — Tree view (hierarchy via nested native <details>: keyboard-toggle, zero-JS).
+ * Branches expand/collapse; leaves are plain rows. Chevron + optional folder/file icons. */
+.fdy-tree{list-style:none;margin:0;padding:0;font-size:var(--text-sm);}
+.fdy-tree ul{list-style:none;margin:0;padding-left:var(--space-4);}
+.fdy-tree__branch > summary,.fdy-tree__leaf{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);color:var(--color-text);}
+.fdy-tree__branch > summary{list-style:none;cursor:pointer;}
+.fdy-tree__branch > summary::-webkit-details-marker{display:none;}
+.fdy-tree__branch > summary:hover,.fdy-tree__leaf:hover{background:var(--color-surface-2);}
+.fdy-tree__branch > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-tree__chevron{flex:none;width:.9rem;height:.9rem;color:var(--color-text-subtle);transition:transform var(--dur-fast) var(--ease-standard);}
+.fdy-tree__branch[open] > summary .fdy-tree__chevron{transform:rotate(90deg);}
+.fdy-tree__icon{flex:none;width:1rem;height:1rem;color:var(--color-text-muted);}
+.fdy-tree__leaf{padding-left:calc(var(--space-2) * 2 + .9rem);}
+.fdy-tree__leaf .fdy-tree__icon{color:var(--color-text-subtle);}

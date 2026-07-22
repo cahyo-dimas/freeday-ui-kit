@@ -95,6 +95,7 @@
       <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
       <a class="fdy-nav__item" href="#sec-states">States</a>
       <a class="fdy-nav__item" href="#sec-charts">Charts</a>
+      <a class="fdy-nav__item" href="#sec-tree">Tree view</a>
       <div class="doc-navgroup__label">Tampilan</div>
       <a class="fdy-nav__item" href="#sec-card">Card</a>
       <a class="fdy-nav__item" href="#sec-badge">Badge</a>
@@ -801,6 +802,48 @@
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-3)">Status faktur</h3>
           <div class="fdy-donut" data-fdy-chart="donut" data-values="45,30,25" data-labels="Lunas,Tertunda,Batal" data-fdy-colors="success,warning,danger" data-fdy-center="100" role="img" aria-label="Status faktur: Lunas 45%, Tertunda 30%, Batal 25%"></div>
         </div></div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-tree">
+      <h2>Tree view</h2>
+      <p class="doc-desc">Hierarki lewat <code>&lt;details&gt;</code> native — buka/tutup dengan klik atau <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, tanpa JS. Cabang bisa dilipat; daun = baris biasa.</p>
+      <div class="doc-demo doc-demo--block" style="max-width:26rem">
+        <ul class="fdy-tree">
+          <li>
+            <details class="fdy-tree__branch" open>
+              <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Pelanggan</summary>
+              <ul>
+                <li>
+                  <details class="fdy-tree__branch" open>
+                    <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Jakarta</summary>
+                    <ul>
+                      <li class="fdy-tree__leaf"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PT Sumber Makmur</li>
+                      <li class="fdy-tree__leaf"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PT Cahaya Abadi</li>
+                    </ul>
+                  </details>
+                </li>
+                <li>
+                  <details class="fdy-tree__branch">
+                    <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Bandung</summary>
+                    <ul>
+                      <li class="fdy-tree__leaf"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>CV Berkah Jaya</li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details class="fdy-tree__branch">
+              <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Item</summary>
+              <ul>
+                <li class="fdy-tree__leaf"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>Kertas A4 80gsm</li>
+                <li class="fdy-tree__leaf"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>Tinta Printer Hitam</li>
+              </ul>
+            </details>
+          </li>
+        </ul>
       </div>
     </section>
 
