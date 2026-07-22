@@ -16,7 +16,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/foundry-ui-kit#v0.9.1
+npm i github:cahyo-dimas/foundry-ui-kit#v0.9.5
 ```
 ```js
 import 'foundry/css';   // token + komponen (satu file)

@@ -3,6 +3,16 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.5] — 2026-07-22
+### Added
+- **Two-tone (duotone) control icons** — the date/time picker triggers (and the datetime
+  composer that reuses them) now render with a low-opacity fill behind the stroke, matching the
+  sun/moon theme toggle. A coherent duotone treatment for the control-glyph family.
+### Docs
+- **Landing language toggle (ID ⇄ EN)** — a topbar button swaps the landing copy (hero, stats,
+  framework-integration, footer) between Indonesian and English via `[data-i18n]`; inline
+  markup (bold/code) is preserved. Version references synced to v0.9.5.
+
 ## [0.9.4] — 2026-07-22
 ### Added
 - **Sidebar-menu component** — `.fdy-nav` (App shell) now supports per-node `.fdy-nav__icon`
