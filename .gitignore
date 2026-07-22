@@ -12,8 +12,9 @@ yarn-error.log*
 .idea/
 *.swp
 
-# Local agent/session state (scheduler locks, etc.)
+# Local agent/session state (scheduler locks, SDD scratch, etc.)
 .claude/
+.superpowers/
 
 # NOTE: dist/ is intentionally committed so projects can import
 # freeday.tokens.css / freeday.css directly without running a build.
