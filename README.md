@@ -16,7 +16,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/foundry-ui-kit#v0.8.1
+npm i github:cahyo-dimas/foundry-ui-kit#v0.9.0
 ```
 ```js
 import 'foundry/css';   // token + komponen (satu file)
@@ -82,7 +82,17 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 > biasa dipasang (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …) + cara
 > menjembataninya + binding Vue/React/Blazor. Buka itu saat mulai project baru.
 
-Enhancer meng-auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
+**Vue 3 — adapter siap pakai (`foundry/vue`):**
+```ts
+import { useFoundry } from 'foundry/vue';
+const root = ref<HTMLElement | null>(null);
+useFoundry(root);   // hydrate semua [data-fdy-*] di subtree ini saat mount + tiap update
+// <div ref="root"> …markup fdy-* … </div>  ·  event: @fdy-cascade-change="…" (detail bertipe)
+```
+Contoh layar penuh yang jalan: [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`).
+React/Blazor pakai pola yang sama (init hook + event) — lihat [`docs/integrations.md`](docs/integrations.md).
+
+Secara umum, enhancer meng-auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
 - **Reuse enhancer:** setelah mount/route change, panggil `window.FoundryTable.initAll(el)`
   (atau `initAll()` global). Aman diulang — tiap init dijaga flag idempotent. Jembatani ke
   state framework lewat event yang dipancarkan (mis. dengarkan `fdy-cfl-select`, `fdy-datepicker-change`).

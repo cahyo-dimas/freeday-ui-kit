@@ -3,6 +3,20 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.0] — 2026-07-22
+### Added
+- **Adapter Vue 3** (`foundry/vue`) — composable `useFoundry(rootRef?)` yang meng-*hydrate*
+  semua enhancer di subtree komponen saat mount + tiap update (idempotent). Tipis: enhancer
+  tetap sumber kebenaran, event `fdy-*` mengalir lewat `v-on` native. Tipe `event.detail`
+  disertakan (`FdyCascadeChangeDetail`, dst) di `adapters/vue/index.d.ts`.
+- **Contoh jalan** `examples/vue-faktur/` — layar faktur nyata (Vite + Vue 3 + TS) yang memakai
+  form validation + mask + cascade + datepicker + combo + table via adapter. `npm install &&
+  npm run dev`. Membuktikan kontrak integrasi end-to-end (diverifikasi headless: hydrate,
+  validasi men-gate submit, event → state Vue, tema light/dark).
+### Changed
+- `package.json`: export `./vue`, `adapters/` masuk `files`, `vue` sebagai peerDependency
+  opsional (`^3.4.0`). `version` 0.8.1 → 0.9.0.
+
 ## [0.8.1] — 2026-07-22
 ### Added
 - **Form validation** (`foundry-form.js`, `[data-fdy-validate]`) — Constraint Validation

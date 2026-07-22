@@ -1,6 +1,6 @@
 {
   "name": "foundry",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Foundry — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "UNLICENSED",
@@ -10,6 +10,7 @@
   "files": [
     "dist",
     "src",
+    "adapters",
     "tokens/tokens.json",
     "README.md",
     "CHANGELOG.md"
@@ -20,7 +21,17 @@
     "./css/components": "./dist/foundry.css",
     "./tokens": "./dist/foundry.tokens.css",
     "./enhancers/*": "./dist/foundry-*.js",
+    "./vue": {
+      "types": "./adapters/vue/index.d.ts",
+      "default": "./adapters/vue/index.js"
+    },
     "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "vue": "^3.4.0"
+  },
+  "peerDependenciesMeta": {
+    "vue": { "optional": true }
   },
   "scripts": {
     "build": "node tokens/build.mjs",
