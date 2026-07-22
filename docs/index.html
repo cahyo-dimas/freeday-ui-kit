@@ -79,6 +79,7 @@
       <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
       <a class="fdy-nav__item" href="#sec-upload">File upload</a>
       <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
+      <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -494,6 +495,35 @@
             <span class="fdy-file__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg></span>
             <div class="fdy-file__meta"><div class="fdy-file__name">scan-copy.png</div><div class="fdy-file__sub">Bukan PDF — hanya berkas PDF yang diterima.</div></div>
             <button class="fdy-file__remove" type="button" aria-label="Hapus scan-copy.png" onclick="this.closest('.fdy-file').remove()">&times;</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-stepper">
+      <h2>Stepper / Wizard</h2>
+      <p class="doc-desc">Alur multi-langkah — indikator progres (nomor → centang), panel per langkah, tombol Kembali/Lanjut. Langkah yang sudah dilewati bisa diklik untuk ditinjau (linear, tak bisa lompat maju). Butuh <code>foundry-stepper.js</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div data-fdy-stepper>
+          <ol class="fdy-stepper">
+            <li class="fdy-step is-active"><button type="button" class="fdy-step__btn"><span class="fdy-step__marker">1</span><span class="fdy-step__label">Data pelanggan</span></button></li>
+            <li class="fdy-step"><button type="button" class="fdy-step__btn"><span class="fdy-step__marker">2</span><span class="fdy-step__label">Item</span></button></li>
+            <li class="fdy-step"><button type="button" class="fdy-step__btn"><span class="fdy-step__marker">3</span><span class="fdy-step__label">Ringkasan</span></button></li>
+          </ol>
+          <div class="fdy-step-panels">
+            <div class="fdy-step-panel">
+              <label class="fdy-field"><span class="fdy-label">Nama pelanggan</span><input class="fdy-input" placeholder="cth. PT Sumber Makmur"></label>
+            </div>
+            <div class="fdy-step-panel" hidden>
+              <label class="fdy-field"><span class="fdy-label">Item pertama</span><input class="fdy-input" placeholder="Kode / nama item"></label>
+            </div>
+            <div class="fdy-step-panel" hidden>
+              <p style="margin:0;color:var(--color-text-muted)">Tinjau data, lalu tekan <strong>Selesai</strong> untuk menyimpan faktur.</p>
+            </div>
+          </div>
+          <div class="fdy-step-nav">
+            <button type="button" class="fdy-btn fdy-btn--ghost" data-fdy-step-prev>Kembali</button>
+            <button type="button" class="fdy-btn" data-fdy-step-next>Lanjut</button>
           </div>
         </div>
       </div>
@@ -1078,6 +1108,7 @@
 <script src="../dist/foundry-breakpoint.js"></script>
 <script src="../dist/foundry-carousel.js"></script>
 <script src="../dist/foundry-chart.js"></script>
+<script src="../dist/foundry-stepper.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
