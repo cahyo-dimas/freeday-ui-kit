@@ -10,7 +10,7 @@ body {
   background: var(--color-surface);
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-semibold); line-height: var(--leading-tight); margin: 0; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tighter); line-height: var(--leading-snug); margin: 0; }
 a { color: var(--color-primary); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
