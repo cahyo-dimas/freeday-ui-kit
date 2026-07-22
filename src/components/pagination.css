@@ -4,5 +4,5 @@
 .fdy-pagination__link:hover{background:var(--color-surface-2);border-color:var(--color-border);}
 .fdy-pagination__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-pagination__link[aria-current="page"]{background:var(--color-primary);color:var(--color-on-primary);}
-.fdy-pagination__link[aria-disabled="true"],.fdy-pagination__link:disabled{opacity:.45;pointer-events:none;}
+.fdy-pagination__link[aria-disabled="true"],.fdy-pagination__link:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
 .fdy-pagination__ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;color:var(--color-text-subtle);}

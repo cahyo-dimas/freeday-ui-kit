@@ -8,6 +8,8 @@
 .fdy-check input:checked,.fdy-radio input:checked{background:var(--color-primary);border-color:var(--color-primary);}
 .fdy-check input:checked::before,.fdy-radio input:checked::before{transform:scale(1);}
 .fdy-check input:focus-visible,.fdy-radio input:focus-visible,.fdy-switch input:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-check input:disabled,.fdy-radio input:disabled,.fdy-switch input:disabled{opacity:.5;cursor:not-allowed;}
+.fdy-check:has(input:disabled),.fdy-radio:has(input:disabled),.fdy-switch:has(input:disabled){cursor:not-allowed;}
 .fdy-switch input{appearance:none;-webkit-appearance:none;position:relative;width:2.4rem;height:1.35rem;margin:0;border-radius:var(--radius-full);background:var(--color-control-border);cursor:pointer;transition:background var(--dur-base) var(--ease-standard);}
 .fdy-switch input::before{content:"";position:absolute;top:2px;left:2px;width:calc(1.35rem - 4px);height:calc(1.35rem - 4px);border-radius:50%;background:#fff;box-shadow:var(--shadow-1);transition:transform var(--dur-base) var(--ease-spring);}
 .fdy-switch input:checked{background:var(--color-primary);}
@@ -20,3 +22,4 @@
 .fdy-checkbox:checked::before{transform:scale(1);}
 .fdy-checkbox:indeterminate::before{width:.6rem;height:2px;transform:scale(1);clip-path:none;box-shadow:none;background:var(--color-on-primary);}
 .fdy-checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-checkbox:disabled{opacity:.5;cursor:not-allowed;}
