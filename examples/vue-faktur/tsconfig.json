@@ -10,7 +10,11 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "baseUrl": ".",
+    "paths": {
+      "vue": ["./node_modules/vue"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "env.d.ts"]
 }

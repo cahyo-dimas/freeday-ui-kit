@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday } from 'freeday/vue';
+import { useFreeday, FdyCombo } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
@@ -71,6 +71,18 @@ const items = reactive([
 const total = computed(() => items.reduce((s, it) => s + it.qty * it.harga, 0));
 
 const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertunda', lunas: 'Lunas' };
+
+// FdyCombo demo — Vue-native v-model over `.fdy-combo`, alternative to the
+// `data-fdy-combo` enhancer used for "Status" above.
+type MetodePembayaran = 'transfer' | 'tunai' | 'kartu' | 'giro';
+const metodeOptions: ReadonlyArray<{ value: MetodePembayaran; label: string }> = [
+  { value: 'transfer', label: 'Transfer bank' },
+  { value: 'tunai', label: 'Tunai' },
+  { value: 'kartu', label: 'Kartu kredit' },
+  { value: 'giro', label: 'Giro' },
+];
+const metode = ref<MetodePembayaran>('transfer');
+const metodeInvalidDemo = ref<MetodePembayaran | ''>('');
 
 const onValid = (): void => {
   submitted.value = { ...form };
@@ -202,6 +214,29 @@ const toggleTheme = (): void => {
                     <td style="text-align:right;font-weight:var(--weight-bold);font-variant-numeric:tabular-nums">{{ rupiah(total) }}</td></tr>
               </tfoot>
             </table>
+          </div>
+        </section>
+
+        <section class="fdy-card">
+          <div class="fdy-card__body">
+            <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native combo (FdyCombo)</h2>
+            <p class="fdy-help" style="margin:0 0 var(--space-4)">
+              <code>&lt;FdyCombo v-model&gt;</code> — binding Vue asli di atas kelas <code>.fdy-combo</code>,
+              alternatif dari enhancer <code>data-fdy-combo</code> yang dipakai untuk "Status" di atas.
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5)">
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-metode">Metode pembayaran</span>
+                <FdyCombo v-model="metode" :options="metodeOptions" aria-labelledby="lbl-metode" placeholder="Pilih metode" />
+              </label>
+
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-metode-invalid">Metode pembayaran (contoh invalid)</span>
+                <FdyCombo v-model="metodeInvalidDemo" :options="metodeOptions" aria-labelledby="lbl-metode-invalid"
+                          placeholder="Wajib dipilih" invalid describedby="err-metode-invalid" />
+                <span id="err-metode-invalid" class="fdy-help" style="color:var(--color-danger)">Metode pembayaran wajib dipilih.</span>
+              </label>
+            </div>
           </div>
         </section>
 

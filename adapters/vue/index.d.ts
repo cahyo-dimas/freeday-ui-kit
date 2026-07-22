@@ -12,6 +12,8 @@ export interface UseFreedayReturn {
  */
 export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreedayReturn;
 
+export { default as FdyCombo } from './components/FdyCombo.vue';
+
 /** `event.detail` shapes for the bubbling `fdy-*` CustomEvents. */
 export interface FdyChangeDetail { value: string }
 export interface FdyAutocompleteSelectDetail { value: string }
