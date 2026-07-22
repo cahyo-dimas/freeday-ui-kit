@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
@@ -83,6 +83,18 @@ const metodeOptions: ReadonlyArray<{ value: MetodePembayaran; label: string }> =
 ];
 const metode = ref<MetodePembayaran>('transfer');
 const metodeInvalidDemo = ref<MetodePembayaran | ''>('');
+
+// FdyDatepicker demo — Vue-native v-model over `.fdy-datepicker`, alternative to the
+// `data-fdy-datepicker` enhancer used for "Jatuh tempo" above.
+const tanggalKirim = ref<string | null>(dueDefault());
+const tanggalTerbit: string = new Date().toISOString().slice(0, 10);
+const tanggalTerbitMax: string = (() => {
+  const d = new Date();
+  d.setDate(d.getDate() + 30);
+  return d.toISOString().slice(0, 10);
+})();
+const tanggalTerbitDemo = ref<string | null>(null);
+const tanggalInvalidDemo = ref<string | null>(null);
 
 const onValid = (): void => {
   submitted.value = { ...form };
@@ -235,6 +247,34 @@ const toggleTheme = (): void => {
                 <FdyCombo v-model="metodeInvalidDemo" :options="metodeOptions" aria-labelledby="lbl-metode-invalid"
                           placeholder="Wajib dipilih" invalid describedby="err-metode-invalid" />
                 <span id="err-metode-invalid" class="fdy-help" style="color:var(--color-danger)">Metode pembayaran wajib dipilih.</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="fdy-card">
+          <div class="fdy-card__body">
+            <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native kalender (FdyDatepicker)</h2>
+            <p class="fdy-help" style="margin:0 0 var(--space-4)">
+              <code>&lt;FdyDatepicker v-model&gt;</code> — kalender native Vue di atas kelas <code>.fdy-datepicker</code>,
+              alternatif dari enhancer <code>data-fdy-datepicker</code> yang dipakai untuk "Jatuh tempo" di atas.
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5)">
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-kirim">Tanggal kirim</span>
+                <FdyDatepicker v-model="tanggalKirim" id="dp-kirim" describedby="help-kirim" />
+                <span id="help-kirim" class="fdy-help">Nilai awal: {{ tanggalKirim }}</span>
+              </label>
+
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-terbit">Tanggal terbit (min/max 30 hari)</span>
+                <FdyDatepicker v-model="tanggalTerbitDemo" :min="tanggalTerbit" :max="tanggalTerbitMax" placeholder="Pilih dalam 30 hari" />
+              </label>
+
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-invalid-tanggal">Tanggal jatuh tempo (contoh invalid)</span>
+                <FdyDatepicker v-model="tanggalInvalidDemo" placeholder="Wajib dipilih" invalid describedby="err-tanggal-invalid" />
+                <span id="err-tanggal-invalid" class="fdy-help" style="color:var(--color-danger)">Tanggal jatuh tempo wajib diisi.</span>
               </label>
             </div>
           </div>
