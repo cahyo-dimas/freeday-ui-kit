@@ -34,6 +34,7 @@
   --teal-800: #115e59;
   --teal-900: #134e4a;
   --red-100: #fee2e2;
+  --red-300: #fca5a5;
   --red-400: #f87171;
   --red-500: #ef4444;
   --red-600: #dc2626;
@@ -51,6 +52,7 @@
   --green-700: #15803d;
   --green-800: #166534;
   --blue-100: #dbeafe;
+  --blue-300: #93c5fd;
   --blue-400: #60a5fa;
   --blue-500: #3b82f6;
   --blue-600: #2563eb;
@@ -131,6 +133,7 @@
   --color-border: var(--slate-200);
   --color-border-strong: var(--slate-300);
   --color-border-muted: var(--slate-100);
+  --color-control-border: var(--slate-500);
   --color-inverse-surface: var(--slate-900);
   --color-inverse-text: var(--slate-0);
   --color-success: var(--green-600);
@@ -178,6 +181,7 @@
   --color-border: var(--slate-800);
   --color-border-strong: var(--slate-700);
   --color-border-muted: #1c2130;
+  --color-control-border: var(--slate-500);
   --color-inverse-surface: var(--slate-100);
   --color-inverse-text: var(--slate-900);
   --color-success: var(--green-500);
@@ -191,8 +195,8 @@
   --color-primary-strong: var(--azure-300);
   --color-success-strong: var(--green-400);
   --color-warning-strong: var(--amber-400);
-  --color-danger-strong: var(--red-400);
-  --color-info-strong: var(--blue-400);
+  --color-danger-strong: var(--red-300);
+  --color-info-strong: var(--blue-300);
   --focus-ring: var(--azure-400);
   }
 }
@@ -224,6 +228,7 @@
   --color-border: var(--slate-800);
   --color-border-strong: var(--slate-700);
   --color-border-muted: #1c2130;
+  --color-control-border: var(--slate-500);
   --color-inverse-surface: var(--slate-100);
   --color-inverse-text: var(--slate-900);
   --color-success: var(--green-500);
@@ -237,8 +242,8 @@
   --color-primary-strong: var(--azure-300);
   --color-success-strong: var(--green-400);
   --color-warning-strong: var(--amber-400);
-  --color-danger-strong: var(--red-400);
-  --color-info-strong: var(--blue-400);
+  --color-danger-strong: var(--red-300);
+  --color-info-strong: var(--blue-300);
   --focus-ring: var(--azure-400);
 }
 :root[data-theme="light"] {
@@ -269,6 +274,7 @@
   --color-border: var(--slate-200);
   --color-border-strong: var(--slate-300);
   --color-border-muted: var(--slate-100);
+  --color-control-border: var(--slate-500);
   --color-inverse-surface: var(--slate-900);
   --color-inverse-text: var(--slate-0);
   --color-success: var(--green-600);

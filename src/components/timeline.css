@@ -7,6 +7,6 @@
 .fdy-timeline__item--warning .fdy-timeline__marker{background:var(--color-warning);}
 .fdy-timeline__item--danger .fdy-timeline__marker{background:var(--color-danger);}
 .fdy-timeline__item--muted .fdy-timeline__marker{background:var(--color-border-strong);}
-.fdy-timeline__time{font-size:var(--text-xs);color:var(--color-text-subtle);font-variant-numeric:tabular-nums;}
+.fdy-timeline__time{font-size:var(--text-xs);color:var(--color-text-muted);font-variant-numeric:tabular-nums;}
 .fdy-timeline__title{margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-text);}
 .fdy-timeline__text{margin:var(--space-1) 0 0;font-size:var(--text-sm);color:var(--color-text-muted);line-height:var(--leading-normal);}
