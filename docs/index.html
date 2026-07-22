@@ -279,17 +279,17 @@
       <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-fw">
-          <a class="doc-fw__card" href="../examples/vue-faktur/">
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/vue-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">foundry/vue</span>
             <h3>Vue 3</h3>
             <p data-i18n="fw.vue">Composable <code>useFoundry()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>.</p>
           </a>
-          <a class="doc-fw__card" href="../examples/react-faktur/">
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/react-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">foundry/react</span>
             <h3>React 19</h3>
             <p data-i18n="fw.react">Hook <code>useFoundry()</code> — event <code>fdy-*</code> bubbling didengar di root.</p>
           </a>
-          <a class="doc-fw__card" href="../examples/blazor-faktur/">
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/blazor-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">foundry/blazor</span>
             <h3>Blazor WASM</h3>
             <p data-i18n="fw.blazor">Interop <code>window.FoundryBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
@@ -1735,9 +1735,50 @@
   const GROUPS = { 'Fondasi': 'Foundation', 'Aksi & Form': 'Action & Form', 'Feedback': 'Feedback', 'Navigasi': 'Navigation', 'Data': 'Data', 'Tampilan': 'Display', 'Layout': 'Layout', 'Utilitas': 'Utilities', 'Tentang': 'About' };
   const UI = { title: 'Components', density: 'Density' };
 
+  // Secondary/tertiary section descriptions (the extra .doc-desc paragraphs).
+  const SEC2 = {
+    'sec-tombol': ['Text + icon · text-only (low emphasis) · icon-only (needs <code>aria-label</code>).', 'Button group (segmented) &amp; FAB (round · small · extended).'],
+    'sec-cfl': ['Single-select commits on row click (no "OK"). Keyboard: type to search, <kbd class="fdy-kbd">↓</kbd> enters the list, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> navigate, <kbd class="fdy-kbd">Enter</kbd> pick, <kbd class="fdy-kbd">Esc</kbd> close. Multi-select uses checkboxes + an "Apply" footer.'],
+    'sec-datepicker': ['Icon variants (kit convention): <strong>default</strong> (calendar), <strong>none</strong> via <code>data-fdy-no-icon</code>, or a <strong>custom icon</strong> with <code>&lt;template data-fdy-icon&gt;</code> inside.'],
+    'sec-timepicker': ['Icon variants (kit convention): <strong>default</strong> (clock), <strong>none</strong> via <code>data-fdy-no-icon</code>, or a <strong>custom icon</strong> with <code>&lt;template data-fdy-icon&gt;</code>.'],
+    'sec-upload': ['Two terminal states (static) — uploaded &amp; rejected:'],
+    'sec-badge': ['<strong>Notification badge = overlay.</strong> Not a component separate from "mail": a count/"99+"/icon/dot anchored to the corner of <em>any</em> element — bell, envelope, avatar, or button. Wrap the content with <code>.fdy-badge-wrap</code>, add <code>.fdy-badge-ov</code>. AA-text colours (default dark · primary · danger); dots for accent/info/success/warning.'],
+    'sec-appbar': ['Coloured (primary) &amp; dense — controls go on-colour.'],
+  };
+  // Text-keyed translations for demo UI chrome (labels, placeholders, buttons,
+  // state text, menu items). Sample DATA (company names, amounts, invoice ids)
+  // stays as-is on purpose.
+  const TXT = {
+    'Pelanggan': 'Customer', 'Nama pelanggan': 'Customer name', 'Nominal (error)': 'Amount (error)', 'Kode pelanggan': 'Customer code', 'Tanggal faktur': 'Invoice date', 'Periode laporan': 'Report period', 'Tanpa ikon': 'No icon', 'Ikon custom': 'Custom icon', 'Jam mulai': 'Start time', 'Tiap 15 menit, 08:00–17:00': 'Every 15 min, 08:00–17:00', 'Jadwal kirim faktur': 'Invoice send schedule', 'Item pertama': 'First item', 'Diskon': 'Discount', 'Anggaran': 'Budget', 'Kata sandi': 'Password', 'Ulangi kata sandi': 'Repeat password', 'Nomor kartu': 'Card number', 'Tanggal (HH/BB/TTTT)': 'Date (DD/MM/YYYY)', 'Status faktur (default)': 'Invoice status (default)',
+    'cth. PT Sumber Makmur': 'e.g. PT Sumber Makmur', 'Cari…': 'Search…', 'Pilih pelanggan…': 'Pick a customer…', 'Pilih item…': 'Pick an item…', 'Cari kode / nama…': 'Search code / name…', 'Dari': 'From', 'Sampai': 'To', 'Pilih jam': 'Pick a time', 'Kode / nama item': 'Item code / name', 'Ketik nama…': 'Type a name…', 'Pilih kategori': 'Pick a category', 'Cari faktur / pelanggan…': 'Search invoices / customers…',
+    'Tanggal mulai': 'Start date', 'Tanggal akhir': 'End date', 'Tanggal default': 'Default date', 'Tanggal tanpa ikon': 'Date without icon', 'Tanggal ikon custom': 'Date custom icon', 'Jam rapat': 'Meeting time', 'Waktu default': 'Default time', 'Waktu tanpa ikon': 'Time without icon', 'Waktu ikon custom': 'Time custom icon', 'Jadwal kirim': 'Send schedule', 'Tanggal kirim': 'Send date', 'Jam kirim': 'Send time', 'Jadwal tanpa ikon': 'Schedule without icon', 'Tanggal': 'Date', 'Jam': 'Time', 'Kategori produk': 'Product category', 'Rentang waktu': 'Time range', 'Filter status': 'Status filter',
+    'Simpan': 'Save', 'Batal': 'Cancel', 'Unduh': 'Download', 'Ubah': 'Edit', 'Tambah baris': 'Add row', 'Kiri': 'Left', 'Tengah': 'Center', 'Kanan': 'Right', 'Tindakan': 'Actions', '+ Baru': '+ New', 'Tutup': 'Close', 'Pilih': 'Select', 'Kembali': 'Back', 'Lanjut': 'Next', 'Toast sukses': 'Toast success', 'Arahkan / fokus': 'Hover / focus', 'Ekspor': 'Export', 'Hapus': 'Delete', 'Bersihkan': 'Clear', 'Buat faktur': 'Create invoice', 'Coba lagi': 'Try again', 'Bayar': 'Pay', 'Buka drawer kiri': 'Open left drawer', 'Buka drawer kanan': 'Open right drawer', 'Terapkan': 'Apply', 'Buka modal': 'Open modal', '+ Faktur baru': '+ New invoice',
+    'Simpan & baru': 'Save & new', 'Simpan sebagai draf': 'Save as draft', 'Simpan & kirim': 'Save & send',
+    'Belum ada faktur': 'No invoices yet', 'Faktur yang kamu buat akan muncul di sini.': 'Invoices you create will appear here.', 'Gagal memuat': 'Failed to load', 'Tidak bisa mengambil data dari server.': "Couldn't fetch data from the server.",
+    'Faktur': 'Invoice', 'Produk': 'Products', 'Gudang': 'Warehouse', 'Pajak': 'Tax', 'Laporan': 'Reports', 'Penjualan': 'Sales', 'Neraca': 'Balance sheet', 'baru': 'new',
+  };
+
   const i18nEls = [...document.querySelectorAll('[data-i18n]')];
   const orig = new WeakMap();
+  const nOrig = new WeakMap();
+  const aOrig = new WeakMap();
   const cap = (el) => { if (!orig.has(el)) orig.set(el, el.innerHTML); return orig.get(el); };
+  // Translate an element's own text nodes (keeps child icons / <span>* </span>).
+  const trNodes = (el, en) => {
+    el.childNodes.forEach((n) => {
+      if (n.nodeType !== 3) return;
+      if (!nOrig.has(n)) nOrig.set(n, n.textContent);
+      const o = nOrig.get(n); const k = o.trim(); const t = TXT[k];
+      if (t != null) n.textContent = en ? o.replace(k, t) : o;
+    });
+  };
+  const trAttr = (el, attr, en) => {
+    if (!aOrig.has(el)) aOrig.set(el, {});
+    const store = aOrig.get(el);
+    if (!(attr in store)) store[attr] = el.getAttribute(attr);
+    const o = store[attr]; const t = o != null ? TXT[o] : null;
+    if (t != null) el.setAttribute(attr, en ? t : o);
+  };
   const langBtn = document.getElementById('lang');
   const titleEl = document.querySelector('.fdy-app__title');
   let lang = 'id';
@@ -1745,10 +1786,12 @@
     lang = l; const en = l === 'en';
     i18nEls.forEach((el) => { const o = cap(el); const k = el.dataset.i18n; el.innerHTML = (en && I18N[k] != null) ? I18N[k] : o; });
     document.querySelectorAll('.doc-section[id]').forEach((sec) => {
-      const t = SEC[sec.id]; if (!t) return;
-      const h2 = sec.querySelector(':scope > h2'); const d = sec.querySelector(':scope > .doc-desc');
-      if (h2 && t.h2) { const o = cap(h2); h2.innerHTML = en ? t.h2 : o; }
-      if (d && t.desc) { const o = cap(d); d.innerHTML = en ? t.desc : o; }
+      const t = SEC[sec.id];
+      const h2 = sec.querySelector(':scope > h2');
+      if (h2 && t && t.h2) { const o = cap(h2); h2.innerHTML = en ? t.h2 : o; }
+      const descs = sec.querySelectorAll(':scope > .doc-desc');
+      const ens = [t && t.desc, ...((SEC2[sec.id]) || [])];
+      descs.forEach((d, i) => { if (ens[i]) { const o = cap(d); d.innerHTML = en ? ens[i] : o; } });
     });
     document.querySelectorAll('#doc-nav .fdy-nav__item[href^="#sec-"]').forEach((a) => {
       const t = NAV[a.getAttribute('href')]; if (t == null) return; const o = cap(a); a.innerHTML = en ? t : o;
@@ -1756,6 +1799,15 @@
     document.querySelectorAll('#doc-nav .doc-navgroup__summary').forEach((s) => {
       const key = (orig.has(s) ? orig.get(s) : s.textContent).trim(); const t = GROUPS[key]; if (t == null) return; const o = cap(s); s.innerHTML = en ? t : o;
     });
+    // Demo UI chrome: labels, state text, buttons, menu items, nav-demo labels,
+    // and enhancer-rendered placeholders — translated by their text.
+    document.querySelectorAll('.fdy-label, .fdy-state__title, .fdy-state__text, .fdy-menu__item, .fdy-nav__label, .fdy-timepicker__value, .fdy-datepicker__value, .fdy-cascade__value, .fdy-btn:not([data-i18n])').forEach((el) => {
+      if (el.id === 'lang' || el.id === 'theme' || el.id === 'density') return;
+      trNodes(el, en);
+    });
+    document.querySelectorAll('[placeholder]').forEach((el) => trAttr(el, 'placeholder', en));
+    document.querySelectorAll('[data-label]').forEach((el) => trAttr(el, 'data-label', en));
+    document.querySelectorAll('[data-placeholder]').forEach((el) => trAttr(el, 'data-placeholder', en));
     if (titleEl) { const o = cap(titleEl); titleEl.innerHTML = en ? UI.title : o; }
     { const o = cap(densityBtn); densityBtn.innerHTML = en ? UI.density : o; }
     root.lang = l;
