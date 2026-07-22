@@ -1414,6 +1414,34 @@
           <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Bantuan"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 1 1 5.8 1c-.5 1.4-2.9 2-2.9 3.5"></path><path d="M12 17h.01"></path></svg></span></button>
         </div>
       </div>
+      <p class="doc-desc" style="margin-top:var(--space-4)">Product appbar — komposisi kaya di dalam <code>.fdy-app__topbar</code> (App shell), beda dari <code>.fdy-appbar</code> berdiri sendiri di atas. Urutan: nav toggle → <code>.fdy-breadcrumb</code> → judul halaman (<code>.fdy-app__title</code>, auto-spacer kanan) → pencarian (<code>.fdy-input-group</code> + <code>__addon--icon</code>) → menu pengguna (<code>.fdy-menu</code>). Salin blok ini langsung ke dalam <code>&lt;header class="fdy-app__topbar"&gt;</code> shell Anda.</p>
+      <div class="doc-demo doc-demo--block" style="padding:0;overflow:hidden">
+        <header class="fdy-app__topbar">
+          <button class="fdy-app__navtoggle" type="button" aria-label="Buka/tutup navigasi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+          <nav class="fdy-breadcrumb" aria-label="Breadcrumb">
+            <ol class="fdy-breadcrumb__list">
+              <li class="fdy-breadcrumb__item"><a class="fdy-breadcrumb__link" href="#sec-appbar">Faktur</a></li>
+              <li class="fdy-breadcrumb__sep" aria-hidden="true">/</li>
+              <li class="fdy-breadcrumb__item" aria-current="page">INV-1042</li>
+            </ol>
+          </nav>
+          <h3 class="fdy-app__title">INV-1042</h3>
+          <div class="fdy-input-group" style="max-width:14rem">
+            <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+            <input class="fdy-input" type="search" placeholder="Cari…" aria-label="Cari">
+          </div>
+          <div class="fdy-menu-wrap" data-fdy-menu>
+            <button class="fdy-btn fdy-btn--ghost" aria-haspopup="menu" aria-expanded="false" aria-label="Menu pengguna"><span class="fdy-avatar fdy-avatar--sm">CD</span></button>
+            <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+              <li role="none"><button class="fdy-menu__item" role="menuitem">Profil</button></li>
+              <li role="none"><button class="fdy-menu__item" role="menuitem">Pengaturan</button></li>
+              <li role="none"><hr class="fdy-menu__sep"></li>
+              <li role="none"><button class="fdy-menu__item fdy-menu__item--danger" role="menuitem">Keluar</button></li>
+            </ul>
+          </div>
+        </header>
+      </div>
+      <p class="doc-desc" style="margin-top:var(--space-3)">Vue/React: <code>useFreeday</code> menghidrasi <code>.fdy-menu</code> otomatis lewat enhancer <code>data-fdy-menu</code> (mekanisme sama dengan <code>freeday-menu.js</code> vanilla) — cukup pasang markup di atas di dalam komponen, tak perlu wiring buka/tutup manual.</p>
     </section>
 
     <section class="doc-section" id="sec-sidenav">
@@ -1769,7 +1797,7 @@
     'sec-timepicker': ['Icon variants (kit convention): <strong>default</strong> (clock), <strong>none</strong> via <code>data-fdy-no-icon</code>, or a <strong>custom icon</strong> with <code>&lt;template data-fdy-icon&gt;</code>.'],
     'sec-upload': ['Two terminal states (static) — uploaded &amp; rejected:'],
     'sec-badge': ['<strong>Notification badge = overlay.</strong> Not a component separate from "mail": a count/"99+"/icon/dot anchored to the corner of <em>any</em> element — bell, envelope, avatar, or button. Wrap the content with <code>.fdy-badge-wrap</code>, add <code>.fdy-badge-ov</code>. AA-text colours (default dark · primary · danger); dots for accent/info/success/warning.'],
-    'sec-appbar': ['Coloured (primary) &amp; dense — controls go on-colour.'],
+    'sec-appbar': ['Coloured (primary) &amp; dense — controls go on-colour.', 'Product appbar — a rich composition inside <code>.fdy-app__topbar</code> (App shell), distinct from the standalone <code>.fdy-appbar</code> above. Order: nav toggle → <code>.fdy-breadcrumb</code> → page title (<code>.fdy-app__title</code>, auto right-spacer) → search (<code>.fdy-input-group</code> + <code>__addon--icon</code>) → user menu (<code>.fdy-menu</code>). Copy this block straight into your shell\'s <code>&lt;header class="fdy-app__topbar"&gt;</code>.', 'Vue/React: <code>useFreeday</code> hydrates <code>.fdy-menu</code> automatically via the <code>data-fdy-menu</code> enhancer (the same mechanism as vanilla <code>freeday-menu.js</code>) — drop the markup above inside your component, no manual open/close wiring needed.'],
   };
   // Text-keyed translations for demo UI chrome (labels, placeholders, buttons,
   // state text, menu items). Sample DATA (company names, amounts, invoice ids)
