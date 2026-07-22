@@ -112,6 +112,9 @@
   --ease-standard: cubic-bezier(.2,0,0,1);
   --ease-spring: cubic-bezier(.2,.8,.2,1);
   --control-h: 2.5rem;
+  --control-box: 1.15rem;
+  --control-switch-w: 2.4rem;
+  --control-switch-h: 1.35rem;
   --bw: 1px;
   --color-primary: var(--azure-600);
   --color-primary-hover: var(--azure-700);
@@ -135,6 +138,8 @@
   --color-border-strong: var(--slate-300);
   --color-border-muted: var(--slate-100);
   --color-control-border: var(--slate-500);
+  --color-switch-thumb: var(--slate-0);
+  --color-shadow-inset: rgba(16,14,30,.06);
   --color-inverse-surface: var(--slate-900);
   --color-inverse-text: var(--slate-0);
   --color-success: var(--green-600);
