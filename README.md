@@ -102,6 +102,17 @@ docs/index.html        referensi hidup / demo-site
 - **Layout:** app shell, accordion (native `<details>`), modal (native `<dialog>`), divider, kbd.
 
 ## Aksesibilitas
-Kontras WCAG AA (terang & gelap), `:focus-visible` selalu terlihat, HTML native dulu sebelum
-ARIA, komponen interaktif ikut pola WAI-ARIA APG, hormati `prefers-reduced-motion`.
-Status tak hanya lewat warna. Lihat section "Aksesibilitas" di `docs/index.html`.
+Kontras WCAG AA (terang & gelap) — diaudit otomatis oleh `test/contrast.test.mjs` yang
+menyelesaikan graf token, meng-*composite* fill `-soft` semi-transparan di atas surface-nya,
+dan menegakkan tiap pasangan (teks 4.5:1; batas kontrol / ikon 3:1, WCAG 1.4.11). Border kontrol
+form pakai `--color-control-border` (≥3:1); border dekoratif sengaja tetap terang.
+`:focus-visible` selalu terlihat, HTML native dulu sebelum ARIA, komponen interaktif ikut pola
+WAI-ARIA APG, hormati `prefers-reduced-motion`. Status tak hanya lewat warna. Lihat section
+"Aksesibilitas" di `docs/index.html`.
+
+## Dukungan browser
+Butuh browser evergreen ~2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (floor ditentukan
+oleh `color-mix()`). Fitur lain: native `<dialog>`/`::backdrop`, `accent-color`, `100dvh`,
+`conic-gradient`, `scroll-snap` — semua ≥ Safari 15.4. Blur backdrop pakai
+`-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya tanpa blur).
+Belum ada CSS build/autoprefixer — dukungan browser lama = tanggung jawab konsumen.
