@@ -1,0 +1,12 @@
+/* Foundry — Autocomplete (text input + filtered suggestion listbox, APG editable combobox).
+ * Enhanced by foundry-autocomplete.js. */
+.fdy-autocomplete{position:relative;display:block;max-width:22rem;}
+.fdy-autocomplete__listbox{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:120;min-width:100%;max-height:16rem;overflow-y:auto;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
+.fdy-autocomplete__listbox[hidden]{display:none;}
+.fdy-autocomplete__option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;white-space:nowrap;}
+.fdy-autocomplete__option[hidden]{display:none;}
+.fdy-autocomplete__option:hover,.fdy-autocomplete__option.is-highlighted{background:var(--color-surface-3);}
+.fdy-autocomplete__option[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
+.fdy-autocomplete__empty{padding:var(--space-2) var(--space-3);font-size:var(--text-sm);color:var(--color-text-muted);}
+.fdy-autocomplete__empty[hidden]{display:none;}
+@media (prefers-reduced-motion:no-preference){.fdy-autocomplete__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}

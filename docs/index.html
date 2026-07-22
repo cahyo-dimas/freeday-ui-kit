@@ -82,6 +82,7 @@
       <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
       <a class="fdy-nav__item" href="#sec-slider">Slider</a>
       <a class="fdy-nav__item" href="#sec-rating">Rating</a>
+      <a class="fdy-nav__item" href="#sec-autocomplete">Autocomplete</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -573,6 +574,29 @@
           <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
           <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
           <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-autocomplete">
+      <h2>Autocomplete</h2>
+      <p class="doc-desc">Combobox editable — ketik untuk memfilter saran (pola APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Butuh <code>foundry-autocomplete.js</code>. (Opsi statis di-filter di klien; di app nyata, fetch/filter server-side.)</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <div class="fdy-field">
+          <label class="fdy-label" for="ac-cust">Pelanggan</label>
+          <div class="fdy-autocomplete" data-fdy-autocomplete>
+            <input class="fdy-input" id="ac-cust" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="ac-cust-list" autocomplete="off" placeholder="Ketik nama…">
+            <ul class="fdy-autocomplete__listbox" id="ac-cust-list" role="listbox" hidden aria-label="Pelanggan">
+              <li class="fdy-autocomplete__option" role="option">PT Sumber Makmur</li>
+              <li class="fdy-autocomplete__option" role="option">CV Berkah Jaya</li>
+              <li class="fdy-autocomplete__option" role="option">UD Cahaya Abadi</li>
+              <li class="fdy-autocomplete__option" role="option">PT Mitra Sentosa</li>
+              <li class="fdy-autocomplete__option" role="option">Toko Rejeki Makmur</li>
+              <li class="fdy-autocomplete__option" role="option">Koperasi Sejahtera</li>
+              <li class="fdy-autocomplete__empty" hidden>Tak ada hasil.</li>
+            </ul>
+          </div>
+          <span class="fdy-help">Ketik untuk menyaring; pilih dengan panah + Enter.</span>
         </div>
       </div>
     </section>
@@ -1234,6 +1258,7 @@
 <script src="../dist/foundry-stepper.js"></script>
 <script src="../dist/foundry-slider.js"></script>
 <script src="../dist/foundry-rating.js"></script>
+<script src="../dist/foundry-autocomplete.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
