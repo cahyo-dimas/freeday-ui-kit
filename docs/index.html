@@ -99,6 +99,7 @@
       <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
       <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
       <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
+      <a class="fdy-nav__item" href="#sec-carousel">Carousel</a>
       <div class="doc-navgroup__label">Layout</div>
       <a class="fdy-nav__item" href="#sec-appbar">App bar</a>
       <a class="fdy-nav__item" href="#sec-drawer">Drawer</a>
@@ -816,6 +817,29 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-carousel">
+      <h2>Carousel</h2>
+      <p class="doc-desc">Scroll-snap + panah + titik indikator. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe di sentuh, autoplay opsional (<code>data-fdy-autoplay</code>, jeda saat hover/fokus). Butuh <code>foundry-carousel.js</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-carousel" data-fdy-carousel role="region" aria-roledescription="carousel" aria-label="Sorotan" tabindex="0">
+          <button class="fdy-carousel__arrow fdy-carousel__arrow--prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+          <div class="fdy-carousel__viewport">
+            <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">
+              <div style="padding:var(--space-8);text-align:center;background:var(--color-primary-soft);color:var(--color-primary-strong)"><h3 style="margin:0 0 var(--space-2);font-family:var(--font-display)">Faktur lebih cepat</h3><p style="margin:0;color:var(--color-text-muted)">Buat, kirim, dan lacak faktur dalam hitungan detik.</p></div>
+            </div>
+            <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">
+              <div style="padding:var(--space-8);text-align:center;background:var(--color-surface-3)"><h3 style="margin:0 0 var(--space-2);font-family:var(--font-display)">Laporan real-time</h3><p style="margin:0;color:var(--color-text-muted)">Pantau arus kas dan piutang kapan saja.</p></div>
+            </div>
+            <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">
+              <div style="padding:var(--space-8);text-align:center;background:var(--color-success-soft);color:var(--color-success-strong)"><h3 style="margin:0 0 var(--space-2);font-family:var(--font-display)">Terintegrasi SAP B1</h3><p style="margin:0;color:var(--color-text-muted)">Sinkron data master &amp; dokumen tanpa entri ganda.</p></div>
+            </div>
+          </div>
+          <button class="fdy-carousel__arrow fdy-carousel__arrow--next" aria-label="Berikutnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+          <div class="fdy-carousel__dots"></div>
+        </div>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-appbar">
       <h2>App bar</h2>
       <p class="doc-desc">Bar atas standalone — brand · aksi · spacer. Bisa sticky, elevated, dense, atau berwarna. Tombol hamburger biasanya membuka drawer (menu samping).</p>
@@ -1030,6 +1054,7 @@
 <script src="../dist/foundry-menu.js"></script>
 <script src="../dist/foundry-drawer.js"></script>
 <script src="../dist/foundry-breakpoint.js"></script>
+<script src="../dist/foundry-carousel.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');

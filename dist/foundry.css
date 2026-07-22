@@ -213,6 +213,24 @@ a { color: var(--color-primary); }
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}
 .fdy-card__footer{padding:var(--space-3) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));display:flex;gap:var(--space-2);justify-content:flex-end;}
 
+/* Foundry — Carousel (scroll-snap track + arrows + dots). Enhanced by foundry-carousel.js. */
+.fdy-carousel{position:relative;}
+.fdy-carousel__viewport{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
+.fdy-carousel__viewport::-webkit-scrollbar{display:none;}
+.fdy-carousel__slide{flex:0 0 100%;min-width:0;scroll-snap-align:center;}
+.fdy-carousel__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border:0;border-radius:var(--radius-full);background:color-mix(in srgb,var(--color-surface) 86%,transparent);color:var(--color-text);box-shadow:var(--shadow-2);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard);}
+.fdy-carousel__arrow:hover{background:var(--color-surface);}
+.fdy-carousel__arrow:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-carousel__arrow:disabled{opacity:.4;cursor:not-allowed;}
+.fdy-carousel__arrow--prev{left:var(--space-3);}
+.fdy-carousel__arrow--next{right:var(--space-3);}
+.fdy-carousel__arrow svg{display:block;width:1.25rem;height:1.25rem;}
+.fdy-carousel__dots{display:flex;justify-content:center;gap:var(--space-2);margin-top:var(--space-3);}
+.fdy-carousel__dot{width:.5rem;height:.5rem;padding:0;border:0;border-radius:var(--radius-full);background:var(--color-border-strong);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),width var(--dur-fast) var(--ease-standard);}
+.fdy-carousel__dot[aria-current="true"]{background:var(--color-primary);width:1.25rem;}
+.fdy-carousel__dot:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 40%,transparent);}
+@media (prefers-reduced-motion:reduce){.fdy-carousel__viewport{scroll-behavior:auto;}}
+
 /* Foundry — Choose-from-list dialog (searchable master-data picker).
  * Built on .fdy-modal: header + search + scrollable results table + footer.
  * Backs a choose-from-list field (readonly input + .fdy-input-group__btn magnifier). */
