@@ -1,0 +1,181 @@
+/* Foundry — form validation enhancer (optional, zero-dependency).
+ * Wires the native Constraint Validation API to accessible inline errors on any
+ * [data-fdy-validate] <form>. Native-first: constraints come from the standard
+ * markup attributes (required, type, pattern, min/max, minlength/maxlength, step);
+ * this only handles presentation + the accessible plumbing.
+ *
+ * Per control it toggles aria-invalid (which the CSS mirrors to the --error border)
+ * and shows the message in a linked [data-fdy-error] element (auto-created inside
+ * the .fdy-field if absent, and wired via aria-describedby).
+ *
+ * Custom messages via data attributes on the control (first match wins):
+ *   data-fdy-msg-required | -type | -pattern | -minlength | -maxlength |
+ *   data-fdy-msg-min | -max | -step | -mismatch, then generic data-fdy-msg.
+ * Cross-field match (e.g. confirm password): data-fdy-match="#otherId".
+ *
+ * Timing: validates on submit (blocks + focuses the first invalid control); after
+ * the first submit attempt each field re-validates on input/blur so errors clear
+ * live. Add data-fdy-eager to validate on blur from the start.
+ *
+ * Emits bubbling CustomEvents on the form: "fdy-form-invalid" (detail {invalid:[]})
+ * and "fdy-form-valid". Exposes window.FoundryForm.
+ */
+(function () {
+  'use strict';
+
+  var seq = 0;
+
+  // ValidityState key -> friendly data-attribute alias.
+  var ALIAS = {
+    valueMissing: 'required',
+    typeMismatch: 'type',
+    patternMismatch: 'pattern',
+    tooShort: 'minlength',
+    tooLong: 'maxlength',
+    rangeUnderflow: 'min',
+    rangeOverflow: 'max',
+    stepMismatch: 'step',
+    badInput: 'type',
+    customError: 'mismatch'
+  };
+  var DEFAULTS = {
+    required: 'Wajib diisi.',
+    type: 'Format tidak valid.',
+    pattern: 'Format tidak sesuai.',
+    minlength: 'Terlalu pendek.',
+    maxlength: 'Terlalu panjang.',
+    min: 'Nilai terlalu kecil.',
+    max: 'Nilai terlalu besar.',
+    step: 'Nilai tidak sesuai kelipatan.',
+    mismatch: 'Nilai tidak cocok.'
+  };
+  var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];
+
+  function isCandidate(el) {
+    if (el.disabled || el.type === 'hidden' || el.type === 'submit' || el.type === 'button' || el.type === 'reset') return false;
+    return typeof el.checkValidity === 'function' && el.willValidate;
+  }
+
+  function fieldOf(el) { return el.closest('.fdy-field') || el.parentElement; }
+
+  function ensureErrorEl(el) {
+    var field = fieldOf(el);
+    var errEl = field ? field.querySelector('[data-fdy-error]') : null;
+    if (!errEl) {
+      errEl = document.createElement('p');
+      errEl.className = 'fdy-help fdy-help--error';
+      errEl.setAttribute('data-fdy-error', '');
+      errEl.hidden = true;
+      (field || el.parentElement).appendChild(errEl);
+    }
+    if (!errEl.id) { seq += 1; errEl.id = 'fdy-err-' + seq; }
+    // Link the control to its message without clobbering existing describedby.
+    var described = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+    if (described.indexOf(errEl.id) === -1) { described.push(errEl.id); el.setAttribute('aria-describedby', described.join(' ')); }
+    return errEl;
+  }
+
+  function messageFor(el) {
+    // Cross-field match runs first (drives customError via setCustomValidity).
+    el.setCustomValidity('');
+    var matchSel = el.getAttribute('data-fdy-match');
+    if (matchSel) {
+      var other = document.querySelector(matchSel);
+      if (other && el.value !== other.value) {
+        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || DEFAULTS.mismatch);
+      }
+    }
+    if (el.validity.valid) return '';
+    var alias = el.validity.customError ? 'mismatch' : null;
+    if (!alias) {
+      for (var i = 0; i < VALIDITY_KEYS.length; i++) {
+        if (el.validity[VALIDITY_KEYS[i]]) { alias = ALIAS[VALIDITY_KEYS[i]]; break; }
+      }
+    }
+    var custom = alias ? el.getAttribute('data-fdy-msg-' + alias) : null;
+    return custom || el.getAttribute('data-fdy-msg') || (alias && DEFAULTS[alias]) || el.validationMessage || 'Tidak valid.';
+  }
+
+  function paint(el, message) {
+    var errEl = ensureErrorEl(el);
+    if (message) {
+      el.setAttribute('aria-invalid', 'true');
+      errEl.textContent = message;
+      errEl.hidden = false;
+    } else {
+      el.removeAttribute('aria-invalid');
+      errEl.textContent = '';
+      errEl.hidden = true;
+    }
+  }
+
+  function initForm(form) {
+    if (form.dataset.fdyFormReady === '1') return;
+    form.dataset.fdyFormReady = '1';
+    form.setAttribute('novalidate', '');
+    var eager = form.hasAttribute('data-fdy-eager');
+    var submitted = false;
+
+    function controls() {
+      return Array.prototype.filter.call(form.elements, isCandidate);
+    }
+    function validateOne(el) {
+      var msg = messageFor(el);
+      paint(el, msg);
+      return !msg;
+    }
+    function liveBind(el) {
+      if (el.dataset.fdyFieldBound === '1') return;
+      el.dataset.fdyFieldBound = '1';
+      var live = function () { if (submitted || eager) validateOne(el); };
+      el.addEventListener('blur', live, true);
+      el.addEventListener('input', function () { if ((submitted || eager) && el.getAttribute('aria-invalid') === 'true') validateOne(el); });
+    }
+
+    Array.prototype.forEach.call(controls(), liveBind);
+
+    form.addEventListener('submit', function (e) {
+      submitted = true;
+      var invalid = [];
+      Array.prototype.forEach.call(controls(), function (el) {
+        liveBind(el);
+        if (!validateOne(el)) invalid.push(el);
+      });
+      if (invalid.length) {
+        e.preventDefault();
+        invalid[0].focus();
+        form.dispatchEvent(new CustomEvent('fdy-form-invalid', { bubbles: true, detail: { invalid: invalid } }));
+      } else {
+        form.dispatchEvent(new CustomEvent('fdy-form-valid', { bubbles: true }));
+      }
+    });
+
+    var api = {
+      form: form,
+      validate: function () {
+        submitted = true;
+        var invalid = [];
+        Array.prototype.forEach.call(controls(), function (el) { if (!validateOne(el)) invalid.push(el); });
+        return invalid;
+      },
+      reset: function () {
+        submitted = false;
+        Array.prototype.forEach.call(controls(), function (el) { paint(el, ''); });
+      }
+    };
+    form._fdyForm = api;
+    return api;
+  }
+
+  function initAll(context) {
+    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-validate]'), initForm);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FoundryForm = { init: initForm, initAll: initAll };
+})();

@@ -3,6 +3,30 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.8.1] — 2026-07-22
+### Added
+- **Form validation** (`foundry-form.js`, `[data-fdy-validate]`) — Constraint Validation
+  API di-wire ke error inline aksesibel: `aria-invalid` + pesan ter-`aria-describedby`,
+  fokus ke field invalid pertama saat submit, re-validasi live tiap blur/input. Pesan
+  custom `data-fdy-msg-*`, cocok antar-field `data-fdy-match`. Event `fdy-form-invalid`/
+  `fdy-form-valid`, `window.FoundryForm`.
+- **Password reveal + input mask** (`foundry-mask.js`) — `[data-fdy-password]` tambah
+  toggle tampil/sembunyi (memakai ulang chrome tombol input-group); `[data-fdy-mask]`
+  format saat mengetik (`#` digit, `A` huruf, `*` alnum, sisanya literal), raw value di
+  `dataset.fdyRaw` + event `fdy-mask`. `window.FoundryMask`.
+- **Cascade select** (`cascade.css` + `foundry-cascade.js`, `[data-fdy-cascade]`) —
+  pemilih hierarki drill-down dari `<ul>` bersarang; cabang membuka level berikut, daun
+  memilih (nilai = jalur lengkap), back/crumb + keyboard penuh. Event `fdy-cascade-change`,
+  `window.FoundryCascade`.
+- **Chip choice/filter** (`chip.css` + `foundry-chip.js`) — chip interaktif
+  (`fdy-chip--choice` / `fdy-chip--filter`, `<button aria-pressed>`) dalam grup
+  `[data-fdy-chips]` (`data-single` = pilih-satu), plus wiring hapus untuk
+  `.fdy-chip__remove`. Event `fdy-chip-change` / `fdy-chip-remove`, `window.FoundryChip`.
+### Changed
+- `.fdy-input`/`.fdy-textarea` kini juga menampilkan border error lewat
+  `aria-invalid="true"` (bukan cuma kelas `--error`), jadi enhancer cukup toggle satu
+  atribut aksesibel.
+
 ## [0.8.0] — 2026-07-22
 ### Added
 - **Installable sebagai paket GitHub.** `npm i github:cahyo-dimas/foundry-ui-kit#v0.8.0`.

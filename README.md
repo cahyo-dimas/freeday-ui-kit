@@ -16,7 +16,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/foundry-ui-kit#v0.8.0
+npm i github:cahyo-dimas/foundry-ui-kit#v0.8.1
 ```
 ```js
 import 'foundry/css';   // token + komponen (satu file)
@@ -64,6 +64,10 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 | `foundry-datepicker` | `[data-fdy-datepicker]`, `[data-fdy-daterange]` | `fdy-datepicker-change` `{value,date}` · `window.FoundryDatepicker` |
 | `foundry-timepicker` | `[data-fdy-timepicker]` | `fdy-time-select` `{value}` · `window.FoundryTimepicker` |
 | `foundry-datetime` | `[data-fdy-datetimepicker]` | `fdy-datetime-change` `{date,time,value}` · `window.FoundryDatetime` |
+| `foundry-cascade` | `[data-fdy-cascade]` (nested `<ul>` model) | `fdy-cascade-change` `{value,path,labels}` · `window.FoundryCascade` |
+| `foundry-mask` | `[data-fdy-mask]`, `[data-fdy-password]` | `fdy-mask` `{value,raw}` · `window.FoundryMask` |
+| `foundry-form` | `[data-fdy-validate]` (form) | `fdy-form-invalid`/`-valid` · `window.FoundryForm` |
+| `foundry-chip` | `[data-fdy-chips]`, `.fdy-chip__remove` | `fdy-chip-change`/`fdy-chip-remove` · `window.FoundryChip` |
 | `foundry-upload` | `[data-fdy-dropzone]` | `fdy-upload-add`/`-remove` · `window.FoundryUpload` |
 | `foundry-toast` | — | `Foundry.toast({variant,title,message,timeout})` |
 
@@ -109,12 +113,15 @@ docs/index.html        referensi hidup / demo-site
 - **Fondasi:** warna semantic, tipografi (Sora/IBM Plex Sans/JetBrains Mono), skala spasi 4px,
   radius & elevasi, motion, checklist aksesibilitas.
 - **Aksi & form:** button, input (+error), input-group (Rp/%/ikon), checkbox/radio/switch,
-  **select `fdy-combo`** (APG), **choose-from-list** (field + dialog single/multi),
-  **date picker** (single + range), **file upload** (dropzone + state per-berkas).
+  **select `fdy-combo`** (APG), **autocomplete**, **cascade select** (hierarki drill-down),
+  **choose-from-list** (field + dialog single/multi), **date / time / datetime picker**,
+  **file upload** (dropzone + state per-berkas), **password reveal + input mask**,
+  **form validation** (Constraint Validation API → error aksesibel).
 - **Data:** table, **data table** (cari · sort · **filter per-kolom** teks/enum/angka · **bulk
   actions** · paginasi · seleksi), states (empty/loading/error).
 - **Feedback:** alert, toast, tooltip. **Navigasi:** tabs, breadcrumb, pagination.
-- **Tampilan:** card, badge, avatar, chip, description-list, progress, spinner, skeleton.
+- **Tampilan:** card, badge, avatar, chip (default/hapus · choice · filter), description-list,
+  progress, spinner, skeleton.
 - **Layout:** app shell, accordion (native `<details>`), modal (native `<dialog>`), divider, kbd.
 
 ## Aksesibilitas

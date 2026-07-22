@@ -298,6 +298,261 @@
   window.FoundryCarousel = { init: initCarousel, initAll: initAll };
 })();
 
+/* Foundry — cascade select enhancer (optional, zero-dependency).
+ * Turns a [data-fdy-cascade] wrapper into a hierarchical drill-down picker. The
+ * data model is a hidden nested <ul> inside the wrapper: a <li> with a child <ul>
+ * is a branch (drills in), a <li> without is a leaf (selects). Each <li> carries
+ * its value in data-value; its own text (before any nested <ul>) is the label.
+ *
+ * The popover shows one level at a time (a listbox); a branch drills in, the back
+ * control ascends, a leaf selects and stores the full path as the value.
+ * Attributes: data-label, data-placeholder, data-value (pre-select a leaf value),
+ * data-separator (path separator in the display, default " / ").
+ *
+ * Keyboard: trigger opens on click / Enter / Space / ArrowDown. In the list:
+ * Up/Down move, Home/End jump, ArrowRight/Enter/Space drill into a branch or
+ * select a leaf, ArrowLeft/Backspace go up a level, Esc closes (focus returns to
+ * the trigger). Emits a bubbling "fdy-cascade-change" (detail {value, path, labels}).
+ */
+(function () {
+  'use strict';
+
+  var seq = 0;
+  var BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>';
+
+  // Own text of an <li>, excluding any nested <ul>.
+  function ownLabel(li) {
+    var s = '';
+    Array.prototype.forEach.call(li.childNodes, function (n) {
+      if (n.nodeType === 3) s += n.textContent;
+      else if (n.nodeType === 1 && n.tagName !== 'UL') s += n.textContent;
+    });
+    return s.trim();
+  }
+  function parse(ul) {
+    var nodes = [];
+    Array.prototype.forEach.call(ul.children, function (li) {
+      if (li.tagName !== 'LI') return;
+      var childUl = li.querySelector(':scope > ul');
+      nodes.push({
+        label: ownLabel(li),
+        value: li.getAttribute('data-value') || ownLabel(li),
+        children: childUl ? parse(childUl) : null
+      });
+    });
+    return nodes;
+  }
+  // Depth-first search for the stack of labels leading to a leaf value.
+  function pathTo(nodes, value, trail) {
+    for (var i = 0; i < nodes.length; i++) {
+      var n = nodes[i];
+      var here = trail.concat([n]);
+      if (!n.children && n.value === value) return here;
+      if (n.children) { var found = pathTo(n.children, value, here); if (found) return found; }
+    }
+    return null;
+  }
+
+  function initCascade(wrap) {
+    if (wrap.dataset.fdyCascadeReady === '1') return;
+    wrap.dataset.fdyCascadeReady = '1';
+    wrap.classList.add('fdy-cascade');
+
+    var sourceUl = wrap.querySelector('ul');
+    var root = sourceUl ? parse(sourceUl) : [];
+    if (sourceUl) sourceUl.remove();
+
+    var label = wrap.getAttribute('data-label') || 'Pilih';
+    var placeholder = wrap.getAttribute('data-placeholder') || 'Pilih…';
+    var sep = wrap.getAttribute('data-separator') || ' / ';
+
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'fdy-cascade__trigger';
+    trigger.setAttribute('aria-haspopup', 'true');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-label', label);
+    var valueSpan = document.createElement('span');
+    valueSpan.className = 'fdy-cascade__value';
+    trigger.appendChild(valueSpan);
+
+    var panel = document.createElement('div');
+    panel.className = 'fdy-cascade__panel';
+    panel.hidden = true;
+    var head = document.createElement('div');
+    head.className = 'fdy-cascade__head';
+    var back = document.createElement('button');
+    back.type = 'button';
+    back.className = 'fdy-cascade__back';
+    back.setAttribute('aria-label', 'Kembali satu tingkat');
+    back.innerHTML = BACK;
+    back.hidden = true;
+    var crumb = document.createElement('span');
+    crumb.className = 'fdy-cascade__crumb';
+    crumb.setAttribute('aria-live', 'polite');
+    head.appendChild(back);
+    head.appendChild(crumb);
+    var list = document.createElement('ul');
+    seq += 1;
+    list.className = 'fdy-cascade__list';
+    list.id = 'fdy-cascade-list-' + seq;
+    list.setAttribute('role', 'listbox');
+    list.setAttribute('aria-label', label);
+    list.tabIndex = -1;
+    panel.appendChild(head);
+    panel.appendChild(list);
+
+    wrap.appendChild(trigger);
+    wrap.appendChild(panel);
+
+    var stack = [];        // branch nodes drilled through (context)
+    var current = root;    // nodes at the visible level
+    var opts = [];         // rendered <li> elements
+    var active = -1;
+    var selectedValue = wrap.getAttribute('data-value') || '';
+
+    function render() {
+      list.innerHTML = '';
+      opts = [];
+      back.hidden = stack.length === 0;
+      crumb.textContent = stack.length ? stack.map(function (n) { return n.label; }).join(sep) : label;
+      current.forEach(function (node, i) {
+        var li = document.createElement('li');
+        seq += 1; li.id = 'fdy-cascade-opt-' + seq;
+        li.className = 'fdy-cascade__opt';
+        li.setAttribute('role', 'option');
+        li.setAttribute('data-index', String(i));
+        var isBranch = !!node.children;
+        li.setAttribute('aria-selected', (!isBranch && node.value === selectedValue) ? 'true' : 'false');
+        if (isBranch) li.setAttribute('aria-label', node.label + ', submenu');
+        var lbl = document.createElement('span');
+        lbl.className = 'fdy-cascade__opt-label';
+        lbl.textContent = node.label;
+        li.appendChild(lbl);
+        if (isBranch) {
+          var arrow = document.createElement('span');
+          arrow.className = 'fdy-cascade__opt-arrow';
+          arrow.setAttribute('aria-hidden', 'true');
+          li.appendChild(arrow);
+        }
+        list.appendChild(li);
+        opts.push(li);
+      });
+      setActive(0);
+    }
+    function setActive(i) {
+      if (active >= 0 && opts[active]) opts[active].classList.remove('is-active');
+      active = Math.max(-1, Math.min(opts.length - 1, i));
+      if (active >= 0) {
+        opts[active].classList.add('is-active');
+        list.setAttribute('aria-activedescendant', opts[active].id);
+        opts[active].scrollIntoView({ block: 'nearest' });
+      } else {
+        list.removeAttribute('aria-activedescendant');
+      }
+    }
+    function drill(i) {
+      var node = current[i];
+      if (!node || !node.children) return;
+      stack.push(node);
+      current = node.children;
+      render();
+    }
+    function ascend() {
+      if (!stack.length) return;
+      stack.pop();
+      current = stack.length ? stack[stack.length - 1].children : root;
+      render();
+    }
+    function activate(i) {
+      var node = current[i];
+      if (!node) return;
+      if (node.children) { drill(i); return; }
+      selectedValue = node.value;
+      var labels = stack.map(function (n) { return n.label; }).concat([node.label]);
+      valueSpan.textContent = labels.join(sep);
+      valueSpan.classList.remove('fdy-cascade__value--placeholder');
+      wrap.dispatchEvent(new CustomEvent('fdy-cascade-change', { bubbles: true, detail: { value: node.value, path: labels.join(sep), labels: labels } }));
+      close(true);
+    }
+
+    function open() {
+      if (!panel.hidden) return;
+      // Re-open at the selected leaf's level for quick re-selection.
+      var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
+      if (trail && trail.length > 1) { stack = trail.slice(0, -1); current = stack[stack.length - 1].children; }
+      else { stack = []; current = root; }
+      panel.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      trigger.classList.add('is-open');
+      render();
+      list.focus();
+      document.addEventListener('click', onDoc, true);
+    }
+    function close(returnFocus) {
+      if (panel.hidden) return;
+      panel.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.classList.remove('is-open');
+      document.removeEventListener('click', onDoc, true);
+      if (returnFocus === true) trigger.focus();
+    }
+    function onDoc(e) { if (!wrap.contains(e.target)) close(false); }
+
+    trigger.addEventListener('click', function () { panel.hidden ? open() : close(true); });
+    trigger.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+    back.addEventListener('click', function () { ascend(); list.focus(); });
+    list.addEventListener('keydown', function (e) {
+      switch (e.key) {
+        case 'ArrowDown': e.preventDefault(); setActive(active + 1); break;
+        case 'ArrowUp': e.preventDefault(); setActive(active - 1); break;
+        case 'Home': e.preventDefault(); setActive(0); break;
+        case 'End': e.preventDefault(); setActive(opts.length - 1); break;
+        case 'ArrowRight': case 'Enter': case ' ': e.preventDefault(); if (active >= 0) activate(active); break;
+        case 'ArrowLeft': case 'Backspace': e.preventDefault(); ascend(); break;
+        case 'Escape': e.preventDefault(); close(true); break;
+        case 'Tab': close(false); break;
+        default: break;
+      }
+    });
+    list.addEventListener('click', function (e) {
+      var li = e.target.closest('[role="option"]');
+      if (li) activate(opts.indexOf(li));
+    });
+
+    // Initial display: pre-selected leaf shows its full path, else placeholder.
+    var initTrail = selectedValue ? pathTo(root, selectedValue, []) : null;
+    if (initTrail) {
+      valueSpan.textContent = initTrail.map(function (n) { return n.label; }).join(sep);
+    } else {
+      valueSpan.textContent = placeholder;
+      valueSpan.classList.add('fdy-cascade__value--placeholder');
+    }
+
+    var api = {
+      wrap: wrap,
+      getValue: function () { return selectedValue; },
+      clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); }
+    };
+    wrap._fdyCascade = api;
+    return api;
+  }
+
+  function initAll(context) {
+    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-cascade]'), initCascade);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FoundryCascade = { init: initCascade, initAll: initAll };
+})();
+
 /* Foundry — choose-from-list enhancer (optional, zero-dependency).
  * Wires a searchable master-data picker dialog to read-only fields.
  * Progressive enhancement over a native <dialog>; in a framework app, drive the
@@ -639,6 +894,90 @@
   }
 
   window.FoundryChart = { init: initChart, initAll: initAll };
+})();
+
+/* Foundry — chip enhancer (optional, zero-dependency).
+ * Two behaviours, both progressive enhancement:
+ *
+ * 1. Removable chips — any .fdy-chip__remove button removes its chip and emits a
+ *    bubbling "fdy-chip-remove" (detail {value}).
+ * 2. Choice / filter groups — a [data-fdy-chips] container of interactive chips
+ *    (.fdy-chip--choice / .fdy-chip--filter, each a <button>) toggles aria-pressed
+ *    on click. Add data-single for one-at-a-time (radio-like) selection; filter
+ *    chips get a leading check when pressed. Emits "fdy-chip-change" on the group
+ *    (detail {value, pressed, selected}).
+ */
+(function () {
+  'use strict';
+
+  var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+
+  function initRemove(btn) {
+    if (btn.dataset.fdyChipRmReady === '1') return;
+    btn.dataset.fdyChipRmReady = '1';
+    btn.addEventListener('click', function () {
+      var chip = btn.closest('.fdy-chip');
+      if (!chip) return;
+      var value = chip.getAttribute('data-value');
+      if (!value) {
+        // Derive the label from the chip text, minus the remove button glyph.
+        var clone = chip.cloneNode(true);
+        var rm = clone.querySelector('.fdy-chip__remove');
+        if (rm) rm.remove();
+        value = (clone.textContent || '').trim();
+      }
+      chip.dispatchEvent(new CustomEvent('fdy-chip-remove', { bubbles: true, detail: { value: value } }));
+      chip.remove();
+    });
+  }
+
+  function initGroup(group) {
+    if (group.dataset.fdyChipsReady === '1') return;
+    group.dataset.fdyChipsReady = '1';
+    var single = group.hasAttribute('data-single');
+    if (!group.getAttribute('role')) group.setAttribute('role', 'group');
+    var groupLabel = group.getAttribute('data-label');
+    if (groupLabel && !group.getAttribute('aria-label')) group.setAttribute('aria-label', groupLabel);
+
+    var chips = Array.prototype.slice.call(group.querySelectorAll('.fdy-chip--choice, .fdy-chip--filter'));
+    function valueOf(chip) { return chip.getAttribute('data-value') || (chip.textContent || '').trim(); }
+    function selected() {
+      return chips.filter(function (c) { return c.getAttribute('aria-pressed') === 'true'; }).map(valueOf);
+    }
+
+    chips.forEach(function (chip) {
+      if (!chip.hasAttribute('aria-pressed')) chip.setAttribute('aria-pressed', 'false');
+      if (chip.classList.contains('fdy-chip--filter') && !chip.querySelector('.fdy-chip__check')) {
+        var check = document.createElement('span');
+        check.className = 'fdy-chip__check';
+        check.innerHTML = CHECK;
+        chip.insertBefore(check, chip.firstChild);
+      }
+      chip.addEventListener('click', function () {
+        var wasPressed = chip.getAttribute('aria-pressed') === 'true';
+        if (single) chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+        chip.setAttribute('aria-pressed', wasPressed ? 'false' : 'true');
+        group.dispatchEvent(new CustomEvent('fdy-chip-change', {
+          bubbles: true,
+          detail: { value: valueOf(chip), pressed: !wasPressed, selected: selected() }
+        }));
+      });
+    });
+  }
+
+  function initAll(context) {
+    var root = context || document;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-chips]'), initGroup);
+    Array.prototype.forEach.call(root.querySelectorAll('.fdy-chip__remove'), initRemove);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FoundryChip = { initGroup: initGroup, initRemove: initRemove, initAll: initAll };
 })();
 
 /* Foundry — date picker enhancer (optional, zero-dependency).
@@ -1063,6 +1402,303 @@
   }
 
   window.FoundryDrawer = { init: initTriggers };
+})();
+
+/* Foundry — form validation enhancer (optional, zero-dependency).
+ * Wires the native Constraint Validation API to accessible inline errors on any
+ * [data-fdy-validate] <form>. Native-first: constraints come from the standard
+ * markup attributes (required, type, pattern, min/max, minlength/maxlength, step);
+ * this only handles presentation + the accessible plumbing.
+ *
+ * Per control it toggles aria-invalid (which the CSS mirrors to the --error border)
+ * and shows the message in a linked [data-fdy-error] element (auto-created inside
+ * the .fdy-field if absent, and wired via aria-describedby).
+ *
+ * Custom messages via data attributes on the control (first match wins):
+ *   data-fdy-msg-required | -type | -pattern | -minlength | -maxlength |
+ *   data-fdy-msg-min | -max | -step | -mismatch, then generic data-fdy-msg.
+ * Cross-field match (e.g. confirm password): data-fdy-match="#otherId".
+ *
+ * Timing: validates on submit (blocks + focuses the first invalid control); after
+ * the first submit attempt each field re-validates on input/blur so errors clear
+ * live. Add data-fdy-eager to validate on blur from the start.
+ *
+ * Emits bubbling CustomEvents on the form: "fdy-form-invalid" (detail {invalid:[]})
+ * and "fdy-form-valid". Exposes window.FoundryForm.
+ */
+(function () {
+  'use strict';
+
+  var seq = 0;
+
+  // ValidityState key -> friendly data-attribute alias.
+  var ALIAS = {
+    valueMissing: 'required',
+    typeMismatch: 'type',
+    patternMismatch: 'pattern',
+    tooShort: 'minlength',
+    tooLong: 'maxlength',
+    rangeUnderflow: 'min',
+    rangeOverflow: 'max',
+    stepMismatch: 'step',
+    badInput: 'type',
+    customError: 'mismatch'
+  };
+  var DEFAULTS = {
+    required: 'Wajib diisi.',
+    type: 'Format tidak valid.',
+    pattern: 'Format tidak sesuai.',
+    minlength: 'Terlalu pendek.',
+    maxlength: 'Terlalu panjang.',
+    min: 'Nilai terlalu kecil.',
+    max: 'Nilai terlalu besar.',
+    step: 'Nilai tidak sesuai kelipatan.',
+    mismatch: 'Nilai tidak cocok.'
+  };
+  var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];
+
+  function isCandidate(el) {
+    if (el.disabled || el.type === 'hidden' || el.type === 'submit' || el.type === 'button' || el.type === 'reset') return false;
+    return typeof el.checkValidity === 'function' && el.willValidate;
+  }
+
+  function fieldOf(el) { return el.closest('.fdy-field') || el.parentElement; }
+
+  function ensureErrorEl(el) {
+    var field = fieldOf(el);
+    var errEl = field ? field.querySelector('[data-fdy-error]') : null;
+    if (!errEl) {
+      errEl = document.createElement('p');
+      errEl.className = 'fdy-help fdy-help--error';
+      errEl.setAttribute('data-fdy-error', '');
+      errEl.hidden = true;
+      (field || el.parentElement).appendChild(errEl);
+    }
+    if (!errEl.id) { seq += 1; errEl.id = 'fdy-err-' + seq; }
+    // Link the control to its message without clobbering existing describedby.
+    var described = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
+    if (described.indexOf(errEl.id) === -1) { described.push(errEl.id); el.setAttribute('aria-describedby', described.join(' ')); }
+    return errEl;
+  }
+
+  function messageFor(el) {
+    // Cross-field match runs first (drives customError via setCustomValidity).
+    el.setCustomValidity('');
+    var matchSel = el.getAttribute('data-fdy-match');
+    if (matchSel) {
+      var other = document.querySelector(matchSel);
+      if (other && el.value !== other.value) {
+        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || DEFAULTS.mismatch);
+      }
+    }
+    if (el.validity.valid) return '';
+    var alias = el.validity.customError ? 'mismatch' : null;
+    if (!alias) {
+      for (var i = 0; i < VALIDITY_KEYS.length; i++) {
+        if (el.validity[VALIDITY_KEYS[i]]) { alias = ALIAS[VALIDITY_KEYS[i]]; break; }
+      }
+    }
+    var custom = alias ? el.getAttribute('data-fdy-msg-' + alias) : null;
+    return custom || el.getAttribute('data-fdy-msg') || (alias && DEFAULTS[alias]) || el.validationMessage || 'Tidak valid.';
+  }
+
+  function paint(el, message) {
+    var errEl = ensureErrorEl(el);
+    if (message) {
+      el.setAttribute('aria-invalid', 'true');
+      errEl.textContent = message;
+      errEl.hidden = false;
+    } else {
+      el.removeAttribute('aria-invalid');
+      errEl.textContent = '';
+      errEl.hidden = true;
+    }
+  }
+
+  function initForm(form) {
+    if (form.dataset.fdyFormReady === '1') return;
+    form.dataset.fdyFormReady = '1';
+    form.setAttribute('novalidate', '');
+    var eager = form.hasAttribute('data-fdy-eager');
+    var submitted = false;
+
+    function controls() {
+      return Array.prototype.filter.call(form.elements, isCandidate);
+    }
+    function validateOne(el) {
+      var msg = messageFor(el);
+      paint(el, msg);
+      return !msg;
+    }
+    function liveBind(el) {
+      if (el.dataset.fdyFieldBound === '1') return;
+      el.dataset.fdyFieldBound = '1';
+      var live = function () { if (submitted || eager) validateOne(el); };
+      el.addEventListener('blur', live, true);
+      el.addEventListener('input', function () { if ((submitted || eager) && el.getAttribute('aria-invalid') === 'true') validateOne(el); });
+    }
+
+    Array.prototype.forEach.call(controls(), liveBind);
+
+    form.addEventListener('submit', function (e) {
+      submitted = true;
+      var invalid = [];
+      Array.prototype.forEach.call(controls(), function (el) {
+        liveBind(el);
+        if (!validateOne(el)) invalid.push(el);
+      });
+      if (invalid.length) {
+        e.preventDefault();
+        invalid[0].focus();
+        form.dispatchEvent(new CustomEvent('fdy-form-invalid', { bubbles: true, detail: { invalid: invalid } }));
+      } else {
+        form.dispatchEvent(new CustomEvent('fdy-form-valid', { bubbles: true }));
+      }
+    });
+
+    var api = {
+      form: form,
+      validate: function () {
+        submitted = true;
+        var invalid = [];
+        Array.prototype.forEach.call(controls(), function (el) { if (!validateOne(el)) invalid.push(el); });
+        return invalid;
+      },
+      reset: function () {
+        submitted = false;
+        Array.prototype.forEach.call(controls(), function (el) { paint(el, ''); });
+      }
+    };
+    form._fdyForm = api;
+    return api;
+  }
+
+  function initAll(context) {
+    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-validate]'), initForm);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FoundryForm = { init: initForm, initAll: initAll };
+})();
+
+/* Foundry — input mask + password reveal enhancer (optional, zero-dependency).
+ *
+ * [data-fdy-mask]="pattern" formats a text input as you type. Placeholders:
+ *   #  a digit (0-9)      A  a letter (a-z/A-Z)      *  a letter or digit
+ * Any other pattern char is a literal, inserted automatically
+ *   (e.g. "####-####-####", "(###) ###-####", "##/##/####").
+ * The raw (unmasked) value is mirrored to el.dataset.fdyRaw and the bubbling
+ * "fdy-mask" CustomEvent (detail {value, raw}). A native input event is
+ * re-dispatched so validation / framework bindings observe the change.
+ *
+ * [data-fdy-password] on a password <input class="fdy-input"> wraps it in the
+ * input-group chrome and adds a show/hide toggle (type swap + aria-pressed).
+ */
+(function () {
+  'use strict';
+
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 5.2A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4M6.1 6.1A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4-.85"></path><path d="m3 3 18 18"></path></svg>';
+
+  function matches(placeholder, ch) {
+    if (placeholder === '#') return /\d/.test(ch);
+    if (placeholder === 'A') return /[a-zA-Z]/.test(ch);
+    if (placeholder === '*') return /[a-zA-Z0-9]/.test(ch);
+    return false;
+  }
+  function isPlaceholder(ch) { return ch === '#' || ch === 'A' || ch === '*'; }
+
+  // Keep only characters the pattern's placeholders could accept.
+  function rawOf(pattern, value) {
+    var allowDigit = pattern.indexOf('#') !== -1 || pattern.indexOf('*') !== -1;
+    var allowAlpha = pattern.indexOf('A') !== -1 || pattern.indexOf('*') !== -1;
+    var out = '';
+    for (var i = 0; i < value.length; i++) {
+      var c = value[i];
+      if ((allowDigit && /\d/.test(c)) || (allowAlpha && /[a-zA-Z]/.test(c))) out += c;
+    }
+    return out;
+  }
+  function format(pattern, raw) {
+    var out = '', ri = 0;
+    for (var pi = 0; pi < pattern.length && ri < raw.length; pi++) {
+      var p = pattern[pi];
+      if (isPlaceholder(p)) {
+        while (ri < raw.length && !matches(p, raw[ri])) ri++;
+        if (ri < raw.length) { out += raw[ri]; ri++; }
+      } else {
+        out += p;
+      }
+    }
+    return out;
+  }
+
+  function initMask(el) {
+    if (el.dataset.fdyMaskReady === '1') return;
+    el.dataset.fdyMaskReady = '1';
+    var pattern = el.getAttribute('data-fdy-mask') || '';
+    if (!pattern) return;
+    el.setAttribute('inputmode', pattern.indexOf('A') === -1 ? 'numeric' : 'text');
+
+    function apply() {
+      var raw = rawOf(pattern, el.value);
+      var formatted = format(pattern, raw);
+      if (formatted !== el.value) {
+        el.value = formatted;
+        // Masked entry is left-to-right; park the caret at the end.
+        try { el.setSelectionRange(formatted.length, formatted.length); } catch (err) { /* number/date inputs */ }
+      }
+      el.dataset.fdyRaw = raw;
+      el.dispatchEvent(new CustomEvent('fdy-mask', { bubbles: true, detail: { value: formatted, raw: raw } }));
+    }
+    el.addEventListener('input', apply);
+    if (el.value) apply();
+  }
+
+  function initReveal(input) {
+    if (input.dataset.fdyPwReady === '1') return;
+    input.dataset.fdyPwReady = '1';
+
+    var group = document.createElement('span');
+    group.className = 'fdy-input-group';
+    input.parentNode.insertBefore(group, input);
+    group.appendChild(input);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'fdy-input-group__btn';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.setAttribute('aria-label', 'Tampilkan kata sandi');
+    btn.innerHTML = EYE;
+    btn.addEventListener('click', function () {
+      var reveal = input.type === 'password';
+      input.type = reveal ? 'text' : 'password';
+      btn.setAttribute('aria-pressed', reveal ? 'true' : 'false');
+      btn.setAttribute('aria-label', reveal ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+      btn.innerHTML = reveal ? EYE_OFF : EYE;
+      input.focus();
+    });
+    group.appendChild(btn);
+  }
+
+  function initAll(context) {
+    var root = context || document;
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-mask]'), initMask);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-password]'), initReveal);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FoundryMask = { initMask: initMask, initReveal: initReveal, initAll: initAll };
 })();
 
 /* Foundry — menu enhancer (optional, zero-dependency).

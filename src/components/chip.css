@@ -4,3 +4,14 @@
 .fdy-chip__remove{display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
 .fdy-chip__remove:hover{opacity:1;background:color-mix(in srgb,currentColor 16%,transparent);}
 .fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+/* Group wrapper for a row of chips (choice / filter). */
+.fdy-chips{display:flex;flex-wrap:wrap;gap:var(--space-2);}
+/* Interactive chips: choice (toggle) + filter (toggle with a check when on).
+ * Rendered as <button aria-pressed> and enhanced by foundry-chip.js. */
+.fdy-chip--choice{cursor:pointer;font-family:inherit;background:var(--color-surface);border-color:var(--color-border);transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
+.fdy-chip--choice:hover{background:var(--color-surface-3);border-color:var(--color-text-subtle);}
+.fdy-chip--choice:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-chip--choice[aria-pressed="true"]{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-chip__check{display:none;flex:none;width:.85rem;height:.85rem;margin-left:calc(var(--space-1)*-1);}
+.fdy-chip__check svg{display:block;width:100%;height:100%;}
+.fdy-chip--filter[aria-pressed="true"] .fdy-chip__check{display:inline-flex;}

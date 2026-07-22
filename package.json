@@ -1,6 +1,6 @@
 {
   "name": "foundry",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Foundry — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "UNLICENSED",

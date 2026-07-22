@@ -84,6 +84,9 @@
       <a class="fdy-nav__item" href="#sec-slider">Slider</a>
       <a class="fdy-nav__item" href="#sec-rating">Rating</a>
       <a class="fdy-nav__item" href="#sec-autocomplete">Autocomplete</a>
+      <a class="fdy-nav__item" href="#sec-cascade">Cascade select</a>
+      <a class="fdy-nav__item" href="#sec-mask">Password &amp; mask</a>
+      <a class="fdy-nav__item" href="#sec-form">Form validation</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -653,6 +656,78 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-cascade">
+      <h2>Cascade select</h2>
+      <p class="doc-desc">Pemilih hierarki (drill-down) — model data = <code>&lt;ul&gt;</code> bersarang tersembunyi: <code>&lt;li&gt;</code> dengan anak <code>&lt;ul&gt;</code> adalah cabang, tanpa anak adalah daun. Cabang membuka level berikut, daun memilih (nilai = jalur lengkap). Keyboard: <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> pindah, <kbd class="fdy-kbd">→</kbd>/<kbd class="fdy-kbd">Enter</kbd> masuk cabang / pilih daun, <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">Backspace</kbd> naik level, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>foundry-cascade.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <div data-fdy-cascade data-label="Kategori produk" data-placeholder="Pilih kategori" data-value="android" style="max-width:17rem">
+          <ul>
+            <li data-value="elektronik">Elektronik
+              <ul>
+                <li data-value="hp">Handphone
+                  <ul>
+                    <li data-value="android">Android</li>
+                    <li data-value="ios">iOS</li>
+                  </ul>
+                </li>
+                <li data-value="laptop">Laptop</li>
+                <li data-value="tv">Televisi</li>
+              </ul>
+            </li>
+            <li data-value="fashion">Fashion
+              <ul>
+                <li data-value="pria">Pria</li>
+                <li data-value="wanita">Wanita</li>
+                <li data-value="anak">Anak</li>
+              </ul>
+            </li>
+            <li data-value="lainnya">Lainnya</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-mask">
+      <h2>Password &amp; mask</h2>
+      <p class="doc-desc">Field kata sandi dengan tombol tampil/sembunyi (<code>data-fdy-password</code> — memakai kembali chrome tombol input-group) dan input ber-format saat mengetik (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> huruf, <code>*</code> alnum; karakter lain jadi literal otomatis). Butuh <code>foundry-mask.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start">
+        <label class="fdy-field">
+          <span class="fdy-label">Kata sandi</span>
+          <input class="fdy-input" type="password" data-fdy-password value="rahasia123" autocomplete="current-password">
+        </label>
+        <label class="fdy-field">
+          <span class="fdy-label">Nomor kartu</span>
+          <input class="fdy-input" type="text" data-fdy-mask="####-####-####-####" placeholder="1234-5678-9012-3456">
+        </label>
+        <label class="fdy-field">
+          <span class="fdy-label">Tanggal (HH/BB/TTTT)</span>
+          <input class="fdy-input" type="text" data-fdy-mask="##/##/####" placeholder="21/07/2026">
+        </label>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-form">
+      <h2>Form validation</h2>
+      <p class="doc-desc">Validasi native (Constraint Validation API) di-wire ke error inline aksesibel — <code>aria-invalid</code> + pesan ter-<code>aria-describedby</code>, fokus ke field invalid pertama saat submit, lalu re-validasi live tiap blur/input. Pesan custom via <code>data-fdy-msg-*</code>, cocokkan antar-field via <code>data-fdy-match</code>. Coba tekan <strong>Simpan</strong> saat kosong. Butuh <code>foundry-form.js</code>.</p>
+      <div class="doc-demo doc-demo--block" style="max-width:24rem">
+        <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-3)">
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Email <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" name="email" type="email" required data-fdy-msg-required="Email wajib diisi." data-fdy-msg-type="Format email tidak valid.">
+          </label>
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Kata sandi <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" id="fm-pw" name="password" type="password" required minlength="8" data-fdy-msg-required="Kata sandi wajib diisi." data-fdy-msg-minlength="Minimal 8 karakter.">
+          </label>
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Ulangi kata sandi <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" name="confirm" type="password" required data-fdy-match="#fm-pw" data-fdy-msg-required="Ulangi kata sandi." data-fdy-msg-mismatch="Kata sandi tidak cocok.">
+          </label>
+          <div><button class="fdy-btn" type="submit">Simpan</button></div>
+        </form>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-select">
       <h2>Select (combobox)</h2>
       <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>foundry-select.js</code>. Varian ikon: caret <strong>default</strong>, <strong>tanpa</strong> lewat <code>fdy-combo--no-icon</code>, atau <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> di dalam tombol).</p>
@@ -1018,11 +1093,23 @@
 
     <section class="doc-section" id="sec-chip">
       <h2>Chip</h2>
-      <p class="doc-desc">Tag / filter aktif yang bisa dihapus.</p>
-      <div class="doc-demo">
-        <span class="fdy-chip">Semua</span>
-        <span class="fdy-chip fdy-chip--primary">Status: Lunas <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Status: Lunas">&times;</button></span>
-        <span class="fdy-chip fdy-chip--primary">Bulan: Juli <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Bulan: Juli">&times;</button></span>
+      <p class="doc-desc">Tiga peran: <strong>default / hapus</strong> (tag statis atau filter aktif yang bisa dihapus), <strong>choice</strong> (toggle pilih), dan <strong>filter</strong> (toggle dengan centang). Yang interaktif = <code>&lt;button aria-pressed&gt;</code> dikelola <code>foundry-chip.js</code> — bungkus dalam <code>data-fdy-chips</code>, tambah <code>data-single</code> untuk pilih-satu.</p>
+      <div class="doc-demo doc-demo--stack" style="gap:var(--space-5);align-items:flex-start">
+        <div class="fdy-chips">
+          <span class="fdy-chip">Semua</span>
+          <span class="fdy-chip fdy-chip--primary">Status: Lunas <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Status: Lunas">&times;</button></span>
+          <span class="fdy-chip fdy-chip--primary">Bulan: Juli <button class="fdy-chip__remove" type="button" aria-label="Hapus filter Bulan: Juli">&times;</button></span>
+        </div>
+        <div class="fdy-chips" data-fdy-chips data-single data-label="Rentang waktu">
+          <button type="button" class="fdy-chip fdy-chip--choice" data-value="7h" aria-pressed="true">7 hari</button>
+          <button type="button" class="fdy-chip fdy-chip--choice" data-value="30h">30 hari</button>
+          <button type="button" class="fdy-chip fdy-chip--choice" data-value="90h">90 hari</button>
+        </div>
+        <div class="fdy-chips" data-fdy-chips data-label="Filter status">
+          <button type="button" class="fdy-chip fdy-chip--filter" data-value="lunas" aria-pressed="true">Lunas</button>
+          <button type="button" class="fdy-chip fdy-chip--filter" data-value="tempo">Jatuh tempo</button>
+          <button type="button" class="fdy-chip fdy-chip--filter" data-value="draft">Draft</button>
+        </div>
       </div>
     </section>
 
@@ -1341,6 +1428,10 @@
 <script src="../dist/foundry-slider.js"></script>
 <script src="../dist/foundry-rating.js"></script>
 <script src="../dist/foundry-autocomplete.js"></script>
+<script src="../dist/foundry-cascade.js"></script>
+<script src="../dist/foundry-mask.js"></script>
+<script src="../dist/foundry-form.js"></script>
+<script src="../dist/foundry-chip.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
