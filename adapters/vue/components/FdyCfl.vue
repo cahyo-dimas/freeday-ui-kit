@@ -1,0 +1,341 @@
+<script setup lang="ts" generic="Row extends Record<string, unknown>">
+import { computed, nextTick, onBeforeUnmount, ref, useId, type ComputedRef, type Ref } from 'vue';
+
+// A Vue-native, *controlled async* choose-from-list over freeday's `.fdy-cfl*` +
+// `.fdy-input-group` classes (see src/components/cfl.css, input-group.css). freeday
+// ships a framework-agnostic enhancer (freeday-cfl.js) that scans static `.fdy-cfl__row`
+// markup; its own header says a framework app should "drive the dialog as a controlled
+// component (fetchPage callback + server cache), not a store." This component does exactly
+// that: a real `v-model:Row|null` over a native <dialog> whose rows come from an async
+// `fetchPage(query, page)`. It re-implements the enhancer's open/close + search + dense
+// sticky-header results + single-commit-on-click + keyboard, and adds the pieces a server
+// picker needs — loading/empty/error states, retry, pagination, an out-of-order guard, and
+// an optional in-memory cache. The enhancer is NOT mounted here (it would fight Vue's DOM).
+
+interface CflColumn {
+  key: keyof Row & string;
+  label: string;
+}
+
+interface CflPage {
+  rows: Row[];
+  hasMore: boolean;
+}
+
+const props = defineProps<{
+  modelValue: Row | null;
+  fetchPage: (query: string, page: number) => Promise<CflPage>;
+  columns: ReadonlyArray<CflColumn>;
+  display: (row: Row) => string;
+  rowKey: (row: Row) => string;
+  pageSize?: number;
+  placeholder?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  describedby?: string;
+  id?: string;
+  ariaLabelledby?: string;
+}>();
+
+const emit = defineEmits<{
+  'update:modelValue': [value: Row];
+  change: [value: Row];
+}>();
+
+const baseId: string = useId();
+const fieldId: ComputedRef<string> = computed((): string => props.id ?? `${baseId}-field`);
+const titleId: string = `${baseId}-title`;
+const resultsId: string = `${baseId}-results`;
+function rowId(index: number): string {
+  return `${baseId}-row-${index}`;
+}
+
+const dialogEl: Ref<HTMLDialogElement | null> = ref(null);
+const triggerEl: Ref<HTMLButtonElement | null> = ref(null);
+const searchEl: Ref<HTMLInputElement | null> = ref(null);
+
+const query: Ref<string> = ref('');
+const rows: Ref<Row[]> = ref([]) as Ref<Row[]>;
+const page: Ref<number> = ref(0);
+const hasMore: Ref<boolean> = ref(false);
+const loading: Ref<boolean> = ref(false);
+const error: Ref<Error | null> = ref(null);
+const activeIndex: Ref<number> = ref(-1);
+
+const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
+const displayValue: ComputedRef<string> = computed((): string =>
+  props.modelValue !== null ? props.display(props.modelValue) : '',
+);
+const activeDescendant: ComputedRef<string | undefined> = computed((): string | undefined =>
+  activeIndex.value >= 0 ? rowId(activeIndex.value) : undefined,
+);
+const isInitialLoading: ComputedRef<boolean> = computed((): boolean => loading.value && rows.value.length === 0);
+const isBlockingError: ComputedRef<boolean> = computed((): boolean => error.value !== null && rows.value.length === 0);
+const isEmpty: ComputedRef<boolean> = computed(
+  (): boolean => !loading.value && error.value === null && rows.value.length === 0,
+);
+
+// --- Async engine ---------------------------------------------------------
+// Out-of-order guard: every fetch takes a monotonically increasing token; a
+// resolved/rejected page is discarded unless it still owns the latest token
+// (a newer search, a load-more, or a dialog reset all bump it). This keeps a
+// slow stale response from overwriting fresh results.
+let reqToken: number = 0;
+// Optional in-memory cache, keyed by `${query}::${page}`, cleared on close.
+const cache: Map<string, CflPage> = new Map<string, CflPage>();
+let lastPage: number = 0;
+let lastAppend: boolean = false;
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function loadPage(targetPage: number, append: boolean): Promise<void> {
+  const q: string = query.value;
+  lastPage = targetPage;
+  lastAppend = append;
+  const token: number = ++reqToken;
+  const key = `${q}::${targetPage}`;
+  error.value = null;
+  loading.value = true;
+  try {
+    const cached: CflPage | undefined = cache.get(key);
+    const res: CflPage = cached ?? (await props.fetchPage(q, targetPage));
+    if (token !== reqToken) return; // stale — a newer request has started
+    if (cached === undefined) cache.set(key, res);
+    const copy: Row[] = res.rows.slice(); // never mutate the caller's array
+    rows.value = append ? rows.value.concat(copy) : copy;
+    hasMore.value = res.hasMore;
+    page.value = targetPage;
+    if (!append) activeIndex.value = rows.value.length > 0 ? 0 : -1;
+  } catch (err: unknown) {
+    if (token !== reqToken) return;
+    error.value = err instanceof Error ? err : new Error(String(err));
+  } finally {
+    if (token === reqToken) loading.value = false;
+  }
+}
+
+function retry(): void {
+  void loadPage(lastPage, lastAppend);
+}
+
+function loadMore(): void {
+  if (loading.value || !hasMore.value) return;
+  void loadPage(page.value + 1, true);
+}
+
+function onSearchInput(e: Event): void {
+  query.value = (e.target as HTMLInputElement).value;
+  if (searchTimer !== null) clearTimeout(searchTimer);
+  searchTimer = setTimeout((): void => {
+    void loadPage(0, false);
+  }, 250);
+}
+
+// --- Active-row / keyboard ------------------------------------------------
+function setActive(index: number): void {
+  if (rows.value.length === 0) {
+    activeIndex.value = -1;
+    return;
+  }
+  const clamped: number = Math.max(0, Math.min(index, rows.value.length - 1));
+  activeIndex.value = clamped;
+  void nextTick((): void => {
+    document.getElementById(rowId(clamped))?.scrollIntoView({ block: 'nearest' });
+  });
+}
+
+function commit(row: Row): void {
+  emit('update:modelValue', row);
+  emit('change', row);
+  closeDialog();
+}
+
+function onKeydown(e: KeyboardEvent): void {
+  switch (e.key) {
+    case 'ArrowDown':
+      e.preventDefault();
+      setActive(activeIndex.value + 1);
+      break;
+    case 'ArrowUp':
+      e.preventDefault();
+      setActive(activeIndex.value - 1);
+      break;
+    case 'Home':
+      if (rows.value.length > 0) {
+        e.preventDefault();
+        setActive(0);
+      }
+      break;
+    case 'End':
+      if (rows.value.length > 0) {
+        e.preventDefault();
+        setActive(rows.value.length - 1);
+      }
+      break;
+    case 'Enter': {
+      const row: Row | undefined = activeIndex.value >= 0 ? rows.value[activeIndex.value] : undefined;
+      if (row !== undefined) {
+        e.preventDefault();
+        commit(row);
+      }
+      break;
+    }
+    default:
+      break; // Escape is left to the native <dialog> cancel/close
+  }
+}
+
+// --- Open / close ---------------------------------------------------------
+function openDialog(): void {
+  if (isDisabled.value) return;
+  if (searchTimer !== null) {
+    clearTimeout(searchTimer);
+    searchTimer = null;
+  }
+  cache.clear();
+  query.value = '';
+  rows.value = [];
+  page.value = 0;
+  hasMore.value = false;
+  error.value = null;
+  activeIndex.value = -1;
+  dialogEl.value?.showModal();
+  void nextTick((): void => searchEl.value?.focus());
+  void loadPage(0, false);
+}
+
+function closeDialog(): void {
+  dialogEl.value?.close();
+}
+
+// Fires for every close path (button, Esc, commit); centralise cleanup here.
+function onClose(): void {
+  reqToken++; // invalidate any in-flight fetch so it can't apply after close
+  cache.clear();
+  loading.value = false;
+  triggerEl.value?.focus();
+}
+
+function cellText(row: Row, key: keyof Row & string): string {
+  const value: unknown = row[key];
+  return value === null || value === undefined ? '' : String(value);
+}
+
+onBeforeUnmount((): void => {
+  if (searchTimer !== null) clearTimeout(searchTimer);
+});
+</script>
+
+<template>
+  <div class="fdy-input-group">
+    <input
+      :id="fieldId"
+      class="fdy-input"
+      type="text"
+      readonly
+      :value="displayValue"
+      :placeholder="placeholder"
+      :aria-labelledby="ariaLabelledby"
+      :aria-invalid="isInvalid ? 'true' : undefined"
+      :aria-describedby="describedby"
+      :disabled="isDisabled"
+    />
+    <button
+      ref="triggerEl"
+      type="button"
+      class="fdy-input-group__btn"
+      aria-haspopup="dialog"
+      :aria-labelledby="ariaLabelledby"
+      :aria-label="ariaLabelledby ? undefined : 'Buka pencarian'"
+      :disabled="isDisabled"
+      @click="openDialog"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </button>
+
+    <dialog ref="dialogEl" class="fdy-modal fdy-modal--cfl" :aria-labelledby="titleId" @close="onClose" @keydown="onKeydown">
+      <div class="fdy-modal__header">
+        <h3 :id="titleId" class="fdy-modal__title">Pilih data</h3>
+        <button class="fdy-modal__close" type="button" aria-label="Tutup" @click="closeDialog">&times;</button>
+      </div>
+
+      <div class="fdy-modal__body">
+        <div class="fdy-cfl__search">
+          <div class="fdy-input-group" style="max-width:none">
+            <span class="fdy-input-group__addon fdy-input-group__addon--icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </span>
+            <input
+              ref="searchEl"
+              class="fdy-input"
+              type="search"
+              :value="query"
+              placeholder="Cari…"
+              aria-label="Cari data"
+              :aria-controls="resultsId"
+              :aria-activedescendant="activeDescendant"
+              @input="onSearchInput"
+            />
+          </div>
+        </div>
+
+        <div class="fdy-cfl__results">
+          <p v-if="isInitialLoading" class="fdy-cfl__empty" role="status">Memuat…</p>
+
+          <div v-else-if="isBlockingError" class="fdy-cfl__empty" role="alert">
+            <p style="margin:0 0 var(--space-3)">{{ error?.message }}</p>
+            <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">Coba lagi</button>
+          </div>
+
+          <p v-else-if="isEmpty" class="fdy-cfl__empty">Tidak ada hasil.</p>
+
+          <template v-else>
+            <table :id="resultsId" class="fdy-table" aria-label="Hasil pencarian">
+              <thead>
+                <tr>
+                  <th v-for="col in columns" :key="col.key" scope="col">{{ col.label }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(row, i) in rows"
+                  :id="rowId(i)"
+                  :key="rowKey(row)"
+                  class="fdy-cfl__row"
+                  :aria-selected="i === activeIndex ? 'true' : undefined"
+                  @click="commit(row)"
+                  @mousemove="setActive(i)"
+                >
+                  <td v-for="col in columns" :key="col.key">{{ cellText(row, col.key) }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div v-if="error !== null" class="fdy-cfl__empty" role="alert" style="padding:var(--space-4) var(--space-5)">
+              <p style="margin:0 0 var(--space-3)">{{ error.message }}</p>
+              <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">Coba lagi</button>
+            </div>
+            <div v-else-if="hasMore" style="padding:var(--space-3) var(--space-4);text-align:center">
+              <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" :disabled="loading" @click="loadMore">
+                {{ loading ? 'Memuat…' : 'Muat lebih banyak' }}
+              </button>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <div class="fdy-modal__footer">
+        <span class="fdy-cfl__count">Klik baris untuk memilih</span>
+        <div class="fdy-cfl__actions">
+          <button class="fdy-btn fdy-btn--ghost" type="button" @click="closeDialog">Tutup</button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</template>

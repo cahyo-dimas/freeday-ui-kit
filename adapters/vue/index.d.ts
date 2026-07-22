@@ -14,6 +14,7 @@ export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreeda
 
 export { default as FdyCombo } from './components/FdyCombo.vue';
 export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
+export { default as FdyCfl } from './components/FdyCfl.vue';
 
 /** `event.detail` shapes for the bubbling `fdy-*` CustomEvents. */
 export interface FdyChangeDetail { value: string }

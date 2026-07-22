@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyCfl } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
@@ -95,6 +95,54 @@ const tanggalTerbitMax: string = (() => {
 })();
 const tanggalTerbitDemo = ref<string | null>(null);
 const tanggalInvalidDemo = ref<string | null>(null);
+
+// FdyCfl demo — Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
+// Unblocks the "map an extracted value → SAP master data" gap: the caller supplies a
+// `fetchPage(query, page)` that hits the server; here it's a mock over a static array
+// (filter by query, slice by page, report `hasMore`) so the demo runs without a backend.
+interface Pelanggan extends Record<string, unknown> {
+  code: string;
+  name: string;
+  city: string;
+}
+
+const masterPelanggan: ReadonlyArray<Pelanggan> = [
+  { code: 'C-1001', name: 'PT Sumber Makmur', city: 'Jakarta' },
+  { code: 'C-1002', name: 'CV Berkah Jaya', city: 'Bandung' },
+  { code: 'C-1003', name: 'UD Cahaya Abadi', city: 'Surabaya' },
+  { code: 'C-1004', name: 'PT Mitra Sentosa', city: 'Semarang' },
+  { code: 'C-1005', name: 'Toko Rejeki Makmur', city: 'Medan' },
+  { code: 'C-1006', name: 'PT Anugerah Digital', city: 'Yogyakarta' },
+  { code: 'C-1007', name: 'CV Karya Bersama', city: 'Denpasar' },
+  { code: 'C-1008', name: 'PT Bina Sejahtera', city: 'Makassar' },
+  { code: 'C-1009', name: 'UD Tani Subur', city: 'Malang' },
+  { code: 'C-1010', name: 'PT Global Nusantara', city: 'Batam' },
+];
+
+const CFL_PAGE_SIZE = 4;
+
+const fetchPelanggan = (query: string, page: number): Promise<{ rows: Pelanggan[]; hasMore: boolean }> => {
+  const q = query.trim().toLowerCase();
+  const matched = masterPelanggan.filter(
+    (r) => q === '' || r.code.toLowerCase().includes(q) || r.name.toLowerCase().includes(q) || r.city.toLowerCase().includes(q),
+  );
+  const start = page * CFL_PAGE_SIZE;
+  const slice = matched.slice(start, start + CFL_PAGE_SIZE);
+  const hasMore = start + CFL_PAGE_SIZE < matched.length;
+  // Simulate network latency so loading/pagination/out-of-order states are observable.
+  return new Promise((resolve) => setTimeout(() => resolve({ rows: slice, hasMore }), 350));
+};
+
+const pelangganColumns: ReadonlyArray<{ key: keyof Pelanggan & string; label: string }> = [
+  { key: 'code', label: 'Kode' },
+  { key: 'name', label: 'Nama' },
+  { key: 'city', label: 'Kota' },
+];
+const pelangganDisplay = (row: Pelanggan): string => `${row.code} — ${row.name}`;
+const pelangganKey = (row: Pelanggan): string => row.code;
+
+const pelanggan = ref<Pelanggan | null>(null);
+const pelangganInvalidDemo = ref<Pelanggan | null>(null);
 
 const onValid = (): void => {
   submitted.value = { ...form };
@@ -275,6 +323,49 @@ const toggleTheme = (): void => {
                 <span class="fdy-label" id="lbl-invalid-tanggal">Tanggal jatuh tempo (contoh invalid)</span>
                 <FdyDatepicker v-model="tanggalInvalidDemo" aria-labelledby="lbl-invalid-tanggal" placeholder="Wajib dipilih" invalid describedby="err-tanggal-invalid" />
                 <span id="err-tanggal-invalid" class="fdy-help" style="color:var(--color-danger)">Tanggal jatuh tempo wajib diisi.</span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="fdy-card">
+          <div class="fdy-card__body">
+            <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native choose-from-list (FdyCfl)</h2>
+            <p class="fdy-help" style="margin:0 0 var(--space-4)">
+              <code>&lt;FdyCfl v-model&gt;</code> — pemilih master data <em>async</em> terkontrol di atas kelas <code>.fdy-cfl*</code>.
+              Klik kaca pembesar → dialog memanggil <code>fetchPage(query, page)</code> (di sini mock berlatensi), dengan
+              pencarian ter-debounce, paginasi "muat lebih banyak", dan status memuat/kosong/error.
+            </p>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5)">
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-pelanggan">Pelanggan</span>
+                <FdyCfl
+                  v-model="pelanggan"
+                  :fetch-page="fetchPelanggan"
+                  :columns="pelangganColumns"
+                  :display="pelangganDisplay"
+                  :row-key="pelangganKey"
+                  aria-labelledby="lbl-pelanggan"
+                  placeholder="Pilih pelanggan…"
+                  describedby="help-pelanggan"
+                />
+                <span id="help-pelanggan" class="fdy-help">Terpilih: {{ pelanggan ? pelangganDisplay(pelanggan) : '—' }}</span>
+              </label>
+
+              <label class="fdy-field" style="max-width:none">
+                <span class="fdy-label" id="lbl-pelanggan-invalid">Pelanggan (contoh invalid)</span>
+                <FdyCfl
+                  v-model="pelangganInvalidDemo"
+                  :fetch-page="fetchPelanggan"
+                  :columns="pelangganColumns"
+                  :display="pelangganDisplay"
+                  :row-key="pelangganKey"
+                  aria-labelledby="lbl-pelanggan-invalid"
+                  placeholder="Wajib dipilih"
+                  invalid
+                  describedby="err-pelanggan-invalid"
+                />
+                <span id="err-pelanggan-invalid" class="fdy-help" style="color:var(--color-danger)">Pelanggan wajib dipilih.</span>
               </label>
             </div>
           </div>
