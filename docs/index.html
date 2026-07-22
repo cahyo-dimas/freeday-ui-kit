@@ -91,6 +91,7 @@
       <a class="fdy-nav__item" href="#sec-table">Table</a>
       <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
       <a class="fdy-nav__item" href="#sec-states">States</a>
+      <a class="fdy-nav__item" href="#sec-charts">Charts</a>
       <div class="doc-navgroup__label">Tampilan</div>
       <a class="fdy-nav__item" href="#sec-card">Card</a>
       <a class="fdy-nav__item" href="#sec-badge">Badge</a>
@@ -705,6 +706,27 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-charts">
+      <h2>Charts</h2>
+      <p class="doc-desc">Sparkline, bar, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>, data lewat <code>data-values</code>. Butuh <code>foundry-chart.js</code>. Warna dari token; tiap chart <code>role="img"</code> + <code>aria-label</code>, donut/bar punya legenda/label (bukan warna saja).</p>
+      <div class="doc-demo doc-cardgrid">
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Pendapatan</h3>
+          <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">6 bulan terakhir</p>
+          <span class="fdy-sparkline" data-fdy-chart="sparkline" data-values="8,11,9,14,13,18" data-fdy-color="primary" role="img" aria-label="Tren pendapatan enam bulan, naik dari 8 ke 18 juta"></span>
+          <span style="margin-left:var(--space-3);font-family:var(--font-display);font-weight:var(--weight-bold)">Rp 18 jt</span>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-3)">Faktur / hari</h3>
+          <div class="fdy-bars" data-fdy-chart="bar" data-values="12,19,8,15,22,17" data-labels="Sen,Sel,Rab,Kam,Jum,Sab" data-fdy-color="primary" role="img" aria-label="Jumlah faktur per hari: Senin 12, Selasa 19, Rabu 8, Kamis 15, Jumat 22, Sabtu 17"></div>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-3)">Status faktur</h3>
+          <div class="fdy-donut" data-fdy-chart="donut" data-values="45,30,25" data-labels="Lunas,Tertunda,Batal" data-fdy-colors="success,warning,danger" data-fdy-center="100" role="img" aria-label="Status faktur: Lunas 45%, Tertunda 30%, Batal 25%"></div>
+        </div></div>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-card">
       <h2>Card</h2>
       <div class="doc-demo doc-cardgrid">
@@ -1055,6 +1077,7 @@
 <script src="../dist/foundry-drawer.js"></script>
 <script src="../dist/foundry-breakpoint.js"></script>
 <script src="../dist/foundry-carousel.js"></script>
+<script src="../dist/foundry-chart.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
