@@ -4,9 +4,11 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
 ## [1.1.0] — 2026-07-23
-Rilis **1.1 — "Precision" visual polish**. Penyegaran visual murni token-driven — radius
-lebih tajam, elevation overlay lebih tegas, hierarki tipografi heading yang lebih jelas, dan
-teal (`--color-accent`) sebagai indikator fungsional non-teks untuk state aktif/terpilih.
+Rilis **1.1 — "Precision" visual polish + pengerasan adopsi**. Dua bagian: **(1) penyegaran
+visual** token-driven — radius lebih tajam, elevation overlay lebih tegas, hierarki tipografi
+heading lebih jelas, teal (`--color-accent`) sebagai indikator fungsional non-teks untuk state
+aktif/terpilih; **(2) pengerasan adopsi** dari pemakaian project nyata — palet chart tervalidasi,
+ukuran modal, nav statis, brand shell, export breakpoint, drawer `initAll`, dan tokenisasi kontrol.
 **Non-breaking**: tak ada rename kelas/token/API (`fdy-` prefix, `--color-*`,
 `window.Freeday*` tetap stabil). **AA-gated**: `npm test` tetap hijau (9/9), termasuk 6
 assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
@@ -22,6 +24,13 @@ assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
 - **State interaksi disatukan** — hover/active/disabled/focus-visible dirapikan lintas
   input/combo/cascade/chip/pagination/selection; memperbaiki bug nyata di mana
   `.fdy-chip--filter` tidak punya focus ring sama sekali.
+- **`.fdy-table-scroll` scroll tanpa syarat** — tak lagi hanya berlaku di dalam `.fdy-datatable`
+  (`.fdy-table-wrap` untuk shell berbingkai, `.fdy-table-scroll` untuk scroll polos standalone).
+- **`selection.css` di-tokenkan** — nilai mentah (`#fff` thumb switch, inset `rgba`, dimensi
+  `1.15`/`2.4`/`1.35rem`) → token (`--color-switch-thumb`, `--color-shadow-inset`, `--control-box`,
+  `--control-switch-w/-h`). Nol perubahan visual.
+- **Default warna seri donut** — saat `data-fdy-colors` lebih pendek dari jumlah seri, celah kini
+  diisi `--chart-N` fixed-order (bukan cycle palet semantik lama). Non-breaking.
 ### Added
 - **Teal sebagai aksen fungsional** — `--color-accent` dipakai sebagai indikator non-teks
   untuk state aktif/terpilih: item nav aktif, underline tab aktif, baris tabel terpilih,
@@ -29,6 +38,21 @@ assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
 - **Token baru** `--tracking-tighter` (-0.03em) untuk heading Sora.
 - **6 assertion kontras WCAG (`AA_UI`, 3:1)** baru di `test/contrast.test.mjs` yang menjaga
   teal-on-surface di light & dark tetap lolos ambang kontrol non-teks.
+- **Palet chart kategorikal** — token `--chart-1..8` (+ `--chart-grid`/`--chart-tick`), 8 warna
+  colorblind-safe **tervalidasi** (validator dataviz, light & dark di surface Freeday: dark
+  all-pass, light lolos + relief rule). Donut menggambar seri **fixed-order** (tanpa cycle).
+  Token chart sengaja di luar `contrast.test.mjs` (a11y via validator palet + legend/label).
+- **Modal size** — `.fdy-modal--sm/--md/--lg/--wide` (24/32/48/60rem, responsif, anti-overflow).
+- **`.fdy-nav--flat`** — varian nav grup statis (tanpa caret / garis antar-grup / affordance
+  collapse) + dukung markup non-`<details>` yang benar-benar tak bisa dilipat.
+- **Brand shell berstruktur** — `.fdy-app__brand-mark`/`-title`/`-subtitle` (ikon + 2 baris di
+  header shell); pemakaian teks satu-baris tetap jalan.
+- **`FreedayDrawer.initAll`** — drawer kini ter-hydrate `useFreeday` di subtree Vue/React.
+- **Export skala breakpoint** — `freeday/breakpoints` (`{ sm:600, md:960, lg:1280, xl:1920 }`)
+  untuk `matchMedia` / menyelaraskan `@media` app ke skala kit.
+- **Docs** — contoh **product-appbar** siap-copas (breadcrumb + input-group search + menu);
+  install `git+https` untuk CI (repo privat tanpa SSH key); klarifikasi `.fdy-btn` = primary,
+  `.fdy-table-wrap`, dan density `--control-h` untuk komponen custom.
 
 ## [1.0.0] — 2026-07-22
 Rilis **1.0 — project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
