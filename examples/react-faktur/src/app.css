@@ -1,5 +1,5 @@
 /* Local layout helpers so the JSX stays free of inline style objects.
- * Everything else comes from Foundry tokens / component classes. */
+ * Everything else comes from Freeday tokens / component classes. */
 .faktur-main { display: flex; flex-direction: column; gap: var(--space-6); max-width: 56rem; }
 .faktur-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
 .faktur-field { max-width: none; }

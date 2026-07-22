@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>FreedayBlazorFaktur</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.*" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.*" PrivateAssets="all" />
+  </ItemGroup>
+
+  <!-- Freeday ships as static files. Copy them from the repo (dist/ + the Blazor
+       interop) into wwwroot/freeday before static web assets are gathered, so they
+       serve as normal wwwroot assets. wwwroot/freeday is git-ignored (generated). -->
+  <Target Name="CopyFreedayAssets" BeforeTargets="ResolveStaticWebAssetsInputs;Build">
+    <ItemGroup>
+      <_FreedaySrc Include="..\..\dist\freeday.bundle.css;..\..\dist\freeday.js;..\..\adapters\blazor\freeday-blazor.js" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_FreedaySrc)" DestinationFolder="$(MSBuildProjectDirectory)\wwwroot\freeday" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

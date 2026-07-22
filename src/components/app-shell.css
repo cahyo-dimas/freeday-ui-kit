@@ -1,4 +1,4 @@
-/* Foundry — App Shell.
+/* Freeday — App Shell.
  * Natural document scroll: the shell grows with content and the PAGE scrolls,
  * while the sidebar and topbar are position:sticky so they stay in view. No
  * fixed-height / internal-scroll trickery (that leaves a white gap if the host

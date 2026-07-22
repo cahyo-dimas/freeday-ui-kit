@@ -1,4 +1,4 @@
-/* Foundry — Card */
+/* Freeday — Card */
 .fdy-card{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}

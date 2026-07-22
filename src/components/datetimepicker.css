@@ -1,5 +1,5 @@
-/* Foundry — Datetime picker (composed: date picker + time picker → one value).
- * A thin composer (foundry-datetime.js) links a child [data-fdy-datepicker] and
+/* Freeday — Datetime picker (composed: date picker + time picker → one value).
+ * A thin composer (freeday-datetime.js) links a child [data-fdy-datepicker] and
  * [data-fdy-timepicker] and emits a single combined event. Icon variants come from
  * the child pickers (data-fdy-no-icon / <template data-fdy-icon>). */
 .fdy-datetimepicker{display:inline-flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}

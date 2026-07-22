@@ -1,6 +1,6 @@
-/* Foundry — Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
+/* Freeday — Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
  * backdrop / return-focus are free). Anchors left (default) or right.
- * Enhanced by foundry-drawer.js (open trigger + backdrop-click close). */
+ * Enhanced by freeday-drawer.js (open trigger + backdrop-click close). */
 /* display is gated behind [open] so the native <dialog> stays hidden until opened.
  * An unconditional display here would beat the UA `dialog:not([open]){display:none}`
  * rule (author origin wins over user-agent) and leave the drawer visible on load. */

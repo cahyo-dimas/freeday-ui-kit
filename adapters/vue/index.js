@@ -1,1 +1,1 @@
-export { useFoundry } from './useFoundry.js';
+export { useFreeday } from './useFreeday.js';

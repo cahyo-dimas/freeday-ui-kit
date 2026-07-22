@@ -1,4 +1,4 @@
-/* Foundry — App bar (standalone top bar: brand · actions · spacer).
+/* Freeday — App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;
  * sticky / elevated / dense / coloured via modifiers. Pure CSS. */
 .fdy-appbar{display:flex;align-items:center;gap:var(--space-3);height:var(--space-16);padding:0 var(--space-4);background:var(--color-surface);color:var(--color-text);border-bottom:var(--bw) solid var(--color-border);}

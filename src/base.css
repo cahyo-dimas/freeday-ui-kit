@@ -1,4 +1,4 @@
-/* Foundry base layer — reset ringan + default via token */
+/* Freeday base layer — reset ringan + default via token */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {

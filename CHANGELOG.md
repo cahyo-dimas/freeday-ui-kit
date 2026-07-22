@@ -74,11 +74,11 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [0.9.1] — 2026-07-22
 ### Added
-- **Adapter React** (`foundry/react`) — hook `useFoundry(rootRef?)` yang meng-*hydrate* enhancer
+- **Adapter React** (`freeday/react`) — hook `useFreeday(rootRef?)` yang meng-*hydrate* enhancer
   di subtree pada mount + tiap commit (idempotent). Tipe `event.detail` di
   `adapters/react/index.d.ts`. Contoh jalan `examples/react-faktur/` (Vite + React 19 + TS).
-- **Interop Blazor** (`foundry/blazor`, `adapters/blazor/foundry-blazor.js`) — script klasik yang
-  mendaftarkan `window.FoundryBlazor` dengan `initAll` / `on` / `off` / `toast` / `toggleTheme`.
+- **Interop Blazor** (`freeday/blazor`, `adapters/blazor/freeday-blazor.js`) — script klasik yang
+  mendaftarkan `window.FreedayBlazor` dengan `initAll` / `on` / `off` / `toast` / `toggleTheme`.
   `on(el, event, dotNetRef, method)` meneruskan detail (JSON-safe) ke method `[JSInvokable]` C#.
   Contoh jalan `examples/blazor-faktur/` (Blazor WASM, .NET 10, code-behind `.razor` + `.razor.cs`).
 - Ketiga adapter (Vue/React/Blazor) diverifikasi headless dengan layar faktur yang sama:
@@ -89,7 +89,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [0.9.0] — 2026-07-22
 ### Added
-- **Adapter Vue 3** (`foundry/vue`) — composable `useFoundry(rootRef?)` yang meng-*hydrate*
+- **Adapter Vue 3** (`freeday/vue`) — composable `useFreeday(rootRef?)` yang meng-*hydrate*
   semua enhancer di subtree komponen saat mount + tiap update (idempotent). Tipis: enhancer
   tetap sumber kebenaran, event `fdy-*` mengalir lewat `v-on` native. Tipe `event.detail`
   disertakan (`FdyCascadeChangeDetail`, dst) di `adapters/vue/index.d.ts`.
@@ -103,23 +103,23 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [0.8.1] — 2026-07-22
 ### Added
-- **Form validation** (`foundry-form.js`, `[data-fdy-validate]`) — Constraint Validation
+- **Form validation** (`freeday-form.js`, `[data-fdy-validate]`) — Constraint Validation
   API di-wire ke error inline aksesibel: `aria-invalid` + pesan ter-`aria-describedby`,
   fokus ke field invalid pertama saat submit, re-validasi live tiap blur/input. Pesan
   custom `data-fdy-msg-*`, cocok antar-field `data-fdy-match`. Event `fdy-form-invalid`/
-  `fdy-form-valid`, `window.FoundryForm`.
-- **Password reveal + input mask** (`foundry-mask.js`) — `[data-fdy-password]` tambah
+  `fdy-form-valid`, `window.FreedayForm`.
+- **Password reveal + input mask** (`freeday-mask.js`) — `[data-fdy-password]` tambah
   toggle tampil/sembunyi (memakai ulang chrome tombol input-group); `[data-fdy-mask]`
   format saat mengetik (`#` digit, `A` huruf, `*` alnum, sisanya literal), raw value di
-  `dataset.fdyRaw` + event `fdy-mask`. `window.FoundryMask`.
-- **Cascade select** (`cascade.css` + `foundry-cascade.js`, `[data-fdy-cascade]`) —
+  `dataset.fdyRaw` + event `fdy-mask`. `window.FreedayMask`.
+- **Cascade select** (`cascade.css` + `freeday-cascade.js`, `[data-fdy-cascade]`) —
   pemilih hierarki drill-down dari `<ul>` bersarang; cabang membuka level berikut, daun
   memilih (nilai = jalur lengkap), back/crumb + keyboard penuh. Event `fdy-cascade-change`,
-  `window.FoundryCascade`.
-- **Chip choice/filter** (`chip.css` + `foundry-chip.js`) — chip interaktif
+  `window.FreedayCascade`.
+- **Chip choice/filter** (`chip.css` + `freeday-chip.js`) — chip interaktif
   (`fdy-chip--choice` / `fdy-chip--filter`, `<button aria-pressed>`) dalam grup
   `[data-fdy-chips]` (`data-single` = pilih-satu), plus wiring hapus untuk
-  `.fdy-chip__remove`. Event `fdy-chip-change` / `fdy-chip-remove`, `window.FoundryChip`.
+  `.fdy-chip__remove`. Event `fdy-chip-change` / `fdy-chip-remove`, `window.FreedayChip`.
 ### Changed
 - `.fdy-input`/`.fdy-textarea` kini juga menampilkan border error lewat
   `aria-invalid="true"` (bukan cuma kelas `--error`), jadi enhancer cukup toggle satu
@@ -127,11 +127,11 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [0.8.0] — 2026-07-22
 ### Added
-- **Installable sebagai paket GitHub.** `npm i github:cahyo-dimas/foundry-ui-kit#v0.8.0`.
+- **Installable sebagai paket GitHub.** `npm i github:cahyo-dimas/freeday-ui-kit#v0.8.0`.
   `package.json` kini punya `exports`, `files`, `sideEffects`. Jalur import:
-  `foundry/css` (token+komponen), `foundry` (semua enhancer), `foundry/tokens`,
-  `foundry/css/components`, `foundry/enhancers/<nama>`.
-- `dist/foundry.bundle.css` — token + komponen dalam satu file (satu import, anti-footgun
+  `freeday/css` (token+komponen), `freeday` (semua enhancer), `freeday/tokens`,
+  `freeday/css/components`, `freeday/enhancers/<nama>`.
+- `dist/freeday.bundle.css` — token + komponen dalam satu file (satu import, anti-footgun
   "lupa token").
 - Skrip rilis: lifecycle `version` build-ulang + `git add dist`; `prepack` build-ulang.
 ### Changed
@@ -139,9 +139,9 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [0.7.0] — 2026-07-22
 ### Added
-- **Time picker** (`foundry-timepicker.js`, `[data-fdy-timepicker]`) — trigger + popup daftar
+- **Time picker** (`freeday-timepicker.js`, `[data-fdy-timepicker]`) — trigger + popup daftar
   waktu (listbox WAI-ARIA), 24 jam, `data-step`/`data-min`/`data-max`, keyboard penuh.
-- **Datetime picker** (`foundry-datetime.js`, `[data-fdy-datetimepicker]`) — komposisi date +
+- **Datetime picker** (`freeday-datetime.js`, `[data-fdy-datetimepicker]`) — komposisi date +
   time, satu event `fdy-datetime-change` (`YYYY-MM-DDTHH:MM`).
 - **Konvensi varian ikon**: `data-fdy-no-icon` / `<template data-fdy-icon>` di date/time/datetime
   picker; `fdy-combo--no-icon` + `.fdy-combo__icon` di select; contoh ikon depan di input-group.

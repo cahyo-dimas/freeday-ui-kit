@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
-import 'foundry/css'; // tokens + components in one file
-import 'foundry';     // side-effect: registers every window.Foundry* enhancer
+import 'freeday/css'; // tokens + components in one file
+import 'freeday';     // side-effect: registers every window.Freeday* enhancer
 import App from './App.vue';
 
 createApp(App).mount('#app');

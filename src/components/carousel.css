@@ -1,4 +1,4 @@
-/* Foundry — Carousel (scroll-snap track + arrows + dots). Enhanced by foundry-carousel.js. */
+/* Freeday — Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
 .fdy-carousel{position:relative;}
 .fdy-carousel__viewport{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
 .fdy-carousel__viewport::-webkit-scrollbar{display:none;}

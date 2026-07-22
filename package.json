@@ -1,7 +1,7 @@
 {
-  "name": "foundry",
+  "name": "freeday",
   "version": "0.9.6",
-  "description": "Foundry — token-driven, framework-agnostic UI KIT (design source-of-truth).",
+  "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "UNLICENSED",
   "private": true,
@@ -16,11 +16,11 @@
     "CHANGELOG.md"
   ],
   "exports": {
-    ".": "./dist/foundry.js",
-    "./css": "./dist/foundry.bundle.css",
-    "./css/components": "./dist/foundry.css",
-    "./tokens": "./dist/foundry.tokens.css",
-    "./enhancers/*": "./dist/foundry-*.js",
+    ".": "./dist/freeday.js",
+    "./css": "./dist/freeday.bundle.css",
+    "./css/components": "./dist/freeday.css",
+    "./tokens": "./dist/freeday.tokens.css",
+    "./enhancers/*": "./dist/freeday-*.js",
     "./vue": {
       "types": "./adapters/vue/index.d.ts",
       "default": "./adapters/vue/index.js"
@@ -29,7 +29,7 @@
       "types": "./adapters/react/index.d.ts",
       "default": "./adapters/react/index.js"
     },
-    "./blazor": "./adapters/blazor/foundry-blazor.js",
+    "./blazor": "./adapters/blazor/freeday-blazor.js",
     "./package.json": "./package.json"
   },
   "peerDependencies": {

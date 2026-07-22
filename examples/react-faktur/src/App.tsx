@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { useFoundry } from 'foundry/react';
+import { useFreeday } from 'freeday/react';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
   FdyChangeDetail,
   FdyMaskDetail,
-} from 'foundry/react';
+} from 'freeday/react';
 import './app.css';
 
 interface Faktur {
@@ -29,7 +29,7 @@ const rupiah = (n: number): string =>
 
 const items = [
   { desc: 'Jasa implementasi SAP B1', qty: 1, harga: 18_000_000 },
-  { desc: 'Lisensi Foundry (tahunan)', qty: 3, harga: 1_200_000 },
+  { desc: 'Lisensi Freeday (tahunan)', qty: 3, harga: 1_200_000 },
   { desc: 'Pelatihan tim (per sesi)', qty: 2, harga: 850_000 },
 ];
 const total = items.reduce((s, it) => s + it.qty * it.harga, 0);
@@ -38,7 +38,7 @@ const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertund
 export function App(): ReactElement {
   const root = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  useFoundry(root); // hydrate [data-fdy-*] in this subtree on mount + every commit
+  useFreeday(root); // hydrate [data-fdy-*] in this subtree on mount + every commit
 
   // Values that arrive via fdy-* events live in a ref (the enhancers own the DOM).
   const live = useRef({ kategori: '', kategoriPath: '', jatuhTempo: dueDefault(), status: 'draft', poRaw: '' });
@@ -68,8 +68,8 @@ export function App(): ReactElement {
         status: live.current.status,
       };
       setSubmitted(rec);
-      (window as unknown as { Foundry?: { toast: (o: Record<string, unknown>) => void } })
-        .Foundry?.toast({ variant: 'success', title: 'Faktur tersimpan', message: `${rec.pelanggan} · ${rupiah(total)}` });
+      (window as unknown as { Freeday?: { toast: (o: Record<string, unknown>) => void } })
+        .Freeday?.toast({ variant: 'success', title: 'Faktur tersimpan', message: `${rec.pelanggan} · ${rupiah(total)}` });
     };
     el.addEventListener('fdy-cascade-change', onCascade);
     el.addEventListener('fdy-datepicker-change', onDate);
@@ -93,7 +93,7 @@ export function App(): ReactElement {
   return (
     <div className="fdy-app" ref={root}>
       <aside className="fdy-app__sidebar" aria-label="Navigasi">
-        <div className="fdy-app__brand">Foundry × React</div>
+        <div className="fdy-app__brand">Freeday × React</div>
         <nav className="fdy-nav" aria-label="Menu">
           <a className="fdy-nav__item" href="#" aria-current="page">Faktur</a>
           <a className="fdy-nav__item" href="#">Pelanggan</a>
@@ -171,7 +171,7 @@ export function App(): ReactElement {
 
                 <div className="faktur-actions">
                   <button className="fdy-btn" type="submit">Simpan faktur</button>
-                  <span className="fdy-help">Bukti v0.9: markup React → enhancer Foundry lewat <code>useFoundry()</code>.</span>
+                  <span className="fdy-help">Bukti v0.9: markup React → enhancer Freeday lewat <code>useFreeday()</code>.</span>
                 </div>
               </form>
             </div>

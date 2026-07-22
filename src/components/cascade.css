@@ -1,5 +1,5 @@
-/* Foundry — Cascade select (hierarchical drill-down picker).
- * Built by foundry-cascade.js from a [data-fdy-cascade] wrapper whose hidden
+/* Freeday — Cascade select (hierarchical drill-down picker).
+ * Built by freeday-cascade.js from a [data-fdy-cascade] wrapper whose hidden
  * nested <ul> is the data model: a <li> with a child <ul> is a branch, one
  * without is a selectable leaf. The popover shows one level at a time — branches
  * drill in, a back control ascends, a leaf selects (value = full path).

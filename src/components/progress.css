@@ -1,4 +1,4 @@
-/* Foundry — Progress */
+/* Freeday — Progress */
 .fdy-progress{height:.5rem;border-radius:var(--radius-full);background:var(--color-surface-3);overflow:hidden;}
 .fdy-progress__bar{height:100%;border-radius:inherit;background:var(--color-primary);transition:width var(--dur-base) var(--ease-standard);}
 .fdy-progress--indeterminate{position:relative;}

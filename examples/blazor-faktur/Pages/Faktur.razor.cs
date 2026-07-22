@@ -2,11 +2,11 @@ using System.Globalization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace FoundryBlazorFaktur.Pages;
+namespace FreedayBlazorFaktur.Pages;
 
-// Code-behind for the faktur screen. The Foundry enhancers own the DOM widgets
+// Code-behind for the faktur screen. The Freeday enhancers own the DOM widgets
 // (cascade, combo, date picker, mask, form validation); this class only bridges
-// their fdy-* events to Blazor state via the foundry-blazor.js interop module.
+// their fdy-* events to Blazor state via the freeday-blazor.js interop module.
 public partial class Faktur : ComponentBase, IAsyncDisposable
 {
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -32,7 +32,7 @@ public partial class Faktur : ComponentBase, IAsyncDisposable
     private static readonly (string Desc, int Qty, long Harga)[] Items =
     {
         ("Jasa implementasi SAP B1", 1, 18_000_000),
-        ("Lisensi Foundry (tahunan)", 3, 1_200_000),
+        ("Lisensi Freeday (tahunan)", 3, 1_200_000),
         ("Pelatihan tim (per sesi)", 2, 850_000),
     };
     private static long Total => Items.Sum(i => (long)i.Qty * i.Harga);
@@ -47,18 +47,18 @@ public partial class Faktur : ComponentBase, IAsyncDisposable
 
     protected override void OnInitialized() => _jatuhTempo = _dueDefault;
 
-    private void Noop() { } // form submit is gated by foundry-form -> fdy-form-valid
+    private void Noop() { } // form submit is gated by freeday-form -> fdy-form-valid
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        await JS.InvokeVoidAsync("FoundryBlazor.initAll", _root); // hydrate enhancers over Blazor-rendered markup
+        await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root); // hydrate enhancers over Blazor-rendered markup
         _self = DotNetObjectReference.Create(this);
-        _tokens.Add(await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade)));
-        _tokens.Add(await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-datepicker-change", _self, nameof(OnDate)));
-        _tokens.Add(await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-change", _self, nameof(OnStatus)));
-        _tokens.Add(await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-mask", _self, nameof(OnPo)));
-        _tokens.Add(await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-form-valid", _self, nameof(OnValid)));
+        _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade)));
+        _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-datepicker-change", _self, nameof(OnDate)));
+        _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-change", _self, nameof(OnStatus)));
+        _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-mask", _self, nameof(OnPo)));
+        _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-form-valid", _self, nameof(OnValid)));
     }
 
     [JSInvokable] public void OnCascade(CascadeDetail d) { _kategori = d.Value; _kategoriPath = d.Path; StateHasChanged(); }
@@ -71,7 +71,7 @@ public partial class Faktur : ComponentBase, IAsyncDisposable
     {
         _submitted = new FakturData(_pelanggan, _email, _po, _kategori, _kategoriPath, _jatuhTempo, _status);
         StateHasChanged();
-        await JS.InvokeVoidAsync("FoundryBlazor.toast", new
+        await JS.InvokeVoidAsync("FreedayBlazor.toast", new
         {
             variant = "success",
             title = "Faktur tersimpan",
@@ -79,13 +79,13 @@ public partial class Faktur : ComponentBase, IAsyncDisposable
         });
     }
 
-    private async Task ToggleThemeAsync() => await JS.InvokeVoidAsync("FoundryBlazor.toggleTheme");
+    private async Task ToggleThemeAsync() => await JS.InvokeVoidAsync("FreedayBlazor.toggleTheme");
 
     public async ValueTask DisposeAsync()
     {
         foreach (var t in _tokens)
         {
-            try { await JS.InvokeVoidAsync("FoundryBlazor.off", t); } catch (JSDisconnectedException) { }
+            try { await JS.InvokeVoidAsync("FreedayBlazor.off", t); } catch (JSDisconnectedException) { }
         }
         _self?.Dispose();
     }

@@ -1,16 +1,16 @@
 import type { Ref } from 'vue';
 
-export interface UseFoundryReturn {
-  /** Manually re-run all Foundry enhancers over the scoped subtree. */
+export interface UseFreedayReturn {
+  /** Manually re-run all Freeday enhancers over the scoped subtree. */
   rehydrate: () => void;
 }
 
 /**
- * Auto-initialise Foundry enhancers over a component's subtree on mount and
+ * Auto-initialise Freeday enhancers over a component's subtree on mount and
  * after every update. Pass a template ref to scope the work; omit it to scan
  * the whole document.
  */
-export declare function useFoundry(rootRef?: Ref<HTMLElement | null>): UseFoundryReturn;
+export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreedayReturn;
 
 /** `event.detail` shapes for the bubbling `fdy-*` CustomEvents. */
 export interface FdyChangeDetail { value: string }

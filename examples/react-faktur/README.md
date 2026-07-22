@@ -1,14 +1,14 @@
-# Foundry × React — contoh Faktur
+# Freeday × React — contoh Faktur
 
-Bukti **v0.9**: layar faktur nyata yang memakai komponen Foundry di React lewat hook
-`foundry/react`. Pola sama dengan contoh Vue — markup yang dirender React di-*enhance* oleh
-enhancer Foundry, dan event `fdy-*` (yang bubbling) didengar di root lalu memperbarui state React.
+Bukti **v0.9**: layar faktur nyata yang memakai komponen Freeday di React lewat hook
+`freeday/react`. Pola sama dengan contoh Vue — markup yang dirender React di-*enhance* oleh
+enhancer Freeday, dan event `fdy-*` (yang bubbling) didengar di root lalu memperbarui state React.
 
 ## Jalankan
 
 ```bash
 cd examples/react-faktur
-npm install     # menautkan `foundry` dari root repo (file:../..) + React/Vite
+npm install     # menautkan `freeday` dari root repo (file:../..) + React/Vite
 npm run dev     # buka URL yang ditampilkan Vite
 ```
 
@@ -17,9 +17,9 @@ npm run dev     # buka URL yang ditampilkan Vite
 ## Pola inti
 
 ```tsx
-import { useFoundry } from 'foundry/react';
+import { useFreeday } from 'freeday/react';
 const root = useRef<HTMLDivElement>(null);
-useFoundry(root);            // hydrate [data-fdy-*] di subtree ini, mount + tiap commit
+useFreeday(root);            // hydrate [data-fdy-*] di subtree ini, mount + tiap commit
 
 // Event fdy-* bubbling → satu set listener di root cukup:
 useEffect(() => {

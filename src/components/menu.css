@@ -1,4 +1,4 @@
-/* Foundry — Menu (action popup) + Split button. Enhanced by foundry-menu.js. */
+/* Freeday — Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
 .fdy-menu-wrap{position:relative;display:inline-flex;}
 .fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
 .fdy-menu[hidden]{display:none;}

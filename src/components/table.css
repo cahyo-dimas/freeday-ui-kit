@@ -1,4 +1,4 @@
-/* Foundry — Table */
+/* Freeday — Table */
 .fdy-table-wrap{overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
 .fdy-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
 .fdy-table caption{text-align:left;padding:var(--space-3) var(--space-4);font-weight:var(--weight-semibold);color:var(--color-text);}

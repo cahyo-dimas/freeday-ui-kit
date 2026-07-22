@@ -16,4 +16,4 @@ yarn-error.log*
 .claude/
 
 # NOTE: dist/ is intentionally committed so projects can import
-# foundry.tokens.css / foundry.css directly without running a build.
+# freeday.tokens.css / freeday.css directly without running a build.

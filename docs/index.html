@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foundry — Design System</title>
+<title>Freeday — Design System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../dist/foundry.tokens.css">
-<link rel="stylesheet" href="../dist/foundry.css">
+<link rel="stylesheet" href="../dist/freeday.tokens.css">
+<link rel="stylesheet" href="../dist/freeday.css">
 <style>
   html { scroll-behavior: smooth; scroll-padding-top: calc(var(--space-16) + var(--space-3)); }
   body { margin: 0; }
@@ -139,7 +139,7 @@
 <a class="fdy-skip" href="#main">Lewati ke konten utama</a>
 <div class="fdy-app">
   <aside class="fdy-app__sidebar" aria-label="Navigasi komponen">
-    <div class="fdy-app__brand">Foundry</div>
+    <div class="fdy-app__brand">Freeday</div>
     <div class="doc-search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>
       <input type="search" id="nav-search" placeholder="Cari komponen…" aria-label="Cari komponen" autocomplete="off">
@@ -265,14 +265,14 @@
         <div>
           <p class="doc-eyebrow">Design System · v0.9.6</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
-          <p class="doc-hero__lead" data-i18n="hero.lead">Foundry — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
+          <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/foundry-ui-kit#v0.9.6</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v0.9.6</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
-        <aside class="doc-showcase" aria-label="Contoh komponen Foundry">
+        <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
           <div class="doc-showcase__head">
             <span class="doc-showcase__label" data-i18n="sc.invoice">Faktur · INV-1042</span>
             <span class="fdy-badge fdy-badge--success" data-i18n="sc.paid">Lunas</span>
@@ -291,7 +291,7 @@
       </div>
     </section>
 
-    <div class="doc-stats" role="list" aria-label="Ringkasan Foundry">
+    <div class="doc-stats" role="list" aria-label="Ringkasan Freeday">
       <div class="doc-stat" role="listitem"><b>44</b><span data-i18n="stat.components">komponen</span></div>
       <div class="doc-stat" role="listitem"><b>22</b><span data-i18n="stat.enhancers">enhancer · 0-dep</span></div>
       <div class="doc-stat" role="listitem"><b>3</b><span data-i18n="stat.adapters">adapter framework</span></div>
@@ -303,20 +303,20 @@
       <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-fw">
-          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/vue-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">foundry/vue</span>
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/vue-faktur" target="_blank" rel="noopener">
+            <span class="doc-fw__k">freeday/vue</span>
             <h3>Vue 3</h3>
-            <p data-i18n="fw.vue">Composable <code>useFoundry()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>.</p>
+            <p data-i18n="fw.vue">Composable <code>useFreeday()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>.</p>
           </a>
-          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/react-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">foundry/react</span>
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/react-faktur" target="_blank" rel="noopener">
+            <span class="doc-fw__k">freeday/react</span>
             <h3>React 19</h3>
-            <p data-i18n="fw.react">Hook <code>useFoundry()</code> — event <code>fdy-*</code> bubbling didengar di root.</p>
+            <p data-i18n="fw.react">Hook <code>useFreeday()</code> — event <code>fdy-*</code> bubbling didengar di root.</p>
           </a>
-          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/foundry-ui-kit/tree/main/examples/blazor-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">foundry/blazor</span>
+          <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/blazor-faktur" target="_blank" rel="noopener">
+            <span class="doc-fw__k">freeday/blazor</span>
             <h3>Blazor WASM</h3>
-            <p data-i18n="fw.blazor">Interop <code>window.FoundryBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
+            <p data-i18n="fw.blazor">Interop <code>window.FreedayBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
           </a>
         </div>
       </div>
@@ -471,7 +471,7 @@
 
     <section class="doc-section" id="sec-menu">
       <h2>Menu &amp; Split button</h2>
-      <p class="doc-desc">Popup aksi (pola menu-button WAI-ARIA APG) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = aksi utama + toggle menu. Butuh <code>foundry-menu.js</code>.</p>
+      <p class="doc-desc">Popup aksi (pola menu-button WAI-ARIA APG) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = aksi utama + toggle menu. Butuh <code>freeday-menu.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-menu-wrap" data-fdy-menu>
           <button class="fdy-btn fdy-btn--ghost" aria-haspopup="menu" aria-expanded="false">Tindakan <span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span></button>
@@ -546,7 +546,7 @@
 
     <section class="doc-section" id="sec-cfl">
       <h2>Choose-from-list</h2>
-      <p class="doc-desc">Field read-only yang di-<em>backing</em> master data (pelanggan, item, gudang…). Ikon kaca pembesar di kanan membuka dialog pencari; baris yang dipilih mengisi field (kode + nama sekaligus). Nilai selalu <strong>dipilih</strong>, tak pernah diketik. Butuh <code>foundry-cfl.js</code>.</p>
+      <p class="doc-desc">Field read-only yang di-<em>backing</em> master data (pelanggan, item, gudang…). Ikon kaca pembesar di kanan membuka dialog pencari; baris yang dipilih mengisi field (kode + nama sekaligus). Nilai selalu <strong>dipilih</strong>, tak pernah diketik. Butuh <code>freeday-cfl.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label" id="lbl-cust">Kode pelanggan</span>
@@ -646,7 +646,7 @@
 
     <section class="doc-section" id="sec-datepicker">
       <h2>Date picker</h2>
-      <p class="doc-desc">Trigger bergaya input + kalender popover — konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>foundry-datepicker.js</code>.</p>
+      <p class="doc-desc">Trigger bergaya input + kalender popover — konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>freeday-datepicker.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label">Tanggal faktur</span>
@@ -675,7 +675,7 @@
 
     <section class="doc-section" id="sec-timepicker">
       <h2>Time picker</h2>
-      <p class="doc-desc">Trigger bergaya input + popup daftar waktu (pola listbox WAI-ARIA). Format 24 jam <code>HH:MM</code>; rentang &amp; langkah diatur lewat <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default tiap 30 menit). Keyboard: <kbd class="fdy-kbd">↓</kbd> buka, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> pindah, <kbd class="fdy-kbd">Home</kbd>/<kbd class="fdy-kbd">End</kbd>, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>foundry-timepicker.js</code>.</p>
+      <p class="doc-desc">Trigger bergaya input + popup daftar waktu (pola listbox WAI-ARIA). Format 24 jam <code>HH:MM</code>; rentang &amp; langkah diatur lewat <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default tiap 30 menit). Keyboard: <kbd class="fdy-kbd">↓</kbd> buka, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> pindah, <kbd class="fdy-kbd">Home</kbd>/<kbd class="fdy-kbd">End</kbd>, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>freeday-timepicker.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field"><span class="fdy-label">Jam mulai</span>
           <div data-fdy-timepicker data-value="09:00" data-label="Jam mulai"></div></div>
@@ -695,7 +695,7 @@
 
     <section class="doc-section" id="sec-datetimepicker">
       <h2>Datetime picker</h2>
-      <p class="doc-desc">Komposisi <strong>date picker + time picker</strong> jadi satu nilai — reuse dua komponen yang sudah ada, bukan popover monolitik. Composer <code>foundry-datetime.js</code> menyatukan keduanya dan memancarkan satu event <code>fdy-datetime-change</code> (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Varian ikon diwarisi dari tiap picker anak.</p>
+      <p class="doc-desc">Komposisi <strong>date picker + time picker</strong> jadi satu nilai — reuse dua komponen yang sudah ada, bukan popover monolitik. Composer <code>freeday-datetime.js</code> menyatukan keduanya dan memancarkan satu event <code>fdy-datetime-change</code> (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Varian ikon diwarisi dari tiap picker anak.</p>
       <div class="doc-demo doc-demo--stack" style="gap:var(--space-6)">
         <div class="fdy-field"><span class="fdy-label">Jadwal kirim faktur</span>
           <div data-fdy-datetimepicker data-label="Jadwal kirim">
@@ -712,7 +712,7 @@
 
     <section class="doc-section" id="sec-upload">
       <h2>File upload</h2>
-      <p class="doc-desc">Drop target yang juga membuka dialog berkas saat klik / Enter. State eksplisit — idle, drag-over, mengunggah (progress), selesai, error — karena "tidak terjadi apa-apa" adalah feedback unggah terburuk. Butuh <code>foundry-upload.js</code>. (Demo ini mensimulasikan progress; di app nyata, sambungkan event <code>fdy-upload-add</code> ke fungsi unggahmu.)</p>
+      <p class="doc-desc">Drop target yang juga membuka dialog berkas saat klik / Enter. State eksplisit — idle, drag-over, mengunggah (progress), selesai, error — karena "tidak terjadi apa-apa" adalah feedback unggah terburuk. Butuh <code>freeday-upload.js</code>. (Demo ini mensimulasikan progress; di app nyata, sambungkan event <code>fdy-upload-add</code> ke fungsi unggahmu.)</p>
       <div class="doc-demo doc-demo--col" style="max-width:34rem">
         <div class="fdy-dropzone" data-fdy-dropzone data-max-size="10485760" data-filelist="#dz-list" data-fdy-upload-simulate role="button" tabindex="0" aria-label="Unggah berkas — seret ke sini atau tekan Enter untuk memilih">
           <span class="fdy-dropzone__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg></span>
@@ -741,7 +741,7 @@
 
     <section class="doc-section" id="sec-stepper">
       <h2>Stepper / Wizard</h2>
-      <p class="doc-desc">Alur multi-langkah — indikator progres (nomor → centang), panel per langkah, tombol Kembali/Lanjut. Langkah yang sudah dilewati bisa diklik untuk ditinjau (linear, tak bisa lompat maju). Butuh <code>foundry-stepper.js</code>.</p>
+      <p class="doc-desc">Alur multi-langkah — indikator progres (nomor → centang), panel per langkah, tombol Kembali/Lanjut. Langkah yang sudah dilewati bisa diklik untuk ditinjau (linear, tak bisa lompat maju). Butuh <code>freeday-stepper.js</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div data-fdy-stepper>
           <ol class="fdy-stepper">
@@ -770,7 +770,7 @@
 
     <section class="doc-section" id="sec-slider">
       <h2>Slider</h2>
-      <p class="doc-desc">Native <code>&lt;input type="range"&gt;</code> di-tema lewat <code>accent-color</code> — keyboard &amp; ARIA bawaan, fill &amp; thumb otomatis. <code>foundry-slider.js</code> cuma menyalin nilai ke <code>&lt;output&gt;</code>. Warna: primary/accent/danger.</p>
+      <p class="doc-desc">Native <code>&lt;input type="range"&gt;</code> di-tema lewat <code>accent-color</code> — keyboard &amp; ARIA bawaan, fill &amp; thumb otomatis. <code>freeday-slider.js</code> cuma menyalin nilai ke <code>&lt;output&gt;</code>. Warna: primary/accent/danger.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-8)">
         <div class="fdy-slider-field">
           <div class="fdy-slider-field__head">
@@ -793,7 +793,7 @@
 
     <section class="doc-section" id="sec-rating">
       <h2>Rating</h2>
-      <p class="doc-desc">Bintang — grup radio native (panah kiri/kanan untuk memilih, ter-asosiasi form). Terisi vs kosong dibedakan <em>isi vs garis</em> (bukan warna saja). Ada varian read-only. Butuh <code>foundry-rating.js</code>.</p>
+      <p class="doc-desc">Bintang — grup radio native (panah kiri/kanan untuk memilih, ter-asosiasi form). Terisi vs kosong dibedakan <em>isi vs garis</em> (bukan warna saja). Ada varian read-only. Butuh <code>freeday-rating.js</code>.</p>
       <div class="doc-demo" style="align-items:center;gap:var(--space-8)">
         <div class="fdy-rating" data-fdy-rating role="radiogroup" aria-label="Beri nilai layanan">
           <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">1 bintang</span></label>
@@ -814,7 +814,7 @@
 
     <section class="doc-section" id="sec-autocomplete">
       <h2>Autocomplete</h2>
-      <p class="doc-desc">Combobox editable — ketik untuk memfilter saran (pola APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Butuh <code>foundry-autocomplete.js</code>. (Opsi statis di-filter di klien; di app nyata, fetch/filter server-side.)</p>
+      <p class="doc-desc">Combobox editable — ketik untuk memfilter saran (pola APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Butuh <code>freeday-autocomplete.js</code>. (Opsi statis di-filter di klien; di app nyata, fetch/filter server-side.)</p>
       <div class="doc-demo" style="align-items:flex-start">
         <div class="fdy-field">
           <label class="fdy-label" for="ac-cust">Pelanggan</label>
@@ -837,7 +837,7 @@
 
     <section class="doc-section" id="sec-cascade">
       <h2>Cascade select</h2>
-      <p class="doc-desc">Pemilih hierarki (drill-down) — model data = <code>&lt;ul&gt;</code> bersarang tersembunyi: <code>&lt;li&gt;</code> dengan anak <code>&lt;ul&gt;</code> adalah cabang, tanpa anak adalah daun. Cabang membuka level berikut, daun memilih (nilai = jalur lengkap). Keyboard: <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> pindah, <kbd class="fdy-kbd">→</kbd>/<kbd class="fdy-kbd">Enter</kbd> masuk cabang / pilih daun, <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">Backspace</kbd> naik level, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>foundry-cascade.js</code>.</p>
+      <p class="doc-desc">Pemilih hierarki (drill-down) — model data = <code>&lt;ul&gt;</code> bersarang tersembunyi: <code>&lt;li&gt;</code> dengan anak <code>&lt;ul&gt;</code> adalah cabang, tanpa anak adalah daun. Cabang membuka level berikut, daun memilih (nilai = jalur lengkap). Keyboard: <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> pindah, <kbd class="fdy-kbd">→</kbd>/<kbd class="fdy-kbd">Enter</kbd> masuk cabang / pilih daun, <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">Backspace</kbd> naik level, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>freeday-cascade.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start">
         <div data-fdy-cascade data-label="Kategori produk" data-placeholder="Pilih kategori" data-value="android" style="max-width:17rem">
           <ul>
@@ -868,7 +868,7 @@
 
     <section class="doc-section" id="sec-mask">
       <h2>Password &amp; mask</h2>
-      <p class="doc-desc">Field kata sandi dengan tombol tampil/sembunyi (<code>data-fdy-password</code> — memakai kembali chrome tombol input-group) dan input ber-format saat mengetik (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> huruf, <code>*</code> alnum; karakter lain jadi literal otomatis). Butuh <code>foundry-mask.js</code>.</p>
+      <p class="doc-desc">Field kata sandi dengan tombol tampil/sembunyi (<code>data-fdy-password</code> — memakai kembali chrome tombol input-group) dan input ber-format saat mengetik (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> huruf, <code>*</code> alnum; karakter lain jadi literal otomatis). Butuh <code>freeday-mask.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start">
         <label class="fdy-field">
           <span class="fdy-label">Kata sandi</span>
@@ -887,7 +887,7 @@
 
     <section class="doc-section" id="sec-form">
       <h2>Form validation</h2>
-      <p class="doc-desc">Validasi native (Constraint Validation API) di-wire ke error inline aksesibel — <code>aria-invalid</code> + pesan ter-<code>aria-describedby</code>, fokus ke field invalid pertama saat submit, lalu re-validasi live tiap blur/input. Pesan custom via <code>data-fdy-msg-*</code>, cocokkan antar-field via <code>data-fdy-match</code>. Coba tekan <strong>Simpan</strong> saat kosong. Butuh <code>foundry-form.js</code>.</p>
+      <p class="doc-desc">Validasi native (Constraint Validation API) di-wire ke error inline aksesibel — <code>aria-invalid</code> + pesan ter-<code>aria-describedby</code>, fokus ke field invalid pertama saat submit, lalu re-validasi live tiap blur/input. Pesan custom via <code>data-fdy-msg-*</code>, cocokkan antar-field via <code>data-fdy-match</code>. Coba tekan <strong>Simpan</strong> saat kosong. Butuh <code>freeday-form.js</code>.</p>
       <div class="doc-demo doc-demo--block" style="max-width:24rem">
         <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-3)">
           <label class="fdy-field" style="max-width:none">
@@ -909,7 +909,7 @@
 
     <section class="doc-section" id="sec-select">
       <h2>Select (combobox)</h2>
-      <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>foundry-select.js</code>. Varian ikon: caret <strong>default</strong>, <strong>tanpa</strong> lewat <code>fdy-combo--no-icon</code>, atau <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> di dalam tombol).</p>
+      <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>freeday-select.js</code>. Varian ikon: caret <strong>default</strong>, <strong>tanpa</strong> lewat <code>fdy-combo--no-icon</code>, atau <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> di dalam tombol).</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label" id="lbl-status">Status faktur (default)</span>
@@ -988,11 +988,11 @@
 
     <section class="doc-section" id="sec-toast">
       <h2>Toast</h2>
-      <p class="doc-desc">Notifikasi sekilas di live-region. Panggil <code>Foundry.toast({variant,title,message})</code>.</p>
+      <p class="doc-desc">Notifikasi sekilas di live-region. Panggil <code>Freeday.toast({variant,title,message})</code>.</p>
       <div class="doc-demo">
-        <button class="fdy-btn" onclick="Foundry.toast({variant:'success',title:'Tersimpan',message:'Faktur INV-1042 berhasil disimpan.'})">Toast sukses</button>
-        <button class="fdy-btn fdy-btn--ghost" onclick="Foundry.toast({variant:'info',title:'Info',message:'Sinkronisasi berjalan di latar belakang.'})">Toast info</button>
-        <button class="fdy-btn fdy-btn--danger" onclick="Foundry.toast({variant:'danger',title:'Gagal',message:'Tidak bisa terhubung ke server.'})">Toast error</button>
+        <button class="fdy-btn" onclick="Freeday.toast({variant:'success',title:'Tersimpan',message:'Faktur INV-1042 berhasil disimpan.'})">Toast sukses</button>
+        <button class="fdy-btn fdy-btn--ghost" onclick="Freeday.toast({variant:'info',title:'Info',message:'Sinkronisasi berjalan di latar belakang.'})">Toast info</button>
+        <button class="fdy-btn fdy-btn--danger" onclick="Freeday.toast({variant:'danger',title:'Gagal',message:'Tidak bisa terhubung ke server.'})">Toast error</button>
       </div>
     </section>
 
@@ -1009,7 +1009,7 @@
 
     <section class="doc-section" id="sec-tabs">
       <h2>Tabs</h2>
-      <p class="doc-desc">Pola APG — panah ←/→, Home/End, roving tabindex. Butuh <code>foundry-tabs.js</code>.</p>
+      <p class="doc-desc">Pola APG — panah ←/→, Home/End, roving tabindex. Butuh <code>freeday-tabs.js</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-tabs" data-fdy-tabs>
           <div class="fdy-tabs__list" role="tablist" aria-label="Detail faktur">
@@ -1076,7 +1076,7 @@
 
     <section class="doc-section" id="sec-datatable">
       <h2>Data table</h2>
-      <p class="doc-desc">Interaktif: cari global, urutkan (klik judul kolom), <strong>filter per kolom</strong> (ikon corong — teks <em>berisi</em>, enum <em>checklist</em>, angka <em>rentang</em>), pilih baris → <strong>bar aksi massal</strong>, paginasi. Butuh <code>foundry-table.js</code>.</p>
+      <p class="doc-desc">Interaktif: cari global, urutkan (klik judul kolom), <strong>filter per kolom</strong> (ikon corong — teks <em>berisi</em>, enum <em>checklist</em>, angka <em>rentang</em>), pilih baris → <strong>bar aksi massal</strong>, paginasi. Butuh <code>freeday-table.js</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-datatable" data-fdy-table data-page-size="5">
           <div class="fdy-table-toolbar">
@@ -1141,7 +1141,7 @@
 
     <section class="doc-section" id="sec-charts">
       <h2>Charts</h2>
-      <p class="doc-desc">Sparkline, bar, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>, data lewat <code>data-values</code>. Butuh <code>foundry-chart.js</code>. Warna dari token; tiap chart <code>role="img"</code> + <code>aria-label</code>, donut/bar punya legenda/label (bukan warna saja).</p>
+      <p class="doc-desc">Sparkline, bar, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>, data lewat <code>data-values</code>. Butuh <code>freeday-chart.js</code>. Warna dari token; tiap chart <code>role="img"</code> + <code>aria-label</code>, donut/bar punya legenda/label (bukan warna saja).</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Pendapatan</h3>
@@ -1276,7 +1276,7 @@
 
     <section class="doc-section" id="sec-chip">
       <h2>Chip</h2>
-      <p class="doc-desc">Tiga peran: <strong>default / hapus</strong> (tag statis atau filter aktif yang bisa dihapus), <strong>choice</strong> (toggle pilih), dan <strong>filter</strong> (toggle dengan centang). Yang interaktif = <code>&lt;button aria-pressed&gt;</code> dikelola <code>foundry-chip.js</code> — bungkus dalam <code>data-fdy-chips</code>, tambah <code>data-single</code> untuk pilih-satu.</p>
+      <p class="doc-desc">Tiga peran: <strong>default / hapus</strong> (tag statis atau filter aktif yang bisa dihapus), <strong>choice</strong> (toggle pilih), dan <strong>filter</strong> (toggle dengan centang). Yang interaktif = <code>&lt;button aria-pressed&gt;</code> dikelola <code>freeday-chip.js</code> — bungkus dalam <code>data-fdy-chips</code>, tambah <code>data-single</code> untuk pilih-satu.</p>
       <div class="doc-demo doc-demo--stack" style="gap:var(--space-5);align-items:flex-start">
         <div class="fdy-chips">
           <span class="fdy-chip">Semua</span>
@@ -1332,7 +1332,7 @@
 
     <section class="doc-section" id="sec-carousel">
       <h2>Carousel</h2>
-      <p class="doc-desc">Scroll-snap + panah + titik indikator. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe di sentuh, autoplay opsional (<code>data-fdy-autoplay</code>, jeda saat hover/fokus). Butuh <code>foundry-carousel.js</code>.</p>
+      <p class="doc-desc">Scroll-snap + panah + titik indikator. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe di sentuh, autoplay opsional (<code>data-fdy-autoplay</code>, jeda saat hover/fokus). Butuh <code>freeday-carousel.js</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-carousel" data-fdy-carousel role="region" aria-roledescription="carousel" aria-label="Sorotan" tabindex="0">
           <button class="fdy-carousel__arrow fdy-carousel__arrow--prev" aria-label="Sebelumnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
@@ -1392,7 +1392,7 @@
       <div class="doc-demo doc-demo--block" style="padding:0;overflow:hidden">
         <div class="fdy-appbar fdy-appbar--elevated">
           <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Buka menu" data-fdy-drawer="drawer-left"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg></span></button>
-          <span class="fdy-appbar__brand">Foundry</span>
+          <span class="fdy-appbar__brand">Freeday</span>
           <span class="fdy-appbar__spacer"></span>
           <div class="fdy-appbar__actions">
             <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Cari"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span></button>
@@ -1456,7 +1456,7 @@
 
     <section class="doc-section" id="sec-drawer">
       <h2>Drawer</h2>
-      <p class="doc-desc">Panel samping temporary (overlay + backdrop) di atas <code>&lt;dialog&gt;</code> native — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, dan kembalikan-fokus gratis. Kiri atau kanan. Butuh <code>foundry-drawer.js</code>. (Tombol hamburger di App bar di atas juga membukanya.)</p>
+      <p class="doc-desc">Panel samping temporary (overlay + backdrop) di atas <code>&lt;dialog&gt;</code> native — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, dan kembalikan-fokus gratis. Kiri atau kanan. Butuh <code>freeday-drawer.js</code>. (Tombol hamburger di App bar di atas juga membukanya.)</p>
       <div class="doc-demo">
         <button class="fdy-btn" data-fdy-drawer="drawer-left">Buka drawer kiri</button>
         <button class="fdy-btn fdy-btn--ghost" data-fdy-drawer="drawer-right">Buka drawer kanan</button>
@@ -1541,7 +1541,7 @@
         <div class="fdy-app fdy-app--static" style="min-height:440px;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
           <a class="fdy-skip" href="#screen-main">Lewati ke konten utama</a>
           <aside class="fdy-app__sidebar" aria-label="Navigasi contoh">
-            <div class="fdy-app__brand">Foundry</div>
+            <div class="fdy-app__brand">Freeday</div>
             <nav class="fdy-nav">
               <a class="fdy-nav__item" href="#sec-screen" aria-current="page">Faktur</a>
               <a class="fdy-nav__item" href="#sec-screen">Pelanggan</a>
@@ -1603,7 +1603,7 @@
 
     <section class="doc-section" id="sec-breakpoint">
       <h2>Breakpoint</h2>
-      <p class="doc-desc">Utilitas tampilan responsif + provider JS. Skala (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. Kelas <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> menyembunyikan per rentang. <code>foundry-breakpoint.js</code> menstempel <code>&lt;html data-breakpoint&gt;</code> + memancarkan <code>fdy-breakpoint-change</code>. Ubah ukuran jendela untuk melihatnya.</p>
+      <p class="doc-desc">Utilitas tampilan responsif + provider JS. Skala (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. Kelas <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> menyembunyikan per rentang. <code>freeday-breakpoint.js</code> menstempel <code>&lt;html data-breakpoint&gt;</code> + memancarkan <code>fdy-breakpoint-change</code>. Ubah ukuran jendela untuk melihatnya.</p>
       <div class="doc-demo doc-demo--block" style="display:flex;flex-direction:column;gap:var(--space-3)">
         <p style="margin:0">Breakpoint saat ini: <strong class="fdy-badge fdy-badge--info" data-fdy-breakpoint-label>…</strong></p>
         <div class="fdy-hide-below-md"><span class="fdy-badge fdy-badge--success">Terlihat di md ke atas (≥ 960px) — konten desktop</span></div>
@@ -1630,40 +1630,40 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Foundry</b> · design system token-driven &amp; framework-agnostic · v0.9.6</div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v0.9.6</div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
         <a href="integrations.md" data-i18n="footer.integrations">Integrasi</a>
-        <a href="https://github.com/cahyo-dimas/foundry-ui-kit">GitHub</a>
+        <a href="https://github.com/cahyo-dimas/freeday-ui-kit">GitHub</a>
       </nav>
     </footer>
   </main>
   </div>
 </div>
 
-<script src="../dist/foundry-select.js"></script>
-<script src="../dist/foundry-tabs.js"></script>
-<script src="../dist/foundry-table.js"></script>
-<script src="../dist/foundry-toast.js"></script>
-<script src="../dist/foundry-cfl.js"></script>
-<script src="../dist/foundry-datepicker.js"></script>
-<script src="../dist/foundry-timepicker.js"></script>
-<script src="../dist/foundry-datetime.js"></script>
-<script src="../dist/foundry-upload.js"></script>
-<script src="../dist/foundry-menu.js"></script>
-<script src="../dist/foundry-drawer.js"></script>
-<script src="../dist/foundry-breakpoint.js"></script>
-<script src="../dist/foundry-carousel.js"></script>
-<script src="../dist/foundry-chart.js"></script>
-<script src="../dist/foundry-stepper.js"></script>
-<script src="../dist/foundry-slider.js"></script>
-<script src="../dist/foundry-rating.js"></script>
-<script src="../dist/foundry-autocomplete.js"></script>
-<script src="../dist/foundry-cascade.js"></script>
-<script src="../dist/foundry-mask.js"></script>
-<script src="../dist/foundry-form.js"></script>
-<script src="../dist/foundry-chip.js"></script>
+<script src="../dist/freeday-select.js"></script>
+<script src="../dist/freeday-tabs.js"></script>
+<script src="../dist/freeday-table.js"></script>
+<script src="../dist/freeday-toast.js"></script>
+<script src="../dist/freeday-cfl.js"></script>
+<script src="../dist/freeday-datepicker.js"></script>
+<script src="../dist/freeday-timepicker.js"></script>
+<script src="../dist/freeday-datetime.js"></script>
+<script src="../dist/freeday-upload.js"></script>
+<script src="../dist/freeday-menu.js"></script>
+<script src="../dist/freeday-drawer.js"></script>
+<script src="../dist/freeday-breakpoint.js"></script>
+<script src="../dist/freeday-carousel.js"></script>
+<script src="../dist/freeday-chart.js"></script>
+<script src="../dist/freeday-stepper.js"></script>
+<script src="../dist/freeday-slider.js"></script>
+<script src="../dist/freeday-rating.js"></script>
+<script src="../dist/freeday-autocomplete.js"></script>
+<script src="../dist/freeday-cascade.js"></script>
+<script src="../dist/freeday-mask.js"></script>
+<script src="../dist/freeday-form.js"></script>
+<script src="../dist/freeday-chip.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
@@ -1679,7 +1679,7 @@
   // Landing language toggle (ID ⇄ EN) — swaps [data-i18n] content on the landing section.
   const I18N = {
     'hero.h1': 'From <em>token</em> to a business screen — consistently.',
-    'hero.lead': 'Foundry — a <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong> source of truth. Colour, type, spacing, and 44 accessible components you assemble into real screens in Vue, React, or Blazor. Zero runtime dependencies, WCAG AA contrast in light &amp; dark.',
+    'hero.lead': 'Freeday — a <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong> source of truth. Colour, type, spacing, and 44 accessible components you assemble into real screens in Vue, React, or Blazor. Zero runtime dependencies, WCAG AA contrast in light &amp; dark.',
     'cta.explore': 'Explore components',
     'cta.integrate': 'Framework integration',
     'sc.invoice': 'Invoice · INV-1042',
@@ -1693,9 +1693,9 @@
     'stat.contrast': 'contrast · light &amp; dark',
     'int.h2': 'Framework integration',
     'int.desc': 'Thin adapters — the enhancers stay the source of truth; <code>fdy-*</code> events bridge into framework reactivity. Each stack ships a runnable invoice example (see <code>examples/</code>).',
-    'fw.vue': 'Composable <code>useFoundry()</code> — hydrate on mount &amp; update, events via <code>v-on</code>.',
-    'fw.react': 'Hook <code>useFoundry()</code> — bubbling <code>fdy-*</code> events listened at the root.',
-    'fw.blazor': 'Interop <code>window.FoundryBlazor</code> → <code>[JSInvokable]</code> C# methods.',
+    'fw.vue': 'Composable <code>useFreeday()</code> — hydrate on mount &amp; update, events via <code>v-on</code>.',
+    'fw.react': 'Hook <code>useFreeday()</code> — bubbling <code>fdy-*</code> events listened at the root.',
+    'fw.blazor': 'Interop <code>window.FreedayBlazor</code> → <code>[JSInvokable]</code> C# methods.',
     'footer.integrations': 'Integrations',
   };
   // Section headings + descriptions (keyed by section id), so the whole app — not
@@ -1708,51 +1708,51 @@
     'sec-radius': { h2: 'Radius &amp; Elevation', desc: 'Tiered corners &amp; shadows — a consistent depth hierarchy.' },
     'sec-motion': { h2: 'Motion', desc: 'A small set of durations &amp; easings. Hover the track to feel it — disabled under <code>prefers-reduced-motion</code>.' },
     'sec-tombol': { h2: 'Button', desc: 'Dark-to-bottom gradient + coloured glow. One primary action per screen; the rest are ghost.' },
-    'sec-menu': { h2: 'Menu &amp; Split button', desc: 'Action popup (WAI-ARIA APG menu-button pattern) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = primary action + menu toggle. Needs <code>foundry-menu.js</code>.' },
+    'sec-menu': { h2: 'Menu &amp; Split button', desc: 'Action popup (WAI-ARIA APG menu-button pattern) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = primary action + menu toggle. Needs <code>freeday-menu.js</code>.' },
     'sec-input': { h2: 'Input', desc: 'Inner shadow + focus glow. Errors use <code>aria-invalid</code> + <code>aria-describedby</code>.' },
     'sec-inputgroup': { h2: 'Input group', desc: 'Free prefix/suffix addons — text (Rp / %), a decorative icon (<code>__addon--icon</code>), an action button (<code>__btn</code>), or none at all. So "with icon / without / custom icon" is just addon markup.' },
-    'sec-cfl': { h2: 'Choose-from-list', desc: 'A read-only field backed by master data (customers, items, warehouses…). The magnifier on the right opens a search dialog; the picked row fills the field (code + name at once). The value is always <strong>picked</strong>, never typed. Needs <code>foundry-cfl.js</code>.' },
-    'sec-datepicker': { h2: 'Date picker', desc: 'Input-styled trigger + calendar popover — consistent across browsers &amp; themeable. (Native <code>&lt;input type="date"&gt;</code> stays a light option when you don\'t need theming.) A range is two linked pickers; the end can\'t precede the start. Full keyboard support. Needs <code>foundry-datepicker.js</code>.' },
-    'sec-timepicker': { h2: 'Time picker', desc: 'Input-styled trigger + a time-list popup (WAI-ARIA listbox). 24-hour <code>HH:MM</code>; range &amp; step set via <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default every 30 min). Full keyboard support. Needs <code>foundry-timepicker.js</code>.' },
-    'sec-datetimepicker': { h2: 'Datetime picker', desc: 'Composes <strong>date picker + time picker</strong> into one value — reusing two existing components, not a monolithic popover. The <code>foundry-datetime.js</code> composer joins them and emits a single <code>fdy-datetime-change</code> event (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Icon variants are inherited from each child picker.' },
-    'sec-upload': { h2: 'File upload', desc: 'A drop target that also opens the file dialog on click / Enter. Explicit states — idle, drag-over, uploading (progress), done, error — because "nothing happened" is the worst upload feedback. Needs <code>foundry-upload.js</code>. (This demo simulates progress; in a real app, wire the <code>fdy-upload-add</code> event to your upload function.)' },
-    'sec-stepper': { h2: 'Stepper / Wizard', desc: 'A multi-step flow — progress indicator (number → check), a panel per step, Back/Next buttons. Completed steps are clickable to review (linear, no jumping ahead). Needs <code>foundry-stepper.js</code>.' },
-    'sec-slider': { h2: 'Slider', desc: 'Native <code>&lt;input type="range"&gt;</code> themed via <code>accent-color</code> — native keyboard &amp; ARIA, automatic fill &amp; thumb. <code>foundry-slider.js</code> only mirrors the value into an <code>&lt;output&gt;</code>. Colours: primary/accent/danger.' },
-    'sec-rating': { h2: 'Rating', desc: 'Stars — a native radio group (left/right arrows to choose, form-associated). Filled vs empty is shown by <em>fill vs outline</em> (not colour alone). A read-only variant is included. Needs <code>foundry-rating.js</code>.' },
-    'sec-autocomplete': { h2: 'Autocomplete', desc: 'An editable combobox — type to filter suggestions (APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Needs <code>foundry-autocomplete.js</code>. (Static options are filtered client-side; in a real app, fetch/filter server-side.)' },
-    'sec-cascade': { h2: 'Cascade select', desc: 'A hierarchical (drill-down) picker — the data model is a hidden nested <code>&lt;ul&gt;</code>: an <code>&lt;li&gt;</code> with a child <code>&lt;ul&gt;</code> is a branch, without one it is a leaf. Branches drill in, a leaf selects (value = full path). Full keyboard support. Needs <code>foundry-cascade.js</code>.' },
-    'sec-mask': { h2: 'Password &amp; mask', desc: 'A password field with a show/hide toggle (<code>data-fdy-password</code> — reusing the input-group button chrome) and an input that formats as you type (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> letter, <code>*</code> alnum; other characters become literals). Needs <code>foundry-mask.js</code>.' },
-    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors — <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>foundry-form.js</code>.' },
-    'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG) — stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>foundry-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
+    'sec-cfl': { h2: 'Choose-from-list', desc: 'A read-only field backed by master data (customers, items, warehouses…). The magnifier on the right opens a search dialog; the picked row fills the field (code + name at once). The value is always <strong>picked</strong>, never typed. Needs <code>freeday-cfl.js</code>.' },
+    'sec-datepicker': { h2: 'Date picker', desc: 'Input-styled trigger + calendar popover — consistent across browsers &amp; themeable. (Native <code>&lt;input type="date"&gt;</code> stays a light option when you don\'t need theming.) A range is two linked pickers; the end can\'t precede the start. Full keyboard support. Needs <code>freeday-datepicker.js</code>.' },
+    'sec-timepicker': { h2: 'Time picker', desc: 'Input-styled trigger + a time-list popup (WAI-ARIA listbox). 24-hour <code>HH:MM</code>; range &amp; step set via <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default every 30 min). Full keyboard support. Needs <code>freeday-timepicker.js</code>.' },
+    'sec-datetimepicker': { h2: 'Datetime picker', desc: 'Composes <strong>date picker + time picker</strong> into one value — reusing two existing components, not a monolithic popover. The <code>freeday-datetime.js</code> composer joins them and emits a single <code>fdy-datetime-change</code> event (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Icon variants are inherited from each child picker.' },
+    'sec-upload': { h2: 'File upload', desc: 'A drop target that also opens the file dialog on click / Enter. Explicit states — idle, drag-over, uploading (progress), done, error — because "nothing happened" is the worst upload feedback. Needs <code>freeday-upload.js</code>. (This demo simulates progress; in a real app, wire the <code>fdy-upload-add</code> event to your upload function.)' },
+    'sec-stepper': { h2: 'Stepper / Wizard', desc: 'A multi-step flow — progress indicator (number → check), a panel per step, Back/Next buttons. Completed steps are clickable to review (linear, no jumping ahead). Needs <code>freeday-stepper.js</code>.' },
+    'sec-slider': { h2: 'Slider', desc: 'Native <code>&lt;input type="range"&gt;</code> themed via <code>accent-color</code> — native keyboard &amp; ARIA, automatic fill &amp; thumb. <code>freeday-slider.js</code> only mirrors the value into an <code>&lt;output&gt;</code>. Colours: primary/accent/danger.' },
+    'sec-rating': { h2: 'Rating', desc: 'Stars — a native radio group (left/right arrows to choose, form-associated). Filled vs empty is shown by <em>fill vs outline</em> (not colour alone). A read-only variant is included. Needs <code>freeday-rating.js</code>.' },
+    'sec-autocomplete': { h2: 'Autocomplete', desc: 'An editable combobox — type to filter suggestions (APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Needs <code>freeday-autocomplete.js</code>. (Static options are filtered client-side; in a real app, fetch/filter server-side.)' },
+    'sec-cascade': { h2: 'Cascade select', desc: 'A hierarchical (drill-down) picker — the data model is a hidden nested <code>&lt;ul&gt;</code>: an <code>&lt;li&gt;</code> with a child <code>&lt;ul&gt;</code> is a branch, without one it is a leaf. Branches drill in, a leaf selects (value = full path). Full keyboard support. Needs <code>freeday-cascade.js</code>.' },
+    'sec-mask': { h2: 'Password &amp; mask', desc: 'A password field with a show/hide toggle (<code>data-fdy-password</code> — reusing the input-group button chrome) and an input that formats as you type (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> letter, <code>*</code> alnum; other characters become literals). Needs <code>freeday-mask.js</code>.' },
+    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors — <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>freeday-form.js</code>.' },
+    'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG) — stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>freeday-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
     'sec-pilihan': { h2: 'Checkbox · Radio · Switch', desc: 'Native <code>&lt;input&gt;</code> styled — Space, label association, and <code>:focus-visible</code> stay native.' },
     'sec-alert': { h2: 'Alert', desc: 'Inline messages. The danger variant uses <code>role="alert"</code>.' },
-    'sec-toast': { h2: 'Toast', desc: 'A transient notification in a live region. Call <code>Foundry.toast({variant,title,message})</code>.' },
+    'sec-toast': { h2: 'Toast', desc: 'A transient notification in a live region. Call <code>Freeday.toast({variant,title,message})</code>.' },
     'sec-tooltip': { h2: 'Tooltip', desc: 'Appears on hover/focus. Associated via <code>aria-describedby</code>.' },
-    'sec-tabs': { h2: 'Tabs', desc: 'APG pattern — arrows ←/→, Home/End, roving tabindex. Needs <code>foundry-tabs.js</code>.' },
+    'sec-tabs': { h2: 'Tabs', desc: 'APG pattern — arrows ←/→, Home/End, roving tabindex. Needs <code>freeday-tabs.js</code>.' },
     'sec-breadcrumb': { h2: 'Breadcrumb' },
     'sec-pagination': { h2: 'Pagination' },
     'sec-table': { h2: 'Table', desc: 'A static semantic table — <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, right-aligned tabular numbers.' },
-    'sec-datatable': { h2: 'Data table', desc: 'Interactive: global search, sort (click a column header), <strong>per-column filters</strong> (funnel icon — text <em>contains</em>, enum <em>checklist</em>, number <em>range</em>), row select → <strong>bulk action bar</strong>, pagination. Needs <code>foundry-table.js</code>.' },
+    'sec-datatable': { h2: 'Data table', desc: 'Interactive: global search, sort (click a column header), <strong>per-column filters</strong> (funnel icon — text <em>contains</em>, enum <em>checklist</em>, number <em>range</em>), row select → <strong>bulk action bar</strong>, pagination. Needs <code>freeday-table.js</code>.' },
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
-    'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>foundry-chart.js</code>. Colours from tokens; each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
+    'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
     'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row.' },
     'sec-card': { h2: 'Card' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
     'sec-avatar': { h2: 'Avatar' },
-    'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>foundry-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
+    'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>freeday-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
     'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages.' },
     'sec-progress': { h2: 'Progress &amp; Spinner' },
     'sec-skeleton': { h2: 'Skeleton' },
-    'sec-carousel': { h2: 'Carousel', desc: 'Scroll-snap + arrows + dot indicators. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe on touch, optional autoplay (<code>data-fdy-autoplay</code>, pauses on hover/focus). Needs <code>foundry-carousel.js</code>.' },
+    'sec-carousel': { h2: 'Carousel', desc: 'Scroll-snap + arrows + dot indicators. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe on touch, optional autoplay (<code>data-fdy-autoplay</code>, pauses on hover/focus). Needs <code>freeday-carousel.js</code>.' },
     'sec-timeline': { h2: 'Timeline', desc: 'A vertical event feed — markers on a connecting line, with time &amp; description. Marker colour signals status (paired with text, not colour alone). Pure CSS.' },
     'sec-appbar': { h2: 'App bar', desc: 'A standalone top bar — brand · actions · spacer. Can be sticky, elevated, dense, or coloured. The hamburger usually opens a drawer (side menu).' },
     'sec-sidenav': { h2: 'Sidebar menu', desc: 'A vertical navigation menu from <code>.fdy-nav</code> (used by the App shell &amp; this documentation sidebar). Each node is free-form: <strong>icon + text</strong>, <strong>text only</strong>, or add a <strong>count badge</strong>. <code>.fdy-nav__group</code> = a collapsible section; <code>.fdy-nav__tree</code> = a nested item — both native <code>&lt;details&gt;</code> (zero-JS, built-in keyboard). In the App shell the sidebar becomes an off-canvas drawer on mobile.' },
-    'sec-drawer': { h2: 'Drawer', desc: 'A temporary side panel (overlay + backdrop) on top of a native <code>&lt;dialog&gt;</code> — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, and return-focus for free. Left or right. Needs <code>foundry-drawer.js</code>. (The hamburger in the App bar above also opens it.)' },
+    'sec-drawer': { h2: 'Drawer', desc: 'A temporary side panel (overlay + backdrop) on top of a native <code>&lt;dialog&gt;</code> — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, and return-focus for free. Left or right. Needs <code>freeday-drawer.js</code>. (The hamburger in the App bar above also opens it.)' },
     'sec-accordion': { h2: 'Accordion', desc: 'Native <code>&lt;details&gt;</code> — zero-JS, accessible by default.' },
     'sec-util': { h2: 'Divider · Kbd' },
     'sec-modal': { h2: 'Modal', desc: 'Native <code>&lt;dialog&gt;</code> — focus-trap, Esc, and a backdrop, free from the browser.' },
     'sec-screen': { h2: 'Example: one business screen', desc: 'Every component assembled into a real invoice screen.' },
-    'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>foundry-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
+    'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>freeday-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
     'sec-a11y': { h2: 'Accessibility', desc: 'A contract every component keeps — not an afterthought.' },
   };
   const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };

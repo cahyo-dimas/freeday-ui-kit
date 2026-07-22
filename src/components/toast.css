@@ -1,4 +1,4 @@
-/* Foundry — Toast (transient notification) */
+/* Freeday — Toast (transient notification) */
 .fdy-toast-region{position:fixed;z-index:200;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));pointer-events:none;}
 .fdy-toast{pointer-events:auto;display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-inverse-surface);color:var(--color-inverse-text);box-shadow:var(--shadow-3);}
 .fdy-toast__accent{flex:none;width:.25rem;align-self:stretch;border-radius:var(--radius-full);background:var(--color-primary);}

@@ -1,6 +1,6 @@
-/* Foundry — Slider (native <input type="range"> themed via accent-color: keeps native
+/* Freeday — Slider (native <input type="range"> themed via accent-color: keeps native
  * keyboard + ARIA, filled track and thumb come free). Optional value output + scale.
- * foundry-slider.js just mirrors the value into an <output for="…">. */
+ * freeday-slider.js just mirrors the value into an <output for="…">. */
 .fdy-slider{width:100%;max-width:22rem;height:1.5rem;accent-color:var(--color-primary);cursor:pointer;}
 .fdy-slider:disabled{cursor:not-allowed;opacity:.6;}
 .fdy-slider--accent{accent-color:var(--color-accent);}

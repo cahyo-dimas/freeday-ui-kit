@@ -1,4 +1,4 @@
-/* Foundry — Modal (native <dialog>) */
+/* Freeday — Modal (native <dialog>) */
 .fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;}
 .fdy-modal::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
 .fdy-modal__header{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}

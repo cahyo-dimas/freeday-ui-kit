@@ -1,4 +1,4 @@
-/* Foundry — Choose-from-list dialog (searchable master-data picker).
+/* Freeday — Choose-from-list dialog (searchable master-data picker).
  * Built on .fdy-modal: header + search + scrollable results table + footer.
  * Backs a choose-from-list field (readonly input + .fdy-input-group__btn magnifier). */
 .fdy-modal--cfl{width:min(46rem,calc(100vw - var(--space-8)));}

@@ -1,5 +1,5 @@
-/* Foundry — Rating (star rating). Interactive = native radio group (arrow keys, form-assoc);
- * filled vs empty differ by fill-vs-outline (not colour alone). Enhanced by foundry-rating.js. */
+/* Freeday — Rating (star rating). Interactive = native radio group (arrow keys, form-assoc);
+ * filled vs empty differ by fill-vs-outline (not colour alone). Enhanced by freeday-rating.js. */
 .fdy-rating{display:inline-flex;gap:var(--space-1);}
 .fdy-rating__star{display:inline-flex;line-height:0;cursor:pointer;}
 .fdy-rating__star input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}

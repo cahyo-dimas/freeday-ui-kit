@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFoundry } from 'foundry/vue';
+import { useFreeday } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
   FdyChangeDetail,
   FdyMaskDetail,
-} from 'foundry/vue';
+} from 'freeday/vue';
 
 // One call wires every [data-fdy-*] in this subtree after Vue renders it.
 const root = ref<HTMLElement | null>(null);
-useFoundry(root);
+useFreeday(root);
 
 interface Faktur {
   pelanggan: string;
@@ -42,7 +42,7 @@ const form = reactive<Faktur>({
 
 const submitted = ref<Faktur | null>(null);
 
-// Foundry events arrive as native bubbling CustomEvents — read event.detail.
+// Freeday events arrive as native bubbling CustomEvents — read event.detail.
 const onCascade = (e: Event): void => {
   const d = (e as CustomEvent<FdyCascadeChangeDetail>).detail;
   form.kategori = d.value;
@@ -65,7 +65,7 @@ const rupiah = (n: number): string =>
 
 const items = reactive([
   { desc: 'Jasa implementasi SAP B1', qty: 1, harga: 18_000_000 },
-  { desc: 'Lisensi Foundry (tahunan)', qty: 3, harga: 1_200_000 },
+  { desc: 'Lisensi Freeday (tahunan)', qty: 3, harga: 1_200_000 },
   { desc: 'Pelatihan tim (per sesi)', qty: 2, harga: 850_000 },
 ]);
 const total = computed(() => items.reduce((s, it) => s + it.qty * it.harga, 0));
@@ -74,8 +74,8 @@ const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertund
 
 const onValid = (): void => {
   submitted.value = { ...form };
-  (window as unknown as { Foundry?: { toast: (o: Record<string, unknown>) => void } })
-    .Foundry?.toast({
+  (window as unknown as { Freeday?: { toast: (o: Record<string, unknown>) => void } })
+    .Freeday?.toast({
       variant: 'success',
       title: 'Faktur tersimpan',
       message: `${form.pelanggan} · ${rupiah(total.value)}`,
@@ -91,7 +91,7 @@ const toggleTheme = (): void => {
 <template>
   <div class="fdy-app" ref="root">
     <aside class="fdy-app__sidebar" aria-label="Navigasi">
-      <div class="fdy-app__brand">Foundry × Vue</div>
+      <div class="fdy-app__brand">Freeday × Vue</div>
       <nav class="fdy-nav" aria-label="Menu">
         <a class="fdy-nav__item" href="#" aria-current="page">Faktur</a>
         <a class="fdy-nav__item" href="#">Pelanggan</a>
@@ -176,7 +176,7 @@ const toggleTheme = (): void => {
 
               <div style="grid-column:1/-1;display:flex;gap:var(--space-3);margin-top:var(--space-2)">
                 <button class="fdy-btn" type="submit">Simpan faktur</button>
-                <span class="fdy-help" style="align-self:center">Bukti v0.9: markup Vue → enhancer Foundry lewat <code>useFoundry()</code>.</span>
+                <span class="fdy-help" style="align-self:center">Bukti v0.9: markup Vue → enhancer Freeday lewat <code>useFreeday()</code>.</span>
               </div>
             </form>
           </div>

@@ -1,15 +1,15 @@
-# Foundry — UI KIT
+# Freeday — UI KIT
 
 **Design source-of-truth** yang token-driven dan *framework-agnostic*. Bukan component
 library ter-compile; ini satu file token kanonik + halaman referensi hidup, tempat semua
 warna/tipografi/spasi berasal. Diturunkan dari `Foundation Design System.html`.
 
-> **Baca dulu spec sebelum implement:** [docs/superpowers/specs/2026-07-21-foundry-ui-kit-design.md](docs/superpowers/specs/2026-07-21-foundry-ui-kit-design.md)
+> **Baca dulu spec sebelum implement:** [docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md)
 > Itu sumber kebenaran untuk semua nilai token, keputusan, dan roadmap. CLAUDE.md ini hanya ringkasan operasional.
 
 ## Stack & tooling
 - **Bahasa:** CSS murni + `tokens.json` (format W3C Design Tokens / DTCG).
-- **Build:** `node tokens/build.mjs` — Node murni, baca `tokens/tokens.json` → tulis `dist/foundry.tokens.css`. Tidak ada Style Dictionary / bundler berat di v1 (YAGNI).
+- **Build:** `node tokens/build.mjs` — Node murni, baca `tokens/tokens.json` → tulis `dist/freeday.tokens.css`. Tidak ada Style Dictionary / bundler berat di v1 (YAGNI).
 - **Docs:** `docs/index.html` — static, buka langsung di browser.
 - **Tidak ada** framework runtime. Komponen = CSS + markup contoh.
 
@@ -32,7 +32,7 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 - **Prefix kelas:** `fdy-` (mis. `fdy-btn`, `fdy-card__title`, `fdy-btn--danger`). Pola BEM ringkas.
 - **Token:** `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, `--dur-*`, `--ease-*`; component token `--fdy-<komp>-<prop>`.
 - **Spasi:** selalu kelipatan 4px (skala `--space-*`), tak pernah nilai lepas.
-- **Satu file per komponen** di `src/components/*.css`; digabung ke `dist/foundry.css`.
+- **Satu file per komponen** di `src/components/*.css`; digabung ke `dist/freeday.css`.
 
 ## Theming — 3 sumbu via `data-*` di `<html>`
 - `data-theme="light|dark"` → re-definisi token **semantic** (wajib).
@@ -48,7 +48,7 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 ```
 tokens/tokens.json     tokens/build.mjs
 src/components/*.css
-dist/foundry.tokens.css  dist/foundry.css   (dist DI-COMMIT — lihat .gitignore)
+dist/freeday.tokens.css  dist/freeday.css   (dist DI-COMMIT — lihat .gitignore)
 docs/index.html
 ```
 

@@ -1,4 +1,4 @@
-/* Foundry — Responsive display utilities (pairs with foundry-breakpoint.js).
+/* Freeday — Responsive display utilities (pairs with freeday-breakpoint.js).
  * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
  * NOTE: media-query breakpoints must be literal — CSS can't read custom properties
  * inside @media, so these px are structural, not stray magic numbers. */

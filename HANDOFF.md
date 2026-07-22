@@ -1,4 +1,4 @@
-# Foundry — Handoff (cek pagi hari)
+# Freeday — Handoff (cek pagi hari)
 
 Ringkasan kerja otonom, sesuai izinmu. Semua **commit lokal** di branch
 `feat/v0.2-rich-refinement`; milestone ditandai git tag. Sudah kupush ke GitHub sampai `v0.4`
@@ -47,7 +47,7 @@ pakai-di-project. **Semua beres.** Enam iterasi, tiap-tiap di-commit + build det
    Menu **"File upload"**.
 5. **Index foundations** (`b106047`) — Prinsip, Spasi, Radius & Elevasi, Motion, Aksesibilitas.
    Index kini kaya seperti Foundation (menjawab "polos banget").
-6. **Struktur project** (`02eb769`) — satu bundel `dist/foundry.js` (semua enhancer, cukup 1
+6. **Struktur project** (`02eb769`) — satu bundel `dist/freeday.js` (semua enhancer, cukup 1
    `<script>`) + **README ditulis ulang** jadi panduan pakai lengkap (include CSS, JS bundel/per-file,
    tabel hook/event, theming 3-sumbu, integrasi Vue/React/Blazor, tier token, struktur repo).
 
@@ -90,11 +90,11 @@ distyle lintas-browser — sama seperti pendekatan Foundation). Semua AA-bersih.
 - **Data table** interaktif: toolbar/cari, sort kolom, paginasi, seleksi baris (select-all
   dengan indeterminate).
 - **4 enhancer JS opsional** (0 dependency, auto-init lewat `data-*`, pola WAI-ARIA APG):
-  `foundry-select.js`, `foundry-tabs.js`, `foundry-table.js`, `foundry-toast.js`.
+  `freeday-select.js`, `freeday-tabs.js`, `freeday-table.js`, `freeday-toast.js`.
 - **Docs jadi demo-site** (jawaban keluhan "polos banget").
 - Token baru `--color-inverse-surface/-text` (tooltip & toast).
 
-Sekarang Foundry punya **20+ komponen**, semua token-driven, 0 dependency runtime,
+Sekarang Freeday punya **20+ komponen**, semua token-driven, 0 dependency runtime,
 `node --test` 5/5, `dist/` deterministik (rebuild = tanpa diff).
 
 ## 3. Keputusan yang kuambil sendiri (kamu bilang percaya penuh)
@@ -102,7 +102,7 @@ Sekarang Foundry punya **20+ komponen**, semua token-driven, 0 dependency runtim
 - **Datepicker & data-grid virtualized → ditunda v0.4.** Kompleks & berisiko tanpa cek visual;
   aku fokuskan v0.3 ke yang paling dipakai layar bisnis + keluhanmu.
 - Data table = enhancement client-side (cocok untuk demo/kit). Di app nyata, kelola data
-  server/store-side; markup + kelas Foundry tetap dipakai.
+  server/store-side; markup + kelas Freeday tetap dipakai.
 
 ## 4. Catatan minor untuk KEPUTUSANMU (tidak memblokir; sengaja tidak kuubah)
 Review akhir (opus) memberi verdict **Ready** — tanpa isu Critical/Important. Sisa minor yang
@@ -119,7 +119,7 @@ sebaiknya **kamu** yang putuskan karena menyangkut selera visual / perubahan kit
 3. **Demo "layar bisnis" di docs** menyisipkan shell kedua → ada landmark `<aside>`/`<nav>`
    tambahan (sedikit "ramai" untuk screen reader). Murni docs, bukan komponen.
 4. **Sort angka** butuh `data-sort-value` untuk angka berformat ribuan (mis. "1.240.000").
-   Docs sudah menyediakannya; ini kontrak yang didokumentasikan di header `foundry-table.js`.
+   Docs sudah menyediakannya; ini kontrak yang didokumentasikan di header `freeday-table.js`.
 
 ## 5. Git & cara merge (saat kamu siap)
 - Branch: `feat/v0.2-rich-refinement` (berisi v0.2 **dan** v0.3 — aku tak boleh pindah branch).
@@ -130,7 +130,7 @@ sebaiknya **kamu** yang putuskan karena menyangkut selera visual / perubahan kit
 
 ## 6. Build & test
 ```bash
-node tokens/build.mjs   # tokens.json -> dist/foundry.tokens.css + dist/foundry.css + copy dist/*.js
+node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css + dist/freeday.css + copy dist/*.js
 npm test                # node --test (5/5)
 ```
 

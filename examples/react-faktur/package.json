@@ -1,9 +1,9 @@
 {
-  "name": "foundry-example-react-faktur",
+  "name": "freeday-example-react-faktur",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Foundry v0.9 proof — a real invoice (faktur) screen in React wired via the useFoundry hook.",
+  "description": "Freeday v0.9 proof — a real invoice (faktur) screen in React wired via the useFreeday hook.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "foundry": "file:../..",
+    "freeday": "file:../..",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
