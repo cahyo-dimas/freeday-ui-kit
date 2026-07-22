@@ -103,8 +103,8 @@
   --radius-full: 999px;
   --shadow-1: 0 1px 2px rgba(16,14,30,.06);
   --shadow-2: 0 2px 6px rgba(16,14,30,.07),0 1px 2px rgba(16,14,30,.05);
-  --shadow-3: 0 8px 24px rgba(16,14,30,.10),0 2px 6px rgba(16,14,30,.06);
-  --shadow-4: 0 20px 48px rgba(16,14,30,.16),0 4px 12px rgba(16,14,30,.08);
+  --shadow-3: 0 4px 16px -2px rgba(16,14,30,.14),0 1px 3px rgba(16,14,30,.10);
+  --shadow-4: 0 24px 48px -12px rgba(16,14,30,.26),0 2px 8px rgba(16,14,30,.10);
   --shadow-lift: 0 1px 2px rgba(16,14,30,.05),0 16px 34px -14px rgba(16,14,30,.24);
   --shadow-lift-hover: 0 2px 4px rgba(16,14,30,.06),0 30px 50px -16px rgba(16,14,30,.33);
   --dur-fast: 120ms;
@@ -158,8 +158,8 @@
   :root:not([data-theme="light"]) {
   --shadow-1: 0 1px 2px rgba(0,0,0,.4);
   --shadow-2: 0 2px 6px rgba(0,0,0,.45);
-  --shadow-3: 0 8px 24px rgba(0,0,0,.5);
-  --shadow-4: 0 20px 48px rgba(0,0,0,.6);
+  --shadow-3: 0 6px 20px -2px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.5);
+  --shadow-4: 0 28px 56px -12px rgba(0,0,0,.72),0 2px 8px rgba(0,0,0,.5);
   --shadow-lift: 0 1px 2px rgba(0,0,0,.5),0 18px 38px -14px rgba(0,0,0,.72);
   --shadow-lift-hover: 0 3px 6px rgba(0,0,0,.55),0 32px 56px -16px rgba(0,0,0,.82);
   --color-primary: var(--azure-500);
@@ -205,8 +205,8 @@
 :root[data-theme="dark"] {
   --shadow-1: 0 1px 2px rgba(0,0,0,.4);
   --shadow-2: 0 2px 6px rgba(0,0,0,.45);
-  --shadow-3: 0 8px 24px rgba(0,0,0,.5);
-  --shadow-4: 0 20px 48px rgba(0,0,0,.6);
+  --shadow-3: 0 6px 20px -2px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.5);
+  --shadow-4: 0 28px 56px -12px rgba(0,0,0,.72),0 2px 8px rgba(0,0,0,.5);
   --shadow-lift: 0 1px 2px rgba(0,0,0,.5),0 18px 38px -14px rgba(0,0,0,.72);
   --shadow-lift-hover: 0 3px 6px rgba(0,0,0,.55),0 32px 56px -16px rgba(0,0,0,.82);
   --color-primary: var(--azure-500);
@@ -251,8 +251,8 @@
 :root[data-theme="light"] {
   --shadow-1: 0 1px 2px rgba(16,14,30,.06);
   --shadow-2: 0 2px 6px rgba(16,14,30,.07),0 1px 2px rgba(16,14,30,.05);
-  --shadow-3: 0 8px 24px rgba(16,14,30,.10),0 2px 6px rgba(16,14,30,.06);
-  --shadow-4: 0 20px 48px rgba(16,14,30,.16),0 4px 12px rgba(16,14,30,.08);
+  --shadow-3: 0 4px 16px -2px rgba(16,14,30,.14),0 1px 3px rgba(16,14,30,.10);
+  --shadow-4: 0 24px 48px -12px rgba(16,14,30,.26),0 2px 8px rgba(16,14,30,.10);
   --shadow-lift: 0 1px 2px rgba(16,14,30,.05),0 16px 34px -14px rgba(16,14,30,.24);
   --shadow-lift-hover: 0 2px 4px rgba(16,14,30,.06),0 30px 50px -16px rgba(16,14,30,.33);
   --color-primary: var(--azure-600);
