@@ -532,6 +532,19 @@ a { color: var(--color-primary); }
 @keyframes fdy-skeleton{to{background-position:-200% 0;}}
 @media (prefers-reduced-motion:reduce){.fdy-skeleton{animation:none;}}
 
+/* Foundry — Slider (native <input type="range"> themed via accent-color: keeps native
+ * keyboard + ARIA, filled track and thumb come free). Optional value output + scale.
+ * foundry-slider.js just mirrors the value into an <output for="…">. */
+.fdy-slider{width:100%;max-width:22rem;height:1.5rem;accent-color:var(--color-primary);cursor:pointer;}
+.fdy-slider:disabled{cursor:not-allowed;opacity:.6;}
+.fdy-slider--accent{accent-color:var(--color-accent);}
+.fdy-slider--danger{accent-color:var(--color-danger);}
+
+.fdy-slider-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+.fdy-slider-field__head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);}
+.fdy-slider__value{font-family:var(--font-mono);font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-primary-strong);font-variant-numeric:tabular-nums;}
+.fdy-slider__scale{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--color-text-muted);font-variant-numeric:tabular-nums;}
+
 /* Foundry — Spinner */
 .fdy-spinner{display:inline-block;width:1.5rem;height:1.5rem;border:2.5px solid var(--color-border-strong);border-top-color:var(--color-primary);border-radius:var(--radius-full);animation:fdy-spin .7s linear infinite;}
 .fdy-spinner--sm{width:1rem;height:1rem;border-width:2px;}

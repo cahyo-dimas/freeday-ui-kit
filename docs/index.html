@@ -80,6 +80,7 @@
       <a class="fdy-nav__item" href="#sec-upload">File upload</a>
       <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
       <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
+      <a class="fdy-nav__item" href="#sec-slider">Slider</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -526,6 +527,29 @@
             <button type="button" class="fdy-btn fdy-btn--ghost" data-fdy-step-prev>Kembali</button>
             <button type="button" class="fdy-btn" data-fdy-step-next>Lanjut</button>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-slider">
+      <h2>Slider</h2>
+      <p class="doc-desc">Native <code>&lt;input type="range"&gt;</code> di-tema lewat <code>accent-color</code> — keyboard &amp; ARIA bawaan, fill &amp; thumb otomatis. <code>foundry-slider.js</code> cuma menyalin nilai ke <code>&lt;output&gt;</code>. Warna: primary/accent/danger.</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-8)">
+        <div class="fdy-slider-field">
+          <div class="fdy-slider-field__head">
+            <span class="fdy-label">Diskon</span>
+            <output class="fdy-slider__value" for="sld-disc" data-fdy-suffix="%">15</output>
+          </div>
+          <input class="fdy-slider" type="range" id="sld-disc" min="0" max="100" value="15" step="5" data-fdy-slider aria-label="Diskon persen">
+          <div class="fdy-slider__scale"><span>0%</span><span>100%</span></div>
+        </div>
+        <div class="fdy-slider-field">
+          <div class="fdy-slider-field__head">
+            <span class="fdy-label">Anggaran</span>
+            <output class="fdy-slider__value" for="sld-budget" data-fdy-prefix="Rp ">30</output>
+          </div>
+          <input class="fdy-slider fdy-slider--accent" type="range" id="sld-budget" min="0" max="100" value="30" data-fdy-slider aria-label="Anggaran juta rupiah">
+          <div class="fdy-slider__scale"><span>Rp 0</span><span>Rp 100 jt</span></div>
         </div>
       </div>
     </section>
@@ -1143,6 +1167,7 @@
 <script src="../dist/foundry-carousel.js"></script>
 <script src="../dist/foundry-chart.js"></script>
 <script src="../dist/foundry-stepper.js"></script>
+<script src="../dist/foundry-slider.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
