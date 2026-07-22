@@ -3,6 +3,25 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.4] — 2026-07-22
+### Added
+- **Sidebar-menu component** — `.fdy-nav` (App shell) now supports per-node `.fdy-nav__icon`
+  and `.fdy-nav__badge` (count), collapsible sections `.fdy-nav__group`/`.fdy-nav__grouplabel`,
+  and nested items `.fdy-nav__tree` + `.fdy-nav__sub` (native `<details>`, zero-JS). Any node
+  can be icon+text, text-only, or badged. New "Sidebar menu" docs section.
+- **Responsive App shell** — on mobile (≤720px) the sidebar becomes an **off-canvas drawer**
+  opened by the topbar toggle, with a `.fdy-app__backdrop`; on desktop the toggle collapses it.
+### Changed
+- **Brand ↔ topbar aligned** — `.fdy-app__brand` is now the same height as the topbar
+  (`--space-16`) so the logo and page title sit on the same line. `.fdy-app__title` truncates
+  instead of forcing overflow.
+### Fixed
+- **Awkward Indonesian copy** — dropzone “Jatuhkan …” → “Seret berkas ke sini …”.
+### Docs
+- Theme toggle is now a two-tone **sun/moon icon** button. Clearer **notification badge** demo
+  (bell + count) explaining the overlay badge works on any element. Responsive fixes so nothing
+  overflows down to 320px.
+
 ## [0.9.3] — 2026-07-22
 ### Added
 - **Chart hover (Chart.js-style)** — bar & donut charts now show an interactive tooltip that

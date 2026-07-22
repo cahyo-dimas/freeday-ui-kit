@@ -3030,7 +3030,7 @@
  * Markup contract:
  *  <div class="fdy-dropzone" data-fdy-dropzone role="button" tabindex="0"
  *       data-max-size="10485760" data-filelist="#dz-list" [data-fdy-upload-simulate]
- *       aria-label="Unggah berkas — jatuhkan di sini atau tekan Enter">
+ *       aria-label="Unggah berkas — seret ke sini atau tekan Enter">
  *    <span class="fdy-dropzone__icon">…svg…</span>
  *    <span class="fdy-dropzone__title">…</span>
  *    <span class="fdy-dropzone__hint">…</span>
