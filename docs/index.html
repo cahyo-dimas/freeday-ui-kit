@@ -101,6 +101,7 @@
       <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
       <div class="doc-navgroup__label">Layout</div>
       <a class="fdy-nav__item" href="#sec-appbar">App bar</a>
+      <a class="fdy-nav__item" href="#sec-drawer">Drawer</a>
       <a class="fdy-nav__item" href="#sec-accordion">Accordion</a>
       <a class="fdy-nav__item" href="#sec-modal">Modal</a>
       <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
@@ -819,7 +820,7 @@
       <p class="doc-desc">Bar atas standalone — brand · aksi · spacer. Bisa sticky, elevated, dense, atau berwarna. Tombol hamburger biasanya membuka drawer (menu samping).</p>
       <div class="doc-demo doc-demo--block" style="padding:0;overflow:hidden">
         <div class="fdy-appbar fdy-appbar--elevated">
-          <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Buka menu"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg></span></button>
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Buka menu" data-fdy-drawer="drawer-left"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"></path></svg></span></button>
           <span class="fdy-appbar__brand">Foundry</span>
           <span class="fdy-appbar__spacer"></span>
           <div class="fdy-appbar__actions">
@@ -841,6 +842,48 @@
           <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Bantuan"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.1 9a3 3 0 1 1 5.8 1c-.5 1.4-2.9 2-2.9 3.5"></path><path d="M12 17h.01"></path></svg></span></button>
         </div>
       </div>
+    </section>
+
+    <section class="doc-section" id="sec-drawer">
+      <h2>Drawer</h2>
+      <p class="doc-desc">Panel samping temporary (overlay + backdrop) di atas <code>&lt;dialog&gt;</code> native — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, dan kembalikan-fokus gratis. Kiri atau kanan. Butuh <code>foundry-drawer.js</code>. (Tombol hamburger di App bar di atas juga membukanya.)</p>
+      <div class="doc-demo">
+        <button class="fdy-btn" data-fdy-drawer="drawer-left">Buka drawer kiri</button>
+        <button class="fdy-btn fdy-btn--ghost" data-fdy-drawer="drawer-right">Buka drawer kanan</button>
+      </div>
+      <dialog class="fdy-drawer fdy-drawer--left" id="drawer-left" aria-label="Navigasi">
+        <div class="fdy-drawer__header">
+          <span class="fdy-drawer__title">Menu</span>
+          <button class="fdy-drawer__close" aria-label="Tutup" data-close>&times;</button>
+        </div>
+        <div class="fdy-drawer__body">
+          <nav class="fdy-nav" aria-label="Navigasi drawer">
+            <a class="fdy-nav__item" href="#sec-drawer" aria-current="page">Dashboard</a>
+            <a class="fdy-nav__item" href="#sec-drawer">Faktur</a>
+            <a class="fdy-nav__item" href="#sec-drawer">Pelanggan</a>
+            <a class="fdy-nav__item" href="#sec-drawer">Laporan</a>
+          </nav>
+        </div>
+      </dialog>
+      <dialog class="fdy-drawer fdy-drawer--right" id="drawer-right" aria-label="Filter">
+        <div class="fdy-drawer__header">
+          <span class="fdy-drawer__title">Filter</span>
+          <button class="fdy-drawer__close" aria-label="Tutup" data-close>&times;</button>
+        </div>
+        <div class="fdy-drawer__body">
+          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+              <span class="fdy-label">Status</span>
+              <label class="fdy-check"><input type="checkbox" checked> Lunas</label>
+              <label class="fdy-check"><input type="checkbox"> Tertunda</label>
+            </div>
+            <div style="display:flex;gap:var(--space-2)">
+              <button class="fdy-btn fdy-btn--ghost" data-close>Reset</button>
+              <button class="fdy-btn" data-close>Terapkan</button>
+            </div>
+          </div>
+        </div>
+      </dialog>
     </section>
 
     <section class="doc-section" id="sec-accordion">
@@ -974,6 +1017,7 @@
 <script src="../dist/foundry-datepicker.js"></script>
 <script src="../dist/foundry-upload.js"></script>
 <script src="../dist/foundry-menu.js"></script>
+<script src="../dist/foundry-drawer.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
