@@ -77,6 +77,11 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 - (roadmap) `data-style` — varian visual lain.
 
 ## Integrasi framework (SPA)
+> **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md) — tiap area
+> (form/validasi, chart, tabel, tanggal, overlay, dst) dipetakan ke library ekosistem yang
+> biasa dipasang (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …) + cara
+> menjembataninya + binding Vue/React/Blazor. Buka itu saat mulai project baru.
+
 Enhancer meng-auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
 - **Reuse enhancer:** setelah mount/route change, panggil `window.FoundryTable.initAll(el)`
   (atau `initAll()` global). Aman diulang — tiap init dijaga flag idempotent. Jembatani ke
