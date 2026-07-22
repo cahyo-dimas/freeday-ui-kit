@@ -16,7 +16,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/foundry-ui-kit#v0.9.0
+npm i github:cahyo-dimas/foundry-ui-kit#v0.9.1
 ```
 ```js
 import 'foundry/css';   // token + komponen (satu file)
@@ -82,15 +82,34 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 > biasa dipasang (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …) + cara
 > menjembataninya + binding Vue/React/Blazor. Buka itu saat mulai project baru.
 
-**Vue 3 — adapter siap pakai (`foundry/vue`):**
+**Adapter siap pakai — Vue · React · Blazor.** Semua tipis: enhancer tetap sumber kebenaran,
+adapter hanya hydrate + jembatani event. Tiap punya contoh layar **faktur** yang jalan:
+
 ```ts
+// Vue 3 — foundry/vue
 import { useFoundry } from 'foundry/vue';
 const root = ref<HTMLElement | null>(null);
-useFoundry(root);   // hydrate semua [data-fdy-*] di subtree ini saat mount + tiap update
-// <div ref="root"> …markup fdy-* … </div>  ·  event: @fdy-cascade-change="…" (detail bertipe)
+useFoundry(root);                     // @fdy-cascade-change="…" (detail bertipe)
 ```
-Contoh layar penuh yang jalan: [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`).
-React/Blazor pakai pola yang sama (init hook + event) — lihat [`docs/integrations.md`](docs/integrations.md).
+```tsx
+// React — foundry/react
+import { useFoundry } from 'foundry/react';
+const root = useRef<HTMLDivElement>(null);
+useFoundry(root);                     // event fdy-* bubbling → listen di root
+```
+```csharp
+// Blazor — foundry/blazor (window.FoundryBlazor via JS interop)
+await JS.InvokeVoidAsync("FoundryBlazor.initAll", _root);
+await JS.InvokeAsync<int>("FoundryBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade));
+```
+
+| Framework | Adapter | Contoh jalan |
+|---|---|---|
+| Vue 3 | `foundry/vue` | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
+| React 19 | `foundry/react` | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
+| Blazor WASM (.NET 10) | `foundry/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
+
+Peta library & pola lengkap: [`docs/integrations.md`](docs/integrations.md).
 
 Secara umum, enhancer meng-auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
 - **Reuse enhancer:** setelah mount/route change, panggil `window.FoundryTable.initAll(el)`

@@ -1,0 +1,141 @@
+@namespace FoundryBlazorFaktur.Pages
+
+<div class="fdy-app" @ref="_root">
+  <aside class="fdy-app__sidebar" aria-label="Navigasi">
+    <div class="fdy-app__brand">Foundry × Blazor</div>
+    <nav class="fdy-nav" aria-label="Menu">
+      <a class="fdy-nav__item" href="#" aria-current="page">Faktur</a>
+      <a class="fdy-nav__item" href="#">Pelanggan</a>
+      <a class="fdy-nav__item" href="#">Produk</a>
+      <a class="fdy-nav__item" href="#">Laporan</a>
+    </nav>
+  </aside>
+
+  <div class="fdy-app__content">
+    <header class="fdy-app__topbar">
+      <h1 style="font-size:var(--text-lg);font-weight:var(--weight-semibold);margin:0">Faktur baru</h1>
+      <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" @onclick="ToggleThemeAsync">Tema</button>
+    </header>
+
+    <main class="fdy-app__main" style="display:flex;flex-direction:column;gap:var(--space-6);max-width:56rem">
+      <section class="fdy-card"><div class="fdy-card__body">
+        <h2 class="fdy-card__title" style="margin-bottom:var(--space-5)">Detail faktur</h2>
+
+        <form data-fdy-validate @onsubmit="Noop" @onsubmit:preventDefault
+              style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5)">
+
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Pelanggan <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" name="pelanggan" @bind="_pelanggan" @bind:event="oninput" required
+                   data-fdy-msg-required="Nama pelanggan wajib diisi." placeholder="cth. PT Sumber Makmur" />
+          </label>
+
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Email <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" name="email" type="email" @bind="_email" @bind:event="oninput" required
+                   data-fdy-msg-required="Email wajib diisi." data-fdy-msg-type="Format email tidak valid." placeholder="nama@perusahaan.com" />
+          </label>
+
+          <label class="fdy-field" style="max-width:none">
+            <span class="fdy-label">No. PO <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
+            <input class="fdy-input" name="po" data-fdy-mask="PO-####/AA" pattern="PO-\d{4}/[A-Za-z]{2}"
+                   required data-fdy-msg-required="Nomor PO wajib diisi."
+                   data-fdy-msg-pattern="Format: PO-2026/AB." placeholder="PO-2026/AB" />
+          </label>
+
+          <div class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Kategori produk</span>
+            <div data-fdy-cascade data-label="Kategori produk" data-placeholder="Pilih kategori">
+              <ul>
+                <li data-value="jasa">Jasa
+                  <ul>
+                    <li data-value="implementasi">Implementasi</li>
+                    <li data-value="pelatihan">Pelatihan</li>
+                  </ul>
+                </li>
+                <li data-value="lisensi">Lisensi
+                  <ul>
+                    <li data-value="tahunan">Tahunan</li>
+                    <li data-value="perpetual">Perpetual</li>
+                  </ul>
+                </li>
+                <li data-value="barang">Barang</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="fdy-field" style="max-width:none">
+            <span class="fdy-label">Jatuh tempo</span>
+            <div data-fdy-datepicker data-value="@_dueDefault" data-label="Jatuh tempo"></div>
+          </div>
+
+          <div class="fdy-field" style="max-width:none">
+            <span class="fdy-label" id="lbl-status">Status</span>
+            <div class="fdy-combo" data-fdy-combo data-value="draft">
+              <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
+                <span class="fdy-combo__value" id="val-status">Draft</span>
+              </button>
+              <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-status" hidden>
+                <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="true"><span class="fdy-combo__check">✓</span>Draft</li>
+                <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="false"><span class="fdy-combo__check"></span>Tertunda</li>
+                <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
+              </ul>
+            </div>
+          </div>
+
+          <div style="grid-column:1/-1;display:flex;gap:var(--space-3);margin-top:var(--space-2);align-items:center">
+            <button class="fdy-btn" type="submit">Simpan faktur</button>
+            <span class="fdy-help">Bukti v0.9: markup Blazor → enhancer Foundry lewat JS interop.</span>
+          </div>
+        </form>
+      </div></section>
+
+      <section class="fdy-card"><div class="fdy-card__body">
+        <h2 class="fdy-card__title" style="margin-bottom:var(--space-4)">Item</h2>
+        <table class="fdy-table" style="width:100%">
+          <thead>
+            <tr><th>Deskripsi</th><th style="text-align:right">Qty</th><th style="text-align:right">Harga</th><th style="text-align:right">Subtotal</th></tr>
+          </thead>
+          <tbody>
+            @foreach (var it in Items)
+            {
+              <tr>
+                <td>@it.Desc</td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums">@it.Qty</td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums">@Rupiah(it.Harga)</td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums">@Rupiah((long)it.Qty * it.Harga)</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:right;font-weight:var(--weight-semibold)">Total</td>
+              <td style="text-align:right;font-weight:var(--weight-bold);font-variant-numeric:tabular-nums">@Rupiah(Total)</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div></section>
+
+      @if (_submitted is not null)
+      {
+        <section class="fdy-card" aria-live="polite"><div class="fdy-card__body">
+          <h2 class="fdy-card__title" style="margin-bottom:var(--space-4)">Tersimpan (state Blazor)</h2>
+          <dl class="fdy-dl">
+            <dt>Pelanggan</dt><dd>@_submitted.Pelanggan</dd>
+            <dt>Email</dt><dd>@_submitted.Email</dd>
+            <dt>No. PO</dt><dd>@(string.IsNullOrEmpty(_submitted.Po) ? "—" : _submitted.Po)</dd>
+            <dt>Kategori</dt>
+            <dd>
+              @(string.IsNullOrEmpty(_submitted.KategoriPath) ? "—" : _submitted.KategoriPath)
+              @(string.IsNullOrEmpty(_submitted.Kategori) ? "" : $"({_submitted.Kategori})")
+            </dd>
+            <dt>Jatuh tempo</dt><dd>@_submitted.JatuhTempo</dd>
+            <dt>Status</dt>
+            <dd><span class="fdy-badge @(_submitted.Status == "lunas" ? "fdy-badge--success" : "fdy-badge--outline")">@StatusText(_submitted.Status)</span></dd>
+            <dt>Total</dt><dd>@Rupiah(Total)</dd>
+          </dl>
+        </div></section>
+      }
+    </main>
+  </div>
+</div>

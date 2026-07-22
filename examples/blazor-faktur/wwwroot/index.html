@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="id" data-theme="light" data-density="comfortable">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foundry × Blazor — Faktur</title>
+  <base href="/" />
+  <link rel="stylesheet" href="foundry/foundry.bundle.css" />
+</head>
+<body>
+  <div id="app">Memuat…</div>
+  <div id="blazor-error-ui" style="display:none">
+    Terjadi kesalahan. <a href="" class="reload">Muat ulang</a>
+  </div>
+  <!-- Foundry enhancers + Blazor interop (register window.Foundry* / FoundryBlazor)
+       before Blazor boots. -->
+  <script src="foundry/foundry.js"></script>
+  <script src="foundry/foundry-blazor.js"></script>
+  <script src="_framework/blazor.webassembly.js"></script>
+</body>
+</html>

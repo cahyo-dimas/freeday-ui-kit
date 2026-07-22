@@ -3,6 +3,21 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.1] — 2026-07-22
+### Added
+- **Adapter React** (`foundry/react`) — hook `useFoundry(rootRef?)` yang meng-*hydrate* enhancer
+  di subtree pada mount + tiap commit (idempotent). Tipe `event.detail` di
+  `adapters/react/index.d.ts`. Contoh jalan `examples/react-faktur/` (Vite + React 19 + TS).
+- **Interop Blazor** (`foundry/blazor`, `adapters/blazor/foundry-blazor.js`) — script klasik yang
+  mendaftarkan `window.FoundryBlazor` dengan `initAll` / `on` / `off` / `toast` / `toggleTheme`.
+  `on(el, event, dotNetRef, method)` meneruskan detail (JSON-safe) ke method `[JSInvokable]` C#.
+  Contoh jalan `examples/blazor-faktur/` (Blazor WASM, .NET 10, code-behind `.razor` + `.razor.cs`).
+- Ketiga adapter (Vue/React/Blazor) diverifikasi headless dengan layar faktur yang sama:
+  hydrate markup framework, validasi men-gate submit, event → state framework, tema light/dark.
+### Changed
+- `package.json`: export `./react` + `./blazor`, `react` peerDependency opsional (`>=18`).
+  `version` 0.9.0 → 0.9.1.
+
 ## [0.9.0] — 2026-07-22
 ### Added
 - **Adapter Vue 3** (`foundry/vue`) — composable `useFoundry(rootRef?)` yang meng-*hydrate*
