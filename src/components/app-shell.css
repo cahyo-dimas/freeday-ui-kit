@@ -9,8 +9,20 @@
 .fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
 /* Brand is a fixed header — same height as the topbar so they align, and only
- * the nav below it scrolls. */
+ * the nav below it scrolls. Bare text (no children) renders as one bold
+ * display line via the rules on .fdy-app__brand itself. For a mark + two-line
+ * title/subtitle, add structured children mirroring .fdy-appbar__brand:
+ * <div class="fdy-app__brand"><svg class="fdy-app__brand-mark">…</svg>
+ *   <div class="fdy-app__brand-text">
+ *     <span class="fdy-app__brand-title">…</span>
+ *     <span class="fdy-app__brand-subtitle">…</span>
+ *   </div></div> */
 .fdy-app__brand{flex:none;display:flex;align-items:center;gap:var(--space-2);box-sizing:border-box;min-height:var(--space-16);font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);padding:0 var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__brand-mark{flex:none;width:1.5rem;height:1.5rem;}
+.fdy-app__brand-mark svg{display:block;width:100%;height:100%;}
+.fdy-app__brand-text{display:flex;flex-direction:column;min-width:0;}
+.fdy-app__brand-title{display:block;font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fdy-app__brand-subtitle{display:block;font-size:var(--text-xs);font-weight:var(--weight-regular);color:var(--color-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:2px;padding:var(--space-3) var(--space-3) var(--space-6);}
 .fdy-nav__item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-nav__item:hover{background:var(--color-surface-2);color:var(--color-text);}
@@ -32,6 +44,12 @@
 .fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-nav__grouplabel::after{content:"";flex:none;width:.45rem;height:.45rem;margin-right:var(--space-1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.7;}
 .fdy-nav__group[open] > .fdy-nav__grouplabel::after{transform:rotate(45deg);}
+/* --flat: calmer, non-collapsible grouped nav — hide the caret, drop the
+ * inter-group divider and the collapse cursor. Works on native <details> groups
+ * (caret just hidden) and on static <div>/<p> groups (never collapsible). */
+.fdy-nav--flat .fdy-nav__grouplabel::after{display:none;}
+.fdy-nav--flat .fdy-nav__group + .fdy-nav__group,.fdy-nav--flat .fdy-nav__item + .fdy-nav__group{border-top:0;}
+.fdy-nav--flat .fdy-nav__grouplabel{cursor:default;}
 /* Collapsible item (nested tree): <details class="fdy-nav__tree"><summary class="fdy-nav__item"> */
 .fdy-nav__tree{margin:0;}
 .fdy-nav__tree > summary{list-style:none;}
