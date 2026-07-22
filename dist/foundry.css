@@ -50,23 +50,31 @@ a { color: var(--color-primary); }
 .fdy-alert--danger{background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
 .fdy-alert--danger .fdy-alert__title,.fdy-alert--danger .fdy-alert__icon{color:var(--color-danger-strong);}
 
-/* Foundry — App Shell */
-.fdy-app{display:grid;grid-template-columns:15rem 1fr;grid-template-rows:auto 1fr;grid-template-areas:"sidebar topbar" "sidebar main";min-height:100vh;background:var(--color-surface-2);}
-/* --fill: pin the shell to the viewport so topbar + sidebar stay put and only
- * __main scrolls (sticky-header app layout). Plain .fdy-app grows with content. */
-.fdy-app--fill{min-height:0;height:100vh;height:100dvh;}
-.fdy-app__sidebar{grid-area:sidebar;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;padding:var(--space-4);gap:var(--space-1);overflow-y:auto;}
+/* Foundry — App Shell.
+ * Natural document scroll: the shell grows with content and the PAGE scrolls,
+ * while the sidebar and topbar are position:sticky so they stay in view. No
+ * fixed-height / internal-scroll trickery (that leaves a white gap if the host
+ * page can still scroll). Structure: .fdy-app > (.fdy-app__sidebar, .fdy-app__content
+ * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
+ * topbar a tall containing block so it can travel — a bare grid cell can't. */
+.fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow-y:auto;flex:none;width:15rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;padding:var(--space-4);gap:var(--space-1);}
+.fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
 .fdy-app__brand{font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);padding:var(--space-2) var(--space-2) var(--space-4);}
 .fdy-nav{display:flex;flex-direction:column;gap:2px;}
 .fdy-nav__item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);text-decoration:none;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-nav__item:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
-.fdy-app__topbar{grid-area:topbar;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-4);padding:0 var(--space-6);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-4);padding:0 var(--space-6);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;}
-.fdy-app__main{grid-area:main;padding:var(--space-6);overflow:auto;}
+.fdy-app__main{flex:1;padding:var(--space-6);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-skip:focus{transform:translateY(0);}
-@media (max-width:720px){.fdy-app{grid-template-columns:1fr;grid-template-areas:"topbar" "main";}.fdy-app__sidebar{display:none;}}
+/* --static: for a bounded/embedded shell (a demo box, not the whole page) —
+ * drop sticky so nothing escapes the box; sidebar stretches to fill it. */
+.fdy-app--static .fdy-app__sidebar{position:static;height:auto;align-self:stretch;}
+.fdy-app--static .fdy-app__topbar{position:static;}
+@media (max-width:720px){.fdy-app__sidebar{display:none;}}
 
 /* Foundry — App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;

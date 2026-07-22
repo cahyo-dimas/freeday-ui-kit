@@ -10,7 +10,8 @@
 <link rel="stylesheet" href="../dist/foundry.tokens.css">
 <link rel="stylesheet" href="../dist/foundry.css">
 <style>
-  html, body { height: 100%; margin: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--space-16) + var(--space-3)); }
+  body { margin: 0; }
   .doc-hero { padding: var(--space-8) 0 var(--space-6); }
   .doc-hero h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
   .doc-hero p { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 46rem; margin: 0; line-height: var(--leading-normal); }
@@ -23,8 +24,6 @@
   .doc-demo--stack { flex-direction: column; }
   .demo { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
   .doc-navgroup__label { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); color: var(--color-text-subtle); padding: var(--space-4) var(--space-3) var(--space-1); font-weight: var(--weight-semibold); }
-  .fdy-app__sidebar { overflow-y: auto; }
-  .fdy-app__main { scroll-behavior: smooth; }
   .doc-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--space-2); width: 100%; }
   .doc-sw { border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; font-size: var(--text-xs); background: var(--color-surface); }
   .doc-sw i { display: block; height: 48px; }
@@ -57,7 +56,7 @@
 </head>
 <body>
 <a class="fdy-skip" href="#main">Lewati ke konten utama</a>
-<div class="fdy-app fdy-app--fill">
+<div class="fdy-app">
   <aside class="fdy-app__sidebar" aria-label="Navigasi komponen">
     <div class="fdy-app__brand">Foundry</div>
     <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
@@ -121,6 +120,7 @@
     </nav>
   </aside>
 
+  <div class="fdy-app__content">
   <header class="fdy-app__topbar">
     <h1 class="fdy-app__title">Komponen</h1>
     <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="theme" aria-pressed="false">Tema</button>
@@ -1152,7 +1152,7 @@
       <h2>Contoh: satu layar bisnis</h2>
       <p class="doc-desc">Semua komponen dirakit jadi layar faktur nyata.</p>
       <div class="doc-demo doc-demo--block" style="padding:0;background:transparent;border:0">
-        <div class="fdy-app" style="min-height:440px;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
+        <div class="fdy-app fdy-app--static" style="min-height:440px;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;position:relative">
           <a class="fdy-skip" href="#screen-main">Lewati ke konten utama</a>
           <aside class="fdy-app__sidebar" aria-label="Navigasi contoh">
             <div class="fdy-app__brand">Foundry</div>
@@ -1162,6 +1162,7 @@
               <a class="fdy-nav__item" href="#sec-screen">Laporan</a>
             </nav>
           </aside>
+          <div class="fdy-app__content">
           <header class="fdy-app__topbar">
             <h3 class="fdy-app__title">Faktur</h3>
             <button class="fdy-btn" id="open-new">+ Faktur baru</button>
@@ -1184,6 +1185,7 @@
                 </tbody>
               </table>
             </div>
+          </div>
           </div>
         </div>
         <dialog class="fdy-modal" id="new-modal" aria-labelledby="new-title">
@@ -1241,6 +1243,7 @@
       </div>
     </section>
   </main>
+  </div>
 </div>
 
 <script src="../dist/foundry-select.js"></script>
