@@ -25,6 +25,35 @@
   function colorVar(name) { return 'var(--color-' + (name || 'primary') + ')'; }
   function ensureImg(el) { if (!el.hasAttribute('role')) el.setAttribute('role', 'img'); }
 
+  // ---- Interactive tooltip (Chart.js-style hover readout; purely visual) ----
+  function makeTip(container) {
+    if (getComputedStyle(container).position === 'static') container.style.position = 'relative';
+    var tip = document.createElement('div');
+    tip.className = 'fdy-chart__tip';
+    tip.setAttribute('aria-hidden', 'true');
+    container.appendChild(tip);
+    return tip;
+  }
+  function showTip(tip, container, clientX, clientY, text) {
+    var r = container.getBoundingClientRect();
+    tip.textContent = text;
+    tip.style.left = (clientX - r.left) + 'px';
+    tip.style.top = (clientY - r.top) + 'px';
+    tip.classList.add('is-visible');
+  }
+  function hideTip(tip) { tip.classList.remove('is-visible'); }
+
+  // Donut sector geometry (SVG path for a ring slice between two radii/angles).
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function sectorPath(cx, cy, R, r, a0, a1) {
+    var large = (a1 - a0) > 180 ? 1 : 0;
+    var p0 = polar(cx, cy, R, a0), p1 = polar(cx, cy, R, a1), p2 = polar(cx, cy, r, a1), p3 = polar(cx, cy, r, a0);
+    return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2)
+      + ' A' + R + ' ' + R + ' 0 ' + large + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2)
+      + ' L' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2)
+      + ' A' + r + ' ' + r + ' 0 ' + large + ' 0 ' + p3[0].toFixed(2) + ' ' + p3[1].toFixed(2) + ' Z';
+  }
+
   function renderSparkline(el) {
     var vals = nums(el, 'data-values');
     if (vals.length < 2) return;
@@ -60,7 +89,7 @@
       var val = document.createElement('span'); val.className = 'fdy-bars__val'; val.textContent = v;
       var bar = document.createElement('div'); bar.className = 'fdy-bars__bar';
       bar.style.height = Math.max(2, (v / max) * 100) + '%';
-      bar.setAttribute('title', (labels[i] || ('#' + (i + 1))) + ': ' + v);
+      col.setAttribute('data-tip', (labels[i] || ('#' + (i + 1))) + ': ' + v);
       track.appendChild(val); track.appendChild(bar);
       col.appendChild(track);
       if (labels[i]) {
@@ -69,6 +98,14 @@
       }
       el.appendChild(col);
     });
+    // Hover tooltip that follows the cursor over each column.
+    var tip = makeTip(el);
+    el.addEventListener('mousemove', function (e) {
+      var col = e.target.closest('.fdy-bars__col');
+      if (col && col.hasAttribute('data-tip')) showTip(tip, el, e.clientX, e.clientY, col.getAttribute('data-tip'));
+      else hideTip(tip);
+    });
+    el.addEventListener('mouseleave', function () { hideTip(tip); });
     ensureImg(el);
   }
 
@@ -93,6 +130,23 @@
     center.innerHTML = centerLabel ? '<b></b>' : '<b></b><span>Total</span>';
     center.querySelector('b').textContent = centerLabel != null ? centerLabel : String(total);
     ring.appendChild(center);
+    // Transparent SVG sector per slice → per-segment hover (pop + tooltip).
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'fdy-donut__hit');
+    svg.setAttribute('viewBox', '0 0 128 128');
+    var ringTip = makeTip(ring), acc2 = 0;
+    vals.forEach(function (v, i) {
+      var a0 = (acc2 / total) * 360, a1 = ((acc2 + v) / total) * 360; acc2 += v;
+      var path = document.createElementNS(NS, 'path');
+      path.setAttribute('class', 'fdy-donut__seg');
+      path.setAttribute('d', sectorPath(64, 64, 64, 33, a0, a1));
+      var text = (labels[i] || ('#' + (i + 1))) + ': ' + v + ' (' + Math.round((v / total) * 100) + '%)';
+      path.addEventListener('mousemove', function (e) { showTip(ringTip, ring, e.clientX, e.clientY, text); });
+      path.addEventListener('mouseleave', function () { hideTip(ringTip); });
+      svg.appendChild(path);
+    });
+    ring.appendChild(svg);
     var legend = document.createElement('ul'); legend.className = 'fdy-chart__legend';
     vals.forEach(function (v, i) {
       var li = document.createElement('li');

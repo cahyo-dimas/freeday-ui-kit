@@ -3,6 +3,22 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.3] — 2026-07-22
+### Added
+- **Chart hover (Chart.js-style)** — bar & donut charts now show an interactive tooltip that
+  follows the cursor (`label: value`, donut adds `(%)`). Bars dim while one is hovered (the
+  hovered bar stays lit); donut gains a transparent SVG sector per slice that pops on hover.
+### Changed
+- **App shell**: the brand is now a fixed header (only the nav scrolls, so the logo never
+  scrolls away). New `.fdy-app__navtoggle` (hamburger) + `.fdy-app--nav-collapsed` to
+  collapse/hide the sidebar. Roomier `--space-8` main padding.
+### Fixed
+- **Anchor buttons underlined** — `.fdy-btn` now sets `text-decoration:none`, so links styled
+  as buttons (e.g. hero CTAs) no longer show an underline.
+### Docs
+- Nav categories are collapsible `<details>` groups with chevrons (PrimeVue-style); more
+  section whitespace; topbar hamburger to collapse the sidebar.
+
 ## [0.9.2] — 2026-07-22
 ### Fixed
 - **Hover kontrol form tak terlihat** — sejak border resting jadi `--color-control-border`
