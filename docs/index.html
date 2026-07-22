@@ -107,6 +107,7 @@
       <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
       <div class="doc-navgroup__label">Utilitas</div>
       <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
+      <a class="fdy-nav__item" href="#sec-breakpoint">Breakpoint</a>
       <div class="doc-navgroup__label">Tentang</div>
       <a class="fdy-nav__item" href="#sec-a11y">Aksesibilitas</a>
     </nav>
@@ -989,6 +990,16 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-breakpoint">
+      <h2>Breakpoint</h2>
+      <p class="doc-desc">Utilitas tampilan responsif + provider JS. Skala (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. Kelas <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> menyembunyikan per rentang. <code>foundry-breakpoint.js</code> menstempel <code>&lt;html data-breakpoint&gt;</code> + memancarkan <code>fdy-breakpoint-change</code>. Ubah ukuran jendela untuk melihatnya.</p>
+      <div class="doc-demo doc-demo--block" style="display:flex;flex-direction:column;gap:var(--space-3)">
+        <p style="margin:0">Breakpoint saat ini: <strong class="fdy-badge fdy-badge--info" data-fdy-breakpoint-label>…</strong></p>
+        <div class="fdy-hide-below-md"><span class="fdy-badge fdy-badge--success">Terlihat di md ke atas (≥ 960px) — konten desktop</span></div>
+        <div class="fdy-hide-above-md"><span class="fdy-badge fdy-badge--warning">Terlihat di bawah md (&lt; 960px) — konten mobile</span></div>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-a11y">
       <h2>Aksesibilitas</h2>
       <p class="doc-desc">Kontrak yang dipegang setiap komponen — bukan renungan belakangan.</p>
@@ -1018,6 +1029,7 @@
 <script src="../dist/foundry-upload.js"></script>
 <script src="../dist/foundry-menu.js"></script>
 <script src="../dist/foundry-drawer.js"></script>
+<script src="../dist/foundry-breakpoint.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');

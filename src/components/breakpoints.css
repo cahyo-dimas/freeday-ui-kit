@@ -1,0 +1,15 @@
+/* Foundry — Responsive display utilities (pairs with foundry-breakpoint.js).
+ * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
+ * NOTE: media-query breakpoints must be literal — CSS can't read custom properties
+ * inside @media, so these px are structural, not stray magic numbers. */
+.fdy-hidden{display:none !important;}
+
+/* hide-below-X — hidden when the viewport is narrower than X (content shows at X and up) */
+@media (max-width:599.98px){.fdy-hide-below-sm{display:none !important;}}
+@media (max-width:959.98px){.fdy-hide-below-md{display:none !important;}}
+@media (max-width:1279.98px){.fdy-hide-below-lg{display:none !important;}}
+
+/* hide-above-X — hidden when the viewport is X and wider (content shows below X) */
+@media (min-width:600px){.fdy-hide-above-sm{display:none !important;}}
+@media (min-width:960px){.fdy-hide-above-md{display:none !important;}}
+@media (min-width:1280px){.fdy-hide-above-lg{display:none !important;}}
