@@ -39,5 +39,5 @@
     initTriggers();
   }
 
-  window.FreedayDrawer = { init: initTriggers };
+  window.FreedayDrawer = { init: initTriggers, initAll: initTriggers };
 })();

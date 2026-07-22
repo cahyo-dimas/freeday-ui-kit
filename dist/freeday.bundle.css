@@ -1078,7 +1078,7 @@ a { color: var(--color-primary); }
 
 /* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
 .fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
-.fdy-datatable .fdy-table-scroll{overflow-x:auto;}
+.fdy-table-scroll{overflow-x:auto;}
 .fdy-table-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-table-toolbar__search{max-width:18rem;}
 .fdy-table-toolbar__spacer{flex:1;}

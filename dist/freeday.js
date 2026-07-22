@@ -1455,7 +1455,7 @@
     initTriggers();
   }
 
-  window.FreedayDrawer = { init: initTriggers };
+  window.FreedayDrawer = { init: initTriggers, initAll: initTriggers };
 })();
 
 /* Freeday — form validation enhancer (optional, zero-dependency).
