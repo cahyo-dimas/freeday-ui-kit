@@ -16,5 +16,9 @@ yarn-error.log*
 .claude/
 .superpowers/
 
+# Local cross-repo working notes (distilled into docs/superpowers/specs/2026-07-23-freeday-adoption-backlog.md)
+freeday-convert-gaps.md
+freeday-kit-improvements.md
+
 # NOTE: dist/ is intentionally committed so projects can import
 # freeday.tokens.css / freeday.css directly without running a build.

@@ -104,7 +104,8 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 
 Tabel lebar (banyak kolom) butuh wrapper untuk scroll horizontal: bungkus `.fdy-table` dengan
 `.fdy-table-wrap` (tabel biasa, sudah termasuk border+shadow shell) atau `.fdy-table-scroll`
-(dipakai `.fdy-datatable`, yang shell-nya sendiri sudah punya border/shadow). Tanpa salah satu
+(scroll polos tanpa shell — jalan standalone maupun di dalam `.fdy-datatable` yang shell
+border/shadow-nya sudah ada sendiri). Tanpa salah satu
 wrapper ini tabel lebar akan overflow container-nya, bukan scroll sendiri.
 
 ### 3. Theming — 3 sumbu lewat `data-*` di root
