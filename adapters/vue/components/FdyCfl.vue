@@ -28,6 +28,7 @@ const props = defineProps<{
   columns: ReadonlyArray<CflColumn>;
   display: (row: Row) => string;
   rowKey: (row: Row) => string;
+  /** Advisory only — the caller's `fetchPage` owns paging; kept for API documentation. */
   pageSize?: number;
   placeholder?: string;
   disabled?: boolean;
@@ -67,8 +68,14 @@ const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid ==
 const displayValue: ComputedRef<string> = computed((): string =>
   props.modelValue !== null ? props.display(props.modelValue) : '',
 );
+// The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
+// search input's aria refs on rows existing — otherwise they'd dangle during loading/empty/error.
+const hasRows: ComputedRef<boolean> = computed((): boolean => rows.value.length > 0);
+const controlsId: ComputedRef<string | undefined> = computed((): string | undefined =>
+  hasRows.value ? resultsId : undefined,
+);
 const activeDescendant: ComputedRef<string | undefined> = computed((): string | undefined =>
-  activeIndex.value >= 0 ? rowId(activeIndex.value) : undefined,
+  hasRows.value && activeIndex.value >= 0 ? rowId(activeIndex.value) : undefined,
 );
 const isInitialLoading: ComputedRef<boolean> = computed((): boolean => loading.value && rows.value.length === 0);
 const isBlockingError: ComputedRef<boolean> = computed((): boolean => error.value !== null && rows.value.length === 0);
@@ -211,6 +218,12 @@ function closeDialog(): void {
 // Fires for every close path (button, Esc, commit); centralise cleanup here.
 function onClose(): void {
   reqToken++; // invalidate any in-flight fetch so it can't apply after close
+  if (searchTimer !== null) {
+    // Cancel a debounce armed just before close (e.g. typed a char then clicked a
+    // row) so it can't fire a stray fetchPage after the dialog is gone.
+    clearTimeout(searchTimer);
+    searchTimer = null;
+  }
   cache.clear();
   loading.value = false;
   triggerEl.value?.focus();
@@ -278,7 +291,7 @@ onBeforeUnmount((): void => {
               :value="query"
               placeholder="Cari…"
               aria-label="Cari data"
-              :aria-controls="resultsId"
+              :aria-controls="controlsId"
               :aria-activedescendant="activeDescendant"
               @input="onSearchInput"
             />
