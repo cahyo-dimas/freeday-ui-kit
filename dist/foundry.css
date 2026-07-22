@@ -384,7 +384,11 @@ a { color: var(--color-primary); }
 /* Foundry — Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
  * backdrop / return-focus are free). Anchors left (default) or right.
  * Enhanced by foundry-drawer.js (open trigger + backdrop-click close). */
-.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);display:flex;flex-direction:column;border:0;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-4);overflow:hidden;}
+/* display is gated behind [open] so the native <dialog> stays hidden until opened.
+ * An unconditional display here would beat the UA `dialog:not([open]){display:none}`
+ * rule (author origin wins over user-agent) and leave the drawer visible on load. */
+.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);flex-direction:column;border:0;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-4);overflow:hidden;}
+.fdy-drawer[open]{display:flex;}
 .fdy-drawer--right{inset:0 0 0 auto;}
 .fdy-drawer::backdrop{background:rgba(10,12,25,.5);backdrop-filter:blur(2px);}
 .fdy-drawer__header{flex:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
