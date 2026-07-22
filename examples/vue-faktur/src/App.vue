@@ -262,18 +262,18 @@ const toggleTheme = (): void => {
             <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5)">
               <label class="fdy-field" style="max-width:none">
                 <span class="fdy-label" id="lbl-kirim">Tanggal kirim</span>
-                <FdyDatepicker v-model="tanggalKirim" id="dp-kirim" describedby="help-kirim" />
+                <FdyDatepicker v-model="tanggalKirim" id="dp-kirim" aria-labelledby="lbl-kirim" describedby="help-kirim" />
                 <span id="help-kirim" class="fdy-help">Nilai awal: {{ tanggalKirim }}</span>
               </label>
 
               <label class="fdy-field" style="max-width:none">
                 <span class="fdy-label" id="lbl-terbit">Tanggal terbit (min/max 30 hari)</span>
-                <FdyDatepicker v-model="tanggalTerbitDemo" :min="tanggalTerbit" :max="tanggalTerbitMax" placeholder="Pilih dalam 30 hari" />
+                <FdyDatepicker v-model="tanggalTerbitDemo" :min="tanggalTerbit" :max="tanggalTerbitMax" aria-labelledby="lbl-terbit" placeholder="Pilih dalam 30 hari" />
               </label>
 
               <label class="fdy-field" style="max-width:none">
                 <span class="fdy-label" id="lbl-invalid-tanggal">Tanggal jatuh tempo (contoh invalid)</span>
-                <FdyDatepicker v-model="tanggalInvalidDemo" placeholder="Wajib dipilih" invalid describedby="err-tanggal-invalid" />
+                <FdyDatepicker v-model="tanggalInvalidDemo" aria-labelledby="lbl-invalid-tanggal" placeholder="Wajib dipilih" invalid describedby="err-tanggal-invalid" />
                 <span id="err-tanggal-invalid" class="fdy-help" style="color:var(--color-danger)">Tanggal jatuh tempo wajib diisi.</span>
               </label>
             </div>

@@ -33,6 +33,7 @@ const props = defineProps<{
   invalid?: boolean;
   describedby?: string;
   id?: string;
+  ariaLabelledby?: string;
 }>();
 
 const emit = defineEmits<{
@@ -283,6 +284,7 @@ onBeforeUnmount((): void => {
       :class="{ 'is-open': open }"
       aria-haspopup="dialog"
       :aria-expanded="open"
+      :aria-labelledby="ariaLabelledby"
       :aria-invalid="isInvalid ? 'true' : undefined"
       :aria-describedby="describedby"
       :disabled="isDisabled"
