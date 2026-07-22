@@ -3,6 +3,19 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [0.9.6] — 2026-07-22
+### Docs
+- **Whole-app language toggle (ID ⇄ EN)** — the topbar toggle now switches the entire docs,
+  not just the landing: topbar, sidebar labels + group headers, every section heading, and
+  every description. Keyed by section id / nav href, round-trips cleanly. (In-demo sample
+  labels stay as illustrative content.)
+- **Proper state icons** — the empty / error state cards use duotone SVG icons instead of
+  emoji (🗂️/⚠️).
+- Hero CTA spacing loosened (removed a stale `.doc-hero p` rule that zeroed the gap).
+### Changed
+- **Icons stay single-tone** — reverted the date/time picker glyphs to minimalist single-tone
+  (duotone is reserved for the larger illustrative icons — states — and the theme toggle).
+
 ## [0.9.5] — 2026-07-22
 ### Added
 - **Two-tone (duotone) control icons** — the date/time picker triggers (and the datetime

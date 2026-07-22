@@ -12,10 +12,7 @@
 <style>
   html { scroll-behavior: smooth; scroll-padding-top: calc(var(--space-16) + var(--space-3)); }
   body { margin: 0; }
-  .doc-hero { padding: var(--space-8) 0 var(--space-6); }
-  .doc-hero h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-3); }
-  .doc-hero p { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 46rem; margin: 0; line-height: var(--leading-normal); }
-  .doc-hero .demo { margin-top: var(--space-5); }
+  /* (hero typography is defined in the landing block below) */
   .doc-section { max-width: 66rem; margin: 0 0 var(--space-12); scroll-margin-top: var(--space-4); }
   .doc-section > h2 { font-size: var(--text-2xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-1); }
   .doc-section > .doc-desc { color: var(--color-text-muted); margin: 0 0 var(--space-4); font-size: var(--text-sm); max-width: 46rem; line-height: var(--leading-normal); }
@@ -61,7 +58,7 @@
   .doc-eyebrow::before { content: ""; width: var(--space-8); height: 2px; background: var(--color-accent); border-radius: 2px; }
   .doc-hero h1 { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: 1.04; letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-5); text-wrap: balance; }
   .doc-hero h1 em { font-style: normal; color: var(--color-primary); }
-  .doc-hero__lead { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 34rem; margin: 0 0 var(--space-6); line-height: var(--leading-normal); }
+  .doc-hero__lead { font-size: var(--text-lg); color: var(--color-text-muted); max-width: 34rem; margin: 0 0 var(--space-8); line-height: var(--leading-normal); }
   .doc-hero__cta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; margin-bottom: var(--space-5); }
   .doc-install { display: inline-flex; align-items: center; gap: var(--space-3); max-width: 100%; font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text); background: var(--color-surface-3); border: var(--bw) solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); overflow-x: auto; }
   .doc-install b { color: var(--color-accent); font-weight: var(--weight-medium); user-select: none; }
@@ -242,14 +239,14 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v0.9.5</p>
+          <p class="doc-eyebrow">Design System · v0.9.6</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Foundry — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;npm i github:cahyo-dimas/foundry-ui-kit#v0.9.5</div>
+          <div class="doc-install"><b>$</b>&nbsp;npm i github:cahyo-dimas/foundry-ui-kit#v0.9.6</div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Foundry">
           <div class="doc-showcase__head">
@@ -1113,8 +1110,8 @@
       <h2>States</h2>
       <p class="doc-desc">Placeholder kosong / error untuk area data.</p>
       <div class="doc-demo doc-cardgrid">
-        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state"><div class="fdy-state__icon" aria-hidden="true">🗂️</div><div class="fdy-state__title">Belum ada faktur</div><div class="fdy-state__text">Faktur yang kamu buat akan muncul di sini.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--sm">Buat faktur</button></div></div></div></div>
-        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state fdy-state--danger"><div class="fdy-state__icon" aria-hidden="true">⚠️</div><div class="fdy-state__title">Gagal memuat</div><div class="fdy-state__text">Tidak bisa mengambil data dari server.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Coba lagi</button></div></div></div></div>
+        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state"><div class="fdy-state__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2v5h5" fill="currentColor" opacity=".16"></path><path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="currentColor" opacity=".16"></path><path d="M13 2v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><path d="M9 13h6M9 17h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></div><div class="fdy-state__title">Belum ada faktur</div><div class="fdy-state__text">Faktur yang kamu buat akan muncul di sini.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--sm">Buat faktur</button></div></div></div></div>
+        <div class="fdy-card"><div class="fdy-card__body"><div class="fdy-state fdy-state--danger"><div class="fdy-state__icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" fill="currentColor" opacity=".16"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><path d="M12 9v4M12 17h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></div><div class="fdy-state__title">Gagal memuat</div><div class="fdy-state__text">Tidak bisa mengambil data dari server.</div><div class="fdy-state__actions"><button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Coba lagi</button></div></div></div></div>
       </div>
     </section>
 
@@ -1609,7 +1606,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Foundry</b> · design system token-driven &amp; framework-agnostic · v0.9.5</div>
+      <div><b>Foundry</b> · design system token-driven &amp; framework-agnostic · v0.9.6</div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -1677,13 +1674,90 @@
     'fw.blazor': 'Interop <code>window.FoundryBlazor</code> → <code>[JSInvokable]</code> C# methods.',
     'footer.integrations': 'Integrations',
   };
+  // Section headings + descriptions (keyed by section id), so the whole app — not
+  // just the landing — switches language.
+  const SEC = {
+    'sec-prinsip': { h2: 'Principles', desc: 'Four rules that keep the system consistent as it grows.' },
+    'sec-warna': { h2: 'Colour', desc: 'Semantic roles (Tier-2). Components only touch these roles, never the raw ramp.' },
+    'sec-tipografi': { h2: 'Typography', desc: 'Display <strong>Sora</strong> · body <strong>IBM Plex Sans</strong> · data <strong>JetBrains Mono</strong>.' },
+    'sec-spasi': { h2: 'Spacing', desc: 'A 4px-multiple scale. Always <code>var(--space-N)</code>, never a loose value.' },
+    'sec-radius': { h2: 'Radius &amp; Elevation', desc: 'Tiered corners &amp; shadows — a consistent depth hierarchy.' },
+    'sec-motion': { h2: 'Motion', desc: 'A small set of durations &amp; easings. Hover the track to feel it — disabled under <code>prefers-reduced-motion</code>.' },
+    'sec-tombol': { h2: 'Button', desc: 'Dark-to-bottom gradient + coloured glow. One primary action per screen; the rest are ghost.' },
+    'sec-menu': { h2: 'Menu &amp; Split button', desc: 'Action popup (WAI-ARIA APG menu-button pattern) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = primary action + menu toggle. Needs <code>foundry-menu.js</code>.' },
+    'sec-input': { h2: 'Input', desc: 'Inner shadow + focus glow. Errors use <code>aria-invalid</code> + <code>aria-describedby</code>.' },
+    'sec-inputgroup': { h2: 'Input group', desc: 'Free prefix/suffix addons — text (Rp / %), a decorative icon (<code>__addon--icon</code>), an action button (<code>__btn</code>), or none at all. So "with icon / without / custom icon" is just addon markup.' },
+    'sec-cfl': { h2: 'Choose-from-list', desc: 'A read-only field backed by master data (customers, items, warehouses…). The magnifier on the right opens a search dialog; the picked row fills the field (code + name at once). The value is always <strong>picked</strong>, never typed. Needs <code>foundry-cfl.js</code>.' },
+    'sec-datepicker': { h2: 'Date picker', desc: 'Input-styled trigger + calendar popover — consistent across browsers &amp; themeable. (Native <code>&lt;input type="date"&gt;</code> stays a light option when you don\'t need theming.) A range is two linked pickers; the end can\'t precede the start. Full keyboard support. Needs <code>foundry-datepicker.js</code>.' },
+    'sec-timepicker': { h2: 'Time picker', desc: 'Input-styled trigger + a time-list popup (WAI-ARIA listbox). 24-hour <code>HH:MM</code>; range &amp; step set via <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default every 30 min). Full keyboard support. Needs <code>foundry-timepicker.js</code>.' },
+    'sec-datetimepicker': { h2: 'Datetime picker', desc: 'Composes <strong>date picker + time picker</strong> into one value — reusing two existing components, not a monolithic popover. The <code>foundry-datetime.js</code> composer joins them and emits a single <code>fdy-datetime-change</code> event (<code>value</code> = <code>YYYY-MM-DDTHH:MM</code>). Icon variants are inherited from each child picker.' },
+    'sec-upload': { h2: 'File upload', desc: 'A drop target that also opens the file dialog on click / Enter. Explicit states — idle, drag-over, uploading (progress), done, error — because "nothing happened" is the worst upload feedback. Needs <code>foundry-upload.js</code>. (This demo simulates progress; in a real app, wire the <code>fdy-upload-add</code> event to your upload function.)' },
+    'sec-stepper': { h2: 'Stepper / Wizard', desc: 'A multi-step flow — progress indicator (number → check), a panel per step, Back/Next buttons. Completed steps are clickable to review (linear, no jumping ahead). Needs <code>foundry-stepper.js</code>.' },
+    'sec-slider': { h2: 'Slider', desc: 'Native <code>&lt;input type="range"&gt;</code> themed via <code>accent-color</code> — native keyboard &amp; ARIA, automatic fill &amp; thumb. <code>foundry-slider.js</code> only mirrors the value into an <code>&lt;output&gt;</code>. Colours: primary/accent/danger.' },
+    'sec-rating': { h2: 'Rating', desc: 'Stars — a native radio group (left/right arrows to choose, form-associated). Filled vs empty is shown by <em>fill vs outline</em> (not colour alone). A read-only variant is included. Needs <code>foundry-rating.js</code>.' },
+    'sec-autocomplete': { h2: 'Autocomplete', desc: 'An editable combobox — type to filter suggestions (APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Needs <code>foundry-autocomplete.js</code>. (Static options are filtered client-side; in a real app, fetch/filter server-side.)' },
+    'sec-cascade': { h2: 'Cascade select', desc: 'A hierarchical (drill-down) picker — the data model is a hidden nested <code>&lt;ul&gt;</code>: an <code>&lt;li&gt;</code> with a child <code>&lt;ul&gt;</code> is a branch, without one it is a leaf. Branches drill in, a leaf selects (value = full path). Full keyboard support. Needs <code>foundry-cascade.js</code>.' },
+    'sec-mask': { h2: 'Password &amp; mask', desc: 'A password field with a show/hide toggle (<code>data-fdy-password</code> — reusing the input-group button chrome) and an input that formats as you type (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> letter, <code>*</code> alnum; other characters become literals). Needs <code>foundry-mask.js</code>.' },
+    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors — <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>foundry-form.js</code>.' },
+    'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG) — stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>foundry-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
+    'sec-pilihan': { h2: 'Checkbox · Radio · Switch', desc: 'Native <code>&lt;input&gt;</code> styled — Space, label association, and <code>:focus-visible</code> stay native.' },
+    'sec-alert': { h2: 'Alert', desc: 'Inline messages. The danger variant uses <code>role="alert"</code>.' },
+    'sec-toast': { h2: 'Toast', desc: 'A transient notification in a live region. Call <code>Foundry.toast({variant,title,message})</code>.' },
+    'sec-tooltip': { h2: 'Tooltip', desc: 'Appears on hover/focus. Associated via <code>aria-describedby</code>.' },
+    'sec-tabs': { h2: 'Tabs', desc: 'APG pattern — arrows ←/→, Home/End, roving tabindex. Needs <code>foundry-tabs.js</code>.' },
+    'sec-breadcrumb': { h2: 'Breadcrumb' },
+    'sec-pagination': { h2: 'Pagination' },
+    'sec-table': { h2: 'Table', desc: 'A static semantic table — <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, right-aligned tabular numbers.' },
+    'sec-datatable': { h2: 'Data table', desc: 'Interactive: global search, sort (click a column header), <strong>per-column filters</strong> (funnel icon — text <em>contains</em>, enum <em>checklist</em>, number <em>range</em>), row select → <strong>bulk action bar</strong>, pagination. Needs <code>foundry-table.js</code>.' },
+    'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
+    'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>foundry-chart.js</code>. Colours from tokens; each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
+    'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row.' },
+    'sec-card': { h2: 'Card' },
+    'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
+    'sec-avatar': { h2: 'Avatar' },
+    'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>foundry-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
+    'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages.' },
+    'sec-progress': { h2: 'Progress &amp; Spinner' },
+    'sec-skeleton': { h2: 'Skeleton' },
+    'sec-carousel': { h2: 'Carousel', desc: 'Scroll-snap + arrows + dot indicators. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe on touch, optional autoplay (<code>data-fdy-autoplay</code>, pauses on hover/focus). Needs <code>foundry-carousel.js</code>.' },
+    'sec-timeline': { h2: 'Timeline', desc: 'A vertical event feed — markers on a connecting line, with time &amp; description. Marker colour signals status (paired with text, not colour alone). Pure CSS.' },
+    'sec-appbar': { h2: 'App bar', desc: 'A standalone top bar — brand · actions · spacer. Can be sticky, elevated, dense, or coloured. The hamburger usually opens a drawer (side menu).' },
+    'sec-sidenav': { h2: 'Sidebar menu', desc: 'A vertical navigation menu from <code>.fdy-nav</code> (used by the App shell &amp; this documentation sidebar). Each node is free-form: <strong>icon + text</strong>, <strong>text only</strong>, or add a <strong>count badge</strong>. <code>.fdy-nav__group</code> = a collapsible section; <code>.fdy-nav__tree</code> = a nested item — both native <code>&lt;details&gt;</code> (zero-JS, built-in keyboard). In the App shell the sidebar becomes an off-canvas drawer on mobile.' },
+    'sec-drawer': { h2: 'Drawer', desc: 'A temporary side panel (overlay + backdrop) on top of a native <code>&lt;dialog&gt;</code> — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, and return-focus for free. Left or right. Needs <code>foundry-drawer.js</code>. (The hamburger in the App bar above also opens it.)' },
+    'sec-accordion': { h2: 'Accordion', desc: 'Native <code>&lt;details&gt;</code> — zero-JS, accessible by default.' },
+    'sec-util': { h2: 'Divider · Kbd' },
+    'sec-modal': { h2: 'Modal', desc: 'Native <code>&lt;dialog&gt;</code> — focus-trap, Esc, and a backdrop, free from the browser.' },
+    'sec-screen': { h2: 'Example: one business screen', desc: 'Every component assembled into a real invoice screen.' },
+    'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>foundry-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
+    'sec-a11y': { h2: 'Accessibility', desc: 'A contract every component keeps — not an afterthought.' },
+  };
+  const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };
+  const GROUPS = { 'Fondasi': 'Foundation', 'Aksi & Form': 'Action & Form', 'Feedback': 'Feedback', 'Navigasi': 'Navigation', 'Data': 'Data', 'Tampilan': 'Display', 'Layout': 'Layout', 'Utilitas': 'Utilities', 'Tentang': 'About' };
+  const UI = { title: 'Components', density: 'Density' };
+
   const i18nEls = [...document.querySelectorAll('[data-i18n]')];
-  const idHTML = new Map(i18nEls.map((el) => [el, el.innerHTML]));
+  const orig = new WeakMap();
+  const cap = (el) => { if (!orig.has(el)) orig.set(el, el.innerHTML); return orig.get(el); };
   const langBtn = document.getElementById('lang');
+  const titleEl = document.querySelector('.fdy-app__title');
   let lang = 'id';
   const setLang = (l) => {
-    lang = l;
-    i18nEls.forEach((el) => { const k = el.dataset.i18n; el.innerHTML = (l === 'en' && I18N[k] != null) ? I18N[k] : idHTML.get(el); });
+    lang = l; const en = l === 'en';
+    i18nEls.forEach((el) => { const o = cap(el); const k = el.dataset.i18n; el.innerHTML = (en && I18N[k] != null) ? I18N[k] : o; });
+    document.querySelectorAll('.doc-section[id]').forEach((sec) => {
+      const t = SEC[sec.id]; if (!t) return;
+      const h2 = sec.querySelector(':scope > h2'); const d = sec.querySelector(':scope > .doc-desc');
+      if (h2 && t.h2) { const o = cap(h2); h2.innerHTML = en ? t.h2 : o; }
+      if (d && t.desc) { const o = cap(d); d.innerHTML = en ? t.desc : o; }
+    });
+    document.querySelectorAll('#doc-nav .fdy-nav__item[href^="#sec-"]').forEach((a) => {
+      const t = NAV[a.getAttribute('href')]; if (t == null) return; const o = cap(a); a.innerHTML = en ? t : o;
+    });
+    document.querySelectorAll('#doc-nav .doc-navgroup__summary').forEach((s) => {
+      const key = (orig.has(s) ? orig.get(s) : s.textContent).trim(); const t = GROUPS[key]; if (t == null) return; const o = cap(s); s.innerHTML = en ? t : o;
+    });
+    if (titleEl) { const o = cap(titleEl); titleEl.innerHTML = en ? UI.title : o; }
+    { const o = cap(densityBtn); densityBtn.innerHTML = en ? UI.density : o; }
     root.lang = l;
     langBtn.textContent = l === 'id' ? 'EN' : 'ID';
     langBtn.setAttribute('aria-label', l === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia');
