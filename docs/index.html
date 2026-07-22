@@ -81,6 +81,7 @@
       <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
       <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
       <a class="fdy-nav__item" href="#sec-slider">Slider</a>
+      <a class="fdy-nav__item" href="#sec-rating">Rating</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -550,6 +551,27 @@
           </div>
           <input class="fdy-slider fdy-slider--accent" type="range" id="sld-budget" min="0" max="100" value="30" data-fdy-slider aria-label="Anggaran juta rupiah">
           <div class="fdy-slider__scale"><span>Rp 0</span><span>Rp 100 jt</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-rating">
+      <h2>Rating</h2>
+      <p class="doc-desc">Bintang — grup radio native (panah kiri/kanan untuk memilih, ter-asosiasi form). Terisi vs kosong dibedakan <em>isi vs garis</em> (bukan warna saja). Ada varian read-only. Butuh <code>foundry-rating.js</code>.</p>
+      <div class="doc-demo" style="align-items:center;gap:var(--space-8)">
+        <div class="fdy-rating" data-fdy-rating role="radiogroup" aria-label="Beri nilai layanan">
+          <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">1 bintang</span></label>
+          <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">2 bintang</span></label>
+          <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">3 bintang</span></label>
+          <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="4" checked><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">4 bintang</span></label>
+          <label class="fdy-rating__star"><input type="radio" name="svc-rating" value="5"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg><span class="fdy-visually-hidden">5 bintang</span></label>
+        </div>
+        <div class="fdy-rating fdy-rating--readonly fdy-rating--sm" data-fdy-rating data-fdy-readonly data-value="4" role="img" aria-label="Nilai 4 dari 5">
+          <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
+          <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
+          <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
+          <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
+          <span class="fdy-rating__star"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14l-5-4.87 6.91-1.01L12 2z"></path></svg></span>
         </div>
       </div>
     </section>
@@ -1168,6 +1190,7 @@
 <script src="../dist/foundry-chart.js"></script>
 <script src="../dist/foundry-stepper.js"></script>
 <script src="../dist/foundry-slider.js"></script>
+<script src="../dist/foundry-rating.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
