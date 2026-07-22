@@ -95,6 +95,20 @@
   .doc-footer a { color: var(--color-primary-strong); text-decoration: none; }
   .doc-footer a:hover { text-decoration: underline; }
   .doc-footer__links { display: flex; gap: var(--space-5); flex-wrap: wrap; }
+  /* Collapsible nav categories (PrimeVue-style) */
+  .doc-navgroup { margin: 0; }
+  .doc-navgroup + .doc-navgroup { border-top: var(--bw) solid var(--color-border-muted); }
+  .doc-navgroup__summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-4) var(--space-3) var(--space-2); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--weight-semibold); color: var(--color-text-subtle); }
+  .doc-navgroup__summary::-webkit-details-marker { display: none; }
+  .doc-navgroup__summary:hover { color: var(--color-text-muted); }
+  .doc-navgroup__summary:focus-visible { outline: none; border-radius: var(--radius-sm); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 45%, transparent); }
+  .doc-navgroup__summary::after { content: ""; flex: none; width: .45rem; height: .45rem; margin-right: var(--space-1); border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform var(--dur-fast) var(--ease-standard); opacity: .7; }
+  .doc-navgroup[open] > .doc-navgroup__summary::after { transform: rotate(45deg); }
+  .doc-navgroup__items { display: flex; flex-direction: column; gap: 2px; }
+  /* Breathing room */
+  .doc-section { margin-bottom: var(--space-16); }
+  .doc-section > .doc-desc { margin-bottom: var(--space-5); }
+  .doc-hero { padding: var(--space-12) 0 var(--space-10); margin-bottom: var(--space-12); }
 </style>
 </head>
 <body>
@@ -105,72 +119,109 @@
     <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
       <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
       <a class="fdy-nav__item" href="#sec-integrasi">Integrasi framework</a>
-      <div class="doc-navgroup__label">Fondasi</div>
-      <a class="fdy-nav__item" href="#sec-prinsip">Prinsip</a>
-      <a class="fdy-nav__item" href="#sec-warna">Warna</a>
-      <a class="fdy-nav__item" href="#sec-tipografi">Tipografi</a>
-      <a class="fdy-nav__item" href="#sec-spasi">Spasi</a>
-      <a class="fdy-nav__item" href="#sec-radius">Radius &amp; Elevasi</a>
-      <a class="fdy-nav__item" href="#sec-motion">Motion</a>
-      <div class="doc-navgroup__label">Aksi &amp; Form</div>
-      <a class="fdy-nav__item" href="#sec-tombol">Tombol</a>
-      <a class="fdy-nav__item" href="#sec-input">Input</a>
-      <a class="fdy-nav__item" href="#sec-select">Select</a>
-      <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
-      <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
-      <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
-      <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
-      <a class="fdy-nav__item" href="#sec-timepicker">Time picker</a>
-      <a class="fdy-nav__item" href="#sec-datetimepicker">Datetime picker</a>
-      <a class="fdy-nav__item" href="#sec-upload">File upload</a>
-      <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
-      <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
-      <a class="fdy-nav__item" href="#sec-slider">Slider</a>
-      <a class="fdy-nav__item" href="#sec-rating">Rating</a>
-      <a class="fdy-nav__item" href="#sec-autocomplete">Autocomplete</a>
-      <a class="fdy-nav__item" href="#sec-cascade">Cascade select</a>
-      <a class="fdy-nav__item" href="#sec-mask">Password &amp; mask</a>
-      <a class="fdy-nav__item" href="#sec-form">Form validation</a>
-      <div class="doc-navgroup__label">Feedback</div>
-      <a class="fdy-nav__item" href="#sec-alert">Alert</a>
-      <a class="fdy-nav__item" href="#sec-toast">Toast</a>
-      <a class="fdy-nav__item" href="#sec-tooltip">Tooltip</a>
-      <div class="doc-navgroup__label">Navigasi</div>
-      <a class="fdy-nav__item" href="#sec-tabs">Tabs</a>
-      <a class="fdy-nav__item" href="#sec-breadcrumb">Breadcrumb</a>
-      <a class="fdy-nav__item" href="#sec-pagination">Pagination</a>
-      <div class="doc-navgroup__label">Data</div>
-      <a class="fdy-nav__item" href="#sec-table">Table</a>
-      <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
-      <a class="fdy-nav__item" href="#sec-states">States</a>
-      <a class="fdy-nav__item" href="#sec-charts">Charts</a>
-      <a class="fdy-nav__item" href="#sec-tree">Tree view</a>
-      <div class="doc-navgroup__label">Tampilan</div>
-      <a class="fdy-nav__item" href="#sec-card">Card</a>
-      <a class="fdy-nav__item" href="#sec-badge">Badge</a>
-      <a class="fdy-nav__item" href="#sec-avatar">Avatar</a>
-      <a class="fdy-nav__item" href="#sec-chip">Chip</a>
-      <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
-      <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
-      <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
-      <a class="fdy-nav__item" href="#sec-carousel">Carousel</a>
-      <a class="fdy-nav__item" href="#sec-timeline">Timeline</a>
-      <div class="doc-navgroup__label">Layout</div>
-      <a class="fdy-nav__item" href="#sec-appbar">App bar</a>
-      <a class="fdy-nav__item" href="#sec-drawer">Drawer</a>
-      <a class="fdy-nav__item" href="#sec-accordion">Accordion</a>
-      <a class="fdy-nav__item" href="#sec-modal">Modal</a>
-      <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
-      <div class="doc-navgroup__label">Utilitas</div>
-      <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
-      <a class="fdy-nav__item" href="#sec-breakpoint">Breakpoint</a>
-      <div class="doc-navgroup__label">Tentang</div>
-      <a class="fdy-nav__item" href="#sec-a11y">Aksesibilitas</a>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Fondasi</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-prinsip">Prinsip</a>
+          <a class="fdy-nav__item" href="#sec-warna">Warna</a>
+          <a class="fdy-nav__item" href="#sec-tipografi">Tipografi</a>
+          <a class="fdy-nav__item" href="#sec-spasi">Spasi</a>
+          <a class="fdy-nav__item" href="#sec-radius">Radius &amp; Elevasi</a>
+          <a class="fdy-nav__item" href="#sec-motion">Motion</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Aksi &amp; Form</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-tombol">Tombol</a>
+          <a class="fdy-nav__item" href="#sec-input">Input</a>
+          <a class="fdy-nav__item" href="#sec-select">Select</a>
+          <a class="fdy-nav__item" href="#sec-pilihan">Checkbox · Radio · Switch</a>
+          <a class="fdy-nav__item" href="#sec-inputgroup">Input group</a>
+          <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
+          <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
+          <a class="fdy-nav__item" href="#sec-timepicker">Time picker</a>
+          <a class="fdy-nav__item" href="#sec-datetimepicker">Datetime picker</a>
+          <a class="fdy-nav__item" href="#sec-upload">File upload</a>
+          <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
+          <a class="fdy-nav__item" href="#sec-stepper">Stepper</a>
+          <a class="fdy-nav__item" href="#sec-slider">Slider</a>
+          <a class="fdy-nav__item" href="#sec-rating">Rating</a>
+          <a class="fdy-nav__item" href="#sec-autocomplete">Autocomplete</a>
+          <a class="fdy-nav__item" href="#sec-cascade">Cascade select</a>
+          <a class="fdy-nav__item" href="#sec-mask">Password &amp; mask</a>
+          <a class="fdy-nav__item" href="#sec-form">Form validation</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Feedback</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-alert">Alert</a>
+          <a class="fdy-nav__item" href="#sec-toast">Toast</a>
+          <a class="fdy-nav__item" href="#sec-tooltip">Tooltip</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Navigasi</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-tabs">Tabs</a>
+          <a class="fdy-nav__item" href="#sec-breadcrumb">Breadcrumb</a>
+          <a class="fdy-nav__item" href="#sec-pagination">Pagination</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Data</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-table">Table</a>
+          <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
+          <a class="fdy-nav__item" href="#sec-states">States</a>
+          <a class="fdy-nav__item" href="#sec-charts">Charts</a>
+          <a class="fdy-nav__item" href="#sec-tree">Tree view</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Tampilan</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-card">Card</a>
+          <a class="fdy-nav__item" href="#sec-badge">Badge</a>
+          <a class="fdy-nav__item" href="#sec-avatar">Avatar</a>
+          <a class="fdy-nav__item" href="#sec-chip">Chip</a>
+          <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
+          <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
+          <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
+          <a class="fdy-nav__item" href="#sec-carousel">Carousel</a>
+          <a class="fdy-nav__item" href="#sec-timeline">Timeline</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Layout</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-appbar">App bar</a>
+          <a class="fdy-nav__item" href="#sec-drawer">Drawer</a>
+          <a class="fdy-nav__item" href="#sec-accordion">Accordion</a>
+          <a class="fdy-nav__item" href="#sec-modal">Modal</a>
+          <a class="fdy-nav__item" href="#sec-screen">Layar bisnis</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Utilitas</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
+          <a class="fdy-nav__item" href="#sec-breakpoint">Breakpoint</a>
+        </div>
+      </details>
+      <details class="doc-navgroup" open>
+        <summary class="doc-navgroup__summary">Tentang</summary>
+        <div class="doc-navgroup__items">
+          <a class="fdy-nav__item" href="#sec-a11y">Aksesibilitas</a>
+        </div>
+      </details>
     </nav>
   </aside>
 
   <div class="fdy-app__content">
   <header class="fdy-app__topbar">
+    <button class="fdy-app__navtoggle" id="navtoggle" type="button" aria-label="Buka/tutup navigasi" aria-expanded="true" aria-controls="doc-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
     <h1 class="fdy-app__title">Komponen</h1>
     <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="theme" aria-pressed="false">Tema</button>
     <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="density" aria-pressed="false">Kerapatan</button>
@@ -1544,6 +1595,10 @@
   themeBtn.onclick = () => { const d = root.dataset.theme === 'dark' ? 'light' : 'dark'; root.dataset.theme = d; themeBtn.setAttribute('aria-pressed', String(d === 'dark')); };
   const densityBtn = document.getElementById('density');
   densityBtn.onclick = () => { const d = root.dataset.density === 'compact' ? 'comfortable' : 'compact'; root.dataset.density = d; densityBtn.setAttribute('aria-pressed', String(d === 'compact')); };
+  // Collapse / expand the sidebar.
+  const navToggle = document.getElementById('navtoggle');
+  const app = document.querySelector('.fdy-app');
+  navToggle.onclick = () => { const collapsed = app.classList.toggle('fdy-app--nav-collapsed'); navToggle.setAttribute('aria-expanded', String(!collapsed)); };
   // Any [data-close] closes its nearest <dialog>.
   document.addEventListener('click', (e) => {
     const c = e.target.closest('[data-close]');
