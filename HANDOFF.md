@@ -1,8 +1,34 @@
 # Foundry — Handoff (cek pagi hari)
 
-Ringkasan kerja semalam (otonom, sesuai izinmu). Semua **commit lokal saja** — tidak ada
-push/merge/checkout/reset (sesuai batasanmu). Aku tetap di branch `feat/v0.2-rich-refinement`
-dan menandai milestone dengan git tag.
+Ringkasan kerja otonom, sesuai izinmu. Semua **commit lokal** di branch
+`feat/v0.2-rich-refinement`; milestone ditandai git tag. Sudah kupush ke GitHub sampai `v0.4`
+(remote `main`); commit v0.5/v0.6 **belum dipush** — tinggal `git push` saat kamu siap.
+
+## ⭐⭐ v0.5 + v0.6 — SELESAI (tag `v0.5` & `v0.6`) — komponen MudBlazor/PrimeVue
+Loop 1-menit menambah komponen di luar Foundation, referensi MudBlazor & PrimeVue.
+
+**v0.5 (tag `v0.5`) — 7 komponen yang kamu minta eksplisit:**
+- **Badge overlay** (`fdb4ba8`) — angka / "99+" / ikon / dot menempel di sudut ikon/tombol/teks
+  (persis screenshot yang kamu kirim). Lihat menu **"Badge"**.
+- **Buttons** (`c583ee2`) — FAB (+extended/accent/danger), text+ikon, text-only, icon-only,
+  button group. **Menu + split button** (`bad2ec0`). Lihat **"Tombol"** & **"Menu & split"**.
+- **App bar** (`a12667c`), **Drawer** (`e45e5ce`, hamburger app bar membukanya),
+  **Breakpoint provider** (`f3b14a9`), **Carousel** (`1643b35`), **Charts** (`46faa7a` —
+  sparkline/bar/donut, tanpa dependency).
+
+**v0.6 (tag `v0.6`) — "dan komponen lainnya" (pilihan berguna, YAGNI):**
+- **Stepper/Wizard** (`9acc167`), **Timeline** (`731f93c`), **Slider** (`ea9f859`),
+  **Rating** (`13a5bef`), **Tree view** (`876bf8b`), **Autocomplete** (`3c0bdb6`).
+
+**Total sekarang: 41 komponen, 16 enhancer JS, 48 section docs.** `node --test` **6/6**,
+`dist/` deterministik tiap commit, kontras **AA** dicek untuk tiap komponen berwarna (mis. badge
+overlay: danger dibuat pakai `--color-danger-btn` biar lolos AA di dark). **Loop dihentikan** —
+set komponen sudah wajar. Opsional yang sengaja tak kubuat (keputusanmu): dual-range slider,
+role=tree penuh dgn navigasi panah, virtualisasi data-grid, timeline layout alternate.
+
+> Bagian di bawah = handoff v0.4 (parity Foundation) & v0.2/v0.3 — tetap berlaku.
+
+---
 
 ## ⭐ v0.4 — SELESAI (tag `v0.4` @ 02eb769) — parity Foundation + siap-project
 Loop 30-menit menuntaskan semua yang kamu minta. Kamu bilang: ikon CFL jelek (emoji 🔎, kiri) →
