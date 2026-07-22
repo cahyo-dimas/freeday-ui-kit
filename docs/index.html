@@ -92,6 +92,25 @@
   .doc-footer a { color: var(--color-primary-strong); text-decoration: none; }
   .doc-footer a:hover { text-decoration: underline; }
   .doc-footer__links { display: flex; gap: var(--space-5); flex-wrap: wrap; }
+  /* Install pill copy button */
+  .doc-install { padding: var(--space-1) var(--space-1) var(--space-1) var(--space-3); gap: var(--space-2); }
+  .doc-install__cmd { overflow-x: auto; white-space: nowrap; }
+  .doc-install__copy { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 1.9rem; height: 1.9rem; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--color-text-muted); cursor: pointer; transition: background var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard); }
+  .doc-install__copy:hover { background: var(--color-surface); color: var(--color-text); }
+  .doc-install__copy:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 45%, transparent); }
+  .doc-install__copy svg { width: 1rem; height: 1rem; display: block; }
+  .doc-install__copy.is-copied { color: var(--color-success); }
+  /* Sidebar component search */
+  .doc-search { flex: none; display: flex; align-items: center; gap: var(--space-2); margin: var(--space-3) var(--space-3) 0; padding: 0 var(--space-3); height: 2.25rem; background: var(--color-surface-2); border: var(--bw) solid var(--color-control-border); border-radius: var(--radius-md); color: var(--color-text-subtle); transition: border-color var(--dur-fast) var(--ease-standard), box-shadow var(--dur-fast) var(--ease-standard); }
+  .doc-search:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent); }
+  .doc-search svg { width: 1rem; height: 1rem; flex: none; }
+  .doc-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: transparent; font-family: var(--font-body); font-size: var(--text-sm); color: var(--color-text); }
+  .doc-search input:focus { outline: none; }
+  .doc-search input::placeholder { color: var(--color-text-subtle); }
+  .doc-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .fdy-nav__item[hidden], .doc-navgroup[hidden] { display: none; }
+  .doc-nav__empty { display: none; padding: var(--space-4) var(--space-3); font-size: var(--text-sm); color: var(--color-text-muted); }
+  .doc-nav__empty.is-shown { display: block; }
   /* Collapsible nav categories (PrimeVue-style) */
   .doc-navgroup { margin: 0; }
   .doc-navgroup + .doc-navgroup { border-top: var(--bw) solid var(--color-border-muted); }
@@ -121,7 +140,12 @@
 <div class="fdy-app">
   <aside class="fdy-app__sidebar" aria-label="Navigasi komponen">
     <div class="fdy-app__brand">Foundry</div>
+    <div class="doc-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>
+      <input type="search" id="nav-search" placeholder="Cari komponen…" aria-label="Cari komponen" autocomplete="off">
+    </div>
     <nav class="fdy-nav" id="doc-nav" aria-label="Daftar komponen">
+      <p class="doc-nav__empty" id="nav-empty" role="status">Tidak ada hasil.</p>
       <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
       <a class="fdy-nav__item" href="#sec-integrasi">Integrasi framework</a>
       <details class="doc-navgroup" open>
@@ -246,7 +270,7 @@
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;npm i github:cahyo-dimas/foundry-ui-kit#v0.9.6</div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/foundry-ui-kit#v0.9.6</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Foundry">
           <div class="doc-showcase__head">
@@ -1756,6 +1780,7 @@
     'Simpan & baru': 'Save & new', 'Simpan sebagai draf': 'Save as draft', 'Simpan & kirim': 'Save & send',
     'Belum ada faktur': 'No invoices yet', 'Faktur yang kamu buat akan muncul di sini.': 'Invoices you create will appear here.', 'Gagal memuat': 'Failed to load', 'Tidak bisa mengambil data dari server.': "Couldn't fetch data from the server.",
     'Faktur': 'Invoice', 'Produk': 'Products', 'Gudang': 'Warehouse', 'Pajak': 'Tax', 'Laporan': 'Reports', 'Penjualan': 'Sales', 'Neraca': 'Balance sheet', 'baru': 'new',
+    'Cari komponen…': 'Search components…', 'Tidak ada hasil.': 'No results.',
   };
 
   const i18nEls = [...document.querySelectorAll('[data-i18n]')];
@@ -1801,7 +1826,7 @@
     });
     // Demo UI chrome: labels, state text, buttons, menu items, nav-demo labels,
     // and enhancer-rendered placeholders — translated by their text.
-    document.querySelectorAll('.fdy-label, .fdy-state__title, .fdy-state__text, .fdy-menu__item, .fdy-nav__label, .fdy-timepicker__value, .fdy-datepicker__value, .fdy-cascade__value, .fdy-btn:not([data-i18n])').forEach((el) => {
+    document.querySelectorAll('.fdy-label, .fdy-state__title, .fdy-state__text, .fdy-menu__item, .fdy-nav__label, .doc-nav__empty, .fdy-timepicker__value, .fdy-datepicker__value, .fdy-cascade__value, .fdy-btn:not([data-i18n])').forEach((el) => {
       if (el.id === 'lang' || el.id === 'theme' || el.id === 'density') return;
       trNodes(el, en);
     });
@@ -1828,6 +1853,34 @@
   navBackdrop.addEventListener('click', closeMobileNav);
   document.getElementById('doc-nav').addEventListener('click', (e) => { if (mqMobile.matches && e.target.closest('.fdy-nav__item')) closeMobileNav(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && app.classList.contains('fdy-app--nav-open')) closeMobileNav(); });
+
+  // Copy the install command.
+  const copyBtn = document.getElementById('install-copy');
+  const COPY_SVG = copyBtn.innerHTML;
+  const CHECK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
+  const fallbackCopy = (text) => { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) { /* ignore */ } document.body.removeChild(ta); };
+  copyBtn.addEventListener('click', () => {
+    const cmd = document.getElementById('install-cmd').textContent.trim();
+    const done = () => {
+      copyBtn.classList.add('is-copied'); copyBtn.innerHTML = CHECK_SVG; copyBtn.setAttribute('aria-label', 'Tersalin');
+      setTimeout(() => { copyBtn.classList.remove('is-copied'); copyBtn.innerHTML = COPY_SVG; copyBtn.setAttribute('aria-label', 'Salin perintah install'); }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(cmd).then(done).catch(() => { fallbackCopy(cmd); done(); });
+    else { fallbackCopy(cmd); done(); }
+  });
+
+  // Filter the sidebar nav by component name.
+  const navSearch = document.getElementById('nav-search');
+  const navEmpty = document.getElementById('nav-empty');
+  const searchItems = [...document.querySelectorAll('#doc-nav .fdy-nav__item[href^="#sec-"]')];
+  const searchGroups = [...document.querySelectorAll('#doc-nav .doc-navgroup')];
+  navSearch.addEventListener('input', () => {
+    const q = navSearch.value.trim().toLowerCase();
+    searchItems.forEach((a) => { a.hidden = !!q && !a.textContent.toLowerCase().includes(q); });
+    searchGroups.forEach((g) => { const any = [...g.querySelectorAll('.fdy-nav__item')].some((a) => !a.hidden); g.hidden = !!q && !any; if (q && any) g.open = true; });
+    const anyVisible = searchItems.some((a) => !a.hidden);
+    navEmpty.classList.toggle('is-shown', !!q && !anyVisible);
+  });
   // Any [data-close] closes its nearest <dialog>.
   document.addEventListener('click', (e) => {
     const c = e.target.closest('[data-close]');
