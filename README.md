@@ -16,7 +16,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v0.9.6
+npm i github:cahyo-dimas/freeday-ui-kit#v1.0.0
 ```
 ```js
 import 'freeday/css';   // token + komponen (satu file)

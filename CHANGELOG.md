@@ -3,6 +3,21 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.0.0] — 2026-07-22
+Rilis **1.0 — project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
+kontras WCAG AA lolos audit otomatis · installable via git · integrasi Vue/React/Blazor
+terbukti di contoh faktur yang jalan · docs adopsi lengkap.
+### Changed
+- **Rebrand Foundry → Freeday.** Nama paket `freeday`; export
+  `freeday/css | /vue | /react | /blazor | /tokens | /enhancers/*`; API JS
+  `window.Freeday*` / `Freeday.toast()` / hook `useFreeday`; artefak dist `freeday.*` + `freeday-*.js`.
+  Prefix kelas/token **`fdy-` dipertahankan** (backronym FreeDaY) sehingga markup konsumen
+  **tidak** breaking. Repo: `github:cahyo-dimas/freeday-ui-kit`. Filosofi: *"lebih banyak free day
+  buat dev karena UI kit-nya sudah siap pakai"*.
+- Install: `npm i github:cahyo-dimas/freeday-ui-kit#v1.0.0`.
+### Docs
+- Root redirect `index.html` → `docs/` untuk GitHub Pages (URL bersih `/freeday-ui-kit/`).
+
 ## [0.9.6] — 2026-07-22
 ### Docs
 - **Whole-app language toggle (ID ⇄ EN)** — the topbar toggle now switches the entire docs,
