@@ -331,7 +331,7 @@
 
     <section class="doc-section" id="sec-inputgroup">
       <h2>Input group</h2>
-      <p class="doc-desc">Addon prefix/suffix untuk field mata uang, persen, atau ikon — umum di form bisnis.</p>
+      <p class="doc-desc">Addon prefix/suffix bebas — teks (Rp / %), ikon dekoratif (<code>__addon--icon</code>), tombol aksi (<code>__btn</code>), atau tanpa addon sama sekali. Jadi "dengan ikon / tanpa ikon / ikon custom" cukup dari markup addon.</p>
       <div class="doc-demo" style="align-items:flex-start">
         <div class="fdy-input-group">
           <span class="fdy-input-group__addon">Rp</span>
@@ -340,6 +340,10 @@
         <div class="fdy-input-group">
           <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Diskon">
           <span class="fdy-input-group__addon">%</span>
+        </div>
+        <div class="fdy-input-group">
+          <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+          <input class="fdy-input" type="search" placeholder="Cari…" aria-label="Cari (ikon depan)">
         </div>
         <div class="fdy-input-group" data-fdy-cfl="cfl-customer" data-fdy-cfl-display="code">
           <input class="fdy-input" type="text" placeholder="Pilih pelanggan…" aria-label="Kode pelanggan" readonly>
@@ -651,10 +655,10 @@
 
     <section class="doc-section" id="sec-select">
       <h2>Select (combobox)</h2>
-      <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>foundry-select.js</code>.</p>
-      <div class="doc-demo" style="align-items:flex-start">
+      <p class="doc-desc">Dropdown berdesain penuh (pola WAI-ARIA APG) — popup bisa distyle, keyboard ↑↓/Enter/Esc/ketik. Butuh <code>foundry-select.js</code>. Varian ikon: caret <strong>default</strong>, <strong>tanpa</strong> lewat <code>fdy-combo--no-icon</code>, atau <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> di dalam tombol).</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
-          <span class="fdy-label" id="lbl-status">Status faktur</span>
+          <span class="fdy-label" id="lbl-status">Status faktur (default)</span>
           <div class="fdy-combo" data-fdy-combo data-value="tertunda">
             <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
               <span class="fdy-combo__value" id="val-status">Tertunda</span>
@@ -664,6 +668,31 @@
               <li class="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span class="fdy-combo__check"></span>Lunas</li>
               <li class="fdy-combo__option" role="option" data-value="tertunda" aria-selected="true"><span class="fdy-combo__check">✓</span>Tertunda</li>
               <li class="fdy-combo__option" role="option" data-value="draft" aria-selected="false"><span class="fdy-combo__check"></span>Draft</li>
+            </ul>
+          </div>
+        </div>
+        <div class="fdy-field">
+          <span class="fdy-label" id="lbl-cbno">Tanpa ikon</span>
+          <div class="fdy-combo fdy-combo--no-icon" data-fdy-combo data-value="a">
+            <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-cbno val-cbno">
+              <span class="fdy-combo__value" id="val-cbno">Opsi A</span>
+            </button>
+            <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-cbno" hidden>
+              <li class="fdy-combo__option" role="option" data-value="a" aria-selected="true"><span class="fdy-combo__check">✓</span>Opsi A</li>
+              <li class="fdy-combo__option" role="option" data-value="b" aria-selected="false"><span class="fdy-combo__check"></span>Opsi B</li>
+            </ul>
+          </div>
+        </div>
+        <div class="fdy-field">
+          <span class="fdy-label" id="lbl-cbcustom">Ikon custom</span>
+          <div class="fdy-combo fdy-combo--no-icon" data-fdy-combo data-value="a">
+            <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-cbcustom val-cbcustom">
+              <span class="fdy-combo__value" id="val-cbcustom">Opsi A</span>
+              <span class="fdy-combo__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 9 4-4 4 4M16 15l-4 4-4-4"></path></svg></span>
+            </button>
+            <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-cbcustom" hidden>
+              <li class="fdy-combo__option" role="option" data-value="a" aria-selected="true"><span class="fdy-combo__check">✓</span>Opsi A</li>
+              <li class="fdy-combo__option" role="option" data-value="b" aria-selected="false"><span class="fdy-combo__check"></span>Opsi B</li>
             </ul>
           </div>
         </div>
