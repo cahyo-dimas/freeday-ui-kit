@@ -3,6 +3,33 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.1.0] — 2026-07-23
+Rilis **1.1 — "Precision" visual polish**. Penyegaran visual murni token-driven — radius
+lebih tajam, elevation overlay lebih tegas, hierarki tipografi heading yang lebih jelas, dan
+teal (`--color-accent`) sebagai indikator fungsional non-teks untuk state aktif/terpilih.
+**Non-breaking**: tak ada rename kelas/token/API (`fdy-` prefix, `--color-*`,
+`window.Freeday*` tetap stabil). **AA-gated**: `npm test` tetap hijau (9/9), termasuk 6
+assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
+### Changed
+- **Radius ramp lebih tajam** — skala dirapatkan ke `3/4/6/10/14/999px` (dari nilai lama yang
+  lebih membulat), kesan lebih presisi di semua kontrol & container.
+- **Motion lebih responsif** — durasi dasar `--dur-base` 200ms→180ms, `--dur-slow` 320ms→280ms.
+- **Elevation overlay dijatah ulang** — bayangan `--shadow-3` (menu/dropdown/popover) dan
+  `--shadow-4` (modal) kini lebih tajam & lebih hadir secara visual; bayangan resting
+  (kartu, tombol) tidak berubah.
+- **Hierarki heading "Precision"** — `h1`–`h4` kini memakai `--font-display` (Sora) / 700 /
+  `--tracking-tighter` (token baru, -0.03em) / `--leading-snug`; ukuran font tidak berubah.
+- **State interaksi disatukan** — hover/active/disabled/focus-visible dirapikan lintas
+  input/combo/cascade/chip/pagination/selection; memperbaiki bug nyata di mana
+  `.fdy-chip--filter` tidak punya focus ring sama sekali.
+### Added
+- **Teal sebagai aksen fungsional** — `--color-accent` dipakai sebagai indikator non-teks
+  untuk state aktif/terpilih: item nav aktif, underline tab aktif, baris tabel terpilih,
+  opsi combo/cascade/autocomplete terpilih. Bukan dekorasi — murni penanda status.
+- **Token baru** `--tracking-tighter` (-0.03em) untuk heading Sora.
+- **6 assertion kontras WCAG (`AA_UI`, 3:1)** baru di `test/contrast.test.mjs` yang menjaga
+  teal-on-surface di light & dark tetap lolos ambang kontrol non-teks.
+
 ## [1.0.0] — 2026-07-22
 Rilis **1.0 — project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
 kontras WCAG AA lolos audit otomatis · installable via git · integrasi Vue/React/Blazor
