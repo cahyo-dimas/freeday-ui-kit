@@ -12,6 +12,7 @@
     "src",
     "adapters",
     "tokens/tokens.json",
+    "tokens/breakpoints.mjs",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -20,6 +21,7 @@
     "./css": "./dist/freeday.bundle.css",
     "./css/components": "./dist/freeday.css",
     "./tokens": "./dist/freeday.tokens.css",
+    "./breakpoints": "./tokens/breakpoints.mjs",
     "./enhancers/*": "./dist/freeday-*.js",
     "./vue": {
       "types": "./adapters/vue/index.d.ts",

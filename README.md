@@ -33,6 +33,26 @@ import 'freeday';       // semua enhancer JS (auto-init [data-fdy-*])
 Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit → install
 dari git jalan **tanpa build step**; minify diserahkan ke bundler konsumen.
 
+**Install di CI (`git+https`, bukan `git+ssh`).** `npm i github:...#v1.0.0` menulis
+`git+ssh://` ke lockfile konsumen — `npm ci` di CI gagal kalau runner tidak punya SSH key yang
+di-otorisasi ke repo privat ini. Pakai `git+https` + read-only PAT, tidak butuh upgrade plan
+GitHub atau GitHub Packages:
+```json
+// package.json konsumen
+"dependencies": {
+  "freeday": "git+https://github.com/cahyo-dimas/freeday-ui-kit.git#v1.0.0"
+}
+```
+```yaml
+# GitHub Actions — GITHUB_TOKEN sudah cukup kalau workflow punya akses ke repo ini
+- run: git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+- run: npm ci
+```
+Di luar GitHub Actions (CI lain), ganti `GITHUB_TOKEN` dengan PAT read-only (scope `repo`)
+lewat secret CI-nya, dengan `insteadOf` yang sama.
+
 **Atau link file langsung (tanpa build):**
 
 ### 1. Sertakan CSS (wajib)
@@ -43,6 +63,10 @@ dari git jalan **tanpa build step**; minify diserahkan ke bundler konsumen.
 ```
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`). Pakai langsung di
 markup framework apa pun — Vue, React, Blazor, HTML polos.
+
+> `.fdy-btn` **sudah** tombol primary — tidak ada modifier `.fdy-btn--primary` terpisah.
+> Modifier yang tersedia untuk varian lain: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`,
+> `--icon` (lihat `docs/index.html`).
 
 ### 2. Sertakan JS enhancer (opsional, 0 dependency)
 Komponen interaktif (dropdown, tabs, tabel, choose-from-list, datepicker, upload, toast)
@@ -78,10 +102,21 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 | `freeday-upload` | `[data-fdy-dropzone]` | `fdy-upload-add`/`-remove` · `window.FreedayUpload` |
 | `freeday-toast` | — | `Freeday.toast({variant,title,message,timeout})` |
 
+Tabel lebar (banyak kolom) butuh wrapper untuk scroll horizontal: bungkus `.fdy-table` dengan
+`.fdy-table-wrap` (tabel biasa, sudah termasuk border+shadow shell) atau `.fdy-table-scroll`
+(dipakai `.fdy-datatable`, yang shell-nya sendiri sudah punya border/shadow). Tanpa salah satu
+wrapper ini tabel lebar akan overflow container-nya, bukan scroll sendiri.
+
 ### 3. Theming — 3 sumbu lewat `data-*` di root
 - `data-theme="light|dark"` — redefinisi token semantic (bind ke state tema app-mu).
 - `data-density="comfortable|compact"` — tinggi kontrol (`--control-h`) untuk layar data-dense.
+  Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
+  custom/hand-built harus baca `--control-h` sendiri (mis. `height:var(--control-h)`) supaya
+  ikut menyusut/melebar saat `data-density` berubah.
 - (roadmap) `data-style` — varian visual lain.
+- Breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
+  `src/components/breakpoints.css`) juga tersedia di JS: `import { breakpoints } from
+  'freeday/breakpoints'` — dipakai untuk menyamakan `matchMedia`/`@media` app-mu ke skala Freeday.
 
 ## Integrasi framework (SPA)
 > **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md) — tiap area
