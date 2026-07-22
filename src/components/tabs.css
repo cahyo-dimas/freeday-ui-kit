@@ -2,7 +2,7 @@
 .fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
-.fdy-tabs__tab[aria-selected="true"]{color:var(--color-primary-strong);border-bottom-color:var(--color-primary);}
+.fdy-tabs__tab[aria-selected="true"]{color:var(--color-primary-strong);border-bottom-color:var(--color-accent);}
 .fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}

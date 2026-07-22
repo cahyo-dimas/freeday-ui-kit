@@ -55,6 +55,7 @@ add('--color-control-border', '--color-surface', AA_UI, 'control border (input/s
 add('--color-control-border', '--color-surface-2', AA_UI, 'control border on surface-2');
 add('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
 add('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
+for (const s of SURF) add('--color-accent', s, AA_UI, `teal accent indicator on ${s}`);
 
 // --- assert ---------------------------------------------------------------
 for (const [themeName, theme] of Object.entries(THEMES)) {

@@ -19,6 +19,7 @@
 /* Selection column + selected row */
 .fdy-table__selcol{width:1px;white-space:nowrap;}
 .fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
+.fdy-table tbody tr[aria-selected="true"] td:first-child{box-shadow:inset 3px 0 0 var(--color-accent);}
 
 /* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
 .fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
