@@ -1,0 +1,20 @@
+/* Foundry — Menu (action popup) + Split button. Enhanced by foundry-menu.js. */
+.fdy-menu-wrap{position:relative;display:inline-flex;}
+.fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
+.fdy-menu[hidden]{display:none;}
+.fdy-menu--end{left:auto;right:0;}
+.fdy-menu__item{display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-2) var(--space-3);border:0;background:transparent;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);text-align:left;cursor:pointer;white-space:nowrap;}
+.fdy-menu__item:hover,.fdy-menu__item.is-highlighted{background:var(--color-surface-3);}
+.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);}
+.fdy-menu__item:disabled{opacity:.5;cursor:not-allowed;background:transparent;}
+.fdy-menu__item--danger{color:var(--color-danger-strong);}
+.fdy-menu__item svg{display:block;width:1rem;height:1rem;flex:none;}
+.fdy-menu__sep{height:0;margin:var(--space-1) 0;border:0;border-top:var(--bw) solid var(--color-border-muted);}
+@media (prefers-reduced-motion:no-preference){.fdy-menu:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
+
+/* Split button — main action + attached menu toggle (caret) */
+.fdy-btn-split{position:relative;display:inline-flex;}
+.fdy-btn-split > .fdy-btn:first-child{border-top-right-radius:0;border-bottom-right-radius:0;}
+.fdy-btn-split__toggle{padding:0 var(--space-2);margin-left:calc(var(--bw) * -1);border-top-left-radius:0;border-bottom-left-radius:0;}
+.fdy-btn-split__toggle:hover,.fdy-btn-split__toggle:focus-visible{z-index:1;}
+.fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}

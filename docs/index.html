@@ -78,6 +78,7 @@
       <a class="fdy-nav__item" href="#sec-cfl">Choose-from-list</a>
       <a class="fdy-nav__item" href="#sec-datepicker">Date picker</a>
       <a class="fdy-nav__item" href="#sec-upload">File upload</a>
+      <a class="fdy-nav__item" href="#sec-menu">Menu &amp; split</a>
       <div class="doc-navgroup__label">Feedback</div>
       <a class="fdy-nav__item" href="#sec-alert">Alert</a>
       <a class="fdy-nav__item" href="#sec-toast">Toast</a>
@@ -270,6 +271,31 @@
         <button class="fdy-fab fdy-fab--sm fdy-fab--accent" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
         <button class="fdy-fab fdy-fab--danger" aria-label="Hapus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg></button>
         <button class="fdy-fab fdy-fab--extended"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg> Faktur baru</button>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-menu">
+      <h2>Menu &amp; Split button</h2>
+      <p class="doc-desc">Popup aksi (pola menu-button WAI-ARIA APG) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = aksi utama + toggle menu. Butuh <code>foundry-menu.js</code>.</p>
+      <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
+        <div class="fdy-menu-wrap" data-fdy-menu>
+          <button class="fdy-btn fdy-btn--ghost" aria-haspopup="menu" aria-expanded="false">Tindakan <span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+          <ul class="fdy-menu" role="menu" hidden>
+            <li role="none"><button class="fdy-menu__item" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Ubah</button></li>
+            <li role="none"><button class="fdy-menu__item" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>Duplikat</button></li>
+            <li role="none"><hr class="fdy-menu__sep"></li>
+            <li role="none"><button class="fdy-menu__item fdy-menu__item--danger" role="menuitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path></svg>Hapus</button></li>
+          </ul>
+        </div>
+        <div class="fdy-btn-split" data-fdy-menu>
+          <button class="fdy-btn">Simpan</button>
+          <button class="fdy-btn fdy-btn-split__toggle" aria-haspopup="menu" aria-expanded="false" aria-label="Opsi simpan lainnya"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+            <li role="none"><button class="fdy-menu__item" role="menuitem">Simpan &amp; baru</button></li>
+            <li role="none"><button class="fdy-menu__item" role="menuitem">Simpan sebagai draf</button></li>
+            <li role="none"><button class="fdy-menu__item" role="menuitem">Simpan &amp; kirim</button></li>
+          </ul>
+        </div>
       </div>
     </section>
 
@@ -917,6 +943,7 @@
 <script src="../dist/foundry-cfl.js"></script>
 <script src="../dist/foundry-datepicker.js"></script>
 <script src="../dist/foundry-upload.js"></script>
+<script src="../dist/foundry-menu.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
