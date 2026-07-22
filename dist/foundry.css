@@ -52,7 +52,10 @@ a { color: var(--color-primary); }
 
 /* Foundry — App Shell */
 .fdy-app{display:grid;grid-template-columns:15rem 1fr;grid-template-rows:auto 1fr;grid-template-areas:"sidebar topbar" "sidebar main";min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{grid-area:sidebar;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;padding:var(--space-4);gap:var(--space-1);}
+/* --fill: pin the shell to the viewport so topbar + sidebar stay put and only
+ * __main scrolls (sticky-header app layout). Plain .fdy-app grows with content. */
+.fdy-app--fill{min-height:0;height:100vh;height:100dvh;}
+.fdy-app__sidebar{grid-area:sidebar;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;padding:var(--space-4);gap:var(--space-1);overflow-y:auto;}
 .fdy-app__brand{font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);padding:var(--space-2) var(--space-2) var(--space-4);}
 .fdy-nav{display:flex;flex-direction:column;gap:2px;}
 .fdy-nav__item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);text-decoration:none;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
