@@ -4,6 +4,10 @@ Bukti **v0.9**: layar faktur nyata yang memakai komponen Freeday di React lewat 
 `freeday/react`. Pola sama dengan contoh Vue — markup yang dirender React di-*enhance* oleh
 enhancer Freeday, dan event `fdy-*` (yang bubbling) didengar di root lalu memperbarui state React.
 
+> **Mau pakai Freeday di project React-mu sendiri?** Ikuti panduan
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §React — install dari GitHub
+> (`github:cahyo-dimas/freeday-ui-kit#v1.0.0`), bukan `file:../..` seperti contoh ini.
+
 ## Jalankan
 
 ```bash

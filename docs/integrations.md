@@ -118,6 +118,11 @@ Freeday, murni library.
 
 ## Binding per framework
 
+> **Jalur utama (disarankan):** pakai adapter siap pakai — composable `useFreeday` (Vue), hook
+> `useFreeday` (React), atau `window.FreedayBlazor` (Blazor) — yang membungkus hydrate + jembatan
+> event. Langkah lengkap per stack ada di **[`getting-started.md`](getting-started.md)**. Pola
+> `initAll()` mentah di bawah adalah mekanisme dasarnya (dan fallback bila kamu tak pakai adapter).
+
 Enhancer auto-init sekali saat `DOMContentLoaded`. Untuk DOM yang dirender dinamis:
 
 **Vue 3**

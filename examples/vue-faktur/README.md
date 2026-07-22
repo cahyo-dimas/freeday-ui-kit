@@ -4,6 +4,10 @@ Bukti **v0.9**: layar faktur nyata yang memakai komponen Freeday di Vue 3 lewat 
 `freeday/vue`. Menunjukkan kontrak integrasi end-to-end — markup yang dirender Vue di-*enhance*
 oleh enhancer Freeday, dan event `fdy-*` mengalir balik ke state Vue.
 
+> **Mau pakai Freeday di project Vue-mu sendiri?** Ikuti panduan
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install dari GitHub
+> (`github:cahyo-dimas/freeday-ui-kit#v1.0.0`), bukan `file:../..` seperti contoh ini.
+
 ## Jalankan
 
 ```bash

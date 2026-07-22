@@ -9,6 +9,8 @@ Token-driven, framework-agnostic UI KIT — satu sumber kebenaran untuk warna, t
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
 **Referensi hidup:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — atau buka `docs/index.html` langsung di browser.
 
+> 🚀 **Baru mau pakai di project?** Langkah demi langkah per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
+
 ## Build
 ```bash
 node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css; bundel dist/freeday.css;

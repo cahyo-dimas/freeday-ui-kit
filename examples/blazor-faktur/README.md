@@ -4,6 +4,10 @@ Bukti **v0.9**: layar faktur nyata di Blazor WebAssembly yang memakai komponen F
 interop `freeday-blazor.js`. Markup yang dirender Blazor di-*enhance* oleh enhancer Freeday,
 dan event `fdy-*` diteruskan ke method `[JSInvokable]` C# → memperbarui state komponen.
 
+> **Mau pakai Freeday di project Blazor-mu sendiri?** Ikuti panduan
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Blazor (WASM) — salin aset ke
+> `wwwroot/freeday/` (manual atau via MSBuild target).
+
 ## Jalankan
 
 ```bash
