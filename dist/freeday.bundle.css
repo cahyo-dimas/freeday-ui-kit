@@ -375,6 +375,9 @@ a { color: var(--color-primary); }
 .fdy-accordion__item > summary:hover{background:var(--color-surface-2);}
 .fdy-accordion__item > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-accordion__panel{padding:0 var(--space-4) var(--space-4);color:var(--color-text-muted);font-size:var(--text-sm);line-height:var(--leading-normal);}
+/* Content reveal on open (fade + rise). Native <details> can't animate its own height cross-
+ * browser without JS, so we animate the revealed panel instead — cheap, safe, reduced-motion gated. */
+@media (prefers-reduced-motion:no-preference){.fdy-accordion__item[open] > .fdy-accordion__panel{animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
 /* Freeday — Alert (inline) */
 .fdy-alert{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:var(--bw) solid var(--color-border);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface-2);}
@@ -403,7 +406,7 @@ a { color: var(--color-primary); }
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
  * topbar a tall containing block so it can travel — a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;}
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
 /* Brand is a fixed header — same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
@@ -455,12 +458,14 @@ a { color: var(--color-primary); }
 .fdy-nav__tree > summary .fdy-nav__caret{flex:none;margin-left:auto;width:.4rem;height:.4rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.6;}
 .fdy-nav__tree[open] > summary .fdy-nav__caret{transform:rotate(45deg);}
 .fdy-nav__sub{display:flex;flex-direction:column;gap:2px;padding-left:calc(var(--space-3) + 1.15rem);margin-top:2px;}
-/* Collapse toggle (hamburger) — sits in the topbar; hides the sidebar. */
+/* Collapse toggle (hamburger) — sits in the topbar; collapses the sidebar. */
 .fdy-app__navtoggle{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;flex:none;padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-app__navtoggle:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-app__navtoggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}
 .fdy-app__navtoggle svg{display:block;width:1.25rem;height:1.25rem;}
-@media (min-width:721px){.fdy-app--nav-collapsed .fdy-app__sidebar{display:none;}}
+/* Desktop collapse: animate width -> 0 (content clips via overflow:hidden; the content area
+ * flexes in to fill). Not display:none, so the collapse/expand slides instead of snapping. */
+@media (min-width:721px){.fdy-app--nav-collapsed .fdy-app__sidebar{width:0;border-right-width:0;}}
 .fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__main{flex:1;padding:var(--space-8);}
@@ -765,6 +770,23 @@ a { color: var(--color-primary); }
 .fdy-chart__legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--space-2);}
 .fdy-chart__legend li{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);}
 .fdy-chart__swatch{width:.75rem;height:.75rem;border-radius:var(--radius-xs);flex:none;}
+/* Horizontal legend for cartesian charts (legend sits above the plot). */
+.fdy-chart__legend--row{flex-direction:row;flex-wrap:wrap;gap:var(--space-2) var(--space-4);}
+
+/* Cartesian charts (line / area / multi-series & stacked bar) — SVG with themed axes.
+ * Axis colour comes from --chart-grid / --chart-tick (both theme-aware); series colours are
+ * set inline by the renderer from --chart-1..8, so the whole chart recolours on data-theme. */
+.fdy-chart-xy{position:relative;display:flex;flex-direction:column;gap:var(--space-3);width:100%;}
+.fdy-chart-xy__plot{width:100%;aspect-ratio:16/9;min-height:8rem;}
+.fdy-chart-xy__plot svg{display:block;width:100%;height:100%;overflow:visible;}
+.fdy-chart-xy__grid{stroke:var(--chart-grid);stroke-width:1;shape-rendering:crispEdges;}
+.fdy-chart-xy__tick{fill:var(--chart-tick);font-family:var(--font-mono);font-size:9px;}
+.fdy-chart-xy__xlabel{fill:var(--chart-tick);font-family:var(--font-body);font-size:9px;}
+.fdy-chart-xy__line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;}
+.fdy-chart-xy__area{stroke:none;opacity:.14;}
+.fdy-chart-xy__dot{stroke:var(--color-surface);stroke-width:1;}
+.fdy-chart-xy__bar{transition:opacity var(--dur-fast) var(--ease-standard);}
+.fdy-chart-xy__band{fill:transparent;cursor:pointer;}
 
 /* Freeday — Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}
@@ -850,8 +872,10 @@ a { color: var(--color-primary); }
 .fdy-cal__day:disabled:hover{background:transparent;}
 
 /* Range: two linked pickers */
-.fdy-daterange{display:inline-flex;align-items:center;gap:var(--space-2);}
-.fdy-daterange .fdy-datepicker{max-width:11rem;}
+/* Responsive: each picker may shrink (min-width:0) & wrap so the range never overflows a
+   narrow row/phone; inline-flex still hugs to ~23rem at wider widths (look unchanged). */
+.fdy-daterange{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);}
+.fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:0;}
 .fdy-daterange__sep{flex:none;color:var(--color-text-subtle);}
 
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
@@ -882,21 +906,25 @@ a { color: var(--color-primary); }
 /* display is gated behind [open] so the native <dialog> stays hidden until opened.
  * An unconditional display here would beat the UA `dialog:not([open]){display:none}`
  * rule (author origin wins over user-agent) and leave the drawer visible on load. */
-.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);flex-direction:column;border:0;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-4);overflow:hidden;}
-.fdy-drawer[open]{display:flex;}
-.fdy-drawer--right{inset:0 0 0 auto;}
-.fdy-drawer::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);flex-direction:column;border:0;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-4);overflow:hidden;transform:translateX(-100%);transition:transform var(--dur-slow) var(--ease-standard),overlay var(--dur-slow) allow-discrete,display var(--dur-slow) allow-discrete;}
+.fdy-drawer[open]{display:flex;transform:none;}
+.fdy-drawer--right{inset:0 0 0 auto;transform:translateX(100%);}
+.fdy-drawer::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity var(--dur-slow) var(--ease-standard),overlay var(--dur-slow) allow-discrete,display var(--dur-slow) allow-discrete;}
 .fdy-drawer__header{flex:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 .fdy-drawer__title{font-family:var(--font-display);font-weight:var(--weight-semibold);font-size:var(--text-lg);color:var(--color-text);margin:0 auto 0 0;}
 .fdy-drawer__close{border:0;background:transparent;color:var(--color-text-muted);font-size:var(--text-xl);line-height:1;cursor:pointer;padding:var(--space-1);border-radius:var(--radius-sm);}
 .fdy-drawer__close:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-drawer__body{flex:1;min-height:0;overflow:auto;padding:var(--space-4);}
-@media (prefers-reduced-motion:no-preference){
-  .fdy-drawer[open]{animation:fdy-drawer-l var(--dur-base) var(--ease-standard);}
-  .fdy-drawer--right[open]{animation:fdy-drawer-r var(--dur-base) var(--ease-standard);}
+/* Symmetric enter AND exit on the native <dialog>: @starting-style animates the entry;
+ * the overlay/display allow-discrete transitions keep the panel painted through the exit so
+ * it slides back out on close (not just in). prefers-reduced-motion is honored by the global
+ * duration reset in base.css. Unsupported browsers degrade to an instant open/close. */
+.fdy-drawer[open]::backdrop{opacity:1;}
+@starting-style{
+  .fdy-drawer[open]{transform:translateX(-100%);}
+  .fdy-drawer--right[open]{transform:translateX(100%);}
+  .fdy-drawer[open]::backdrop{opacity:0;}
 }
-@keyframes fdy-drawer-l{from{transform:translateX(-100%);}to{transform:none;}}
-@keyframes fdy-drawer-r{from{transform:translateX(100%);}to{transform:none;}}
 
 /* Freeday — File upload (drop target + explicit per-file states).
  * Enhanced by freeday-upload.js; states: idle · drag-over · uploading · done · error. */
@@ -997,20 +1025,27 @@ a { color: var(--color-primary); }
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
 
 /* Freeday — Modal (native <dialog>) */
-.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;}
+.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal--sm{width:min(24rem,calc(100vw - var(--space-8)));}
 .fdy-modal--md{width:min(32rem,calc(100vw - var(--space-8)));}
 .fdy-modal--lg{width:min(48rem,calc(100vw - var(--space-8)));}
 .fdy-modal--wide{width:min(60rem,calc(100vw - var(--space-8)));}
-.fdy-modal::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.fdy-modal::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity var(--dur-base) var(--ease-standard),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal__header{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 .fdy-modal__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;}
 .fdy-modal__close{border:0;background:transparent;color:var(--color-text-muted);font-size:var(--text-xl);line-height:1;cursor:pointer;padding:var(--space-1);border-radius:var(--radius-sm);}
 .fdy-modal__close:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-modal__body{padding:var(--space-5);overflow:auto;}
 .fdy-modal__footer{display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-4) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:var(--color-surface-2);}
-@media (prefers-reduced-motion:no-preference){.fdy-modal[open]{animation:fdy-modal-in var(--dur-base) var(--ease-spring);}}
-@keyframes fdy-modal-in{from{opacity:0;transform:translateY(8px) scale(.98);}to{opacity:1;transform:none;}}
+/* Symmetric enter AND exit (fade + rise + subtle scale) on the native <dialog>. @starting-style
+ * animates the entry; overlay/display allow-discrete keep it painted through the exit so it
+ * animates out on close too. Reduced motion honored by the global duration reset in base.css. */
+.fdy-modal[open]{opacity:1;transform:none;}
+.fdy-modal[open]::backdrop{opacity:1;}
+@starting-style{
+  .fdy-modal[open]{opacity:0;transform:translateY(8px) scale(.98);}
+  .fdy-modal[open]::backdrop{opacity:0;}
+}
 
 /* Freeday — Pagination */
 .fdy-pagination__list{display:flex;align-items:center;gap:var(--space-1);list-style:none;margin:0;padding:0;}
@@ -1132,6 +1167,7 @@ a { color: var(--color-primary); }
 .fdy-table th{text-align:left;padding:var(--space-3) var(--space-4);font-size:var(--text-xs);font-weight:var(--weight-semibold);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--color-text-muted);background:var(--color-surface-2);border-bottom:var(--bw) solid var(--color-border);white-space:nowrap;}
 .fdy-table td{padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);color:var(--color-text);}
 .fdy-table tbody tr:last-child td{border-bottom:0;}
+.fdy-table tbody tr{transition:background-color var(--dur-fast) var(--ease-standard);}
 .fdy-table tbody tr:hover{background:var(--color-surface-2);}
 .fdy-table__num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--font-mono);}
 .fdy-table th[aria-sort]{cursor:pointer;}
@@ -1188,6 +1224,8 @@ a { color: var(--color-primary); }
 .fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}
+/* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */
+@media (prefers-reduced-motion:no-preference){.fdy-tabs__panel:not([hidden]){animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
 /* Freeday — Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
 .fdy-timeline{list-style:none;margin:0;padding:0;}

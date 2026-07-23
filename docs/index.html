@@ -263,14 +263,14 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.3.1</p>
+          <p class="doc-eyebrow">Design System · v1.4.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.3.1</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.4.0</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
           <div class="doc-showcase__head">
@@ -425,13 +425,14 @@
 
     <section class="doc-section" id="sec-motion">
       <h2>Motion</h2>
-      <p class="doc-desc">Durasi &amp; easing terbatas. Arahkan kursor ke track untuk merasakannya — dinonaktifkan saat <code>prefers-reduced-motion</code>.</p>
+      <p class="doc-desc">Skala gerak terbatas &amp; konsisten: tiga durasi (<code>--dur-fast</code> 120ms · <code>--dur-base</code> 180ms · <code>--dur-slow</code> 280ms) dan dua easing yang keduanya <em>decelerate</em> (tanpa bounce/elastic). Gerak hanya untuk <strong>feedback, reveal, dan transisi state</strong> — bukan dekorasi. Semua otomatis nonaktif saat <code>prefers-reduced-motion: reduce</code>. Arahkan kursor ke track untuk merasakan easing-nya.</p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-motion">
-          <div class="doc-motion__row"><span class="doc-motion__key">standard · 200ms · ease-standard</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--std"></div></div></div>
-          <div class="doc-motion__row"><span class="doc-motion__key">spring · 320ms · ease-spring</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--spring"></div></div></div>
+          <div class="doc-motion__row"><span class="doc-motion__key">base · 180ms · ease-standard</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--std"></div></div></div>
+          <div class="doc-motion__row"><span class="doc-motion__key">slow · 280ms · ease-spring</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--spring"></div></div></div>
         </div>
       </div>
+      <p class="doc-desc" style="margin-top:var(--space-5)"><strong>Yang bergerak:</strong> <a href="#sec-drawer">Drawer</a> &amp; <a href="#sec-modal">Modal</a> beranimasi <em>masuk dan keluar</em> (slide / fade-scale + backdrop blur) lewat <code>@starting-style</code> + <code>allow-discrete</code> pada <code>&lt;dialog&gt;</code> native — buka lalu tutup, perhatikan animasi keluarnya. Overlay (menu, select, cascade, autocomplete, date/time picker) reveal saat dibuka; <a href="#sec-accordion">Accordion</a> &amp; <a href="#sec-tabs">Tabs</a> me-<em>reveal</em> konten (fade + rise); baris tabel &amp; kontrol punya transisi hover/press halus.</p>
     </section>
 
     <section class="doc-section" id="sec-tombol">
@@ -1142,7 +1143,7 @@
 
     <section class="doc-section" id="sec-charts">
       <h2>Charts</h2>
-      <p class="doc-desc">Sparkline, bar, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>, data lewat <code>data-values</code>. Butuh <code>freeday-chart.js</code>. Warna dari token; tiap chart <code>role="img"</code> + <code>aria-label</code>, donut/bar punya legenda/label (bukan warna saja).</p>
+      <p class="doc-desc">Sparkline, bar, <strong>line</strong>, <strong>area</strong>, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>. Seri tunggal via <code>data-values</code>; multi-seri via <code>data-series</code> (JSON). Cartesian (line/area/bar) menggambar <strong>sumbu ber-tema</strong> (<code>--chart-grid</code>/<code>--chart-tick</code>), legenda otomatis untuk ≥2 seri, dan format nilai <code>data-fdy-format="number|percent|currency"</code>. Warna dari token → chart <strong>ikut re-warna saat <code>data-theme</code> berubah</strong>. Untuk data reaktif: panggil <code>FreedayChart.update(el)</code> atau pakai <code>&lt;FdyChart&gt;</code> dari <code>freeday/vue</code>. Butuh <code>freeday-chart.js</code>; tiap chart <code>role="img"</code> + <code>aria-label</code> + fallback tabel di dalam elemen.</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Pendapatan</h3>
@@ -1157,6 +1158,27 @@
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-3)">Status faktur</h3>
           <div class="fdy-donut" data-fdy-chart="donut" data-values="45,30,25" data-labels="Lunas,Tertunda,Batal" data-fdy-colors="success,warning,danger" data-fdy-center="100" role="img" aria-label="Status faktur: Lunas 45%, Tertunda 30%, Batal 25%"></div>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Posting vs draft</h3>
+          <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Line multi-seri · sumbu persen</p>
+          <div data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]},{"label":"Draft","values":[24,20,26,22,18,16]}]' data-fdy-format="percent" role="img" aria-label="Tren posting bulanan: Posted naik 62% ke 88%, Draft turun 24% ke 16%">
+            <table><caption>Posting vs draft (%)</caption><tr><th>Bulan</th><th>Posted</th><th>Draft</th></tr><tr><td>Jun</td><td>88</td><td>16</td></tr></table>
+          </div>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Nilai faktur</h3>
+          <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Area · sumbu USD</p>
+          <div data-fdy-chart="area" data-labels="Sen,Sel,Rab,Kam,Jum" data-values="4200,5100,4800,6300,7200" data-fdy-format="currency" data-fdy-color="primary" role="img" aria-label="Nilai faktur harian dalam USD, naik dari 4.200 ke 7.200">
+            <table><caption>Nilai faktur (USD)</caption><tr><th>Hari</th><th>Nilai</th></tr><tr><td>Jum</td><td>7200</td></tr></table>
+          </div>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Faktur per kanal</h3>
+          <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Bar bertumpuk (stacked)</p>
+          <div data-fdy-chart="bar" data-fdy-stacked data-labels="Q1,Q2,Q3,Q4" data-series='[{"label":"Online","values":[32,41,38,52]},{"label":"Cabang","values":[18,15,22,19]},{"label":"Mitra","values":[9,12,8,14]}]' role="img" aria-label="Faktur per kanal per kuartal, bertumpuk: Online, Cabang, Mitra">
+            <table><caption>Faktur per kanal</caption><tr><th>Kuartal</th><th>Online</th><th>Cabang</th><th>Mitra</th></tr><tr><td>Q4</td><td>52</td><td>19</td><td>14</td></tr></table>
+          </div>
         </div></div>
       </div>
     </section>
@@ -1485,7 +1507,7 @@
 
     <section class="doc-section" id="sec-drawer">
       <h2>Drawer</h2>
-      <p class="doc-desc">Panel samping temporary (overlay + backdrop) di atas <code>&lt;dialog&gt;</code> native — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, dan kembalikan-fokus gratis. Kiri atau kanan. Butuh <code>freeday-drawer.js</code>. (Tombol hamburger di App bar di atas juga membukanya.)</p>
+      <p class="doc-desc">Panel samping temporary (overlay + backdrop) di atas <code>&lt;dialog&gt;</code> native — focus-trap, <kbd class="fdy-kbd">Esc</kbd>, dan kembalikan-fokus gratis. Kiri atau kanan. <strong>Slide masuk &amp; keluar</strong> dengan backdrop yang mem-blur — tutup lewat <kbd class="fdy-kbd">Esc</kbd>/backdrop untuk melihat animasi keluarnya. Butuh <code>freeday-drawer.js</code>. (Tombol hamburger di App bar di atas juga membukanya.)</p>
       <div class="doc-demo">
         <button class="fdy-btn" data-fdy-drawer="drawer-left">Buka drawer kiri</button>
         <button class="fdy-btn fdy-btn--ghost" data-fdy-drawer="drawer-right">Buka drawer kanan</button>
@@ -1527,7 +1549,7 @@
 
     <section class="doc-section" id="sec-accordion">
       <h2>Accordion</h2>
-      <p class="doc-desc">Native <code>&lt;details&gt;</code> — zero-JS, aksesibel bawaan.</p>
+      <p class="doc-desc">Native <code>&lt;details&gt;</code> — zero-JS, aksesibel bawaan. Panel me-<em>reveal</em> (fade + rise) saat dibuka; chevron ikut berputar.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-accordion">
           <details class="fdy-accordion__item" open><summary>Info pengiriman</summary><div class="fdy-accordion__panel">Dikirim via JNE, estimasi 2–3 hari kerja.</div></details>
@@ -1549,7 +1571,7 @@
 
     <section class="doc-section" id="sec-modal">
       <h2>Modal</h2>
-      <p class="doc-desc">Native <code>&lt;dialog&gt;</code> — focus-trap, Esc, backdrop gratis dari browser.</p>
+      <p class="doc-desc">Native <code>&lt;dialog&gt;</code> — focus-trap, Esc, backdrop gratis dari browser. Muncul &amp; menghilang dengan <strong>fade + skala halus</strong> (backdrop ikut mem-blur), simetris masuk-keluar.</p>
       <div class="doc-demo">
         <button class="fdy-btn" id="open-modal">Buka modal</button>
         <dialog class="fdy-modal" id="demo-modal" aria-labelledby="demo-modal-title">
@@ -1659,7 +1681,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.3.1</div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.4.0</div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

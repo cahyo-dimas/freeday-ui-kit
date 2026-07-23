@@ -6,3 +6,5 @@
 .fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}
+/* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */
+@media (prefers-reduced-motion:no-preference){.fdy-tabs__panel:not([hidden]){animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}

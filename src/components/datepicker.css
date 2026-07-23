@@ -35,8 +35,10 @@
 .fdy-cal__day:disabled:hover{background:transparent;}
 
 /* Range: two linked pickers */
-.fdy-daterange{display:inline-flex;align-items:center;gap:var(--space-2);}
-.fdy-daterange .fdy-datepicker{max-width:11rem;}
+/* Responsive: each picker may shrink (min-width:0) & wrap so the range never overflows a
+   narrow row/phone; inline-flex still hugs to ~23rem at wider widths (look unchanged). */
+.fdy-daterange{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);}
+.fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:0;}
 .fdy-daterange__sep{flex:none;color:var(--color-text-subtle);}
 
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}

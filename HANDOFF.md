@@ -6,8 +6,8 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.3.1 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.3.1`, tree bersih).
-Jalur rilis: … → v1.2.2 (brand link-safe + indikator teal→primary) → v1.3.0 (accent teal → biru Microsoft Azure) → v1.3.1 (hapus rail aksen "eyebrow" di state aktif/terpilih).
+**v1.4.0 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.4.0`, tree bersih).
+Jalur rilis: … → v1.3.0 (accent Azure) → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass enter/exit + collapse sidebar beranimasi; chart native parity line/area/multi-seri/stacked + `<FdyChart>`; fix daterange responsif).
 
 - **44 komponen** CSS (`src/components/*.css`)
 - **22 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`)
@@ -25,7 +25,7 @@ terbukti · docs adopsi lengkap.
 
 - **Live:** [cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)
 - **Lokal:** buka `docs/index.html` langsung di browser (font Google via internet; ada fallback)
-- **Pakai di project:** `npm i github:cahyo-dimas/freeday-ui-kit#v1.3.1` — panduan di
+- **Pakai di project:** `npm i github:cahyo-dimas/freeday-ui-kit#v1.4.0` — panduan di
   [`README.md`](README.md) & [`docs/getting-started.md`](docs/getting-started.md)
 
 ## Build & test

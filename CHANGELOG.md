@@ -3,6 +3,41 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.4.0] — 2026-07-23
+Rilis **1.4 — motion & native charts**. Dua fitur besar (gerak enter/exit lintas komponen +
+chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. Non-breaking.
+
+### Added
+- **Chart native — parity untuk drop Chart.js.** Tipe baru **`line`** & **`area`** dan **`bar`
+  multi-seri + `data-fdy-stacked`**, semuanya dengan **sumbu ber-tema** (y-gridline + tick,
+  x-label autoskip, baseline nol) dari `--chart-grid`/`--chart-tick`. Data multi-seri lewat
+  **`data-series`** (JSON `[{label,values}]`); `data-values` tetap jadi shortcut seri-tunggal.
+  **`data-fdy-format="number|percent|currency"`** memformat tick + tooltip; **legenda otomatis**
+  untuk ≥2 seri (`data-fdy-legend="auto|always|none"`); hover band per-kategori. Warna dari token
+  → **chart re-warna otomatis saat `data-theme` berubah** (tak perlu observer/re-paint kanvas).
+- **`FreedayChart.update(el)`** — render ulang idempoten saat data berubah (auto-init tetap sekali).
+- **`freeday/vue` → `<FdyChart>`** — wrapper reaktif & typed di atas renderer (re-render on prop
+  change): `type` · `series`/`values` · `labels` · `format` · `stacked` · `legend` · `colors`/`color`
+  · `center`; `aria-label` fallthrough. Tipe `FdyChartSeries` diekspor. Diverifikasi `vue-tsc` + `vite build`.
+
+### Changed
+- **Motion pass — gerak yang bermakna, semua hormati `prefers-reduced-motion`.**
+  - **Drawer & Modal** kini beranimasi **masuk _dan_ keluar** (slide / fade-scale + backdrop blur)
+    via `@starting-style` + `allow-discrete` pada `<dialog>` native — sebelumnya hanya masuk.
+  - **Sidebar app-shell** collapse/expand desktop kini **meluncur** (animasi `width`) — sebelumnya
+    `display:none` (snap). Mobile (off-canvas) tak berubah.
+  - **Accordion** & **Tabs** me-reveal konten (fade + rise) saat dibuka/diganti.
+  - **Baris tabel** transisi `background` halus saat hover.
+- **`.fdy-daterange` responsif** — dua picker kini boleh menyusut (`min-width:0`) & wrap, jadi tak
+  lagi overflow di row/HP < ~23rem; di lebar cukup tetap hug ~23rem seperti sebelumnya.
+
+### Migrasi konsumen (opsional, aman)
+1. Bump pin: `npm i github:cahyo-dimas/freeday-ui-kit#v1.4.0`, lalu rebuild.
+2. **Motion & daterange:** otomatis, tanpa perubahan kode.
+3. **Drop Chart.js (opsional):** ganti wrapper chart lokal dengan `<FdyChart type="line" :series>`
+   (atau bentuk `data-fdy-chart`), hapus folder wrapper chart lokal, dan buang `chart.js` dari
+   `package.json`. Machinery tema chart (probe warna + observer) tak lagi perlu — token yang urus.
+
 ## [1.3.1] — 2026-07-23
 Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
 ### Removed
