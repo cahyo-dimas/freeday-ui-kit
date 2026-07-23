@@ -40,7 +40,7 @@ Cocok untuk halaman `.html` polos / template — tanpa bundler, tanpa npm.
 `dist/` sudah di-commit, jadi tak ada build step. Cara termudah — pakai npm sekali hanya untuk
 mengunduh, lalu salin file-nya (vendor):
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.2.2
+npm i github:cahyo-dimas/freeday-ui-kit#v1.3.0
 cp -r node_modules/freeday/dist ./assets/freeday   # salin ke project-mu
 ```
 (atau `git clone` repo lalu salin `dist/`, atau unduh file satu per satu). Yang kamu butuh minimal:
@@ -89,9 +89,9 @@ Dari docs live (View Source) atau `Foundation Design System.html`. **Ganti** kel
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.2.2
+npm i github:cahyo-dimas/freeday-ui-kit#v1.3.0
 ```
-Masuk ke `package.json` sebagai `"freeday": "github:cahyo-dimas/freeday-ui-kit#v1.2.2"`
+Masuk ke `package.json` sebagai `"freeday": "github:cahyo-dimas/freeday-ui-kit#v1.3.0"`
 (nama paket **`freeday`**). `dist/` di-commit → tanpa build step; repo public → tanpa auth.
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.ts`)
@@ -147,7 +147,7 @@ Contoh utuh yang jalan: [`examples/vue-faktur/`](../examples/vue-faktur/).
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.2.2
+npm i github:cahyo-dimas/freeday-ui-kit#v1.3.0
 ```
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.tsx`)

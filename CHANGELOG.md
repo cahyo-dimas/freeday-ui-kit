@@ -3,6 +3,18 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.3.0] — 2026-07-23
+Rilis **1.3 — accent Azure**. Warna sekunder/aksen berubah dari **teal → biru Microsoft Azure**.
+### Changed
+- **Accent: teal → sky / Azure blue** — `--color-accent` kini `#0078d4` (light) / `#47a1e6` (dark),
+  menggantikan teal `#0d9488`. Ramp primitif `teal` diganti `sky` (biru Azure muda);
+  `--color-accent-hover` & `--color-on-accent` ikut disesuaikan (on-accent dark `#06233f` agar
+  kontras di atas accent biru-muda dark). Semua konsumen `--color-accent` ikut otomatis: varian
+  opt-in `.fdy-fab--accent`/`.fdy-slider--accent`/`.fdy-badge-ov--accent`, chrome docs, swatch
+  identitas. Identitas kit kini **Azure** (primary biru-deep + accent biru-muda) — teal dibuang.
+  Kontras WCAG tetap **9/9** (accent/surface + on-accent/accent lolos light & dark). Non-breaking
+  (nilai token berubah; nama token/kelas/API tetap).
+
 ## [1.2.2] — 2026-07-23
 Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terpilih.
 ### Fixed
