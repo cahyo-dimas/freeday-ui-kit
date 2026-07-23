@@ -6,8 +6,8 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.2.1 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.2.1`, tree bersih).
-Jalur rilis: v1.0.0 (project-ready) → v1.1.0 (Precision + adoption) → v1.2.0 (Vue input wrappers) → v1.2.1 (input-group leading-icon fix).
+**v1.2.2 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.2.2`, tree bersih).
+Jalur rilis: v1.0.0 → v1.1.0 → v1.2.0 (Vue wrappers) → v1.2.1 (input-group fix) → v1.2.2 (brand link-safe + active/selected indikator teal→primary).
 
 - **44 komponen** CSS (`src/components/*.css`)
 - **22 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`)
@@ -25,7 +25,7 @@ terbukti · docs adopsi lengkap.
 
 - **Live:** [cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)
 - **Lokal:** buka `docs/index.html` langsung di browser (font Google via internet; ada fallback)
-- **Pakai di project:** `npm i github:cahyo-dimas/freeday-ui-kit#v1.2.1` — panduan di
+- **Pakai di project:** `npm i github:cahyo-dimas/freeday-ui-kit#v1.2.2` — panduan di
   [`README.md`](README.md) & [`docs/getting-started.md`](docs/getting-started.md)
 
 ## Build & test

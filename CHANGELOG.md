@@ -3,6 +3,19 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.2.2] — 2026-07-23
+Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terpilih.
+### Fixed
+- **Brand link-safe (#17)** — `.fdy-app__brand` kini set `text-decoration:none`; saat brand
+  dijadikan link "logo → home", judul/subjudul tak lagi ber-underline default browser.
+- **Indikator aktif/terpilih: teal → primary (#18 + extend)** — bar/underline/check pada state
+  aktif/terpilih sebelumnya pakai `--color-accent` (teal), yang **clash** dengan bg
+  `--color-primary-soft` + teks `--color-primary-strong` pada palet re-theme (accent ≠ primary).
+  Kini semua cue "you-are-here / terpilih" seragam di keluarga **primary**: item nav, underline
+  tab, rail baris tabel, opsi combo/cascade/autocomplete. Varian aksen opt-in
+  (`.fdy-fab--accent`, `.fdy-badge-ov--accent`, `.fdy-slider--accent`) tak berubah. Membalik
+  bagian "teal sebagai aksen fungsional" dari v1.1.0. Murni CSS, backward-compatible.
+
 ## [1.2.1] — 2026-07-23
 Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
 ### Fixed
