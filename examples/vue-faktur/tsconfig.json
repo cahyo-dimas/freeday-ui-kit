@@ -11,9 +11,7 @@
     "esModuleInterop": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "paths": {
-      "vue": ["./node_modules/vue"]
-    }
+    "preserveSymlinks": true
   },
   "include": ["src/**/*.ts", "src/**/*.vue", "env.d.ts"]
 }
