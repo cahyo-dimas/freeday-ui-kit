@@ -37,8 +37,8 @@
     "./package.json": "./package.json"
   },
   "peerDependencies": {
-    "vue": "^3.4.0",
-    "react": ">=18"
+    "react": ">=18",
+    "vue": "^3.4.0"
   },
   "peerDependenciesMeta": {
     "vue": {
@@ -52,6 +52,11 @@
     "build": "node tokens/build.mjs",
     "test": "node --test",
     "prepack": "node tokens/build.mjs",
-    "version": "node tokens/build.mjs && git add dist"
+    "version": "node tokens/build.mjs && git add dist",
+    "typecheck:react": "tsc -p adapters/react/tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.17",
+    "typescript": "^7.0.2"
   }
 }
