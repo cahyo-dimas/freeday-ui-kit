@@ -414,7 +414,7 @@ a { color: var(--color-primary); }
  *     <span class="fdy-app__brand-title">…</span>
  *     <span class="fdy-app__brand-subtitle">…</span>
  *   </div></div> */
-.fdy-app__brand{flex:none;display:flex;align-items:center;gap:var(--space-2);box-sizing:border-box;min-height:var(--space-16);font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);padding:0 var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__brand{flex:none;display:flex;align-items:center;gap:var(--space-2);box-sizing:border-box;min-height:var(--space-16);font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);text-decoration:none;padding:0 var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__brand-mark{flex:none;width:1.5rem;height:1.5rem;}
 .fdy-app__brand-mark svg{display:block;width:100%;height:100%;}
 .fdy-app__brand-text{display:flex;flex-direction:column;min-width:0;}
@@ -423,7 +423,8 @@ a { color: var(--color-primary); }
 .fdy-nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:2px;padding:var(--space-3) var(--space-3) var(--space-6);}
 .fdy-nav__item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-nav__item:hover{background:var(--color-surface-2);color:var(--color-text);}
-.fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);box-shadow:inset 3px 0 0 var(--color-accent);}
+/* Active indicator stays in the primary ramp so it never clashes with a re-themed accent. */
+.fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);box-shadow:inset 3px 0 0 var(--color-primary);}
 .fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 /* Sidebar-menu extras: per-node icon (leading), count badge (trailing), and a
  * text label that truncates. Any of these are optional — a bare text item works. */
