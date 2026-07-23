@@ -263,14 +263,14 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.0.0</p>
+          <p class="doc-eyebrow">Design System · v1.2.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.0.0</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.2.0</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
           <div class="doc-showcase__head">
@@ -300,14 +300,14 @@
 
     <section class="doc-section" id="sec-integrasi">
       <h2 data-i18n="int.h2">Integrasi framework</h2>
-      <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
+      <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. <strong>Vue kini juga punya komponen <code>v-model</code> typed: <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>.</strong> Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
       <p class="doc-desc" data-i18n="int.guide">Baru mau pakai di project sendiri? <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/getting-started.md" target="_blank" rel="noopener"><strong>Panduan langkah-demi-langkah per stack →</strong></a></p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-fw">
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/vue-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">freeday/vue</span>
             <h3>Vue 3</h3>
-            <p data-i18n="fw.vue">Composable <code>useFreeday()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>.</p>
+            <p data-i18n="fw.vue">Composable <code>useFreeday()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>. Plus komponen <code>v-model</code>: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>.</p>
           </a>
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/react-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">freeday/react</span>
@@ -1659,7 +1659,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.0.0</div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.2.0</div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -1721,9 +1721,9 @@
     'stat.adapters': 'framework adapters',
     'stat.contrast': 'contrast · light &amp; dark',
     'int.h2': 'Framework integration',
-    'int.desc': 'Thin adapters — the enhancers stay the source of truth; <code>fdy-*</code> events bridge into framework reactivity. Each stack ships a runnable invoice example (see <code>examples/</code>).',
+    'int.desc': 'Thin adapters — the enhancers stay the source of truth; <code>fdy-*</code> events bridge into framework reactivity. <strong>Vue also ships typed <code>v-model</code> components now: <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>.</strong> Each stack ships a runnable invoice example (see <code>examples/</code>).',
     'int.guide': 'New to it? <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/getting-started.md" target="_blank" rel="noopener"><strong>Step-by-step guide, per stack →</strong></a>',
-    'fw.vue': 'Composable <code>useFreeday()</code> — hydrate on mount &amp; update, events via <code>v-on</code>.',
+    'fw.vue': 'Composable <code>useFreeday()</code> — hydrate on mount &amp; update, events via <code>v-on</code>. Plus <code>v-model</code> components: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>.',
     'fw.react': 'Hook <code>useFreeday()</code> — bubbling <code>fdy-*</code> events listened at the root.',
     'fw.blazor': 'Interop <code>window.FreedayBlazor</code> → <code>[JSInvokable]</code> C# methods.',
     'footer.integrations': 'Integrations',
