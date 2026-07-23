@@ -27,7 +27,7 @@
 .fdy-nav__item{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-nav__item:hover{background:var(--color-surface-2);color:var(--color-text);}
 /* Active indicator stays in the primary ramp so it never clashes with a re-themed accent. */
-.fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);box-shadow:inset 3px 0 0 var(--color-primary);}
+.fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 .fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 /* Sidebar-menu extras: per-node icon (leading), count badge (trailing), and a
  * text label that truncates. Any of these are optional — a bare text item works. */

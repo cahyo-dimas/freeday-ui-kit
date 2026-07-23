@@ -3,6 +3,19 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.3.1] — 2026-07-23
+Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
+### Removed
+- **Rail aksen 3px pada state aktif/terpilih** (`box-shadow:inset 3px 0 0 var(--color-primary)`)
+  dihapus dari nav app-shell (`[aria-current="page"]`), opsi cascade & autocomplete
+  (`[aria-selected="true"]`), dan baris tabel terpilih. State terpilih tetap jelas & aksesibel
+  lewat background `--color-primary-soft` + teks `--color-primary-strong` + semibold (tabel:
+  soft-bg satu baris penuh). Murni visual, non-breaking; kontras tetap **9/9**.
+### Kept
+- Indikator fungsional yang **beda motif** sengaja dipertahankan: rail fokus keyboard CFL
+  (`:focus-visible`, wajib a11y — pembeda fokus vs terpilih), underline tab aktif, checkmark
+  combo, ring highlight combo.
+
 ## [1.3.0] — 2026-07-23
 Rilis **1.3 — accent Azure**. Warna sekunder/aksen berubah dari **teal → biru Microsoft Azure**.
 ### Changed

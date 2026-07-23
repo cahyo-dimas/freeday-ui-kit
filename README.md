@@ -3,7 +3,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.3.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.3.0)
+[![Release](https://img.shields.io/badge/release-v1.3.1-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.3.1)
 
 Token-driven, framework-agnostic UI KIT — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -23,7 +23,7 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.3.0
+npm i github:cahyo-dimas/freeday-ui-kit#v1.3.1
 ```
 ```js
 import 'freeday/css';   // token + komponen (satu file)
@@ -33,14 +33,14 @@ import 'freeday';       // semua enhancer JS (auto-init [data-fdy-*])
 Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit → install
 dari git jalan **tanpa build step**; minify diserahkan ke bundler konsumen.
 
-**Install di CI (`git+https`, bukan `git+ssh`).** `npm i github:...#v1.3.0` menulis
+**Install di CI (`git+https`, bukan `git+ssh`).** `npm i github:...#v1.3.1` menulis
 `git+ssh://` ke lockfile konsumen — `npm ci` di CI gagal kalau runner tidak punya SSH key yang
 di-otorisasi ke repo privat ini. Pakai `git+https` + read-only PAT, tidak butuh upgrade plan
 GitHub atau GitHub Packages:
 ```json
 // package.json konsumen
 "dependencies": {
-  "freeday": "git+https://github.com/cahyo-dimas/freeday-ui-kit.git#v1.3.0"
+  "freeday": "git+https://github.com/cahyo-dimas/freeday-ui-kit.git#v1.3.1"
 }
 ```
 ```yaml
