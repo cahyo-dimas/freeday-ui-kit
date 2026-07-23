@@ -16,9 +16,9 @@ yarn-error.log*
 .claude/
 .superpowers/
 
-# Local cross-repo working notes (distilled into docs/superpowers/specs/2026-07-23-freeday-adoption-backlog.md)
-freeday-convert-gaps.md
-freeday-kit-improvements.md
+# improvement-notes/ is intentionally NOT ignored, so local project/client notes stay
+# @-mentionable in Claude Code. A pre-commit hook (.git/hooks/pre-commit) blocks
+# committing them — this repo is PUBLIC, so those notes must never be pushed.
 
 # NOTE: dist/ is intentionally committed so projects can import
 # freeday.tokens.css / freeday.css directly without running a build.
