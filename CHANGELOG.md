@@ -3,6 +3,34 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.2.0] — 2026-07-23
+Rilis **1.2 — Vue input wrappers (native reimpl)**. Komponen Vue idiomatik dengan `v-model`
+nyata di atas class CSS kit, supaya form Vue tak perlu fallback ke `<select>`/`<input type=date>`
+native. **Non-breaking**: murni tambahan (file `.vue` + export baru); enhancer, `useFreeday`,
+dan semua class/token lama tak berubah. `vue` tetap peerDependency opsional.
+### Added
+- **`FdyCombo`** (`import { FdyCombo } from 'freeday/vue'`) — combobox select-only WAI-ARIA APG
+  dengan `v-model` (generic `T extends string`), keyboard penuh (↑↓/Home/End/Enter/Esc/typeahead)
+  + outside-click; props `options`/`placeholder`/`disabled`/`invalid`/`describedby`/`ariaLabelledby`.
+- **`FdyDatepicker`** — kalender native di atas `datepicker.css`; `v-model` string ISO
+  `YYYY-MM-DD`, `min`/`max`, `locale` (Intl), keyboard grid penuh, `invalid`/`ariaLabelledby`.
+- **`FdyCfl`** — choose-from-list **controlled + async**: `v-model:Row|null` +
+  `fetchPage(query,page) => Promise<{rows,hasMore}>`, `columns`/`display`/`rowKey`. `<dialog>`
+  native, search debounced, state loading/empty/error(+retry), pagination append, cache opsional,
+  guard respons out-of-order. Ini kontrak integrasi field lookup (map nilai → master data server).
+- **Error-state kit** — varian `--error`/`[aria-invalid]` ditambah ke `combo`/`cascade`/
+  `datepicker`/`timepicker`, dan `input-group :has()` diperluas menangkap error kontrol — jadi
+  validasi vanilla (`freeday-form`) **dan** prop `invalid` wrapper Vue sama-sama ber-styling.
+  (Field CFL = `.fdy-input`+input-group, jadi error-nya via `aria-invalid` pada input, bukan
+  kelas `.fdy-cfl--error`.)
+### Notes
+- Komponen Vue di-ship sebagai `.vue` mentah (bundler konsumen yang meng-compile); type-check
+  butuh `vue-tsc`/Volar, bukan `tsc` polos. Install: `npm i github:cahyo-dimas/freeday-ui-kit#v1.2.0`.
+- QA interaksi runtime (klik/keyboard di browser) = tanggung jawab konsumen; komponen
+  terverifikasi type-check + build (`vue-tsc --noEmit` + `vite build`) + review kode.
+- Follow-up diketahui (warisan datepicker, non-blocking): grid `role="grid"` datar tanpa `row`;
+  hari fokus-awal yang ter-`min`/`max`-disable bisa bikin grid tak ter-fokus keyboard di config tepi.
+
 ## [1.1.0] — 2026-07-23
 Rilis **1.1 — "Precision" visual polish + pengerasan adopsi**. Dua bagian: **(1) penyegaran
 visual** token-driven — radius lebih tajam, elevation overlay lebih tegas, hierarki tipografi
