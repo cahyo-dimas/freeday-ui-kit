@@ -934,9 +934,12 @@ a { color: var(--color-primary); }
 .fdy-input-group .fdy-input:focus{box-shadow:none;}
 .fdy-input-group__addon{display:inline-flex;align-items:center;padding:0 var(--space-3);background:var(--color-surface-2);color:var(--color-text-muted);font-size:var(--text-sm);white-space:nowrap;border-right:var(--bw) solid var(--color-border);}
 .fdy-input-group__addon:last-child{border-right:0;border-left:var(--bw) solid var(--color-border);}
-/* Borderless decorative icon (e.g. leading search magnifier) — no addon chrome. */
-.fdy-input-group__addon--icon{background:transparent;border:0;padding:0 0 0 var(--space-3);color:var(--color-text-subtle);}
+/* Borderless leading icon (e.g. search magnifier) — self-contained like __btn so it
+   centers standalone (no base .fdy-input-group__addon required). */
+.fdy-input-group__addon--icon{display:inline-flex;align-items:center;background:transparent;border:0;padding:0 0 0 var(--space-3);color:var(--color-text-subtle);}
 .fdy-input-group__addon--icon svg{display:block;width:1rem;height:1rem;}
+/* The leading icon already provides the left inset — don't let the input add its full left padding on top. */
+.fdy-input-group__addon--icon + .fdy-input{padding-left:var(--space-2);}
 /* Trailing action button (e.g. choose-from-list magnifier) — a real, focusable control. */
 .fdy-input-group__btn{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-h);align-self:stretch;border:0;border-left:var(--bw) solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-input-group__btn:hover{background:var(--color-surface-3);color:var(--color-text);}
