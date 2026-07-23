@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light" data-density="comfortable">
+<html lang="id" data-theme="light" data-density="comfortable" data-reveal>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -133,7 +133,68 @@
     .doc-scale__key { width: 7rem; }
     .doc-desc code, .doc-section p code { overflow-wrap: anywhere; }
   }
+
+  /* ============================================================
+     v1.5 docs polish — hero glow, section anchors, scroll reveal,
+     and the component Playground. Every value comes from a token.
+     ============================================================ */
+
+  /* Hero: a soft, token-driven glow behind the headline (decorative). */
+  .doc-hero { isolation: isolate; background:
+      radial-gradient(88% 74% at 8% -14%, color-mix(in srgb, var(--color-primary) 11%, transparent), transparent 58%),
+      radial-gradient(62% 56% at 98% 2%, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 60%); }
+
+  /* Hero showcase: a live trend row (real sparkline + delta badge). */
+  .doc-showcase__trend { display: flex; align-items: center; gap: var(--space-4); }
+  .doc-showcase__trend .fdy-sparkline { flex: 1; min-width: 0; height: 2.25rem; }
+
+  /* Stat strip: a primary rule that sweeps across on hover. */
+  .doc-stat { position: relative; transition: background var(--dur-fast) var(--ease-standard); }
+  .doc-stat::after { content: ""; position: absolute; inset: 0 auto auto 0; height: 2px; width: 0; background: var(--color-primary); transition: width var(--dur-base) var(--ease-standard); }
+  .doc-stat:hover { background: var(--color-surface-2); }
+  .doc-stat:hover::after { width: 100%; }
+
+  /* Section heading anchor — a link that fades in on hover, in the left gutter.
+     Injected as a sibling of the section (not a child of <h2>) so the language
+     toggle, which rewrites h2.innerHTML, never clobbers it. */
+  .doc-section { position: relative; }
+  .doc-anchor { position: absolute; top: .12em; left: calc(var(--space-6) * -1); display: inline-flex; align-items: center; justify-content: center; width: 1.4rem; height: 1.4rem; border-radius: var(--radius-sm); color: var(--color-text-subtle); text-decoration: none; opacity: 0; transition: opacity var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard), background var(--dur-fast) var(--ease-standard); }
+  .doc-anchor svg { width: 1rem; height: 1rem; }
+  .doc-section:has(> h2:hover) .doc-anchor, .doc-anchor:focus-visible { opacity: 1; }
+  .doc-anchor:hover { color: var(--color-primary-strong); background: var(--color-primary-soft); }
+  .doc-anchor:focus-visible { outline: none; opacity: 1; box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 45%, transparent); }
+  @media (max-width: 899px) { .doc-anchor { display: none; } }
+
+  /* One-time scroll reveal (fade + small rise). Hero is exempt; disabled under
+     reduced-motion; fully unhidden when JS is off (see the <noscript> in head). */
+  :root[data-reveal] .doc-section:not(.doc-hero) { opacity: 0; transform: translateY(14px); transition: opacity .55s var(--ease-standard), transform .55s var(--ease-standard); }
+  :root[data-reveal] .doc-section.is-in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { :root[data-reveal] .doc-section { opacity: 1 !important; transform: none !important; transition: none !important; } }
+
+  /* ---- Component Playground ---- */
+  .pg { display: grid; gap: var(--space-5); }
+  .pg__bar { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
+  .pg__bar .fdy-combo { min-width: 12rem; }
+  .pg__grid { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); gap: var(--space-5); align-items: start; }
+  @media (max-width: 760px) { .pg__grid { grid-template-columns: 1fr; } }
+  .pg__controls { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-4); background: var(--color-surface); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); }
+  .pg__ctrl { display: flex; flex-direction: column; gap: var(--space-2); }
+  .pg__ctrl--switch { flex-direction: row; align-items: center; }
+  .pg__stage { display: grid; gap: var(--space-4); min-width: 0; }
+  .pg__preview { display: flex; align-items: center; justify-content: center; gap: var(--space-3); flex-wrap: wrap; min-height: 9.5rem; padding: var(--space-8) var(--space-6); background: var(--color-surface);
+      background-image: radial-gradient(color-mix(in srgb, var(--color-border) 55%, transparent) 1px, transparent 1px); background-size: 15px 15px;
+      border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); }
+  .pg__preview .fdy-card { max-width: 22rem; width: 100%; }
+  .pg__preview .fdy-alert, .pg__preview .fdy-field { max-width: 26rem; width: 100%; }
+  .pg__code { margin: 0; border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface-3); }
+  .pg__code-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-bottom: var(--bw) solid var(--color-border); background: var(--color-surface-2); }
+  .pg__lang { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-subtle); letter-spacing: var(--tracking-wide); }
+  .pg__copy { margin-left: auto; }
+  .pg__copy.is-copied { color: var(--color-success); border-color: color-mix(in srgb, var(--color-success) 40%, transparent); }
+  .pg__pre { margin: 0; padding: var(--space-4); overflow-x: auto; }
+  .pg__pre code { font-family: var(--font-mono); font-size: var(--text-xs); line-height: var(--leading-normal); color: var(--color-text); white-space: pre; tab-size: 2; }
 </style>
+<noscript><style>:root[data-reveal] .doc-section{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 <a class="fdy-skip" href="#main">Lewati ke konten utama</a>
@@ -148,6 +209,7 @@
       <p class="doc-nav__empty" id="nav-empty" role="status">Tidak ada hasil.</p>
       <a class="fdy-nav__item" href="#sec-ikhtisar" aria-current="page">Ikhtisar</a>
       <a class="fdy-nav__item" href="#sec-integrasi">Integrasi framework</a>
+      <a class="fdy-nav__item" href="#sec-playground">Playground</a>
       <details class="doc-navgroup" open>
         <summary class="doc-navgroup__summary">Fondasi</summary>
         <div class="doc-navgroup__items">
@@ -278,6 +340,10 @@
             <span class="fdy-badge fdy-badge--success" data-i18n="sc.paid">Lunas</span>
           </div>
           <div class="doc-showcase__amount">Rp 1.240.000</div>
+          <div class="doc-showcase__trend">
+            <span class="fdy-sparkline" data-fdy-chart="sparkline" data-values="8,11,9,14,13,18" data-fdy-color="primary" role="img" aria-label="Tren pembayaran enam bulan terakhir, naik dari 8 ke 18 juta"></span>
+            <span class="fdy-badge" aria-label="naik 18 persen">▲ 18%</span>
+          </div>
           <label class="fdy-field" style="max-width:none">
             <span class="fdy-label" data-i18n="sc.customer">Pelanggan</span>
             <input class="fdy-input" value="PT Sumber Makmur" readonly aria-readonly="true">
@@ -319,6 +385,52 @@
             <h3>Blazor WASM</h3>
             <p data-i18n="fw.blazor">Interop <code>window.FreedayBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
           </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="sec-playground">
+      <h2>Playground</h2>
+      <p class="doc-desc">Pilih komponen, atur varian lewat kontrol Freeday (chip &amp; switch), lihat pratinjau langsung, lalu salin markup-nya. Semua kelas berasal dari kit — nol dependency, siap tempel ke Vue / React / Blazor.</p>
+      <div class="doc-demo doc-demo--block pg" data-pg>
+        <div class="pg__bar">
+          <span class="fdy-label" id="pg-comp-label">Komponen</span>
+          <div class="fdy-combo" data-fdy-combo data-value="button" id="pg-comp">
+            <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="pg-comp-label pg-comp-val">
+              <span class="fdy-combo__value" id="pg-comp-val">Button</span>
+            </button>
+            <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="pg-comp-label" hidden>
+              <li class="fdy-combo__option" role="option" data-value="button" aria-selected="true"><span class="fdy-combo__check">✓</span>Button</li>
+              <li class="fdy-combo__option" role="option" data-value="badge" aria-selected="false"><span class="fdy-combo__check"></span>Badge</li>
+              <li class="fdy-combo__option" role="option" data-value="alert" aria-selected="false"><span class="fdy-combo__check"></span>Alert</li>
+              <li class="fdy-combo__option" role="option" data-value="input" aria-selected="false"><span class="fdy-combo__check"></span>Input</li>
+              <li class="fdy-combo__option" role="option" data-value="card" aria-selected="false"><span class="fdy-combo__check"></span>Card</li>
+              <li class="fdy-combo__option" role="option" data-value="chip" aria-selected="false"><span class="fdy-combo__check"></span>Chip</li>
+              <li class="fdy-combo__option" role="option" data-value="inputgroup" aria-selected="false"><span class="fdy-combo__check"></span>Input group</li>
+              <li class="fdy-combo__option" role="option" data-value="badgeov" aria-selected="false"><span class="fdy-combo__check"></span>Badge overlay</li>
+              <li class="fdy-combo__option" role="option" data-value="avatar" aria-selected="false"><span class="fdy-combo__check"></span>Avatar</li>
+              <li class="fdy-combo__option" role="option" data-value="progress" aria-selected="false"><span class="fdy-combo__check"></span>Progress</li>
+              <li class="fdy-combo__option" role="option" data-value="spinner" aria-selected="false"><span class="fdy-combo__check"></span>Spinner</li>
+              <li class="fdy-combo__option" role="option" data-value="skeleton" aria-selected="false"><span class="fdy-combo__check"></span>Skeleton</li>
+              <li class="fdy-combo__option" role="option" data-value="breadcrumb" aria-selected="false"><span class="fdy-combo__check"></span>Breadcrumb</li>
+              <li class="fdy-combo__option" role="option" data-value="accordion" aria-selected="false"><span class="fdy-combo__check"></span>Accordion</li>
+              <li class="fdy-combo__option" role="option" data-value="timeline" aria-selected="false"><span class="fdy-combo__check"></span>Timeline</li>
+              <li class="fdy-combo__option" role="option" data-value="kbd" aria-selected="false"><span class="fdy-combo__check"></span>Kbd</li>
+            </ul>
+          </div>
+        </div>
+        <div class="pg__grid">
+          <div class="pg__controls" id="pg-controls" role="group" aria-label="Kontrol komponen"></div>
+          <div class="pg__stage">
+            <div class="pg__preview" id="pg-preview"></div>
+            <figure class="pg__code">
+              <figcaption class="pg__code-head">
+                <span class="pg__lang">HTML</span>
+                <button class="fdy-btn fdy-btn--ghost fdy-btn--sm pg__copy" id="pg-copy" type="button">Salin HTML</button>
+              </figcaption>
+              <pre class="pg__pre"><code id="pg-code"></code></pre>
+            </figure>
+          </div>
         </div>
       </div>
     </section>
@@ -1753,6 +1865,7 @@
   // Section headings + descriptions (keyed by section id), so the whole app — not
   // just the landing — switches language.
   const SEC = {
+    'sec-playground': { h2: 'Playground', desc: 'Pick a component, tweak its variants with Freeday controls (chips &amp; switches), watch the live preview, then copy the markup. Every class comes from the kit — zero dependencies, ready to paste into Vue / React / Blazor.' },
     'sec-prinsip': { h2: 'Principles', desc: 'Four rules that keep the system consistent as it grows.' },
     'sec-warna': { h2: 'Colour', desc: 'Semantic roles (Tier-2). Components only touch these roles, never the raw ramp.' },
     'sec-tipografi': { h2: 'Typography', desc: 'Display <strong>Sora</strong> · body <strong>IBM Plex Sans</strong> · data <strong>JetBrains Mono</strong>.' },
@@ -1807,7 +1920,7 @@
     'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>freeday-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
     'sec-a11y': { h2: 'Accessibility', desc: 'A contract every component keeps — not an afterthought.' },
   };
-  const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };
+  const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-playground': 'Playground', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };
   const GROUPS = { 'Fondasi': 'Foundation', 'Aksi & Form': 'Action & Form', 'Feedback': 'Feedback', 'Navigasi': 'Navigation', 'Data': 'Data', 'Tampilan': 'Display', 'Layout': 'Layout', 'Utilitas': 'Utilities', 'Tentang': 'About' };
   const UI = { title: 'Components', density: 'Density' };
 
@@ -1833,6 +1946,9 @@
     'Belum ada faktur': 'No invoices yet', 'Faktur yang kamu buat akan muncul di sini.': 'Invoices you create will appear here.', 'Gagal memuat': 'Failed to load', 'Tidak bisa mengambil data dari server.': "Couldn't fetch data from the server.",
     'Faktur': 'Invoice', 'Produk': 'Products', 'Gudang': 'Warehouse', 'Pajak': 'Tax', 'Laporan': 'Reports', 'Penjualan': 'Sales', 'Neraca': 'Balance sheet', 'baru': 'new',
     'Cari komponen…': 'Search components…', 'Tidak ada hasil.': 'No results.',
+    'Komponen': 'Component', 'Varian': 'Variant', 'Ukuran': 'Size', 'State': 'State', 'Teks bantuan': 'Helper text', 'Tombol tutup': 'Close button', 'Footer aksi': 'Action footer', 'Ikon': 'Icon', 'Nonaktif': 'Disabled', 'Salin HTML': 'Copy HTML', 'Tersalin': 'Copied',
+    'Teks': 'Text', 'Bisa dihapus': 'Removable', 'Addon': 'Addon', 'Tipe': 'Type', 'Warna': 'Color', 'Jumlah': 'Count',
+    'Bentuk': 'Shape', 'Mode': 'Mode', 'Nilai': 'Value', 'Level': 'Levels', 'Terbuka': 'Open',
   };
 
   const i18nEls = [...document.querySelectorAll('[data-i18n]')];
@@ -1878,7 +1994,7 @@
     });
     // Demo UI chrome: labels, state text, buttons, menu items, nav-demo labels,
     // and enhancer-rendered placeholders — translated by their text.
-    document.querySelectorAll('.fdy-label, .fdy-state__title, .fdy-state__text, .fdy-menu__item, .fdy-nav__label, .doc-nav__empty, .fdy-timepicker__value, .fdy-datepicker__value, .fdy-cascade__value, .fdy-btn:not([data-i18n])').forEach((el) => {
+    document.querySelectorAll('.fdy-label, .fdy-state__title, .fdy-state__text, .fdy-menu__item, .fdy-nav__label, .doc-nav__empty, .fdy-timepicker__value, .fdy-datepicker__value, .fdy-cascade__value, .fdy-switch, .fdy-btn:not([data-i18n])').forEach((el) => {
       if (el.id === 'lang' || el.id === 'theme' || el.id === 'density') return;
       trNodes(el, en);
     });
@@ -1963,6 +2079,300 @@
     });
   }, { rootMargin: '-10% 0px -80% 0px' });
   document.querySelectorAll('.doc-section[id]').forEach(s => obs.observe(s));
+
+  // Section heading anchors — a hover-reveal link in the left gutter. Added as a
+  // sibling of <h2> so the language toggle (rewrites h2.innerHTML) never wipes it.
+  const LINK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+  document.querySelectorAll('.doc-section[id] > h2').forEach((h2) => {
+    const sec = h2.parentElement;
+    const a = document.createElement('a');
+    a.className = 'doc-anchor';
+    a.href = '#' + sec.id;
+    a.setAttribute('aria-label', 'Tautan langsung ke bagian ini');
+    a.innerHTML = LINK_SVG;
+    sec.insertBefore(a, sec.firstChild);
+  });
+
+  // One-time scroll reveal (skipped for reduced-motion; CSS keeps content visible
+  // if this never runs). Hero is exempt via the :not(.doc-hero) selector in CSS.
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const revObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); revObs.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    document.querySelectorAll('.doc-section:not(.doc-hero)').forEach((s) => revObs.observe(s));
+  } else {
+    root.removeAttribute('data-reveal');
+  }
+
+  // -------- Component Playground: variant chips/switches → live preview + copyable HTML --------
+  (function () {
+    const pg = document.querySelector('[data-pg]');
+    if (!pg) return;
+    const combo = document.getElementById('pg-comp');
+    const controlsEl = document.getElementById('pg-controls');
+    const previewEl = document.getElementById('pg-preview');
+    const codeEl = document.getElementById('pg-code');
+    const copyBtn = document.getElementById('pg-copy');
+
+    const ICON_DL = '<span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg></span>';
+    const ICON_INFO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>';
+    const ICON_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg>';
+    const ICON_BELL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>';
+    const esc = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const escAttr = (v) => esc(v).replace(/"/g, '&quot;');
+
+    const COMPS = {
+      button: {
+        controls: [
+          { id: 'variant', label: 'Varian', opts: [['', 'Primary'], ['fdy-btn--ghost', 'Ghost'], ['fdy-btn--danger', 'Danger'], ['fdy-btn--text', 'Text']] },
+          { id: 'size', label: 'Ukuran', def: '', opts: [['fdy-btn--sm', 'sm'], ['', 'md'], ['fdy-btn--lg', 'lg']] },
+          { id: 'icon', label: 'Ikon', type: 'switch' },
+          { id: 'disabled', label: 'Nonaktif', type: 'switch' },
+          { id: 'text', label: 'Teks', type: 'text', def: 'Simpan' },
+        ],
+        render(s) {
+          const cls = ['fdy-btn', s.variant, s.size].filter(Boolean).join(' ');
+          return `<button class="${cls}"${s.disabled ? ' disabled' : ''}>${s.icon ? ICON_DL : ''}${esc(s.text || 'Simpan')}</button>`;
+        },
+      },
+      badge: {
+        controls: [
+          { id: 'variant', label: 'Varian', opts: [['', 'Primary'], ['fdy-badge--success', 'Success'], ['fdy-badge--warning', 'Warning'], ['fdy-badge--danger', 'Danger'], ['fdy-badge--info', 'Info'], ['fdy-badge--outline', 'Outline']] },
+          { id: 'text', label: 'Teks', type: 'text', def: 'Lunas' },
+        ],
+        render(s) {
+          const cls = ['fdy-badge', s.variant].filter(Boolean).join(' ');
+          return `<span class="${cls}">${esc(s.text || 'Status')}</span>`;
+        },
+      },
+      alert: {
+        controls: [
+          { id: 'variant', label: 'Varian', def: 'fdy-alert--info', opts: [['fdy-alert--info', 'Info'], ['fdy-alert--success', 'Success'], ['fdy-alert--warning', 'Warning'], ['fdy-alert--danger', 'Danger']] },
+          { id: 'icon', label: 'Ikon', type: 'switch', def: true },
+          { id: 'close', label: 'Tombol tutup', type: 'switch' },
+        ],
+        render(s) {
+          const cls = ['fdy-alert', s.variant].filter(Boolean).join(' ');
+          const role = s.variant === 'fdy-alert--danger' ? ' role="alert"' : '';
+          const icon = s.icon ? `\n  <span class="fdy-alert__icon">${ICON_INFO}</span>` : '';
+          const close = s.close ? `\n  <button class="fdy-alert__close" aria-label="Tutup">&times;</button>` : '';
+          return `<div class="${cls}"${role}>${icon}\n  <div class="fdy-alert__body">\n    <span class="fdy-alert__title">Tersimpan</span>\n    <span class="fdy-alert__text">Faktur INV-1042 berhasil disimpan.</span>\n  </div>${close}\n</div>`;
+        },
+      },
+      input: {
+        controls: [
+          { id: 'state', label: 'State', def: '', opts: [['', 'Normal'], ['error', 'Error'], ['disabled', 'Nonaktif']] },
+          { id: 'help', label: 'Teks bantuan', type: 'switch', def: true },
+        ],
+        render(s) {
+          const err = s.state === 'error', dis = s.state === 'disabled';
+          const cls = ['fdy-input', err ? 'fdy-input--error' : ''].filter(Boolean).join(' ');
+          const help = s.help ? `\n  <span class="fdy-help${err ? ' fdy-help--error' : ''}" id="pg-inp-help">${err ? 'Format email tidak valid.' : 'Nama sesuai dokumen.'}</span>` : '';
+          const desc = (err || s.help) ? ' aria-describedby="pg-inp-help"' : '';
+          const attrs = `${err ? ' value="bukan-email" aria-invalid="true"' : ' placeholder="cth. PT Sumber Makmur"'}${dis ? ' disabled' : ''}${desc}`;
+          return `<label class="fdy-field">\n  <span class="fdy-label">${err ? 'Email' : 'Nama pelanggan'}</span>\n  <input class="${cls}"${attrs}>${help}\n</label>`;
+        },
+      },
+      card: {
+        controls: [
+          { id: 'variant', label: 'Varian', opts: [['', 'Default'], ['fdy-card--interactive', 'Interactive'], ['fdy-card--elevated', 'Elevated']] },
+          { id: 'footer', label: 'Footer aksi', type: 'switch', def: true },
+        ],
+        render(s) {
+          const cls = ['fdy-card', s.variant].filter(Boolean).join(' ');
+          const footer = s.footer ? `\n  <div class="fdy-card__footer">\n    <button class="fdy-btn fdy-btn--ghost fdy-btn--sm">Detail</button>\n    <button class="fdy-btn fdy-btn--sm">Bayar</button>\n  </div>` : '';
+          return `<div class="${cls}">\n  <div class="fdy-card__body">\n    <h3 class="fdy-card__title">Faktur INV-1042</h3>\n    <p class="fdy-card__desc">Jatuh tempo 30 Juli 2026. Total Rp 1.240.000.</p>\n  </div>${footer}\n</div>`;
+        },
+      },
+      chip: {
+        controls: [
+          { id: 'variant', label: 'Varian', opts: [['', 'Default'], ['fdy-chip--primary', 'Primary']] },
+          { id: 'removable', label: 'Bisa dihapus', type: 'switch' },
+          { id: 'text', label: 'Teks', type: 'text', def: 'Status: Lunas' },
+        ],
+        render(s) {
+          const cls = ['fdy-chip', s.variant].filter(Boolean).join(' ');
+          const rm = s.removable ? ` <button class="fdy-chip__remove" type="button" aria-label="Hapus ${escAttr(s.text || '')}">&times;</button>` : '';
+          return `<span class="${cls}">${esc(s.text || 'Chip')}${rm}</span>`;
+        },
+      },
+      inputgroup: {
+        controls: [
+          { id: 'addon', label: 'Addon', def: 'pre', opts: [['pre', 'Prefix Rp'], ['suf', 'Suffix %'], ['icon', 'Ikon depan']] },
+        ],
+        render(s) {
+          if (s.addon === 'suf') return `<div class="fdy-input-group">\n  <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Diskon">\n  <span class="fdy-input-group__addon">%</span>\n</div>`;
+          if (s.addon === 'icon') return `<div class="fdy-input-group">\n  <span class="fdy-input-group__addon fdy-input-group__addon--icon">${ICON_SEARCH}</span>\n  <input class="fdy-input" type="search" placeholder="Cari…" aria-label="Cari">\n</div>`;
+          return `<div class="fdy-input-group">\n  <span class="fdy-input-group__addon">Rp</span>\n  <input class="fdy-input" type="text" inputmode="numeric" placeholder="0" aria-label="Nominal">\n</div>`;
+        },
+      },
+      badgeov: {
+        controls: [
+          { id: 'type', label: 'Tipe', def: 'count', opts: [['count', 'Angka'], ['dot', 'Titik']] },
+          { id: 'color', label: 'Warna', def: 'fdy-badge-ov--danger', opts: [['', 'Default'], ['fdy-badge-ov--primary', 'Primary'], ['fdy-badge-ov--danger', 'Danger']] },
+          { id: 'text', label: 'Jumlah', type: 'text', def: '5' },
+        ],
+        render(s) {
+          const dot = s.type === 'dot';
+          const ovCls = ['fdy-badge-ov', s.color, dot ? 'fdy-badge-ov--dot' : ''].filter(Boolean).join(' ');
+          const content = dot ? '' : esc(s.text || '5');
+          return `<span class="fdy-badge-wrap">\n  <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon" aria-label="Notifikasi">${ICON_BELL}</button>\n  <span class="${ovCls}" aria-hidden="true">${content}</span>\n</span>`;
+        },
+      },
+      avatar: {
+        controls: [
+          { id: 'size', label: 'Ukuran', def: '', opts: [['fdy-avatar--sm', 'sm'], ['', 'md'], ['fdy-avatar--lg', 'lg']] },
+          { id: 'text', label: 'Teks', type: 'text', def: 'BJ' },
+        ],
+        render(s) {
+          const cls = ['fdy-avatar', s.size].filter(Boolean).join(' ');
+          return `<span class="${cls}">${esc(s.text || 'BJ')}</span>`;
+        },
+      },
+      progress: {
+        controls: [
+          { id: 'mode', label: 'Mode', def: '', opts: [['', 'Determinate'], ['fdy-progress--indeterminate', 'Indeterminate']] },
+          { id: 'value', label: 'Nilai', type: 'text', def: '64' },
+        ],
+        render(s) {
+          if (s.mode === 'fdy-progress--indeterminate') {
+            return `<div class="fdy-progress fdy-progress--indeterminate" role="progressbar" aria-label="Memuat" style="width:100%;max-width:24rem">\n  <div class="fdy-progress__bar"></div>\n</div>`;
+          }
+          const v = Math.max(0, Math.min(100, parseInt(s.value, 10) || 0));
+          return `<div class="fdy-progress" role="progressbar" aria-valuenow="${v}" aria-valuemin="0" aria-valuemax="100" aria-label="Unggah" style="width:100%;max-width:24rem">\n  <div class="fdy-progress__bar" style="width:${v}%"></div>\n</div>`;
+        },
+      },
+      spinner: {
+        controls: [
+          { id: 'size', label: 'Ukuran', def: '', opts: [['fdy-spinner--sm', 'sm'], ['', 'md'], ['fdy-spinner--lg', 'lg']] },
+        ],
+        render(s) {
+          const cls = ['fdy-spinner', s.size].filter(Boolean).join(' ');
+          return `<span class="${cls}" role="status" aria-label="Memuat"></span>`;
+        },
+      },
+      skeleton: {
+        controls: [
+          { id: 'shape', label: 'Bentuk', def: 'fdy-skeleton--text', opts: [['fdy-skeleton--title', 'Title'], ['fdy-skeleton--text', 'Text'], ['fdy-skeleton--circle', 'Circle']] },
+        ],
+        render(s) {
+          if (s.shape === 'fdy-skeleton--circle') return `<div class="fdy-skeleton fdy-skeleton--circle" style="width:3rem;height:3rem"></div>`;
+          return `<div style="width:100%;max-width:20rem">\n  <div class="fdy-skeleton ${s.shape}"></div>\n</div>`;
+        },
+      },
+      breadcrumb: {
+        controls: [
+          { id: 'levels', label: 'Level', def: '3', opts: [['2', '2'], ['3', '3'], ['4', '4']] },
+        ],
+        render(s) {
+          const n = parseInt(s.levels, 10) || 3;
+          const path = ['Dashboard', 'Faktur', 'INV-1042', 'Baris'].slice(0, n);
+          const items = path.map((label, i) => {
+            if (i === path.length - 1) return `    <li class="fdy-breadcrumb__item" aria-current="page">${esc(label)}</li>`;
+            return `    <li class="fdy-breadcrumb__item"><a class="fdy-breadcrumb__link" href="#">${esc(label)}</a></li>\n    <li class="fdy-breadcrumb__sep" aria-hidden="true">/</li>`;
+          }).join('\n');
+          return `<nav class="fdy-breadcrumb" aria-label="Breadcrumb">\n  <ol class="fdy-breadcrumb__list">\n${items}\n  </ol>\n</nav>`;
+        },
+      },
+      accordion: {
+        controls: [
+          { id: 'open', label: 'Terbuka', type: 'switch', def: true },
+          { id: 'text', label: 'Teks', type: 'text', def: 'Detail faktur' },
+        ],
+        render(s) {
+          const open = s.open ? ' open' : '';
+          return `<div class="fdy-accordion">\n  <details class="fdy-accordion__item"${open}>\n    <summary>${esc(s.text || 'Detail faktur')}</summary>\n    <div class="fdy-accordion__panel">Faktur INV-1042 · jatuh tempo 30 Juli 2026 · total Rp 1.240.000.</div>\n  </details>\n  <details class="fdy-accordion__item">\n    <summary>Riwayat pembayaran</summary>\n    <div class="fdy-accordion__panel">Belum ada pembayaran tercatat.</div>\n  </details>\n</div>`;
+        },
+      },
+      timeline: {
+        controls: [
+          { id: 'status', label: 'Status', def: 'fdy-timeline__item--success', opts: [['fdy-timeline__item--success', 'Success'], ['fdy-timeline__item--warning', 'Warning'], ['fdy-timeline__item--danger', 'Danger'], ['fdy-timeline__item--muted', 'Muted'], ['', 'Default']] },
+        ],
+        render(s) {
+          const first = ['fdy-timeline__item', s.status].filter(Boolean).join(' ');
+          return `<ul class="fdy-timeline">\n  <li class="${first}">\n    <span class="fdy-timeline__marker"></span>\n    <time class="fdy-timeline__time">09:12</time>\n    <p class="fdy-timeline__title">Faktur dibuat</p>\n    <p class="fdy-timeline__text">INV-1042 untuk PT Sumber Makmur.</p>\n  </li>\n  <li class="fdy-timeline__item fdy-timeline__item--warning">\n    <span class="fdy-timeline__marker"></span>\n    <time class="fdy-timeline__time">10:03</time>\n    <p class="fdy-timeline__title">Menunggu pembayaran</p>\n    <p class="fdy-timeline__text">Jatuh tempo 30 Juli 2026.</p>\n  </li>\n  <li class="fdy-timeline__item fdy-timeline__item--muted">\n    <span class="fdy-timeline__marker"></span>\n    <time class="fdy-timeline__time">—</time>\n    <p class="fdy-timeline__title">Lunas</p>\n    <p class="fdy-timeline__text">Belum terjadi.</p>\n  </li>\n</ul>`;
+        },
+      },
+      kbd: {
+        controls: [
+          { id: 'text', label: 'Teks', type: 'text', def: 'Ctrl' },
+        ],
+        render(s) {
+          return `<kbd class="fdy-kbd">${esc(s.text || 'Ctrl')}</kbd>`;
+        },
+      },
+    };
+
+    const defOf = (c) => c.def != null ? c.def : (c.opts && c.opts[0] ? c.opts[0][0] : '');
+    let current = COMPS[combo.getAttribute('data-value')] ? combo.getAttribute('data-value') : 'button';
+
+    function buildControls(key) {
+      const cfg = COMPS[key];
+      controlsEl.innerHTML = cfg.controls.map((c) => {
+        if (c.type === 'switch') {
+          return `<div class="pg__ctrl pg__ctrl--switch" data-ctrl="${c.id}"><label class="fdy-switch"><input type="checkbox"${c.def ? ' checked' : ''}> ${c.label}</label></div>`;
+        }
+        if (c.type === 'text') {
+          return `<div class="pg__ctrl" data-ctrl="${c.id}"><span class="fdy-label">${c.label}</span><input class="fdy-input" type="text" value="${escAttr(c.def || '')}" data-pg-text aria-label="${c.label}"></div>`;
+        }
+        const def = defOf(c);
+        const chips = c.opts.map(([v, label]) => `<button type="button" class="fdy-chip fdy-chip--choice" data-value="${v}" aria-pressed="${v === def ? 'true' : 'false'}">${label}</button>`).join('');
+        return `<div class="pg__ctrl" data-ctrl="${c.id}"><span class="fdy-label">${c.label}</span><div class="fdy-chips" data-fdy-chips data-single data-label="${c.label}">${chips}</div></div>`;
+      }).join('');
+      if (window.FreedayChip) window.FreedayChip.initAll(controlsEl);
+      // Re-render is language-agnostic markup; translate the fresh labels if EN is active.
+      if (typeof lang !== 'undefined' && lang === 'en') controlsEl.querySelectorAll('.fdy-label, .fdy-switch').forEach((el) => trNodes(el, true));
+    }
+
+    function readState(key) {
+      const cfg = COMPS[key], s = {};
+      cfg.controls.forEach((c) => {
+        const box = controlsEl.querySelector('[data-ctrl="' + c.id + '"]');
+        if (c.type === 'switch') { const i = box.querySelector('input'); s[c.id] = !!(i && i.checked); return; }
+        if (c.type === 'text') { const i = box.querySelector('input'); s[c.id] = i ? i.value : ''; return; }
+        let active = box.querySelector('.fdy-chip[aria-pressed="true"]');
+        if (!active) { // a single-select group must always keep one selected
+          const def = defOf(c);
+          active = box.querySelector('.fdy-chip[data-value="' + def + '"]') || box.querySelector('.fdy-chip');
+          if (active) active.setAttribute('aria-pressed', 'true');
+        }
+        s[c.id] = active ? active.getAttribute('data-value') : '';
+      });
+      return s;
+    }
+
+    function render() {
+      const html = COMPS[current].render(readState(current));
+      previewEl.innerHTML = html;
+      codeEl.textContent = html;
+    }
+
+    function selectComp(key) {
+      if (!COMPS[key]) return;
+      current = key;
+      buildControls(key);
+      render();
+    }
+
+    controlsEl.addEventListener('fdy-chip-change', render);
+    controlsEl.addEventListener('change', (e) => { if (e.target.matches('.fdy-switch input')) render(); });
+    controlsEl.addEventListener('input', (e) => { if (e.target.matches('[data-pg-text]')) render(); });
+    combo.addEventListener('fdy-change', (e) => selectComp(e.detail.value));
+
+    copyBtn.addEventListener('click', () => {
+      const text = codeEl.textContent;
+      const original = copyBtn.textContent;
+      const done = () => {
+        copyBtn.classList.add('is-copied');
+        copyBtn.textContent = (typeof lang !== 'undefined' && lang === 'en') ? 'Copied' : 'Tersalin';
+        setTimeout(() => { copyBtn.classList.remove('is-copied'); copyBtn.textContent = original; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(done);
+      else { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (err) { /* ignore */ } document.body.removeChild(ta); done(); }
+    });
+
+    selectComp(current);
+  })();
 </script>
 </body>
 </html>
