@@ -6,7 +6,7 @@ oleh enhancer Freeday, dan event `fdy-*` mengalir balik ke state Vue.
 
 > **Mau pakai Freeday di project Vue-mu sendiri?** Ikuti panduan
 > [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install dari GitHub
-> (`github:cahyo-dimas/freeday-ui-kit#v1.2.0`), bukan `file:../..` seperti contoh ini.
+> (`github:cahyo-dimas/freeday-ui-kit#v1.2.1`), bukan `file:../..` seperti contoh ini.
 
 ## Jalankan
 

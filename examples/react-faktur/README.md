@@ -6,7 +6,7 @@ enhancer Freeday, dan event `fdy-*` (yang bubbling) didengar di root lalu memper
 
 > **Mau pakai Freeday di project React-mu sendiri?** Ikuti panduan
 > [`../../docs/getting-started.md`](../../docs/getting-started.md) §React — install dari GitHub
-> (`github:cahyo-dimas/freeday-ui-kit#v1.2.0`), bukan `file:../..` seperti contoh ini.
+> (`github:cahyo-dimas/freeday-ui-kit#v1.2.1`), bukan `file:../..` seperti contoh ini.
 
 ## Jalankan
 

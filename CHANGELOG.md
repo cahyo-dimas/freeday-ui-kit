@@ -3,6 +3,16 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.2.1] — 2026-07-23
+Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
+### Fixed
+- **Ikon depan input-group tak ke-center + gap** — `.fdy-input-group__addon--icon` dipakai
+  standalone tapi tak set `display`/`align-items`, jadi `<svg>`-nya nempel ke atas kotak flex
+  yang ter-stretch (ikon melayang tinggi); dan padding-kiri ikon menumpuk dengan padding-kiri
+  `.fdy-input` → gap lebar. Kini `--icon` self-contained (`inline-flex` + center, meniru
+  `.fdy-input-group__btn`) dan `.fdy-input` setelah ikon memangkas padding-kirinya. Murni CSS,
+  backward-compatible. Kena semua field search/find (topbar search, filter tabel, dialog CFL, dst).
+
 ## [1.2.0] — 2026-07-23
 Rilis **1.2 — Vue input wrappers (native reimpl)**. Komponen Vue idiomatik dengan `v-model`
 nyata di atas class CSS kit, supaya form Vue tak perlu fallback ke `<select>`/`<input type=date>`
