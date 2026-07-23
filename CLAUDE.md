@@ -60,3 +60,4 @@ docs/index.html
 ## Aset tersedia
 - `Foundation Design System.html` — sumber referensi untuk **port** komponen (⬆ di spec §7).
 - Font latin (Sora/IBM Plex Sans/Manrope/JetBrains Mono) sudah ter-embed base64 di file Foundation itu — bisa diekstrak ulang bila perlu.
+- `auth_web_ui_layout_patterns.png` — 15 arketipe layout aplikasi web (dashboard/admin, master-detail, kanban, feed, chat, canvas, kalender, editor dokumen, media, e-commerce, analytics/BI, POS, wizard, file manager, forum) sebagai referensi wireframe saat menyusun layar bisnis nyata dengan kit.
