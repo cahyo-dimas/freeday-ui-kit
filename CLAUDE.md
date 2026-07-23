@@ -22,8 +22,8 @@ Tier 3 COMPONENT  --fdy-<komponen>-<properti>, opsional, hanya untuk override lo
 **Aturan keras:** komponen hanya menyentuh Tier 2/3. **Jangan pernah menaruh hex/px mentah**
 di CSS komponen. Butuh nilai baru → compose → extend modifier → only then create.
 
-## Identitas (Azure & Teal) — referensi cepat
-- primary `#2050d8` · primary-hover `#1c40b0` · accent (teal) `#0d9488`
+## Identitas (Azure) — referensi cepat
+- primary `#2050d8` · primary-hover `#1c40b0` · accent (sky / Microsoft Azure blue) `#0078d4`
 - surface `#ffffff` · text `#171b26` · border `#e0e3ea`
 - Fonts: display **Sora** · body **IBM Plex Sans** · data **JetBrains Mono**
 - Nilai lengkap (ramp 50–950, semantic light & dark) ada di spec §5.

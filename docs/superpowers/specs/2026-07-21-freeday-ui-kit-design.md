@@ -32,7 +32,7 @@
 |---|---|---|
 | 1 | Bentuk KIT | **Design source-of-truth** (framework-agnostic, token file + referensi hidup) |
 | 2 | Strategi build | **Hybrid** — token layer ditulis bersih dari nol, komponen di-port dari Foundation |
-| 3 | Identitas visual | **Baru — "Azure & Teal"** (azure `#2050d8` + accent teal, netral slate dingin) |
+| 3 | Identitas visual | **"Azure"** (azure `#2050d8` primary + accent sky/Microsoft-Azure `#0078d4`, netral slate dingin) |
 | 4 | Cakupan komponen | Foundation **+ komponen business-app** (app shell, data grid, master-detail, wizard, filter bar, pagination, states) |
 | 5 | Target konsumsi | **CSS variables + `tokens.json` kanonik (W3C DTCG)**; adapter stack lain on-demand |
 | 6 | Visual styles v1 | **1 gaya utama (`soft`) + dark/light**; gaya lain = roadmap |
@@ -91,10 +91,10 @@ Contoh alur:
 0 #ffffff · 50 #f7f8fa · 100 #eef0f4 · 200 #e0e3ea · 300 #cbd0da · 400 #99a1b3
 500 #6b7488 · 600 #4d5568 · 700 #3a4152 · 800 #262b38 · 900 #171b26 · 950 #0e111a
 ```
-**Teal (accent)**
+**Sky / Azure light (accent)**
 ```
-50 #f0fdfa · 100 #ccfbf1 · 200 #99f6e4 · 300 #5eead4 · 400 #24c49d · 500 #14b8a6
-600 #0d9488 · 700 #0f766e · 800 #115e59 · 900 #134e4a · 950 #042f2c
+50 #eff6fd · 100 #d6e9fb · 200 #b0d4f6 · 300 #7bbdef · 400 #47a1e6 · 500 #1a86dc
+600 #0078d4 · 700 #0061ac · 800 #004d88 · 900 #003a67
 ```
 **Support (semantic)** — ramp ringkas 50/100/500/600/700
 ```
@@ -113,7 +113,7 @@ Blue    50 #eff6ff · 100 #dbeafe · 500 #3b82f6 · 600 #2563eb · 700 #1d4ed8
 --color-primary-soft   #eff4ff
 --color-primary-border #dbe6fe      --color-surface      #ffffff
                                      --color-surface-2    #f7f8fa
---color-accent         #0d9488      --color-surface-3    #eef0f4
+--color-accent         #0078d4      --color-surface-3    #eef0f4
 --color-accent-hover   #0f766e
 --color-on-accent      #ffffff      --color-border       #e0e3ea
                                      --color-border-strong#cbd0da
