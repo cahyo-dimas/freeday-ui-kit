@@ -39,15 +39,17 @@
     function visible() { return options.filter(function (o) { return !o.hidden; }); }
     function clearHighlight() { options.forEach(function (o) { o.classList.remove('is-highlighted'); }); }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, input); return _pop; }
     function open() {
       if (!listbox.hidden) return;
-      listbox.hidden = false;
+      var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       input.setAttribute('aria-expanded', 'true');
       document.addEventListener('click', onDocClick, true);
     }
     function close() {
       if (listbox.hidden) return;
-      listbox.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else listbox.hidden = true;
       input.setAttribute('aria-expanded', 'false');
       input.removeAttribute('aria-activedescendant');
       active = -1;
@@ -476,13 +478,15 @@
       close(true);
     }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
       // Re-open at the selected leaf's level for quick re-selection.
       var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
       if (trail && trail.length > 1) { stack = trail.slice(0, -1); current = stack[stack.length - 1].children; }
       else { stack = []; current = root; }
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       render();
@@ -491,7 +495,7 @@
     }
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       document.removeEventListener('click', onDoc, true);
@@ -1485,11 +1489,13 @@
       close(true);
     }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
       focusDate = selected || focusDate || new Date();
       view = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       render();
@@ -1499,7 +1505,7 @@
 
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       document.removeEventListener('click', onDocClick, true);
@@ -2013,15 +2019,17 @@
       if (!its.length) return;
       its[(index + its.length) % its.length].focus();
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(menu, trigger, { matchWidth: false }); return _pop; }
     function open(index) {
-      menu.hidden = false;
+      var p = popCtl(); if (p) p.show(); else menu.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       document.addEventListener('click', onDocClick, true);
       focusAt(index);
     }
     function close(returnFocus) {
       if (menu.hidden) return;
-      menu.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else menu.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       document.removeEventListener('click', onDocClick, true);
       if (returnFocus === true) trigger.focus();
@@ -2066,6 +2074,76 @@
   }
 
   window.FreedayMenu = { init: initMenu, initAll: initAll };
+})();
+
+/* Freeday — popover positioning helper (optional, zero-dependency).
+ * Lifts a dropdown panel into the top layer via the native Popover API so it escapes ANY
+ * ancestor overflow clip (a .fdy-card with overflow:hidden, an app-shell main with
+ * overflow:auto, …), then positions it `fixed` against its trigger — flipping above when
+ * there is no room below, and matching the trigger width. The panel stays a DOM child of its
+ * component, so focus, outside-click (.closest), and ARIA relationships keep working unchanged.
+ *
+ * Used by the select/combo, datepicker, timepicker, cascade, autocomplete and menu enhancers;
+ * the freeday/vue adapter ships an equivalent `usePopover` composable.
+ *
+ * attach(panel, trigger) -> { show(), hide() }. show()/hide() also toggle the panel's [hidden]
+ * attribute so callers keep using `!panel.hidden` for open-state and the `:not([hidden])`
+ * entrance animation still fires. On browsers without the Popover API it degrades to that
+ * [hidden] toggle over the panel's existing absolute-positioned CSS (clipped, but functional).
+ */
+(function () {
+  'use strict';
+
+  var GAP = 4; // ~ --space-1, breathing room between trigger and panel
+  var supported = typeof HTMLElement !== 'undefined'
+    && typeof HTMLElement.prototype.showPopover === 'function';
+
+  // Position `panel` (already shown, so it has a measurable box) against `trigger`'s rect.
+  // matchWidth (default true) floors the panel to the trigger width — right for input-shaped
+  // dropdowns (combo/cascade/date/time), skipped for menus that keep their own min-width.
+  function place(panel, trigger, matchWidth) {
+    var r = trigger.getBoundingClientRect();
+    panel.style.position = 'fixed';
+    panel.style.margin = '0';
+    panel.style.inset = 'auto';                 // clear the UA popover centering
+    if (matchWidth !== false) panel.style.minWidth = r.width + 'px'; // at least as wide as the trigger
+    var ph = panel.offsetHeight, pw = panel.offsetWidth;
+    var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+    var below = vh - r.bottom - GAP, above = r.top - GAP;
+    // Prefer below; flip above only when it doesn't fit below and above has more room.
+    var top = (ph <= below || below >= above) ? (r.bottom + GAP) : Math.max(GAP, r.top - GAP - ph);
+    var left = r.left;
+    if (left + pw > vw - GAP) left = Math.max(GAP, vw - GAP - pw); // keep within the viewport
+    panel.style.top = Math.round(top) + 'px';
+    panel.style.left = Math.round(left) + 'px';
+  }
+
+  function attach(panel, trigger, opts) {
+    var matchWidth = !(opts && opts.matchWidth === false);
+    if (supported) panel.setAttribute('popover', 'manual');
+    function reposition() { if (supported && panel.matches(':popover-open')) place(panel, trigger, matchWidth); }
+    return {
+      show: function () {
+        panel.hidden = false;
+        if (supported) {
+          if (!panel.matches(':popover-open')) panel.showPopover();
+          place(panel, trigger, matchWidth);
+          window.addEventListener('scroll', reposition, true); // capture: any scrolling ancestor
+          window.addEventListener('resize', reposition);
+        }
+      },
+      hide: function () {
+        if (supported) {
+          window.removeEventListener('scroll', reposition, true);
+          window.removeEventListener('resize', reposition);
+          if (panel.matches(':popover-open')) panel.hidePopover();
+        }
+        panel.hidden = true;
+      }
+    };
+  }
+
+  window.FreedayPopover = { attach: attach, place: place, supported: supported };
 })();
 
 /* Freeday — rating enhancer (optional, zero-dependency).
@@ -2191,9 +2269,11 @@
     function isOpen() {
       return !listbox.hidden;
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, button); return _pop; }
     function open() {
       if (openClose && openClose !== close) openClose();
-      listbox.hidden = false;
+      var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       button.classList.add('is-open');
       button.setAttribute('aria-expanded', 'true');
       var selected = options.findIndex(function (opt) {
@@ -2203,7 +2283,7 @@
       openClose = close;
     }
     function close() {
-      listbox.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else listbox.hidden = true;
       button.classList.remove('is-open');
       button.setAttribute('aria-expanded', 'false');
       button.removeAttribute('aria-activedescendant');
@@ -3083,9 +3163,11 @@
         panel.removeAttribute('aria-activedescendant');
       }
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       var i = indexOfValue();
@@ -3095,7 +3177,7 @@
     }
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       panel.removeAttribute('aria-activedescendant');

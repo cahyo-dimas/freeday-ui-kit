@@ -3,6 +3,22 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.4.1] — 2026-07-23
+Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll container.
+### Fixed
+- **Dropdown lepas dari clipping ancestor** (`.fdy-card{overflow:hidden}`, scroll container, atau
+  ancestor ber-`transform`). Semua dropdown `position:absolute` — **combo/select, datepicker,
+  cascade, autocomplete, timepicker, menu** — kini di-render di **top layer** lewat native
+  **Popover API** (`popover="manual"`) dan diposisikan `fixed` ke trigger (flip ke atas bila
+  sempit di bawah, lebar mengikuti trigger, reposisi saat scroll/resize). Panel tetap DOM child
+  komponennya, jadi focus, outside-click, dan ARIA tak berubah. Berlaku untuk enhancer vanilla
+  **dan** komponen Vue `FdyCombo`/`FdyDatepicker`. `FdyCfl` sudah aman (berbasis `<dialog>`).
+  Degradasi mulus ke perilaku lama pada browser tanpa Popover API. Non-breaking, tanpa perubahan API.
+### Internal
+- Helper baru `src/freeday-popover.js` (`window.FreedayPopover`) + composable `usePopover` di
+  `freeday/vue` (internal, tak diekspor). Panel dropdown kini set `color:var(--color-text)` eksplisit
+  (UA `[popover]` default-nya `CanvasText`).
+
 ## [1.4.0] — 2026-07-23
 Rilis **1.4 — motion & native charts**. Dua fitur besar (gerak enter/exit lintas komponen +
 chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. Non-breaking.

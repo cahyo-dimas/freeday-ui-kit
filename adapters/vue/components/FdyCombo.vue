@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T extends string">
 import { computed, onBeforeUnmount, onMounted, ref, useId, type ComputedRef, type Ref } from 'vue';
+import { usePopover } from '../usePopover';
 
 // A Vue-native binding over freeday's `.fdy-combo` classes. freeday ships the styled
 // listbox (combo.css) plus a framework-agnostic enhancer (freeday-select.js) whose own
@@ -39,7 +40,12 @@ function optionId(index: number): string {
 
 const rootEl: Ref<HTMLDivElement | null> = ref(null);
 const buttonEl: Ref<HTMLButtonElement | null> = ref(null);
+const listboxEl: Ref<HTMLUListElement | null> = ref(null);
 const open: Ref<boolean> = ref(false);
+
+// Render the listbox in the top layer (popover) so it escapes any ancestor overflow clip
+// (a .fdy-card, a scroll container) and positions against the button.
+usePopover(listboxEl, buttonEl, open);
 const highlighted: Ref<number> = ref(-1);
 
 const selectedIndex: ComputedRef<number> = computed((): number =>
@@ -207,7 +213,7 @@ onBeforeUnmount((): void => {
     >
       <span class="fdy-combo__value" :class="{ 'fdy-combo__value--placeholder': isPlaceholder }">{{ selectedLabel }}</span>
     </button>
-    <ul :id="listboxId" class="fdy-combo__listbox" role="listbox" :hidden="!open">
+    <ul :id="listboxId" ref="listboxEl" class="fdy-combo__listbox" role="listbox" popover="manual" :hidden="!open">
       <li
         v-for="(opt, i) in options"
         :id="optionId(i)"

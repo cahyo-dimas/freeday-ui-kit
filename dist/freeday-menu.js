@@ -35,15 +35,17 @@
       if (!its.length) return;
       its[(index + its.length) % its.length].focus();
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(menu, trigger, { matchWidth: false }); return _pop; }
     function open(index) {
-      menu.hidden = false;
+      var p = popCtl(); if (p) p.show(); else menu.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       document.addEventListener('click', onDocClick, true);
       focusAt(index);
     }
     function close(returnFocus) {
       if (menu.hidden) return;
-      menu.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else menu.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       document.removeEventListener('click', onDocClick, true);
       if (returnFocus === true) trigger.focus();

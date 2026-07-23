@@ -12,7 +12,7 @@
 .fdy-datepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}
 .fdy-datepicker__icon svg{display:block;width:1.05rem;height:1.05rem;}
 
-.fdy-datepicker__panel{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;padding:var(--space-3);background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
+.fdy-datepicker__panel{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;padding:var(--space-3);background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
 .fdy-datepicker__panel[hidden]{display:none;}
 
 /* Calendar grid */

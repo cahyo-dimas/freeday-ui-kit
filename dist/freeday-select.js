@@ -70,9 +70,11 @@
     function isOpen() {
       return !listbox.hidden;
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, button); return _pop; }
     function open() {
       if (openClose && openClose !== close) openClose();
-      listbox.hidden = false;
+      var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       button.classList.add('is-open');
       button.setAttribute('aria-expanded', 'true');
       var selected = options.findIndex(function (opt) {
@@ -82,7 +84,7 @@
       openClose = close;
     }
     function close() {
-      listbox.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else listbox.hidden = true;
       button.classList.remove('is-open');
       button.setAttribute('aria-expanded', 'false');
       button.removeAttribute('aria-activedescendant');

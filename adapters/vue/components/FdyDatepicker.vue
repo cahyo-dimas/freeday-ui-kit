@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, type ComputedRef, type Ref } from 'vue';
+import { usePopover } from '../usePopover';
 
 // A Vue-native binding over freeday's `.fdy-datepicker` / `.fdy-cal__*` classes
 // (see src/components/datepicker.css). freeday ships the styled trigger+popover
@@ -83,9 +84,14 @@ const titleId: string = `${baseId}-title`;
 
 const rootEl: Ref<HTMLDivElement | null> = ref(null);
 const triggerEl: Ref<HTMLButtonElement | null> = ref(null);
+const panelEl: Ref<HTMLDivElement | null> = ref(null);
 const dayRefs: Record<string, HTMLButtonElement | null> = {};
 
 const open: Ref<boolean> = ref(false);
+
+// Render the calendar panel in the top layer (popover) so it never gets clipped by a card or
+// scroll container; positions against the trigger.
+usePopover(panelEl, triggerEl, open);
 
 const selectedDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.modelValue));
 const minDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.min));
@@ -299,7 +305,7 @@ onBeforeUnmount((): void => {
       </span>
     </button>
 
-    <div class="fdy-datepicker__panel" role="dialog" aria-modal="false" :aria-labelledby="titleId" :hidden="!open">
+    <div ref="panelEl" class="fdy-datepicker__panel" role="dialog" aria-modal="false" popover="manual" :aria-labelledby="titleId" :hidden="!open">
       <div class="fdy-cal__head">
         <button type="button" class="fdy-cal__nav" aria-label="Bulan sebelumnya" @click="view = addMonths(view, -1)">‹</button>
         <div :id="titleId" class="fdy-cal__title">{{ monthFmt.format(view) }}</div>

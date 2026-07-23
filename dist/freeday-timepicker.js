@@ -103,9 +103,11 @@
         panel.removeAttribute('aria-activedescendant');
       }
     }
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       var i = indexOfValue();
@@ -115,7 +117,7 @@
     }
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       panel.removeAttribute('aria-activedescendant');

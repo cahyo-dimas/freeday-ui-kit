@@ -228,11 +228,13 @@
       close(true);
     }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
       focusDate = selected || focusDate || new Date();
       view = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       render();
@@ -242,7 +244,7 @@
 
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       document.removeEventListener('click', onDocClick, true);

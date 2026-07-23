@@ -176,13 +176,15 @@
       close(true);
     }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
       // Re-open at the selected leaf's level for quick re-selection.
       var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
       if (trail && trail.length > 1) { stack = trail.slice(0, -1); current = stack[stack.length - 1].children; }
       else { stack = []; current = root; }
-      panel.hidden = false;
+      var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       render();
@@ -191,7 +193,7 @@
     }
     function close(returnFocus) {
       if (panel.hidden) return;
-      panel.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
       document.removeEventListener('click', onDoc, true);

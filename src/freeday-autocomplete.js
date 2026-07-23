@@ -37,15 +37,17 @@
     function visible() { return options.filter(function (o) { return !o.hidden; }); }
     function clearHighlight() { options.forEach(function (o) { o.classList.remove('is-highlighted'); }); }
 
+    var _pop = null;
+    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, input); return _pop; }
     function open() {
       if (!listbox.hidden) return;
-      listbox.hidden = false;
+      var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       input.setAttribute('aria-expanded', 'true');
       document.addEventListener('click', onDocClick, true);
     }
     function close() {
       if (listbox.hidden) return;
-      listbox.hidden = true;
+      var p = popCtl(); if (p) p.hide(); else listbox.hidden = true;
       input.setAttribute('aria-expanded', 'false');
       input.removeAttribute('aria-activedescendant');
       active = -1;
