@@ -1,6 +1,6 @@
 {
   "name": "freeday",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "UNLICENSED",
