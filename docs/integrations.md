@@ -146,6 +146,17 @@ function Panel(): JSX.Element {
   return <div ref={ref} data-fdy-cascade />;
 }
 ```
+> **Alternatif controlled (parity dengan `v-model` Vue):** `freeday/react` juga mengekspor
+> komponen typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` / `FdyChart` — `value`/`onChange` biasa,
+> tanpa `data-fdy-*` + event listener manual:
+> ```tsx
+> import { FdyCombo } from 'freeday/react';
+> <FdyCombo value={status} options={statusOptions} onChange={setStatus} ariaLabelledby="lbl-status" />
+> ```
+> `FdyDatepicker`/`FdyCfl` pakai `value`/`onChange` yang sama; `FdyChart` pakai `series`/`values`.
+> Lihat [`getting-started.md` §React](getting-started.md#react-vite) dan
+> `examples/react-faktur/src/App.tsx`. **Vite** transpile `.tsx` source-nya tanpa config tambahan;
+> **Next.js** mungkin butuh `transpilePackages: ['freeday']`.
 
 **Blazor**
 ```csharp

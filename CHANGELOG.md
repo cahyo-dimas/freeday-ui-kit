@@ -3,6 +3,16 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.5.0] — 2026-07-24
+Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
+### Added
+- **React adapter parity** — komponen controlled typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` /
+  `FdyChart` + `usePopover`, di atas CSS kit yang sama (aksesibilitas WAI-ARIA APG, dropdown
+  top-layer lewat Popover API). Aplikasi React tak lagi butuh fallback `<select>`/`<input
+  type="date">` native. Dikonsumsi lewat `freeday/react`; Vite men-transpile source component
+  langsung tanpa config tambahan, konsumen Next.js mungkin butuh
+  `transpilePackages: ['freeday']`.
+
 ## [1.4.1] — 2026-07-23
 Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll container.
 ### Fixed
