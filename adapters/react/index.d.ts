@@ -25,3 +25,10 @@ export interface FdyChipChangeDetail { value: string; pressed: boolean; selected
 export interface FdyChipRemoveDetail { value: string }
 export interface FdyCflSelectDetail { row?: unknown; rows?: unknown[] }
 export interface FdyTableChangeDetail { page: number; sort: string | null; query: string }
+
+// Re-exports of React components and hooks
+export { usePopover } from './usePopover';
+export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/FdyCombo';
+export { FdyDatepicker, type FdyDatepickerProps } from './components/FdyDatepicker';
+export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
+export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';
