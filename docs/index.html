@@ -495,16 +495,16 @@
       <p class="doc-desc">Skala kelipatan 4px. Selalu <code>var(--space-N)</code>, tak pernah nilai lepas.</p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-scale">
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-1 · 4px</span><span class="doc-scale__bar" style="width:var(--space-1)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-2 · 8px</span><span class="doc-scale__bar" style="width:var(--space-2)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-3 · 12px</span><span class="doc-scale__bar" style="width:var(--space-3)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-4 · 16px</span><span class="doc-scale__bar" style="width:var(--space-4)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-5 · 20px</span><span class="doc-scale__bar" style="width:var(--space-5)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-6 · 24px</span><span class="doc-scale__bar" style="width:var(--space-6)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-8 · 32px</span><span class="doc-scale__bar" style="width:var(--space-8)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-10 · 40px</span><span class="doc-scale__bar" style="width:var(--space-10)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-12 · 48px</span><span class="doc-scale__bar" style="width:var(--space-12)"></span></div>
-          <div class="doc-scale__row"><span class="doc-scale__key">--space-16 · 64px</span><span class="doc-scale__bar" style="width:var(--space-16)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-1 · <span data-token="--space-1"></span></span><span class="doc-scale__bar" style="width:var(--space-1)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-2 · <span data-token="--space-2"></span></span><span class="doc-scale__bar" style="width:var(--space-2)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-3 · <span data-token="--space-3"></span></span><span class="doc-scale__bar" style="width:var(--space-3)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-4 · <span data-token="--space-4"></span></span><span class="doc-scale__bar" style="width:var(--space-4)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-5 · <span data-token="--space-5"></span></span><span class="doc-scale__bar" style="width:var(--space-5)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-6 · <span data-token="--space-6"></span></span><span class="doc-scale__bar" style="width:var(--space-6)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-8 · <span data-token="--space-8"></span></span><span class="doc-scale__bar" style="width:var(--space-8)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-10 · <span data-token="--space-10"></span></span><span class="doc-scale__bar" style="width:var(--space-10)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-12 · <span data-token="--space-12"></span></span><span class="doc-scale__bar" style="width:var(--space-12)"></span></div>
+          <div class="doc-scale__row"><span class="doc-scale__key">--space-16 · <span data-token="--space-16"></span></span><span class="doc-scale__bar" style="width:var(--space-16)"></span></div>
         </div>
       </div>
     </section>
@@ -516,11 +516,11 @@
         <div>
           <p class="doc-scale__row" style="margin:0 0 var(--space-3)">Radius</p>
           <div class="doc-tiles">
-            <div class="doc-tile" style="border-radius:var(--radius-xs)">xs · 4px</div>
-            <div class="doc-tile" style="border-radius:var(--radius-sm)">sm · 6px</div>
-            <div class="doc-tile" style="border-radius:var(--radius-md)">md · 8px</div>
-            <div class="doc-tile" style="border-radius:var(--radius-lg)">lg · 12px</div>
-            <div class="doc-tile" style="border-radius:var(--radius-xl)">xl · 16px</div>
+            <div class="doc-tile" style="border-radius:var(--radius-xs)">xs · <span data-token="--radius-xs"></span></div>
+            <div class="doc-tile" style="border-radius:var(--radius-sm)">sm · <span data-token="--radius-sm"></span></div>
+            <div class="doc-tile" style="border-radius:var(--radius-md)">md · <span data-token="--radius-md"></span></div>
+            <div class="doc-tile" style="border-radius:var(--radius-lg)">lg · <span data-token="--radius-lg"></span></div>
+            <div class="doc-tile" style="border-radius:var(--radius-xl)">xl · <span data-token="--radius-xl"></span></div>
             <div class="doc-tile" style="border-radius:var(--radius-full)">full</div>
           </div>
         </div>
@@ -538,11 +538,11 @@
 
     <section class="doc-section" id="sec-motion">
       <h2>Motion</h2>
-      <p class="doc-desc">Skala gerak terbatas &amp; konsisten: tiga durasi (<code>--dur-fast</code> 120ms · <code>--dur-base</code> 180ms · <code>--dur-slow</code> 280ms) dan dua easing yang keduanya <em>decelerate</em> (tanpa bounce/elastic). Gerak hanya untuk <strong>feedback, reveal, dan transisi state</strong> — bukan dekorasi. Semua otomatis nonaktif saat <code>prefers-reduced-motion: reduce</code>. Arahkan kursor ke track untuk merasakan easing-nya.</p>
+      <p class="doc-desc">Skala gerak terbatas &amp; konsisten: tiga durasi (<code>--dur-fast</code> <span data-token="--dur-fast"></span> · <code>--dur-base</code> <span data-token="--dur-base"></span> · <code>--dur-slow</code> <span data-token="--dur-slow"></span>) dan dua easing yang keduanya <em>decelerate</em> (tanpa bounce/elastic). Gerak hanya untuk <strong>feedback, reveal, dan transisi state</strong> — bukan dekorasi. Semua otomatis nonaktif saat <code>prefers-reduced-motion: reduce</code>. Arahkan kursor ke track untuk merasakan easing-nya.</p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-motion">
-          <div class="doc-motion__row"><span class="doc-motion__key">base · 180ms · ease-standard</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--std"></div></div></div>
-          <div class="doc-motion__row"><span class="doc-motion__key">slow · 280ms · ease-spring</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--spring"></div></div></div>
+          <div class="doc-motion__row"><span class="doc-motion__key">base · <span data-token="--dur-base"></span> · ease-standard</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--std"></div></div></div>
+          <div class="doc-motion__row"><span class="doc-motion__key">slow · <span data-token="--dur-slow"></span> · ease-spring</span><div class="doc-motion__track"><div class="doc-motion__dot doc-motion__dot--spring"></div></div></div>
         </div>
       </div>
       <p class="doc-desc" style="margin-top:var(--space-5)"><strong>Yang bergerak:</strong> <a href="#sec-drawer">Drawer</a> &amp; <a href="#sec-modal">Modal</a> beranimasi <em>masuk dan keluar</em> (slide / fade-scale + backdrop blur) lewat <code>@starting-style</code> + <code>allow-discrete</code> pada <code>&lt;dialog&gt;</code> native — buka lalu tutup, perhatikan animasi keluarnya. Overlay (menu, select, cascade, autocomplete, date/time picker) reveal saat dibuka; <a href="#sec-accordion">Accordion</a> &amp; <a href="#sec-tabs">Tabs</a> me-<em>reveal</em> konten (fade + rise); baris tabel &amp; kontrol punya transisi hover/press halus.</p>
@@ -2421,6 +2421,32 @@
     });
 
     selectComp(current);
+  })();
+
+  // -------- Token labels read the LIVE tokens --------
+  // These docs must never restate a token value by hand. That exact drift shipped once: the
+  // radius ramp changed in v1.1 (md 8px -> 6px, etc.) and these labels kept the old numbers,
+  // so the page rendered a 6px corner while claiming "8px". Any [data-token] span now prints
+  // the value resolved from the running stylesheet, so a token change can't leave docs lying.
+  (function () {
+    const labels = [...document.querySelectorAll('[data-token]')];
+    if (labels.length === 0) return;
+    const cs = getComputedStyle(root);
+    // Lengths may be authored in any unit (px, rem…), so resolve them to px by measuring a
+    // probe sized with the token; time tokens are already human-readable, so pass them through.
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;visibility:hidden;height:0;padding:0;border:0';
+    document.body.appendChild(probe);
+    labels.forEach((el) => {
+      const name = el.dataset.token;
+      const raw = cs.getPropertyValue(name).trim();
+      if (raw === '') return;
+      if (/m?s$/.test(raw)) { el.textContent = raw; return; }
+      probe.style.width = `var(${name})`;
+      const w = probe.getBoundingClientRect().width;
+      el.textContent = w > 0 ? `${Math.round(w * 100) / 100}px` : raw;
+    });
+    probe.remove();
   })();
 </script>
 </body>
