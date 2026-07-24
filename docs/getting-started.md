@@ -40,7 +40,7 @@ Cocok untuk halaman `.html` polos / template — tanpa bundler, tanpa npm.
 `dist/` sudah di-commit, jadi tak ada build step. Cara termudah — pakai npm sekali hanya untuk
 mengunduh, lalu salin file-nya (vendor):
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.5.0
+npm i github:cahyo-dimas/freeday-ui-kit#v1.6.0
 cp -r node_modules/freeday/dist ./assets/freeday   # salin ke project-mu
 ```
 (atau `git clone` repo lalu salin `dist/`, atau unduh file satu per satu). Yang kamu butuh minimal:
@@ -89,9 +89,9 @@ Dari docs live (View Source) atau `Foundation Design System.html`. **Ganti** kel
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.5.0
+npm i github:cahyo-dimas/freeday-ui-kit#v1.6.0
 ```
-Masuk ke `package.json` sebagai `"freeday": "github:cahyo-dimas/freeday-ui-kit#v1.5.0"`
+Masuk ke `package.json` sebagai `"freeday": "github:cahyo-dimas/freeday-ui-kit#v1.6.0"`
 (nama paket **`freeday`**). `dist/` di-commit → tanpa build step; repo public → tanpa auth.
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.ts`)
@@ -147,7 +147,7 @@ Contoh utuh yang jalan: [`examples/vue-faktur/`](../examples/vue-faktur/).
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.5.0
+npm i github:cahyo-dimas/freeday-ui-kit#v1.6.0
 ```
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.tsx`)
@@ -207,7 +207,7 @@ export function Panel() {
 dari `event.detail` ke state/ref, jangan meng-set balik `value` DOM-nya. `StrictMode` men-*mount*
 dua kali di dev; `useFreeday` idempotent jadi aman.
 
-### 5. Alternatif: komponen controlled typed (`FdyCombo` / `FdyDatepicker` / `FdyCfl` / `FdyChart`)
+### 5. Alternatif: komponen controlled typed (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
 Untuk field yang biasa kamu tulis lewat `<select>`/`<input type="date">` native, `freeday/react`
 juga mengekspor komponen **controlled** typed — `value`/`onChange` biasa, tanpa event bubbling
 manual (parity dengan komponen `v-model` Vue di atas):

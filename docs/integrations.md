@@ -147,13 +147,16 @@ function Panel(): JSX.Element {
 }
 ```
 > **Alternatif controlled (parity dengan `v-model` Vue):** `freeday/react` juga mengekspor
-> komponen typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` / `FdyChart` — `value`/`onChange` biasa,
+> komponen typed `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` /
+> `FdyCfl` / `FdyChart` — `value`/`onChange` biasa,
 > tanpa `data-fdy-*` + event listener manual:
 > ```tsx
 > import { FdyCombo } from 'freeday/react';
 > <FdyCombo value={status} options={statusOptions} onChange={setStatus} ariaLabelledby="lbl-status" />
 > ```
-> `FdyDatepicker`/`FdyCfl` pakai `value`/`onChange` yang sama; `FdyChart` pakai `series`/`values`.
+> `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` pakai `value`/`onChange` yang sama;
+> `FdyDateRange` pakai `{start, end}`; `FdyChart` pakai `series`/`values`. Set yang sama tersedia
+> di `freeday/vue` lewat `v-model` — kedua adapter simetris penuh.
 > Lihat [`getting-started.md` §React](getting-started.md#react-vite) dan
 > `examples/react-faktur/src/App.tsx`. **Vite** transpile `.tsx` source-nya tanpa config tambahan;
 > **Next.js** mungkin butuh `transpilePackages: ['freeday']`.

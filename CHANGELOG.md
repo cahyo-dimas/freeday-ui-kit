@@ -3,6 +3,39 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.6.0] — 2026-07-24
+Rilis **1.6 — wrapper input ekstra (Vue + React) + filter-bar**. Non-breaking, aditif.
+
+### Added
+- **`FdyDateRange` (Vue + React)** — rentang tanggal terkontrol `{start, end}` yang menyusun dua
+  `FdyDatepicker` di atas layout `.fdy-daterange` yang sudah ada (akhir tak bisa mendahului awal,
+  lewat min/max saling terkait). `v-model` di Vue, `value`/`onChange` di React. Tanpa CSS baru.
+- **`FdyAutocomplete` (Vue + React)** — editable combobox WAI-ARIA APG terkontrol, port dari
+  enhancer `freeday-autocomplete.js` di atas CSS `.fdy-autocomplete` yang sama: filter saat
+  mengetik (substring case-insensitive pada query ter-trim), ↑/↓ dengan wrap, Enter commit,
+  Esc/Tab/klik-luar menutup, `aria-activedescendant` + empty state, dropdown top-layer via
+  Popover API. `onSelect`/`select` hanya saat commit — terpisah dari perubahan ketikan, jadi
+  options yang sudah difilter server bisa dilempar masuk apa adanya.
+- **`FdyCascade` (Vue + React)** — picker hierarkis drill-down terkontrol, port dari enhancer
+  `freeday-cascade.js` di atas CSS `.fdy-cascade` yang sama: satu level sekaligus, branch masuk,
+  kontrol back naik, leaf memilih (value = value leaf, tampilan = path penuh), buka ulang di level
+  terpilih. Keyboard: Up/Down/Home/End, ArrowRight/Enter/Space aktifkan, ArrowLeft/Backspace naik,
+  Esc tutup; `aria-activedescendant` + crumb live. Model data = **pohon `CascadeNode` bertipe**,
+  menggantikan `<ul>` bersarang tersembunyi milik enhancer.
+- **`.fdy-filterbar`** — layout primitive untuk baris filter yang konsisten, di atas `.fdy-field`:
+  ritme lebar kolom (`--w-sm` / default / `--w-lg` / `--w-xl`), satu field `--w-grow` menyerap sisa
+  ruang, `__actions` menempel di ujung sejajar kontrol, wrap rapi di layar sempit. Nol JS.
+  Menutup gap "filter row ragged" dari adoption backlog #11.
+
+### Changed
+- Contoh `react-faktur` kini menggerakkan **Kategori** lewat `FdyCascade` — menghapus jembatan
+  event `fdy-cascade-change` manual; ditambah field Periode (`FdyDateRange`) & Kota (`FdyAutocomplete`).
+- Contoh `vue-faktur` mendapat demo Vue-native untuk ketiga komponen baru.
+
+Dengan rilis ini adapter **Vue dan React simetris penuh** — tujuh komponen controlled typed yang
+sama di kedua sisi: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` ·
+`FdyCascade` · `FdyCfl` · `FdyChart`.
+
 ## [1.5.0] — 2026-07-24
 Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
 ### Added
