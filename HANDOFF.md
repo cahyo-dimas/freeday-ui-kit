@@ -48,8 +48,13 @@ npm test                # node --test (9/9)
 - `docs/superpowers/specs/` — spec/blueprint (sumber-kebenaran desain). Plan v0.1–v0.3
   historis diarsipkan di git tag `v0.2`/`v0.3`, tak lagi di working tree.
 
-## Selanjutnya (YAGNI)
+## Selanjutnya
 
-Cakupan komponen praktis lengkap. Sisa spec §7 — **data grid virtualisasi, filter-bar, form
-master-detail / 2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya.
-Design system tak pernah "selesai", dia ber-versi.
+Backlog aktif + titik lanjut ada di **[`NEXT-UP.md`](NEXT-UP.md)** — buka itu dulu kalau mau
+nerusin. Ringkasnya: **tak ada yang mendesak**. Tiga item tersisa (kontras AA soft-badge §13,
+review independen kode v1.6.0, distribusi registry-friendly #8), semuanya bisa ditunda dan dua
+di antaranya menunggu keputusan, bukan koding.
+
+Cakupan komponen praktis lengkap. Sisa spec §7 — **data grid virtualisasi, form master-detail /
+2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya (filter-bar sudah
+mendarat di v1.6.0). Design system tak pernah "selesai", dia ber-versi.
