@@ -13,7 +13,7 @@
   html { scroll-behavior: smooth; scroll-padding-top: calc(var(--space-16) + var(--space-3)); }
   body { margin: 0; }
   /* (hero typography is defined in the landing block below) */
-  .doc-section { max-width: 66rem; margin: 0 0 var(--space-12); scroll-margin-top: var(--space-4); }
+  .doc-section { margin: 0 0 var(--space-12); scroll-margin-top: var(--space-4); }
   .doc-section > h2 { font-size: var(--text-2xl); letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-1); }
   .doc-section > .doc-desc { color: var(--color-text-muted); margin: 0 0 var(--space-4); font-size: var(--text-sm); max-width: 46rem; line-height: var(--leading-normal); }
   .doc-demo { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: flex-start; padding: var(--space-6); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface-2); }
@@ -52,8 +52,8 @@
 
   /* ---- Landing hero ---- */
   .doc-hero { max-width: none; padding: var(--space-10) 0 var(--space-9); margin-bottom: var(--space-10); border-bottom: var(--bw) solid var(--color-border); }
-  .doc-hero__grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(var(--space-8), 6vw, var(--space-16)); align-items: center; max-width: 74rem; }
-  @media (max-width: 940px) { .doc-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); } }
+  .doc-hero__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 30rem); gap: clamp(var(--space-8), 6vw, var(--space-16)); align-items: center; }
+  @media (max-width: 1180px) { .doc-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); } }
   .doc-eyebrow { display: inline-flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--color-accent); margin: 0 0 var(--space-5); }
   .doc-eyebrow::before { content: ""; width: var(--space-8); height: 2px; background: var(--color-accent); border-radius: 2px; }
   .doc-hero h1 { font-family: var(--font-display); font-weight: var(--weight-bold); font-size: clamp(2.2rem, 4.4vw, 3.4rem); line-height: 1.04; letter-spacing: var(--tracking-tight); margin: 0 0 var(--space-5); text-wrap: balance; }
@@ -71,7 +71,7 @@
   .doc-ident { display: inline-flex; gap: var(--space-2); margin-left: auto; }
   .doc-ident i { width: var(--space-6); height: var(--space-6); border-radius: var(--radius-full); box-shadow: inset 0 0 0 1px rgba(16,14,30,.12); }
   /* Spec strip */
-  .doc-stats { display: grid; grid-template-columns: repeat(4, 1fr); max-width: 74rem; margin: 0 0 var(--space-12); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
+  .doc-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 0 var(--space-12); border: var(--bw) solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; background: var(--color-surface); }
   .doc-stat { padding: var(--space-5); border-left: var(--bw) solid var(--color-border); }
   .doc-stat:first-child { border-left: 0; }
   .doc-stat b { display: block; font-family: var(--font-display); font-weight: var(--weight-bold); font-size: var(--text-xl); letter-spacing: var(--tracking-tight); margin-bottom: var(--space-1); }
@@ -87,7 +87,7 @@
   .doc-fw__card h3 { font-family: var(--font-display); font-size: var(--text-lg); margin: var(--space-2) 0 var(--space-1); }
   .doc-fw__card p { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); line-height: var(--leading-normal); }
   /* Footer */
-  .doc-footer { max-width: 74rem; margin-top: var(--space-16); padding: var(--space-8) 0 var(--space-10); border-top: var(--bw) solid var(--color-border); display: flex; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; font-size: var(--text-sm); color: var(--color-text-muted); }
+  .doc-footer { margin-top: var(--space-16); padding: var(--space-8) 0 var(--space-10); border-top: var(--bw) solid var(--color-border); display: flex; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; font-size: var(--text-sm); color: var(--color-text-muted); }
   .doc-footer b { font-family: var(--font-display); color: var(--color-text); }
   .doc-footer a { color: var(--color-primary-strong); text-decoration: none; }
   .doc-footer a:hover { text-decoration: underline; }
