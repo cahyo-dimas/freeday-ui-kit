@@ -216,3 +216,7 @@ oleh `color-mix()`). Fitur lain: native `<dialog>`/`::backdrop`, `accent-color`,
 `conic-gradient`, `scroll-snap` — semua ≥ Safari 15.4. Blur backdrop pakai
 `-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya tanpa blur).
 Belum ada CSS build/autoprefixer — dukungan browser lama = tanggung jawab konsumen.
+
+## Lisensi
+[MIT](LICENSE) © 2026 Cahyo D. Kurnianto — bebas dipakai, diubah, dan didistribusikan asal
+menyertakan baris copyright + teks lisensi.

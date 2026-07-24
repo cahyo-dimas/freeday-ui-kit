@@ -3,7 +3,7 @@
   "version": "1.6.1",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "sideEffects": true,
   "engines": {
