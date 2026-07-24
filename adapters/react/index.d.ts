@@ -30,5 +30,6 @@ export interface FdyTableChangeDetail { page: number; sort: string | null; query
 export { usePopover } from './usePopover';
 export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/FdyCombo';
 export { FdyDatepicker, type FdyDatepickerProps } from './components/FdyDatepicker';
+export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
 export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';

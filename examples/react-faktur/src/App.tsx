@@ -1,12 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyCfl, FdyChart } from 'freeday/react';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyCfl, FdyChart } from 'freeday/react';
 import type {
   FdyCascadeChangeDetail,
   FdyMaskDetail,
   FdyComboOption,
   CflColumn,
   CflPage,
+  DateRangeValue,
 } from 'freeday/react';
 import './app.css';
 
@@ -114,6 +115,7 @@ export function App(): ReactElement {
   const [status, setStatus] = useState<InvoiceStatus>('draft');
   const [jatuhTempo, setJatuhTempo] = useState<string>(dueDefault());
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [periode, setPeriode] = useState<DateRangeValue>({ start: null, end: null });
 
   // The submit handler below is registered once (mount-only effect) and reads `live.current`,
   // so mirror the controlled state into it on every change to avoid a stale closure.
@@ -253,6 +255,17 @@ export function App(): ReactElement {
                     value={jatuhTempo}
                     onChange={setJatuhTempo}
                     ariaLabelledby="lbl-jatuh-tempo"
+                  />
+                </div>
+
+                <div className="fdy-field faktur-field">
+                  <span className="fdy-label" id="lbl-periode">Periode laporan</span>
+                  <FdyDateRange
+                    value={periode}
+                    onChange={setPeriode}
+                    ariaLabelledby="lbl-periode"
+                    startPlaceholder="Dari"
+                    endPlaceholder="Sampai"
                   />
                 </div>
 
