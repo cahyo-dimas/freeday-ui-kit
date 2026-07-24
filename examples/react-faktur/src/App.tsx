@@ -194,8 +194,12 @@ export function App(): ReactElement {
                       // manual entry rather than replacing the required native inputs.
                       const form = formRef.current;
                       if (form === null) return;
-                      (form.elements.namedItem('pelanggan') as HTMLInputElement).value = row.nama;
-                      (form.elements.namedItem('email') as HTMLInputElement).value = row.email;
+                      const pelangganInput = form.elements.namedItem('pelanggan') as HTMLInputElement;
+                      pelangganInput.value = row.nama;
+                      pelangganInput.dispatchEvent(new Event('input', { bubbles: true }));
+                      const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+                      emailInput.value = row.email;
+                      emailInput.dispatchEvent(new Event('input', { bubbles: true }));
                     }}
                     fetchPage={fetchCustomers}
                     columns={customerColumns}
