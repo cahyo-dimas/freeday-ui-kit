@@ -3,6 +3,31 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.7.0] — 2026-07-24
+Rilis **1.7 — tree checkbox, form-grid, & tiga section docs full-width**. Non-breaking, aditif.
+
+### Added
+- **Tree checkbox (cascading) — `freeday-tree.js` + `.fdy-tree--checkbox`.** Varian tree yang
+  bisa dipilih: centang cabang → semua anak ikut; sebagian anak → cabang jadi native
+  `:indeterminate`. Checkbox = `<input class="fdy-checkbox">` native (Space toggle, nama lewat
+  `aria-label`); klik checkbox `stopPropagation` sehingga memilih **tak pernah** membuka/menutup
+  cabang, sedangkan teks summary tetap toggle `<details>`. Opt-in via `data-fdy-tree`; init
+  post-order menghitung state cabang dari leaf yang sudah tercentang saat load. Zero-dependency,
+  `window.FreedayTree`. Tree dasar tetap tanpa JS.
+- **`.fdy-form-grid` — layout header/dokumen.** Pelengkap dua-dimensi dari stack `.fdy-field`
+  satu kolom dan baris `.fdy-filterbar`: field tersusun di kolom yang rapi (`auto-fit`, reflow ke
+  satu kolom di layar sempit); `.fdy-field--full` membentang penuh (mis. alamat). Zero JS — murni
+  layout di atas `.fdy-field`.
+- **File upload — layout melebar.** Modifier `.fdy-dropzone--row` (ikon di samping teks, bukan
+  bertumpuk) dan `.fdy-filelist--grid` (baris file berdampingan di layar lebar).
+
+### Changed
+- **Docs — tiga section jadi full-width & selaras.** Tree (kini menampilkan varian dasar +
+  checkbox berdampingan), Form (validasi inline + contoh **header + detail**: `.fdy-form-grid` +
+  tabel item), dan File upload semuanya melebar mengisi kolom konten agar lebar semua section rata.
+  Terverifikasi lewat gestur mouse asli (headless CDP `Input.dispatchMouseEvent`): cascade
+  centang/indeterminate, checkbox tak melipat cabang, teks summary tetap toggle.
+
 ## [1.6.2] — 2026-07-24
 Rilis **patch — lisensi**. Tak ada perubahan kode.
 

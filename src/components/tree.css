@@ -12,3 +12,10 @@
 .fdy-tree__icon{flex:none;width:1rem;height:1rem;color:var(--color-text-muted);}
 .fdy-tree__leaf{padding-left:calc(var(--space-2) * 2 + .9rem);}
 .fdy-tree__leaf .fdy-tree__icon{color:var(--color-text-subtle);}
+
+/* Checkbox variant — a selectable tree (cascading parent/child via freeday-tree.js).
+ * A native <input class="fdy-checkbox"> sits at the start of every row; a partially
+ * selected branch shows the native :indeterminate dash. The checkbox stops click
+ * propagation, so toggling selection never expands/collapses the branch. */
+.fdy-tree--checkbox .fdy-tree__check{flex:none;}
+.fdy-tree--checkbox .fdy-tree__leaf{padding-left:calc(var(--space-2) + .9rem + var(--space-2));}

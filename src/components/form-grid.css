@@ -1,0 +1,8 @@
+/* Freeday — Form grid (document/header fields laid out in aligned columns).
+ * The two-dimensional counterpart to the single-column .fdy-field stack and the
+ * one-row .fdy-filterbar: related fields sit in columns that reflow to one on narrow
+ * screens. Fields are the standard .fdy-field; a field with --full spans the whole row
+ * (e.g. an address or note). Zero JS — pure layout over .fdy-field. */
+.fdy-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:var(--space-4) var(--space-5);}
+.fdy-form-grid>.fdy-field{max-width:none;}
+.fdy-form-grid>.fdy-field--full{grid-column:1/-1;}

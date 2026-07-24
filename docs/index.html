@@ -30,6 +30,8 @@
   .doc-type--body { font-family: var(--font-body); font-size: var(--text-base); }
   .doc-type--mono { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
   .doc-cardgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); width: 100%; }
+  .doc-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-8); width: 100%; }
+  .doc-sublabel { margin: 0 0 var(--space-3); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--weight-semibold); color: var(--color-text-subtle); }
   .doc-scale { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
   .doc-scale__row { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
   .doc-scale__key { width: 8.5rem; flex: none; }
@@ -326,14 +328,14 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.6.2</p>
+          <p class="doc-eyebrow">Design System · v1.7.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.6.2</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
           <div class="doc-showcase__head">
@@ -828,18 +830,20 @@
     <section class="doc-section" id="sec-upload">
       <h2>File upload</h2>
       <p class="doc-desc">Drop target yang juga membuka dialog berkas saat klik / Enter. State eksplisit — idle, drag-over, mengunggah (progress), selesai, error — karena "tidak terjadi apa-apa" adalah feedback unggah terburuk. Butuh <code>freeday-upload.js</code>. (Demo ini mensimulasikan progress; di app nyata, sambungkan event <code>fdy-upload-add</code> ke fungsi unggahmu.)</p>
-      <div class="doc-demo doc-demo--col" style="max-width:34rem">
-        <div class="fdy-dropzone" data-fdy-dropzone data-max-size="10485760" data-filelist="#dz-list" data-fdy-upload-simulate role="button" tabindex="0" aria-label="Unggah berkas — seret ke sini atau tekan Enter untuk memilih">
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-dropzone fdy-dropzone--row" data-fdy-dropzone data-max-size="10485760" data-filelist="#dz-list" data-fdy-upload-simulate role="button" tabindex="0" aria-label="Unggah berkas — seret ke sini atau tekan Enter untuk memilih">
           <span class="fdy-dropzone__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5-5 5 5"></path><path d="M12 5v12"></path></svg></span>
-          <span class="fdy-dropzone__title">Seret berkas ke sini, atau klik untuk memilih</span>
-          <span class="fdy-dropzone__hint">PDF hingga 10 MB per berkas</span>
+          <span class="fdy-dropzone__text">
+            <span class="fdy-dropzone__title">Seret berkas ke sini, atau klik untuk memilih</span>
+            <span class="fdy-dropzone__hint">PDF hingga 10 MB per berkas</span>
+          </span>
           <input type="file" accept=".pdf,application/pdf" multiple hidden>
         </div>
         <div class="fdy-filelist" id="dz-list"></div>
       </div>
       <p class="doc-desc" style="margin-top:var(--space-2)">Dua state terminal (statis) — terunggah &amp; ditolak:</p>
-      <div class="doc-demo doc-demo--col" style="max-width:34rem">
-        <div class="fdy-filelist">
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-filelist fdy-filelist--grid">
           <div class="fdy-file fdy-file--success">
             <span class="fdy-file__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m8 12 3 3 5-6"></path></svg></span>
             <div class="fdy-file__meta"><div class="fdy-file__name">PO-48213-acme.pdf</div><div class="fdy-file__sub">248 KB · Terunggah</div></div>
@@ -1003,8 +1007,9 @@
     <section class="doc-section" id="sec-form">
       <h2>Form validation</h2>
       <p class="doc-desc">Validasi native (Constraint Validation API) di-wire ke error inline aksesibel — <code>aria-invalid</code> + pesan ter-<code>aria-describedby</code>, fokus ke field invalid pertama saat submit, lalu re-validasi live tiap blur/input. Pesan custom via <code>data-fdy-msg-*</code>, cocokkan antar-field via <code>data-fdy-match</code>. Coba tekan <strong>Simpan</strong> saat kosong. Butuh <code>freeday-form.js</code>.</p>
-      <div class="doc-demo doc-demo--block" style="max-width:24rem">
-        <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-3)">
+      <p class="doc-sublabel">Validasi inline</p>
+      <div class="doc-demo doc-demo--block">
+        <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-3);max-width:24rem">
           <label class="fdy-field" style="max-width:none">
             <span class="fdy-label">Email <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
             <input class="fdy-input" name="email" type="email" required data-fdy-msg-required="Email wajib diisi." data-fdy-msg-type="Format email tidak valid.">
@@ -1018,6 +1023,31 @@
             <input class="fdy-input" name="confirm" type="password" required data-fdy-match="#fm-pw" data-fdy-msg-required="Ulangi kata sandi." data-fdy-msg-mismatch="Kata sandi tidak cocok.">
           </label>
           <div><button class="fdy-btn" type="submit">Simpan</button></div>
+        </form>
+      </div>
+
+      <p class="doc-sublabel" style="margin-top:var(--space-6)">Header + detail (dokumen) — <code>.fdy-form-grid</code> + tabel</p>
+      <div class="doc-demo doc-demo--block">
+        <form style="display:flex;flex-direction:column;gap:var(--space-5)">
+          <div class="fdy-form-grid">
+            <label class="fdy-field"><span class="fdy-label">Pelanggan</span><input class="fdy-input" name="cust" value="PT Sumber Makmur"></label>
+            <label class="fdy-field"><span class="fdy-label">No. faktur</span><input class="fdy-input" name="no" value="INV-1042"></label>
+            <label class="fdy-field"><span class="fdy-label">Tanggal</span><input class="fdy-input" name="date" type="date" value="2026-07-21"></label>
+            <label class="fdy-field"><span class="fdy-label">Jatuh tempo</span><input class="fdy-input" name="due" type="date" value="2026-08-20"></label>
+            <label class="fdy-field fdy-field--full"><span class="fdy-label">Alamat</span><input class="fdy-input" name="addr" value="Jl. Merdeka No. 10, Jakarta Pusat"></label>
+          </div>
+          <div class="fdy-table-wrap">
+            <table class="fdy-table">
+              <caption>Rincian item</caption>
+              <thead><tr><th scope="col">Item</th><th scope="col" class="fdy-table__num">Qty</th><th scope="col" class="fdy-table__num">Harga</th><th scope="col" class="fdy-table__num">Jumlah</th></tr></thead>
+              <tbody>
+                <tr><td>Kertas A4 80gsm</td><td class="fdy-table__num">10</td><td class="fdy-table__num">50.000</td><td class="fdy-table__num">500.000</td></tr>
+                <tr><td>Tinta Printer Hitam</td><td class="fdy-table__num">2</td><td class="fdy-table__num">120.000</td><td class="fdy-table__num">240.000</td></tr>
+              </tbody>
+              <tfoot><tr><td colspan="3" class="fdy-table__num" style="border-top:var(--bw) solid var(--color-border);font-weight:var(--weight-semibold);color:var(--color-text)">Total</td><td class="fdy-table__num" style="border-top:var(--bw) solid var(--color-border);font-weight:var(--weight-semibold);color:var(--color-text)">Rp 740.000</td></tr></tfoot>
+            </table>
+          </div>
+          <div style="display:flex;gap:var(--space-2)"><button class="fdy-btn fdy-btn--ghost" type="reset">Batal</button><button class="fdy-btn" type="submit">Simpan faktur</button></div>
         </form>
       </div>
     </section>
@@ -1344,8 +1374,11 @@
 
     <section class="doc-section" id="sec-tree">
       <h2>Tree view</h2>
-      <p class="doc-desc">Hierarki lewat <code>&lt;details&gt;</code> native — buka/tutup dengan klik atau <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, tanpa JS. Cabang bisa dilipat; daun = baris biasa.</p>
-      <div class="doc-demo doc-demo--block" style="max-width:26rem">
+      <p class="doc-desc">Hierarki lewat <code>&lt;details&gt;</code> native — buka/tutup dengan klik atau <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, tanpa JS. Cabang bisa dilipat; daun = baris biasa. Varian <strong>checkbox</strong> (kanan) menambah pilihan bertingkat: centang cabang → semua anak ikut; sebagian anak → cabang jadi <em>indeterminate</em>. Butuh <code>freeday-tree.js</code> untuk cascade; centang tak pernah membuka/menutup cabang.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-cols">
+          <div>
+            <p class="doc-sublabel">Dasar (tanpa JS)</p>
         <ul class="fdy-tree">
           <li>
             <details class="fdy-tree__branch" open>
@@ -1381,6 +1414,46 @@
             </details>
           </li>
         </ul>
+          </div>
+          <div>
+            <p class="doc-sublabel">Dengan checkbox (cascading)</p>
+            <ul class="fdy-tree fdy-tree--checkbox" data-fdy-tree aria-label="Pilih pelanggan &amp; item">
+              <li>
+                <details class="fdy-tree__branch" open>
+                  <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Pelanggan"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Pelanggan</summary>
+                  <ul>
+                    <li>
+                      <details class="fdy-tree__branch" open>
+                        <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Jakarta"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Jakarta</summary>
+                        <ul>
+                          <li class="fdy-tree__leaf"><input class="fdy-checkbox fdy-tree__check" type="checkbox" checked aria-label="PT Sumber Makmur"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PT Sumber Makmur</li>
+                          <li class="fdy-tree__leaf"><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="PT Cahaya Abadi"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>PT Cahaya Abadi</li>
+                        </ul>
+                      </details>
+                    </li>
+                    <li>
+                      <details class="fdy-tree__branch">
+                        <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Bandung"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Bandung</summary>
+                        <ul>
+                          <li class="fdy-tree__leaf"><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="CV Berkah Jaya"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>CV Berkah Jaya</li>
+                        </ul>
+                      </details>
+                    </li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details class="fdy-tree__branch">
+                  <summary><svg class="fdy-tree__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Item"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h16a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1h-7l-2-2H4a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1z"></path></svg>Item</summary>
+                  <ul>
+                    <li class="fdy-tree__leaf"><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Kertas A4 80gsm"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>Kertas A4 80gsm</li>
+                    <li class="fdy-tree__leaf"><input class="fdy-checkbox fdy-tree__check" type="checkbox" aria-label="Tinta Printer Hitam"><svg class="fdy-tree__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>Tinta Printer Hitam</li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1840,7 +1913,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.6.2 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.7.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -1875,6 +1948,7 @@
 <script src="../dist/freeday-mask.js"></script>
 <script src="../dist/freeday-form.js"></script>
 <script src="../dist/freeday-chip.js"></script>
+<script src="../dist/freeday-tree.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
@@ -1936,7 +2010,7 @@
     'sec-cascade': { h2: 'Cascade select', desc: 'A hierarchical (drill-down) picker — the data model is a hidden nested <code>&lt;ul&gt;</code>: an <code>&lt;li&gt;</code> with a child <code>&lt;ul&gt;</code> is a branch, without one it is a leaf. Branches drill in, a leaf selects (value = full path). Full keyboard support. Needs <code>freeday-cascade.js</code>.' },
     'sec-mask': { h2: 'Password &amp; mask', desc: 'A password field with a show/hide toggle (<code>data-fdy-password</code> — reusing the input-group button chrome) and an input that formats as you type (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> letter, <code>*</code> alnum; other characters become literals). Needs <code>freeday-mask.js</code>.' },
     'sec-filterbar': { h2: 'Filter bar', desc: 'A consistent filter row — <code>.fdy-filterbar</code> wraps several <code>.fdy-field</code>. Each field follows a <strong>width rhythm</strong> (<code>--w-sm</code> · default · <code>--w-lg</code> · <code>--w-xl</code>); one <code>--w-grow</code> field (usually search) absorbs the slack; actions (<code>__actions</code>) sit at the end, aligned to the controls. Wraps cleanly on narrow screens. Zero JS — just layout over <code>.fdy-field</code>.' },
-    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors — <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>freeday-form.js</code>.' },
+    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors — <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>freeday-form.js</code>. A second example shows a document <strong>header + detail</strong> layout (<code>.fdy-form-grid</code> + a line-items table).' },
     'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG) — stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>freeday-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
     'sec-pilihan': { h2: 'Checkbox · Radio · Switch', desc: 'Native <code>&lt;input&gt;</code> styled — Space, label association, and <code>:focus-visible</code> stay native.' },
     'sec-alert': { h2: 'Alert', desc: 'Inline messages. The danger variant uses <code>role="alert"</code>.' },
@@ -1949,7 +2023,7 @@
     'sec-datatable': { h2: 'Data table', desc: 'Interactive: global search, sort (click a column header), <strong>per-column filters</strong> (funnel icon — text <em>contains</em>, enum <em>checklist</em>, number <em>range</em>), row select → <strong>bulk action bar</strong>, pagination. Needs <code>freeday-table.js</code>.' },
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
     'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
-    'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row.' },
+    'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row. The <strong>checkbox</strong> variant (right) adds cascading selection: check a branch → all children follow; some children → the branch turns <em>indeterminate</em>. Needs <code>freeday-tree.js</code> for the cascade; a checkbox never expands/collapses the branch.' },
     'sec-card': { h2: 'Card' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
     'sec-avatar': { h2: 'Avatar' },
