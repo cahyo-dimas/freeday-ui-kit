@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCfl } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl } from 'freeday/vue';
 import type {
+  CascadeNode,
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
   FdyChangeDetail,
@@ -103,6 +104,20 @@ const kotaOptions: ReadonlyArray<string> = [
   'Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta', 'Denpasar',
 ];
 const kota = ref<string>('');
+
+// FdyCascade demo — the tree as typed data (replaces the enhancer's hidden nested <ul>).
+const kategoriTree: ReadonlyArray<CascadeNode> = [
+  { label: 'Jasa', value: 'jasa', children: [
+    { label: 'Implementasi', value: 'implementasi' },
+    { label: 'Pelatihan', value: 'pelatihan' },
+  ] },
+  { label: 'Lisensi', value: 'lisensi', children: [
+    { label: 'Tahunan', value: 'tahunan' },
+    { label: 'Perpetual', value: 'perpetual' },
+  ] },
+  { label: 'Barang', value: 'barang' },
+];
+const kategoriVue = ref<string>('');
 
 // FdyCfl demo — Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
 // Unblocks the "map an extracted value → SAP master data" gap: the caller supplies a
@@ -309,6 +324,12 @@ const toggleTheme = (): void => {
               <span class="fdy-label" id="lbl-kota-vue">Kota (FdyAutocomplete)</span>
               <FdyAutocomplete v-model="kota" :options="kotaOptions" aria-labelledby="lbl-kota-vue" placeholder="Ketik kota…" />
               <span class="fdy-help">Nilai: {{ kota || '—' }}</span>
+            </div>
+            <div class="fdy-field" style="max-width:none;margin-top:var(--space-4)">
+              <span class="fdy-label" id="lbl-kategori-vue">Kategori (FdyCascade)</span>
+              <FdyCascade v-model="kategoriVue" :options="kategoriTree" aria-labelledby="lbl-kategori-vue"
+                          label="Kategori produk" placeholder="Pilih kategori" />
+              <span class="fdy-help">Nilai: {{ kategoriVue || '—' }}</span>
             </div>
           </div>
         </section>

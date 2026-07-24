@@ -32,5 +32,6 @@ export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/
 export { FdyDatepicker, type FdyDatepickerProps } from './components/FdyDatepicker';
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
+export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';
 export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';

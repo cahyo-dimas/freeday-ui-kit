@@ -1,13 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCfl, FdyChart } from 'freeday/react';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl, FdyChart } from 'freeday/react';
 import type {
-  FdyCascadeChangeDetail,
   FdyMaskDetail,
   FdyComboOption,
   CflColumn,
   CflPage,
   DateRangeValue,
+  CascadeNode,
 } from 'freeday/react';
 import './app.css';
 
@@ -53,6 +53,19 @@ const trendValues = [12, 9, 14, 11, 18, 15, 21];
 // Suggestions for the FdyAutocomplete demo — the component filters them client-side.
 const kotaOptions: ReadonlyArray<string> = [
   'Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta', 'Denpasar',
+];
+
+// The cascade tree as typed data — replaces the enhancer's hidden nested <ul>.
+const kategoriOptions: ReadonlyArray<CascadeNode> = [
+  { label: 'Jasa', value: 'jasa', children: [
+    { label: 'Implementasi', value: 'implementasi' },
+    { label: 'Pelatihan', value: 'pelatihan' },
+  ] },
+  { label: 'Lisensi', value: 'lisensi', children: [
+    { label: 'Tahunan', value: 'tahunan' },
+    { label: 'Perpetual', value: 'perpetual' },
+  ] },
+  { label: 'Barang', value: 'barang' },
 ];
 
 const statusOptions: ReadonlyArray<FdyComboOption<InvoiceStatus>> = [
@@ -122,21 +135,20 @@ export function App(): ReactElement {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [periode, setPeriode] = useState<DateRangeValue>({ start: null, end: null });
   const [kota, setKota] = useState<string>('');
+  const [kategori, setKategori] = useState<string>('');
+  const [kategoriPath, setKategoriPath] = useState<string>('');
 
   // The submit handler below is registered once (mount-only effect) and reads `live.current`,
   // so mirror the controlled state into it on every change to avoid a stale closure.
   useEffect(() => { live.current.status = status; }, [status]);
   useEffect(() => { live.current.jatuhTempo = jatuhTempo; }, [jatuhTempo]);
+  useEffect(() => { live.current.kategori = kategori; }, [kategori]);
+  useEffect(() => { live.current.kategoriPath = kategoriPath; }, [kategoriPath]);
 
   useEffect(() => {
     const el = root.current;
     if (!el) return;
     // fdy-* events bubble, so one set of listeners on the root covers every control.
-    const onCascade = (e: Event): void => {
-      const d = (e as CustomEvent<FdyCascadeChangeDetail>).detail;
-      live.current.kategori = d.value;
-      live.current.kategoriPath = d.path;
-    };
     const onPo = (e: Event): void => { live.current.poRaw = (e as CustomEvent<FdyMaskDetail>).detail.raw; };
     const onValid = (): void => {
       const fd = new FormData(formRef.current!);
@@ -153,11 +165,9 @@ export function App(): ReactElement {
       (window as unknown as { Freeday?: { toast: (o: Record<string, unknown>) => void } })
         .Freeday?.toast({ variant: 'success', title: 'Faktur tersimpan', message: `${rec.pelanggan} · ${rupiah(total)}` });
     };
-    el.addEventListener('fdy-cascade-change', onCascade);
     el.addEventListener('fdy-mask', onPo);
     el.addEventListener('fdy-form-valid', onValid);
     return () => {
-      el.removeEventListener('fdy-cascade-change', onCascade);
       el.removeEventListener('fdy-mask', onPo);
       el.removeEventListener('fdy-form-valid', onValid);
     };
@@ -235,24 +245,15 @@ export function App(): ReactElement {
                 </label>
 
                 <div className="fdy-field faktur-field">
-                  <span className="fdy-label">Kategori produk</span>
-                  <div data-fdy-cascade data-label="Kategori produk" data-placeholder="Pilih kategori">
-                    <ul>
-                      <li data-value="jasa">Jasa
-                        <ul>
-                          <li data-value="implementasi">Implementasi</li>
-                          <li data-value="pelatihan">Pelatihan</li>
-                        </ul>
-                      </li>
-                      <li data-value="lisensi">Lisensi
-                        <ul>
-                          <li data-value="tahunan">Tahunan</li>
-                          <li data-value="perpetual">Perpetual</li>
-                        </ul>
-                      </li>
-                      <li data-value="barang">Barang</li>
-                    </ul>
-                  </div>
+                  <span className="fdy-label" id="lbl-kategori">Kategori produk</span>
+                  <FdyCascade
+                    value={kategori}
+                    onChange={(v: string, labels: string[]): void => { setKategori(v); setKategoriPath(labels.join(' / ')); }}
+                    options={kategoriOptions}
+                    label="Kategori produk"
+                    ariaLabelledby="lbl-kategori"
+                    placeholder="Pilih kategori"
+                  />
                 </div>
 
                 <div className="fdy-field faktur-field">
