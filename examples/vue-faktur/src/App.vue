@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyCfl } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCfl } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
@@ -97,6 +97,12 @@ const tanggalTerbitMax: string = (() => {
 const tanggalTerbitDemo = ref<string | null>(null);
 const tanggalInvalidDemo = ref<string | null>(null);
 const periode = ref<DateRangeValue>({ start: null, end: null });
+
+// FdyAutocomplete demo — editable combobox; the component filters these client-side.
+const kotaOptions: ReadonlyArray<string> = [
+  'Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta', 'Denpasar',
+];
+const kota = ref<string>('');
 
 // FdyCfl demo — Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
 // Unblocks the "map an extracted value → SAP master data" gap: the caller supplies a
@@ -298,6 +304,11 @@ const toggleTheme = (): void => {
                           placeholder="Wajib dipilih" invalid describedby="err-metode-invalid" />
                 <span id="err-metode-invalid" class="fdy-help" style="color:var(--color-danger)">Metode pembayaran wajib dipilih.</span>
               </label>
+            </div>
+            <div class="fdy-field" style="max-width:none;margin-top:var(--space-4)">
+              <span class="fdy-label" id="lbl-kota-vue">Kota (FdyAutocomplete)</span>
+              <FdyAutocomplete v-model="kota" :options="kotaOptions" aria-labelledby="lbl-kota-vue" placeholder="Ketik kota…" />
+              <span class="fdy-help">Nilai: {{ kota || '—' }}</span>
             </div>
           </div>
         </section>
