@@ -112,6 +112,11 @@
     button.addEventListener('click', function () {
       isOpen() ? close() : open();
     });
+    // Pressing an option must not blur the button: a blur fires the focusout
+    // handler below, which closes the listbox before the option's click lands —
+    // so the pick is lost (real mouse only; synthetic .click() never blurs).
+    // preventDefault on mousedown keeps focus on the button without blocking click.
+    listbox.addEventListener('mousedown', function (e) { e.preventDefault(); });
     options.forEach(function (opt, i) {
       opt.addEventListener('click', function () { choose(opt); });
       opt.addEventListener('mousemove', function () { setHighlight(i); });

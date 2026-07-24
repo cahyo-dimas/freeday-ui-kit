@@ -10,15 +10,16 @@ _Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live._
 
 ## TL;DR — tidak ada yang mendesak
 
-Kit sudah **fungsional lengkap dan live di v1.6.0**. Tiga item di bawah semuanya **bisa ditunda**:
+Kit **fungsional & live di v1.6.1**. Tiga item di bawah semuanya **bisa ditunda**:
 tak satu pun memblokir siapa pun hari ini, tak satu pun mengubah fitur atau UI secara signifikan,
 dan **dua dari tiga menunggu keputusanmu, bukan koding**. Aman kalau repo ini didiamkan berbulan-bulan.
 
 ## Kondisi saat dokumen ini ditulis
 
-- `main` = `origin/main` = **`ae43914`**, satu branch bersih, working tree bersih.
-- Tag: **`v1.5.0`** (React adapter parity) dan **`v1.6.0`** (wrapper input ekstra + filter-bar).
-- Live: <https://cahyo-dimas.github.io/freeday-ui-kit/docs/> — terverifikasi menampilkan v1.6.0.
+- `main` = `origin/main` = tag **`v1.6.1`**, satu branch bersih, working tree bersih.
+- Tag: **`v1.5.0`** (React adapter parity) · **`v1.6.0`** (wrapper input ekstra + filter-bar) ·
+  **`v1.6.1`** (fix: pemilihan opsi combo dengan mouse — lihat "Pelajaran" di bawah).
+- Live: <https://cahyo-dimas.github.io/freeday-ui-kit/docs/> — terverifikasi menampilkan v1.6.1.
 - Gate hijau: `npm test` 9/9 · `npm run typecheck:react` 0 error · `node tokens/build.mjs` tanpa diff.
 - `improvement-notes/` sengaja dibiarkan untracked (catatan mentah, bukan bagian rilis).
 
@@ -131,6 +132,24 @@ diterapkan ke **radius · spasi · motion**.
 Status: tertutup untuk radius/spasi/motion. Belum dijadikan tes otomatis — kalau mau paling aman,
 tambah satu tes yang me-render docs headless dan meng-assert tiap `[data-token]` == nilai token
 (kandidat kerja kecil, opsional).
+
+## Pelajaran / invariant — uji komponen interaktif dengan **gestur mouse asli**, bukan `.click()` sintetik
+
+**Kejadian (2026-07-24, v1.6.1).** Di live, memilih opsi combo/select dengan mouse **tidak
+mengubah nilai** (tetap "Button"). Awalnya tak terlihat karena tes memakai `element.click()`
+sintetik — yang **melewati** urutan fokus/blur asli. Akar masalah: menekan (mousedown) opsi
+mem-blur tombol combo → handler `focusout` di `freeday-select.js` memanggil `close()` yang
+menyembunyikan listbox **sebelum** event `click` opsi menjalankan `choose()`. Jadi pilihan hilang.
+Hanya kena mouse asli; keyboard tak terpengaruh. Fix: `preventDefault` pada `mousedown` listbox
+(tombol tetap fokus, `close` tak terpicu, `click` mendarat). Rilis di v1.6.1.
+
+**Aturan.** Untuk komponen yang bergantung pada **fokus/blur/pointer** (combo, dropdown, menu,
+picker), verifikasi dengan **event mouse asli** (headless Chrome via CDP `Input.dispatchMouseEvent`
+di koordinat sungguhan), bukan hanya `.click()` sintetik — `.click()` tak memicu `focusout`, jadi
+menyembunyikan seluruh kelas bug "listbox tertutup sebelum pilih". Harness sekali-pakai ada di
+scratchpad sesi (driver CDP nol-dependency: Node 22 `WebSocket`+`fetch` global). Pola tes:
+buka trigger → **pastikan** `aria-expanded="true"` → klik opsi di koordinatnya (settle dulu, hindari
+klik saat transisi/scroll) → assert nilai berubah.
 
 ## Kalau nanti mau rilis lagi
 

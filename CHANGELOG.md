@@ -3,6 +3,19 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.6.1] — 2026-07-24
+Rilis **patch — perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
+
+### Fixed
+- **`freeday-select.js` (combo/select vanilla) — memilih opsi dengan mouse tidak berfungsi.**
+  Menekan (mousedown) sebuah opsi mem-blur tombol combo; handler `focusout` lalu memanggil
+  `close()` yang menyembunyikan listbox **sebelum** event `click` opsi sempat menjalankan
+  `choose()` — sehingga pilihan hilang dan nilai tak berubah (hanya terlihat dengan mouse asli;
+  navigasi keyboard tak terpengaruh). Perbaikan: `preventDefault` pada `mousedown` listbox agar
+  tombol tetap fokus, jadi `click` mendarat normal. Terverifikasi lewat gestur mouse asli
+  (headless CDP `Input.dispatchMouseEvent`) pada playground docs dan section Select. Memengaruhi
+  konsumen vanilla `freeday/js`; adapter Vue/React punya implementasi sendiri dan tak terdampak.
+
 ## [1.6.0] — 2026-07-24
 Rilis **1.6 — wrapper input ekstra (Vue + React) + filter-bar**. Non-breaking, aditif.
 
