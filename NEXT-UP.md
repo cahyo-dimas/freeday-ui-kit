@@ -99,6 +99,39 @@ Ini bukan utang. Ini keputusan sadar: design system tak pernah "selesai", dia be
 
 ---
 
+## Pelajaran / invariant — docs jangan pernah menyalin nilai token ke prosa
+
+**Kejadian (2026-07-24).** Section "Radius" di `docs/index.html` menampilkan ramp *lama sebelum
+v1.1* — `xs 4 / sm 6 / md 8 / lg 12 / xl 16 px` — padahal token asli sudah `3/4/6/10/14px`. Pass
+"Precision" di v1.1 me-retune radius (`tokens.json`), tapi label docs ditulis tangan dan **tidak ikut
+berubah**. Kotaknya dirender pakai token asli (`var(--radius-md)`), teksnya menyebut angka lain →
+developer melihat sudut 6px berlabel "8px". Untuk kit yang seluruh nilai jualnya adalah *jadi sumber
+kebenaran token*, ini diam-diam menghancurkan kepercayaan.
+
+**Akar masalah = duplikasi**, bukan salah ketik. Nilai token hidup di dua tempat (token + label docs)
+yang bisa hanyut berpisah.
+
+**Invariant sekarang (ditegakkan di `docs/index.html`).** Setiap label nilai token adalah
+`<span data-token="--nama-token">` yang **diisi runtime dari stylesheet yang jalan** (panjang diukur
+ke px lewat elemen probe; token waktu dibaca apa adanya). Token berubah → label ikut otomatis. Sudah
+diterapkan ke **radius · spasi · motion**.
+
+**Aturan saat menyentuh docs / token:**
+- **Jangan pernah** menulis angka nilai token (px/rem/ms) langsung di prosa atau label docs. Pakai
+  `<span data-token="--x">` (di HTML docs) atau `<code>var(--x)</code>` (kalau yang dimaksud memang
+  *nama* token, bukan nilainya).
+- Nilai skala (breakpoint) yang tak bisa dibaca CSS custom-prop hidup di `tokens/breakpoints.mjs` —
+  itu satu-satunya sumber; jangan restate angkanya di tempat lain.
+- Kalau me-retune ramp token, tak perlu sentuh label docs lagi — tapi **cek**: `grep -nE "[0-9]+px"
+  docs/index.html` mestinya nyaris tak menyentuh area token (sisanya cuma nilai layout lepas yang
+  memang bukan token).
+- Audit cepat kapan pun ragu: render headless lalu bandingkan DOM ber-`[data-token]` dengan
+  `dist/freeday.tokens.css`. (Contoh perintah ada di commit `adc80dc`.)
+
+Status: tertutup untuk radius/spasi/motion. Belum dijadikan tes otomatis — kalau mau paling aman,
+tambah satu tes yang me-render docs headless dan meng-assert tiap `[data-token]` == nilai token
+(kandidat kerja kecil, opsional).
+
 ## Kalau nanti mau rilis lagi
 
 Semua perubahan sejauh ini bersifat aditif → **MINOR bump**. Saat cut versi, jangan lupa **sync semua
