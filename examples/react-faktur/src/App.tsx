@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { useFreeday } from 'freeday/react';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyCfl, FdyChart } from 'freeday/react';
 import type {
   FdyCascadeChangeDetail,
-  FdyDatepickerChangeDetail,
-  FdyChangeDetail,
   FdyMaskDetail,
+  FdyComboOption,
+  CflColumn,
+  CflPage,
 } from 'freeday/react';
 import './app.css';
 
@@ -17,6 +18,17 @@ interface Faktur {
   kategoriPath: string;
   jatuhTempo: string;
   status: string;
+}
+
+type InvoiceStatus = 'draft' | 'tertunda' | 'lunas';
+
+// `extends Record<string, unknown>` satisfies FdyCfl's `Row extends Record<string, unknown>`
+// constraint — same pattern the Vue example's `Pelanggan` interface uses.
+interface Customer extends Record<string, unknown> {
+  id: string;
+  nama: string;
+  kota: string;
+  email: string;
 }
 
 const dueDefault = (): string => {
@@ -34,15 +46,79 @@ const items = [
 ];
 const total = items.reduce((s, it) => s + it.qty * it.harga, 0);
 const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertunda', lunas: 'Lunas' };
+// 7 days of recent invoice totals (in millions), for the sparkline demo below.
+const trendValues = [12, 9, 14, 11, 18, 15, 21];
+
+const statusOptions: ReadonlyArray<FdyComboOption<InvoiceStatus>> = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'tertunda', label: 'Tertunda' },
+  { value: 'lunas', label: 'Lunas' },
+];
+
+// Mock customer master (stands in for a Business Partner lookup) — filtered/paged locally by
+// FdyCfl's fetchPage contract instead of a real API call.
+const customers: Customer[] = [
+  { id: 'C-001', nama: 'PT Sumber Makmur', kota: 'Jakarta', email: 'ap@sumbermakmur.co.id' },
+  { id: 'C-002', nama: 'CV Cahaya Abadi', kota: 'Surabaya', email: 'finance@cahayaabadi.co.id' },
+  { id: 'C-003', nama: 'PT Mitra Sejahtera', kota: 'Bandung', email: 'ar@mitrasejahtera.co.id' },
+  { id: 'C-004', nama: 'UD Berkah Jaya', kota: 'Semarang', email: 'admin@berkahjaya.co.id' },
+  { id: 'C-005', nama: 'PT Nusantara Prima', kota: 'Jakarta', email: 'billing@nusantaraprima.co.id' },
+  { id: 'C-006', nama: 'CV Sinar Terang', kota: 'Medan', email: 'ap@sinarterang.co.id' },
+  { id: 'C-007', nama: 'PT Karya Utama', kota: 'Yogyakarta', email: 'finance@karyautama.co.id' },
+  { id: 'C-008', nama: 'PT Global Teknindo', kota: 'Jakarta', email: 'ar@globalteknindo.co.id' },
+  { id: 'C-009', nama: 'CV Maju Bersama', kota: 'Makassar', email: 'admin@majubersama.co.id' },
+  { id: 'C-010', nama: 'PT Andalan Sukses', kota: 'Surabaya', email: 'ap@andalansukses.co.id' },
+  { id: 'C-011', nama: 'UD Sentosa Abadi', kota: 'Denpasar', email: 'finance@sentosaabadi.co.id' },
+  { id: 'C-012', nama: 'PT Cipta Mandiri', kota: 'Bandung', email: 'billing@ciptamandiri.co.id' },
+  { id: 'C-013', nama: 'CV Harapan Baru', kota: 'Palembang', email: 'ar@harapanbaru.co.id' },
+  { id: 'C-014', nama: 'PT Pilar Jaya', kota: 'Jakarta', email: 'ap@pilarjaya.co.id' },
+  { id: 'C-015', nama: 'PT Fajar Sejahtera', kota: 'Semarang', email: 'admin@fajarsejahtera.co.id' },
+  { id: 'C-016', nama: 'CV Bintang Timur', kota: 'Malang', email: 'finance@bintangtimur.co.id' },
+  { id: 'C-017', nama: 'PT Sumber Makmur Dua', kota: 'Surabaya', email: 'ap2@sumbermakmur.co.id' },
+  { id: 'C-018', nama: 'UD Rejeki Lancar', kota: 'Jakarta', email: 'billing@rejekilancar.co.id' },
+];
+
+const customerColumns: ReadonlyArray<CflColumn<Customer>> = [
+  { key: 'nama', label: 'Nama' },
+  { key: 'kota', label: 'Kota' },
+  { key: 'email', label: 'Email' },
+];
+
+const CUSTOMER_PAGE_SIZE = 8;
+
+// Local mock in place of a real Business Partner search endpoint — filters + pages the
+// in-file array and resolves like a network call would (FdyCfl's fetchPage contract).
+const fetchCustomers = (query: string, page: number): Promise<CflPage<Customer>> => {
+  const q = query.trim().toLowerCase();
+  const filtered = q === ''
+    ? customers
+    : customers.filter((c) => c.nama.toLowerCase().includes(q) || c.kota.toLowerCase().includes(q));
+  const start = page * CUSTOMER_PAGE_SIZE;
+  const rows = filtered.slice(start, start + CUSTOMER_PAGE_SIZE);
+  const hasMore = start + CUSTOMER_PAGE_SIZE < filtered.length;
+  return new Promise((resolve) => {
+    setTimeout(() => resolve({ rows, hasMore }), 150);
+  });
+};
 
 export function App(): ReactElement {
   const root = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   useFreeday(root); // hydrate [data-fdy-*] in this subtree on mount + every commit
 
-  // Values that arrive via fdy-* events live in a ref (the enhancers own the DOM).
-  const live = useRef({ kategori: '', kategoriPath: '', jatuhTempo: dueDefault(), status: 'draft', poRaw: '' });
+  // Values that arrive via fdy-* events (the enhancers still own that DOM) live in a ref.
+  const live = useRef({ kategori: '', kategoriPath: '', jatuhTempo: dueDefault(), status: 'draft' as InvoiceStatus, poRaw: '' });
   const [submitted, setSubmitted] = useState<Faktur | null>(null);
+
+  // Fully-controlled React components — plain useState, no DOM events to bridge.
+  const [status, setStatus] = useState<InvoiceStatus>('draft');
+  const [jatuhTempo, setJatuhTempo] = useState<string>(dueDefault());
+  const [customer, setCustomer] = useState<Customer | null>(null);
+
+  // The submit handler below is registered once (mount-only effect) and reads `live.current`,
+  // so mirror the controlled state into it on every change to avoid a stale closure.
+  useEffect(() => { live.current.status = status; }, [status]);
+  useEffect(() => { live.current.jatuhTempo = jatuhTempo; }, [jatuhTempo]);
 
   useEffect(() => {
     const el = root.current;
@@ -53,8 +129,6 @@ export function App(): ReactElement {
       live.current.kategori = d.value;
       live.current.kategoriPath = d.path;
     };
-    const onDate = (e: Event): void => { live.current.jatuhTempo = (e as CustomEvent<FdyDatepickerChangeDetail>).detail.value; };
-    const onStatus = (e: Event): void => { live.current.status = (e as CustomEvent<FdyChangeDetail>).detail.value; };
     const onPo = (e: Event): void => { live.current.poRaw = (e as CustomEvent<FdyMaskDetail>).detail.raw; };
     const onValid = (): void => {
       const fd = new FormData(formRef.current!);
@@ -72,14 +146,10 @@ export function App(): ReactElement {
         .Freeday?.toast({ variant: 'success', title: 'Faktur tersimpan', message: `${rec.pelanggan} · ${rupiah(total)}` });
     };
     el.addEventListener('fdy-cascade-change', onCascade);
-    el.addEventListener('fdy-datepicker-change', onDate);
-    el.addEventListener('fdy-change', onStatus);
     el.addEventListener('fdy-mask', onPo);
     el.addEventListener('fdy-form-valid', onValid);
     return () => {
       el.removeEventListener('fdy-cascade-change', onCascade);
-      el.removeEventListener('fdy-datepicker-change', onDate);
-      el.removeEventListener('fdy-change', onStatus);
       el.removeEventListener('fdy-mask', onPo);
       el.removeEventListener('fdy-form-valid', onValid);
     };
@@ -114,6 +184,29 @@ export function App(): ReactElement {
               <h2 className="fdy-card__title" style={{ marginBottom: 'var(--space-5)' }}>Detail faktur</h2>
 
               <form data-fdy-validate ref={formRef} onSubmit={(e) => e.preventDefault()} className="faktur-form">
+                <div className="fdy-field faktur-field">
+                  <span className="fdy-label" id="lbl-customer">Cari pelanggan</span>
+                  <FdyCfl<Customer>
+                    value={customer}
+                    onChange={(row) => {
+                      setCustomer(row);
+                      // Autofill the plain-text fields below — the search picker complements
+                      // manual entry rather than replacing the required native inputs.
+                      const form = formRef.current;
+                      if (form === null) return;
+                      (form.elements.namedItem('pelanggan') as HTMLInputElement).value = row.nama;
+                      (form.elements.namedItem('email') as HTMLInputElement).value = row.email;
+                    }}
+                    fetchPage={fetchCustomers}
+                    columns={customerColumns}
+                    display={(row) => row.nama}
+                    rowKey={(row) => row.id}
+                    placeholder="Cari nama atau kota…"
+                    ariaLabelledby="lbl-customer"
+                  />
+                  {customer && <span className="fdy-help">{customer.kota} · {customer.email}</span>}
+                </div>
+
                 <label className="fdy-field faktur-field">
                   <span className="fdy-label">Pelanggan <span aria-hidden="true" className="req">*</span></span>
                   <input className="fdy-input" name="pelanggan" required data-fdy-msg-required="Nama pelanggan wajib diisi." placeholder="cth. PT Sumber Makmur" />
@@ -151,22 +244,22 @@ export function App(): ReactElement {
                 </div>
 
                 <div className="fdy-field faktur-field">
-                  <span className="fdy-label">Jatuh tempo</span>
-                  <div data-fdy-datepicker data-value={live.current.jatuhTempo} data-label="Jatuh tempo"></div>
+                  <span className="fdy-label" id="lbl-jatuh-tempo">Jatuh tempo</span>
+                  <FdyDatepicker
+                    value={jatuhTempo}
+                    onChange={setJatuhTempo}
+                    ariaLabelledby="lbl-jatuh-tempo"
+                  />
                 </div>
 
                 <div className="fdy-field faktur-field">
                   <span className="fdy-label" id="lbl-status">Status</span>
-                  <div className="fdy-combo" data-fdy-combo data-value="draft">
-                    <button type="button" className="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-status val-status">
-                      <span className="fdy-combo__value" id="val-status">Draft</span>
-                    </button>
-                    <ul className="fdy-combo__listbox" role="listbox" aria-labelledby="lbl-status" hidden>
-                      <li className="fdy-combo__option" role="option" data-value="draft" aria-selected="true"><span className="fdy-combo__check">✓</span>Draft</li>
-                      <li className="fdy-combo__option" role="option" data-value="tertunda" aria-selected="false"><span className="fdy-combo__check"></span>Tertunda</li>
-                      <li className="fdy-combo__option" role="option" data-value="lunas" aria-selected="false"><span className="fdy-combo__check"></span>Lunas</li>
-                    </ul>
-                  </div>
+                  <FdyCombo<InvoiceStatus>
+                    value={status}
+                    options={statusOptions}
+                    onChange={setStatus}
+                    ariaLabelledby="lbl-status"
+                  />
                 </div>
 
                 <div className="faktur-actions">
@@ -179,7 +272,13 @@ export function App(): ReactElement {
 
           <section className="fdy-card">
             <div className="fdy-card__body">
-              <h2 className="fdy-card__title" style={{ marginBottom: 'var(--space-4)' }}>Item</h2>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
+                <h2 className="fdy-card__title" style={{ marginBottom: 0 }}>Item</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <span className="fdy-help">Tren 7 hari</span>
+                  <FdyChart type="sparkline" values={trendValues} aria-label="Tren total faktur 7 hari terakhir" />
+                </div>
+              </div>
               <table className="fdy-table" style={{ width: '100%' }}>
                 <thead>
                   <tr><th>Deskripsi</th><th className="num">Qty</th><th className="num">Harga</th><th className="num">Subtotal</th></tr>
