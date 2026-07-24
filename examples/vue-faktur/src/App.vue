@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyCfl } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyCfl } from 'freeday/vue';
 import type {
   FdyCascadeChangeDetail,
   FdyDatepickerChangeDetail,
   FdyChangeDetail,
   FdyMaskDetail,
+  DateRangeValue,
 } from 'freeday/vue';
 
 // One call wires every [data-fdy-*] in this subtree after Vue renders it.
@@ -95,6 +96,7 @@ const tanggalTerbitMax: string = (() => {
 })();
 const tanggalTerbitDemo = ref<string | null>(null);
 const tanggalInvalidDemo = ref<string | null>(null);
+const periode = ref<DateRangeValue>({ start: null, end: null });
 
 // FdyCfl demo — Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
 // Unblocks the "map an extracted value → SAP master data" gap: the caller supplies a
@@ -324,6 +326,11 @@ const toggleTheme = (): void => {
                 <FdyDatepicker v-model="tanggalInvalidDemo" aria-labelledby="lbl-invalid-tanggal" placeholder="Wajib dipilih" invalid describedby="err-tanggal-invalid" />
                 <span id="err-tanggal-invalid" class="fdy-help" style="color:var(--color-danger)">Tanggal jatuh tempo wajib diisi.</span>
               </label>
+            </div>
+            <div class="fdy-field" style="max-width:none;margin-top:var(--space-4)">
+              <span class="fdy-label" id="lbl-periode-vue">Periode laporan (FdyDateRange)</span>
+              <FdyDateRange v-model="periode" aria-labelledby="lbl-periode-vue" />
+              <span class="fdy-help">Nilai: {{ periode.start ?? '—' }} s/d {{ periode.end ?? '—' }}</span>
             </div>
           </div>
         </section>
