@@ -10,16 +10,17 @@ _Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live._
 
 ## TL;DR — tidak ada yang mendesak
 
-Kit **fungsional & live di v1.6.1**. Tiga item di bawah semuanya **bisa ditunda**:
+Kit **fungsional & live di v1.6.2**. Tiga item di bawah semuanya **bisa ditunda**:
 tak satu pun memblokir siapa pun hari ini, tak satu pun mengubah fitur atau UI secara signifikan,
 dan **dua dari tiga menunggu keputusanmu, bukan koding**. Aman kalau repo ini didiamkan berbulan-bulan.
 
 ## Kondisi saat dokumen ini ditulis
 
-- `main` = `origin/main` = tag **`v1.6.1`**, satu branch bersih, working tree bersih.
+- `main` = `origin/main` = tag **`v1.6.2`**, satu branch bersih, working tree bersih.
 - Tag: **`v1.5.0`** (React adapter parity) · **`v1.6.0`** (wrapper input ekstra + filter-bar) ·
-  **`v1.6.1`** (fix: pemilihan opsi combo dengan mouse — lihat "Pelajaran" di bawah).
-- Live: <https://cahyo-dimas.github.io/freeday-ui-kit/docs/> — terverifikasi menampilkan v1.6.1.
+  **`v1.6.1`** (fix: pemilihan opsi combo dengan mouse — lihat "Pelajaran" di bawah) ·
+  **`v1.6.2`** (lisensi MIT + file `LICENSE`).
+- Live: <https://cahyo-dimas.github.io/freeday-ui-kit/docs/> — terverifikasi menampilkan v1.6.2.
 - Gate hijau: `npm test` 9/9 · `npm run typecheck:react` 0 error · `node tokens/build.mjs` tanpa diff.
 - `improvement-notes/` sengaja dibiarkan untracked (catatan mentah, bukan bagian rilis).
 

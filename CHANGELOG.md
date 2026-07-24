@@ -3,6 +3,17 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.6.2] — 2026-07-24
+Rilis **patch — lisensi**. Tak ada perubahan kode.
+
+### Changed
+- **Lisensi jadi [MIT](LICENSE)** (`Copyright (c) 2026 Cahyo D. Kurnianto`). Sebelumnya
+  `"license": "UNLICENSED"` tanpa file `LICENSE` — di repo publik itu berarti *all rights
+  reserved*, jadi tak ada yang boleh memakainya secara legal. Sekarang bebas dipakai/ubah/
+  distribusi asal menyertakan copyright. `package.json`/`package-lock.json` → `"MIT"`, tambah
+  file `LICENSE`, catat di README + footer docs. `"private": true` dipertahankan (pengaman
+  anti-`npm publish`, tak terkait lisensi).
+
 ## [1.6.1] — 2026-07-24
 Rilis **patch — perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
 
