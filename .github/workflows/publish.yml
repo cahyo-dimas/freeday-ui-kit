@@ -21,9 +21,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22 # npm@11 needs Node ^20.17 || >=22.9; latest npm dropped Node 20
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm@latest # trusted publishing needs npm >= 11.5.1
+      - run: npm install -g npm@^11.5.1 # trusted publishing needs npm >= 11.5.1; pin the 11.x line so a future npm major can't break CI
       - run: npm ci
       - run: node tokens/build.mjs
       - run: node --test
