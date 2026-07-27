@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl, FdyChart } from 'freeday/react';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl, FdyChart } from '@cahyo-dimas/freeday/react';
 import type {
   FdyMaskDetail,
   FdyComboOption,
@@ -8,7 +8,7 @@ import type {
   CflPage,
   DateRangeValue,
   CascadeNode,
-} from 'freeday/react';
+} from '@cahyo-dimas/freeday/react';
 import './app.css';
 
 interface Faktur {

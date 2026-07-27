@@ -335,7 +335,7 @@
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
-          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
+          <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i @cahyo-dimas/freeday</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
           <div class="doc-showcase__head">
@@ -374,17 +374,17 @@
       <div class="doc-demo doc-demo--block">
         <div class="doc-fw">
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/vue-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">freeday/vue</span>
+            <span class="doc-fw__k">@cahyo-dimas/freeday/vue</span>
             <h3>Vue 3</h3>
             <p data-i18n="fw.vue">Composable <code>useFreeday()</code> — hydrate saat mount &amp; update, event lewat <code>v-on</code>. Plus komponen <code>v-model</code>: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>.</p>
           </a>
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/react-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">freeday/react</span>
+            <span class="doc-fw__k">@cahyo-dimas/freeday/react</span>
             <h3>React 19</h3>
             <p data-i18n="fw.react">Hook <code>useFreeday()</code> + komponen controlled typed: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>/<code>FdyChart</code> (<code>value</code>/<code>onChange</code>).</p>
           </a>
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/blazor-faktur" target="_blank" rel="noopener">
-            <span class="doc-fw__k">freeday/blazor</span>
+            <span class="doc-fw__k">@cahyo-dimas/freeday/blazor</span>
             <h3>Blazor WASM</h3>
             <p data-i18n="fw.blazor">Interop <code>window.FreedayBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
           </a>
@@ -1332,7 +1332,7 @@
 
     <section class="doc-section" id="sec-charts">
       <h2>Charts</h2>
-      <p class="doc-desc">Sparkline, bar, <strong>line</strong>, <strong>area</strong>, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>. Seri tunggal via <code>data-values</code>; multi-seri via <code>data-series</code> (JSON). Cartesian (line/area/bar) menggambar <strong>sumbu ber-tema</strong> (<code>--chart-grid</code>/<code>--chart-tick</code>), legenda otomatis untuk ≥2 seri, dan format nilai <code>data-fdy-format="number|percent|currency"</code>. Warna dari token → chart <strong>ikut re-warna saat <code>data-theme</code> berubah</strong>. Untuk data reaktif: panggil <code>FreedayChart.update(el)</code> atau pakai <code>&lt;FdyChart&gt;</code> dari <code>freeday/vue</code>. Butuh <code>freeday-chart.js</code>; tiap chart <code>role="img"</code> + <code>aria-label</code> + fallback tabel di dalam elemen.</p>
+      <p class="doc-desc">Sparkline, bar, <strong>line</strong>, <strong>area</strong>, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>. Seri tunggal via <code>data-values</code>; multi-seri via <code>data-series</code> (JSON). Cartesian (line/area/bar) menggambar <strong>sumbu ber-tema</strong> (<code>--chart-grid</code>/<code>--chart-tick</code>), legenda otomatis untuk ≥2 seri, dan format nilai <code>data-fdy-format="number|percent|currency"</code>. Warna dari token → chart <strong>ikut re-warna saat <code>data-theme</code> berubah</strong>. Untuk data reaktif: panggil <code>FreedayChart.update(el)</code> atau pakai <code>&lt;FdyChart&gt;</code> dari <code>@cahyo-dimas/freeday/vue</code>. Butuh <code>freeday-chart.js</code>; tiap chart <code>role="img"</code> + <code>aria-label</code> + fallback tabel di dalam elemen.</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Pendapatan</h3>

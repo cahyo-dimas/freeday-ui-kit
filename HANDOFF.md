@@ -51,9 +51,11 @@ npm test                # node --test (9/9)
 ## Selanjutnya
 
 Backlog aktif + titik lanjut ada di **[`NEXT-UP.md`](NEXT-UP.md)** — buka itu dulu kalau mau
-nerusin. Ringkasnya: **tak ada yang mendesak**. Tiga item tersisa (kontras AA soft-badge §13,
-review independen kode v1.6.0, distribusi registry-friendly #8), semuanya bisa ditunda dan dua
-di antaranya menunggu keputusan, bukan koding.
+nerusin. Ringkasnya: **tak ada yang mendesak**. Ketiga item lama sudah ditangani (2026-07-27):
+kontras AA soft-badge **ternyata sudah tertutup sejak v0.2** (cuma prosa spec §12 yang basi,
+sudah di-truth-up) · review independen v1.6.0 **selesai, tak ada bug korektnes** · distribusi #8
+**diputuskan (npm publik ber-scope `@cahyo-dimas/freeday`)** dengan plumbing sudah di working tree.
+Sisa satu-satunya = **eksekusi rilis npm** (outward-facing) — runbook lengkap di `NEXT-UP.md` item 3.
 
 Cakupan komponen praktis lengkap. Sisa spec §7 — **data grid virtualisasi, form master-detail /
 2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya (filter-bar sudah

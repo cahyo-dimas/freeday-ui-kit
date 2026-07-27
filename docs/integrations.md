@@ -146,20 +146,20 @@ function Panel(): JSX.Element {
   return <div ref={ref} data-fdy-cascade />;
 }
 ```
-> **Alternatif controlled (parity dengan `v-model` Vue):** `freeday/react` juga mengekspor
+> **Alternatif controlled (parity dengan `v-model` Vue):** `@cahyo-dimas/freeday/react` juga mengekspor
 > komponen typed `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` /
 > `FdyCfl` / `FdyChart` — `value`/`onChange` biasa,
 > tanpa `data-fdy-*` + event listener manual:
 > ```tsx
-> import { FdyCombo } from 'freeday/react';
+> import { FdyCombo } from '@cahyo-dimas/freeday/react';
 > <FdyCombo value={status} options={statusOptions} onChange={setStatus} ariaLabelledby="lbl-status" />
 > ```
 > `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` pakai `value`/`onChange` yang sama;
 > `FdyDateRange` pakai `{start, end}`; `FdyChart` pakai `series`/`values`. Set yang sama tersedia
-> di `freeday/vue` lewat `v-model` — kedua adapter simetris penuh.
+> di `@cahyo-dimas/freeday/vue` lewat `v-model` — kedua adapter simetris penuh.
 > Lihat [`getting-started.md` §React](getting-started.md#react-vite) dan
 > `examples/react-faktur/src/App.tsx`. **Vite** transpile `.tsx` source-nya tanpa config tambahan;
-> **Next.js** mungkin butuh `transpilePackages: ['freeday']`.
+> **Next.js** mungkin butuh `transpilePackages: ['@cahyo-dimas/freeday']`.
 
 **Blazor**
 ```csharp

@@ -1,0 +1,32 @@
+# Publishes @cahyo-dimas/freeday to the public npm registry when a version tag is pushed.
+# Auth = OIDC Trusted Publishing (no stored token — the 2FA-bypassing tokens npm is
+# restricting are avoided entirely). Prereqs (one-time): (1) own the npm scope `cahyo-dimas`;
+# (2) on npmjs.com set this repo + workflow file (publish.yml) as the package's Trusted
+# Publisher. Release: `npm version <patch|minor|major>` (builds + stages dist), then
+# `git push --follow-tags`; this workflow builds, tests, and publishes.
+name: Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install -g npm@latest # trusted publishing needs npm >= 11.5.1
+      - run: npm ci
+      - run: node tokens/build.mjs
+      - run: node --test
+      - run: npm run typecheck:react
+      - run: npm publish # OIDC trusted publishing: no token, provenance automatic
+

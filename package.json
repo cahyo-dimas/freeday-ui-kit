@@ -1,11 +1,21 @@
 {
-  "name": "freeday",
+  "name": "@cahyo-dimas/freeday",
   "version": "1.7.0",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
-  "private": true,
   "sideEffects": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cahyo-dimas/freeday-ui-kit.git"
+  },
+  "homepage": "https://cahyo-dimas.github.io/freeday-ui-kit/docs/",
+  "bugs": {
+    "url": "https://github.com/cahyo-dimas/freeday-ui-kit/issues"
+  },
   "engines": {
     "node": ">=20"
   },

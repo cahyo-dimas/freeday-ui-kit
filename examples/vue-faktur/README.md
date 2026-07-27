@@ -1,18 +1,18 @@
 # Freeday × Vue 3 — contoh Faktur
 
 Bukti **v0.9**: layar faktur nyata yang memakai komponen Freeday di Vue 3 lewat adapter
-`freeday/vue`. Menunjukkan kontrak integrasi end-to-end — markup yang dirender Vue di-*enhance*
+`@cahyo-dimas/freeday/vue`. Menunjukkan kontrak integrasi end-to-end — markup yang dirender Vue di-*enhance*
 oleh enhancer Freeday, dan event `fdy-*` mengalir balik ke state Vue.
 
 > **Mau pakai Freeday di project Vue-mu sendiri?** Ikuti panduan
-> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install dari GitHub
-> (`github:cahyo-dimas/freeday-ui-kit#v1.7.0`), bukan `file:../..` seperti contoh ini.
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install dari npm
+> (`npm i @cahyo-dimas/freeday`), bukan `file:../..` seperti contoh ini.
 
 ## Jalankan
 
 ```bash
 cd examples/vue-faktur
-npm install     # menautkan `freeday` dari root repo (file:../..) + Vue/Vite
+npm install     # menautkan `@cahyo-dimas/freeday` dari root repo (file:../..) + Vue/Vite
 npm run dev     # buka URL yang ditampilkan Vite
 ```
 
@@ -35,12 +35,12 @@ Satu composable meng-*hydrate* semua enhancer di subtree komponen, sekali saat m
 update (idempotent):
 
 ```ts
-import { useFreeday } from 'freeday/vue';
+import { useFreeday } from '@cahyo-dimas/freeday/vue';
 const root = ref<HTMLElement | null>(null);
 useFreeday(root);          // <div ref="root"> ...[data-fdy-*]... </div>
 ```
 
 Event Freeday = `CustomEvent` bubbling biasa, jadi cukup `v-on` native (`@fdy-cascade-change`)
-lalu baca `event.detail` (tipe di `freeday/vue`). Tidak ada re-implementasi komponen —
+lalu baca `event.detail` (tipe di `@cahyo-dimas/freeday/vue`). Tidak ada re-implementasi komponen —
 enhancer tetap sumber kebenaran. Lihat [`../../docs/integrations.md`](../../docs/integrations.md)
 untuk peta library & pola framework lainnya (React/Blazor).

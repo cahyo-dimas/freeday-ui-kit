@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl } from 'freeday/vue';
+import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl } from '@cahyo-dimas/freeday/vue';
 import type {
   CascadeNode,
   FdyCascadeChangeDetail,
@@ -8,7 +8,7 @@ import type {
   FdyChangeDetail,
   FdyMaskDetail,
   DateRangeValue,
-} from 'freeday/vue';
+} from '@cahyo-dimas/freeday/vue';
 
 // One call wires every [data-fdy-*] in this subtree after Vue renders it.
 const root = ref<HTMLElement | null>(null);

@@ -23,35 +23,18 @@ npm test                # test transformasi build + kontras WCAG (node:test)
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0
+npm i @cahyo-dimas/freeday
 ```
 ```js
-import 'freeday/css';   // token + komponen (satu file)
-import 'freeday';       // semua enhancer JS (auto-init [data-fdy-*])
-// granular bila perlu: 'freeday/tokens' · 'freeday/css/components' · 'freeday/enhancers/<nama>'
+import '@cahyo-dimas/freeday/css';   // token + komponen (satu file)
+import '@cahyo-dimas/freeday';       // semua enhancer JS (auto-init [data-fdy-*])
+// granular bila perlu: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<nama>'
 ```
-Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit → install
-dari git jalan **tanpa build step**; minify diserahkan ke bundler konsumen.
+Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit &
+ter-publish → install jalan **tanpa build step**; minify diserahkan ke bundler konsumen. Karena
+terbit di **npm publik**, `npm ci` di CI jalan tanpa auth/SSH key.
 
-**Install di CI (`git+https`, bukan `git+ssh`).** `npm i github:...#v1.7.0` menulis
-`git+ssh://` ke lockfile konsumen — `npm ci` di CI gagal kalau runner tidak punya SSH key yang
-di-otorisasi ke repo privat ini. Pakai `git+https` + read-only PAT, tidak butuh upgrade plan
-GitHub atau GitHub Packages:
-```json
-// package.json konsumen
-"dependencies": {
-  "freeday": "git+https://github.com/cahyo-dimas/freeday-ui-kit.git#v1.7.0"
-}
-```
-```yaml
-# GitHub Actions — GITHUB_TOKEN sudah cukup kalau workflow punya akses ke repo ini
-- run: git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-- run: npm ci
-```
-Di luar GitHub Actions (CI lain), ganti `GITHUB_TOKEN` dengan PAT read-only (scope `repo`)
-lewat secret CI-nya, dengan `insteadOf` yang sama.
+> **Dari source (tanpa registry):** `npm i github:cahyo-dimas/freeday-ui-kit`.
 
 **Atau link file langsung (tanpa build):**
 
@@ -117,7 +100,7 @@ wrapper ini tabel lebar akan overflow container-nya, bukan scroll sendiri.
 - (roadmap) `data-style` — varian visual lain.
 - Breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
   `src/components/breakpoints.css`) juga tersedia di JS: `import { breakpoints } from
-  'freeday/breakpoints'` — dipakai untuk menyamakan `matchMedia`/`@media` app-mu ke skala Freeday.
+  '@cahyo-dimas/freeday/breakpoints'` — dipakai untuk menyamakan `matchMedia`/`@media` app-mu ke skala Freeday.
 
 ## Integrasi framework (SPA)
 > **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md) — tiap area
@@ -129,28 +112,28 @@ wrapper ini tabel lebar akan overflow container-nya, bukan scroll sendiri.
 adapter hanya hydrate + jembatani event. Tiap punya contoh layar **faktur** yang jalan:
 
 ```ts
-// Vue 3 — freeday/vue
-import { useFreeday } from 'freeday/vue';
+// Vue 3 — @cahyo-dimas/freeday/vue
+import { useFreeday } from '@cahyo-dimas/freeday/vue';
 const root = ref<HTMLElement | null>(null);
 useFreeday(root);                     // @fdy-cascade-change="…" (detail bertipe)
 ```
 ```tsx
-// React — freeday/react
-import { useFreeday } from 'freeday/react';
+// React — @cahyo-dimas/freeday/react
+import { useFreeday } from '@cahyo-dimas/freeday/react';
 const root = useRef<HTMLDivElement>(null);
 useFreeday(root);                     // event fdy-* bubbling → listen di root
 ```
 ```csharp
-// Blazor — freeday/blazor (window.FreedayBlazor via JS interop)
+// Blazor — @cahyo-dimas/freeday/blazor (window.FreedayBlazor via JS interop)
 await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);
 await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade));
 ```
 
 | Framework | Adapter | Contoh jalan |
 |---|---|---|
-| Vue 3 | `freeday/vue` | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
-| React 19 | `freeday/react` | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
-| Blazor WASM (.NET 10) | `freeday/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
+| Vue 3 | `@cahyo-dimas/freeday/vue` | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
+| React 19 | `@cahyo-dimas/freeday/react` | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
+| Blazor WASM (.NET 10) | `@cahyo-dimas/freeday/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
 
 Peta library & pola lengkap: [`docs/integrations.md`](docs/integrations.md).
 

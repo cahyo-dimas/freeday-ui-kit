@@ -40,8 +40,8 @@ Cocok untuk halaman `.html` polos / template — tanpa bundler, tanpa npm.
 `dist/` sudah di-commit, jadi tak ada build step. Cara termudah — pakai npm sekali hanya untuk
 mengunduh, lalu salin file-nya (vendor):
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0
-cp -r node_modules/freeday/dist ./assets/freeday   # salin ke project-mu
+npm i @cahyo-dimas/freeday
+cp -r node_modules/@cahyo-dimas/freeday/dist ./assets/freeday   # salin ke project-mu
 ```
 (atau `git clone` repo lalu salin `dist/`, atau unduh file satu per satu). Yang kamu butuh minimal:
 `freeday.bundle.css` (token + komponen jadi satu) dan `freeday.js` (semua enhancer).
@@ -89,16 +89,16 @@ Dari docs live (View Source) atau `Foundation Design System.html`. **Ganti** kel
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0
+npm i @cahyo-dimas/freeday
 ```
-Masuk ke `package.json` sebagai `"freeday": "github:cahyo-dimas/freeday-ui-kit#v1.7.0"`
-(nama paket **`freeday`**). `dist/` di-commit → tanpa build step; repo public → tanpa auth.
+Masuk ke `package.json` sebagai `"@cahyo-dimas/freeday": "^1.7.0"` (paket npm publik).
+`dist/` di-commit & ter-publish → tanpa build step; `npm ci` jalan tanpa auth.
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.ts`)
 ```ts
 import { createApp } from 'vue';
-import 'freeday/css'; // tokens + komponen (satu file)
-import 'freeday';     // side-effect: daftarkan semua enhancer window.Freeday*
+import '@cahyo-dimas/freeday/css'; // tokens + komponen (satu file)
+import '@cahyo-dimas/freeday';     // side-effect: daftarkan semua enhancer window.Freeday*
 import App from './App.vue';
 
 createApp(App).mount('#app');
@@ -115,8 +115,8 @@ Event `fdy-*` = `CustomEvent` bubbling → pakai `v-on` native (`@fdy-*`), baca 
 ```vue
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { useFreeday } from 'freeday/vue';
-import type { FdyCascadeChangeDetail, FdyDatepickerChangeDetail } from 'freeday/vue';
+import { useFreeday } from '@cahyo-dimas/freeday/vue';
+import type { FdyCascadeChangeDetail, FdyDatepickerChangeDetail } from '@cahyo-dimas/freeday/vue';
 
 const root = ref<HTMLElement | null>(null);
 useFreeday(root); // hydrate [data-fdy-*] di subtree, tiap mount + update (idempotent)
@@ -135,7 +135,7 @@ const onDate    = (e: Event) => { form.jatuhTempo = (e as CustomEvent<FdyDatepic
 </template>
 ```
 
-**Gotcha:** kalau TypeScript protes soal `import 'freeday/css'`, pastikan `env.d.ts` punya
+**Gotcha:** kalau TypeScript protes soal `import '@cahyo-dimas/freeday/css'`, pastikan `env.d.ts` punya
 `/// <reference types="vite/client" />`. Untuk **Nuxt/SSR**, enhancer client-only — bungkus di
 `onMounted`/`<ClientOnly>`.
 
@@ -147,15 +147,15 @@ Contoh utuh yang jalan: [`examples/vue-faktur/`](../examples/vue-faktur/).
 
 ### 1. Install
 ```bash
-npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0
+npm i @cahyo-dimas/freeday
 ```
 
 ### 2. Import CSS + enhancer **sekali** di entry (`src/main.tsx`)
 ```tsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import 'freeday/css'; // tokens + komponen
-import 'freeday';     // daftarkan semua enhancer window.Freeday*
+import '@cahyo-dimas/freeday/css'; // tokens + komponen
+import '@cahyo-dimas/freeday';     // daftarkan semua enhancer window.Freeday*
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
@@ -173,8 +173,8 @@ React tak punya handler `on:fdy-*` native → karena event **bubbling**, pasang 
 di `root` lewat `useEffect` (bersihkan saat unmount). Baca `event.detail` (bertipe).
 ```tsx
 import { useRef, useEffect } from 'react';
-import { useFreeday } from 'freeday/react';
-import type { FdyCascadeChangeDetail, FdyDatepickerChangeDetail } from 'freeday/react';
+import { useFreeday } from '@cahyo-dimas/freeday/react';
+import type { FdyCascadeChangeDetail, FdyDatepickerChangeDetail } from '@cahyo-dimas/freeday/react';
 
 export function Panel() {
   const root = useRef<HTMLDivElement>(null);
@@ -208,12 +208,12 @@ dari `event.detail` ke state/ref, jangan meng-set balik `value` DOM-nya. `Strict
 dua kali di dev; `useFreeday` idempotent jadi aman.
 
 ### 5. Alternatif: komponen controlled typed (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
-Untuk field yang biasa kamu tulis lewat `<select>`/`<input type="date">` native, `freeday/react`
+Untuk field yang biasa kamu tulis lewat `<select>`/`<input type="date">` native, `@cahyo-dimas/freeday/react`
 juga mengekspor komponen **controlled** typed — `value`/`onChange` biasa, tanpa event bubbling
 manual (parity dengan komponen `v-model` Vue di atas):
 ```tsx
-import { FdyCombo } from 'freeday/react';
-import type { FdyComboOption } from 'freeday/react';
+import { FdyCombo } from '@cahyo-dimas/freeday/react';
+import type { FdyComboOption } from '@cahyo-dimas/freeday/react';
 
 type Status = 'draft' | 'sent' | 'paid';
 const options: ReadonlyArray<FdyComboOption<Status>> = [
@@ -230,7 +230,7 @@ function StatusField({ value, onChange }: { value: Status; onChange: (v: Status)
 (`value`/`onChange` typed, atau `series`/`values` untuk `FdyChart`) — lihat
 [`integrations.md`](integrations.md) dan `examples/react-faktur/src/App.tsx` untuk pola lengkap.
 **Vite jalan tanpa config tambahan** (esbuild men-transpile `.tsx` source-nya langsung); konsumen
-**Next.js** mungkin perlu `transpilePackages: ['freeday']` di `next.config.js`.
+**Next.js** mungkin perlu `transpilePackages: ['@cahyo-dimas/freeday']` di `next.config.js`.
 
 Contoh utuh yang jalan: [`examples/react-faktur/`](../examples/react-faktur/).
 
@@ -326,5 +326,5 @@ Jalankan project → cek dua hal:
    dan `event.detail` masuk ke state-mu.
 
 Kalau visual polos → CSS belum ke-load. Kalau visual OK tapi widget mati → enhancer belum
-ter-*hydrate* (pastikan `import 'freeday'` / `<script freeday.js>` ada, dan adapter/`initAll` dipanggil
+ter-*hydrate* (pastikan `import '@cahyo-dimas/freeday'` / `<script freeday.js>` ada, dan adapter/`initAll` dipanggil
 untuk DOM dinamis).

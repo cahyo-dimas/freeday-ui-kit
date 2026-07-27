@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
 
-// The `freeday` core bundle is a side-effect import (registers window.Freeday*);
+// The `@cahyo-dimas/freeday` core bundle is a side-effect import (registers window.Freeday*);
 // it ships no types, so declare it as an untyped side-effect module.
-declare module 'freeday';
+declare module '@cahyo-dimas/freeday';
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue';

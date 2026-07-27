@@ -344,7 +344,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 2. Re-brand cukup mengubah mapping token **primitive → semantic**, tanpa menyentuh CSS komponen.
 3. Dark mode cukup re-definisi token **semantic**.
 4. `tokens.json` memakai format **DTCG-lite** (subset: `$value` + alias `{...}`; ekstensi non-standar `$dark`/`$compact`). `$type` + pemodelan mode standar DTCG = target v0.2.
-5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info + palet Azure (primary button dark kini **4.89:1**). **Terbuka:** hanya foreground *soft badge* di light (3.0–4.24:1) belum 4.5 — keputusan kebijakan menyusul (§13).
+5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info + palet Azure (primary button dark kini **4.89:1**). Foreground *soft badge* juga **lolos AA 4.5:1** (light & dark) sejak v0.2 — dipertegas ke `--color-*-strong`, soft-bg tetap (§13); terendah `danger` light **5.30:1**. Dijaga regresi oleh `test/contrast.test.mjs` (pasangan `*-strong` di atas `*-soft` di tiap surface).
 6. `docs/index.html` menampilkan seluruh komponen v0.1 dalam kedua tema & kedua density.
 7. Setiap komponen interaktif memenuhi **kontrak aksesibilitas §11.3** (role/aria/keyboard) dan lolos uji keyboard-only + smoke test VoiceOver. Markup di docs adalah versi yang aksesibel (bukan hanya visual).
 

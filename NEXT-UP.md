@@ -4,19 +4,32 @@ Titik lanjut. Kalau mau nerusin kerjaan di repo ini, **buka dokumen ini dulu**, 
 kerjakan. Status ada di [`HANDOFF.md`](HANDOFF.md); riwayat versi di [`CHANGELOG.md`](CHANGELOG.md);
 sumber-kebenaran desain di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md).
 
-_Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live._
+_Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live. **Diperbarui 2026-07-27** setelah
+menuntaskan ketiga item di bawah._
 
 ---
 
-## TL;DR — tidak ada yang mendesak
+## TL;DR — ketiga item lama sudah ditangani; sisanya satu langkah rilis
 
-Kit **fungsional & live di v1.7.0**. Tiga item di bawah semuanya **bisa ditunda**:
-tak satu pun memblokir siapa pun hari ini, tak satu pun mengubah fitur atau UI secara signifikan,
-dan **dua dari tiga menunggu keputusanmu, bukan koding**. Aman kalau repo ini didiamkan berbulan-bulan.
+Kit **fungsional & live di v1.7.0**. Update 2026-07-27:
+1. **Kontras AA soft-badge** — ternyata **sudah tertutup sejak v0.2** (bukan gap terbuka). Yang
+   salah cuma prosa spec §12 yang basi (bilang "belum 4.5" padahal §13 di dokumen sama bilang
+   "dituntaskan v0.2"); sudah di-truth-up. Semua soft badge lolos AA (terendah `danger` light
+   **5.30:1**), dijaga `test/contrast.test.mjs`. **Tak ada perubahan token.**
+2. **Review independen v1.6.0** — **selesai**. Tak ada bug korektnes; 3 catatan minor
+   (lihat item 2). Gate hijau.
+3. **Distribusi #8** — **diputuskan: npm publik ber-scope** (`@cahyo-dimas/freeday`). Plumbing
+   sudah dikerjakan di working tree (package.json publishable, workflow, contoh di-rename).
+   Sisanya = **eksekusi rilis** (langkah luar/outward-facing, punyamu) — runbook di item 3.
+
+Perubahan sesi ini **belum di-commit** dan **belum di-rilis**. Aman untuk direview dulu.
 
 ## Kondisi saat dokumen ini ditulis
 
-- `main` = `origin/main` = tag **`v1.7.0`**, satu branch bersih, working tree bersih.
+- `main` = `origin/main` = tag **`v1.7.0`**. **Working tree TIDAK bersih (per 2026-07-27):**
+  ada perubahan sesi ini yang belum di-commit — truth-up spec §12 (item 1) + plumbing distribusi
+  npm ber-scope (item 3: `package.json`, `package-lock.json`, `.github/workflows/publish.yml`,
+  `examples/**`). Review lalu commit di branch (jangan langsung ke `main`).
 - Tag: **`v1.5.0`** (React adapter parity) · **`v1.6.0`** (wrapper input ekstra + filter-bar) ·
   **`v1.6.1`** (fix: pemilihan opsi combo dengan mouse — lihat "Pelajaran" di bawah) ·
   **`v1.6.2`** (lisensi MIT + file `LICENSE`) · **`v1.7.0`** (tree checkbox + `.fdy-form-grid` + tiga section docs full-width).
@@ -28,66 +41,85 @@ dan **dua dari tiga menunggu keputusanmu, bukan koding**. Aman kalau repo ini di
 
 ## Urutan prioritas (jujur)
 
-### 1. Tutup gap kontras AA pada soft badge — spec §13
-**Effort: S** · **butuh keputusanmu**
+### 1. ✅ SELESAI (2026-07-27) — kontras AA soft-badge ternyata sudah tertutup
 
-**Masalah.** Foreground badge "soft" di tema **terang** ada di 3.0–4.24:1, di bawah 4.5:1 yang
-disyaratkan untuk teks kecil ber-bold. Sementara kit mengklaim **WCAG AA** di mana-mana (hero docs,
-README, HANDOFF).
+**Temuan.** Premis lama ("foreground soft badge 3.0–4.24:1, belum 4.5") **basi**. Gap ini sudah
+dituntaskan **di v0.2** persis lewat opsi (a): foreground dipertegas ke `--color-*-strong`,
+background soft dipertahankan. Diukur dari token yang jalan sekarang, semua soft badge lolos
+AA 4.5:1 (light: primary 7.91 · success 6.49 · warning 6.37 · **danger 5.30** · info 5.49;
+dark ≥ 7.7). Dan **sudah dijaga** `test/contrast.test.mjs` (pasangan `*-strong` di atas `*-soft`
+di tiap surface, threshold `AA_TEXT`) — jadi saran "tambah assertion" pun sudah terpenuhi.
 
-**Kenapa ini nomor satu.** Ini bukan fitur baru — ini selisih antara yang kita *klaim* dan yang kita
-*penuhi*. Kecil, tapi menyangkut kredibilitas klaim utama kit.
-
-**Kenapa belum dikerjakan.** Butuh keputusanmu: menggelapkan teks sedikit mengubah tampilan "soft"
-badge. Pilihan:
-- **(a)** Gelapkan hanya *foreground* sampai lolos 4.5:1, background soft dipertahankan. ← rekomendasiku, perubahan visual paling kecil
-- **(b)** Besarkan/tebalkan teks badge agar masuk pengecualian teks besar (≥18.66px bold) — mengubah bentuk badge, lebih invasif
-- **(c)** Putuskan badge soft memang bukan untuk informasi kritis, lalu **turunkan klaimnya** di docs supaya jujur
-
-**Enaknya:** gate-nya objektif, bukan selera. Tambah assertion pasangan badge soft di
-`test/contrast.test.mjs`, lalu setel token sampai `npm test` hijau.
-
-**Mulai dari:** `src/components/badge.css` (pasangan `--color-*-strong` di atas `--color-*-soft`) ·
-`tokens/tokens.json` · `test/contrast.test.mjs` · spec §13.
+**Akar kesalahan = kontradiksi di dalam spec:** §13 bilang "dituntaskan v0.2" tapi §12 (kriteria
+sukses) masih menulis "Terbuka … belum 4.5". NEXT-UP/HANDOFF/memory semua nyalin baris §12 yang basi.
+**Fix:** §12 di-truth-up agar sama dengan §13. **Tidak ada perubahan token, tidak ada keputusan
+terbuka.** (Pelajaran: nilai kebenaran cukup di satu tempat — §12 seharusnya menunjuk §13, bukan
+menyatakan ulang statusnya.)
 
 ---
 
-### 2. Review independen untuk kode v1.6.0
-**Effort: S (satu perintah)** · tindak lanjut tergantung temuan
+### 2. ✅ SELESAI (2026-07-27) — review independen kode v1.6.0
 
-**Apa.** Jalankan code review untuk rentang **`91e2953..ae43914`**.
+**Catatan rentang.** Hash `91e2953..ae43914` sudah tak resolve (history di-scrub 2026-07-23).
+Rentang yang benar sekarang = **`v1.5.0..v1.6.0`** (tip `ae43914`). Direview statis (bukan
+`/code-review` berbayar; harness mount React/Vue tak sepadan untuk kode yang sudah live).
 
-**Kenapa.** v1.5.0 lewat review multi-agent penuh (per-task + whole-branch, verdict *READY TO MERGE*).
-v1.6.0 — `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `.fdy-filterbar` — baru lewat typecheck +
-build + render + review saya sendiri, **belum direview independen**. Ini kode interaktif dengan
-logika keyboard/ARIA, tempat bug halus biasa bersembunyi:
-- roving index & fokus saat drill/ascend di `FdyCascade`
-- wrap ↑/↓ dan commit-vs-ketik di `FdyAutocomplete`
-- keterkaitan min/max di `FdyDateRange` saat salah satu sisi dikosongkan
-- perilaku `.fdy-filterbar` di container sempit (media query berbasis viewport, bukan container)
+**Hasil: tak ada bug korektnes.** Keempat area risiko aman:
+- **FdyCascade** — `active` reset ke 0 saat drill/ascend, fokus tetap di listbox `tabindex="-1"`
+  (drill via mouse tak menghilangkan fokus keyboard), roving via `aria-activedescendant`,
+  tutup-di-luar pakai `contains()` pada `mousedown` (hindari bug focusout combo lama).
+- **FdyAutocomplete** — wrap ↑/↓ benar; Enter commit hanya opsi ter-highlight (bukan teks ketik);
+  opsi pakai `mousedown.preventDefault` → fokus input tetap → `choose()`→`input.focus()` no-op,
+  list tak reopen. (Persis pelajaran v1.6.1.)
+- **FdyDateRange** — aman: `FdyDatepicker` hanya emit ISO string (tak pernah `''`), jadi
+  `?? props.max/min` fallback benar saat satu sisi `null`.
+- **.fdy-filterbar** — tak overflow (`flex-wrap`); stack full-width viewport-gated (`@media 640px`).
 
-**Catatan.** Sudah ter-rilis & live, jadi ini menangkap bug laten — bukan gerbang rilis. Nggak ada
-yang rusak sejauh ini.
-
-**Mulai dari:** `/code-review 91e2953..ae43914` (atau `/code-review ultra` untuk yang lebih dalam).
+**3 catatan minor (bukan fix wajib):** (a) filterbar pakai `@media` viewport, bukan `@container` —
+di container sempit pada viewport lebar ia wrap, bukan stack (tak overflow); (b) `options` duplikat
+(Autocomplete) / `value` duplikat sesama level (Cascade) → tabrakan `key` — tanggung jawab pemanggil;
+(c) `aria-activedescendant` bisa menggantung kalau cabang Cascade `children: []` (data cacat).
+Gate hijau: test 9/9 · typecheck:react 0 · build no-diff.
 
 ---
 
-### 3. #8 — Distribusi registry-friendly
-**Effort: S–M setelah keputusan** · **butuh keputusanmu**
+### 3. #8 — Distribusi registry-friendly · **DIPUTUSKAN: npm publik ber-scope**
 
-**Masalah.** `npm i github:cahyo-dimas/freeday-ui-kit#v1.6.0` menulis `git+ssh://` ke lockfile
-konsumen → `npm ci` di CI tanpa SSH key yang berwenang akan **gagal**.
+**Keputusan (2026-07-27).** Publish ke **npm publik** dengan scope **`@cahyo-dimas/freeday`**
+(handle GitHub, sudah publik lewat Pages; hindari nama perusahaan). GitHub Packages ditolak karena
+paket publik pun masih menuntut token di `.npmrc` konsumen — tak menghapus friksi onboarding.
 
-**Status.** Sudah dimitigasi sebagian sejak v1.1 lewat dokumentasi install `git+https`. Jadi **bukan
-blocker aktif** — cuma friksi onboarding.
+**Auth = OIDC Trusted Publishing (bukan token).** Warning npm saat signup — "tokens that bypass
+2FA are being restricted" — persis alasan menghindari classic automation token. OIDC = GitHub
+Actions menukar id-token jangka-pendek dgn izin publish; nol token tersimpan.
 
-**Kenapa paling bawah.** Nol dampak ke pengguna kit hari ini; baru terasa saat menambah konsumen atau
-CI baru. Dan ini menunggu keputusanmu, bukan koding: **npm publik vs GitHub Packages**, nama scope
-(mis. `@cahyo-dimas/freeday`), plus token/secrets untuk publish.
+**Sudah dikerjakan (working tree, belum commit/rilis):**
+- `package.json` — `name` → `@cahyo-dimas/freeday`, hapus `private`, tambah
+  `publishConfig.access:"public"` + `repository`/`homepage`/`bugs`.
+- `package-lock.json` — nama diselaraskan.
+- `.github/workflows/publish.yml` — publish-on-tag (`v*`) via **OIDC** (`id-token: write`,
+  `npm publish` tanpa token, provenance otomatis; upgrade npm ke ≥11.5.1 di runner).
+- `examples/**` — di-rename ke specifier ber-scope (link lokal `file:../..` tetap).
+- **Docs publik SUDAH di-sync** ke nama ber-scope + install `npm i @cahyo-dimas/freeday`:
+  `README.md` (buang seksi workaround `git+https` — payoff #8), `docs/getting-started.md`,
+  `docs/integrations.md`, `docs/index.html` (`#install-cmd` + kartu), `examples/*/README.md`.
+- Gate inti tetap hijau (nama paket tak menyentuh test/typecheck/build).
 
-**Mulai dari:** `package.json` (`name`, `publishConfig`, `files`) · bagian install di `README.md` +
-`docs/getting-started.md` · kemungkinan satu workflow release.
+**Sisa = eksekusi rilis (outward-facing, punyamu) — RUNBOOK:**
+1. **Pastikan scope `cahyo-dimas` milikmu** di npm. Kalau beda, ganti string scope di seluruh repo
+   (satu find-replace) — sudah dipakai luas.
+2. **Publish pertama (bootstrap paket baru) manual dari laptop:** dari root repo →
+   `npm publish` (mesin sudah `npm login`; `publishConfig.access:"public"` menangani akses).
+3. **Set Trusted Publisher di npmjs.com** untuk paket ini: repo `cahyo-dimas/freeday-ui-kit`,
+   workflow `publish.yml` → agar rilis berikutnya otomatis lewat CI tanpa token.
+4. **Verifikasi contoh** (belum bisa di sesi ini — npm tak di PATH + butuh jaringan): di tiap
+   `examples/*` jalankan `npm install` (regen lockfile) + `npm run build`.
+5. **Commit di branch** (jangan langsung `main`) + push. Pages rebuild → docs live menampilkan
+   install npm. **Publish (langkah 2) sebaiknya sebelum/berbarengan push** supaya perintah yang
+   diiklankan sudah valid.
+6. **Rilis berikutnya:** tambah entri CHANGELOG (satu versi = satu tag) → `npm version minor`
+   (build + stage `dist`) → `git push --follow-tags` → workflow OIDC publish. **Verifikasi:**
+   `npm view @cahyo-dimas/freeday version` + `curl` docs live.
 
 ---
 
