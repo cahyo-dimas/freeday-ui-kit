@@ -1,24 +1,24 @@
-# Freeday — Peta Integrasi Library
+# Freeday — Library Integration Map
 
-Freeday itu **fondasi tanpa dependency**: token + markup aksesibel + enhancer vanilla.
-Dokumen ini memetakan tiap area ke library ekosistem yang biasa kamu pasang di project
-nyata, **kapan** cukup pakai bawaan Freeday, dan **cara menjembataninya**. Tujuannya: pas
-mulai project baru, buka satu file ini — tak perlu cari-cari lagi.
+Freeday is a **dependency-free foundation**: tokens + accessible markup + vanilla enhancers. This
+document maps each area to the ecosystem library you'd normally install in a real project, **when**
+Freeday's built-ins are enough, and **how to bridge**. The goal: when you start a new project, open
+this one file — no more hunting around.
 
-> Aturan emas: **Freeday pegang tampilan (token + markup + a11y), library pegang mesin
-> (logika/engine berat).** Jangan duplikat. Sambungkan lewat 3 mekanisme di bawah.
+> Golden rule: **Freeday owns the look (tokens + markup + a11y); the library owns the engine
+> (heavy logic).** Don't duplicate. Connect through the 3 mechanisms below.
 
 ---
 
-## 3 mekanisme jembatan
+## 3 bridging mechanisms
 
-Semua integrasi turun ke salah satu dari ini:
+Every integration comes down to one of these:
 
-1. **Event `fdy-*`** — dengarkan output enhancer, teruskan ke state framework/library.
-   Semua event *bubbling* `CustomEvent`, datanya di `event.detail`.
-2. **Init hook `window.Freeday<X>.initAll(el)`** — panggil ulang setelah DOM dirender
-   dinamis (Vue `onMounted`, React `useEffect`, Blazor `OnAfterRenderAsync`). Idempotent.
-3. **Token warna** — samakan warna library dengan tema aktif:
+1. **`fdy-*` events** — listen to enhancer output, forward it to framework/library state.
+   All events are bubbling `CustomEvent`s; the data is in `event.detail`.
+2. **Init hook `window.Freeday<X>.initAll(el)`** — call it again after DOM is rendered
+   dynamically (Vue `onMounted`, React `useEffect`, Blazor `OnAfterRenderAsync`). Idempotent.
+3. **Color tokens** — match a library's colors to the active theme:
    ```js
    // Read a live semantic token so a 3rd-party lib matches the current theme
    const token = (name) =>
@@ -26,9 +26,9 @@ Semua integrasi turun ke salah satu dari ini:
    const primary = token('--color-primary'); // e.g. Chart.js borderColor
    ```
 
-### Kontrak event & API (referensi cepat)
+### Event & API contract (quick reference)
 
-| Enhancer | Event `detail` | API global |
+| Enhancer | Event `detail` | Global API |
 |---|---|---|
 | `freeday-select` | `fdy-change` `{value}` | `FreedayCombo` |
 | `freeday-autocomplete` | `fdy-autocomplete-select` `{value}` | `FreedayAutocomplete` |
@@ -50,80 +50,80 @@ Semua integrasi turun ke salah satu dari ini:
 
 ---
 
-## Peta per area
+## Map by area
 
-Legenda kolom **Cukup Freeday?**: ✅ pakai bawaan · ➕ bawaan + library · 🔌 tidak ada di
-Freeday, murni library.
+Legend for **Freeday enough?**: ✅ use the built-in · ➕ built-in + library · 🔌 not in Freeday,
+library only.
 
-### Form, validasi & input
+### Forms, validation & input
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Validasi | ✅ `freeday-form` | Aturan HTML native (required, email, pattern, min/max, match) | Schema kompleks, transform, dipakai server juga: **Zod** / **Yup** / **Valibot** · Vue: **VeeValidate** · React: **React Hook Form** · Blazor: **DataAnnotations** / **FluentValidation** | Jalankan schema di data layer → `input.setCustomValidity(msg)` (ditangkap `freeday-form`), atau toggle `aria-invalid` + isi `[data-fdy-error]`. Lihat contoh #1. |
-| Mask input | ✅ `freeday-mask` | Pola statis (kartu, tanggal, telepon) | Mata uang/locale, mask dinamis: **imask** · **Maska** (Vue) · **react-imask** | Biarkan `.fdy-input` untuk gaya, pasang engine mask ke elemen yang sama. Contoh #2. |
-| Password reveal | ✅ `freeday-mask` (`[data-fdy-password]`) | Semua kasus umum | Meter kekuatan: **zxcvbn** | Dengarkan `input`, render skor ke `.fdy-help`. |
-| Select / dropdown | ✅ `freeday-select` (APG) | Opsi statis, single-select | Async, tag, virtualized ribuan opsi: **Tom Select** · **Choices.js** · React: **react-select** · Vue/Blazor: **PrimeVue/PrimeReact**, **MudBlazor** | Untuk remote search besar, pakai **`freeday-cfl`** (field + dialog, `fetchPage`). Contoh #6. |
-| Autocomplete | ✅ `freeday-autocomplete` | Filter klien | Highlight, remote debounce berat: react-select/Tom Select | Dengarkan `fdy-autocomplete-select`. |
-| Cascade / tree select | ✅ `freeday-cascade` | Hierarki drill-down | Tree checkbox multi-level, lazy load: **PrimeVue TreeSelect**, **MudBlazor TreeView** | `fdy-cascade-change` `{value,path}`. |
-| File upload | ➕ `freeday-upload` (UI dropzone) | Pilih + tampil state per-berkas | Chunked/resumable, crop, progress nyata: **Uppy** · **FilePond** · **tus** (resumable) | Freeday = UI, Uppy = engine unggah. Dengarkan `fdy-upload-add` → serahkan file ke Uppy. |
-| Rich text editor | 🔌 | — | **TipTap** · **Quill** · **Lexical** · Blazor: **Radzen HtmlEditor** | Bungkus editor, beri gaya via token `--color-*`. |
+| Validation | ✅ `freeday-form` | Native HTML rules (required, email, pattern, min/max, match) | Complex schemas, transforms, shared with the server: **Zod** / **Yup** / **Valibot** · Vue: **VeeValidate** · React: **React Hook Form** · Blazor: **DataAnnotations** / **FluentValidation** | Run the schema in your data layer → `input.setCustomValidity(msg)` (picked up by `freeday-form`), or toggle `aria-invalid` + fill `[data-fdy-error]`. See example #1. |
+| Input mask | ✅ `freeday-mask` | Static patterns (card, date, phone) | Currency/locale, dynamic masks: **imask** · **Maska** (Vue) · **react-imask** | Keep `.fdy-input` for styling, attach the mask engine to the same element. Example #2. |
+| Password reveal | ✅ `freeday-mask` (`[data-fdy-password]`) | All common cases | Strength meter: **zxcvbn** | Listen for `input`, render the score into `.fdy-help`. |
+| Select / dropdown | ✅ `freeday-select` (APG) | Static options, single-select | Async, tags, thousands of virtualized options: **Tom Select** · **Choices.js** · React: **react-select** · Vue/Blazor: **PrimeVue/PrimeReact**, **MudBlazor** | For large remote search, use **`freeday-cfl`** (field + dialog, `fetchPage`). Example #6. |
+| Autocomplete | ✅ `freeday-autocomplete` | Client-side filtering | Highlighting, heavy remote debounce: react-select/Tom Select | Listen for `fdy-autocomplete-select`. |
+| Cascade / tree select | ✅ `freeday-cascade` | Drill-down hierarchy | Multi-level checkbox tree, lazy loading: **PrimeVue TreeSelect**, **MudBlazor TreeView** | `fdy-cascade-change` `{value,path}`. |
+| File upload | ➕ `freeday-upload` (dropzone UI) | Pick + show per-file state | Chunked/resumable, cropping, real progress: **Uppy** · **FilePond** · **tus** (resumable) | Freeday = UI, Uppy = upload engine. Listen for `fdy-upload-add` → hand the file to Uppy. |
+| Rich text editor | 🔌 | — | **TipTap** · **Quill** · **Lexical** · Blazor: **Radzen HtmlEditor** | Wrap the editor, style it via `--color-*` tokens. |
 
-### Data & tabel
+### Data & tables
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Tabel | ✅ `freeday-table` | Sort/filter/paginasi klien, data sedang | Server-side, virtualisasi, grouping, pin kolom: **TanStack Table** (headless, Vue+React) · **AG Grid** · **MudBlazor MudDataGrid** · **PrimeVue DataTable** | TanStack headless → render pakai kelas `.fdy-table*` (gaya tetap Freeday). |
-| Data fetching / cache | 🔌 | — | **TanStack Query** · **SWR** · Vue: **Pinia** | `freeday-cfl` `fetchPage` callback cocok dipadu Query. |
-| Export Excel/PDF | 🔌 | — | **SheetJS (xlsx)** · **jsPDF** + **jspdf-autotable** | Ambil data dari state, bukan dari DOM. |
+| Table | ✅ `freeday-table` | Client-side sort/filter/pagination, moderate data | Server-side, virtualization, grouping, pinned columns: **TanStack Table** (headless, Vue+React) · **AG Grid** · **MudBlazor MudDataGrid** · **PrimeVue DataTable** | TanStack is headless → render with `.fdy-table*` classes (styling stays Freeday). |
+| Data fetching / cache | 🔌 | — | **TanStack Query** · **SWR** · Vue: **Pinia** | `freeday-cfl`'s `fetchPage` callback pairs well with Query. |
+| Excel/PDF export | 🔌 | — | **SheetJS (xlsx)** · **jsPDF** + **jspdf-autotable** | Take data from state, not from the DOM. |
 | Virtual scroll | 🔌 | — | **TanStack Virtual** · Vue: **vue-virtual-scroller** | — |
 
-### Chart & visualisasi
+### Charts & visualization
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Chart | ➕ `freeday-chart` | Sparkline/bar/donut ringkas di card & dashboard | Interaktif (zoom, tooltip hover, multi-series, real-time, banyak tipe): **Chart.js** · **ApexCharts** · **ECharts** · React: **Recharts** / **visx** · Vue: **vue-chartjs** · Blazor: **ApexCharts.Blazor**, **MudBlazor Chart** | Mount library ke container; ambil warna dari token biar ikut tema. Contoh #3. |
-| Peta | 🔌 | — | **Leaflet** · **MapLibre** | Beri gaya kontrol pakai token. |
+| Chart | ➕ `freeday-chart` | Compact sparkline/bar/donut in cards & dashboards | Interactive (zoom, hover tooltips, multi-series, real-time, many types): **Chart.js** · **ApexCharts** · **ECharts** · React: **Recharts** / **visx** · Vue: **vue-chartjs** · Blazor: **ApexCharts.Blazor**, **MudBlazor Chart** | Mount the library into a container; pull colors from tokens so it follows the theme. Example #3. |
+| Maps | 🔌 | — | **Leaflet** · **MapLibre** | Style the controls with tokens. |
 | Diagram/flow | 🔌 | — | **Mermaid** · **React Flow** | — |
 
-### Tanggal, angka & i18n
+### Dates, numbers & i18n
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Pilih tanggal/jam | ✅ `freeday-datepicker`/`timepicker`/`datetime` | Kalender & list waktu standar | Range presets, multi-bulan, locale rumit: **flatpickr** · React: **react-day-picker** | Freeday = UI pilih; parsing/format → date-fns. Contoh #4. |
-| Math/format tanggal | 🔌 (pakai `Intl` native dulu) | Format sederhana → `Intl.DateTimeFormat` | Zona waktu, arithmetic, parsing: **date-fns** (+ `date-fns-tz`) · **Luxon** · **Day.js** | `format(parseISO(detail.value), 'dd MMM yyyy', { locale: id })`. |
-| Format angka/uang | 🔌 (pakai `Intl` native dulu) | `Intl.NumberFormat('id-ID', {style:'currency',currency:'IDR'})` | Kasus khusus: **dinero.js** (uang presisi) | Kombinasikan dengan `freeday-mask` untuk input. |
-| i18n teks | 🔌 | — | **i18next** · Vue: **vue-i18n** · Blazor: **IStringLocalizer** | — |
+| Date/time picking | ✅ `freeday-datepicker`/`timepicker`/`datetime` | Standard calendar & time list | Range presets, multi-month, complex locales: **flatpickr** · React: **react-day-picker** | Freeday = the picking UI; parsing/formatting → date-fns. Example #4. |
+| Date math/formatting | 🔌 (reach for native `Intl` first) | Simple formatting → `Intl.DateTimeFormat` | Time zones, arithmetic, parsing: **date-fns** (+ `date-fns-tz`) · **Luxon** · **Day.js** | `format(parseISO(detail.value), 'dd MMM yyyy', { locale: enUS })`. |
+| Number/currency formatting | 🔌 (reach for native `Intl` first) | `Intl.NumberFormat('en-US', {style:'currency',currency:'USD'})` | Special cases: **dinero.js** (precise money) | Combine with `freeday-mask` for input. |
+| Text i18n | 🔌 | — | **i18next** · Vue: **vue-i18n** · Blazor: **IStringLocalizer** | — |
 
-### Overlay, posisi & motion
+### Overlays, positioning & motion
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Modal / dialog | ✅ modal (native `<dialog>`) | Fokus-trap + Esc sudah gratis | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday pakai native — jarang perlu ganti. |
-| Drawer | ✅ `freeday-drawer` | Overlay kiri/kanan | — | — |
-| Tooltip / popover | ➕ tooltip (CSS) | Tooltip statis sederhana | Posisi sadar-collision (flip/shift), popover interaktif: **Floating UI** (`@floating-ui/dom`) | Pakai Floating UI untuk hitung posisi, gaya tetap token. Contoh #5. |
-| Toast | ✅ `freeday-toast` | Notifikasi umum | Antrian/stack canggih: **Sonner** · **react-hot-toast** · **vue-toastification** | `Freeday.toast({variant,title,message})`. |
-| Animasi | ✅ (CSS + hormati `prefers-reduced-motion`) | Transisi UI standar | Orkestrasi kompleks: **Motion One** · React: **Framer Motion** · **GSAP** | Selalu cek reduced-motion. |
-| Carousel | ✅ `freeday-carousel` | Scroll-snap + panah + dots | Loop tak terbatas, parallax: **Embla** · **Swiper** | — |
+| Modal / dialog | ✅ modal (native `<dialog>`) | Focus trap + Esc come for free | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday uses native — rarely worth replacing. |
+| Drawer | ✅ `freeday-drawer` | Left/right overlay | — | — |
+| Tooltip / popover | ➕ tooltip (CSS) | Simple static tooltips | Collision-aware positioning (flip/shift), interactive popovers: **Floating UI** (`@floating-ui/dom`) | Use Floating UI to compute position; styling stays token-based. Example #5. |
+| Toast | ✅ `freeday-toast` | Common notifications | Advanced queue/stack: **Sonner** · **react-hot-toast** · **vue-toastification** | `Freeday.toast({variant,title,message})`. |
+| Animation | ✅ (CSS + respect `prefers-reduced-motion`) | Standard UI transitions | Complex orchestration: **Motion One** · React: **Framer Motion** · **GSAP** | Always check reduced-motion. |
+| Carousel | ✅ `freeday-carousel` | Scroll-snap + arrows + dots | Infinite loop, parallax: **Embla** · **Swiper** | — |
 
-### Navigasi, ikon & interaksi
+### Navigation, icons & interaction
 
-| Area | Cukup Freeday? | Kapan cukup bawaan | Kalau butuh lebih | Jembatan |
+| Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Ikon | ➕ (SVG inline) | Ikon bawaan set kecil | Set lengkap: **Lucide** (paling cocok — Freeday pakai gaya stroke ini), **Heroicons**, **Tabler**, **Phosphor** | Tempel SVG ke slot: `[data-fdy-icon]`, `.fdy-input-group__addon--icon`, `.fdy-combo__icon`. |
-| Drag & drop / sortable | 🔌 | — | **SortableJS** (vanilla) · React: **dnd-kit** · Vue: **vuedraggable** | Susun pakai markup Freeday, DnD dari library. |
-| Command palette | 🔌 | — | **cmdk** (React) · **kbar** | Gaya pakai token + `.fdy-kbd`. |
-| Routing | 🔌 | — | Vue Router · React Router · Blazor Router | Setelah route change → `window.FreedayTable.initAll()` dsb. |
+| Icons | ➕ (inline SVG) | A small built-in set | A full set: **Lucide** (best fit — Freeday uses this stroke style), **Heroicons**, **Tabler**, **Phosphor** | Drop the SVG into a slot: `[data-fdy-icon]`, `.fdy-input-group__addon--icon`, `.fdy-combo__icon`. |
+| Drag & drop / sortable | 🔌 | — | **SortableJS** (vanilla) · React: **dnd-kit** · Vue: **vuedraggable** | Lay it out with Freeday markup, DnD from the library. |
+| Command palette | 🔌 | — | **cmdk** (React) · **kbar** | Style with tokens + `.fdy-kbd`. |
+| Routing | 🔌 | — | Vue Router · React Router · Blazor Router | After a route change → `window.FreedayTable.initAll()`, etc. |
 
 ---
 
-## Binding per framework
+## Per-framework binding
 
-> **Jalur utama (disarankan):** pakai adapter siap pakai — composable `useFreeday` (Vue), hook
-> `useFreeday` (React), atau `window.FreedayBlazor` (Blazor) — yang membungkus hydrate + jembatan
-> event. Langkah lengkap per stack ada di **[`getting-started.md`](getting-started.md)**. Pola
-> `initAll()` mentah di bawah adalah mekanisme dasarnya (dan fallback bila kamu tak pakai adapter).
+> **Recommended path:** use the ready-made adapters — the `useFreeday` composable (Vue), the
+> `useFreeday` hook (React), or `window.FreedayBlazor` (Blazor) — which wrap hydration + event
+> bridging. Full steps per stack are in **[`getting-started.md`](getting-started.md)**. The raw
+> `initAll()` pattern below is the underlying mechanism (and a fallback if you don't use an adapter).
 
-Enhancer auto-init sekali saat `DOMContentLoaded`. Untuk DOM yang dirender dinamis:
+Enhancers auto-init once on `DOMContentLoaded`. For dynamically rendered DOM:
 
 **Vue 3**
 ```vue
@@ -146,20 +146,20 @@ function Panel(): JSX.Element {
   return <div ref={ref} data-fdy-cascade />;
 }
 ```
-> **Alternatif controlled (parity dengan `v-model` Vue):** `@cahyo-dimas/freeday/react` juga mengekspor
-> komponen typed `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` /
-> `FdyCfl` / `FdyChart` — `value`/`onChange` biasa,
-> tanpa `data-fdy-*` + event listener manual:
+> **Controlled alternative (parity with Vue's `v-model`):** `@cahyo-dimas/freeday/react` also exports
+> the typed components `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` /
+> `FdyCascade` / `FdyCfl` / `FdyChart` — plain `value`/`onChange`, no `data-fdy-*` + manual event
+> listener:
 > ```tsx
 > import { FdyCombo } from '@cahyo-dimas/freeday/react';
 > <FdyCombo value={status} options={statusOptions} onChange={setStatus} ariaLabelledby="lbl-status" />
 > ```
-> `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` pakai `value`/`onChange` yang sama;
-> `FdyDateRange` pakai `{start, end}`; `FdyChart` pakai `series`/`values`. Set yang sama tersedia
-> di `@cahyo-dimas/freeday/vue` lewat `v-model` — kedua adapter simetris penuh.
-> Lihat [`getting-started.md` §React](getting-started.md#react-vite) dan
-> `examples/react-faktur/src/App.tsx`. **Vite** transpile `.tsx` source-nya tanpa config tambahan;
-> **Next.js** mungkin butuh `transpilePackages: ['@cahyo-dimas/freeday']`.
+> `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` use the same `value`/`onChange`;
+> `FdyDateRange` uses `{start, end}`; `FdyChart` uses `series`/`values`. The same set is available
+> in `@cahyo-dimas/freeday/vue` via `v-model` — both adapters are fully symmetric. See
+> [`getting-started.md` §React](getting-started.md#react-vite) and
+> `examples/react-faktur/src/App.tsx`. **Vite** transpiles the `.tsx` source with no extra config;
+> **Next.js** may need `transpilePackages: ['@cahyo-dimas/freeday']`.
 
 **Blazor**
 ```csharp
@@ -177,22 +177,22 @@ document.addEventListener('fdy-form-invalid', (e) =>
   dotNetRef.invokeMethodAsync('OnFormInvalid', e.detail.invalid.length));
 ```
 
-> **Alternatif:** re-implement komponen sebagai native framework (composable Vue / hook
-> React / komponen Blazor), tapi **pertahankan markup + kontrak ARIA + kelas `fdy-*`**.
-> Enhancer = implementasi rujukan, bukan keharusan.
+> **Alternative:** re-implement a component as a native framework one (Vue composable / React hook /
+> Blazor component), but **keep the markup + ARIA contract + `fdy-*` classes**. The enhancer is the
+> reference implementation, not a requirement.
 
 ---
 
-## Contoh jembatan
+## Bridging examples
 
 ### 1. Zod / Yup → `freeday-form`
-Library pegang logika, Freeday pegang error UI aksesibel.
+The library owns the logic; Freeday owns the accessible error UI.
 ```js
 import { z } from 'zod';
 
 const schema = z.object({
-  email: z.string().email('Format email tidak valid.'),
-  age: z.coerce.number().min(17, 'Minimal 17 tahun.'),
+  email: z.string().email('Invalid email format.'),
+  age: z.coerce.number().min(17, 'Must be at least 17.'),
 });
 
 const form = document.querySelector('[data-fdy-validate]');
@@ -212,21 +212,21 @@ form.addEventListener('submit', (e) => {
 // Clear the custom error as the user edits, so native + schema rules coexist.
 form.addEventListener('input', (e) => e.target.setCustomValidity?.(''));
 ```
-> Yup setara: `schema.validate(data, { abortEarly: false })` → tangkap `err.inner`
-> (`{ path, message }`) di `catch`, lalu `setCustomValidity` per field.
+> Yup equivalent: `schema.validate(data, { abortEarly: false })` → catch `err.inner`
+> (`{ path, message }`) in `catch`, then `setCustomValidity` per field.
 
-### 2. imask → `.fdy-input` (mask lanjutan)
-Pakai kalau butuh mata uang/locale yang di luar `data-fdy-mask`.
+### 2. imask → `.fdy-input` (advanced masking)
+Use this when you need currency/locale beyond `data-fdy-mask`.
 ```js
 import IMask from 'imask';
 // Freeday keeps the input styling; imask owns the formatting engine.
 IMask(document.querySelector('#amount'), {
-  mask: 'Rp num',
-  blocks: { num: { mask: Number, thousandsSeparator: '.', scale: 0 } },
+  mask: '$ num',
+  blocks: { num: { mask: Number, thousandsSeparator: ',', scale: 0 } },
 });
 ```
 
-### 3. Chart.js dengan warna token
+### 3. Chart.js with token colors
 ```js
 import { Chart } from 'chart.js/auto';
 const token = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -245,15 +245,15 @@ new Chart(document.querySelector('#sales'), {
 ### 4. `freeday-datepicker` + date-fns
 ```js
 import { parseISO, format } from 'date-fns';
-import { id } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 document.querySelector('[data-fdy-datepicker]')
   .addEventListener('fdy-datepicker-change', (e) => {
     // e.detail.value is an ISO string; date-fns handles locale formatting.
-    label.textContent = format(parseISO(e.detail.value), 'EEEE, dd MMMM yyyy', { locale: id });
+    label.textContent = format(parseISO(e.detail.value), 'EEEE, dd MMMM yyyy', { locale: enUS });
   });
 ```
 
-### 5. Floating UI untuk posisi tooltip/popover
+### 5. Floating UI for tooltip/popover positioning
 ```js
 import { computePosition, offset, flip, shift } from '@floating-ui/dom';
 // Freeday styles the .fdy-tooltip; Floating UI keeps it inside the viewport.
@@ -261,8 +261,8 @@ computePosition(trigger, tip, { placement: 'top', middleware: [offset(8), flip()
   .then(({ x, y }) => Object.assign(tip.style, { left: `${x}px`, top: `${y}px` }));
 ```
 
-### 6. Select async besar → `freeday-cfl`
-Untuk ribuan baris dari server, jangan paksa `<select>` — pakai choose-from-list:
+### 6. Large async select → `freeday-cfl`
+For thousands of server-side rows, don't force a `<select>` — use choose-from-list:
 ```js
 window.FreedayCfl.init(el, {
   // Server owns paging/search; Freeday owns the accessible dialog UI.
@@ -273,13 +273,14 @@ el.addEventListener('fdy-cfl-select', (e) => store.setCustomer(e.detail.row));
 
 ---
 
-## Catatan SAP B1
+## SAP B1 note
 
-Freeday murni untuk **web** (companion app, web addon .NET, portal). Addon **UI API
-(SAPBouiCOM)** itu WinForms/COM — beda dunia, Freeday tak berlaku di sana. Untuk addon
-berbasis web (Service Layer + .NET), Freeday + enhancer via JS interop jalan normal.
+Freeday is purely for the **web** (companion apps, .NET web add-ons, portals). A **UI API
+(SAPBouiCOM)** add-on is WinForms/COM — a different world where Freeday doesn't apply. For
+web-based add-ons (Service Layer + .NET), Freeday + enhancers over JS interop work normally.
 
 ---
 
-*Rekomendasi library = yang lazim & stabil per 2026; pilih sesuai lisensi & ukuran bundle
-project. Freeday tidak mengikat satu pun — semua opsional dan bisa diganti.*
+*Library recommendations reflect what's common and stable as of 2026; choose based on your
+project's license and bundle-size budget. Freeday locks you into none of them — everything is
+optional and replaceable.*

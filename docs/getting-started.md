@@ -1,87 +1,87 @@
 # Freeday — Getting Started (per stack)
 
-Panduan adopsi Freeday di **project barumu**, langkah demi langkah. Pilih stack-mu:
+A step-by-step guide to adopting Freeday in **your new project**. Pick your stack:
 
-**[HTML statis](#html-statis-tanpa-build)** · **[Vue 3 (Vite)](#vue-3-vite)** · **[React (Vite)](#react-vite)** · **[Blazor (WASM)](#blazor-wasm)**
+**[Static HTML](#static-html-no-build)** · **[Vue 3 (Vite)](#vue-3-vite)** · **[React (Vite)](#react-vite)** · **[Blazor (WASM)](#blazor-wasm)**
 
-> **Referensi komponen** (markup + ARIA persis tiap komponen): docs live →
-> <https://cahyo-dimas.github.io/freeday-ui-kit/> (buka section komponen, tiru markup-nya).
-> **Peta library ekosistem & cara jembatan:** [`integrations.md`](integrations.md).
+> **Component reference** (each component's exact markup + ARIA): live docs →
+> <https://cahyo-dimas.github.io/freeday-ui-kit/> (open a component section, copy its markup).
+> **Ecosystem library map & how to bridge:** [`integrations.md`](integrations.md).
 
 ---
 
-## Konsep inti (baca sekali, berlaku semua stack)
+## Core concepts (read once, applies to every stack)
 
-Freeday = **CSS** (token semantic + kelas `fdy-*`) + **enhancer JS 0-dependency** (opsional).
+Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enhancers** (optional).
 
-1. **Statis vs interaktif.** Komponen statis (button, card, badge, input biasa, layout) cukup
-   **kelas `fdy-*`** — tanpa JS. Komponen interaktif (select/combo, cascade, date/time picker,
-   table, dropzone, form-validation, input-mask, chip) butuh **enhancer JS**.
-2. **Enhancer = sumber kebenaran.** Kamu tak me-reimplement komponen; enhancer memegang DOM
-   widget-nya. Kamu **dengarkan event `fdy-*`** (semua *bubbling* `CustomEvent`, datanya di
-   `event.detail`) → simpan ke state framework-mu. Tabel kontrak event/API:
-   [`integrations.md` §Kontrak event & API](integrations.md).
-3. **Hydrate untuk DOM dinamis.** Enhancer auto-init sekali saat `DOMContentLoaded`. DOM yang
-   dirender SPA **setelah** itu harus di-hydrate ulang: `window.Freeday<X>.initAll(el)`
-   (idempotent, aman diulang). Adapter tiap framework membungkus ini — kamu tak perlu memanggilnya manual.
-4. **Tema via `data-*` di `<html>`.** `data-theme="light|dark"` (semua token semantic berganti)
-   + `data-density="comfortable|compact"` (tinggi kontrol, untuk layar padat data). Ganti runtime:
+1. **Static vs interactive.** Static components (button, card, badge, plain input, layout) need
+   only the **`fdy-*` classes** — no JS. Interactive components (select/combo, cascade, date/time
+   picker, table, dropzone, form validation, input mask, chip) need the **JS enhancers**.
+2. **The enhancer is the source of truth.** You don't re-implement components; the enhancer owns
+   the widget's DOM. You **listen for `fdy-*` events** (all bubbling `CustomEvent`s, data in
+   `event.detail`) → store them in your framework state. Event/API contract table:
+   [`integrations.md` §Event & API contract](integrations.md).
+3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
+   **after** that must be re-hydrated: `window.Freeday<X>.initAll(el)` (idempotent, safe to repeat).
+   Each framework's adapter wraps this — you don't call it manually.
+4. **Theme via `data-*` on `<html>`.** `data-theme="light|dark"` (all semantic tokens switch) +
+   `data-density="comfortable|compact"` (control height, for data-dense screens). Change at runtime:
    `document.documentElement.dataset.theme = 'dark'`.
-5. **Aturan token 3-lapis.** Komponen hanya menyentuh **Tier-2/3** (`var(--color-primary)`,
-   `var(--space-4)`, `var(--radius-md)`…). **Jangan** tulis hex/px mentah.
+5. **3-tier token rule.** Components only touch **Tier 2/3** (`var(--color-primary)`,
+   `var(--space-4)`, `var(--radius-md)`…). **Never** write raw hex/px.
 
 ---
 
-## HTML statis (tanpa build)
+## Static HTML (no build)
 
-Cocok untuk halaman `.html` polos / template — tanpa bundler, tanpa npm.
+Good for plain `.html` pages / templates — no bundler, no npm.
 
-### 1. Ambil file dist ke project-mu
-`dist/` sudah di-commit, jadi tak ada build step. Cara termudah — pakai npm sekali hanya untuk
-mengunduh, lalu salin file-nya (vendor):
+### 1. Get the dist files into your project
+`dist/` is committed, so there's no build step. Easiest way — use npm once just to download, then
+copy the files (vendor them):
 ```bash
 npm i @cahyo-dimas/freeday
-cp -r node_modules/@cahyo-dimas/freeday/dist ./assets/freeday   # salin ke project-mu
+cp -r node_modules/@cahyo-dimas/freeday/dist ./assets/freeday   # copy into your project
 ```
-(atau `git clone` repo lalu salin `dist/`, atau unduh file satu per satu). Yang kamu butuh minimal:
-`freeday.bundle.css` (token + komponen jadi satu) dan `freeday.js` (semua enhancer).
+(or `git clone` the repo and copy `dist/`, or download the files one by one). The minimum you need:
+`freeday.bundle.css` (tokens + components in one) and `freeday.js` (all enhancers).
 
-### 2. Set tema di `<html>` + link CSS
+### 2. Set the theme on `<html>` + link the CSS
 ```html
 <!doctype html>
-<html lang="id" data-theme="light" data-density="comfortable">
+<html lang="en" data-theme="light" data-density="comfortable">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="assets/freeday/freeday.bundle.css">
 </head>
 ```
-> Alternatif dua file terpisah: `freeday.tokens.css` (token) + `freeday.css` (komponen).
+> Two-file alternative: `freeday.tokens.css` (tokens) + `freeday.css` (components).
 
-### 3. Muat enhancer sebelum `</body>`
+### 3. Load the enhancers before `</body>`
 ```html
   <script src="assets/freeday/freeday.js" defer></script>
-  <!-- atau pilih per-file: freeday-select.js, freeday-table.js, freeday-datepicker.js, … -->
+  <!-- or pick per-file: freeday-select.js, freeday-table.js, freeday-datepicker.js, … -->
 </body>
 ```
 
-### 4. Pakai kelas `fdy-*` + hook `data-fdy-*`
+### 4. Use `fdy-*` classes + `data-fdy-*` hooks
 ```html
-<button class="fdy-btn fdy-btn--primary" type="button">Simpan</button>
+<button class="fdy-btn fdy-btn--primary" type="button">Save</button>
 
-<div data-fdy-datepicker></div>   <!-- enhancer auto-init saat DOMContentLoaded -->
+<div data-fdy-datepicker></div>   <!-- enhancer auto-inits on DOMContentLoaded -->
 ```
-Dengarkan event bila perlu; untuk DOM yang kamu tambah **dinamis** setelah load, hydrate ulang:
+Listen for events as needed; for DOM you add **dynamically** after load, re-hydrate:
 ```html
 <script>
   document.addEventListener('fdy-datepicker-change', (e) => console.log(e.detail.value));
-  // setelah menyisipkan markup baru secara dinamis:
+  // after inserting new markup dynamically:
   // window.FreedayDatepicker.initAll(containerEl);
 </script>
 ```
 
-### 5. Salin markup komponen
-Dari docs live (View Source) atau `Foundation Design System.html`. **Ganti** kelas lama → `fdy-*`.
+### 5. Copy component markup
+From the live docs (View Source) or `Foundation Design System.html`. **Replace** the old classes → `fdy-*`.
 
 ---
 
@@ -91,27 +91,27 @@ Dari docs live (View Source) atau `Foundation Design System.html`. **Ganti** kel
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Masuk ke `package.json` sebagai `"@cahyo-dimas/freeday": "^1.7.0"` (paket npm publik).
-`dist/` di-commit & ter-publish → tanpa build step; `npm ci` jalan tanpa auth.
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.7.0"` (public npm package). `dist/` is
+committed and published → no build step; `npm ci` runs without auth.
 
-### 2. Import CSS + enhancer **sekali** di entry (`src/main.ts`)
+### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)
 ```ts
 import { createApp } from 'vue';
-import '@cahyo-dimas/freeday/css'; // tokens + komponen (satu file)
-import '@cahyo-dimas/freeday';     // side-effect: daftarkan semua enhancer window.Freeday*
+import '@cahyo-dimas/freeday/css'; // tokens + components (single file)
+import '@cahyo-dimas/freeday';     // side-effect: registers every window.Freeday* enhancer
 import App from './App.vue';
 
 createApp(App).mount('#app');
 ```
 
-### 3. Set tema di root (`index.html`)
+### 3. Set the theme on the root (`index.html`)
 ```html
-<html lang="id" data-theme="light" data-density="comfortable">
+<html lang="en" data-theme="light" data-density="comfortable">
 ```
 
-### 4. Pakai `fdy-*` + hydrate via `useFreeday`
-Panggil `useFreeday(root)` **sekali** per komponen; taruh `ref="root"` di wadah subtree.
-Event `fdy-*` = `CustomEvent` bubbling → pakai `v-on` native (`@fdy-*`), baca `event.detail` (bertipe).
+### 4. Use `fdy-*` + hydrate via `useFreeday`
+Call `useFreeday(root)` **once** per component; put `ref="root"` on the subtree container. `fdy-*`
+events are bubbling `CustomEvent`s → use native `v-on` (`@fdy-*`) and read `event.detail` (typed).
 ```vue
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
@@ -119,27 +119,27 @@ import { useFreeday } from '@cahyo-dimas/freeday/vue';
 import type { FdyCascadeChangeDetail, FdyDatepickerChangeDetail } from '@cahyo-dimas/freeday/vue';
 
 const root = ref<HTMLElement | null>(null);
-useFreeday(root); // hydrate [data-fdy-*] di subtree, tiap mount + update (idempotent)
+useFreeday(root); // hydrate [data-fdy-*] in the subtree, on each mount + update (idempotent)
 
-const form = reactive({ kategori: '', jatuhTempo: '' });
-const onCascade = (e: Event) => { form.kategori   = (e as CustomEvent<FdyCascadeChangeDetail>).detail.value; };
-const onDate    = (e: Event) => { form.jatuhTempo = (e as CustomEvent<FdyDatepickerChangeDetail>).detail.value; };
+const form = reactive({ category: '', dueDate: '' });
+const onCascade = (e: Event) => { form.category = (e as CustomEvent<FdyCascadeChangeDetail>).detail.value; };
+const onDate    = (e: Event) => { form.dueDate  = (e as CustomEvent<FdyDatepickerChangeDetail>).detail.value; };
 </script>
 
 <template>
   <div ref="root">
-    <button class="fdy-btn fdy-btn--primary" type="button">Simpan</button>
+    <button class="fdy-btn fdy-btn--primary" type="button">Save</button>
     <div data-fdy-cascade    @fdy-cascade-change="onCascade">…</div>
     <div data-fdy-datepicker @fdy-datepicker-change="onDate">…</div>
   </div>
 </template>
 ```
 
-**Gotcha:** kalau TypeScript protes soal `import '@cahyo-dimas/freeday/css'`, pastikan `env.d.ts` punya
-`/// <reference types="vite/client" />`. Untuk **Nuxt/SSR**, enhancer client-only — bungkus di
-`onMounted`/`<ClientOnly>`.
+**Gotcha:** if TypeScript complains about `import '@cahyo-dimas/freeday/css'`, make sure `env.d.ts`
+has `/// <reference types="vite/client" />`. For **Nuxt/SSR**, enhancers are client-only — wrap them
+in `onMounted`/`<ClientOnly>`.
 
-Contoh utuh yang jalan: [`examples/vue-faktur/`](../examples/vue-faktur/).
+Full working example: [`examples/vue-faktur/`](../examples/vue-faktur/).
 
 ---
 
@@ -150,12 +150,12 @@ Contoh utuh yang jalan: [`examples/vue-faktur/`](../examples/vue-faktur/).
 npm i @cahyo-dimas/freeday
 ```
 
-### 2. Import CSS + enhancer **sekali** di entry (`src/main.tsx`)
+### 2. Import the CSS + enhancers **once** in your entry (`src/main.tsx`)
 ```tsx
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@cahyo-dimas/freeday/css'; // tokens + komponen
-import '@cahyo-dimas/freeday';     // daftarkan semua enhancer window.Freeday*
+import '@cahyo-dimas/freeday/css'; // tokens + components
+import '@cahyo-dimas/freeday';     // registers every window.Freeday* enhancer
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(
@@ -163,14 +163,14 @@ createRoot(document.getElementById('root')!).render(
 );
 ```
 
-### 3. Set tema di root (`index.html`)
+### 3. Set the theme on the root (`index.html`)
 ```html
-<html lang="id" data-theme="light" data-density="comfortable">
+<html lang="en" data-theme="light" data-density="comfortable">
 ```
 
-### 4. Pakai `fdy-*` + hydrate via hook `useFreeday`
-React tak punya handler `on:fdy-*` native → karena event **bubbling**, pasang satu set listener
-di `root` lewat `useEffect` (bersihkan saat unmount). Baca `event.detail` (bertipe).
+### 4. Use `fdy-*` + hydrate via the `useFreeday` hook
+React has no native `on:fdy-*` handler → since the events **bubble**, attach one set of listeners on
+`root` via `useEffect` (clean up on unmount). Read `event.detail` (typed).
 ```tsx
 import { useRef, useEffect } from 'react';
 import { useFreeday } from '@cahyo-dimas/freeday/react';
@@ -195,7 +195,7 @@ export function Panel() {
 
   return (
     <div ref={root}>
-      <button className="fdy-btn fdy-btn--primary" type="button">Simpan</button>
+      <button className="fdy-btn fdy-btn--primary" type="button">Save</button>
       <div data-fdy-cascade />
       <div data-fdy-datepicker />
     </div>
@@ -203,47 +203,47 @@ export function Panel() {
 }
 ```
 
-**Gotcha:** karena enhancer memegang DOM widget, jangan double-kontrol dari React — simpan nilai
-dari `event.detail` ke state/ref, jangan meng-set balik `value` DOM-nya. `StrictMode` men-*mount*
-dua kali di dev; `useFreeday` idempotent jadi aman.
+**Gotcha:** because the enhancer owns the widget DOM, don't double-control it from React — store the
+value from `event.detail` in state/ref; don't set the DOM `value` back. `StrictMode` mounts twice in
+dev; `useFreeday` is idempotent, so it's safe.
 
-### 5. Alternatif: komponen controlled typed (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
-Untuk field yang biasa kamu tulis lewat `<select>`/`<input type="date">` native, `@cahyo-dimas/freeday/react`
-juga mengekspor komponen **controlled** typed — `value`/`onChange` biasa, tanpa event bubbling
-manual (parity dengan komponen `v-model` Vue di atas):
+### 5. Alternative: typed controlled components (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
+For fields you'd normally write as a native `<select>`/`<input type="date">`,
+`@cahyo-dimas/freeday/react` also exports typed **controlled** components — plain `value`/`onChange`,
+no manual event bubbling (parity with the Vue `v-model` components above):
 ```tsx
 import { FdyCombo } from '@cahyo-dimas/freeday/react';
 import type { FdyComboOption } from '@cahyo-dimas/freeday/react';
 
 type Status = 'draft' | 'sent' | 'paid';
 const options: ReadonlyArray<FdyComboOption<Status>> = [
-  { value: 'draft', label: 'Draf' },
-  { value: 'sent', label: 'Terkirim' },
-  { value: 'paid', label: 'Lunas' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'sent', label: 'Sent' },
+  { value: 'paid', label: 'Paid' },
 ];
 
 function StatusField({ value, onChange }: { value: Status; onChange: (v: Status) => void }) {
   return <FdyCombo<Status> value={value} options={options} onChange={onChange} ariaLabelledby="lbl-status" />;
 }
 ```
-`FdyDatepicker`, `FdyCfl` (choose-from-list async), dan `FdyChart` punya bentuk yang sama
-(`value`/`onChange` typed, atau `series`/`values` untuk `FdyChart`) — lihat
-[`integrations.md`](integrations.md) dan `examples/react-faktur/src/App.tsx` untuk pola lengkap.
-**Vite jalan tanpa config tambahan** (esbuild men-transpile `.tsx` source-nya langsung); konsumen
-**Next.js** mungkin perlu `transpilePackages: ['@cahyo-dimas/freeday']` di `next.config.js`.
+`FdyDatepicker`, `FdyCfl` (async choose-from-list), and `FdyChart` share the same shape (typed
+`value`/`onChange`, or `series`/`values` for `FdyChart`) — see [`integrations.md`](integrations.md)
+and `examples/react-faktur/src/App.tsx` for the full patterns. **Vite works with no extra config**
+(esbuild transpiles the `.tsx` source directly); **Next.js** consumers may need
+`transpilePackages: ['@cahyo-dimas/freeday']` in `next.config.js`.
 
-Contoh utuh yang jalan: [`examples/react-faktur/`](../examples/react-faktur/).
+Full working example: [`examples/react-faktur/`](../examples/react-faktur/).
 
 ---
 
 ## Blazor (WASM)
 
-Blazor tak pakai npm — Freeday disajikan sebagai **file statis** di `wwwroot/`.
+Blazor doesn't use npm — Freeday is served as **static files** in `wwwroot/`.
 
-### 1. Taruh aset di `wwwroot/freeday/`
-Salin 3 file ke `wwwroot/freeday/`: `freeday.bundle.css`, `freeday.js` (dari `dist/`), dan
-`freeday-blazor.js` (dari `adapters/blazor/`). Cara manual, **atau** otomatis lewat MSBuild target
-(taruh repo Freeday di dekat project, sesuaikan path) di `.csproj`:
+### 1. Place the assets in `wwwroot/freeday/`
+Copy 3 files into `wwwroot/freeday/`: `freeday.bundle.css`, `freeday.js` (from `dist/`), and
+`freeday-blazor.js` (from `adapters/blazor/`). Manually, **or** automatically via an MSBuild target
+(put the Freeday repo near your project and adjust the path) in `.csproj`:
 ```xml
 <Target Name="CopyFreedayAssets" BeforeTargets="ResolveStaticWebAssetsInputs;Build">
   <ItemGroup>
@@ -253,25 +253,25 @@ Salin 3 file ke `wwwroot/freeday/`: `freeday.bundle.css`, `freeday.js` (dari `di
 </Target>
 ```
 
-### 2. Set tema + muat aset di `wwwroot/index.html`
-Muat `freeday.js` lalu `freeday-blazor.js` **sebelum** `blazor.webassembly.js`:
+### 2. Set the theme + load the assets in `wwwroot/index.html`
+Load `freeday.js` then `freeday-blazor.js` **before** `blazor.webassembly.js`:
 ```html
-<html lang="id" data-theme="light" data-density="comfortable">
+<html lang="en" data-theme="light" data-density="comfortable">
 <head>
   <link rel="stylesheet" href="freeday/freeday.bundle.css" />
 </head>
 <body>
-  <div id="app">Memuat…</div>
+  <div id="app">Loading…</div>
   <script src="freeday/freeday.js"></script>
   <script src="freeday/freeday-blazor.js"></script>
   <script src="_framework/blazor.webassembly.js"></script>
 </body>
 ```
-> Pakai IIFE global (`window.FreedayBlazor`), **bukan** ES module — supaya lolos strict-MIME di host statis.
+> Use the global IIFE (`window.FreedayBlazor`), **not** an ES module — so it passes strict-MIME on static hosts.
 
-### 3. Hydrate + jembatani event di code-behind (`.razor.cs`)
-Di `OnAfterRenderAsync(firstRender)`: `initAll` lalu `on(...)` per event → method `[JSInvokable]`.
-Lepas di `DisposeAsync`.
+### 3. Hydrate + bridge events in code-behind (`.razor.cs`)
+In `OnAfterRenderAsync(firstRender)`: `initAll`, then `on(...)` per event → `[JSInvokable]` methods.
+Release them in `DisposeAsync`.
 ```csharp
 public partial class Panel : ComponentBase, IAsyncDisposable
 {
@@ -283,7 +283,7 @@ public partial class Panel : ComponentBase, IAsyncDisposable
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
-        await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);   // hydrate markup Blazor
+        await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);   // hydrate the Blazor markup
         _self = DotNetObjectReference.Create(this);
         _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade)));
         _tokens.Add(await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-datepicker-change", _self, nameof(OnDate)));
@@ -304,27 +304,27 @@ public partial class Panel : ComponentBase, IAsyncDisposable
 }
 ```
 ```razor
-@* Panel.razor — @ref pada wadah subtree, kelas fdy-* + hook data-fdy-* di markup *@
+@* Panel.razor — @ref on the subtree container, fdy-* classes + data-fdy-* hooks in the markup *@
 <div @ref="_root">
-  <button class="fdy-btn fdy-btn--primary" type="button">Simpan</button>
+  <button class="fdy-btn fdy-btn--primary" type="button">Save</button>
   <div data-fdy-cascade></div>
   <div data-fdy-datepicker></div>
 </div>
 ```
-Ekstra: `FreedayBlazor.toast(new { variant, title, message })` untuk toast; `FreedayBlazor.toggleTheme()`
-untuk flip tema. DTO event di-deserialize case-insensitive oleh Blazor.
+Extras: `FreedayBlazor.toast(new { variant, title, message })` for toasts; `FreedayBlazor.toggleTheme()`
+to flip the theme. Event DTOs are deserialized case-insensitively by Blazor.
 
-Contoh utuh yang jalan: [`examples/blazor-faktur/`](../examples/blazor-faktur/).
+Full working example: [`examples/blazor-faktur/`](../examples/blazor-faktur/).
 
 ---
 
-## Verifikasi (semua stack)
+## Verify (every stack)
 
-Jalankan project → cek dua hal:
-1. **CSS nyambung** — tombol/kartu sudah ber-style (bukan HTML polos).
-2. **Enhancer nyambung** — komponen interaktif hidup (mis. datepicker/combo terbuka saat diklik),
-   dan `event.detail` masuk ke state-mu.
+Run the project → check two things:
+1. **CSS connected** — buttons/cards are styled (not plain HTML).
+2. **Enhancers connected** — interactive components come alive (e.g. datepicker/combo open on
+   click), and `event.detail` reaches your state.
 
-Kalau visual polos → CSS belum ke-load. Kalau visual OK tapi widget mati → enhancer belum
-ter-*hydrate* (pastikan `import '@cahyo-dimas/freeday'` / `<script freeday.js>` ada, dan adapter/`initAll` dipanggil
-untuk DOM dinamis).
+If the visuals are plain → the CSS didn't load. If visuals are fine but widgets are dead → the
+enhancers aren't hydrated (make sure `import '@cahyo-dimas/freeday'` / `<script freeday.js>` is
+present, and the adapter/`initAll` is called for dynamic DOM).

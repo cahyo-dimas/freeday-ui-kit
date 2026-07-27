@@ -1,37 +1,37 @@
-# Freeday × Vue 3 — contoh Faktur
+# Freeday × Vue 3 — invoice example
 
-Bukti **v0.9**: layar faktur nyata yang memakai komponen Freeday di Vue 3 lewat adapter
-`@cahyo-dimas/freeday/vue`. Menunjukkan kontrak integrasi end-to-end — markup yang dirender Vue di-*enhance*
-oleh enhancer Freeday, dan event `fdy-*` mengalir balik ke state Vue.
+A real invoice screen that uses Freeday components in Vue 3 through the `@cahyo-dimas/freeday/vue`
+adapter. It shows the integration contract end to end — Vue-rendered markup is enhanced by
+Freeday's enhancers, and `fdy-*` events flow back into Vue state.
 
-> **Mau pakai Freeday di project Vue-mu sendiri?** Ikuti panduan
-> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install dari npm
-> (`npm i @cahyo-dimas/freeday`), bukan `file:../..` seperti contoh ini.
+> **Want to use Freeday in your own Vue project?** Follow
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Vue 3 — install from npm
+> (`npm i @cahyo-dimas/freeday`), not `file:../..` like this example.
 
-## Jalankan
+## Run
 
 ```bash
 cd examples/vue-faktur
-npm install     # menautkan `@cahyo-dimas/freeday` dari root repo (file:../..) + Vue/Vite
-npm run dev     # buka URL yang ditampilkan Vite
+npm install     # links `@cahyo-dimas/freeday` from the repo root (file:../..) + Vue/Vite
+npm run dev     # open the URL Vite prints
 ```
 
-`npm run build` untuk build produksi, `npm run typecheck` untuk cek tipe (`vue-tsc`).
+`npm run build` for a production build, `npm run typecheck` to check types (`vue-tsc`).
 
-## Yang dibuktikan
+## What it proves
 
-| Komponen Freeday | Di layar | Kontrak ke Vue |
+| Freeday component | On screen | Contract to Vue |
 |---|---|---|
-| Form validation | form faktur | `<form data-fdy-validate @submit.prevent @fdy-form-valid="onValid">` |
-| Input mask | No. PO (`PO-####/AA`) | `@fdy-mask` → `detail.raw` |
-| Cascade select | kategori produk | `@fdy-cascade-change` → `detail.value/path` |
-| Date picker | jatuh tempo | `@fdy-datepicker-change` → `detail.value` |
+| Form validation | invoice form | `<form data-fdy-validate @submit.prevent @fdy-form-valid="onValid">` |
+| Input mask | PO number (`PO-####/AA`) | `@fdy-mask` → `detail.raw` |
+| Cascade select | product category | `@fdy-cascade-change` → `detail.value/path` |
+| Date picker | due date | `@fdy-datepicker-change` → `detail.value` |
 | Select (combo) | status | `@fdy-change` → `detail.value` |
-| Table · card · badge · app-shell | tabel item + layout | kelas `fdy-*` langsung |
+| Table · card · badge · app-shell | item table + layout | `fdy-*` classes directly |
 
-## Pola inti
+## Core pattern
 
-Satu composable meng-*hydrate* semua enhancer di subtree komponen, sekali saat mount dan tiap
+One composable hydrates every enhancer in the component's subtree — once on mount and on each
 update (idempotent):
 
 ```ts
@@ -40,7 +40,8 @@ const root = ref<HTMLElement | null>(null);
 useFreeday(root);          // <div ref="root"> ...[data-fdy-*]... </div>
 ```
 
-Event Freeday = `CustomEvent` bubbling biasa, jadi cukup `v-on` native (`@fdy-cascade-change`)
-lalu baca `event.detail` (tipe di `@cahyo-dimas/freeday/vue`). Tidak ada re-implementasi komponen —
-enhancer tetap sumber kebenaran. Lihat [`../../docs/integrations.md`](../../docs/integrations.md)
-untuk peta library & pola framework lainnya (React/Blazor).
+Freeday events are ordinary bubbling `CustomEvent`s, so plain native `v-on` is enough
+(`@fdy-cascade-change`); then read `event.detail` (typed in `@cahyo-dimas/freeday/vue`). No
+component is re-implemented — the enhancer stays the source of truth. See
+[`../../docs/integrations.md`](../../docs/integrations.md) for the library map and other framework
+patterns (React/Blazor).

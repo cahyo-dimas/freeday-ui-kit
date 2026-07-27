@@ -1,53 +1,52 @@
-# Freeday × Blazor (WASM) — contoh Faktur
+# Freeday × Blazor (WASM) — invoice example
 
-Bukti **v0.9**: layar faktur nyata di Blazor WebAssembly yang memakai komponen Freeday lewat
-interop `freeday-blazor.js`. Markup yang dirender Blazor di-*enhance* oleh enhancer Freeday,
-dan event `fdy-*` diteruskan ke method `[JSInvokable]` C# → memperbarui state komponen.
+A real invoice screen in Blazor WebAssembly that uses Freeday components through the
+`freeday-blazor.js` interop. Blazor-rendered markup is enhanced by Freeday's enhancers, and `fdy-*`
+events are forwarded to C# `[JSInvokable]` methods that update component state.
 
-> **Mau pakai Freeday di project Blazor-mu sendiri?** Ikuti panduan
-> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Blazor (WASM) — salin aset ke
-> `wwwroot/freeday/` (manual atau via MSBuild target).
+> **Want to use Freeday in your own Blazor project?** Follow
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Blazor (WASM) — copy the assets
+> into `wwwroot/freeday/` (manually or via the MSBuild target).
 
-## Jalankan
+## Run
 
 ```bash
 cd examples/blazor-faktur
-dotnet run          # buka URL yang ditampilkan (mis. http://localhost:5xxx)
+dotnet run          # open the URL it prints (e.g. http://localhost:5xxx)
 ```
 
-Butuh **.NET 10 SDK**. Aset Freeday (`dist/freeday.bundle.css`, `dist/freeday.js`, dan
-`adapters/blazor/freeday-blazor.js`) disalin otomatis ke `wwwroot/freeday/` saat build (lihat
-target `CopyFreedayAssets` di `.csproj`); folder itu di-gitignore.
+Needs the **.NET 10 SDK**. The Freeday assets (`dist/freeday.bundle.css`, `dist/freeday.js`, and
+`adapters/blazor/freeday-blazor.js`) are copied into `wwwroot/freeday/` automatically at build time
+(see the `CopyFreedayAssets` target in the `.csproj`); that folder is gitignored.
 
-## Pola inti (code-behind, `Pages/Faktur.razor` + `Faktur.razor.cs`)
+## Core pattern (code-behind, `Pages/Faktur.razor` + `Faktur.razor.cs`)
 
-`freeday-blazor.js` dimuat sebagai script biasa (mendaftarkan `window.FreedayBlazor`), lalu
-dipanggil via `IJSRuntime`:
+`freeday-blazor.js` is loaded as a plain script (it registers `window.FreedayBlazor`), then called
+through `IJSRuntime`:
 
 ```csharp
 protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (!firstRender) return;
-    await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);          // hydrate enhancer
+    await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);          // hydrate the enhancers
     _self = DotNetObjectReference.Create(this);
     _tokens.Add(await JS.InvokeAsync<int>(
         "FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade)));
 }
 
-[JSInvokable] public void OnCascade(CascadeDetail d) { _kategori = d.Value; StateHasChanged(); }
+[JSInvokable] public void OnCascade(CascadeDetail d) { _category = d.Value; StateHasChanged(); }
 ```
 
-`FreedayBlazor.on(...)` mengembalikan token; panggil `FreedayBlazor.off(token)` di
-`DisposeAsync`. Detail event dikirim JSON-safe (Blazor deserialisasi ke record, case-insensitive).
+`FreedayBlazor.on(...)` returns a token; call `FreedayBlazor.off(token)` in `DisposeAsync`. Event
+details are sent JSON-safe (Blazor deserializes them into a record, case-insensitive).
 
-## Catatan integrasi
+## Integration notes
 
-- **Input teks** yang di-`@bind` (pelanggan, email) aman — tak ada enhancer yang menyentuhnya.
-- **Field ber-mask / widget** (`data-fdy-*`) dibiarkan tanpa `@bind`: enhancer yang memiliki
-  nilai DOM-nya. Markup widget bersifat statis, jadi diff Blazor tak menimpa node yang
-  ditambahkan enhancer.
-- Validasi digerakkan `freeday-form`; submit di-gate lewat event `fdy-form-valid`
-  (`@onsubmit:preventDefault` menahan navigasi).
+- **Text inputs** bound with `@bind` (customer, email) are safe — no enhancer touches them.
+- **Masked fields / widgets** (`data-fdy-*`) are left without `@bind`: the enhancer owns their DOM
+  value. The widget markup is static, so Blazor's diff won't overwrite the nodes the enhancer added.
+- Validation is driven by `freeday-form`; submit is gated through the `fdy-form-valid` event
+  (`@onsubmit:preventDefault` holds navigation).
 
-Enhancer tetap sumber kebenaran — tak ada re-implementasi. Lihat
-[`../../docs/integrations.md`](../../docs/integrations.md) untuk peta library & pola lainnya.
+The enhancer stays the source of truth — nothing is re-implemented. See
+[`../../docs/integrations.md`](../../docs/integrations.md) for the library map and other patterns.

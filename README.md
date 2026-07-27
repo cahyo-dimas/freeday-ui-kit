@@ -1,64 +1,66 @@
 # Freeday
 
-> **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
+**English** · [Bahasa Indonesia](README.id.md)
+
+> **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
 [![Release](https://img.shields.io/badge/release-v1.7.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.7.0)
 
-Token-driven, framework-agnostic UI KIT — satu sumber kebenaran untuk warna, tipografi,
-spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
-**Referensi hidup:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — atau buka `docs/index.html` langsung di browser.
+A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
+spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
+**Living reference:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — or open `docs/index.html` directly in a browser.
 
-> 🚀 **Baru mau pakai di project?** Langkah demi langkah per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
+> 🚀 **Starting a project?** Step-by-step per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
 
 ## Build
 ```bash
-node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css; bundel dist/freeday.css;
-                        #   dist/freeday.bundle.css (token+komponen); salinan dist/*.js + dist/freeday.js
-npm test                # test transformasi build + kontras WCAG (node:test)
+node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css; bundles dist/freeday.css;
+                        #   dist/freeday.bundle.css (tokens+components); copies dist/*.js + dist/freeday.js
+npm test                # build-transform tests + WCAG contrast (node:test)
 ```
-`dist/` di-commit — konsumen tak wajib build sendiri.
+`dist/` is committed — consumers don't have to build it themselves.
 
-## Pakai di project
+## Use in a project
 
-**Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
+**As a package (projects with a bundler — Vue/React/Blazor/Vite):**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
 ```js
-import '@cahyo-dimas/freeday/css';   // token + komponen (satu file)
-import '@cahyo-dimas/freeday';       // semua enhancer JS (auto-init [data-fdy-*])
-// granular bila perlu: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<nama>'
+import '@cahyo-dimas/freeday/css';   // tokens + components (single file)
+import '@cahyo-dimas/freeday';       // all JS enhancers (auto-init [data-fdy-*])
+// granular if needed: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<name>'
 ```
-Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit &
-ter-publish → install jalan **tanpa build step**; minify diserahkan ke bundler konsumen. Karena
-terbit di **npm publik**, `npm ci` di CI jalan tanpa auth/SSH key.
+Set the theme on your app root: `<html data-theme="light" data-density="comfortable">`. `dist/` is
+committed and published, so install needs **no build step**; minification is left to the consumer's
+bundler. Because it's on **public npm**, `npm ci` runs in CI without auth or an SSH key.
 
-> **Dari source (tanpa registry):** `npm i github:cahyo-dimas/freeday-ui-kit`.
+> **From source (no registry):** `npm i github:cahyo-dimas/freeday-ui-kit`.
 
-**Atau link file langsung (tanpa build):**
+**Or link the files directly (no build):**
 
-### 1. Sertakan CSS (wajib)
+### 1. Include the CSS (required)
 ```html
-<html lang="id" data-theme="light" data-density="comfortable">
-<link rel="stylesheet" href="dist/freeday.tokens.css">  <!-- token: warna, spasi, dst -->
-<link rel="stylesheet" href="dist/freeday.css">          <!-- komponen fdy-* -->
+<html lang="en" data-theme="light" data-density="comfortable">
+<link rel="stylesheet" href="dist/freeday.tokens.css">  <!-- tokens: color, spacing, etc. -->
+<link rel="stylesheet" href="dist/freeday.css">          <!-- fdy-* components -->
 ```
-Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`). Pakai langsung di
-markup framework apa pun — Vue, React, Blazor, HTML polos.
+Component classes are prefixed `fdy-` (e.g. `fdy-btn`, `fdy-card`, `fdy-badge`). Use them directly
+in any framework's markup — Vue, React, Blazor, or plain HTML.
 
-> `.fdy-btn` **sudah** tombol primary — tidak ada modifier `.fdy-btn--primary` terpisah.
-> Modifier yang tersedia untuk varian lain: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`,
-> `--icon` (lihat `docs/index.html`).
+> `.fdy-btn` is **already** the primary button — there's no separate `.fdy-btn--primary` modifier.
+> Modifiers for other variants: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`, `--icon`
+> (see `docs/index.html`).
 
-### 2. Sertakan JS enhancer (opsional, 0 dependency)
-Komponen interaktif (dropdown, tabs, tabel, choose-from-list, datepicker, upload, toast)
-butuh JS. Dua cara:
+### 2. Include the JS enhancers (optional, zero dependencies)
+Interactive components (dropdown, tabs, table, choose-from-list, datepicker, upload, toast) need
+JS. Two ways:
 ```html
-<!-- a) satu bundel semua enhancer -->
+<!-- a) one bundle with every enhancer -->
 <script src="dist/freeday.js" defer></script>
 
-<!-- b) atau pilih per-file yang dipakai saja -->
+<!-- b) or pick only the per-file ones you use -->
 <script src="dist/freeday-select.js"     defer></script>  <!-- [data-fdy-combo] -->
 <script src="dist/freeday-tabs.js"       defer></script>  <!-- [data-fdy-tabs] -->
 <script src="dist/freeday-table.js"      defer></script>  <!-- [data-fdy-table] -->
@@ -67,9 +69,9 @@ butuh JS. Dua cara:
 <script src="dist/freeday-upload.js"     defer></script>  <!-- [data-fdy-dropzone] -->
 <script src="dist/freeday-toast.js"      defer></script>  <!-- Freeday.toast({...}) -->
 ```
-Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progressive-enhancement.
+Each one auto-inits `[data-fdy-*]` on `DOMContentLoaded` — idempotent, progressive enhancement.
 
-| Enhancer | Hook markup | Event / API |
+| Enhancer | Markup hook | Event / API |
 |---|---|---|
 | `freeday-select` | `[data-fdy-combo]` | `fdy-change` `{value}` · `window.FreedayCombo` |
 | `freeday-tabs` | `[data-fdy-tabs]` | `window.FreedayTabs` |
@@ -85,43 +87,44 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`, idempotent, dan progress
 | `freeday-upload` | `[data-fdy-dropzone]` | `fdy-upload-add`/`-remove` · `window.FreedayUpload` |
 | `freeday-toast` | — | `Freeday.toast({variant,title,message,timeout})` |
 
-Tabel lebar (banyak kolom) butuh wrapper untuk scroll horizontal: bungkus `.fdy-table` dengan
-`.fdy-table-wrap` (tabel biasa, sudah termasuk border+shadow shell) atau `.fdy-table-scroll`
-(scroll polos tanpa shell — jalan standalone maupun di dalam `.fdy-datatable` yang shell
-border/shadow-nya sudah ada sendiri). Tanpa salah satu
-wrapper ini tabel lebar akan overflow container-nya, bukan scroll sendiri.
+Wide tables (many columns) need a wrapper for horizontal scroll: wrap `.fdy-table` in
+`.fdy-table-wrap` (a standard table, includes the border + shadow shell) or `.fdy-table-scroll`
+(plain scroll, no shell — works standalone or inside `.fdy-datatable`, which already has its own
+border/shadow shell). Without one of these wrappers, a wide table overflows its container instead
+of scrolling.
 
-### 3. Theming — 3 sumbu lewat `data-*` di root
-- `data-theme="light|dark"` — redefinisi token semantic (bind ke state tema app-mu).
-- `data-density="comfortable|compact"` — tinggi kontrol (`--control-h`) untuk layar data-dense.
-  Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
-  custom/hand-built harus baca `--control-h` sendiri (mis. `height:var(--control-h)`) supaya
-  ikut menyusut/melebar saat `data-density` berubah.
-- (roadmap) `data-style` — varian visual lain.
-- Breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
-  `src/components/breakpoints.css`) juga tersedia di JS: `import { breakpoints } from
-  '@cahyo-dimas/freeday/breakpoints'` — dipakai untuk menyamakan `matchMedia`/`@media` app-mu ke skala Freeday.
+### 3. Theming — 3 axes via `data-*` on the root
+- `data-theme="light|dark"` — redefines the semantic tokens (bind it to your app's theme state).
+- `data-density="comfortable|compact"` — control height (`--control-h`) for data-dense screens.
+  This auto-applies only to Freeday's built-in controls (button, input, combo, etc.);
+  custom/hand-built components must read `--control-h` themselves (e.g. `height: var(--control-h)`)
+  to shrink or grow when `data-density` changes.
+- (roadmap) `data-style` — alternative visual variants.
+- The breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, matching the
+  `src/components/breakpoints.css` utilities) is also available in JS: `import { breakpoints } from
+  '@cahyo-dimas/freeday/breakpoints'` — use it to align your app's `matchMedia`/`@media` with
+  Freeday's scale.
 
-## Integrasi framework (SPA)
-> **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md) — tiap area
-> (form/validasi, chart, tabel, tanggal, overlay, dst) dipetakan ke library ekosistem yang
-> biasa dipasang (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …) + cara
-> menjembataninya + binding Vue/React/Blazor. Buka itu saat mulai project baru.
+## Framework integration (SPA)
+> **Full library map:** [`docs/integrations.md`](docs/integrations.md) — each area (forms/validation,
+> charts, tables, dates, overlays, etc.) mapped to the ecosystem library you'd normally reach for
+> (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …), plus how to bridge it and the
+> Vue/React/Blazor bindings. Read it when starting a new project.
 
-**Adapter siap pakai — Vue · React · Blazor.** Semua tipis: enhancer tetap sumber kebenaran,
-adapter hanya hydrate + jembatani event. Tiap punya contoh layar **faktur** yang jalan:
+**Ready-made adapters — Vue · React · Blazor.** All thin: the enhancer stays the source of truth;
+the adapter only hydrates and bridges events. Each ships a working **invoice** screen:
 
 ```ts
 // Vue 3 — @cahyo-dimas/freeday/vue
 import { useFreeday } from '@cahyo-dimas/freeday/vue';
 const root = ref<HTMLElement | null>(null);
-useFreeday(root);                     // @fdy-cascade-change="…" (detail bertipe)
+useFreeday(root);                     // @fdy-cascade-change="…" (typed detail)
 ```
 ```tsx
 // React — @cahyo-dimas/freeday/react
 import { useFreeday } from '@cahyo-dimas/freeday/react';
 const root = useRef<HTMLDivElement>(null);
-useFreeday(root);                     // event fdy-* bubbling → listen di root
+useFreeday(root);                     // fdy-* events bubble → listen at the root
 ```
 ```csharp
 // Blazor — @cahyo-dimas/freeday/blazor (window.FreedayBlazor via JS interop)
@@ -129,77 +132,80 @@ await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);
 await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade));
 ```
 
-| Framework | Adapter | Contoh jalan |
+| Framework | Adapter | Working example |
 |---|---|---|
 | Vue 3 | `@cahyo-dimas/freeday/vue` | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
 | React 19 | `@cahyo-dimas/freeday/react` | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
 | Blazor WASM (.NET 10) | `@cahyo-dimas/freeday/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
 
-Peta library & pola lengkap: [`docs/integrations.md`](docs/integrations.md).
+Full library map and patterns: [`docs/integrations.md`](docs/integrations.md).
 
-Secara umum, enhancer meng-auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
-- **Reuse enhancer:** setelah mount/route change, panggil `window.FreedayTable.initAll(el)`
-  (atau `initAll()` global). Aman diulang — tiap init dijaga flag idempotent. Jembatani ke
-  state framework lewat event yang dipancarkan (mis. dengarkan `fdy-cfl-select`, `fdy-datepicker-change`).
-- **Atau re-implement:** tulis komponen framework sendiri, pertahankan **markup + kontrak ARIA
-  + kelas `fdy-*`** yang sama (lihat `docs/index.html`). Enhancer adalah implementasi rujukan,
-  bukan keharusan. Untuk choose-from-list, jadikan komponen terkontrol (`fetchPage` callback +
-  server-cache), jangan mirror ke store global.
+Enhancers auto-init once on load. For DOM rendered dynamically (Vue/React/Blazor):
+- **Reuse the enhancer:** after a mount or route change, call `window.FreedayTable.initAll(el)`
+  (or the global `initAll()`). Safe to repeat — each init is guarded by an idempotent flag. Bridge
+  to framework state through the events it emits (e.g. listen for `fdy-cfl-select`,
+  `fdy-datepicker-change`).
+- **Or re-implement:** write your own framework component, keeping the same **markup + ARIA
+  contract + `fdy-*` classes** (see `docs/index.html`). The enhancer is the reference
+  implementation, not a requirement. For choose-from-list, make it a controlled component
+  (`fetchPage` callback + server cache) rather than mirroring into a global store.
 
-## Aturan token — 3 lapis (jangan dilanggar)
+## Token rules — 3 tiers (don't break them)
 ```
-Tier 1 PRIMITIVE  ramp mentah (--azure-600…) — TAK PERNAH dipakai di komponen
-Tier 2 SEMANTIC   peran (--color-primary, --color-surface…) — berubah saat theme & re-brand
-Tier 3 COMPONENT  --fdy-<komp>-<prop> — opsional, override lokal
+Tier 1 PRIMITIVE  raw ramp (--azure-600…) — NEVER used in components
+Tier 2 SEMANTIC   roles (--color-primary, --color-surface…) — change on theme & re-brand
+Tier 3 COMPONENT  --fdy-<component>-<prop> — optional, local override
 ```
-Komponen hanya menyentuh Tier 2/3. Butuh nilai baru → compose → extend modifier → baru create.
+Components only touch Tier 2/3. Need a new value → compose → extend a modifier → only then create.
 
-## Struktur repo
+## Repo structure
 ```
-tokens/tokens.json     sumber sejati (edit di sini)
-tokens/build.mjs       generator (Node murni, 0 dependency)
-src/base.css           reset + utilitas
-src/components/*.css    satu file per komponen (fdy-*)
-src/*.js               enhancer JS opsional (rujukan, vanilla)
-dist/                  hasil build (DI-COMMIT):
-  freeday.tokens.css   token semantic (light/dark/compact)
-  freeday.css          bundel semua komponen
-  freeday.js           bundel semua enhancer (satu <script>)
-  freeday-*.js         enhancer per-file
-docs/index.html        referensi hidup / demo-site
+tokens/tokens.json     source of truth (edit here)
+tokens/build.mjs       generator (pure Node, zero dependencies)
+src/base.css           reset + utilities
+src/components/*.css    one file per component (fdy-*)
+src/*.js               optional JS enhancers (reference, vanilla)
+dist/                  build output (COMMITTED):
+  freeday.tokens.css   semantic tokens (light/dark/compact)
+  freeday.css          bundle of every component
+  freeday.js           bundle of every enhancer (single <script>)
+  freeday-*.js         per-file enhancers
+docs/index.html        living reference / demo site
 ```
 
-## Inventaris komponen
-- **Fondasi:** warna semantic, tipografi (Sora/IBM Plex Sans/JetBrains Mono), skala spasi 4px,
-  radius & elevasi, motion, checklist aksesibilitas.
-- **Aksi & form:** button, input (+error), input-group (Rp/%/ikon), checkbox/radio/switch,
-  **select `fdy-combo`** (APG), **autocomplete**, **cascade select** (hierarki drill-down),
-  **choose-from-list** (field + dialog single/multi), **date / time / datetime picker**,
-  **file upload** (dropzone + state per-berkas), **password reveal + input mask**,
-  **form validation** (Constraint Validation API → error aksesibel).
-- **Data:** table, **data table** (cari · sort · **filter per-kolom** teks/enum/angka · **bulk
-  actions** · paginasi · seleksi), states (empty/loading/error).
-- **Feedback:** alert, toast, tooltip. **Navigasi:** tabs, breadcrumb, pagination.
-- **Tampilan:** card, badge, avatar, chip (default/hapus · choice · filter), description-list,
+## Component inventory
+- **Foundation:** semantic colors, typography (Sora/IBM Plex Sans/JetBrains Mono), 4px spacing
+  scale, radius & elevation, motion, accessibility checklist.
+- **Actions & forms:** button, input (+error), input-group (currency/%/icon),
+  checkbox/radio/switch, **select `fdy-combo`** (APG), **autocomplete**, **cascade select**
+  (hierarchical drill-down), **choose-from-list** (field + single/multi dialog),
+  **date / time / datetime picker**, **file upload** (dropzone + per-file state),
+  **password reveal + input mask**, **form validation** (Constraint Validation API → accessible
+  errors).
+- **Data:** table, **data table** (search · sort · **per-column filter** text/enum/number · **bulk
+  actions** · pagination · selection), states (empty/loading/error).
+- **Feedback:** alert, toast, tooltip. **Navigation:** tabs, breadcrumb, pagination.
+- **Display:** card, badge, avatar, chip (default/removable · choice · filter), description list,
   progress, spinner, skeleton.
 - **Layout:** app shell, accordion (native `<details>`), modal (native `<dialog>`), divider, kbd.
 
-## Aksesibilitas
-Kontras WCAG AA (terang & gelap) — diaudit otomatis oleh `test/contrast.test.mjs` yang
-menyelesaikan graf token, meng-*composite* fill `-soft` semi-transparan di atas surface-nya,
-dan menegakkan tiap pasangan (teks 4.5:1; batas kontrol / ikon 3:1, WCAG 1.4.11). Border kontrol
-form pakai `--color-control-border` (≥3:1); border dekoratif sengaja tetap terang.
-`:focus-visible` selalu terlihat, HTML native dulu sebelum ARIA, komponen interaktif ikut pola
-WAI-ARIA APG, hormati `prefers-reduced-motion`. Status tak hanya lewat warna. Lihat section
-"Aksesibilitas" di `docs/index.html`.
+## Accessibility
+WCAG AA contrast (light & dark), audited automatically by `test/contrast.test.mjs`: it resolves the
+token graph, composites semi-transparent `-soft` fills over their surface, and enforces every pair
+(text 4.5:1; control borders / icons 3:1, WCAG 1.4.11). Form control borders use
+`--color-control-border` (≥3:1); decorative borders are intentionally lighter. `:focus-visible` is
+always visible, native HTML comes before ARIA, interactive components follow the WAI-ARIA APG
+patterns, and `prefers-reduced-motion` is respected. Status is never conveyed by color alone. See
+the "Accessibility" section in `docs/index.html`.
 
-## Dukungan browser
-Butuh browser evergreen ~2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (floor ditentukan
-oleh `color-mix()`). Fitur lain: native `<dialog>`/`::backdrop`, `accent-color`, `100dvh`,
-`conic-gradient`, `scroll-snap` — semua ≥ Safari 15.4. Blur backdrop pakai
-`-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya tanpa blur).
-Belum ada CSS build/autoprefixer — dukungan browser lama = tanggung jawab konsumen.
+## Browser support
+Needs an evergreen browser, roughly 2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (the floor is
+set by `color-mix()`). Other features used: native `<dialog>`/`::backdrop`, `accent-color`,
+`100dvh`, `conic-gradient`, `scroll-snap` — all ≥ Safari 15.4. Backdrop blur uses
+`-webkit-backdrop-filter` + `backdrop-filter` (older Safari still works, just without the blur).
+There's no CSS build or autoprefixer step — supporting older browsers is the consumer's
+responsibility.
 
-## Lisensi
-[MIT](LICENSE) © 2026 Cahyo D. Kurnianto — bebas dipakai, diubah, dan didistribusikan asal
-menyertakan baris copyright + teks lisensi.
+## License
+[MIT](LICENSE) © 2026 Cahyo D. Kurnianto — free to use, modify, and distribute, as long as the
+copyright line and license text are included.
