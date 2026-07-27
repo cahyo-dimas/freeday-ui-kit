@@ -6,7 +6,9 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.7.0 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.7.0`, tree bersih).
+**v1.7.1 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.7.1`). Terbit di npm
+publik sebagai `@cahyo-dimas/freeday`. (1.7.1 = patch docs-only: docs English-first + `README.id.md`;
+kode identik dengan 1.7.0.)
 Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width).
 
 - **46 komponen** CSS (`src/components/*.css`) — termasuk `.fdy-filterbar` (baris filter) & `.fdy-form-grid` (grid header/dokumen)
@@ -29,7 +31,7 @@ terbukti · docs adopsi lengkap.
 
 - **Live:** [cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)
 - **Lokal:** buka `docs/index.html` langsung di browser (font Google via internet; ada fallback)
-- **Pakai di project:** `npm i github:cahyo-dimas/freeday-ui-kit#v1.7.0` — panduan di
+- **Pakai di project:** `npm i @cahyo-dimas/freeday` — panduan di
   [`README.md`](README.md) & [`docs/getting-started.md`](docs/getting-started.md)
 
 ## Build & test

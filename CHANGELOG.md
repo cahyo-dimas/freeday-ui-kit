@@ -3,6 +3,21 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.7.1] — 2026-07-27
+Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `adapters/`, and
+`tokens/` are byte-identical to 1.7.0.
+
+### Changed
+- **Distributed on public npm as `@cahyo-dimas/freeday`.** Install with `npm i @cahyo-dimas/freeday`
+  — `npm ci` now works in CI without auth or an SSH key (the old `git+https` workaround is gone).
+  Releases publish via GitHub Actions **OIDC Trusted Publishing** (no tokens).
+- **Docs are now English-first** — `README.md`, `docs/getting-started.md`, `docs/integrations.md`,
+  and the example READMEs. `docs/index.html` stays Indonesian for now.
+
+### Added
+- **`README.id.md`** (Bahasa Indonesia) with a language-toggle row on both READMEs; now shipped in
+  the published package.
+
 ## [1.7.0] — 2026-07-24
 Rilis **1.7 — tree checkbox, form-grid, & tiga section docs full-width**. Non-breaking, aditif.
 
