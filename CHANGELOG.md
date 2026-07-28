@@ -3,6 +3,18 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.11.2] — 2026-07-28
+### Fixed
+- **A filter bar docked in a table toolbar no longer loses its alignment (#35).** `.fdy-filterbar`
+  (`align-items:flex-end`, for labelled fields) and `.fdy-table-toolbar` (`align-items:center`, for
+  bare buttons) are both single-class rules of equal specificity, so composing them on one element
+  (`<div class="fdy-table-toolbar fdy-filterbar">`) let whichever came later in the bundle win — the
+  toolbar — centring every control and floating the trailing actions ~13px above the inputs beside
+  them. Added a `.fdy-table-toolbar.fdy-filterbar` rule (specificity 0,2,0) that settles it toward the
+  filterbar's `flex-end`. Additive — only affects elements carrying both classes; standalone toolbars
+  and filterbars are untouched. Verified in-browser: the composed bar's controls now share one
+  baseline (computed `align-items: flex-end`).
+
 ## [1.11.1] — 2026-07-28
 ### Fixed
 - **Tall modals now scroll their body instead of clipping the footer (#34).** `.fdy-modal` had a

@@ -971,6 +971,11 @@ a { color: var(--color-primary); }
  * --w-grow to absorb the slack; trailing actions align to the controls. Fields are
  * the standard .fdy-field (label above control); wraps gracefully on narrow screens. */
 .fdy-filterbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--space-3) var(--space-4);}
+/* Composed with a table toolbar (one element, both classes): the fields decide the alignment.
+ * `.fdy-table-toolbar` sets align-items:center (right for bare buttons) at equal specificity, and
+ * being later in the bundle it would otherwise win — floating labelled fields' neighbours out of line.
+ * This 2-class selector (0,2,0) settles it toward the filterbar's flex-end regardless of source order. */
+.fdy-table-toolbar.fdy-filterbar{align-items:flex-end;}
 /* Fields are direct children. Drop the standalone field's 22rem cap; default to the
  * medium column width with no unbounded growth (that's what caused the raggedness). */
 .fdy-filterbar>.fdy-field{max-width:none;flex:0 0 auto;width:12rem;}

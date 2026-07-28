@@ -51,6 +51,14 @@ menuntaskan ketiga item di bawah._
 > Diverifikasi headless Chrome: body scrollHeight 1595 > clientHeight 609, footer di dalam dialog, tombol
 > submit terlihat; `.fdy-modal--cfl` juga OK (results tetap scroll via max-height sendiri, gap 0, tanpa
 > regresi). Note #34 = valid & fix-nya benar (beda dari #28/#32 yang non-fix).
+>
+> **Update 2026-07-28 (6) — v1.11.2 (published, fix-only patch).** Note #35: `.fdy-filterbar`
+> (`align-items:flex-end`) & `.fdy-table-toolbar` (`align-items:center`) dua-duanya single-class (0,1,0)
+> → saat digabung `<div class="fdy-table-toolbar fdy-filterbar">`, yang belakangan di bundle (toolbar,
+> `t`>`f`) menang → semua kontrol ter-center, actions ngambang ~13px. Ditambah `.fdy-table-toolbar.fdy-filterbar
+> {align-items:flex-end}` (0,2,0) — aditif, cuma kena elemen dgn KEDUA kelas. Verifikasi browser:
+> composed bar computed align-items=flex-end, field input & actions button satu baseline (bottom 83/83).
+> Sekeluarga dgn #32 (trailing `__actions` berakhir di tempat tak diinginkan). Note #35 = valid & fix benar.
 
 ---
 
