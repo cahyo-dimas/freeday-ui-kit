@@ -6,19 +6,22 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.7.1 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.7.1`). Terbit di npm
-publik sebagai `@cahyo-dimas/freeday`. (1.7.1 = patch docs-only: docs English-first + `README.id.md`;
-kode identik dengan 1.7.0.)
-Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width).
+**v1.8.0 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.8.0`). Terbit di npm
+publik sebagai `@cahyo-dimas/freeday`. (1.8.0 = aditif: `FdyTable` controlled Vue+React,
+`FdyModal`/`FdyDrawer` controlled Vue+React, dan utilitas `.fdy-mono`. Tak ada selector/markup/enhancer
+lama yang berubah — dari improvement notes #22/#23/#24.)
+Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width) → v1.7.1 (docs English-first + `README.id.md`; kode identik 1.7.0) → v1.8.0 (`FdyTable` controlled Vue+React + core `adapters/core/table-model.js`; `FdyModal`/`FdyDrawer` controlled Vue+React; utilitas `.fdy-mono`; `.fdy-drawer__footer`).
 
 - **46 komponen** CSS (`src/components/*.css`) — termasuk `.fdy-filterbar` (baris filter) & `.fdy-form-grid` (grid header/dokumen)
 - **23 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`) — termasuk `freeday-tree.js` (cascade tree checkbox)
 - **3 adapter framework** terbukti — Vue / React / Blazor (`adapters/`), tiap-tiap dengan
   contoh faktur nyata yang diverifikasi headless (`examples/{vue,react,blazor}-faktur/`)
-- **Komponen framework Vue + React — simetris penuh** (v1.2 → v1.6): tujuh komponen controlled
+- **Komponen framework Vue + React — simetris penuh** (v1.2 → v1.8): sepuluh komponen controlled
   typed di **kedua** adapter — `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` ·
-  `FdyCascade` · `FdyCfl` (async terkontrol) · `FdyChart` — plus `usePopover`, semuanya di atas
-  class CSS kit yang sama (WAI-ARIA APG, dropdown top-layer lewat Popover API). Vue lewat
+  `FdyCascade` · `FdyCfl` (async terkontrol) · `FdyChart` · `FdyTable` (sort/filter/paginate,
+  client atau server) · `FdyModal` · `FdyDrawer` — plus `usePopover` dan core tabel
+  framework-agnostik `adapters/core/table-model.js`, semuanya di atas class CSS kit yang sama
+  (WAI-ARIA APG, dropdown/popover top-layer lewat Popover API). Vue lewat
   `freeday/vue` (`v-model`), React lewat `freeday/react` (`value`/`onChange`). Tak ada lagi
   jembatan event manual untuk kontrol-kontrol ini.
 - **Kontras WCAG AA** ditegakkan sebagai regression test — `node --test` **9/9** hijau

@@ -13,6 +13,7 @@
 .fdy-drawer__close{border:0;background:transparent;color:var(--color-text-muted);font-size:var(--text-xl);line-height:1;cursor:pointer;padding:var(--space-1);border-radius:var(--radius-sm);}
 .fdy-drawer__close:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-drawer__body{flex:1;min-height:0;overflow:auto;padding:var(--space-4);}
+.fdy-drawer__footer{flex:none;display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-4) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:var(--color-surface-2);}
 /* Symmetric enter AND exit on the native <dialog>: @starting-style animates the entry;
  * the overlay/display allow-discrete transitions keep the panel painted through the exit so
  * it slides back out on close (not just in). prefers-reduced-motion is honored by the global

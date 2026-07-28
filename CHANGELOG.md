@@ -3,6 +3,32 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.8.0] — 2026-07-28
+Release **1.8 — framework-safe data table, modal/drawer wrappers, and a monospace utility**.
+Non-breaking, purely additive. No existing selector, markup, or enhancer changed.
+
+### Added
+- **`FdyTable` (Vue + React) — a controlled data table.** Reads `rows` as the source of truth on
+  every render, so it is safe over a `v-for` / `.map()` bound to reactive data — unlike the
+  `freeday-table.js` enhancer, which snapshots the DOM and corrupts a framework list on the first
+  refetch. Two modes: **client** (component sorts/filters, and paginates when `pageSize` is set,
+  over the full `rows`) and **server** (`page` prop present → `rows` render as given and the
+  headers/filters/pager only emit `update:sort` / `update:filters` / `update:page`). Type-aware
+  column filters (**text / enum / number / date**) in a top-layer popover, sort toggles, and a
+  page-window pager — all over the existing `.fdy-table*` / `.fdy-filter*` / `.fdy-pagination__*`
+  classes. Column options: `sortable`, `filter`, `align`, `mono`, `sortType`, `value`, `options`.
+  Sort/filter/paginate logic lives in a shared, framework-agnostic core (`adapters/core/table-model.js`)
+  covered by `node --test` (`test/table-model.test.mjs`).
+- **`FdyModal` + `FdyDrawer` (Vue + React) — controlled `<dialog>` wrappers.** Reconcile a reactive
+  `open` boolean with the native `<dialog>`'s method-driven open/close: guarded
+  `showModal()`/`close()`, `@cancel`/`onCancel` + `preventDefault` so Esc routes through app state,
+  and backdrop-click via `event.target === dialogEl`. `open` + `close` event/`onClose`, `title`,
+  `size`/`side`, `dismissible` (default true), and `footer`. No new modal CSS.
+- **`.fdy-mono` utility.** Alignment-neutral monospace (data font + tabular figures) for identifier /
+  code / IP / timestamp cells or inline spans — the piece that previously only existed welded into
+  the right-aligned `.fdy-table__num`. `FdyTable` applies it for any `mono: true` column.
+- **`.fdy-drawer__footer`** — a bottom action bar for drawers (mirrors `.fdy-modal__footer`).
+
 ## [1.7.1] — 2026-07-27
 Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `adapters/`, and
 `tokens/` are byte-identical to 1.7.0.

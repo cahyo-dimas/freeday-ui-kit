@@ -35,3 +35,19 @@ export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAuto
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';
 export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';
+export { FdyTable, type FdyTableProps } from './components/FdyTable';
+export { FdyModal, type FdyModalProps } from './components/FdyModal';
+export { FdyDrawer, type FdyDrawerProps } from './components/FdyDrawer';
+
+/** Controlled data-table types (shared, framework-agnostic core). */
+export type {
+  FdyTableColumn,
+  FdySortState,
+  FdySortDir,
+  FdyColumnType,
+  FdyColumnAlign,
+  FdyColumnFilterType,
+  FdyColumnFilter,
+  FdyFilterMap,
+  FdyPageState,
+} from '../core/table-model';

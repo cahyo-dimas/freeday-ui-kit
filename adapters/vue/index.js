@@ -6,3 +6,6 @@ export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';
 export { default as FdyCascade } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
 export { default as FdyChart } from './components/FdyChart.vue';
+export { default as FdyTable } from './components/FdyTable.vue';
+export { default as FdyModal } from './components/FdyModal.vue';
+export { default as FdyDrawer } from './components/FdyDrawer.vue';

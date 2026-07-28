@@ -72,10 +72,16 @@ library only.
 
 | Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Table | ✅ `freeday-table` | Client-side sort/filter/pagination, moderate data | Server-side, virtualization, grouping, pinned columns: **TanStack Table** (headless, Vue+React) · **AG Grid** · **MudBlazor MudDataGrid** · **PrimeVue DataTable** | TanStack is headless → render with `.fdy-table*` classes (styling stays Freeday). |
-| Data fetching / cache | 🔌 | — | **TanStack Query** · **SWR** · Vue: **Pinia** | `freeday-cfl`'s `fetchPage` callback pairs well with Query. |
+| Table (vanilla) | ✅ `freeday-table` | Static/server-rendered HTML, client-side sort/filter/pagination | — | Enhancer over a plain `<table>`; **don't** use it on a Vue/React-rendered table (it snapshots the DOM). |
+| Table (Vue/React) | ✅ `FdyTable` | `columns`/`rows` in, controlled sort/filter/page out; type-aware column filters (text/enum/number/date) | Virtualization, grouping, pinned columns: **TanStack Table** (headless) · **AG Grid** | `FdyTable` is the framework-safe primitive (reads `rows` every render). TanStack is headless → still render with `.fdy-table*` classes. |
+| Data fetching / cache | 🔌 | — | **TanStack Query** · **SWR** · Vue: **Pinia** | `freeday-cfl`'s `fetchPage` and `FdyTable`'s controlled `sort`/`filters`/`page` pair well with Query. |
 | Excel/PDF export | 🔌 | — | **SheetJS (xlsx)** · **jsPDF** + **jspdf-autotable** | Take data from state, not from the DOM. |
 | Virtual scroll | 🔌 | — | **TanStack Virtual** · Vue: **vue-virtual-scroller** | — |
+
+> **Monospace data cells:** add `.fdy-mono` to any identifier / code / IP / timestamp cell (or an
+> inline `<span>`) to render it in the data font with tabular figures. It is alignment-neutral —
+> unlike `.fdy-table__num`, which is also right-aligned. `FdyTable` applies it automatically to any
+> column with `mono: true`.
 
 ### Charts & visualization
 
@@ -98,8 +104,8 @@ library only.
 
 | Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Modal / dialog | ✅ modal (native `<dialog>`) | Focus trap + Esc come for free | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday uses native — rarely worth replacing. |
-| Drawer | ✅ `freeday-drawer` | Left/right overlay | — | — |
+| Modal / dialog | ✅ modal (native `<dialog>`) · Vue/React: `FdyModal` | Focus trap + Esc + top layer come for free; `FdyModal` adds the controlled `open`/`onClose` glue | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday uses native — rarely worth replacing. `FdyModal` writes the `showModal()`/`close()` + Esc + backdrop reconciliation once. |
+| Drawer | ✅ `freeday-drawer` · Vue/React: `FdyDrawer` | Left/right overlay; `FdyDrawer` adds controlled `open`/`onClose` | — | Same controlled contract as `FdyModal`, `side="left"\|"right"`. |
 | Tooltip / popover | ➕ tooltip (CSS) | Simple static tooltips | Collision-aware positioning (flip/shift), interactive popovers: **Floating UI** (`@floating-ui/dom`) | Use Floating UI to compute position; styling stays token-based. Example #5. |
 | Toast | ✅ `freeday-toast` | Common notifications | Advanced queue/stack: **Sonner** · **react-hot-toast** · **vue-toastification** | `Freeday.toast({variant,title,message})`. |
 | Animation | ✅ (CSS + respect `prefers-reduced-motion`) | Standard UI transitions | Complex orchestration: **Motion One** · React: **Framer Motion** · **GSAP** | Always check reduced-motion. |
@@ -148,15 +154,17 @@ function Panel(): JSX.Element {
 ```
 > **Controlled alternative (parity with Vue's `v-model`):** `@cahyo-dimas/freeday/react` also exports
 > the typed components `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` /
-> `FdyCascade` / `FdyCfl` / `FdyChart` — plain `value`/`onChange`, no `data-fdy-*` + manual event
-> listener:
+> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer` — plain
+> `value`/`onChange` (props in, events out), no `data-fdy-*` + manual event listener:
 > ```tsx
 > import { FdyCombo } from '@cahyo-dimas/freeday/react';
 > <FdyCombo value={status} options={statusOptions} onChange={setStatus} ariaLabelledby="lbl-status" />
 > ```
 > `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` use the same `value`/`onChange`;
-> `FdyDateRange` uses `{start, end}`; `FdyChart` uses `series`/`values`. The same set is available
-> in `@cahyo-dimas/freeday/vue` via `v-model` — both adapters are fully symmetric. See
+> `FdyDateRange` uses `{start, end}`; `FdyChart` uses `series`/`values`; `FdyTable` takes
+> `columns`/`rows` (client-side sort/filter/pagination, or controlled `sort`/`filters`/`page` for a
+> server-paged table); `FdyModal`/`FdyDrawer` take `open` + `onClose`. The same set is available
+> in `@cahyo-dimas/freeday/vue` via `v-model` / props — both adapters are fully symmetric. See
 > [`getting-started.md` §React](getting-started.md#react-vite) and
 > `examples/react-faktur/src/App.tsx`. **Vite** transpiles the `.tsx` source with no extra config;
 > **Next.js** may need `transpilePackages: ['@cahyo-dimas/freeday']`.

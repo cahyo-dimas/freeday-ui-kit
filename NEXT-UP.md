@@ -7,6 +7,16 @@ sumber-kebenaran desain di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-de
 _Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live. **Diperbarui 2026-07-27** setelah
 menuntaskan ketiga item di bawah._
 
+> **Update 2026-07-28 — v1.8.0 (published).** Tiga improvement note dari migrasi
+> `doc-ai-automation-web-*` sudah dikerjakan & rilis (aditif, non-breaking):
+> **#22** utilitas `.fdy-mono` (mono alignment-neutral untuk id/kode/IP/timestamp);
+> **#23** `FdyTable` controlled Vue+React (baca `rows` tiap render — aman di framework, tak seperti
+> enhancer yang snapshot DOM; sort/filter type-aware text/enum/number/date/paginate; client **atau**
+> server via `page`) di atas core murni `adapters/core/table-model.js` (di-test `node --test`);
+> **#24** `FdyModal`/`FdyDrawer` controlled Vue+React (glue `showModal()`/`close()` + Esc + backdrop
+> ditulis sekali). Gate hijau: `node --test` 20/20 · `typecheck:react` 0 · build no-diff (dist =
+> hanya penambahan CSS). Catatan mentah ada di `improvement-notes/` (tetap untracked).
+
 ---
 
 ## TL;DR — ketiga item lama sudah ditangani; sisanya satu langkah rilis

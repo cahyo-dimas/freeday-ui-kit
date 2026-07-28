@@ -915,6 +915,7 @@ a { color: var(--color-primary); }
 .fdy-drawer__close{border:0;background:transparent;color:var(--color-text-muted);font-size:var(--text-xl);line-height:1;cursor:pointer;padding:var(--space-1);border-radius:var(--radius-sm);}
 .fdy-drawer__close:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-drawer__body{flex:1;min-height:0;overflow:auto;padding:var(--space-4);}
+.fdy-drawer__footer{flex:none;display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-4) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:var(--color-surface-2);}
 /* Symmetric enter AND exit on the native <dialog>: @starting-style animates the entry;
  * the overlay/display allow-discrete transitions keep the panel painted through the exit so
  * it slides back out on close (not just in). prefers-reduced-motion is honored by the global
@@ -1210,7 +1211,14 @@ a { color: var(--color-primary); }
 .fdy-table tbody tr:last-child td{border-bottom:0;}
 .fdy-table tbody tr{transition:background-color var(--dur-fast) var(--ease-standard);}
 .fdy-table tbody tr:hover{background:var(--color-surface-2);}
+/* Monospace data — ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
+   or inline (`<span class="fdy-mono">`), not just numeric columns. */
+.fdy-mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
+/* Numeric cells are mono + right-aligned. Kept self-contained (not composed from .fdy-mono)
+   so existing single-class markup keeps working. */
 .fdy-table__num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--font-mono);}
+/* Loading / empty state cell (FdyTable spans it across all columns). */
+.fdy-table__state{text-align:center;color:var(--color-text-muted);padding:var(--space-6) var(--space-4);}
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
@@ -1234,7 +1242,8 @@ a { color: var(--color-primary); }
 .fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}
 .fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
 
-/* Column filter — funnel button injected into a filterable <th> */
+/* Column filter — funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
+.fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
 .fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
 .fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}

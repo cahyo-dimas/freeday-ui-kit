@@ -21,6 +21,22 @@ export { default as FdyCascade } from './components/FdyCascade.vue';
 export type { CascadeNode } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
 export { default as FdyChart } from './components/FdyChart.vue';
+export { default as FdyTable } from './components/FdyTable.vue';
+export { default as FdyModal } from './components/FdyModal.vue';
+export { default as FdyDrawer } from './components/FdyDrawer.vue';
+
+/** Controlled data-table types (shared, framework-agnostic core). */
+export type {
+  FdyTableColumn,
+  FdySortState,
+  FdySortDir,
+  FdyColumnType,
+  FdyColumnAlign,
+  FdyColumnFilterType,
+  FdyColumnFilter,
+  FdyFilterMap,
+  FdyPageState,
+} from '../core/table-model';
 
 /** One data series for the cartesian chart types (line / area / multi-series & stacked bar). */
 export interface FdyChartSeries {
