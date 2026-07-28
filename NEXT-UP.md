@@ -33,6 +33,16 @@ menuntaskan ketiga item di bawah._
 > detail expandable: slot `row-detail`/prop `renderRowDetail` + `expandedKeys` terkontrol +
 > `.fdy-table__detailrow` (menutup tabel hand-rolled terakhir: LogsView). Gate: 20/20 · typecheck 0 ·
 > SFC compile · `node --check` chart OK.
+>
+> **Update 2026-07-28 (4) — v1.11.0 (published).** Notes #31–#33. **#31** `.fdy-badge` +
+> `white-space:nowrap` (konsisten dgn `.fdy-badge-ov`). **#33** donut hormati `data-fdy-legend="none"`
+> (gate sama dgn cartesian). **#32** modifier opt-in `.fdy-filterbar--actions-inline` + doc: **proposal
+> margin note (a) DIUJI di headless Chrome dan TAK bekerja** — margin (auto/left/right) tak mengubah
+> flex line-breaking, actions tetap terdampar sendiri di semua varian (rows=3, actionsAlone=true);
+> hanya posisi horizontal berubah (far-right 665px → adjacent 432px). Jadi #32 = modifier b + doc saja
+> (basis grow menentukan wrap, bukan lebar render). Verifikasi #31 (whiteSpace=nowrap, tinggi 1 baris)
+> & #33 (none→0 legend, auto→1) juga via browser. **Pola berulang: note bisa mengusulkan non-fix (spt
+> #28) — verifikasi tiap klaim & fix di source/render nyata sebelum ship.**
 
 ---
 

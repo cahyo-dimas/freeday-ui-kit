@@ -181,7 +181,7 @@ a { color: var(--color-primary); }
 .fdy-avatar-group .fdy-avatar:first-child{margin-left:0;}
 
 /* Freeday — Badge */
-.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
+.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
 .fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
 .fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
 .fdy-badge--danger{color:var(--color-danger-strong);background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
@@ -639,8 +639,15 @@ a { color: var(--color-primary); }
 .fdy-filterbar>.fdy-field--w-2xl{width:25rem;}
 /* One growing field (usually the search) absorbs the remaining width. */
 .fdy-filterbar>.fdy-field--w-grow{flex:1 1 16rem;width:auto;min-width:12rem;}
-/* Trailing actions (buttons) pushed to the end, aligned with the controls' baseline. */
+/* Trailing actions (buttons) pushed to the end, aligned with the controls' baseline.
+ * Wrap note: a wrapped bar breaks flex lines on each item's *flex-basis* (the grow field's
+ * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width — so the grow basis,
+ * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
+ * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
 .fdy-filterbar__actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;}
+/* Opt-in: sit the actions inline right after the last field instead of at the far edge — so when the
+ * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
+.fdy-filterbar--actions-inline .fdy-filterbar__actions{margin-left:0;}
 /* Stack on narrow screens so nothing overflows the row. */
 @media (max-width:640px){
   .fdy-filterbar>.fdy-field,.fdy-filterbar>.fdy-field--w-sm,.fdy-filterbar>.fdy-field--w-lg,.fdy-filterbar>.fdy-field--w-xl,.fdy-filterbar>.fdy-field--w-2xl,.fdy-filterbar>.fdy-field--w-grow{width:100%;flex:1 1 100%;}

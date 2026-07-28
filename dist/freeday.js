@@ -1153,7 +1153,10 @@
       li.appendChild(document.createTextNode((labels[i] || ('#' + (i + 1))) + ' — ' + Math.round((v / total) * 100) + '%'));
       legend.appendChild(li);
     });
-    el.appendChild(ring); el.appendChild(legend);
+    el.appendChild(ring);
+    // Honour data-fdy-legend for the donut too — a caller may supply its own richer legend. 'auto'
+    // keeps today's behaviour (a donut is unreadable without labels, so it shows); 'none' suppresses it.
+    if ((el.getAttribute('data-fdy-legend') || 'auto') !== 'none') el.appendChild(legend);
     ensureImg(el);
   }
 

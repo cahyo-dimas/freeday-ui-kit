@@ -3,6 +3,29 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.11.0] — 2026-07-28
+Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). Additive / corrective.
+
+### Fixed
+- **Badges no longer wrap and break the pill (#31).** `.fdy-badge` had `line-height:1` but no
+  `white-space`, so a two-word label (e.g. "Needs review") wrapped and collided with the pill padding,
+  turning the capsule into a cramped lozenge. Added `white-space:nowrap` — matching the sibling
+  `.fdy-badge-ov`, which already had it. A too-narrow badge now overflows its column (which
+  `.fdy-table-scroll` already handles) instead of wrapping.
+- **Donut chart honours `legend="none"` (#33).** `freeday-chart.js` read `data-fdy-legend` only in the
+  cartesian renderer; the donut appended its legend unconditionally, so `<FdyChart type="donut"
+  legend="none">` still printed the built-in legend even when the caller supplied its own. Gated the
+  donut legend on the same attribute (`auto` still shows it — a donut is unreadable without labels).
+
+### Added
+- **`.fdy-filterbar--actions-inline` modifier (#32).** Opt-in: sits the trailing actions inline after
+  the last field instead of at the far edge, so a wrapped bar reads as attached to its filters. Also
+  **documented** the filterbar's wrap behaviour: a wrapped bar breaks flex lines on each item's
+  *flex-basis* (the grow field's `flex:1 1 16rem` reserves 16rem), not its rendered width — so the
+  grow basis decides the wrap point; to avoid stranded actions, tune the `--w-grow` basis or drop a
+  field. (The note's margin-swap proposal to un-strand the actions was **tested in-browser and does not
+  work** — margins don't change flex line-breaking — so only the modifier + docs were taken.)
+
 ## [1.10.0] — 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #27–#30). Additive / corrective;
 no breaking changes.

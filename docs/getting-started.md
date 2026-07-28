@@ -91,7 +91,7 @@ From the live docs (View Source) or `Foundation Design System.html`. **Replace**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.10.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.11.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)
