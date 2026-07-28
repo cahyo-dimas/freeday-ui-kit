@@ -213,17 +213,31 @@
       svg.appendChild(tk);
     }
 
-    // x category labels with autoskip.
-    var maxTicks = Math.max(2, Math.floor(plotW / 40)), step = Math.ceil(n / maxTicks);
+    // x category labels with autoskip. Labels are author-supplied, so estimate the widest one instead
+    // of assuming a fixed 40px slot; keep every step-th plus the last, then drop any kept label that
+    // would collide with the one before it — including the forced last one (a fraction-of-a-slot
+    // overlap happens when n-1 lands next to the last kept multiple of step, e.g. n=24 at most widths).
+    var charW = 5.4; // ~9px font advance (.fdy-chart-xy__xlabel)
+    var widest = 0;
+    for (var wi = 0; wi < n; wi++) widest = Math.max(widest, String(labels[wi] || ('#' + (wi + 1))).length * charW);
+    var minGap = widest + 8;
+    var maxTicks = Math.max(2, Math.floor(plotW / minGap)), step = Math.ceil(n / maxTicks);
+    var xPos = function (i) { return (type === 'bar') ? xCenter(i) : xLine(i); };
+    var kept = [];
     for (var xi = 0; xi < n; xi++) {
-      if (xi % step !== 0 && xi !== n - 1) continue;
-      var lx = (type === 'bar') ? xCenter(xi) : xLine(xi);
-      var xt = svgEl('text');
-      xt.setAttribute('x', lx.toFixed(1)); xt.setAttribute('y', H - 6);
-      xt.setAttribute('text-anchor', 'middle'); xt.setAttribute('class', 'fdy-chart-xy__xlabel');
-      xt.textContent = labels[xi] || ('#' + (xi + 1));
-      svg.appendChild(xt);
+      if (xi % step === 0 || xi === n - 1) kept.push(xi);
     }
+    // The last label is worth forcing, but not on top of its neighbour — drop the penultimate one.
+    if (kept.length >= 2 && xPos(kept[kept.length - 1]) - xPos(kept[kept.length - 2]) < minGap) {
+      kept.splice(kept.length - 2, 1);
+    }
+    kept.forEach(function (xk) {
+      var xt = svgEl('text');
+      xt.setAttribute('x', xPos(xk).toFixed(1)); xt.setAttribute('y', H - 6);
+      xt.setAttribute('text-anchor', 'middle'); xt.setAttribute('class', 'fdy-chart-xy__xlabel');
+      xt.textContent = labels[xk] || ('#' + (xk + 1));
+      svg.appendChild(xt);
+    });
 
     if (type === 'bar') {
       var S = series.length;

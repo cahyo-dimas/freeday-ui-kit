@@ -48,6 +48,8 @@ const props = defineProps<{
   rowActivatable?: boolean;
   /** Per-row class hook, e.g. to mark a selected row. */
   rowClass?: (row: Row) => string | undefined;
+  /** Controlled: row keys whose `row-detail` slot is shown as a full-width row beneath them. */
+  expandedKeys?: ReadonlyArray<string | number>;
 }>();
 
 const emit = defineEmits<{
@@ -184,6 +186,9 @@ function onRowKeydown(e: KeyboardEvent, row: Row): void {
   e.preventDefault();
   emit('row-activate', row);
 }
+function isExpanded(row: Row): boolean {
+  return props.expandedKeys?.includes(props.rowKey(row)) === true;
+}
 </script>
 
 <template>
@@ -224,19 +229,24 @@ function onRowKeydown(e: KeyboardEvent, row: Row): void {
               <slot name="empty">{{ emptyText ?? 'No data' }}</slot>
             </td>
           </tr>
-          <tr
-            v-for="row in displayRows"
-            v-else
-            :key="rowKey(row)"
-            :class="rowClasses(row)"
-            :tabindex="rowActivatable ? 0 : undefined"
-            @click="onRowClick(row)"
-            @keydown="onRowKeydown($event, row)"
-          >
-            <td v-for="col in columns" :key="col.key" :class="cellClass(col)" :style="alignStyle(col)">
-              <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col)">{{ cellText(row, col) }}</slot>
-            </td>
-          </tr>
+          <template v-else>
+            <template v-for="row in displayRows" :key="rowKey(row)">
+              <tr
+                :class="rowClasses(row)"
+                :tabindex="rowActivatable ? 0 : undefined"
+                :aria-expanded="$slots['row-detail'] ? (isExpanded(row) ? 'true' : 'false') : undefined"
+                @click="onRowClick(row)"
+                @keydown="onRowKeydown($event, row)"
+              >
+                <td v-for="col in columns" :key="col.key" :class="cellClass(col)" :style="alignStyle(col)">
+                  <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col)">{{ cellText(row, col) }}</slot>
+                </td>
+              </tr>
+              <tr v-if="$slots['row-detail'] && isExpanded(row)" class="fdy-table__detailrow">
+                <td :colspan="columns.length"><slot name="row-detail" :row="row" /></td>
+              </tr>
+            </template>
+          </template>
         </tbody>
       </table>
     </div>

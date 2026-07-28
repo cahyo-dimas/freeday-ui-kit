@@ -1,5 +1,5 @@
 import type { CSSProperties, JSX, ReactNode } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import {
   cellValue,
   cellText,
@@ -57,6 +57,10 @@ export interface FdyTableProps<Row extends object> {
   rowClass?: (row: Row) => string | undefined;
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   onRowActivate?: (row: Row) => void;
+  /** Controlled: row keys whose detail is shown as a full-width row beneath them. */
+  expandedKeys?: ReadonlyArray<string | number>;
+  /** Renders the expandable detail row for an expanded row (React equivalent of Vue's `row-detail` slot). */
+  renderRowDetail?: (row: Row) => ReactNode;
 }
 
 export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Element {
@@ -164,6 +168,9 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
     e.preventDefault();
     props.onRowActivate?.(row);
   }
+  function isExpanded(row: Row): boolean {
+    return props.expandedKeys?.includes(props.rowKey(row)) === true;
+  }
   function renderCellContent(col: FdyTableColumn<Row>, row: Row): ReactNode {
     if (props.renderCell !== undefined) {
       const custom: ReactNode = props.renderCell(col, row, cellValue(row, col));
@@ -213,19 +220,26 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
               </tr>
             ) : (
               displayRows.map((row: Row): JSX.Element => (
-                <tr
-                  key={props.rowKey(row)}
-                  className={rowClassName(row)}
-                  tabIndex={props.rowActivatable ? 0 : undefined}
-                  onClick={(): void => {
-                    if (props.rowActivatable === true) props.onRowActivate?.(row);
-                  }}
-                  onKeyDown={(e): void => onRowKeydown(e, row)}
-                >
-                  {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
-                    <td key={col.key} className={cellClass(col)} style={alignStyle(col)}>{renderCellContent(col, row)}</td>
-                  ))}
-                </tr>
+                <Fragment key={props.rowKey(row)}>
+                  <tr
+                    className={rowClassName(row)}
+                    tabIndex={props.rowActivatable ? 0 : undefined}
+                    aria-expanded={props.renderRowDetail !== undefined ? (isExpanded(row) ? 'true' : 'false') : undefined}
+                    onClick={(): void => {
+                      if (props.rowActivatable === true) props.onRowActivate?.(row);
+                    }}
+                    onKeyDown={(e): void => onRowKeydown(e, row)}
+                  >
+                    {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
+                      <td key={col.key} className={cellClass(col)} style={alignStyle(col)}>{renderCellContent(col, row)}</td>
+                    ))}
+                  </tr>
+                  {props.renderRowDetail !== undefined && isExpanded(row) && (
+                    <tr className="fdy-table__detailrow">
+                      <td colSpan={colCount}>{props.renderRowDetail(row)}</td>
+                    </tr>
+                  )}
+                </Fragment>
               ))
             )}
           </tbody>

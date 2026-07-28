@@ -875,7 +875,9 @@ a { color: var(--color-primary); }
 /* Responsive: each picker may shrink (min-width:0) & wrap so the range never overflows a
    narrow row/phone; inline-flex still hugs to ~23rem at wider widths (look unchanged). */
 .fdy-daterange{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);}
-.fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:0;}
+/* Each picker shrinks from an 11rem basis but not below ~7rem — enough for "dd/mm/yyyy" + the icon,
+   so a squeezed range compresses gracefully (and wraps) instead of clipping the date. */
+.fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:7rem;}
 .fdy-daterange__sep{flex:none;color:var(--color-text-subtle);}
 
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
@@ -978,13 +980,15 @@ a { color: var(--color-primary); }
 .fdy-filterbar>.fdy-field--w-sm{width:9rem;}
 .fdy-filterbar>.fdy-field--w-lg{width:15rem;}
 .fdy-filterbar>.fdy-field--w-xl{width:18rem;}
+/* Wide enough for a two-picker date range (~25rem) so it need not burn the single --w-grow slot. */
+.fdy-filterbar>.fdy-field--w-2xl{width:25rem;}
 /* One growing field (usually the search) absorbs the remaining width. */
 .fdy-filterbar>.fdy-field--w-grow{flex:1 1 16rem;width:auto;min-width:12rem;}
 /* Trailing actions (buttons) pushed to the end, aligned with the controls' baseline. */
 .fdy-filterbar__actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;}
 /* Stack on narrow screens so nothing overflows the row. */
 @media (max-width:640px){
-  .fdy-filterbar>.fdy-field,.fdy-filterbar>.fdy-field--w-sm,.fdy-filterbar>.fdy-field--w-lg,.fdy-filterbar>.fdy-field--w-xl,.fdy-filterbar>.fdy-field--w-grow{width:100%;flex:1 1 100%;}
+  .fdy-filterbar>.fdy-field,.fdy-filterbar>.fdy-field--w-sm,.fdy-filterbar>.fdy-field--w-lg,.fdy-filterbar>.fdy-field--w-xl,.fdy-filterbar>.fdy-field--w-2xl,.fdy-filterbar>.fdy-field--w-grow{width:100%;flex:1 1 100%;}
   .fdy-filterbar__actions{width:100%;margin-left:0;}
 }
 
@@ -1022,6 +1026,11 @@ a { color: var(--color-primary); }
 
 /* Freeday — Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+/* A grouped field is legitimately a <fieldset> (it needs a <legend>) — e.g. a radio/checkbox group.
+   Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
+   <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
+fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
+fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-label{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);}
 .fdy-input,.fdy-textarea{width:100%;height:var(--control-h);padding:0 var(--space-3);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input::placeholder,.fdy-textarea::placeholder{color:var(--color-text-subtle);}
@@ -1223,6 +1232,8 @@ a { color: var(--color-primary); }
    comes from the base `.fdy-table tbody tr:hover` rule, so this only adds the affordance + focus. */
 .fdy-table__row--activatable{cursor:pointer;}
 .fdy-table__row--activatable:focus-visible{outline:2px solid var(--color-primary);outline-offset:-2px;}
+/* Expandable detail row (FdyTable row-detail slot): a muted panel under its row, no hover tint. */
+.fdy-table__detailrow>td,.fdy-table__detailrow:hover>td{background:var(--color-surface-2);}
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}

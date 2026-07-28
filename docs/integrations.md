@@ -164,7 +164,8 @@ function Panel(): JSX.Element {
 > `FdyDateRange` uses `{start, end}`; `FdyChart` uses `series`/`values`; `FdyTable` takes
 > `columns`/`rows` (client-side sort/filter/pagination, or controlled `sort`/`filters`/`page` for a
 > server-paged table; `interface`-typed rows infer through; opt-in `rowActivatable` +
-> `row-activate`/`onRowActivate` for click-to-detail rows); `FdyModal`/`FdyDrawer` take `open` +
+> `row-activate`/`onRowActivate` for click-to-detail rows; expandable detail rows via
+> `row-detail`/`renderRowDetail` + controlled `expandedKeys`); `FdyModal`/`FdyDrawer` take `open` +
 > `onClose`. The same set is available
 > in `@cahyo-dimas/freeday/vue` via `v-model` / props — both adapters are fully symmetric. See
 > [`getting-started.md` §React](getting-started.md#react-vite) and

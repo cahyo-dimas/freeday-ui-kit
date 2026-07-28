@@ -23,6 +23,16 @@ menuntaskan ketiga item di bawah._
 > core, jadi tanpa cast). **#26** aktivasi baris opt-in: `rowActivatable` + `row-activate`/`onRowActivate`
 > + `rowClass` + `.fdy-table__row--activatable` (guard `target !== currentTarget` untuk Enter/Space).
 > Gate hijau + type-proof: interface row compile di `extends object`, ditolak di constraint lama.
+>
+> **Update 2026-07-28 (3) — v1.10.0 (published).** Notes #27–#30 (aditif/korektif). **#27** reset
+> UA-chrome `fieldset.fdy-field` (border/padding/`min-inline-size` groove bocor saat grup pakai
+> `<fieldset>`). **#28** kolom filterbar `.fdy-field--w-2xl` (25rem) + `min-width:7rem` picker daterange
+> (catatan #28 root-cause-nya **basi** — rule "clobber" yang dituduh ternyata milik `.fdy-datetimepicker`,
+> bukan daterange; jadi cuma bagian aditif yang diambil). **#29** fix tabrakan label terakhir sumbu-x
+> chart (ganti tebakan 40px → ukur label + drop penultimate saat bertumpuk). **#30** `FdyTable` baris
+> detail expandable: slot `row-detail`/prop `renderRowDetail` + `expandedKeys` terkontrol +
+> `.fdy-table__detailrow` (menutup tabel hand-rolled terakhir: LogsView). Gate: 20/20 · typecheck 0 ·
+> SFC compile · `node --check` chart OK.
 
 ---
 

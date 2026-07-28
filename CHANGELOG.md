@@ -3,6 +3,32 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.10.0] — 2026-07-28
+Follow-ups from the doc-ai-automation migration (improvement notes #27–#30). Additive / corrective;
+no breaking changes.
+
+### Fixed
+- **`<fieldset class="fdy-field">` no longer leaks native browser chrome (#27).** The kit shipped no
+  `fieldset` reset, so a grouped field (a radio/checkbox group with a `<legend>`) showed the UA groove
+  border, extra padding, and `min-inline-size:min-content` — the last of which also blocked the
+  filterbar column widths from shrinking it. Added a scoped `fieldset.fdy-field` reset so it lays out
+  identically to the `<div>` form.
+- **Chart x-axis: the last label no longer collides with its neighbour (#29).** `freeday-chart.js`
+  force-drew the final label with no spacing check, so on a dense axis (e.g. 24 hourly points) the
+  last two labels fused. It now estimates the widest label instead of assuming a fixed 40px slot, and
+  drops the penultimate label when the forced-last one would overlap it. Visual only; sparse axes
+  render identically.
+
+### Added
+- **`FdyTable` expandable detail rows (#30).** A `row-detail` slot (Vue) / `renderRowDetail` prop
+  (React) renders a full-width row beneath any expanded row, driven by a **controlled** `expandedKeys`
+  (matches the sort/filter/page contract; pairs with `row-activate` as the toggle). Adds a
+  `.fdy-table__detailrow` class (muted panel, no hover tint). Removes the last interaction that kept a
+  table hand-rolled.
+- **`.fdy-field--w-2xl` (25rem) filterbar column (#28).** Wide enough for a two-picker date range, so
+  it need not burn the single `--w-grow` slot. The date-range pickers also gained a `min-width` (7rem)
+  so a squeezed range compresses and wraps instead of clipping the date (was `min-width:0`).
+
 ## [1.9.0] — 2026-07-28
 Follow-ups to 1.8.0's `FdyTable` (improvement notes #25/#26). Additive — the #25 change **widens** a
 generic bound, so every call site that compiled before still compiles.
