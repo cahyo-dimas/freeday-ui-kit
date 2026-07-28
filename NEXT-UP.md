@@ -43,6 +43,14 @@ menuntaskan ketiga item di bawah._
 > (basis grow menentukan wrap, bukan lebar render). Verifikasi #31 (whiteSpace=nowrap, tinggi 1 baris)
 > & #33 (none→0 legend, auto→1) juga via browser. **Pola berulang: note bisa mengusulkan non-fix (spt
 > #28) — verifikasi tiap klaim & fix di source/render nyata sebelum ship.**
+>
+> **Update 2026-07-28 (5) — v1.11.1 (published, fix-only patch).** Note #34: `.fdy-modal` tak pernah
+> punya flex context (base tak `flex-direction:column`, `[open]` tak `display:flex`, body tak
+> `flex:1;min-height:0`) → body height = content, `overflow:auto` tak punya yang di-scroll, `max-height`
+> meng-clip footer + tombol submit di viewport pendek. Diberi pola milik `.fdy-drawer` (yang sudah benar).
+> Diverifikasi headless Chrome: body scrollHeight 1595 > clientHeight 609, footer di dalam dialog, tombol
+> submit terlihat; `.fdy-modal--cfl` juga OK (results tetap scroll via max-height sendiri, gap 0, tanpa
+> regresi). Note #34 = valid & fix-nya benar (beda dari #28/#32 yang non-fix).
 
 ---
 

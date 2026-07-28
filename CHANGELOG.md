@@ -3,6 +3,18 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.11.1] — 2026-07-28
+### Fixed
+- **Tall modals now scroll their body instead of clipping the footer (#34).** `.fdy-modal` had a
+  `max-height` + `overflow:hidden` but never established a flex context, so its three children laid out
+  as blocks: the body's height was its own content height (nothing for `overflow:auto` to scroll), and
+  the dialog's cap clipped whatever stuck out — including `.fdy-modal__footer` and its submit button, on
+  a short viewport (a form you could fill but not save). Gave the modal the column-flex treatment the
+  sibling `.fdy-drawer` already uses: `display:flex` on `.fdy-modal[open]`, `flex-direction:column` on
+  the base, `flex:none` on header/footer, and `flex:1;min-height:0` on the body. Modals that already fit
+  are unchanged. Verified in-browser (body scrolls, footer stays inside) including the `.fdy-modal--cfl`
+  picker — no regression.
+
 ## [1.11.0] — 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). Additive / corrective.
 

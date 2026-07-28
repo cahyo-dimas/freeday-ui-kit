@@ -738,22 +738,22 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
 
 /* Freeday — Modal (native <dialog>) */
-.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
+.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;flex-direction:column;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal--sm{width:min(24rem,calc(100vw - var(--space-8)));}
 .fdy-modal--md{width:min(32rem,calc(100vw - var(--space-8)));}
 .fdy-modal--lg{width:min(48rem,calc(100vw - var(--space-8)));}
 .fdy-modal--wide{width:min(60rem,calc(100vw - var(--space-8)));}
 .fdy-modal::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity var(--dur-base) var(--ease-standard),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
-.fdy-modal__header{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
+.fdy-modal__header{flex:none;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 .fdy-modal__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;}
 .fdy-modal__close{border:0;background:transparent;color:var(--color-text-muted);font-size:var(--text-xl);line-height:1;cursor:pointer;padding:var(--space-1);border-radius:var(--radius-sm);}
 .fdy-modal__close:hover{background:var(--color-surface-2);color:var(--color-text);}
-.fdy-modal__body{padding:var(--space-5);overflow:auto;}
-.fdy-modal__footer{display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-4) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:var(--color-surface-2);}
+.fdy-modal__body{flex:1;min-height:0;padding:var(--space-5);overflow:auto;}
+.fdy-modal__footer{flex:none;display:flex;gap:var(--space-2);justify-content:flex-end;padding:var(--space-4) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:var(--color-surface-2);}
 /* Symmetric enter AND exit (fade + rise + subtle scale) on the native <dialog>. @starting-style
  * animates the entry; overlay/display allow-discrete keep it painted through the exit so it
  * animates out on close too. Reduced motion honored by the global duration reset in base.css. */
-.fdy-modal[open]{opacity:1;transform:none;}
+.fdy-modal[open]{display:flex;opacity:1;transform:none;}
 .fdy-modal[open]::backdrop{opacity:1;}
 @starting-style{
   .fdy-modal[open]{opacity:0;transform:translateY(8px) scale(.98);}
