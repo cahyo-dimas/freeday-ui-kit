@@ -3,6 +3,28 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.9.0] — 2026-07-28
+Follow-ups to 1.8.0's `FdyTable` (improvement notes #25/#26). Additive — the #25 change **widens** a
+generic bound, so every call site that compiled before still compiles.
+
+### Fixed
+- **`FdyTable` now accepts `interface`-typed rows.** The row generic was constrained to
+  `Record<string, unknown>`, to which a TypeScript `interface` is never assignable (interfaces get no
+  implicit index signature) — so a normally-typed DTO array failed to compile and `FdyTable` was
+  effectively unusable in a strict-TS app. Widened the bound to `object` in both adapters; the row type
+  now **infers** correctly (`cell-*` slots / `renderCell` are properly typed) and no cast is pushed
+  onto consumers. The component never indexes rows directly — all access goes through the
+  already-unconstrained core, which is unchanged.
+
+### Added
+- **`FdyTable` row activation (opt-in).** `rowActivatable` makes rows focusable and emits
+  `row-activate` (Vue) / calls `onRowActivate` (React) on click, or Enter/Space while the row itself is
+  focused — a control inside a cell keeps its own event (the `target !== currentTarget` guard). Adds a
+  `rowClass(row)` hook for per-row state (e.g. a selected row) and a `.fdy-table__row--activatable`
+  class (pointer + `:focus-visible` ring; hover tint is already inherited from the base row rule).
+  Replaces the hand-rolled `<tr tabindex="0" @click @keydown>` + duplicated row CSS consumers were
+  each re-writing.
+
 ## [1.8.0] — 2026-07-28
 Release **1.8 — framework-safe data table, modal/drawer wrappers, and a monospace utility**.
 Non-breaking, purely additive. No existing selector, markup, or enhancer changed.

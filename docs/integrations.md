@@ -163,7 +163,9 @@ function Panel(): JSX.Element {
 > `FdyDatepicker`/`FdyAutocomplete`/`FdyCascade`/`FdyCfl` use the same `value`/`onChange`;
 > `FdyDateRange` uses `{start, end}`; `FdyChart` uses `series`/`values`; `FdyTable` takes
 > `columns`/`rows` (client-side sort/filter/pagination, or controlled `sort`/`filters`/`page` for a
-> server-paged table); `FdyModal`/`FdyDrawer` take `open` + `onClose`. The same set is available
+> server-paged table; `interface`-typed rows infer through; opt-in `rowActivatable` +
+> `row-activate`/`onRowActivate` for click-to-detail rows); `FdyModal`/`FdyDrawer` take `open` +
+> `onClose`. The same set is available
 > in `@cahyo-dimas/freeday/vue` via `v-model` / props — both adapters are fully symmetric. See
 > [`getting-started.md` §React](getting-started.md#react-vite) and
 > `examples/react-faktur/src/App.tsx`. **Vite** transpiles the `.tsx` source with no extra config;

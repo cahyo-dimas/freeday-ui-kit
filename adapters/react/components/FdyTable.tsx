@@ -29,7 +29,7 @@ import { FdyTableFilter } from './FdyTableFilter';
 //     `onSortChange` / `onFiltersChange` / `onPageChange` for the caller to feed back into its query.
 // Column filters (text/enum/number/date) apply live; in server mode, debounce the callback if needed.
 
-export interface FdyTableProps<Row extends Record<string, unknown>> {
+export interface FdyTableProps<Row extends object> {
   columns: ReadonlyArray<FdyTableColumn<Row>>;
   rows: ReadonlyArray<Row>;
   rowKey: (row: Row) => string | number;
@@ -51,9 +51,15 @@ export interface FdyTableProps<Row extends Record<string, unknown>> {
   renderCell?: (column: FdyTableColumn<Row>, row: Row, value: unknown) => ReactNode;
   toolbar?: ReactNode;
   empty?: ReactNode;
+  /** Opt in to row activation: rows become focusable and call `onRowActivate` on click/Enter/Space. */
+  rowActivatable?: boolean;
+  /** Per-row class hook, e.g. to mark a selected row. */
+  rowClass?: (row: Row) => string | undefined;
+  /** A row was activated (click, or Enter/Space while the row itself is focused). */
+  onRowActivate?: (row: Row) => void;
 }
 
-export function FdyTable<Row extends Record<string, unknown>>(props: FdyTableProps<Row>): JSX.Element {
+export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Element {
   const serverPaged: boolean = props.page != null;
   const sortControlled: boolean = serverPaged || props.sort !== undefined;
   const filtersControlled: boolean = serverPaged || props.filters !== undefined;
@@ -143,6 +149,21 @@ export function FdyTable<Row extends Record<string, unknown>>(props: FdyTablePro
   function alignStyle(col: FdyTableColumn<Row>): CSSProperties | undefined {
     return col.align !== undefined ? { textAlign: col.align } : undefined;
   }
+  function rowClassName(row: Row): string | undefined {
+    const cls: string = [props.rowClass?.(row), props.rowActivatable === true ? 'fdy-table__row--activatable' : undefined]
+      .filter(Boolean)
+      .join(' ');
+    return cls === '' ? undefined : cls;
+  }
+  // Enter/Space activate only when the row itself is focused — a control inside a cell keeps its own
+  // event (the `event.target !== event.currentTarget` guard). Click relies on inner controls calling
+  // stopPropagation, matching the pattern consumers hand-roll today.
+  function onRowKeydown(e: React.KeyboardEvent<HTMLTableRowElement>, row: Row): void {
+    if (props.rowActivatable !== true || e.target !== e.currentTarget) return;
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    props.onRowActivate?.(row);
+  }
   function renderCellContent(col: FdyTableColumn<Row>, row: Row): ReactNode {
     if (props.renderCell !== undefined) {
       const custom: ReactNode = props.renderCell(col, row, cellValue(row, col));
@@ -192,7 +213,15 @@ export function FdyTable<Row extends Record<string, unknown>>(props: FdyTablePro
               </tr>
             ) : (
               displayRows.map((row: Row): JSX.Element => (
-                <tr key={props.rowKey(row)}>
+                <tr
+                  key={props.rowKey(row)}
+                  className={rowClassName(row)}
+                  tabIndex={props.rowActivatable ? 0 : undefined}
+                  onClick={(): void => {
+                    if (props.rowActivatable === true) props.onRowActivate?.(row);
+                  }}
+                  onKeyDown={(e): void => onRowKeydown(e, row)}
+                >
                   {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
                     <td key={col.key} className={cellClass(col)} style={alignStyle(col)}>{renderCellContent(col, row)}</td>
                   ))}

@@ -16,6 +16,13 @@ menuntaskan ketiga item di bawah._
 > **#24** `FdyModal`/`FdyDrawer` controlled Vue+React (glue `showModal()`/`close()` + Esc + backdrop
 > ditulis sekali). Gate hijau: `node --test` 20/20 · `typecheck:react` 0 · build no-diff (dist =
 > hanya penambahan CSS). Catatan mentah ada di `improvement-notes/` (tetap untracked).
+>
+> **Update 2026-07-28 (2) — v1.9.0 (published).** Follow-up `FdyTable` dari notes #25/#26:
+> **#25** generic row dilonggarkan `Record<string,unknown>` → `extends object` (blocker: DTO
+> ber-`interface` sebelumnya gagal compile; komponen tak pernah meng-index row langsung, semua lewat
+> core, jadi tanpa cast). **#26** aktivasi baris opt-in: `rowActivatable` + `row-activate`/`onRowActivate`
+> + `rowClass` + `.fdy-table__row--activatable` (guard `target !== currentTarget` untuk Enter/Space).
+> Gate hijau + type-proof: interface row compile di `extends object`, ditolak di constraint lama.
 
 ---
 

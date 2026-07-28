@@ -874,6 +874,10 @@ a { color: var(--color-primary); }
 .fdy-table__num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--font-mono);}
 /* Loading / empty state cell (FdyTable spans it across all columns). */
 .fdy-table__state{text-align:center;color:var(--color-text-muted);padding:var(--space-6) var(--space-4);}
+/* Activatable row (FdyTable rowActivatable): pointer + keyboard focus ring. The hover tint already
+   comes from the base `.fdy-table tbody tr:hover` rule, so this only adds the affordance + focus. */
+.fdy-table__row--activatable{cursor:pointer;}
+.fdy-table__row--activatable:focus-visible{outline:2px solid var(--color-primary);outline-offset:-2px;}
 .fdy-table th[aria-sort]{cursor:pointer;}
 .fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
 .fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}

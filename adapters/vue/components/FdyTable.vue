@@ -1,4 +1,4 @@
-<script setup lang="ts" generic="Row extends Record<string, unknown>">
+<script setup lang="ts" generic="Row extends object">
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue';
 import {
   cellValue,
@@ -44,12 +44,18 @@ const props = defineProps<{
   loading?: boolean;
   emptyText?: string;
   ariaLabel?: string;
+  /** Opt in to row activation: rows become focusable and emit `row-activate` on click/Enter/Space. */
+  rowActivatable?: boolean;
+  /** Per-row class hook, e.g. to mark a selected row. */
+  rowClass?: (row: Row) => string | undefined;
 }>();
 
 const emit = defineEmits<{
   'update:sort': [sort: FdySortState | null];
   'update:filters': [filters: FdyFilterMap];
   'update:page': [page: FdyPageState];
+  /** A row was activated (click, or Enter/Space while the row itself is focused). */
+  'row-activate': [row: Row];
 }>();
 
 const internalSort: Ref<FdySortState | null> = ref(null);
@@ -162,6 +168,22 @@ function cellClass(col: FdyTableColumn<Row>): string | undefined {
 function alignStyle(col: FdyTableColumn<Row>): Record<string, string> | undefined {
   return col.align !== undefined ? { textAlign: col.align } : undefined;
 }
+
+function rowClasses(row: Row): Array<string | undefined> {
+  return [props.rowClass?.(row), props.rowActivatable === true ? 'fdy-table__row--activatable' : undefined];
+}
+function onRowClick(row: Row): void {
+  if (props.rowActivatable === true) emit('row-activate', row);
+}
+// Enter/Space activate only when the row itself is focused — a control inside a cell keeps its own
+// event (the `event.target !== event.currentTarget` guard). Click relies on inner controls calling
+// stopPropagation, matching the pattern consumers hand-roll today.
+function onRowKeydown(e: KeyboardEvent, row: Row): void {
+  if (props.rowActivatable !== true || e.target !== e.currentTarget) return;
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  e.preventDefault();
+  emit('row-activate', row);
+}
 </script>
 
 <template>
@@ -202,7 +224,15 @@ function alignStyle(col: FdyTableColumn<Row>): Record<string, string> | undefine
               <slot name="empty">{{ emptyText ?? 'No data' }}</slot>
             </td>
           </tr>
-          <tr v-for="row in displayRows" v-else :key="rowKey(row)">
+          <tr
+            v-for="row in displayRows"
+            v-else
+            :key="rowKey(row)"
+            :class="rowClasses(row)"
+            :tabindex="rowActivatable ? 0 : undefined"
+            @click="onRowClick(row)"
+            @keydown="onRowKeydown($event, row)"
+          >
             <td v-for="col in columns" :key="col.key" :class="cellClass(col)" :style="alignStyle(col)">
               <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col)">{{ cellText(row, col) }}</slot>
             </td>
