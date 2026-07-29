@@ -5,7 +5,7 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.11.2-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.11.2)
+[![Release](https://img.shields.io/badge/release-v1.12.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.12.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.

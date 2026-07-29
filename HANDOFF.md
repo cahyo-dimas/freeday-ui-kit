@@ -6,8 +6,14 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.11.2 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.11.2`). Terbit di npm
-publik sebagai `@cahyo-dimas/freeday`. (1.11.2 = fix-only note #35: `.fdy-filterbar` (align-items:flex-end)
+**v1.12.0 — disiapkan di working tree, BELUM di-commit/tag/push** (menunggu push berikutnya; OIDC
+mem-publish saat tag `v1.12.0` naik). #36 diimplementasi & diverifikasi (gate 20/20, typecheck 0,
+bukti browser); semua ref versi sudah di-bump ke 1.12.0. **Terakhir terbit di npm = v1.11.2**
+(`main` = `origin/main` = tag `v1.11.2`), publik sebagai `@cahyo-dimas/freeday`. (1.12.0 = note #36,
+aditif: `data-fdy-colors` & `<FdyChart colors>` kini bisa menamai slot palet kategorikal `chart-1..8`
+(→ `var(--chart-N)`), bukan hanya token semantik — `colorVar` memetakan nama `chart-N`. Backward-
+compatible; diverifikasi browser: explicit `chart-1..3` == palet default, semantik tetap semantik.
+Sebelumnya 1.11.2 = fix-only note #35: `.fdy-filterbar` (align-items:flex-end)
 & `.fdy-table-toolbar` (align-items:center) sama-sama single-class → saat digabung di satu elemen yang
 belakangan di bundle (toolbar) menang → kontrol ter-center, actions ngambang. Ditambah rule 2-kelas
 `.fdy-table-toolbar.fdy-filterbar{align-items:flex-end}` (0,2,0) — aditif, cuma kena elemen dgn kedua kelas.
@@ -19,10 +25,10 @@ hormati `data-fdy-legend="none"` (dulu selalu render legend); **#32** modifier o
 bekerja** (margin tak mengubah flex line-breaking), jadi cuma modifier + doc yang diambil.) Sebelumnya:
 1.10.0 = notes #27–#30 (fieldset reset · `--w-2xl` · fix label chart · `FdyTable` detail rows); 1.9.0 =
 `FdyTable` #25/#26; 1.8.0 = `FdyTable` + `FdyModal`/`FdyDrawer` + `.fdy-mono`.
-Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width) → v1.7.1 (docs English-first + `README.id.md`; kode identik 1.7.0) → v1.8.0 (`FdyTable` controlled Vue+React + core `adapters/core/table-model.js`; `FdyModal`/`FdyDrawer` controlled Vue+React; utilitas `.fdy-mono`; `.fdy-drawer__footer`) → v1.9.0 (`FdyTable` #25 generic `extends object` untuk row ber-`interface` + #26 aktivasi baris `rowActivatable`/`row-activate`/`rowClass` + `.fdy-table__row--activatable`) → v1.10.0 (#27 reset `fieldset.fdy-field` · #28 `.fdy-field--w-2xl` + min-width picker daterange · #29 fix tabrakan label sumbu-x chart · #30 `FdyTable` baris detail expandable `row-detail`/`expandedKeys`) → v1.11.0 (#31 `.fdy-badge` nowrap · #32 modifier `.fdy-filterbar--actions-inline` + doc wrap · #33 donut hormati `legend="none"`) → v1.11.1 (#34 `.fdy-modal` flex column — body scroll, footer tak ke-clip) → v1.11.2 (#35 `.fdy-table-toolbar.fdy-filterbar` align-items:flex-end — komposisi toolbar+filterbar satu baseline).
+Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width) → v1.7.1 (docs English-first + `README.id.md`; kode identik 1.7.0) → v1.8.0 (`FdyTable` controlled Vue+React + core `adapters/core/table-model.js`; `FdyModal`/`FdyDrawer` controlled Vue+React; utilitas `.fdy-mono`; `.fdy-drawer__footer`) → v1.9.0 (`FdyTable` #25 generic `extends object` untuk row ber-`interface` + #26 aktivasi baris `rowActivatable`/`row-activate`/`rowClass` + `.fdy-table__row--activatable`) → v1.10.0 (#27 reset `fieldset.fdy-field` · #28 `.fdy-field--w-2xl` + min-width picker daterange · #29 fix tabrakan label sumbu-x chart · #30 `FdyTable` baris detail expandable `row-detail`/`expandedKeys`) → v1.11.0 (#31 `.fdy-badge` nowrap · #32 modifier `.fdy-filterbar--actions-inline` + doc wrap · #33 donut hormati `legend="none"`) → v1.11.1 (#34 `.fdy-modal` flex column — body scroll, footer tak ke-clip) → v1.11.2 (#35 `.fdy-table-toolbar.fdy-filterbar` align-items:flex-end — komposisi toolbar+filterbar satu baseline) → v1.12.0 (#36 override warna chart bisa menunjuk slot palet kategorikal `chart-1..8` → `var(--chart-N)`; **disiapkan, belum di-push**).
 
 - **46 komponen** CSS (`src/components/*.css`) — termasuk `.fdy-filterbar` (baris filter) & `.fdy-form-grid` (grid header/dokumen)
-- **23 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`) — termasuk `freeday-tree.js` (cascade tree checkbox)
+- **24 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`) — termasuk `freeday-tree.js` (cascade tree checkbox)
 - **3 adapter framework** terbukti — Vue / React / Blazor (`adapters/`), tiap-tiap dengan
   contoh faktur nyata yang diverifikasi headless (`examples/{vue,react,blazor}-faktur/`)
 - **Komponen framework Vue + React — simetris penuh** (v1.2 → v1.8): sepuluh komponen controlled
@@ -33,7 +39,7 @@ Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + cha
   (WAI-ARIA APG, dropdown/popover top-layer lewat Popover API). Vue lewat
   `freeday/vue` (`v-model`), React lewat `freeday/react` (`value`/`onChange`). Tak ada lagi
   jembatan event manual untuk kontrol-kontrol ini.
-- **Kontras WCAG AA** ditegakkan sebagai regression test — `node --test` **9/9** hijau
+- **Kontras WCAG AA** ditegakkan sebagai regression test — `node --test` **20/20** hijau
 - `dist/` di-commit & deterministik (rebuild = tanpa diff)
 
 Definisi v1.0 terpenuhi: AA lolos audit · installable via git · ≥1 integrasi framework
@@ -50,7 +56,7 @@ terbukti · docs adopsi lengkap.
 
 ```bash
 node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css + freeday.css + copy dist/*.js
-npm test                # node --test (9/9)
+npm test                # node --test (20/20)
 ```
 
 ## Lokasi
@@ -68,8 +74,9 @@ Backlog aktif + titik lanjut ada di **[`NEXT-UP.md`](NEXT-UP.md)** — buka itu 
 nerusin. Ringkasnya: **tak ada yang mendesak**. Ketiga item lama sudah ditangani (2026-07-27):
 kontras AA soft-badge **ternyata sudah tertutup sejak v0.2** (cuma prosa spec §12 yang basi,
 sudah di-truth-up) · review independen v1.6.0 **selesai, tak ada bug korektnes** · distribusi #8
-**diputuskan (npm publik ber-scope `@cahyo-dimas/freeday`)** dengan plumbing sudah di working tree.
-Sisa satu-satunya = **eksekusi rilis npm** (outward-facing) — runbook lengkap di `NEXT-UP.md` item 3.
+**diputuskan & terbit (npm publik ber-scope `@cahyo-dimas/freeday`)**. Rilis kini **otomatis
+via OIDC** (GitHub Actions, tanpa token/OTP) tiap tag `v*` — sudah jalan untuk v1.8.0–v1.11.2.
+Runbook rilis tetap di `NEXT-UP.md` item 3.
 
 Cakupan komponen praktis lengkap. Sisa spec §7 — **data grid virtualisasi, form master-detail /
 2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya (filter-bar sudah

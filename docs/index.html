@@ -328,7 +328,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.11.2</p>
+          <p class="doc-eyebrow">Design System · v1.12.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -1332,7 +1332,7 @@
 
     <section class="doc-section" id="sec-charts">
       <h2>Charts</h2>
-      <p class="doc-desc">Sparkline, bar, <strong>line</strong>, <strong>area</strong>, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>. Seri tunggal via <code>data-values</code>; multi-seri via <code>data-series</code> (JSON). Cartesian (line/area/bar) menggambar <strong>sumbu ber-tema</strong> (<code>--chart-grid</code>/<code>--chart-tick</code>), legenda otomatis untuk ≥2 seri, dan format nilai <code>data-fdy-format="number|percent|currency"</code>. Warna dari token → chart <strong>ikut re-warna saat <code>data-theme</code> berubah</strong>. Untuk data reaktif: panggil <code>FreedayChart.update(el)</code> atau pakai <code>&lt;FdyChart&gt;</code> dari <code>@cahyo-dimas/freeday/vue</code>. Butuh <code>freeday-chart.js</code>; tiap chart <code>role="img"</code> + <code>aria-label</code> + fallback tabel di dalam elemen.</p>
+      <p class="doc-desc">Sparkline, bar, <strong>line</strong>, <strong>area</strong>, dan donut — SVG/CSS murni, <strong>tanpa dependency</strong>. Seri tunggal via <code>data-values</code>; multi-seri via <code>data-series</code> (JSON). Cartesian (line/area/bar) menggambar <strong>sumbu ber-tema</strong> (<code>--chart-grid</code>/<code>--chart-tick</code>), legenda otomatis untuk ≥2 seri, dan format nilai <code>data-fdy-format="number|percent|currency"</code>. Warna dari token → chart <strong>ikut re-warna saat <code>data-theme</code> berubah</strong>. Multi-seri memakai palet kategorikal tervalidasi <code>--chart-1</code>…<code>--chart-8</code> (urutan tetap); override lewat <code>data-fdy-colors</code> — nama token semantik (<code>primary</code>…) <em>atau</em> slot <code>chart-1</code>…<code>chart-8</code> untuk mengunci warna per kategori. Untuk data reaktif: panggil <code>FreedayChart.update(el)</code> atau pakai <code>&lt;FdyChart&gt;</code> dari <code>@cahyo-dimas/freeday/vue</code>. Butuh <code>freeday-chart.js</code>; tiap chart <code>role="img"</code> + <code>aria-label</code> + fallback tabel di dalam elemen.</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Pendapatan</h3>
@@ -1913,7 +1913,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.11.2 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.12.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -2022,7 +2022,7 @@
     'sec-table': { h2: 'Table', desc: 'A static semantic table — <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, right-aligned tabular numbers.' },
     'sec-datatable': { h2: 'Data table', desc: 'Interactive: global search, sort (click a column header), <strong>per-column filters</strong> (funnel icon — text <em>contains</em>, enum <em>checklist</em>, number <em>range</em>), row select → <strong>bulk action bar</strong>, pagination. Needs <code>freeday-table.js</code>.' },
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
-    'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
+    'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, line, area, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; multi-series uses the validated categorical palette <code>--chart-1</code>…<code>--chart-8</code>, overridable with <code>data-fdy-colors</code> — a semantic token name or a slot <code>chart-1</code>…<code>chart-8</code> to pin a colour per category. Each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
     'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row. The <strong>checkbox</strong> variant (right) adds cascading selection: check a branch → all children follow; some children → the branch turns <em>indeterminate</em>. Needs <code>freeday-tree.js</code> for the cascade; a checkbox never expands/collapses the branch.' },
     'sec-card': { h2: 'Card' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },

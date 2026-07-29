@@ -14,6 +14,11 @@ export interface FdyChartProps {
   format?: 'number' | 'percent' | 'currency';
   stacked?: boolean;
   legend?: 'auto' | 'always' | 'none';
+  /**
+   * Per-series colour override. Each entry is a semantic token name (primary/accent/success/
+   * warning/danger/info) OR a categorical slot 'chart-1'..'chart-8' to pin a series to the
+   * validated palette. Omit to use the default fixed-order chart palette.
+   */
   colors?: ReadonlyArray<string>;
   color?: string;
   center?: string | number;

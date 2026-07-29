@@ -6,7 +6,9 @@
  * Single-series colour (sparkline / simple bar / single line) via data-fdy-color references a
  * semantic token by name (primary, accent, success, warning, danger, info). Multi-series
  * defaults draw from the validated categorical --chart-1..8 palette in fixed order (never
- * cycled, 8-series cap); pass data-fdy-colors to override with semantic names instead.
+ * cycled, 8-series cap); pass data-fdy-colors to override — a name is a semantic token
+ * (var(--color-<name>)) OR a slot "chart-1".."chart-8" (var(--chart-N)) to pin a series to the
+ * validated palette. Both data-fdy-color and data-fdy-colors accept the chart-N form.
  * Cartesian charts (line/area, multi-series/stacked bar) draw themed axes from --chart-grid /
  * --chart-tick and format ticks + tooltips via data-fdy-format (number|percent|currency).
  * Charts are an enhancement — put a table/text fallback inside the element and it will be
@@ -28,7 +30,14 @@
   // Categorical chart palette: 8 validated fixed-order slots (--chart-1..8). Series index i
   // (0-based) -> slot i+1; series beyond the 8-slot cap reuse --chart-8 (never cycled).
   function chartSlotVar(i) { return 'var(--chart-' + (i < 8 ? i + 1 : 8) + ')'; }
-  function colorVar(name) { return 'var(--color-' + (name || 'primary') + ')'; }
+  // Resolve a colour name to a CSS var(). A semantic name (primary/accent/success/warning/
+  // danger/info) reaches --color-<name>; a slot name "chart-1".."chart-8" reaches the validated
+  // categorical token --chart-N instead, so a data-fdy-colors override can pin a series to the
+  // palette (stable per category) rather than being forced onto the nearest semantic hue.
+  function colorVar(name) {
+    name = name || 'primary';
+    return name.indexOf('chart-') === 0 ? 'var(--' + name + ')' : 'var(--color-' + name + ')';
+  }
 
   function nums(el, attr) {
     var v = el.getAttribute(attr);

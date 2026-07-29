@@ -3,6 +3,23 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.12.0] — 2026-07-29
+### Added
+- **Chart colour overrides can now name a categorical palette slot (#36).** `data-fdy-colors` (and the
+  `<FdyChart colors>` prop) previously resolved every name through the semantic tier
+  (`var(--color-<name>)`), so an override could only reach `primary`/`info`/`accent`/… — never the
+  validated categorical palette `--chart-1..8`. An app that needs stable *per-category* colours (rather
+  than per-array-index) had to override, and overriding then dropped each series onto the nearest
+  semantic hue — e.g. a three-way split landing on three neighbouring blues: contrast-passing but
+  unreadable as a comparison. `colorVar` now maps a name of the form `chart-1`..`chart-8` to
+  `var(--chart-N)`, so an override can pin a series to the validated palette
+  (`colors={['chart-1','chart-2','chart-3']}`). Backward compatible — no semantic token name starts
+  with `chart-`, so semantic overrides are unchanged; the single-series `data-fdy-color` / `color`
+  accepts the `chart-N` form too. Verified in-browser: explicit `chart-1..3` now render the exact
+  fixed-order palette (blue/orange/green) and equal the default, while `success,warning,danger` still
+  resolve to their semantic tokens. (`--chart-1..8` are public tokens in `dist/freeday.tokens.css`, so
+  matching swatches/bars elsewhere can reference `var(--chart-N)` directly — no adapter export needed.)
+
 ## [1.11.2] — 2026-07-28
 ### Fixed
 - **A filter bar docked in a table toolbar no longer loses its alignment (#35).** `.fdy-filterbar`

@@ -59,6 +59,21 @@ menuntaskan ketiga item di bawah._
 > {align-items:flex-end}` (0,2,0) — aditif, cuma kena elemen dgn KEDUA kelas. Verifikasi browser:
 > composed bar computed align-items=flex-end, field input & actions button satu baseline (bottom 83/83).
 > Sekeluarga dgn #32 (trailing `__actions` berakhir di tempat tak diinginkan). Note #35 = valid & fix benar.
+>
+> **Update 2026-07-29 — v1.12.0 (DISIAPKAN, belum di-push).** Note #36: `data-fdy-colors` (& prop
+> `<FdyChart colors>`) selalu resolve lewat tier semantik (`colorVar` → `var(--color-<name>)`), jadi
+> override tak pernah bisa menyebut slot palet kategorikal `--chart-1..8` (tak ada `--color-chart-N`) →
+> app yang butuh warna stabil **per kategori** terpaksa override lalu jatuh ke hue semantik terdekat
+> (mis. 3 biru bertetangga untuk 3-way split — lolos kontras tapi tak terbaca sbg perbandingan). Fix
+> 1-baris: `colorVar` memetakan nama `chart-1..8` → `var(--chart-N)`; aditif & backward-compatible (tak
+> ada token semantik berawalan `chart-`; `data-fdy-color` single-seri juga terima bentuk `chart-N`).
+> Diverifikasi headless Chrome: explicit `chart-1..3` == palet default (`#2a78d6/#eb6834/#1baf7a`),
+> `success/warning/danger` tetap semantik. Saran kedua note ("export `chartSlotVar`") **sengaja
+> ditunda** — `--chart-1..8` sudah token publik di `dist/freeday.tokens.css`, jadi swatch/bar milik
+> consumer cukup pakai `var(--chart-N)` langsung; helper JS bisa menyusul kalau ada kebutuhan
+> index-dinamis nyata (hindari export runtime pertama dari core adapter tanpa alasan). Gate: 20/20 ·
+> typecheck 0 · `node --check` chart OK. **Belum di-commit/tag/push — versi bump + changelog sudah siap
+> di working tree, menunggu push berikutnya.**
 
 ---
 
