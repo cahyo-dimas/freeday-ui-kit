@@ -60,7 +60,7 @@ menuntaskan ketiga item di bawah._
 > composed bar computed align-items=flex-end, field input & actions button satu baseline (bottom 83/83).
 > Sekeluarga dgn #32 (trailing `__actions` berakhir di tempat tak diinginkan). Note #35 = valid & fix benar.
 >
-> **Update 2026-07-29 — v1.12.0 (DISIAPKAN, belum di-push).** Note #36: `data-fdy-colors` (& prop
+> **Update 2026-07-29 — v1.12.0 (published).** Note #36: `data-fdy-colors` (& prop
 > `<FdyChart colors>`) selalu resolve lewat tier semantik (`colorVar` → `var(--color-<name>)`), jadi
 > override tak pernah bisa menyebut slot palet kategorikal `--chart-1..8` (tak ada `--color-chart-N`) →
 > app yang butuh warna stabil **per kategori** terpaksa override lalu jatuh ke hue semantik terdekat
@@ -72,8 +72,22 @@ menuntaskan ketiga item di bawah._
 > ditunda** — `--chart-1..8` sudah token publik di `dist/freeday.tokens.css`, jadi swatch/bar milik
 > consumer cukup pakai `var(--chart-N)` langsung; helper JS bisa menyusul kalau ada kebutuhan
 > index-dinamis nyata (hindari export runtime pertama dari core adapter tanpa alasan). Gate: 20/20 ·
-> typecheck 0 · `node --check` chart OK. **Belum di-commit/tag/push — versi bump + changelog sudah siap
-> di working tree, menunggu push berikutnya.**
+> typecheck 0 · `node --check` chart OK. **Published via OIDC; parity 141/141 file byte-identik.**
+>
+> **Update 2026-07-30 — v1.13.0 (DISIAPKAN, belum di-push).** Note #37 pada `FdyDatepicker` (Vue+React,
+> simetris). **A** prop `clearable` → tombol × di trigger untuk mengosongkan tanggal opsional (menutup
+> regresi vs native `<input type=date>` yang punya clear). Karena trigger sendiri `<button>`, × = sibling
+> overlay di slot ikon (BUKAN nested button — invalid HTML): ikon `visibility:hidden` saat × tampil
+> (reserve space → boundary ellipsis value tak bergeser), × meng-emit `''` (`update:modelValue`+`change`
+> Vue / `onChange('')` React). **B** label nav bulan hardcoded Indonesia & tak bisa di-override → tambah
+> `prevMonthLabel`/`nextMonthLabel` (+ `clearLabel`); default UI string kini **Inggris**
+> (`Select date`/`Previous month`/`Next month`, selaras docs English-first) — **satu perubahan default
+> string**, di-flag & dikonfirmasi user (opsi Indonesia ditolak). Scope = adapter saja; enhancer vanilla
+> `freeday-datepicker.js` tetap Indonesia (dipakai demo docs ID) — sengaja ditunda. Geometri × diverifikasi
+> browser nyata (chrome-headless-shell — Chrome user sedang jalan mem-block `--headless` bind port; solusi:
+> binari headless-shell terpisah): × 12px dari kanan (=`--space-3`), center vertikal (offset 0), ikon
+> hidden, tak overlap value (pendek & panjang/ellipsis). Gate: 20/20 · typecheck 0 · SFC compile.
+> **Belum di-commit/tag/push — versi bump + changelog siap di working tree, menunggu push berikutnya.**
 
 ---
 

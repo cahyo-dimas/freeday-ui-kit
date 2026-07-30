@@ -3,6 +3,26 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.13.0] — 2026-07-30
+### Added
+- **`FdyDatepicker` clear affordance — an optional date can now be unset (#37A).** A new `clearable`
+  prop renders a small × button in the trigger (overlaid in the calendar-icon slot) whenever a date is
+  set, emitting `''` (`update:modelValue` + `change` in Vue, `onChange('')` in React) to return to
+  empty — closing a functional regression vs the native `<input type="date">`, which offered a clear
+  control. Off by default; both adapters. Verified in-browser: the × is right-aligned in the icon slot,
+  vertically centred, hides the calendar icon while shown, and never overlaps the value text (even a
+  long, ellipsised one).
+- **`FdyDatepicker` month-nav labels are now overridable (#37B).** The previous/next-month `aria-label`s
+  were hardcoded, leaking to every screen-reader user with no way to change them; added
+  `prevMonthLabel` / `nextMonthLabel` props (plus `clearLabel` for the new × button). Month and weekday
+  names already localise via `Intl` + the `locale` prop.
+### Changed
+- **`FdyDatepicker` default UI strings are now English** (`Select date` placeholder, `Previous month` /
+  `Next month` nav labels) instead of Indonesian, matching the kit's English-first public docs. Pass
+  `placeholder` / `prevMonthLabel` / `nextMonthLabel` for other languages. Scope is the Vue + React
+  `FdyDatepicker` adapters only — the vanilla `freeday-datepicker.js` enhancer (used by the Indonesian
+  docs demos) keeps its Indonesian defaults.
+
 ## [1.12.0] — 2026-07-29
 ### Added
 - **Chart colour overrides can now name a categorical palette slot (#36).** `data-fdy-colors` (and the

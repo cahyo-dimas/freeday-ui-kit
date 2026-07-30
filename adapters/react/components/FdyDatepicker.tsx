@@ -33,6 +33,14 @@ export interface FdyDatepickerProps {
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
+  /** Show a clear (×) button in the trigger when a date is set, so an optional date can be unset. Calls onChange('') to reset. Off by default. */
+  clearable?: boolean;
+  /** aria-label for the previous-month nav button. Default 'Previous month' — override for non-English UIs (month/weekday names already follow `locale`). */
+  prevMonthLabel?: string;
+  /** aria-label for the next-month nav button. Default 'Next month'. */
+  nextMonthLabel?: string;
+  /** aria-label for the clear button (when `clearable`). Default 'Clear date'. */
+  clearLabel?: string;
 }
 
 function pad(n: number): string {
@@ -109,7 +117,11 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const maxDate: Date | null = useMemo((): Date | null => parseISO(props.max), [props.max]);
   const isDisabled: boolean = props.disabled === true;
   const isInvalid: boolean = props.invalid === true;
-  const displayPlaceholder: string = props.placeholder ?? 'Pilih tanggal';
+  const displayPlaceholder: string = props.placeholder ?? 'Select date';
+  const showClear: boolean = props.clearable === true && selectedDate !== null && !isDisabled;
+  const prevMonthLabelText: string = props.prevMonthLabel ?? 'Previous month';
+  const nextMonthLabelText: string = props.nextMonthLabel ?? 'Next month';
+  const clearLabelText: string = props.clearLabel ?? 'Clear date';
 
   const [viewMonth, setViewMonth] = useState<Date>((): Date => startOfMonth(parseISO(props.value) ?? new Date()));
   const [focusDate, setFocusDate] = useState<Date>((): Date => parseISO(props.value) ?? new Date());
@@ -201,6 +213,13 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     const iso: string = toISO(day);
     props.onChange(iso);
     closePanel(true);
+  }
+
+  // Clear (reset to empty). Calls onChange('') — parseISO('') is null, so the placeholder shows again.
+  function clearValue(): void {
+    props.onChange('');
+    setOpen(false);
+    triggerRef.current?.focus();
   }
 
   function openPanel(): void {
@@ -307,21 +326,34 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         <span className={selectedDate === null ? 'fdy-datepicker__value fdy-datepicker__value--placeholder' : 'fdy-datepicker__value'}>
           {displayValue}
         </span>
-        <span className="fdy-datepicker__icon" aria-hidden="true">
+        <span className={showClear ? 'fdy-datepicker__icon is-hidden' : 'fdy-datepicker__icon'} aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="4" width="18" height="18" rx="2"></rect>
             <path d="M16 2v4M8 2v4M3 10h18"></path>
           </svg>
         </span>
       </button>
+      {showClear ? (
+        <button
+          type="button"
+          className="fdy-datepicker__clear"
+          aria-label={clearLabelText}
+          onMouseDown={(e: React.MouseEvent): void => e.preventDefault()}
+          onClick={clearValue}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      ) : null}
 
       <div ref={panelRef} className="fdy-datepicker__panel" role="dialog" aria-modal="false" aria-labelledby={titleId} hidden={!open}>
         <div className="fdy-cal__head">
-          <button type="button" className="fdy-cal__nav" aria-label="Bulan sebelumnya" onClick={(): void => setViewMonth(addMonths(viewMonth, -1))}>
+          <button type="button" className="fdy-cal__nav" aria-label={prevMonthLabelText} onClick={(): void => setViewMonth(addMonths(viewMonth, -1))}>
             &lsaquo;
           </button>
           <div id={titleId} className="fdy-cal__title">{monthFmt.format(viewMonth)}</div>
-          <button type="button" className="fdy-cal__nav" aria-label="Bulan berikutnya" onClick={(): void => setViewMonth(addMonths(viewMonth, 1))}>
+          <button type="button" className="fdy-cal__nav" aria-label={nextMonthLabelText} onClick={(): void => setViewMonth(addMonths(viewMonth, 1))}>
             &rsaquo;
           </button>
         </div>

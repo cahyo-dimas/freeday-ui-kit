@@ -11,6 +11,14 @@
 .fdy-datepicker__value--placeholder{color:var(--color-text-subtle);}
 .fdy-datepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}
 .fdy-datepicker__icon svg{display:block;width:1.05rem;height:1.05rem;}
+/* Clearable: a reset button overlaid in the icon slot (the trigger is itself a <button>, so the
+   clear control is a sibling, not a child). Shown only when clearable + a date is set; the calendar
+   icon is hidden (kept in flow so the value's ellipsis boundary doesn't shift). */
+.fdy-datepicker__icon.is-hidden{visibility:hidden;}
+.fdy-datepicker__clear{position:absolute;top:50%;right:var(--space-3);transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:1.15rem;height:1.15rem;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;transition:color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard);}
+.fdy-datepicker__clear:hover{color:var(--color-text);background:var(--color-surface-2);}
+.fdy-datepicker__clear:focus-visible{outline:none;color:var(--color-text);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-datepicker__clear svg{display:block;width:.9rem;height:.9rem;}
 
 .fdy-datepicker__panel{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;padding:var(--space-3);background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
 .fdy-datepicker__panel[hidden]{display:none;}

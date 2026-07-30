@@ -35,6 +35,14 @@ const props = defineProps<{
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
+  /** Show a clear (×) button in the trigger when a date is set, so an optional date can be unset. Emits `''` via update:modelValue + change. Off by default. */
+  clearable?: boolean;
+  /** aria-label for the previous-month nav button. Default 'Previous month' — override for non-English UIs (month/weekday names already follow `locale`). */
+  prevMonthLabel?: string;
+  /** aria-label for the next-month nav button. Default 'Next month'. */
+  nextMonthLabel?: string;
+  /** aria-label for the clear button (when `clearable`). Default 'Clear date'. */
+  clearLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -98,7 +106,13 @@ const minDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(p
 const maxDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.max));
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
-const displayPlaceholder: ComputedRef<string> = computed((): string => props.placeholder ?? 'Pilih tanggal');
+const displayPlaceholder: ComputedRef<string> = computed((): string => props.placeholder ?? 'Select date');
+const showClear: ComputedRef<boolean> = computed(
+  (): boolean => props.clearable === true && selectedDate.value !== null && isDisabled.value === false,
+);
+const prevMonthLabelText: ComputedRef<string> = computed((): string => props.prevMonthLabel ?? 'Previous month');
+const nextMonthLabelText: ComputedRef<string> = computed((): string => props.nextMonthLabel ?? 'Next month');
+const clearLabelText: ComputedRef<string> = computed((): string => props.clearLabel ?? 'Clear date');
 
 const view: Ref<Date> = ref(startOfMonth(selectedDate.value ?? new Date()));
 const focusDate: Ref<Date> = ref(selectedDate.value ?? new Date());
@@ -186,6 +200,14 @@ function pick(d: Date): void {
   emit('update:modelValue', iso);
   emit('change', iso);
   closePanel(true);
+}
+
+// Clear (reset to empty). Emits '' — parseISO('') is null, so the placeholder shows again.
+function clearValue(): void {
+  emit('update:modelValue', '');
+  emit('change', '');
+  open.value = false;
+  triggerEl.value?.focus();
 }
 
 function openPanel(): void {
@@ -297,19 +319,31 @@ onBeforeUnmount((): void => {
       @click="toggle"
     >
       <span class="fdy-datepicker__value" :class="{ 'fdy-datepicker__value--placeholder': selectedDate === null }">{{ displayValue }}</span>
-      <span class="fdy-datepicker__icon" aria-hidden="true">
+      <span class="fdy-datepicker__icon" :class="{ 'is-hidden': showClear }" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
       </span>
     </button>
+    <button
+      v-if="showClear"
+      type="button"
+      class="fdy-datepicker__clear"
+      :aria-label="clearLabelText"
+      @mousedown.prevent
+      @click="clearValue"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6 6 18M6 6l12 12"></path>
+      </svg>
+    </button>
 
     <div ref="panelEl" class="fdy-datepicker__panel" role="dialog" aria-modal="false" popover="manual" :aria-labelledby="titleId" :hidden="!open">
       <div class="fdy-cal__head">
-        <button type="button" class="fdy-cal__nav" aria-label="Bulan sebelumnya" @click="view = addMonths(view, -1)">‹</button>
+        <button type="button" class="fdy-cal__nav" :aria-label="prevMonthLabelText" @click="view = addMonths(view, -1)">‹</button>
         <div :id="titleId" class="fdy-cal__title">{{ monthFmt.format(view) }}</div>
-        <button type="button" class="fdy-cal__nav" aria-label="Bulan berikutnya" @click="view = addMonths(view, 1)">›</button>
+        <button type="button" class="fdy-cal__nav" :aria-label="nextMonthLabelText" @click="view = addMonths(view, 1)">›</button>
       </div>
       <div class="fdy-cal__grid" role="grid" :aria-labelledby="titleId" @keydown="onGridKeydown">
         <div v-for="w in weekdayHeaders" :key="w" class="fdy-cal__dow" role="columnheader" :aria-label="w">{{ w }}</div>
