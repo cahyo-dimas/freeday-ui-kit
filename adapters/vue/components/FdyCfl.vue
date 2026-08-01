@@ -32,6 +32,8 @@ const props = defineProps<{
   pageSize?: number;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   id?: string;
@@ -64,6 +66,7 @@ const error: Ref<Error | null> = ref(null);
 const activeIndex: Ref<number> = ref(-1);
 
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 const displayValue: ComputedRef<string> = computed((): string =>
   props.modelValue !== null ? props.display(props.modelValue) : '',
@@ -194,7 +197,7 @@ function onKeydown(e: KeyboardEvent): void {
 
 // --- Open / close ---------------------------------------------------------
 function openDialog(): void {
-  if (isDisabled.value) return;
+  if (isDisabled.value || isReadonly.value) return;
   if (searchTimer !== null) {
     clearTimeout(searchTimer);
     searchTimer = null;
@@ -260,7 +263,7 @@ onBeforeUnmount((): void => {
       aria-haspopup="dialog"
       :aria-labelledby="ariaLabelledby"
       :aria-label="ariaLabelledby ? undefined : 'Buka pencarian'"
-      :disabled="isDisabled"
+      :disabled="isDisabled || isReadonly"
       @click="openDialog"
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

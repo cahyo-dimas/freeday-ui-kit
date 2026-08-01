@@ -29,6 +29,8 @@ export interface FdyCascadeProps {
   id?: string;
   ariaLabelledby?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }
@@ -70,6 +72,7 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
   }, []);
 
   const isDisabled: boolean = props.disabled === true;
+  const isReadonly: boolean = props.readonly === true;
   const isInvalid: boolean = props.invalid === true;
 
   const current: ReadonlyArray<CascadeNode> =
@@ -86,7 +89,7 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
   const crumb: string = stack.length > 0 ? stack.map((n: CascadeNode): string => n.label).join(sep) : name;
 
   const openPanel = (): void => {
-    if (isDisabled) return;
+    if (isDisabled || isReadonly) return;
     // Re-open at the selected leaf's level for quick re-selection (matches the enhancer).
     setStack(selectedTrail !== null && selectedTrail.length > 1 ? selectedTrail.slice(0, -1) : []);
     setActive(0);
@@ -174,6 +177,7 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
         aria-label={props.ariaLabelledby === undefined ? name : undefined}
         aria-labelledby={props.ariaLabelledby}
         aria-invalid={isInvalid ? 'true' : undefined}
+        aria-readonly={isReadonly ? 'true' : undefined}
         aria-describedby={props.describedby}
         disabled={isDisabled}
         onClick={(): void => { if (open) closePanel(true); else openPanel(); }}

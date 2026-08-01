@@ -3,6 +3,25 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.14.0] — 2026-08-01
+### Added
+- **Read-only state across the form controls (#39).** `input` / `textarea` gain a `[readonly]` rule —
+  full-contrast text on a muted surface with a softened border and no focus-ring escalation, distinct
+  from `:disabled` (which dims the value to placeholder-grey and drops it from tab order). A new
+  `readonly` prop lands on all six controlled select-type adapters — `FdyCombo`, `FdyCascade`,
+  `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCfl` (Vue + React): the control stays focusable
+  and shows its value with `aria-readonly="true"` but can't be opened or changed (`FdyDatepicker`'s clear
+  button is suppressed too). Read-only ≠ disabled — it keeps tab order, full contrast, and stays
+  selectable / copyable / submittable, so a real value the user may not edit reads as data, not an empty
+  placeholder. Verified in-browser (readonly `opacity:1` vs disabled `0.5`; text at full `--color-text`).
+- **Interaction-state coverage completed.** Added the missing `disabled` state to `timepicker`, `rating`
+  (`.fdy-rating--disabled`), `tree` (`[aria-disabled]` rows), `tabs`, `file-upload`
+  (`[aria-disabled]` / `.is-disabled`), and `datepicker`; and the missing `invalid` state to `rating`
+  (`.fdy-rating--error`). The vanilla datetime composer now reflects `data-fdy-disabled` /
+  `data-fdy-invalid` from its wrapper onto **both** child pickers so a datetime reads as one control
+  (applied on a macrotask, so it lands after both child triggers are built — a microtask would run
+  before the later-registered timepicker enhancer). All additive; no breaking changes.
+
 ## [1.13.1] — 2026-08-01
 ### Fixed
 - **`FdyCombo` can be selected with the mouse again (#38).** Clicking an option did nothing — the

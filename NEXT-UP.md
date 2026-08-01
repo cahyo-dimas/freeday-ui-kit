@@ -103,6 +103,22 @@ menuntaskan ketiga item di bawah._
 > fokus tak pindah). Adapter-only → dist tak berubah. Gate: SFC compile · typecheck 0 · 20/20. Regression
 > test browser sengaja TAK ditambah (kit tak punya infra browser-test/puppeteer; strategi = `node --test`
 > saja) — flag ke user bila mau infra itu. See [[verify-interactive-ui-with-real-mouse]].
+>
+> **Update 2026-08-01 (2) — v1.14.0 (published, MINOR: cakupan STATE komponen).** Dari audit "state
+> mode" user + note #39. **readonly** (aditif): rule `[readonly]` input/textarea (versi #39 — full-contrast
+> di `--color-surface-2`, border `--color-border` dilembutkan, focus tak eskalasi; BEDA dari `:disabled`
+> yang opacity .5 → placeholder-grey + keluar tab order). Prop `readonly` di **6 adapter select-type**
+> (Combo/Cascade/Datepicker/DateRange/Autocomplete/**Cfl**) × Vue+React — tetap fokusabel + `aria-readonly`,
+> guard open/openPanel/openList no-op, Datepicker matikan tombol clear, Autocomplete native `readonly` di
+> input. **disabled** ditambah CSS ke timepicker/rating(`--disabled`)/tree(`[aria-disabled]`)/tabs/
+> file-upload/datepicker; **invalid** ke rating(`--error`). **datetime** (vanilla composer): propagasi
+> `data-fdy-disabled`/`data-fdy-invalid` wrapper → KEDUA anak. **BUG timing ketangkap browser test:** awal
+> pakai direct-set (asumsi anak sudah enhanced) → cuma date kena (timepicker enhancer register SESUDAH
+> composer di bundle); lalu microtask → masih gagal (microtask drain di ANTARA listener DOMContentLoaded,
+> sebelum timepicker listener); fix = `setTimeout(0)` (macrotask, tunggu seluruh init pass). Diverifikasi
+> browser: readonly opacity 1 vs disabled 0.5, semua state render, datetime disable/invalid ke 2 anak.
+> Gate 20/20 · typecheck 0 · 6 SFC compile. Vanilla picker readonly sengaja di-skip (datetime interaktif;
+> adapter cover). See [[verify-interactive-ui-with-real-mouse]].
 
 ---
 

@@ -1618,6 +1618,8 @@
  * Markup: <div data-fdy-datetimepicker>
  *   <div data-fdy-datepicker data-value="2026-07-21"></div>
  *   <div data-fdy-timepicker data-value="14:30"></div></div>
+ * State: add data-fdy-disabled or data-fdy-invalid on the wrapper to reflect it onto both
+ * child triggers as one control (read-only is adapter-only — a vanilla datetime is interactive).
  */
 (function () {
   'use strict';
@@ -1630,6 +1632,28 @@
     var dp = wrap.querySelector('[data-fdy-datepicker]');
     var tp = wrap.querySelector('[data-fdy-timepicker]');
     if (!dp || !tp) return;
+
+    // Reflect one wrapper-level state onto BOTH child triggers so a datetime reads as a single
+    // disabled/invalid control. Deferred with setTimeout(0) — NOT a microtask: the timepicker
+    // enhancer registers its DOMContentLoaded init AFTER this composer, and microtasks drain
+    // *between* listeners (so a microtask would run before the timepicker trigger exists). A
+    // macrotask waits until the whole init pass is done and both triggers are built. (readonly is
+    // intentionally not supported here: a vanilla datetime is interactive; adapters cover read-only.)
+    if (wrap.hasAttribute('data-fdy-disabled') || wrap.hasAttribute('data-fdy-invalid')) {
+      var applyState = function () {
+        var dpTrig = dp.querySelector('.fdy-datepicker__trigger');
+        var tpTrig = tp.querySelector('.fdy-timepicker__trigger');
+        if (wrap.hasAttribute('data-fdy-disabled')) {
+          if (dpTrig) dpTrig.disabled = true;
+          if (tpTrig) tpTrig.disabled = true;
+        }
+        if (wrap.hasAttribute('data-fdy-invalid')) {
+          if (dpTrig) dpTrig.setAttribute('aria-invalid', 'true');
+          if (tpTrig) tpTrig.setAttribute('aria-invalid', 'true');
+        }
+      };
+      setTimeout(applyState, 0);
+    }
 
     var date = dp.getAttribute('data-value') || '';
     var time = tp.getAttribute('data-value') || '';

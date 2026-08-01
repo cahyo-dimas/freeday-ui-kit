@@ -19,6 +19,8 @@ export interface FdyDateRangeProps {
   max?: string;
   locale?: string;
   disabled?: boolean;
+  /** Locked/view mode for both pickers — focusable, values shown, but can't be opened or changed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   startPlaceholder?: string;
@@ -45,6 +47,7 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         max={props.value.end ?? props.max}
         locale={props.locale}
         disabled={props.disabled}
+        readonly={props.readonly}
         invalid={props.invalid}
         describedby={props.describedby}
         placeholder={props.startPlaceholder ?? 'Dari'}
@@ -57,6 +60,7 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         max={props.max}
         locale={props.locale}
         disabled={props.disabled}
+        readonly={props.readonly}
         invalid={props.invalid}
         describedby={props.describedby}
         placeholder={props.endPlaceholder ?? 'Sampai'}

@@ -31,6 +31,8 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   pageSize?: number;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   id?: string;
@@ -68,6 +70,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isDisabled: boolean = props.disabled === true;
+  const isReadonly: boolean = props.readonly === true;
   const isInvalid: boolean = props.invalid === true;
   const displayValue: string = props.value !== null ? props.display(props.value) : '';
   // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
@@ -187,7 +190,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
   // --- Open / close ------------------------------------------------------------------------
   function openDialog(): void {
-    if (isDisabled) return;
+    if (isDisabled || isReadonly) return;
     if (searchTimerRef.current !== null) {
       clearTimeout(searchTimerRef.current);
       searchTimerRef.current = null;
@@ -257,7 +260,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         aria-haspopup="dialog"
         aria-labelledby={props.ariaLabelledby}
         aria-label={props.ariaLabelledby ? undefined : 'Buka pencarian'}
-        disabled={isDisabled}
+        disabled={isDisabled || isReadonly}
         onClick={openDialog}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

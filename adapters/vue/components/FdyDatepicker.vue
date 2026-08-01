@@ -31,6 +31,8 @@ const props = defineProps<{
   locale?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its date, but can't be opened, cleared, or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   id?: string;
@@ -105,10 +107,11 @@ const selectedDate: ComputedRef<Date | null> = computed((): Date | null => parse
 const minDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.min));
 const maxDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.max));
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 const displayPlaceholder: ComputedRef<string> = computed((): string => props.placeholder ?? 'Select date');
 const showClear: ComputedRef<boolean> = computed(
-  (): boolean => props.clearable === true && selectedDate.value !== null && isDisabled.value === false,
+  (): boolean => props.clearable === true && selectedDate.value !== null && isDisabled.value === false && isReadonly.value === false,
 );
 const prevMonthLabelText: ComputedRef<string> = computed((): string => props.prevMonthLabel ?? 'Previous month');
 const nextMonthLabelText: ComputedRef<string> = computed((): string => props.nextMonthLabel ?? 'Next month');
@@ -211,7 +214,7 @@ function clearValue(): void {
 }
 
 function openPanel(): void {
-  if (isDisabled.value || open.value) return;
+  if (isDisabled.value || isReadonly.value || open.value) return;
   focusDate.value = selectedDate.value ?? focusDate.value ?? new Date();
   view.value = new Date(focusDate.value.getFullYear(), focusDate.value.getMonth(), 1);
   open.value = true;
@@ -314,6 +317,7 @@ onBeforeUnmount((): void => {
       :aria-expanded="open"
       :aria-labelledby="ariaLabelledby"
       :aria-invalid="isInvalid ? 'true' : undefined"
+      :aria-readonly="isReadonly ? 'true' : undefined"
       :aria-describedby="describedby"
       :disabled="isDisabled"
       @click="toggle"

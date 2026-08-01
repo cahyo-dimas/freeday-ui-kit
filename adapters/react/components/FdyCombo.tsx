@@ -15,6 +15,8 @@ export interface FdyComboProps<T extends string> {
   ariaLabelledby?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }
@@ -39,6 +41,7 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
   }, []);
 
   const isDisabled: boolean = props.disabled === true;
+  const isReadonly: boolean = props.readonly === true;
   const isInvalid: boolean = props.invalid === true;
   const selectedIndex: number = useMemo(
     (): number => props.options.findIndex((o: FdyComboOption<T>): boolean => o.value === props.value),
@@ -53,7 +56,7 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
     setHighlighted(len === 0 ? -1 : ((index % len) + len) % len);
   };
   const openList = (): void => {
-    if (isDisabled || open) return;
+    if (isDisabled || isReadonly || open) return;
     setOpen(true);
     const start: number = selectedIndex >= 0 ? selectedIndex : 0;
     const len: number = props.options.length;
@@ -85,7 +88,7 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>): void => {
-    if (isDisabled) return;
+    if (isDisabled || isReadonly) return;
     switch (e.key) {
       case 'ArrowDown': e.preventDefault(); if (open) setHighlight(highlighted + 1); else openList(); break;
       case 'ArrowUp': e.preventDefault(); if (open) setHighlight(highlighted - 1); else openList(); break;
@@ -140,6 +143,7 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
         aria-activedescendant={activeDescendant}
         aria-labelledby={props.ariaLabelledby}
         aria-invalid={isInvalid ? 'true' : undefined}
+        aria-readonly={isReadonly ? 'true' : undefined}
         aria-describedby={props.describedby}
         disabled={isDisabled}
         onClick={toggle}

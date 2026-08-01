@@ -21,6 +21,8 @@ const props = defineProps<{
   max?: string;
   locale?: string;
   disabled?: boolean;
+  /** Locked/view mode for both pickers — focusable, values shown, but can't be opened or changed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   startPlaceholder?: string;
@@ -57,6 +59,7 @@ function setEnd(end: string): void {
       :max="startMax"
       :locale="locale"
       :disabled="disabled"
+      :readonly="readonly"
       :invalid="invalid"
       :describedby="describedby"
       :placeholder="startPlaceholder ?? 'Dari'"
@@ -69,6 +72,7 @@ function setEnd(end: string): void {
       :max="max"
       :locale="locale"
       :disabled="disabled"
+      :readonly="readonly"
       :invalid="invalid"
       :describedby="describedby"
       :placeholder="endPlaceholder ?? 'Sampai'"

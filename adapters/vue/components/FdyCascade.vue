@@ -42,6 +42,8 @@ const props = defineProps<{
   id?: string;
   ariaLabelledby?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }>();
@@ -73,6 +75,7 @@ usePopover(panelEl, triggerEl, open);
 const sep: ComputedRef<string> = computed((): string => props.separator ?? ' / ');
 const name: ComputedRef<string> = computed((): string => props.label ?? 'Pilih');
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 
 const current: ComputedRef<ReadonlyArray<CascadeNode>> = computed((): ReadonlyArray<CascadeNode> =>
@@ -95,7 +98,7 @@ const activeDescendant: ComputedRef<string | undefined> = computed((): string | 
 );
 
 function openPanel(): void {
-  if (isDisabled.value) return;
+  if (isDisabled.value || isReadonly.value) return;
   // Re-open at the selected leaf's level for quick re-selection (matches the enhancer).
   const trail: CascadeNode[] | null = selectedTrail.value;
   stack.value = trail !== null && trail.length > 1 ? trail.slice(0, -1) : [];
@@ -190,6 +193,7 @@ onBeforeUnmount((): void => {
       :aria-label="ariaLabelledby === undefined ? name : undefined"
       :aria-labelledby="ariaLabelledby"
       :aria-invalid="isInvalid ? 'true' : undefined"
+      :aria-readonly="isReadonly ? 'true' : undefined"
       :aria-describedby="describedby"
       :disabled="isDisabled"
       @click="open ? closePanel(true) : openPanel()"

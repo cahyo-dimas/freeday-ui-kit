@@ -18,6 +18,8 @@ const props = defineProps<{
   ariaLabel?: string;
   ariaLabelledby?: string;
   disabled?: boolean;
+  /** Locked/view mode: the input is not editable and the list won't open, but it stays focusable and shows its value. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }>();
@@ -44,6 +46,7 @@ const active: Ref<number> = ref(-1);
 usePopover(listboxEl, inputEl, open);
 
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 
 const filtered: ComputedRef<string[]> = computed((): string[] => {
@@ -56,7 +59,7 @@ const activeDescendant: ComputedRef<string | undefined> = computed((): string | 
 );
 
 function openList(): void {
-  if (!isDisabled.value) open.value = true;
+  if (!isDisabled.value && !isReadonly.value) open.value = true;
 }
 function closeList(): void {
   open.value = false;
@@ -76,7 +79,7 @@ function onInput(e: Event): void {
 }
 
 function onKeydown(e: KeyboardEvent): void {
-  if (isDisabled.value) return;
+  if (isDisabled.value || isReadonly.value) return;
   const len: number = filtered.value.length;
   switch (e.key) {
     case 'ArrowDown':
@@ -144,6 +147,7 @@ watch(active, async (i: number): Promise<void> => {
       autocomplete="off"
       :placeholder="placeholder"
       :disabled="isDisabled"
+      :readonly="isReadonly"
       :value="modelValue"
       @input="onInput"
       @focus="openList"

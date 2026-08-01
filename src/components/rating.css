@@ -7,4 +7,10 @@
 .fdy-rating__star.is-filled svg{fill:var(--color-warning);stroke:var(--color-warning);}
 .fdy-rating__star input:focus-visible + svg{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-xs);}
 .fdy-rating--readonly .fdy-rating__star{cursor:default;}
+/* Disabled: not editable and greyed (readonly stays full-strength; disabled dims). */
+.fdy-rating--disabled .fdy-rating__star{cursor:not-allowed;}
+.fdy-rating--disabled .fdy-rating__star svg{opacity:.5;}
+/* Invalid: tint the (outline) empty stars danger so a required-but-empty rating reads as an error,
+   paired with a help/error message — never colour alone. */
+.fdy-rating--error .fdy-rating__star svg{stroke:var(--color-danger);}
 .fdy-rating--sm .fdy-rating__star svg{width:1.1rem;height:1.1rem;}

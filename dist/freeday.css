@@ -333,6 +333,9 @@ a { color: var(--color-primary); }
 .fdy-cascade__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-cascade__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-cascade__trigger:disabled,.fdy-cascade__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-cascade__trigger[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
+.fdy-cascade__trigger[aria-readonly="true"]:hover{border-color:var(--color-border);}
+.fdy-cascade__trigger[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-cascade--error .fdy-cascade__trigger,.fdy-cascade__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-cascade--error .fdy-cascade__trigger:focus-visible,.fdy-cascade--error .fdy-cascade__trigger.is-open,.fdy-cascade__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
 .fdy-cascade__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -469,6 +472,11 @@ a { color: var(--color-primary); }
 .fdy-combo__button:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-combo__button.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-combo__button:disabled,.fdy-combo__button[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+/* Read-only: stays focusable & shows its value at full contrast but can't open — muted surface,
+   softened border, default cursor, no focus-ring escalation (matches input[readonly], #39). */
+.fdy-combo__button[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
+.fdy-combo__button[aria-readonly="true"]:hover{border-color:var(--color-border);}
+.fdy-combo__button[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-combo--error .fdy-combo__button,.fdy-combo__button[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-combo--error .fdy-combo__button:focus-visible,.fdy-combo--error .fdy-combo__button.is-open,.fdy-combo__button[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
 .fdy-combo__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -499,6 +507,10 @@ a { color: var(--color-primary); }
 .fdy-datepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-datepicker--error .fdy-datepicker__trigger,.fdy-datepicker__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-datepicker--error .fdy-datepicker__trigger:focus-visible,.fdy-datepicker--error .fdy-datepicker__trigger.is-open,.fdy-datepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-datepicker__trigger:disabled,.fdy-datepicker__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-datepicker__trigger[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
+.fdy-datepicker__trigger[aria-readonly="true"]:hover{border-color:var(--color-border);}
+.fdy-datepicker__trigger[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-datepicker__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-datepicker__value--placeholder{color:var(--color-text-subtle);}
 .fdy-datepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}
@@ -598,6 +610,7 @@ a { color: var(--color-primary); }
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
 .fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
+.fdy-dropzone[aria-disabled="true"],.fdy-dropzone.is-disabled{opacity:.55;cursor:not-allowed;pointer-events:none;}
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
 .fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
@@ -713,6 +726,12 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-input:hover,.fdy-textarea:hover{border-color:var(--color-text-muted);}
 .fdy-input:focus,.fdy-textarea:focus{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-input:disabled,.fdy-textarea:disabled,.fdy-input[aria-disabled="true"],.fdy-textarea[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+/* Read-only (#39): the value is real and may be read/copied, only not edited. Full contrast (unlike
+   :disabled which dims to placeholder-grey), muted surface + softened border so it still reads as
+   inert, default cursor, no focus-ring escalation. */
+.fdy-input[readonly],.fdy-textarea[readonly]{background:var(--color-surface-2);border-color:var(--color-border);color:var(--color-text);cursor:default;}
+.fdy-input[readonly]:hover,.fdy-textarea[readonly]:hover{border-color:var(--color-border);}
+.fdy-input[readonly]:focus-visible,.fdy-textarea[readonly]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-input--error,.fdy-input[aria-invalid="true"],.fdy-textarea[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
@@ -799,6 +818,12 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-rating__star.is-filled svg{fill:var(--color-warning);stroke:var(--color-warning);}
 .fdy-rating__star input:focus-visible + svg{outline:2px solid var(--color-primary);outline-offset:2px;border-radius:var(--radius-xs);}
 .fdy-rating--readonly .fdy-rating__star{cursor:default;}
+/* Disabled: not editable and greyed (readonly stays full-strength; disabled dims). */
+.fdy-rating--disabled .fdy-rating__star{cursor:not-allowed;}
+.fdy-rating--disabled .fdy-rating__star svg{opacity:.5;}
+/* Invalid: tint the (outline) empty stars danger so a required-but-empty rating reads as an error,
+   paired with a help/error message — never colour alone. */
+.fdy-rating--error .fdy-rating__star svg{stroke:var(--color-danger);}
 .fdy-rating--sm .fdy-rating__star svg{width:1.1rem;height:1.1rem;}
 
 /* Freeday — Selection controls */
@@ -960,6 +985,8 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
+.fdy-tabs__tab:disabled,.fdy-tabs__tab[aria-disabled="true"]{opacity:.5;cursor:not-allowed;color:var(--color-text-muted);}
+.fdy-tabs__tab:disabled:hover,.fdy-tabs__tab[aria-disabled="true"]:hover{color:var(--color-text-muted);}
 .fdy-tabs__tab[aria-selected="true"]{color:var(--color-primary-strong);border-bottom-color:var(--color-primary);}
 .fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
@@ -990,6 +1017,7 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-timepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-timepicker--error .fdy-timepicker__trigger,.fdy-timepicker__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-timepicker--error .fdy-timepicker__trigger:focus-visible,.fdy-timepicker--error .fdy-timepicker__trigger.is-open,.fdy-timepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-timepicker__trigger:disabled,.fdy-timepicker__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-timepicker__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .fdy-timepicker__value--placeholder{color:var(--color-text-subtle);}
 .fdy-timepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}
@@ -1042,6 +1070,8 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-tree__icon{flex:none;width:1rem;height:1rem;color:var(--color-text-muted);}
 .fdy-tree__leaf{padding-left:calc(var(--space-2) * 2 + .9rem);}
 .fdy-tree__leaf .fdy-tree__icon{color:var(--color-text-subtle);}
+/* Disabled row (branch summary or leaf): dimmed, no hover, not interactive. */
+.fdy-tree__leaf[aria-disabled="true"],.fdy-tree__branch[aria-disabled="true"] > summary{opacity:.5;cursor:not-allowed;pointer-events:none;}
 
 /* Checkbox variant — a selectable tree (cascading parent/child via freeday-tree.js).
  * A native <input class="fdy-checkbox"> sits at the start of every row; a partially

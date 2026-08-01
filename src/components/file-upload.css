@@ -4,6 +4,7 @@
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
 .fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
+.fdy-dropzone[aria-disabled="true"],.fdy-dropzone.is-disabled{opacity:.55;cursor:not-allowed;pointer-events:none;}
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
 .fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}

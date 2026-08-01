@@ -21,6 +21,8 @@ export interface FdyAutocompleteProps {
   ariaLabel?: string;
   ariaLabelledby?: string;
   disabled?: boolean;
+  /** Locked/view mode: the input is not editable and the list won't open, but it stays focusable and shows its value. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }
@@ -44,6 +46,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   }, []);
 
   const isDisabled: boolean = props.disabled === true;
+  const isReadonly: boolean = props.readonly === true;
   const isInvalid: boolean = props.invalid === true;
 
   const filtered: string[] = useMemo((): string[] => {
@@ -54,7 +57,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   const activeDescendant: string | undefined =
     open && active >= 0 && active < filtered.length ? optionId(active) : undefined;
 
-  const openList = (): void => { if (!isDisabled) setOpen(true); };
+  const openList = (): void => { if (!isDisabled && !isReadonly) setOpen(true); };
   const closeList = (): void => { setOpen(false); setActive(-1); };
 
   const choose = (label: string): void => {
@@ -65,7 +68,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>): void => {
-    if (isDisabled) return;
+    if (isDisabled || isReadonly) return;
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
@@ -128,6 +131,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
         autoComplete="off"
         placeholder={props.placeholder}
         disabled={isDisabled}
+        readOnly={isReadonly}
         value={props.value}
         onChange={(e: React.ChangeEvent<HTMLInputElement>): void => { props.onChange(e.target.value); setActive(-1); openList(); }}
         onFocus={openList}

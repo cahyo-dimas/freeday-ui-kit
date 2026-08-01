@@ -29,6 +29,8 @@ export interface FdyDatepickerProps {
   locale?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its date, but can't be opened, cleared, or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
   id?: string;
@@ -116,9 +118,10 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const minDate: Date | null = useMemo((): Date | null => parseISO(props.min), [props.min]);
   const maxDate: Date | null = useMemo((): Date | null => parseISO(props.max), [props.max]);
   const isDisabled: boolean = props.disabled === true;
+  const isReadonly: boolean = props.readonly === true;
   const isInvalid: boolean = props.invalid === true;
   const displayPlaceholder: string = props.placeholder ?? 'Select date';
-  const showClear: boolean = props.clearable === true && selectedDate !== null && !isDisabled;
+  const showClear: boolean = props.clearable === true && selectedDate !== null && !isDisabled && !isReadonly;
   const prevMonthLabelText: string = props.prevMonthLabel ?? 'Previous month';
   const nextMonthLabelText: string = props.nextMonthLabel ?? 'Next month';
   const clearLabelText: string = props.clearLabel ?? 'Clear date';
@@ -223,7 +226,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   }
 
   function openPanel(): void {
-    if (isDisabled || open) return;
+    if (isDisabled || isReadonly || open) return;
     const next: Date = selectedDate ?? focusDate ?? new Date();
     setFocusDate(next);
     setViewMonth(new Date(next.getFullYear(), next.getMonth(), 1));
@@ -319,6 +322,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         aria-expanded={open}
         aria-labelledby={props.ariaLabelledby}
         aria-invalid={isInvalid ? 'true' : undefined}
+        aria-readonly={isReadonly ? 'true' : undefined}
         aria-describedby={props.describedby}
         disabled={isDisabled}
         onClick={toggle}

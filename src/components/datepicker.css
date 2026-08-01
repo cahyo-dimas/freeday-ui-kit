@@ -7,6 +7,10 @@
 .fdy-datepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-datepicker--error .fdy-datepicker__trigger,.fdy-datepicker__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-datepicker--error .fdy-datepicker__trigger:focus-visible,.fdy-datepicker--error .fdy-datepicker__trigger.is-open,.fdy-datepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-datepicker__trigger:disabled,.fdy-datepicker__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-datepicker__trigger[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
+.fdy-datepicker__trigger[aria-readonly="true"]:hover{border-color:var(--color-border);}
+.fdy-datepicker__trigger[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-datepicker__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-datepicker__value--placeholder{color:var(--color-text-subtle);}
 .fdy-datepicker__icon{flex:none;display:inline-flex;color:var(--color-text-subtle);}

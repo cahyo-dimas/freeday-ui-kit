@@ -22,6 +22,8 @@ const props = defineProps<{
   ariaLabelledby?: string;
   placeholder?: string;
   disabled?: boolean;
+  /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
+  readonly?: boolean;
   invalid?: boolean;
   describedby?: string;
 }>();
@@ -57,6 +59,7 @@ const selectedLabel: ComputedRef<string> = computed((): string => {
 });
 const isPlaceholder: ComputedRef<boolean> = computed((): boolean => selectedIndex.value < 0);
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
+const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 const activeDescendant: ComputedRef<string | undefined> = computed((): string | undefined =>
   open.value && highlighted.value >= 0 ? optionId(highlighted.value) : undefined,
@@ -68,7 +71,7 @@ function setHighlight(index: number): void {
 }
 
 function openList(): void {
-  if (isDisabled.value || open.value) return;
+  if (isDisabled.value || isReadonly.value || open.value) return;
   open.value = true;
   setHighlight(selectedIndex.value >= 0 ? selectedIndex.value : 0);
 }
@@ -114,7 +117,7 @@ function typeahead(char: string): void {
 }
 
 function onKeydown(e: KeyboardEvent): void {
-  if (isDisabled.value) return;
+  if (isDisabled.value || isReadonly.value) return;
   switch (e.key) {
     case 'ArrowDown':
       e.preventDefault();
@@ -207,6 +210,7 @@ onBeforeUnmount((): void => {
       :aria-activedescendant="activeDescendant"
       :aria-labelledby="ariaLabelledby"
       :aria-invalid="isInvalid ? 'true' : undefined"
+      :aria-readonly="isReadonly ? 'true' : undefined"
       :aria-describedby="describedby"
       :disabled="isDisabled"
       @click="toggle"
