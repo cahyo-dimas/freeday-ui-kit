@@ -214,6 +214,9 @@ onBeforeUnmount((): void => {
       <span class="fdy-combo__value" :class="{ 'fdy-combo__value--placeholder': isPlaceholder }">{{ selectedLabel }}</span>
     </button>
     <ul :id="listboxId" ref="listboxEl" class="fdy-combo__listbox" role="listbox" popover="manual" :hidden="!open">
+      <!-- @mousedown.prevent keeps focus on the button: the option <li> isn't focusable, so a plain
+           mousedown moves focus out of the combo, fires @focusout, and closes the list before the click
+           lands — mouse-select would silently do nothing. Same pattern as FdyDatepicker/FdyAutocomplete. -->
       <li
         v-for="(opt, i) in options"
         :id="optionId(i)"
@@ -222,6 +225,7 @@ onBeforeUnmount((): void => {
         :class="{ 'is-highlighted': i === highlighted }"
         role="option"
         :aria-selected="opt.value === modelValue"
+        @mousedown.prevent
         @click="choose(i)"
         @mousemove="setHighlight(i)"
       >

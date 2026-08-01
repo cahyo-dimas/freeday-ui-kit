@@ -74,7 +74,7 @@ menuntaskan ketiga item di bawah._
 > index-dinamis nyata (hindari export runtime pertama dari core adapter tanpa alasan). Gate: 20/20 ·
 > typecheck 0 · `node --check` chart OK. **Published via OIDC; parity 141/141 file byte-identik.**
 >
-> **Update 2026-07-30 — v1.13.0 (DISIAPKAN, belum di-push).** Note #37 pada `FdyDatepicker` (Vue+React,
+> **Update 2026-07-30 — v1.13.0 (published).** Note #37 pada `FdyDatepicker` (Vue+React,
 > simetris). **A** prop `clearable` → tombol × di trigger untuk mengosongkan tanggal opsional (menutup
 > regresi vs native `<input type=date>` yang punya clear). Karena trigger sendiri `<button>`, × = sibling
 > overlay di slot ikon (BUKAN nested button — invalid HTML): ikon `visibility:hidden` saat × tampil
@@ -87,7 +87,22 @@ menuntaskan ketiga item di bawah._
 > browser nyata (chrome-headless-shell — Chrome user sedang jalan mem-block `--headless` bind port; solusi:
 > binari headless-shell terpisah): × 12px dari kanan (=`--space-3`), center vertikal (offset 0), ikon
 > hidden, tak overlap value (pendek & panjang/ellipsis). Gate: 20/20 · typecheck 0 · SFC compile.
-> **Belum di-commit/tag/push — versi bump + changelog siap di working tree, menunggu push berikutnya.**
+> **Published via OIDC; parity 141/141 identik; live docs di-sync ke v1.13.0.**
+>
+> **Update 2026-08-01 — v1.13.1 (published, fix-only patch).** Note #38: `FdyCombo` tak bisa dipilih
+> pakai MOUSE (blocker — tiap konsumen). Opsi `<li>` tak fokusabel → `mousedown` memindah fokus dari
+> tombol combobox → handler `@focusout`/`onBlur` di root menutup list (meng-`hidden` + `hidePopover`)
+> SEBELUM `mouseup` → browser tak pernah bikin `click` → `choose()` tak tercapai, `update:modelValue`
+> tak emit. Keyboard (↑/↓+Enter) tetap jalan → itu sebabnya lolos smoke-test keyboard. Sama persis dgn
+> bug vanilla `freeday-select.js` yang sudah difix v1.6.1 — hanya adapter Vue/React yang ketinggalan.
+> Fix: `@mousedown.prevent` (Vue) / `onMouseDown` `preventDefault` (React) di opsi `<li>` → fokus tetap
+> di tombol, `@focusout` tak fire, klik mendarat. **Kedua adapter** (React punya bug identik walau note
+> cuma sebut Vue). Tanpa perubahan API; keyboard & hover tak tersentuh. Diverifikasi CDP TRUSTED mouse
+> (`Input.dispatchMouseEvent`) di replika mekanisme: tanpa fix value tetap `anthropic`, dgn fix →
+> `openai` (sintetis `el.dispatchEvent` TAK mereproduksi — event untrusted tak jalankan default action,
+> fokus tak pindah). Adapter-only → dist tak berubah. Gate: SFC compile · typecheck 0 · 20/20. Regression
+> test browser sengaja TAK ditambah (kit tak punya infra browser-test/puppeteer; strategi = `node --test`
+> saja) — flag ke user bila mau infra itu. See [[verify-interactive-ui-with-real-mouse]].
 
 ---
 

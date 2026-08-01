@@ -148,12 +148,16 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
       </button>
       <ul id={listboxId} ref={listboxRef} className="fdy-combo__listbox" role="listbox" hidden={!open}>
         {props.options.map((opt: FdyComboOption<T>, i: number): JSX.Element => (
+          // onMouseDown preventDefault keeps focus on the button: the option <li> isn't focusable, so a
+          // plain mousedown moves focus out of the combo, fires onBlur (focusout), and closes the list
+          // before the click lands. Same pattern as FdyDatepicker/FdyAutocomplete.
           <li
             id={optionId(i)}
             key={opt.value}
             className={i === highlighted ? 'fdy-combo__option is-highlighted' : 'fdy-combo__option'}
             role="option"
             aria-selected={opt.value === props.value}
+            onMouseDown={(e: React.MouseEvent): void => e.preventDefault()}
             onClick={(): void => choose(i)}
             onMouseMove={(): void => setHighlight(i)}
           >

@@ -3,6 +3,19 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.13.1] — 2026-08-01
+### Fixed
+- **`FdyCombo` can be selected with the mouse again (#38).** Clicking an option did nothing — the
+  listbox closed and no `update:modelValue` fired (keyboard select still worked, which is why a
+  keyboard-only smoke test missed it). The option `<li>` isn't focusable, so a `mousedown` moved focus
+  off the combobox button; the root's `focusout` handler then closed the list — removing the `<li>` —
+  *before* `mouseup`, so the browser never generated a `click` and `choose()` was never reached. Added
+  `@mousedown.prevent` (Vue) / `onMouseDown` `preventDefault` (React) on the option so focus stays on the
+  button and the click lands — the same pattern the sibling `FdyDatepicker` / `FdyAutocomplete` (and the
+  vanilla `freeday-select.js`, fixed in v1.6.1) already use. Both adapters; no API change; keyboard and
+  hover paths untouched. Verified with trusted CDP mouse events (a synthetic `dispatchEvent` won't
+  reproduce it — untrusted events run no default action, so focus never moves).
+
 ## [1.13.0] — 2026-07-30
 ### Added
 - **`FdyDatepicker` clear affordance — an optional date can now be unset (#37A).** A new `clearable`
