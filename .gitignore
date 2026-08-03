@@ -7,6 +7,9 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 
+# Browser-test build output (esbuild bundles the adapter mount entries here on demand)
+browser/.build/
+
 # Editor
 .vscode/
 .idea/

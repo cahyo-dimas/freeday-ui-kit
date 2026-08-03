@@ -64,7 +64,8 @@ terbukti · docs adopsi lengkap.
 
 ```bash
 node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css + freeday.css + copy dist/*.js
-npm test                # node --test (20/20)
+npm test                # node --test (20/20) — default gate, no browser
+npm run test:browser    # real-Chrome interaction guards (focus/blur/pointer) — dev-only, auto-skips without Chrome. See browser/README.md
 ```
 
 ## Lokasi

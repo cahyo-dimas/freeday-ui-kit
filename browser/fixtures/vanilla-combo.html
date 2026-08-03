@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: vanilla combo mouse-select</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+
+<span id="lbl" class="fdy-label">Component</span>
+<div class="fdy-combo" data-fdy-combo data-value="button" id="cb">
+  <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl cb-val">
+    <span class="fdy-combo__value" id="cb-val">Button</span>
+  </button>
+  <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="lbl" hidden>
+    <li class="fdy-combo__option" role="option" data-value="button" aria-selected="true"><span class="fdy-combo__check">✓</span>Button</li>
+    <li class="fdy-combo__option" role="option" data-value="badge" aria-selected="false"><span class="fdy-combo__check"></span>Badge</li>
+    <li class="fdy-combo__option" role="option" data-value="alert" aria-selected="false"><span class="fdy-combo__check"></span>Alert</li>
+  </ul>
+</div>
+
+<script src="../../dist/freeday.js"></script>
+<script>
+  // Record the enhancer's bubbling change so the harness can assert the mouse pick landed.
+  window.__val = 'button';
+  document.getElementById('cb').addEventListener('fdy-change', function (e) {
+    window.__val = e.detail.value;
+  });
+</script>

@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: vanilla datetime state</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+
+<!-- Wrapper-level state must reflect onto BOTH child triggers (guards the setTimeout(0)
+     propagation in src/freeday-datetime.js — a microtask reached only the date child). -->
+<div id="dt-disabled" data-fdy-datetimepicker data-fdy-disabled data-label="Disabled">
+  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal"></div>
+  <div data-fdy-timepicker data-value="09:00" data-step="30" data-label="Jam"></div>
+</div>
+
+<div id="dt-invalid" data-fdy-datetimepicker data-fdy-invalid data-label="Invalid">
+  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal"></div>
+  <div data-fdy-timepicker data-value="09:00" data-step="30" data-label="Jam"></div>
+</div>
+
+<script src="../../dist/freeday.js"></script>

@@ -119,6 +119,18 @@ menuntaskan ketiga item di bawah._
 > browser: readonly opacity 1 vs disabled 0.5, semua state render, datetime disable/invalid ke 2 anak.
 > Gate 20/20 · typecheck 0 · 6 SFC compile. Vanilla picker readonly sengaja di-skip (datetime interaktif;
 > adapter cover). See [[verify-interactive-ui-with-real-mouse]].
+>
+> **Update 2026-08-03 — harness regresi interaksi (dev-only, BUKAN version bump).** Utang test yang
+> berulang gigit (combo mouse-select #38 di vanilla+adapter, timing datetime v1.14.0) kini punya guard
+> otomatis di `browser/`: driver CDP nol-dependency menyetir `chrome-headless-shell` nyata dengan
+> `Input.dispatchMouseEvent` **trusted** (sintetik `.click()` tak mereproduksi kelas bug ini). Cakupan
+> cut-1: datetime disabled/invalid → KEDUA anak (vanilla), combo mouse-select ubah value (vanilla + Vue
+> + React yang benar-benar di-mount lewat esbuild). Jalan lewat `npm run test:browser` — **di luar `test/`
+> & tak bernama `*.test.mjs`** supaya bare `node --test` (gate default + CI) tak menjaringnya; auto-skip
+> kalau Chrome tak ada. Dev-deps baru `vue`/`react`/`react-dom`/`esbuild` (dev-only, tak ikut publish —
+> `files` tak memuat `browser/`). **Tiap guard dibuktikan bites via mutation test** (revert fix → spec
+> gagal dgn signature bug asli, mis. datetime `{"dp":true,"tp":false}`, combo `got "button"`). Detail di
+> `browser/README.md`. See [[verify-interactive-ui-with-real-mouse]], [[freeday-browser-test-harness]].
 
 ---
 
