@@ -131,6 +131,23 @@ menuntaskan ketiga item di bawah._
 > `files` tak memuat `browser/`). **Tiap guard dibuktikan bites via mutation test** (revert fix → spec
 > gagal dgn signature bug asli, mis. datetime `{"dp":true,"tp":false}`, combo `got "button"`). Detail di
 > `browser/README.md`. See [[verify-interactive-ui-with-real-mouse]], [[freeday-browser-test-harness]].
+>
+> **Update 2026-08-10 — v1.15.0 (published, MINOR: deklarasi tipe).** Note #40: hanya `./vue` & `./react`
+> yang punya kondisi `types` di `exports`; delapan export lain tak punya, jadi konsumen TS gagal resolve
+> side-effect import (`./css`, root, `./enhancers/*`, `./breakpoints`) dan `window.Freeday` ditebak-tangan
+> per konsumen — invisible di TS5 (side-effect import unresolvable lolos diam), error keras di TS6
+> (`noUncheckedSideEffectImports` default-on). Fix aditif: `dist/asset.d.ts` (`export {}` — stub side-effect
+> css/enhancer), `tokens/breakpoints.d.ts` (skala breakpoint), `dist/freeday.d.ts` (global
+> `window.Freeday.toast` **di-author dari `freeday-toast.js`**, bukan disalin dari tebakan konsumen: semua
+> field opsional + return `HTMLElement` — tebakan konsumen keliru `message`/`variant` wajib & return void).
+> `types` diletakkan **pertama** di tiap kondisi (TS berhenti di match pertama). `files` ditambah
+> `tokens/breakpoints.d.ts` (whitelist cuma kirim `breakpoints.mjs` — celah yang snippet note tak sebut).
+> `./blazor` sengaja dibiarkan tanpa tipe (tak ada konsumen TS meng-import-nya; ikut note). **Divalidasi
+> empiris** (bukan penalaran): `npm pack` tarball → konsumen TS `moduleResolution:bundler` +
+> `noUncheckedSideEffectImports` → **4 error SEBELUM** (css/enhancers TS2307, breakpoints TS7016,
+> `window.Freeday` TS2339), **bersih SESUDAH**; cek negatif (variant salah, number→string) → dua TS2322 →
+> tipe nyata bukan `any`; `.d.ts` hadir di tarball termasuk wildcard `enhancers/*` (→ `asset.d.ts`). Build
+> tak sentuh `.d.ts` (statis, di-commit) → determinisme utuh. Gate 20/20 · typecheck 0 · test:browser 5/5.
 
 ---
 

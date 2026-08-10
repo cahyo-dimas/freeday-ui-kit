@@ -3,6 +3,20 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.15.0] — 2026-08-10
+### Added
+- **Type declarations for every export (#40).** Only `./vue` and `./react` shipped a `types`
+  condition; the other eight exports had none. A TypeScript consumer's two side-effect imports —
+  `import '@cahyo-dimas/freeday/css'` and `import '@cahyo-dimas/freeday'` — plus `./enhancers/*` and
+  `./breakpoints` therefore failed to resolve (TS 5 leaves them untyped / `implicitly any`; TS 6 makes
+  it a hard `noUncheckedSideEffectImports` error), and `window.Freeday` was reconstructed by hand in
+  every consumer. Now every export names a `types` condition: `dist/asset.d.ts` (a one-line stub for the
+  side-effect-only CSS/enhancer imports), `tokens/breakpoints.d.ts` (the breakpoint scale), and
+  `dist/freeday.d.ts` — which declares the `window.Freeday` global from the source: `toast(opts?)` with
+  all-optional `variant` / `title` / `message` / `timeout`, returning the toast `HTMLElement` (looser and
+  more correct than the guesses consumers had been copying). `files` now also ships
+  `tokens/breakpoints.d.ts`. Runtime unchanged; purely additive.
+
 ## [1.14.0] — 2026-08-01
 ### Added
 - **Read-only state across the form controls (#39).** `input` / `textarea` gain a `[readonly]` rule —

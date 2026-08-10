@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
@@ -25,17 +25,18 @@
     "adapters",
     "tokens/tokens.json",
     "tokens/breakpoints.mjs",
+    "tokens/breakpoints.d.ts",
     "README.md",
     "README.id.md",
     "CHANGELOG.md"
   ],
   "exports": {
-    ".": "./dist/freeday.js",
-    "./css": "./dist/freeday.bundle.css",
-    "./css/components": "./dist/freeday.css",
-    "./tokens": "./dist/freeday.tokens.css",
-    "./breakpoints": "./tokens/breakpoints.mjs",
-    "./enhancers/*": "./dist/freeday-*.js",
+    ".": { "types": "./dist/freeday.d.ts", "default": "./dist/freeday.js" },
+    "./css": { "types": "./dist/asset.d.ts", "default": "./dist/freeday.bundle.css" },
+    "./css/components": { "types": "./dist/asset.d.ts", "default": "./dist/freeday.css" },
+    "./tokens": { "types": "./dist/asset.d.ts", "default": "./dist/freeday.tokens.css" },
+    "./breakpoints": { "types": "./tokens/breakpoints.d.ts", "default": "./tokens/breakpoints.mjs" },
+    "./enhancers/*": { "types": "./dist/asset.d.ts", "default": "./dist/freeday-*.js" },
     "./vue": {
       "types": "./adapters/vue/index.d.ts",
       "default": "./adapters/vue/index.js"
