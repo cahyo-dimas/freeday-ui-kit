@@ -1,0 +1,93 @@
+@namespace Freeday.Blazor
+@typeparam TRow where TRow : class
+@inherits FreedayComponentBase<FdyCfl<TRow>>
+
+@* Controlled *async* choose-from-list. Unlike the enhancer-wrapper components, this is a
+   Blazor-native controlled component (like FdyTable): the read-only field + the .fdy-modal--cfl
+   dialog are rendered and re-rendered by Blazor, rows come from an async LoadPage callback, and
+   the <dialog> is opened/closed through the same freeday-blazor.js interop FdyModal uses. *@
+
+<div class="@FieldGroupClass">
+    <input class="fdy-input" type="text" readonly value="@DisplayValue"
+           placeholder="@Placeholder" aria-labelledby="@AriaLabelledby"
+           aria-invalid="@(Invalid ? "true" : null)" aria-readonly="@(Readonly ? "true" : null)" />
+    <button class="fdy-input-group__btn" type="button" @onclick="OpenAsync"
+            disabled="@(Disabled || Readonly)" aria-label="@SearchPlaceholder">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>
+        </svg>
+    </button>
+</div>
+
+<dialog @ref="Root" class="fdy-modal fdy-modal--cfl" aria-labelledby="@_titleId">
+    <div class="fdy-modal__header">
+        <h3 id="@_titleId" class="fdy-modal__title">@Title</h3>
+        <button class="fdy-modal__close" type="button" aria-label="@CloseLabel" @onclick="CloseAsync">&times;</button>
+    </div>
+
+    <div class="fdy-modal__body">
+        <div class="fdy-cfl__search">
+            <input class="fdy-input" type="search" data-fdy-cfl-search
+                   placeholder="@SearchPlaceholder" aria-label="@SearchPlaceholder"
+                   @bind="_query" @bind:event="oninput" @bind:after="OnQueryChangedAsync" />
+        </div>
+
+        <div class="fdy-cfl__results">
+            @if (IsInitialLoading)
+            {
+                <p class="fdy-cfl__empty" role="status">@LoadingText</p>
+            }
+            else if (IsBlockingError)
+            {
+                <div class="fdy-cfl__empty" role="alert">
+                    <span>@(_error ?? ErrorText)</span>
+                    <button class="fdy-btn fdy-btn--sm" type="button" @onclick="RetryAsync">@RetryText</button>
+                </div>
+            }
+            else if (IsEmpty)
+            {
+                <p class="fdy-cfl__empty">@EmptyText</p>
+            }
+            else
+            {
+                <table class="fdy-table" aria-label="@Title">
+                    <thead>
+                        <tr>
+                            @foreach (CflColumn<TRow> col in Columns)
+                            {
+                                <th scope="col">@col.Header</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (TRow row in _rows)
+                        {
+                            <tr class="fdy-cfl__row" tabindex="0" @key="RowKey(row)" @onclick="() => ChooseAsync(row)">
+                                @foreach (CflColumn<TRow> col in Columns)
+                                {
+                                    <td>@col.Cell(row)</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @if (_error is not null)
+                {
+                    <div class="fdy-cfl__empty" role="alert" style="padding:var(--space-4) var(--space-5)">
+                        <span>@_error</span>
+                        <button class="fdy-btn fdy-btn--sm" type="button" @onclick="RetryAsync">@RetryText</button>
+                    </div>
+                }
+                @if (_hasMore)
+                {
+                    <div class="fdy-cfl__actions">
+                        <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button"
+                                disabled="@_loading" @onclick="LoadMoreAsync">@MoreText</button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</dialog>

@@ -38,6 +38,14 @@
     </label>
     <p style="margin-top:var(--space-4)">Rentang: <strong>@(string.IsNullOrEmpty(_dari) ? "—" : _dari)</strong> → <strong>@(string.IsNullOrEmpty(_sampai) ? "—" : _sampai)</strong></p>
 
+    <div class="fdy-field" style="max-width:none">
+        <span class="fdy-label" id="demo-cfl-lbl">Pelanggan (choose-from-list)</span>
+        <FdyCfl TRow="Customer" @bind-Value="_customer" LoadPage="LoadCustomers" Columns="_customerCols"
+                Display="@(c => c.Name)" RowKey="@(c => c.Id)" Title="Pilih pelanggan"
+                Placeholder="Pilih pelanggan…" SearchPlaceholder="Cari pelanggan…" AriaLabelledby="demo-cfl-lbl" />
+    </div>
+    <p style="margin-top:var(--space-4)">Pelanggan: <strong>@(_customer is null ? "—" : $"{_customer.Id} · {_customer.Name}")</strong></p>
+
     <button class="fdy-btn fdy-btn--primary" type="button" @onclick="OpenModal">Konfirmasi</button>
 
     <FdyModal @bind-Open="_modalOpen" Title="Konfirmasi faktur" Size="sm">
