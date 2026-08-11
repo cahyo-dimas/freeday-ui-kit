@@ -1,0 +1,28 @@
+@namespace Freeday.Blazor
+@typeparam TValue
+@inherits FreedayComponentBase<FdyCombo<TValue>>
+
+@* Typed wrapper over freeday's .fdy-combo (WAI-ARIA select-only combobox). Blazor renders the
+   markup the freeday-select.js enhancer expects; the enhancer owns the open/keyboard/focus
+   behaviour and emits fdy-change, which flows back to @bind-Value. An externally-changed Value
+   is pushed onto the enhancer silently (no event echo). *@
+<div @ref="Root" class="@RootClass" data-fdy-combo data-value="@SelectedKey">
+    <button id="@ButtonId" type="button" class="fdy-combo__button" role="combobox"
+            aria-haspopup="listbox" aria-expanded="false"
+            aria-labelledby="@AriaLabelledby"
+            aria-invalid="@(Invalid ? "true" : null)"
+            aria-readonly="@(Readonly ? "true" : null)"
+            disabled="@Disabled">
+        <span class="fdy-combo__value@(SelectedOption is null ? " fdy-combo__value--placeholder" : "")">@SelectedLabel</span>
+    </button>
+    <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="@AriaLabelledby" hidden>
+        @foreach (FdyComboOption<TValue> opt in Options)
+        {
+            bool selected = Equals(opt.Value, Value);
+            <li class="fdy-combo__option" role="option" data-value="@KeyOf(opt.Value)"
+                aria-selected="@(selected ? "true" : "false")">
+                <span class="fdy-combo__check">@(selected ? "✓" : "")</span>@opt.Label
+            </li>
+        }
+    </ul>
+</div>

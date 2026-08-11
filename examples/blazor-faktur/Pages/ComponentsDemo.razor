@@ -1,0 +1,27 @@
+@namespace FreedayBlazorFaktur.Pages
+
+@* Consumption demo for the native Blazor components (Phase 1): a typed <FdyCombo> bound
+   with @bind-Value and an <FdyModal> bound with @bind-Open. Proves the RCL is usable from a
+   real app with no manual JS-interop wiring in the page. *@
+<section class="fdy-card" style="max-width:32rem"><div class="fdy-card__body">
+    <h2 class="fdy-card__title" style="margin-bottom:var(--space-5)">Komponen native Blazor</h2>
+
+    <label class="fdy-field" style="max-width:none">
+        <span class="fdy-label" id="demo-status-lbl">Status faktur</span>
+        <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="demo-status-lbl" />
+    </label>
+
+    <p style="margin-top:var(--space-4)">Terpilih: <strong>@_status</strong></p>
+
+    <button class="fdy-btn fdy-btn--primary" type="button" @onclick="OpenModal">Konfirmasi</button>
+
+    <FdyModal @bind-Open="_modalOpen" Title="Konfirmasi faktur" Size="sm">
+        <ChildContent>
+            <p>Simpan faktur dengan status <strong>@_status</strong>?</p>
+        </ChildContent>
+        <FooterContent>
+            <button class="fdy-btn fdy-btn--ghost" type="button" @onclick="CloseModal">Batal</button>
+            <button class="fdy-btn fdy-btn--primary" type="button" @onclick="CloseModal">Simpan</button>
+        </FooterContent>
+    </FdyModal>
+</div></section>

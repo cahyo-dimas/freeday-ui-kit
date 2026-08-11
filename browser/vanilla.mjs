@@ -60,3 +60,21 @@ test('vanilla combo: real mouse-select updates the value', { skip }, async () =>
     assert.ok(changed, `mouse-select should set value to "badge", got "${await p.evalJS('window.__val')}"`);
   });
 });
+
+test('vanilla combo: programmatic setValue updates selection silently (no fdy-change)', { skip }, async () => {
+  await withPage(fixture('vanilla-combo.html'), async (p) => {
+    await p.waitFor(`document.getElementById('cb') && document.getElementById('cb')._fdyCombo`);
+    // Host-driven set (used by the Blazor @bind-Value wrapper) must NOT echo an fdy-change.
+    await p.evalJS(`window.FreedayCombo.setValue(document.getElementById('cb'), 'alert')`);
+    const state = await p.evalJS(`(() => ({
+      label: document.querySelector('#cb .fdy-combo__value').textContent.trim(),
+      dataValue: document.getElementById('cb').getAttribute('data-value'),
+      selected: document.querySelector('#cb .fdy-combo__option[data-value="alert"]').getAttribute('aria-selected'),
+      changed: window.__val
+    }))()`);
+    assert.equal(state.label, 'Alert', 'value label reflects the set option');
+    assert.equal(state.dataValue, 'alert', 'root data-value updated');
+    assert.equal(state.selected, 'true', 'option marked aria-selected');
+    assert.equal(state.changed, 'button', 'setValue is silent — fdy-change NOT fired, window.__val unchanged');
+  });
+});

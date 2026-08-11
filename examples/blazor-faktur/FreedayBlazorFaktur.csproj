@@ -12,6 +12,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.*" PrivateAssets="all" />
   </ItemGroup>
 
+  <!-- The native Blazor component library (typed <FdyCombo> / <FdyModal> wrappers). -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\adapters\blazor\Freeday.Blazor.csproj" />
+  </ItemGroup>
+
   <!-- Freeday ships as static files. Copy them from the repo (dist/ + the Blazor
        interop) into wwwroot/freeday before static web assets are gathered, so they
        serve as normal wwwroot assets. wwwroot/freeday is git-ignored (generated). -->

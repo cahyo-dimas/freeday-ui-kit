@@ -1,0 +1,27 @@
+<!-- Freeday — Blazor component library (Razor Class Library).
+     Typed wrappers over the vanilla `fdy-*` enhancers; the host page must load
+     dist/freeday.js + adapters/blazor/freeday-blazor.js. Targets net8.0 (LTS) so it can
+     be referenced from net8/9/10 apps. Consume via <ProjectReference> to this .csproj
+     (e.g. from node_modules/@cahyo-dimas/freeday/adapters/blazor/). -->
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Freeday.Blazor</RootNamespace>
+    <AssemblyName>Freeday.Blazor</AssemblyName>
+    <IsPackable>false</IsPackable>
+    <!-- freeday-blazor.js is shipped/loaded as a plain <script>, not an RCL static asset. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);freeday-blazor.js</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.8" />
+  </ItemGroup>
+
+</Project>

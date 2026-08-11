@@ -10,6 +10,10 @@ yarn-error.log*
 # Browser-test build output (esbuild bundles the adapter mount entries here on demand)
 browser/.build/
 
+# .NET build output (Blazor RCL + examples)
+bin/
+obj/
+
 # Editor
 .vscode/
 .idea/

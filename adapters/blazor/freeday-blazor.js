@@ -69,11 +69,67 @@
     if (window.Freeday && typeof window.Freeday.toast === 'function') window.Freeday.toast(options);
   }
 
+  // Passthrough to a combo's programmatic setter (window.FreedayCombo.setValue) so a
+  // Blazor @bind-Value can push an external value change onto the enhancer-owned DOM
+  // without the enhancer echoing an fdy-change back.
+  function comboSetValue(element, value) {
+    if (window.FreedayCombo && typeof window.FreedayCombo.setValue === 'function') {
+      window.FreedayCombo.setValue(element, value);
+    }
+  }
+
+  // --- Native <dialog> control for FdyModal ---------------------------------
+  // The kit styles `.fdy-modal` as a <dialog> but nothing drives it; Blazor can't call
+  // showModal()/close() from C#, and Esc/backdrop dismissal must route through .NET state
+  // (not close the DOM behind its back). dialogInit wires cancel + backdrop → a [JSInvokable]
+  // dismiss callback; showModal()/close() are guarded (showModal on an open dialog throws).
+  var dialogSubs = {};
+  var dialogSeq = 0;
+
+  function dialogInit(dialog, dotNetRef, dismissMethod, dismissible) {
+    if (!dialog) return 0;
+    var onCancel = function (e) {
+      e.preventDefault(); // stop the native close; app state is the single source of truth
+      if (dismissible) dotNetRef.invokeMethodAsync(dismissMethod);
+    };
+    var onClick = function (e) {
+      // The ::backdrop is not a separate element — a click whose target is the dialog box
+      // itself (not its content) is a backdrop click.
+      if (dismissible && e.target === dialog) dotNetRef.invokeMethodAsync(dismissMethod);
+    };
+    dialog.addEventListener('cancel', onCancel);
+    dialog.addEventListener('click', onClick);
+    var token = ++dialogSeq;
+    dialogSubs[token] = { el: dialog, cancel: onCancel, click: onClick };
+    return token;
+  }
+
+  function dialogShow(dialog) {
+    if (dialog && typeof dialog.showModal === 'function' && !dialog.open) dialog.showModal();
+  }
+
+  function dialogClose(dialog) {
+    if (dialog && dialog.open) dialog.close();
+  }
+
+  function dialogDispose(token) {
+    var s = dialogSubs[token];
+    if (s) {
+      s.el.removeEventListener('cancel', s.cancel);
+      s.el.removeEventListener('click', s.click);
+      delete dialogSubs[token];
+    }
+  }
+
   // Flip the document theme (data-theme on <html>), for the demo toggle.
   function toggleTheme() {
     var e = document.documentElement;
     e.setAttribute('data-theme', e.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   }
 
-  window.FreedayBlazor = { initAll: initAll, on: on, off: off, toast: toast, toggleTheme: toggleTheme };
+  window.FreedayBlazor = {
+    initAll: initAll, on: on, off: off, toast: toast, toggleTheme: toggleTheme,
+    comboSetValue: comboSetValue,
+    dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,
+  };
 })();

@@ -2340,7 +2340,11 @@
       setHighlight(-1);
       if (openClose === close) openClose = null;
     }
-    function choose(opt) {
+    // Mark an option selected + reflect it in the button. `silent` skips the change
+    // event, close, and focus — used by the programmatic setValue() below so a host
+    // (e.g. a Blazor/framework wrapper) can push a value in without echoing an event
+    // back to itself or stealing focus. User-driven picks go through choose() (loud).
+    function select(opt, silent) {
       options.forEach(function (other) {
         var on = other === opt;
         other.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -2350,12 +2354,24 @@
       root.setAttribute('data-value', opt.getAttribute('data-value') || '');
       valueEl.textContent = optionLabel(opt);
       valueEl.classList.remove('fdy-combo__value--placeholder');
-      root.dispatchEvent(new CustomEvent('fdy-change', {
-        bubbles: true,
-        detail: { value: opt.getAttribute('data-value') }
-      }));
-      close();
-      button.focus();
+      if (!silent) {
+        root.dispatchEvent(new CustomEvent('fdy-change', {
+          bubbles: true,
+          detail: { value: opt.getAttribute('data-value') }
+        }));
+        close();
+        button.focus();
+      }
+    }
+    function choose(opt) { select(opt, false); }
+    // Programmatic set (no event, no focus change). No-op if no option matches.
+    function setValue(value) {
+      for (var i = 0; i < options.length; i++) {
+        if ((options[i].getAttribute('data-value') || '') === String(value)) {
+          select(options[i], true);
+          return;
+        }
+      }
     }
 
     button.addEventListener('click', function () {
@@ -2416,6 +2432,9 @@
     root.addEventListener('focusout', function (e) {
       if (!root.contains(e.relatedTarget)) close();
     });
+
+    // Per-instance API for programmatic control (host wrappers / two-way binding).
+    root._fdyCombo = { setValue: setValue };
   }
 
   function initAll(context) {
@@ -2439,7 +2458,12 @@
     initAll();
   }
 
-  window.FreedayCombo = { init: initCombo, initAll: initAll };
+  // Programmatic set on an already-initialised combo root (no fdy-change dispatched).
+  function setValue(root, value) {
+    if (root && root._fdyCombo) root._fdyCombo.setValue(value);
+  }
+
+  window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue };
 })();
 
 /* Freeday — slider value binding (optional, zero-dependency).
