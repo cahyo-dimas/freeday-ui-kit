@@ -1,0 +1,13 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyDatepicker>
+
+@* Seed-based wrapper over freeday-datepicker.js: the enhancer builds the input-styled
+   trigger + calendar popover from this empty div and emits fdy-datepicker-change. The
+   enhancer owns that DOM, so we render the seed once (ShouldRender => false) and read the
+   picked value back through @bind-Value. Value is an ISO date string ("yyyy-MM-dd") or "". *@
+<div @ref="Root" data-fdy-datepicker
+     data-value="@Value"
+     data-label="@Label"
+     data-placeholder="@Placeholder"
+     data-min="@Min"
+     data-max="@Max"></div>

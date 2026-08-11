@@ -13,6 +13,13 @@
 
     <p style="margin-top:var(--space-4)">Terpilih: <strong>@_status</strong></p>
 
+    <label class="fdy-field" style="max-width:none">
+        <span class="fdy-label">Tanggal jatuh tempo</span>
+        <FdyDatepicker @bind-Value="_tanggal" Label="Tanggal jatuh tempo" Placeholder="Pilih tanggal" />
+    </label>
+
+    <p style="margin-top:var(--space-4)">Tanggal: <strong>@(string.IsNullOrEmpty(_tanggal) ? "—" : _tanggal)</strong></p>
+
     <button class="fdy-btn fdy-btn--primary" type="button" @onclick="OpenModal">Konfirmasi</button>
 
     <FdyModal @bind-Open="_modalOpen" Title="Konfirmasi faktur" Size="sm">

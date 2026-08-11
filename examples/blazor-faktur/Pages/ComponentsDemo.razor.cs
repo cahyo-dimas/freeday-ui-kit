@@ -6,6 +6,7 @@ namespace FreedayBlazorFaktur.Pages;
 public partial class ComponentsDemo : ComponentBase
 {
     private string _status = "draft";
+    private string? _tanggal;
     private bool _modalOpen;
 
     private static readonly IReadOnlyList<FdyComboOption<string>> _statusOptions = new[]
