@@ -148,6 +148,20 @@ menuntaskan ketiga item di bawah._
 > `window.Freeday` TS2339), **bersih SESUDAH**; cek negatif (variant salah, number→string) → dua TS2322 →
 > tipe nyata bukan `any`; `.d.ts` hadir di tarball termasuk wildcard `enhancers/*` (→ `asset.d.ts`). Build
 > tak sentuh `.d.ts` (statis, di-commit) → determinisme utuh. Gate 20/20 · typecheck 0 · test:browser 5/5.
+>
+> **Update 2026-08-11 — v1.16.0 (published, MINOR: library Blazor native).** Rilis pertama RCL
+> `Freeday.Blazor` (net8.0), **10/10 parity** dgn Vue/React: Modal · Drawer · Combo`<TValue>` ·
+> Datepicker · Autocomplete · Cascade · DateRange · Cfl`<TRow>` · Chart · Table`<TRow>`. Dua pola —
+> *wrapper-over-enhancer* (`ShouldRender()=>false` agar Blazor tak melawan DOM milik enhancer, nilai
+> eksternal didorong imperatif) dan *controlled* (Modal/Drawer/Cfl render DOM sendiri; hanya
+> `<dialog>` show/close/Esc/backdrop lewat interop). `FdyTable<TRow>` = data table controlled penuh
+> (client + server mode, sort, 4 tipe filter kolom, pagination, aktivasi baris, detail-row) dgn
+> `TableModel` — port C# murni dari `adapters/core/table-model.js`. Bridge dapat `chartUpdate`
+> (repaint chart dari data-*) + `onOutside` (light-dismiss generik). `setValue` aditif di
+> `freeday-select.js`. `.NET bin/obj` dijaga keluar tarball via `adapters/blazor/.npmignore` (leak
+> ketahuan lewat `npm pack --dry-run` sebelum publish). Ketiganya (Table/Chart/Drawer)
+> **runtime-verified** di WASM headless (dotnet run + CDP). Konsumsi via `<ProjectReference>`; host
+> muat `dist/freeday.js` + `adapters/blazor/freeday-blazor.js`. See [[freeday-blazor-components]].
 
 ---
 

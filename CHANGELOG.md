@@ -3,6 +3,29 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.16.0] — 2026-08-11
+### Added
+- **Native Blazor component library (`adapters/blazor/`) — first release, 10/10 parity.** A Razor
+  Class Library (`Freeday.Blazor`, net8.0) so Blazor consumers get typed `<FdyX>` components with
+  `@bind`, instead of hand-writing `fdy-*` markup + JS interop. Ten components at parity with the
+  Vue/React adapters: `FdyModal`, `FdyDrawer`, `FdyCombo<TValue>`, `FdyDatepicker`, `FdyAutocomplete`,
+  `FdyCascade`, `FdyDateRange`, `FdyCfl<TRow>`, `FdyChart`, and `FdyTable<TRow>`. Two patterns:
+  *wrapper-over-enhancer* (hydrate the vanilla enhancer once, `ShouldRender() => false` so Blazor
+  never fights the enhancer-owned DOM, push external value imperatively) and *controlled*
+  (`FdyModal`/`FdyDrawer`/`FdyCfl` render their own DOM; only the `<dialog>` show/close/Esc/backdrop
+  go through interop). Shared CRTP base `FreedayComponentBase<TSelf>` types the `DotNetObjectReference`
+  so `[JSInvokable]` dispatch resolves. Consumed via `<ProjectReference>`; the host loads
+  `dist/freeday.js` + `adapters/blazor/freeday-blazor.js` as `<script>`s.
+- **`FdyTable<TRow>`** is a full controlled data table — client mode (sort + four column-filter types
+  + pagination over `Rows`) and server mode (set `Page` → the headers/filters/pager only raise
+  `SortChanged`/`FiltersChanged`/`PageChanged` intent), plus row activation, expandable detail rows,
+  cell templates, and loading/empty states. Its sort/filter/paginate logic is `TableModel` — a pure
+  C# port of `adapters/core/table-model.js`.
+- **`freeday-blazor.js` bridge**: `chartUpdate` (repaint a chart from its data-* attributes) and a
+  generic `onOutside` light-dismiss primitive (outside-pointer / Esc).
+- **`src/freeday-select.js`** gained an additive `setValue` (silent programmatic select) so a Blazor
+  `@bind-Value` can push an external combo value without the enhancer echoing an `fdy-change` back.
+
 ## [1.15.0] — 2026-08-10
 ### Added
 - **Type declarations for every export (#40).** Only `./vue` and `./react` shipped a `types`
