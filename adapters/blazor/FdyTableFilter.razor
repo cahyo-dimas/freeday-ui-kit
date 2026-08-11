@@ -1,0 +1,77 @@
+@namespace Freeday.Blazor
+
+@* Internal to FdyTable: one column's header funnel button + its type-aware filter popover
+   (text / enum / number / date), over freeday's .fdy-table__filterbtn + .fdy-filter* classes.
+   The panel is position:fixed (top layer) so it escapes the table's overflow; light-dismiss
+   (outside pointer / Esc) is wired through FreedayBlazor.onOutside. Purely controlled — it renders
+   the current Filter and raises the next one (or null to clear). *@
+<span @ref="_root" class="fdy-table__filterwrap">
+    <button type="button"
+            class="@(Active ? "fdy-table__filterbtn is-active" : "fdy-table__filterbtn")"
+            aria-haspopup="dialog"
+            aria-pressed="@Active"
+            aria-expanded="@_open"
+            aria-label="@($"Filter {Label}")"
+            @onclick="Toggle"
+            @onclick:stopPropagation="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 5h18l-7 8v5l-4 2v-7z" />
+        </svg>
+    </button>
+
+    @if (_open)
+    {
+        <div class="fdy-filter" role="dialog" aria-label="@($"Filter {Label}")">
+            @switch (Type)
+            {
+                case FdyColumnFilterType.Text:
+                    <div class="fdy-filter__title">Contains text</div>
+                    <input class="fdy-input" type="search" placeholder="Contains…" value="@TextValue"
+                           @oninput="OnTextInput" />
+                    break;
+
+                case FdyColumnFilterType.Enum:
+                    <div class="fdy-filter__title">Show values</div>
+                    <div class="fdy-filter__list">
+                        @foreach (string val in Options)
+                        {
+                            <label class="fdy-filter__check">
+                                <input type="checkbox" class="fdy-checkbox"
+                                       checked="@EnumValues.Contains(val)"
+                                       @onchange="e => OnEnumToggle(val, (bool)(e.Value ?? false))" />
+                                @val
+                            </label>
+                        }
+                    </div>
+                    break;
+
+                case FdyColumnFilterType.Number:
+                    <div class="fdy-filter__title">Value range</div>
+                    <div class="fdy-filter__range">
+                        <input class="fdy-input" type="text" inputmode="numeric" placeholder="Min" value="@NumMin"
+                               @oninput="e => OnNumber(true, e.Value?.ToString())" />
+                        <span aria-hidden="true">–</span>
+                        <input class="fdy-input" type="text" inputmode="numeric" placeholder="Max" value="@NumMax"
+                               @oninput="e => OnNumber(false, e.Value?.ToString())" />
+                    </div>
+                    break;
+
+                case FdyColumnFilterType.Date:
+                    <div class="fdy-filter__title">Date range</div>
+                    <div class="fdy-filter__range">
+                        <input class="fdy-input" type="date" aria-label="From" value="@DateFrom"
+                               @oninput="e => OnDate(true, e.Value?.ToString())" />
+                        <span aria-hidden="true">–</span>
+                        <input class="fdy-input" type="date" aria-label="To" value="@DateTo"
+                               @oninput="e => OnDate(false, e.Value?.ToString())" />
+                    </div>
+                    break;
+            }
+
+            <div class="fdy-filter__foot">
+                <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" @onclick="Reset">Reset</button>
+                <button type="button" class="fdy-btn fdy-btn--sm" @onclick="() => Close()">Close</button>
+            </div>
+        </div>
+    }
+</span>

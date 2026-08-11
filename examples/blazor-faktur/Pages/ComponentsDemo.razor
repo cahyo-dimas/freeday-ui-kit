@@ -58,3 +58,41 @@
         </FooterContent>
     </FdyModal>
 </div></section>
+
+@* Phase 3: native <FdyTable>, <FdyChart> and <FdyDrawer>. *@
+<section class="fdy-card" id="demo-phase3" style="max-width:52rem;margin-top:var(--space-6)"><div class="fdy-card__body">
+    <h2 class="fdy-card__title" style="margin-bottom:var(--space-5)">Table, Chart & Drawer</h2>
+
+    <div style="max-width:20rem;margin-bottom:var(--space-6)">
+        <FdyChart Type="donut" Values="_cityValues" Labels="_cityLabels" Format="currency"
+                  Center="Rp 35,9jt" AriaLabel="Pendapatan per kota" />
+    </div>
+
+    <FdyTable TRow="Invoice" Columns="_invoiceCols" Rows="_invoices" RowKey="@(i => i.Code)"
+              PageSize="3" RowActivatable="true" RowActivate="OnInvoiceActivate"
+              AriaLabel="Daftar faktur" />
+    <p style="margin-top:var(--space-4)">Baris aktif: <strong>@(_activeInvoice is null ? "—" : $"{_activeInvoice.Code} · {_activeInvoice.Customer}")</strong></p>
+
+    <button class="fdy-btn fdy-btn--primary" type="button" @onclick="@(() => _drawerOpen = true)" style="margin-top:var(--space-4)">Buka panel</button>
+
+    <FdyDrawer @bind-Open="_drawerOpen" Title="Detail faktur" Side="right">
+        <ChildContent>
+            @if (_activeInvoice is not null)
+            {
+                <dl class="fdy-field" style="max-width:none">
+                    <div><span class="fdy-label">Kode</span> <strong class="fdy-mono">@_activeInvoice.Code</strong></div>
+                    <div style="margin-top:var(--space-3)"><span class="fdy-label">Pelanggan</span> <strong>@_activeInvoice.Customer</strong></div>
+                    <div style="margin-top:var(--space-3)"><span class="fdy-label">Kota</span> <strong>@_activeInvoice.City</strong></div>
+                    <div style="margin-top:var(--space-3)"><span class="fdy-label">Total</span> <strong class="fdy-mono">Rp @_activeInvoice.Total.ToString("N0")</strong></div>
+                </dl>
+            }
+            else
+            {
+                <p>Pilih satu baris faktur untuk melihat detail.</p>
+            }
+        </ChildContent>
+        <FooterContent>
+            <button class="fdy-btn fdy-btn--primary" type="button" @onclick="@(() => _drawerOpen = false)">Tutup</button>
+        </FooterContent>
+    </FdyDrawer>
+</div></section>

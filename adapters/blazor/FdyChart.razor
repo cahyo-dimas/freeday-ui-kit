@@ -1,0 +1,25 @@
+@namespace Freeday.Blazor
+
+@* A thin Blazor wrapper over freeday's zero-dependency chart renderer (freeday-chart.js). Charts
+   are not form controls, so re-implementing the SVG maths in C# would only duplicate them. Instead
+   Blazor owns the outer <div> and its data-* attributes; after every render this calls
+   FreedayChart.update() (via the bridge) to repaint the SVG from those attributes — giving reactive,
+   typed charts with no external dependency. Because the renderer paints with CSS var()/--chart-*
+   tokens, charts also recolour on data-theme change for free. Requires dist/freeday.js loaded so
+   window.FreedayChart exists; until then the slotted fallback content stays visible. *@
+<div @ref="Root"
+     class="@RootClass"
+     data-fdy-chart="@Type"
+     data-series="@SeriesAttr"
+     data-values="@ValuesAttr"
+     data-labels="@LabelsAttr"
+     data-fdy-format="@Format"
+     data-fdy-stacked="@StackedAttr"
+     data-fdy-legend="@Legend"
+     data-fdy-colors="@ColorsAttr"
+     data-fdy-color="@Color"
+     data-fdy-center="@Center"
+     role="img"
+     aria-label="@AriaLabel">
+    @ChildContent
+</div>

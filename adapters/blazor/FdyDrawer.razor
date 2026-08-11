@@ -1,0 +1,36 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyDrawer>
+
+@* Controlled wrapper over freeday's .fdy-drawer native <dialog> side panel. Same contract and
+   bridge as FdyModal (open/close + Esc/backdrop route through freeday-blazor.js) applied to a
+   panel that anchors left (default) or right. Native <dialog> gives the focus trap, focus
+   restore, top-layer stacking and inert background for free. *@
+<dialog @ref="Root" class="@DrawerClass" aria-labelledby="@_titleId">
+    <div class="fdy-drawer__header">
+        <h3 id="@_titleId" class="fdy-drawer__title">
+            @if (TitleContent is not null)
+            {
+                @TitleContent
+            }
+            else
+            {
+                @Title
+            }
+        </h3>
+        @if (Dismissible)
+        {
+            <button class="fdy-drawer__close" type="button" aria-label="@CloseLabel" @onclick="DismissAsync">&times;</button>
+        }
+    </div>
+
+    <div class="fdy-drawer__body">
+        @ChildContent
+    </div>
+
+    @if (FooterContent is not null)
+    {
+        <div class="fdy-drawer__footer">
+            @FooterContent
+        </div>
+    }
+</dialog>

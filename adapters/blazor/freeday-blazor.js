@@ -72,11 +72,27 @@
     return token;
   }
 
-  // Remove a subscription created by on().
+  // Fire a .NET callback when a pointerdown lands outside `element`, or Escape is pressed —
+  // the light-dismiss primitive for Blazor-owned popovers (e.g. FdyTable's column filter, which
+  // is position:fixed in the top layer and so escapes the table's overflow). Returns an off() token.
+  function onOutside(element, dotNetRef, methodName) {
+    if (!element) return 0;
+    var onPointer = function (e) { if (!element.contains(e.target)) dotNetRef.invokeMethodAsync(methodName); };
+    var onKey = function (e) { if (e.key === 'Escape') dotNetRef.invokeMethodAsync(methodName); };
+    document.addEventListener('pointerdown', onPointer, true);
+    document.addEventListener('keydown', onKey, true);
+    var token = ++seq;
+    subs[token] = { el: document, type: 'pointerdown', fn: onPointer, key: onKey, capture: true };
+    return token;
+  }
+
+  // Remove a subscription created by on() / onOutside(); removes with the same capture flag it
+  // was added with (a bubble-phase listener can't be removed with capture:true and vice versa).
   function off(token) {
     var s = subs[token];
     if (s) {
-      s.el.removeEventListener(s.type, s.fn);
+      s.el.removeEventListener(s.type, s.fn, s.capture === true);
+      if (s.key) s.el.removeEventListener('keydown', s.key, true);
       delete subs[token];
     }
   }
@@ -92,6 +108,15 @@
   function comboSetValue(element, value) {
     if (window.FreedayCombo && typeof window.FreedayCombo.setValue === 'function') {
       window.FreedayCombo.setValue(element, value);
+    }
+  }
+
+  // Repaint a chart from its current data-* attributes. FdyChart keeps the outer <div> +
+  // attributes under Blazor's control and calls this after each render, so the SVG re-renders
+  // when the bound data changes (window.FreedayChart.update === renderChart).
+  function chartUpdate(element) {
+    if (element && window.FreedayChart && typeof window.FreedayChart.update === 'function') {
+      window.FreedayChart.update(element);
     }
   }
 
@@ -145,8 +170,8 @@
   }
 
   window.FreedayBlazor = {
-    initAll: initAll, on: on, off: off, toast: toast, toggleTheme: toggleTheme,
-    comboSetValue: comboSetValue, dateRangeOn: dateRangeOn,
+    initAll: initAll, on: on, off: off, onOutside: onOutside, toast: toast, toggleTheme: toggleTheme,
+    comboSetValue: comboSetValue, dateRangeOn: dateRangeOn, chartUpdate: chartUpdate,
     dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,
   };
 })();

@@ -1,0 +1,140 @@
+@namespace Freeday.Blazor
+@typeparam TRow
+@using Microsoft.AspNetCore.Components.Web
+
+@* A controlled Blazor data table over freeday's .fdy-datatable / .fdy-table* / .fdy-filter* /
+   .fdy-pagination__* classes. Unlike the freeday-table.js enhancer (which snapshots static rows and
+   fights a framework's patcher), this reads Rows as the source of truth on every render. Two modes:
+     • Client mode (no Page): sorts/filters (and paginates when PageSize > 0) over the full Rows.
+       Sort/Filters are controlled when their EventCallback is wired, else internal.
+     • Server mode (Page set): Rows are rendered as given; the sort headers, filters and pager only
+       raise intent (SortChanged / FiltersChanged / PageChanged) for the caller to feed to its query. *@
+<div class="fdy-datatable">
+    @if (Toolbar is not null)
+    {
+        <div class="fdy-table-toolbar">
+            @Toolbar
+        </div>
+    }
+
+    <div class="fdy-table-scroll">
+        <table class="fdy-table" aria-label="@AriaLabel">
+            <thead>
+                <tr>
+                    @foreach (FdyTableColumn<TRow> col in Columns)
+                    {
+                        <th scope="col" style="@AlignStyle(col)" aria-sort="@AriaSortOf(col)">
+                            @if (col.Sortable)
+                            {
+                                <button type="button" class="fdy-table__sortbtn" @onclick="() => OnSortClick(col)">@col.Label</button>
+                            }
+                            else
+                            {
+                                @col.Label
+                            }
+                            @if (col.Filter is { } ft)
+                            {
+                                <FdyTableFilter Label="@col.Label"
+                                                Type="ft"
+                                                Filter="@GetFilter(col.Key)"
+                                                Options="@EnumOptions(col)"
+                                                OnChange="f => OnFilterChange(col, f)" />
+                            }
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (Loading)
+                {
+                    <tr><td colspan="@Columns.Count" class="fdy-table__state" role="status">@LoadingText</td></tr>
+                }
+                else if (_displayRows.Count == 0)
+                {
+                    <tr>
+                        <td colspan="@Columns.Count" class="fdy-table__state">
+                            @if (EmptyContent is not null)
+                            {
+                                @EmptyContent
+                            }
+                            else
+                            {
+                                @EmptyText
+                            }
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (TRow row in _displayRows)
+                    {
+                        TRow r = row;
+                        <tr class="@RowClasses(r)"
+                            tabindex="@(RowActivatable ? 0 : (int?)null)"
+                            aria-expanded="@ExpandedAttr(r)"
+                            @onclick="() => OnRowClick(r)"
+                            @onkeydown="e => OnRowKeydown(e, r)">
+                            @foreach (FdyTableColumn<TRow> col in Columns)
+                            {
+                                <td class="@CellClass(col)" style="@AlignStyle(col)">
+                                    @if (col.Cell is not null)
+                                    {
+                                        @col.Cell(r)
+                                    }
+                                    else
+                                    {
+                                        @TableModel.CellText(r, col)
+                                    }
+                                </td>
+                            }
+                        </tr>
+                        @if (RowDetail is not null && IsExpanded(r))
+                        {
+                            <tr class="fdy-table__detailrow">
+                                <td colspan="@Columns.Count">@RowDetail(r)</td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (HasPager)
+    {
+        <div class="fdy-table-footer">
+            <span class="fdy-table-footer__info">Showing @RangeFrom–@RangeTo of @TotalCount</span>
+            <nav aria-label="Pagination">
+                <ul class="fdy-pagination__list">
+                    <li>
+                        <button type="button" class="fdy-pagination__link" aria-label="Previous page"
+                                disabled="@(CurrentPage1 == 1)" @onclick="() => GoTo(CurrentPage1 - 1)">‹</button>
+                    </li>
+                    @foreach (int? p in Pages)
+                    {
+                        <li>
+                            @if (p is null)
+                            {
+                                <span class="fdy-pagination__ellipsis">…</span>
+                            }
+                            else if (p == CurrentPage1)
+                            {
+                                <span class="fdy-pagination__link" aria-current="page">@p</span>
+                            }
+                            else
+                            {
+                                int page = p.Value;
+                                <button type="button" class="fdy-pagination__link" aria-label="@($"Go to page {page}")"
+                                        @onclick="() => GoTo(page)">@(page)</button>
+                            }
+                        </li>
+                    }
+                    <li>
+                        <button type="button" class="fdy-pagination__link" aria-label="Next page"
+                                disabled="@(CurrentPage1 == TotalPages)" @onclick="() => GoTo(CurrentPage1 + 1)">›</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
