@@ -6,3 +6,16 @@
 .fdy-avatar-group{display:inline-flex;}
 .fdy-avatar-group .fdy-avatar{border:2px solid var(--color-surface);margin-left:calc(var(--space-2)*-1);}
 .fdy-avatar-group .fdy-avatar:first-child{margin-left:0;}
+/* Decorative identity tones — a soft tint of a categorical chart colour with a theme-aware,
+ * text-leaning foreground so initials keep WCAG AA (verified >=4.5:1 in light & dark by
+ * test/contrast.test.mjs). Use to disambiguate same-initial avatars (e.g. many "PT …" names):
+ * hash a stable 1..8 index off the FULL name in your app, then apply .fdy-avatar--tone-<n>. */
+.fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:color-mix(in srgb,var(--_fdy-avatar-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-avatar-tone) 50%,var(--color-text));}
+.fdy-avatar--tone-1{--_fdy-avatar-tone:var(--chart-1);}
+.fdy-avatar--tone-2{--_fdy-avatar-tone:var(--chart-2);}
+.fdy-avatar--tone-3{--_fdy-avatar-tone:var(--chart-3);}
+.fdy-avatar--tone-4{--_fdy-avatar-tone:var(--chart-4);}
+.fdy-avatar--tone-5{--_fdy-avatar-tone:var(--chart-5);}
+.fdy-avatar--tone-6{--_fdy-avatar-tone:var(--chart-6);}
+.fdy-avatar--tone-7{--_fdy-avatar-tone:var(--chart-7);}
+.fdy-avatar--tone-8{--_fdy-avatar-tone:var(--chart-8);}

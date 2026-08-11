@@ -10,11 +10,16 @@ export interface FreedayToastOptions {
   message?: string;
   /** Milliseconds before auto-dismiss. Default 4000; 0 = sticky. */
   timeout?: number;
+  /** Stable id: a new toast with the same key replaces the existing one in place instead of
+   *  stacking a duplicate (e.g. a burst of identical failures shows one, refreshed). */
+  key?: string;
 }
 
 export interface FreedayGlobal {
   /** Show a transient toast in a live region (created on first use). Returns the toast element. */
   toast(opts?: FreedayToastOptions): HTMLElement;
+  /** Dismiss a toast early — pass the element returned by toast(), or a key string. */
+  dismiss(target: HTMLElement | string): void;
 }
 
 declare global {

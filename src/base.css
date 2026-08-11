@@ -15,6 +15,11 @@ a { color: var(--color-primary); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
 .fdy-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+/* Opt-in list reset. base.css is intentionally a *light* reset — it does NOT strip list/paragraph
+ * margins (see the kit's own list components, which each reset themselves). If you run a utility
+ * framework with its preflight OFF (the recommended pairing), a semantic <ul>/<ol> keeps native
+ * bullets + a 40px indent; add this class (or a Freeday list component) to normalise it. */
+.fdy-list-reset { list-style: none; margin: 0; padding: 0; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }

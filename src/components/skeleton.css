@@ -3,5 +3,10 @@
 .fdy-skeleton--text{height:.8rem;margin:.3rem 0;}
 .fdy-skeleton--title{height:1.2rem;width:40%;}
 .fdy-skeleton--circle{border-radius:var(--radius-full);}
+/* Size-matched to .fdy-avatar (2.5rem) and its --sm/--lg, so a skeleton reserves the exact avatar
+ * box and data landing causes no layout shift (a plain --circle has no dimensions of its own). */
+.fdy-skeleton--avatar{width:2.5rem;height:2.5rem;border-radius:var(--radius-full);}
+.fdy-skeleton--avatar-sm{width:2rem;height:2rem;border-radius:var(--radius-full);}
+.fdy-skeleton--avatar-lg{width:3.5rem;height:3.5rem;border-radius:var(--radius-full);}
 @keyframes fdy-skeleton{to{background-position:-200% 0;}}
 @media (prefers-reduced-motion:reduce){.fdy-skeleton{animation:none;}}

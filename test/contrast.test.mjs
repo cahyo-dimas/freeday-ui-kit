@@ -22,6 +22,9 @@ function parse(v, theme, depth = 0) {
   if (depth > 20) throw new Error('var cycle: ' + v);
   v = v.trim();
   let m = v.match(/^var\((--[\w-]+)\)$/); if (m) return parse(theme[m[1]], theme, depth + 1);
+  m = v.match(/^color-mix\(in srgb,\s*(.+?)\s+([\d.]+)%\s*,\s*(.+?)\s*\)$/);
+  if (m) { const A = parse(m[1], theme, depth + 1), B = parse(m[3], theme, depth + 1), p = +m[2] / 100;
+    return { r: A.r * p + B.r * (1 - p), g: A.g * p + B.g * (1 - p), b: A.b * p + B.b * (1 - p), a: 1 }; }
   m = v.match(/^#([0-9a-f]{6})$/i); if (m) { const n = parseInt(m[1], 16); return { r: n >> 16 & 255, g: n >> 8 & 255, b: n & 255, a: 1 }; }
   m = v.match(/^#([0-9a-f]{3})$/i); if (m) { const h = m[1]; return { r: parseInt(h[0] + h[0], 16), g: parseInt(h[1] + h[1], 16), b: parseInt(h[2] + h[2], 16), a: 1 }; }
   m = v.match(/^rgba?\(([^)]+)\)$/); if (m) { const p = m[1].split(',').map(s => s.trim()); return { r: +p[0], g: +p[1], b: +p[2], a: p[3] == null ? 1 : +p[3] }; }
@@ -63,6 +66,21 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
     for (const p of req) {
       const r = R(p.fg, p.bg, theme);
       assert.ok(r >= p.min, `${themeName}: ${p.label} = ${r.toFixed(2)}:1 (need ${p.min}:1)`);
+    }
+  });
+}
+
+// Avatar decorative tones (avatar.css): the text-leaning foreground on the tinted background
+// must keep AA text contrast. Keep the mix ratios in sync with .fdy-avatar--tone-* (bg 18%,
+// fg 50% toward --color-text over --color-surface).
+for (const [themeName, theme] of Object.entries(THEMES)) {
+  test(`WCAG contrast — avatar tones — ${themeName}`, () => {
+    for (let i = 1; i <= 8; i++) {
+      const c = `var(--chart-${i})`;
+      const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);
+      const fg = parse(`color-mix(in srgb, ${c} 50%, var(--color-text))`, theme);
+      const r = ratio(fg, bg);
+      assert.ok(r >= AA_TEXT, `${themeName}: avatar tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
     }
   });
 }
