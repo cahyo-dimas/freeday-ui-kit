@@ -240,6 +240,11 @@ Full working example: [`examples/react-faktur/`](../examples/react-faktur/).
 
 Blazor doesn't use npm — Freeday is served as **static files** in `wwwroot/`.
 
+> **Prefer the native components?** Jump to [§4 — the `Freeday.Blazor` RCL](#4-recommended-native-typed-components-freedayblazor-rcl):
+> typed `<FdyX>` with `@bind`, no manual JS interop. Steps 1–2 (assets + scripts) still apply; step 3
+> below (the raw enhancer + event bridge) is the underlying mechanism and the fallback for markup the
+> RCL doesn't cover.
+
 ### 1. Place the assets in `wwwroot/freeday/`
 Copy 3 files into `wwwroot/freeday/`: `freeday.bundle.css`, `freeday.js` (from `dist/`), and
 `freeday-blazor.js` (from `adapters/blazor/`). Manually, **or** automatically via an MSBuild target
@@ -314,7 +319,40 @@ public partial class Panel : ComponentBase, IAsyncDisposable
 Extras: `FreedayBlazor.toast(new { variant, title, message })` for toasts; `FreedayBlazor.toggleTheme()`
 to flip the theme. Event DTOs are deserialized case-insensitively by Blazor.
 
-Full working example: [`examples/blazor-faktur/`](../examples/blazor-faktur/).
+### 4. Recommended: native typed components (`Freeday.Blazor` RCL)
+
+Instead of hand-writing `fdy-*` markup + the interop above, reference the **Razor Class Library** and
+use typed `<FdyX>` components with `@bind` — the Blazor equivalent of the Vue `v-model` / React
+`value`/`onChange` adapters. Place the Freeday repo near your solution and add a project reference:
+```xml
+<!-- YourApp.csproj -->
+<ProjectReference Include="PATH\adapters\blazor\Freeday.Blazor.csproj" />
+```
+```razor
+@* _Imports.razor *@
+@using Freeday.Blazor
+```
+Load `freeday.js` + `freeday-blazor.js` exactly as in step 2 (the components still hydrate over the
+kit's CSS/enhancers), then bind:
+```razor
+@* Invoice.razor — no @ref, no manual JS interop, no [JSInvokable] *@
+<FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />
+<FdyDatepicker @bind-Value="_dueDate" Label="Due date" />
+<FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)"
+          PageSize="10" RowActivatable="true" RowActivate="OpenDetail" />
+<FdyChart Type="donut" Values="_byCity" Labels="_cityLabels" AriaLabel="Revenue by city" />
+<FdyDrawer @bind-Open="_drawerOpen" Title="Detail" Side="right">…</FdyDrawer>
+```
+Ten components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
+`Title`, `Size`/`Side`, `Dismissible`) · **`FdyCombo<TValue>`** · **`FdyDatepicker`** ·
+**`FdyAutocomplete`** · **`FdyCascade`** · **`FdyDateRange`** (`@bind-From`/`@bind-To`) ·
+**`FdyCfl<TRow>`** (async `LoadPage`) · **`FdyChart`** · **`FdyTable<TRow>`** (client sort/filter/page,
+or controlled `Sort`/`Filters`/`Page` for a server-paged table; `RowActivatable`, `RowDetail`). Each
+`select`-type control also takes `Disabled`/`Readonly`/`Invalid`. The RCL targets **net8.0** and is
+consumed as source (`<ProjectReference>`); `.NET bin/obj` never ships in the npm tarball.
+
+Full working example (all ten): [`examples/blazor-faktur/`](../examples/blazor-faktur/) —
+`Pages/ComponentsDemo.razor`.
 
 ---
 

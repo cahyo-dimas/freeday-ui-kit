@@ -369,7 +369,7 @@
 
     <section class="doc-section" id="sec-integrasi">
       <h2 data-i18n="int.h2">Integrasi framework</h2>
-      <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. <strong>Vue dan React kini sama-sama punya komponen controlled typed: <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>, <code>FdyChart</code>.</strong> Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
+      <p class="doc-desc" data-i18n="int.desc">Adapter tipis — enhancer tetap sumber kebenaran, event <code>fdy-*</code> dijembatani ke reaktivitas framework. <strong>Vue, React, dan Blazor kini sama-sama punya komponen typed (10/10 parity): <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>, <code>FdyChart</code>, <code>FdyTable</code>, <code>FdyModal</code>/<code>FdyDrawer</code>, dst.</strong> Tiap stack punya contoh layar faktur yang jalan (lihat <code>examples/</code>).</p>
       <p class="doc-desc" data-i18n="int.guide">Baru mau pakai di project sendiri? <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/getting-started.md" target="_blank" rel="noopener"><strong>Panduan langkah-demi-langkah per stack →</strong></a></p>
       <div class="doc-demo doc-demo--block">
         <div class="doc-fw">
@@ -386,7 +386,7 @@
           <a class="doc-fw__card" href="https://github.com/cahyo-dimas/freeday-ui-kit/tree/main/examples/blazor-faktur" target="_blank" rel="noopener">
             <span class="doc-fw__k">@cahyo-dimas/freeday/blazor</span>
             <h3>Blazor WASM</h3>
-            <p data-i18n="fw.blazor">Interop <code>window.FreedayBlazor</code> → method <code>[JSInvokable]</code> C#.</p>
+            <p data-i18n="fw.blazor">RCL <code>Freeday.Blazor</code> (net8.0) — komponen native typed <code>&lt;FdyX&gt;</code> dengan <code>@bind</code>, 10/10 parity. Fallback: interop <code>window.FreedayBlazor</code>.</p>
           </a>
         </div>
       </div>
@@ -1977,11 +1977,11 @@
     'stat.adapters': 'framework adapters',
     'stat.contrast': 'contrast · light &amp; dark',
     'int.h2': 'Framework integration',
-    'int.desc': 'Thin adapters — the enhancers stay the source of truth; <code>fdy-*</code> events bridge into framework reactivity. <strong>Vue and React both ship typed controlled components now: <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>, <code>FdyChart</code>.</strong> Each stack ships a runnable invoice example (see <code>examples/</code>).',
+    'int.desc': 'Thin adapters — the enhancers stay the source of truth; <code>fdy-*</code> events bridge into framework reactivity. <strong>Vue, React and Blazor all ship typed components now (10/10 parity): <code>FdyCombo</code>, <code>FdyDatepicker</code>, <code>FdyCfl</code>, <code>FdyChart</code>, <code>FdyTable</code>, <code>FdyModal</code>/<code>FdyDrawer</code>, etc.</strong> Each stack ships a runnable invoice example (see <code>examples/</code>).',
     'int.guide': 'New to it? <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/getting-started.md" target="_blank" rel="noopener"><strong>Step-by-step guide, per stack →</strong></a>',
     'fw.vue': 'Composable <code>useFreeday()</code> — hydrate on mount &amp; update, events via <code>v-on</code>. Plus <code>v-model</code> components: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>.',
     'fw.react': 'Hook <code>useFreeday()</code> + typed controlled components: <code>FdyCombo</code>/<code>FdyDatepicker</code>/<code>FdyCfl</code>/<code>FdyChart</code> (<code>value</code>/<code>onChange</code>).',
-    'fw.blazor': 'Interop <code>window.FreedayBlazor</code> → <code>[JSInvokable]</code> C# methods.',
+    'fw.blazor': 'RCL <code>Freeday.Blazor</code> (net8.0) — native typed <code>&lt;FdyX&gt;</code> components with <code>@bind</code>, 10/10 parity. Fallback: <code>window.FreedayBlazor</code> interop.',
     'footer.integrations': 'Integrations',
   };
   // Section headings + descriptions (keyed by section id), so the whole app — not

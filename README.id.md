@@ -126,17 +126,19 @@ import { useFreeday } from '@cahyo-dimas/freeday/react';
 const root = useRef<HTMLDivElement>(null);
 useFreeday(root);                     // event fdy-* bubbling → listen di root
 ```
-```csharp
-// Blazor — @cahyo-dimas/freeday/blazor (window.FreedayBlazor via JS interop)
-await JS.InvokeVoidAsync("FreedayBlazor.initAll", _root);
-await JS.InvokeAsync<int>("FreedayBlazor.on", _root, "fdy-cascade-change", _self, nameof(OnCascade));
+```razor
+@* Blazor — RCL Freeday.Blazor (net8.0): komponen native typed <FdyX> dengan @bind, 10/10 parity *@
+@using Freeday.Blazor
+<FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl" />
+<FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)" PageSize="10" />
+@* Fallback untuk markup mentah: interop window.FreedayBlazor.initAll / .on *@
 ```
 
 | Framework | Adapter | Contoh jalan |
 |---|---|---|
-| Vue 3 | `@cahyo-dimas/freeday/vue` | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
-| React 19 | `@cahyo-dimas/freeday/react` | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
-| Blazor WASM (.NET 10) | `@cahyo-dimas/freeday/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
+| Vue 3 | `@cahyo-dimas/freeday/vue` (`useFreeday` + komponen `v-model`) | [`examples/vue-faktur/`](examples/vue-faktur/) (`npm install && npm run dev`) |
+| React 19 | `@cahyo-dimas/freeday/react` (`useFreeday` + komponen `value`/`onChange`) | [`examples/react-faktur/`](examples/react-faktur/) (`npm install && npm run dev`) |
+| Blazor WASM (net8.0) | RCL `Freeday.Blazor` (`<FdyX>` + `@bind`) · interop `/blazor` | [`examples/blazor-faktur/`](examples/blazor-faktur/) (`dotnet run`) |
 
 Peta library & pola lengkap: [`docs/integrations.md`](docs/integrations.md).
 

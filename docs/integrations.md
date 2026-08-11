@@ -73,7 +73,7 @@ library only.
 | Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
 | Table (vanilla) | ✅ `freeday-table` | Static/server-rendered HTML, client-side sort/filter/pagination | — | Enhancer over a plain `<table>`; **don't** use it on a Vue/React-rendered table (it snapshots the DOM). |
-| Table (Vue/React) | ✅ `FdyTable` | `columns`/`rows` in, controlled sort/filter/page out; type-aware column filters (text/enum/number/date) | Virtualization, grouping, pinned columns: **TanStack Table** (headless) · **AG Grid** | `FdyTable` is the framework-safe primitive (reads `rows` every render). TanStack is headless → still render with `.fdy-table*` classes. |
+| Table (Vue/React/Blazor) | ✅ `FdyTable` | `columns`/`rows` in, controlled sort/filter/page out; type-aware column filters (text/enum/number/date) | Virtualization, grouping, pinned columns: **TanStack Table** (headless) · **AG Grid** | `FdyTable` is the framework-safe primitive (reads `rows` every render). Blazor's is `FdyTable<TRow>` backed by a C# port of the shared `table-model`. TanStack is headless → still render with `.fdy-table*` classes. |
 | Data fetching / cache | 🔌 | — | **TanStack Query** · **SWR** · Vue: **Pinia** | `freeday-cfl`'s `fetchPage` and `FdyTable`'s controlled `sort`/`filters`/`page` pair well with Query. |
 | Excel/PDF export | 🔌 | — | **SheetJS (xlsx)** · **jsPDF** + **jspdf-autotable** | Take data from state, not from the DOM. |
 | Virtual scroll | 🔌 | — | **TanStack Virtual** · Vue: **vue-virtual-scroller** | — |
@@ -104,8 +104,8 @@ library only.
 
 | Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Modal / dialog | ✅ modal (native `<dialog>`) · Vue/React: `FdyModal` | Focus trap + Esc + top layer come for free; `FdyModal` adds the controlled `open`/`onClose` glue | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday uses native — rarely worth replacing. `FdyModal` writes the `showModal()`/`close()` + Esc + backdrop reconciliation once. |
-| Drawer | ✅ `freeday-drawer` · Vue/React: `FdyDrawer` | Left/right overlay; `FdyDrawer` adds controlled `open`/`onClose` | — | Same controlled contract as `FdyModal`, `side="left"\|"right"`. |
+| Modal / dialog | ✅ modal (native `<dialog>`) · Vue/React/Blazor: `FdyModal` | Focus trap + Esc + top layer come for free; `FdyModal` adds the controlled `open`/`onClose` (`@bind-Open` in Blazor) glue | Headless primitives: **Radix** · **Headless UI** · **Ark UI** | Freeday uses native — rarely worth replacing. `FdyModal` writes the `showModal()`/`close()` + Esc + backdrop reconciliation once. |
+| Drawer | ✅ `freeday-drawer` · Vue/React/Blazor: `FdyDrawer` | Left/right overlay; `FdyDrawer` adds controlled `open`/`onClose` (`@bind-Open` in Blazor) | — | Same controlled contract as `FdyModal`, `side="left"\|"right"`. |
 | Tooltip / popover | ➕ tooltip (CSS) | Simple static tooltips | Collision-aware positioning (flip/shift), interactive popovers: **Floating UI** (`@floating-ui/dom`) | Use Floating UI to compute position; styling stays token-based. Example #5. |
 | Toast | ✅ `freeday-toast` | Common notifications | Advanced queue/stack: **Sonner** · **react-hot-toast** · **vue-toastification** | `Freeday.toast({variant,title,message})`. |
 | Animation | ✅ (CSS + respect `prefers-reduced-motion`) | Standard UI transitions | Complex orchestration: **Motion One** · React: **Framer Motion** · **GSAP** | Always check reduced-motion. |
@@ -187,6 +187,21 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
 document.addEventListener('fdy-form-invalid', (e) =>
   dotNetRef.invokeMethodAsync('OnFormInvalid', e.detail.invalid.length));
 ```
+
+> **Native components (parity with Vue's `v-model` / React's `value`/`onChange`):** the
+> **`Freeday.Blazor`** RCL (net8.0, `adapters/blazor/`) ships the typed components `FdyCombo<TValue>` /
+> `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` / `FdyCfl<TRow>` / `FdyChart` /
+> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` — `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
+> ```razor
+> @using Freeday.Blazor
+> <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />
+> <FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)" PageSize="10" />
+> ```
+> Add a `<ProjectReference>` to `Freeday.Blazor.csproj`; the host still loads `freeday.js` +
+> `freeday-blazor.js`. `FdyTable<TRow>` does client-side sort/filter/pagination, or controlled
+> `Sort`/`Filters`/`Page` for a server-paged table (`RowActivatable`, `RowDetail`); `FdyModal`/`FdyDrawer`
+> take `@bind-Open`. See [`getting-started.md` §Blazor](getting-started.md#blazor-wasm) and
+> `examples/blazor-faktur/Pages/ComponentsDemo.razor`. All three stacks are now symmetric.
 
 > **Alternative:** re-implement a component as a native framework one (Vue composable / React hook /
 > Blazor component), but **keep the markup + ARIA contract + `fdy-*` classes**. The enhancer is the
