@@ -55,6 +55,23 @@
     return token;
   }
 
+  // Subscribe to a daterange's child datepicker changes, forwarding {value, role} so a Blazor
+  // wrapper can bind From/To separately — both children emit the same fdy-datepicker-change, so
+  // the originating child's data-role is what tells them apart.
+  function dateRangeOn(element, dotNetRef, methodName) {
+    var handler = function (e) {
+      var origin = e.target && e.target.closest ? e.target.closest('[data-role]') : null;
+      dotNetRef.invokeMethodAsync(methodName, {
+        value: (e.detail && e.detail.value) || '',
+        role: origin ? origin.getAttribute('data-role') : null
+      });
+    };
+    element.addEventListener('fdy-datepicker-change', handler);
+    var token = ++seq;
+    subs[token] = { el: element, type: 'fdy-datepicker-change', fn: handler };
+    return token;
+  }
+
   // Remove a subscription created by on().
   function off(token) {
     var s = subs[token];
@@ -129,7 +146,7 @@
 
   window.FreedayBlazor = {
     initAll: initAll, on: on, off: off, toast: toast, toggleTheme: toggleTheme,
-    comboSetValue: comboSetValue,
+    comboSetValue: comboSetValue, dateRangeOn: dateRangeOn,
     dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,
   };
 })();

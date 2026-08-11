@@ -20,6 +20,24 @@
 
     <p style="margin-top:var(--space-4)">Tanggal: <strong>@(string.IsNullOrEmpty(_tanggal) ? "—" : _tanggal)</strong></p>
 
+    <label class="fdy-field" style="max-width:none">
+        <span class="fdy-label">Kota</span>
+        <FdyAutocomplete @bind-Value="_kota" Options="_kotaOptions" Placeholder="Ketik kota…" AriaLabel="Kota" />
+    </label>
+    <p style="margin-top:var(--space-4)">Kota: <strong>@(string.IsNullOrEmpty(_kota) ? "—" : _kota)</strong></p>
+
+    <label class="fdy-field" style="max-width:none">
+        <span class="fdy-label">Kategori</span>
+        <FdyCascade @bind-Value="_kategori" Nodes="_kategoriNodes" Label="Kategori" Placeholder="Pilih kategori…" />
+    </label>
+    <p style="margin-top:var(--space-4)">Kategori: <strong>@(string.IsNullOrEmpty(_kategori) ? "—" : _kategori)</strong></p>
+
+    <label class="fdy-field" style="max-width:none">
+        <span class="fdy-label">Rentang tanggal</span>
+        <FdyDateRange @bind-From="_dari" @bind-To="_sampai" AriaLabel="Rentang tanggal" FromPlaceholder="Dari" ToPlaceholder="Sampai" />
+    </label>
+    <p style="margin-top:var(--space-4)">Rentang: <strong>@(string.IsNullOrEmpty(_dari) ? "—" : _dari)</strong> → <strong>@(string.IsNullOrEmpty(_sampai) ? "—" : _sampai)</strong></p>
+
     <button class="fdy-btn fdy-btn--primary" type="button" @onclick="OpenModal">Konfirmasi</button>
 
     <FdyModal @bind-Open="_modalOpen" Title="Konfirmasi faktur" Size="sm">

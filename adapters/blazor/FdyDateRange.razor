@@ -1,0 +1,16 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyDateRange>
+
+@* Two linked seed datepickers (freeday-datepicker.js data-fdy-daterange: the end can't precede
+   the start). The daterange sits INSIDE Root so initAll(Root) finds and links it as a descendant.
+   Both children emit fdy-datepicker-change; the bridge's dateRangeOn tags each with its data-role
+   so From/To bind separately. Enhancer-owned DOM → render once (ShouldRender => false). *@
+<div @ref="Root">
+    <div data-fdy-daterange role="group" aria-label="@AriaLabel">
+        <div data-fdy-datepicker data-role="from"
+             data-value="@From" data-placeholder="@FromPlaceholder" data-min="@Min" data-max="@Max"></div>
+        <span class="fdy-daterange__sep">@Separator</span>
+        <div data-fdy-datepicker data-role="to"
+             data-value="@To" data-placeholder="@ToPlaceholder" data-min="@Min" data-max="@Max"></div>
+    </div>
+</div>

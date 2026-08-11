@@ -1,0 +1,33 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyCascade>
+
+@* Typed wrapper over freeday-cascade.js. The enhancer reads the hidden nested <ul> as its data
+   model (a <li> with a child <ul> is a branch; without, a leaf), then REMOVES the source list and
+   builds a drill-down popover. Because it removes/owns that DOM, we render the tree once and never
+   re-render (ShouldRender => false). The chosen leaf value flows back through @bind-Value. *@
+<div @ref="Root" data-fdy-cascade
+     data-label="@Label"
+     data-value="@Value"
+     data-placeholder="@Placeholder"
+     data-separator="@Separator">
+    <ul>
+        @foreach (FdyCascadeNode node in Nodes)
+        {
+            @RenderNode(node)
+        }
+    </ul>
+</div>
+
+@code {
+    // Recursive: each <li> carries its own label text (before any nested <ul>) + data-value; a
+    // nested <ul> makes it a branch. Matches the enhancer's parse(ul) contract.
+    private RenderFragment RenderNode(FdyCascadeNode node) =>@<li data-value="@node.Value">@node.Label@if (node.Children is { Count: > 0 })
+    {
+        <ul>
+            @foreach (FdyCascadeNode child in node.Children)
+            {
+                @RenderNode(child)
+            }
+        </ul>
+    }</li>;
+}

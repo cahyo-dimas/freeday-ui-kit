@@ -1,0 +1,19 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyAutocomplete>
+
+@* Typed wrapper over freeday-autocomplete.js (editable combobox). The enhancer filters the
+   option list as the user types and, on pick, fills the input + emits fdy-autocomplete-select
+   with the chosen text. Value is that text. The enhancer owns the input/listbox after
+   hydration (ShouldRender => false); the initial value seeds the input. *@
+<div @ref="Root" data-fdy-autocomplete class="fdy-autocomplete">
+    <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
+           aria-controls="@_listId" autocomplete="off" value="@Value"
+           placeholder="@Placeholder" aria-label="@AriaLabel" />
+    <ul class="fdy-autocomplete__listbox" id="@_listId" role="listbox" hidden>
+        @foreach (string item in Options)
+        {
+            <li class="fdy-autocomplete__option" role="option">@item</li>
+        }
+        <li class="fdy-autocomplete__empty" hidden>@EmptyText</li>
+    </ul>
+</div>
