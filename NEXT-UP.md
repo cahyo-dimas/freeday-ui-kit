@@ -9,7 +9,7 @@ menuntaskan ketiga item di bawah._
 
 ---
 
-## Roadmap ke depan (per v1.16.0) — default: **tunggu demand**
+## Roadmap ke depan (per v1.17.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -190,6 +190,22 @@ PUBLIC ([[public-repo-keep-internal-out]]).
 > ketahuan lewat `npm pack --dry-run` sebelum publish). Ketiganya (Table/Chart/Drawer)
 > **runtime-verified** di WASM headless (dotnet run + CDP). Konsumsi via `<ProjectReference>`; host
 > muat `dist/freeday.js` + `adapters/blazor/freeday-blazor.js`. See [[freeday-blazor-components]].
+>
+> **Update 2026-08-11 (2) — v1.17.0 (published, MINOR: aditif dari feedback app nyata).** Dua ronde
+> improvement note dari membangun app konsumen (untracked di `improvement-notes/` — memuat nama klien,
+> **jangan** commit). Tiap klaim **diverifikasi ke source dulu** (pelajaran #28/#32): **3 premis ternyata
+> sudah/parsial tertangani** — toast SUDAH return node (`.d.ts` v1.15.0), `--space-*` SUDAH publik di
+> tokens CSS, card hover SUDAH kena reduced-motion via global reset base.css — jadi cuma sisa fitur nyata
+> yang dikerjakan. Ditambahkan (aditif): avatar **`--tone-1..8`** (tint dekoratif dari palet chart +
+> foreground condong ke `--color-text` → auto AA terang/gelap; `test/contrast.test.mjs` dapat evaluator
+> `color-mix()` + assert 8 tone kedua tema), skeleton **`--avatar`/`-sm`/`-lg`** seukuran `.fdy-avatar`,
+> **`.fdy-card--button`** (reset kotak tombol UA **tanpa** buang surface/border — note usul `background:none;border:0`
+> yang salah karena akan menelanjangi kartu), **`.fdy-list-reset`**, toast **`key`** (replace-in-place, anti
+> stack burst) + **`Freeday.dismiss(node|key)`** publik. Docs: batas scope (komponen+token bukan layout;
+> pasangkan utility framework preflight-off; `--space-*` untuk theme; `data-density` cuma `--control-h`),
+> dan input dipimpin `aria-invalid="true"` sebagai field aksesibel kanonik. Semua CSS/JS **diverifikasi di
+> Chrome nyata** (8 tone beda + AA, card button pertahankan bg/border, skeleton 40/56px, list-reset vs
+> native, toast key→1 node + dismiss). Gate 22/22 · typecheck 0 · docs smoke 0 error.
 
 ---
 

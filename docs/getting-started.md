@@ -29,6 +29,18 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    `document.documentElement.dataset.theme = 'dark'`.
 5. **3-tier token rule.** Components only touch **Tier 2/3** (`var(--color-primary)`,
    `var(--space-4)`, `var(--radius-md)`…). **Never** write raw hex/px.
+6. **Scope: components + tokens, deliberately *not* layout.** Freeday ships components and tokens;
+   the only layout helpers are `.fdy-hidden` / `.fdy-visually-hidden`. Stacks, grids, gaps and sizing
+   come from **your** layout layer — pair Freeday with a utility framework (Tailwind, UnoCSS…) run
+   **utilities-only, preflight OFF** (Freeday's `base.css` is your reset). Two consequences worth
+   knowing up front:
+   - **base.css is a *light* reset** — it does not strip `ul`/`ol`/`p` margins. With preflight off, a
+     semantic `<ul>` keeps native bullets + a 40px indent; add **`.fdy-list-reset`** (or use a Freeday
+     list component) on such lists.
+   - **The spacing scale is public.** `--space-0`…`--space-24`, `--radius-*`, `--dur-*` etc. are real
+     custom properties in `dist/freeday.tokens.css` — **define your utility theme in terms of them**
+     (`spacing: { 4: 'var(--space-4)' }`) so both systems stay in step. Note `data-density` only
+     re-scales control height (`--control-h`), **not** utility spacing — density won't reach `gap-4`.
 
 ---
 
@@ -91,7 +103,7 @@ From the live docs (View Source) or `Foundation Design System.html`. **Replace**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.16.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.17.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

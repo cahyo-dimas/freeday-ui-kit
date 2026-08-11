@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.16.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.16.0)
+[![Release](https://img.shields.io/badge/release-v1.17.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.17.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -48,6 +48,14 @@ ter-publish → install tanpa build step; minify diserahkan ke bundler konsumen.
 ```
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`). Pakai langsung di
 markup framework apa pun — Vue, React, Blazor, atau HTML polos.
+
+> **Scope: komponen + token, bukan layout.** Freeday punya komponen & design token; helper layout
+> cuma `.fdy-hidden` / `.fdy-visually-hidden`. Layout (stack/grid/gap) dari layer-mu sendiri —
+> pasangkan dengan utility framework (Tailwind, UnoCSS…) mode **utilities-only, preflight OFF**
+> (`base.css` Freeday = reset-nya). `base.css` itu reset *ringan* (tak me-reset margin `ul`/`ol`/`p` —
+> pakai `.fdy-list-reset` atau komponen list Freeday), dan skala spacing/radius/durasi adalah custom
+> property publik (`--space-0`…`--space-24`, …) yang bisa jadi dasar theme utility-mu. Detail:
+> [`docs/getting-started.md` §Core concepts](docs/getting-started.md).
 
 > `.fdy-btn` **sudah** tombol primary — tak ada modifier `.fdy-btn--primary` terpisah.
 > Modifier untuk varian lain: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`, `--icon`

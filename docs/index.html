@@ -328,7 +328,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.16.0</p>
+          <p class="doc-eyebrow">Design System · v1.17.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -613,7 +613,7 @@
 
     <section class="doc-section" id="sec-input">
       <h2>Input</h2>
-      <p class="doc-desc">Inner-shadow + focus glow. Error pakai <code>aria-invalid</code> + <code>aria-describedby</code>.</p>
+      <p class="doc-desc">Inner-shadow + focus glow. <strong>Untuk error, pakai <code>aria-invalid="true"</code></strong> — atribut ini melakukan dua hal sekaligus (state visual <em>dan</em> yang bisa dibaca screen reader), lalu <code>aria-describedby</code> menautkan pesan (help ber-<code>id</code> sama). <code>.fdy-input--error</code> hanya untuk kasus di mana state invalid bukan milik field itu sendiri.</p>
       <div class="doc-demo" style="align-items:flex-start">
         <label class="fdy-field">
           <span class="fdy-label">Nama pelanggan</span>
@@ -622,7 +622,7 @@
         </label>
         <label class="fdy-field">
           <span class="fdy-label">Email</span>
-          <input class="fdy-input fdy-input--error" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
+          <input class="fdy-input" value="bukan-email" aria-invalid="true" aria-describedby="email-err">
           <span class="fdy-help fdy-help--error" id="email-err">Format email tidak valid.</span>
         </label>
       </div>
@@ -1179,11 +1179,11 @@
 
     <section class="doc-section" id="sec-toast">
       <h2>Toast</h2>
-      <p class="doc-desc">Notifikasi sekilas di live-region. Panggil <code>Freeday.toast({variant,title,message})</code>.</p>
+      <p class="doc-desc">Notifikasi sekilas di live-region. Panggil <code>Freeday.toast({variant,title,message})</code> — <strong>mengembalikan elemen toast</strong>. Beri <code>key</code> agar toast dengan key sama <strong>menggantikan</strong> yang lama (bukan menumpuk saat error yang sama meletup beruntun); tutup lebih awal dengan <code>Freeday.dismiss(node|key)</code>.</p>
       <div class="doc-demo">
         <button class="fdy-btn" onclick="Freeday.toast({variant:'success',title:'Tersimpan',message:'Faktur INV-1042 berhasil disimpan.'})">Toast sukses</button>
         <button class="fdy-btn fdy-btn--ghost" onclick="Freeday.toast({variant:'info',title:'Info',message:'Sinkronisasi berjalan di latar belakang.'})">Toast info</button>
-        <button class="fdy-btn fdy-btn--danger" onclick="Freeday.toast({variant:'danger',title:'Gagal',message:'Tidak bisa terhubung ke server.'})">Toast error</button>
+        <button class="fdy-btn fdy-btn--danger" onclick="Freeday.toast({variant:'danger',title:'Gagal',message:'Tidak bisa terhubung ke server.',key:'net-fail'})">Toast error (key)</button>
       </div>
     </section>
 
@@ -1459,6 +1459,7 @@
 
     <section class="doc-section" id="sec-card">
       <h2>Card</h2>
+      <p class="doc-desc"><code>--interactive</code> = kursor + hover-lift untuk kartu yang <em>diberi</em> handler klik. Kalau kartunya <strong>adalah</strong> kontrol (baris pemilih yang keyboard-reachable &amp; diumumkan), render sebagai <code>&lt;button&gt;</code> dan tambah <strong><code>--button</code></strong> — reset kotak tombol UA tanpa membuang surface/border kartu.</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card">
           <div class="fdy-card__body">
@@ -1476,6 +1477,12 @@
             <p class="fdy-card__desc">Arahkan kursor — kartu terangkat (hover-lift).</p>
           </div>
         </div>
+        <button type="button" class="fdy-card fdy-card--interactive fdy-card--button">
+          <div class="fdy-card__body">
+            <h3 class="fdy-card__title">Baris = tombol</h3>
+            <p class="fdy-card__desc">Kartu ini sebuah <code>&lt;button&gt;</code> (<code>--button</code>): fokusabel, bisa Enter/Space.</p>
+          </div>
+        </button>
       </div>
     </section>
 
@@ -1517,6 +1524,7 @@
 
     <section class="doc-section" id="sec-avatar">
       <h2>Avatar</h2>
+      <p class="doc-desc">Ukuran <code>--sm</code> / default / <code>--lg</code>, plus grup bertumpuk. Untuk membedakan avatar berinisial sama (mis. banyak nama "PT …"), pakai <strong><code>--tone-1</code>…<code>--tone-8</code></strong> — tint dekoratif yang tetap kontras <strong>AA</strong> di terang &amp; gelap; hash indeks stabil dari nama lengkap (bukan dari inisial).</p>
       <div class="doc-demo">
         <span class="fdy-avatar fdy-avatar--sm">SM</span>
         <span class="fdy-avatar">BJ</span>
@@ -1526,6 +1534,16 @@
           <span class="fdy-avatar">BJ</span>
           <span class="fdy-avatar">TA</span>
         </span>
+      </div>
+      <div class="doc-demo" style="margin-top:var(--space-3)">
+        <span class="fdy-avatar fdy-avatar--tone-1">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-2">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-3">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-4">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-5">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-6">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-7">PT</span>
+        <span class="fdy-avatar fdy-avatar--tone-8">PT</span>
       </div>
     </section>
 
@@ -1578,7 +1596,13 @@
 
     <section class="doc-section" id="sec-skeleton">
       <h2>Skeleton</h2>
-      <div class="doc-demo doc-demo--block" style="max-width:24rem">
+      <p class="doc-desc"><code>--title</code>/<code>--text</code> untuk teks, <code>--circle</code> untuk bentuk bulat, dan <strong><code>--avatar</code></strong> (+<code>--avatar-sm</code>/<code>--avatar-lg</code>) yang <strong>seukuran <code>.fdy-avatar</code></strong> — jadi placeholder memesan kotak yang persis sama dan tak ada geser tata letak saat data datang.</p>
+      <div class="doc-demo" style="align-items:center;gap:var(--space-3)">
+        <div class="fdy-skeleton fdy-skeleton--avatar-sm"></div>
+        <div class="fdy-skeleton fdy-skeleton--avatar"></div>
+        <div class="fdy-skeleton fdy-skeleton--avatar-lg"></div>
+      </div>
+      <div class="doc-demo doc-demo--block" style="max-width:24rem;margin-top:var(--space-3)">
         <div class="fdy-skeleton fdy-skeleton--title"></div>
         <div class="fdy-skeleton fdy-skeleton--text"></div>
         <div class="fdy-skeleton fdy-skeleton--text" style="width:80%"></div>
@@ -1913,7 +1937,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.16.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.17.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -1996,7 +2020,7 @@
     'sec-motion': { h2: 'Motion', desc: 'A small set of durations &amp; easings. Hover the track to feel it — disabled under <code>prefers-reduced-motion</code>.' },
     'sec-tombol': { h2: 'Button', desc: 'Dark-to-bottom gradient + coloured glow. One primary action per screen; the rest are ghost.' },
     'sec-menu': { h2: 'Menu &amp; Split button', desc: 'Action popup (WAI-ARIA APG menu-button pattern) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = primary action + menu toggle. Needs <code>freeday-menu.js</code>.' },
-    'sec-input': { h2: 'Input', desc: 'Inner shadow + focus glow. Errors use <code>aria-invalid</code> + <code>aria-describedby</code>.' },
+    'sec-input': { h2: 'Input', desc: 'Inner shadow + focus glow. <strong>For errors, set <code>aria-invalid="true"</code></strong> — it does both jobs (the visual state <em>and</em> the one screen readers can act on), then <code>aria-describedby</code> links the message (a help element with a matching <code>id</code>). <code>.fdy-input--error</code> is only for cases where the invalid state is not the field\'s own.' },
     'sec-inputgroup': { h2: 'Input group', desc: 'Free prefix/suffix addons — text (Rp / %), a decorative icon (<code>__addon--icon</code>), an action button (<code>__btn</code>), or none at all. So "with icon / without / custom icon" is just addon markup.' },
     'sec-cfl': { h2: 'Choose-from-list', desc: 'A read-only field backed by master data (customers, items, warehouses…). The magnifier on the right opens a search dialog; the picked row fills the field (code + name at once). The value is always <strong>picked</strong>, never typed. Needs <code>freeday-cfl.js</code>.' },
     'sec-datepicker': { h2: 'Date picker', desc: 'Input-styled trigger + calendar popover — consistent across browsers &amp; themeable. (Native <code>&lt;input type="date"&gt;</code> stays a light option when you don\'t need theming.) A range is two linked pickers; the end can\'t precede the start. Full keyboard support. Needs <code>freeday-datepicker.js</code>.' },
@@ -2014,7 +2038,7 @@
     'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG) — stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>freeday-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
     'sec-pilihan': { h2: 'Checkbox · Radio · Switch', desc: 'Native <code>&lt;input&gt;</code> styled — Space, label association, and <code>:focus-visible</code> stay native.' },
     'sec-alert': { h2: 'Alert', desc: 'Inline messages. The danger variant uses <code>role="alert"</code>.' },
-    'sec-toast': { h2: 'Toast', desc: 'A transient notification in a live region. Call <code>Freeday.toast({variant,title,message})</code>.' },
+    'sec-toast': { h2: 'Toast', desc: 'A transient notification in a live region. Call <code>Freeday.toast({variant,title,message})</code> — it <strong>returns the toast element</strong>. Pass a <code>key</code> so a same-key toast <strong>replaces</strong> the old one (no stacking when the same failure fires in a burst); dismiss early with <code>Freeday.dismiss(node|key)</code>.' },
     'sec-tooltip': { h2: 'Tooltip', desc: 'Appears on hover/focus. Associated via <code>aria-describedby</code>.' },
     'sec-tabs': { h2: 'Tabs', desc: 'APG pattern — arrows ←/→, Home/End, roving tabindex. Needs <code>freeday-tabs.js</code>.' },
     'sec-breadcrumb': { h2: 'Breadcrumb' },
@@ -2024,13 +2048,13 @@
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
     'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, line, area, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; multi-series uses the validated categorical palette <code>--chart-1</code>…<code>--chart-8</code>, overridable with <code>data-fdy-colors</code> — a semantic token name or a slot <code>chart-1</code>…<code>chart-8</code> to pin a colour per category. Each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
     'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row. The <strong>checkbox</strong> variant (right) adds cascading selection: check a branch → all children follow; some children → the branch turns <em>indeterminate</em>. Needs <code>freeday-tree.js</code> for the cascade; a checkbox never expands/collapses the branch.' },
-    'sec-card': { h2: 'Card' },
+    'sec-card': { h2: 'Card', desc: '<code>--interactive</code> = cursor + hover-lift for a card you <em>attach</em> a click handler to. When the card <strong>is</strong> the control (a keyboard-reachable, announced picker row), render it as a <code>&lt;button&gt;</code> and add <strong><code>--button</code></strong> — it resets the UA button box without stripping the card\'s own surface/border.' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
-    'sec-avatar': { h2: 'Avatar' },
+    'sec-avatar': { h2: 'Avatar', desc: 'Sizes <code>--sm</code> / default / <code>--lg</code>, plus a stacked group. To tell apart same-initial avatars (e.g. many "PT …" names), use <strong><code>--tone-1</code>…<code>--tone-8</code></strong> — decorative tints that stay <strong>AA</strong>-contrast in light &amp; dark; hash a stable index off the full name (not the initials).' },
     'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>freeday-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
     'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages.' },
     'sec-progress': { h2: 'Progress &amp; Spinner' },
-    'sec-skeleton': { h2: 'Skeleton' },
+    'sec-skeleton': { h2: 'Skeleton', desc: '<code>--title</code>/<code>--text</code> for text, <code>--circle</code> for round shapes, and <strong><code>--avatar</code></strong> (+<code>--avatar-sm</code>/<code>--avatar-lg</code>) which are <strong>size-matched to <code>.fdy-avatar</code></strong> — so the placeholder reserves the exact same box and data landing causes no layout shift.' },
     'sec-carousel': { h2: 'Carousel', desc: 'Scroll-snap + arrows + dot indicators. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe on touch, optional autoplay (<code>data-fdy-autoplay</code>, pauses on hover/focus). Needs <code>freeday-carousel.js</code>.' },
     'sec-timeline': { h2: 'Timeline', desc: 'A vertical event feed — markers on a connecting line, with time &amp; description. Marker colour signals status (paired with text, not colour alone). Pure CSS.' },
     'sec-appbar': { h2: 'App bar', desc: 'A standalone top bar — brand · actions · spacer. Can be sticky, elevated, dense, or coloured. The hamburger usually opens a drawer (side menu).' },

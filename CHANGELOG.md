@@ -3,6 +3,35 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.17.0] — 2026-08-11
+### Added
+- **Avatar identity tones (`--tone-1`…`--tone-8`).** Decorative tints (from the categorical chart
+  palette) with a theme-aware, text-leaning foreground, so same-initial avatars — common where many
+  names share a prefix — stay distinguishable. Verified WCAG **AA** (≥4.5:1) in light **and** dark,
+  guarded by `test/contrast.test.mjs` (which gained a `color-mix()` evaluator). Hash a stable index
+  off the full name, not the initials.
+- **Size-matched skeletons (`.fdy-skeleton--avatar` + `--avatar-sm`/`--avatar-lg`).** Reserve the exact
+  `.fdy-avatar` box (2 / 2.5 / 3.5rem) so data landing causes no layout shift (a bare `--circle` has no
+  dimensions of its own).
+- **`.fdy-card--button`.** When the whole card *is* the control — a real `<button>` picker row, so it is
+  keyboard-reachable and announced — this resets the UA button box **without** stripping the card's own
+  surface/border.
+- **`.fdy-list-reset`.** Opt-in list reset for consumers who pair Freeday with a utility framework run
+  preflight-off (`base.css` is intentionally a *light* reset — it does not strip `ul`/`ol`/`p` margins).
+- **Toast `key` + `Freeday.dismiss()`.** `toast({ …, key })` replaces an existing same-key toast in
+  place instead of stacking a duplicate (a burst of identical failures shows one, refreshed);
+  `Freeday.dismiss(node | key)` closes one early. `toast()` already returned the element — both are now
+  in the `window.Freeday` type declarations.
+### Docs
+- State the scope boundary (components + tokens, **not** layout; pair with a utility framework run
+  preflight-off) in the README and getting-started; document that `--space-*`/`--radius-*` are public
+  tokens to build a utility theme on, and that `data-density` only re-scales control height.
+- Input docs now lead with `aria-invalid="true"` as the canonical accessible-field pattern (it does
+  both the visual state and the one screen readers act on); `.fdy-input--error` is the fallback.
+
+Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone contrast, both themes) ·
+`typecheck:react` 0 · new CSS/JS browser-verified in real Chrome. From real-app consumption feedback.
+
 ## [1.16.0] — 2026-08-11
 ### Added
 - **Native Blazor component library (`adapters/blazor/`) — first release, 10/10 parity.** A Razor
