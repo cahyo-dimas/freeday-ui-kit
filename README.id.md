@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.17.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.17.0)
+[![Release](https://img.shields.io/badge/release-v1.18.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.18.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -49,8 +49,18 @@ ter-publish → install tanpa build step; minify diserahkan ke bundler konsumen.
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`). Pakai langsung di
 markup framework apa pun — Vue, React, Blazor, atau HTML polos.
 
+> **⚠️ Muat font-nya sendiri — paket ini tidak.** Token tipe menamai **Sora** / **IBM Plex Sans** /
+> **JetBrains Mono** tapi Freeday tak membundel file font. Muat (mis. `@import '@fontsource/sora/700.css'`
+> …) atau override `--font-display`/`--font-body`/`--font-mono` — kalau tidak, kit jatuh ke fallback
+> sistem dan terlihat "belum jadi". Detail: [`docs/getting-started.md`](docs/getting-started.md).
+
+> **Token/role mana dipakai kapan → [`USAGE.md`](USAGE.md).** Freeday menjaga konsistensi *nilai*;
+> `USAGE.md` = doktrin yang menjaga konsistensi *keputusan* — role tipe (`.fdy-title-page/-section/-card`),
+> ritme spasi, elevasi, satu-primary-per-layar, palet kategorikal `--tone-1…8`, dan primitif komposisi
+> halaman (`.fdy-page`, `.fdy-page-section`, `.fdy-stats`). Tiap app mulai di `.fdy-app`.
+
 > **Scope: komponen + token, bukan layout.** Freeday punya komponen & design token; helper layout
-> cuma `.fdy-hidden` / `.fdy-visually-hidden`. Layout (stack/grid/gap) dari layer-mu sendiri —
+> cuma `.fdy-hidden` / `.fdy-visually-hidden` plus primitif komposisi di atas. Layout grid dari layer-mu sendiri —
 > pasangkan dengan utility framework (Tailwind, UnoCSS…) mode **utilities-only, preflight OFF**
 > (`base.css` Freeday = reset-nya). `base.css` itu reset *ringan* (tak me-reset margin `ul`/`ol`/`p` —
 > pakai `.fdy-list-reset` atau komponen list Freeday), dan skala spacing/radius/durasi adalah custom

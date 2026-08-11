@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
@@ -28,6 +28,7 @@
     "tokens/breakpoints.d.ts",
     "README.md",
     "README.id.md",
+    "USAGE.md",
     "CHANGELOG.md"
   ],
   "exports": {
@@ -36,6 +37,7 @@
     "./css/components": { "types": "./dist/asset.d.ts", "default": "./dist/freeday.css" },
     "./tokens": { "types": "./dist/asset.d.ts", "default": "./dist/freeday.tokens.css" },
     "./breakpoints": { "types": "./tokens/breakpoints.d.ts", "default": "./tokens/breakpoints.mjs" },
+    "./table-model": { "types": "./adapters/core/table-model.d.ts", "default": "./adapters/core/table-model.js" },
     "./enhancers/*": { "types": "./dist/asset.d.ts", "default": "./dist/freeday-*.js" },
     "./vue": {
       "types": "./adapters/vue/index.d.ts",

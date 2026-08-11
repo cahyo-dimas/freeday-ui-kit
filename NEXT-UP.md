@@ -9,7 +9,7 @@ menuntaskan ketiga item di bawah._
 
 ---
 
-## Roadmap ke depan (per v1.17.0) — default: **tunggu demand**
+## Roadmap ke depan (per v1.18.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -206,6 +206,24 @@ PUBLIC ([[public-repo-keep-internal-out]]).
 > dan input dipimpin `aria-invalid="true"` sebagai field aksesibel kanonik. Semua CSS/JS **diverifikasi di
 > Chrome nyata** (8 tone beda + AA, card button pertahankan bg/border, skeleton 40/56px, list-reset vs
 > native, toast key→1 node + dismiss). Gate 22/22 · typecheck 0 · docs smoke 0 error.
+>
+> **Update 2026-08-11 (3) — v1.18.0 (published, "design-system completeness").** Ronde 3 improvement note
+> (`003-*.md`) + sisa ronde 1–2. **Bug a11y NYATA & di-fix:** Vue `FdyModal`/`FdyDrawer` `dismissible`
+> tak terjangkau — Vue **boolean-cast** memberi Boolean prop yang dihilangkan nilai `false` (bukan
+> `undefined`), jadi `props.dismissible !== false` → `false` → dialog non-dismissible (no Esc/backdrop,
+> modal bahkan tanpa tombol ×). Fix `withDefaults(…, { dismissible: true })` (diverifikasi di output
+> `compileScript`: default `true` ter-wire). React AMAN (omitted→undefined); `FdyCombo`/`FdyDatepicker`
+> pakai `=== true` (benar untuk default-false). **Aditif:** primitif komposisi `src/components/composition.css`
+> (`.fdy-page`/`__header`/`.fdy-page-section`/`.fdy-toolbar`/`.fdy-stats`+`.fdy-stat` = KPI tile yang
+> SENGAJA bukan card) + role tipe `.fdy-title-page/-section/-card` (+eyebrow/muted/caption); **`USAGE.md`**
+> = doktrin pemakaian (role tipe, ritme spasi, elevasi, satu-primary, semantik-vs-kategorikal, density,
+> urutan shell→page); palet kategorikal `--tone-1..8` (alias `--chart-N`, theme-aware) + `.fdy-chip--tone-N`
+> (AA di-gate); `FdyTable` emit rows terproses (`process` Vue / `onProcess` React, `{rows,total}`, KEDUA mode)
+> + export `./table-model` (fungsi murni kini reachable). **Changed:** `data-density=compact` step
+> `--space-3..6` (bukan cuma `--control-h`). Docs pimpin `.fdy-app` + langkah keras "muat font sendiri"
+> (paket menamai Sora/IBM Plex/JetBrains tapi tak membundel). LESSON reconfirmed: 3 premis ronde 1–2
+> sudah/parsial tertangani (verify dulu). Semua CSS browser-verified (role hierarchy 31/20/18px, 8 chip
+> tone AA, density propagate 20→16px). Gate 22/22 · typecheck 0 · test:browser 6/6.
 
 ---
 

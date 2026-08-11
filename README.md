@@ -5,7 +5,7 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.17.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.17.0)
+[![Release](https://img.shields.io/badge/release-v1.18.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.18.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -49,13 +49,23 @@ bundler. Because it's on **public npm**, `npm ci` runs in CI without auth or an 
 Component classes are prefixed `fdy-` (e.g. `fdy-btn`, `fdy-card`, `fdy-badge`). Use them directly
 in any framework's markup — Vue, React, Blazor, or plain HTML.
 
+> **⚠️ Load the fonts — the package doesn't.** The type tokens name **Sora** / **IBM Plex Sans** /
+> **JetBrains Mono** but Freeday bundles no font files. Load them (e.g. `@import '@fontsource/sora/700.css'`
+> …) or override `--font-display`/`--font-body`/`--font-mono` — otherwise the kit renders in the system
+> fallback and looks unfinished. See [`docs/getting-started.md` §Core concepts](docs/getting-started.md).
+
+> **Which token/role to use when → [`USAGE.md`](USAGE.md).** Freeday enforces consistent *values*;
+> `USAGE.md` is the doctrine that also makes *decisions* consistent — type roles (`.fdy-title-page/-section/-card`),
+> spacing rhythm, elevation, one-primary-per-screen, the `--tone-1…8` categorical palette, and the page-
+> composition primitives (`.fdy-page`, `.fdy-page-section`, `.fdy-stats`). Every app starts in `.fdy-app`.
+
 > **Scope: components + tokens, not layout.** Freeday owns components and design tokens; the only
-> layout helpers are `.fdy-hidden` / `.fdy-visually-hidden`. Bring your own layout layer — pair it
-> with a utility framework (Tailwind, UnoCSS…) run **utilities-only with preflight OFF** (Freeday's
-> `base.css` is the reset). `base.css` is a *light* reset (it doesn't strip `ul`/`ol`/`p` margins —
-> use `.fdy-list-reset` or a Freeday list component), and the spacing/radius/duration scales are
-> public custom properties (`--space-0`…`--space-24`, …) you can build your utility theme on. Full
-> notes: [`docs/getting-started.md` §Core concepts](docs/getting-started.md).
+> layout helpers are `.fdy-hidden` / `.fdy-visually-hidden` plus the page-composition primitives above.
+> Bring your own grid layer — pair it with a utility framework (Tailwind, UnoCSS…) run **utilities-only
+> with preflight OFF** (Freeday's `base.css` is the reset). `base.css` is a *light* reset (it doesn't
+> strip `ul`/`ol`/`p` margins — use `.fdy-list-reset` or a Freeday list component), and the
+> spacing/radius/duration scales are public custom properties (`--space-0`…`--space-24`, …) you can
+> build your utility theme on. Full notes: [`docs/getting-started.md` §Core concepts](docs/getting-started.md).
 
 > `.fdy-btn` is **already** the primary button — there's no separate `.fdy-btn--primary` modifier.
 > Modifiers for other variants: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`, `--icon`

@@ -39,8 +39,59 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
      list component) on such lists.
    - **The spacing scale is public.** `--space-0`…`--space-24`, `--radius-*`, `--dur-*` etc. are real
      custom properties in `dist/freeday.tokens.css` — **define your utility theme in terms of them**
-     (`spacing: { 4: 'var(--space-4)' }`) so both systems stay in step. Note `data-density` only
-     re-scales control height (`--control-h`), **not** utility spacing — density won't reach `gap-4`.
+     (`spacing: { 4: 'var(--space-4)' }`) so both systems stay in step. `data-density="compact"` steps
+     `--control-h` **and** the mid-range spacing scale (`--space-3`…`--space-6`), so Freeday components
+     densify — and if your utility theme is built on `var(--space-N)`, density reaches your utilities too.
+7. **Load the fonts — the package does not.** The type tokens *name* **Sora** (display), **IBM Plex
+   Sans** (body) and **JetBrains Mono** (data), but Freeday bundles no `@font-face` and no font files.
+   Load them yourself, or the kit renders in the system fallback — which reads as "unfinished design",
+   not "missing dependency". One line with [Fontsource](https://fontsource.org):
+   ```css
+   @import '@fontsource/sora/600.css'; @import '@fontsource/sora/700.css';
+   @import '@fontsource-variable/ibm-plex-sans'; @import '@fontsource/jetbrains-mono/500.css';
+   ```
+   (Or a `<link>` to your own self-hosted copies, or override `--font-display`/`--font-body`/`--font-mono`
+   to faces you already ship. If you keep a system-sans fallback, consider softening
+   `--tracking-tighter` on headings — it's tuned for Sora's proportions.)
+8. **Start from the shell, then compose.** Every application goes inside **`.fdy-app`** (see below);
+   inside it, assemble screens from the composition primitives — `.fdy-page`, `.fdy-page__header`,
+   `.fdy-page-section`, `.fdy-toolbar`, `.fdy-stats`/`.fdy-stat` — and the type roles (`.fdy-title-page`
+   / `-section` / `-card`), not by re-using `.fdy-card__title` for everything. **Which token/role/shadow
+   to use when lives in [`USAGE.md`](../USAGE.md)** — read it once; it's what makes screens cohere.
+
+---
+
+## The app shell (start here)
+
+Every Freeday application goes inside **`.fdy-app`** — the frame that holds a top bar, a sidebar, and
+the scrolling content. Don't hand-roll one from flexbox; the responsive sidebar + backdrop are built in.
+The nav toggle is one line: toggle `.fdy-app--nav-open` (mobile drawer) / `.fdy-app--nav-collapsed`
+(desktop) on the `.fdy-app` element from the `__navtoggle` button's click.
+
+```html
+<div class="fdy-app">
+  <header class="fdy-app__topbar">
+    <button class="fdy-app__navtoggle" aria-label="Toggle menu"><!-- hamburger svg --></button>
+    <a class="fdy-app__brand" href="/">
+      <span class="fdy-app__brand-mark"><!-- logo --></span>
+      <span class="fdy-app__brand-text"><span class="fdy-app__brand-title">eMate</span></span>
+    </a>
+    <!-- topbar actions … -->
+  </header>
+  <aside class="fdy-app__sidebar"><nav class="fdy-nav"><!-- .fdy-nav items … --></nav></aside>
+  <main class="fdy-app__main">
+    <div class="fdy-app__content">
+      <!-- YOUR SCREEN: a .fdy-page … (see USAGE.md) -->
+    </div>
+  </main>
+  <div class="fdy-app__backdrop"></div>
+</div>
+```
+
+Then compose the screen inside `__content` with `.fdy-page` / `.fdy-page__header` / `.fdy-page-section`
+/ `.fdy-stats` and the type roles. The live **App shell** + **Sidebar menu** demos in
+[`docs/index.html`](index.html) are copy-pasteable; **[`USAGE.md`](../USAGE.md)** says which role and
+token to use where.
 
 ---
 
@@ -103,7 +154,7 @@ From the live docs (View Source) or `Foundation Design System.html`. **Replace**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.17.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.18.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

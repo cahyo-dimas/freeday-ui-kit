@@ -3,6 +3,46 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.18.0] — 2026-08-11
+### Fixed
+- **`FdyModal` / `FdyDrawer` (Vue) were non-dismissible when `dismissible` was omitted — an
+  accessibility defect.** Vue's boolean-cast delivers an omitted Boolean prop as `false`, not
+  `undefined`, so the defensive `props.dismissible !== false` evaluated to `false`: no Escape, no
+  backdrop close, and (modal) no close button rendered — the opposite of the documented
+  `dismissible: true` default. Both now use `withDefaults(…, { dismissible: true })`. React was
+  unaffected (it leaves omitted props `undefined`); `FdyCombo`/`FdyDatepicker` use `=== true`, which
+  is correct for an intended-`false` default.
+- **`.fdy-card--interactive` hover transform now respects reduced motion** — the `-3px` lift is dropped
+  under `prefers-reduced-motion` (the shadow still signals the affordance).
+### Added
+- **Page-composition primitives + type roles (`src/components/composition.css`).** `.fdy-page`,
+  `.fdy-page__header`, `.fdy-page-section`, `.fdy-toolbar`, `.fdy-stats`/`.fdy-stat` (a KPI tile that is
+  deliberately *not* a card, so a metric strip doesn't become an identical-card grid), and three title
+  roles `.fdy-title-page` / `-section` / `-card` (+ `.fdy-eyebrow`, `.fdy-text-muted`/`-caption`). They
+  encode *how a page is assembled* so independently-built screens cohere.
+- **`USAGE.md` — the usage doctrine.** Which token/role/shadow to use when: type roles, spacing rhythm,
+  elevation, one-primary-per-screen, semantic-vs-categorical colour, density, and the shell-down
+  composition order. The line where a component library becomes a design system.
+- **General categorical palette `--tone-1`…`--tone-8`** (a chart-neutral alias of the validated,
+  theme-aware `--chart-1`…`8`) + **`.fdy-chip--tone-N`** to match `.fdy-avatar--tone-N` — non-semantic
+  category colours (chips, tags, legends), WCAG AA in light & dark (gated).
+- **`FdyTable` surfaces its processed rows** — a `process` event (Vue) / `onProcess` callback (React),
+  `{ rows, total }`, in **both** client and server modes — so the same filtered/sorted/paged set can
+  drive a responsive card list, a selection summary, or CSV export without re-deriving the pipeline.
+- **`./table-model` export.** The pure `filterRows`/`sortRows`/`paginate`/`cellValue`/… functions
+  (`adapters/core/table-model.js`) are now reachable as `@cahyo-dimas/freeday/table-model`, so a consumer
+  can pre-compute exactly what `FdyTable` does instead of re-deriving it and risking drift.
+### Changed
+- **`data-density="compact"` now steps the mid-range spacing scale** (`--space-3`…`--space-6`) as well as
+  `--control-h`, so Freeday components — and a utility theme built on `var(--space-N)` — actually densify;
+  previously it changed only control height.
+- **Docs:** getting-started leads with the `.fdy-app` shell + a loud "load the fonts yourself" step (the
+  package names Sora / IBM Plex Sans / JetBrains Mono but bundles none); README links `USAGE.md`.
+
+Additive except the two bug fixes (which restore documented behaviour). Gate: `node --test` 22/22 ·
+`typecheck:react` 0 · `test:browser` 6/6 · new CSS browser-verified in real Chrome. From real-app
+consumption feedback (three instalments).
+
 ## [1.17.0] — 2026-08-11
 ### Added
 - **Avatar identity tones (`--tone-1`…`--tone-8`).** Decorative tints (from the categorical chart
