@@ -7,6 +7,34 @@ sumber-kebenaran desain di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-de
 _Ditulis 2026-07-24, tepat setelah v1.6.0 di-push & live. **Diperbarui 2026-07-27** setelah
 menuntaskan ketiga item di bawah._
 
+---
+
+## Roadmap ke depan (per v1.16.0) — default: **tunggu demand**
+
+Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
+(vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
+melanggar prinsip demand-driven yang menjaga kit tetap ramping ([[freeday-consumption-model]]).
+**Sikap default = tunggu demand.** Sinyal paling berharga = project Blazor berikutnya: bangun
+memakainya, biar friksi nyata (prop kurang, timing Server-mode, kebutuhan NuGet) yang menentukan
+rilis berikut — lebih murah & akurat daripada menebak. Kandidat #1 & #2 paling mungkin muncul
+duluan dari project itu.
+
+Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang — pemicunya di kolom kanan):
+
+| # | Kandidat | Kerjakan saat |
+|---|---|---|
+| 1 | **NuGet package `Freeday.Blazor`** — kini source-only via `<ProjectReference>`; NuGet (bundle static asset lewat RCL `wwwroot`) = distribusi bersih di luar repo | ada consumer di luar repo ini |
+| 2 | **Verifikasi Blazor Server + prerender** — baru WASM yang diverifikasi; SSR/prerender beda timing JS-interop (tak ada JS saat prerender; `<dialog>` show/close) | project pakai Server / Auto render mode |
+| 3 | **Row selection + bulk-action bar** di `FdyTable` (ketiga adapter) — enhancer vanilla punya `.fdy-table-bulkbar` + kolom pilih, adapter controlled belum (gap lintas-stack, bukan Blazor saja) | ada layar butuh aksi massal multi-baris |
+| 4 | **Deferred YAGNI** (tak berubah): data grid virtualized · form master-detail 2-kolom · `data-style` lain (glass/neumorph) | on-demand murni |
+| 5 | _Opsional infra:_ bUnit `dotnet test` guard komponen Blazor di CI (kini manual runtime-verify via `drive-*.mjs` + CDP) | mau safety-net regresi Blazor |
+
+Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras AA gate wajib hijau;
+tiap rilis sinkron SEMUA ref versi publik incl. live Pages ([[sync-docs-on-version-bump]]); repo
+PUBLIC ([[public-repo-keep-internal-out]]).
+
+---
+
 > **Update 2026-07-28 — v1.8.0 (published).** Tiga improvement note dari migrasi
 > `doc-ai-automation-web-*` sudah dikerjakan & rilis (aditif, non-breaking):
 > **#22** utilitas `.fdy-mono` (mono alignment-neutral untuk id/kode/IP/timestamp);
