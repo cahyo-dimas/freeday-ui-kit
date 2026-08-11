@@ -58,6 +58,10 @@ const emit = defineEmits<{
   'update:page': [page: FdyPageState];
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   'row-activate': [row: Row];
+  /** The processed page of rows (after filter/sort/paginate) plus the total row count — fires in
+   *  BOTH modes whenever they change. Lets a consumer render the SAME processed set elsewhere
+   *  (a `< md` card list, a "selected" summary, export-to-CSV) without re-deriving the pipeline. */
+  'process': [result: { rows: Row[]; total: number }];
 }>();
 
 const internalSort: Ref<FdySortState | null> = ref(null);
@@ -124,6 +128,14 @@ const rangeTo: ComputedRef<number> = computed((): number =>
 watch(totalPages, (tp: number): void => {
   if (!serverPaged.value && internalPageIndex.value > tp - 1) internalPageIndex.value = Math.max(0, tp - 1);
 });
+
+// Surface the processed page + total to the parent (both modes), so the same result can drive a
+// responsive card list / summary / export without re-implementing filter/sort/paginate.
+watch(
+  [displayRows, totalCount],
+  (): void => emit('process', { rows: displayRows.value, total: totalCount.value }),
+  { immediate: true },
+);
 
 function ariaSortOf(col: FdyTableColumn<Row>): 'ascending' | 'descending' | undefined {
   const s: FdySortState | null = effectiveSort.value;

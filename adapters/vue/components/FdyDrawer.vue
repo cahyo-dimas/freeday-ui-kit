@@ -8,12 +8,15 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 // focus trap, focus restore, top-layer stacking and inert background; `dismissible` (default true)
 // gates Esc + backdrop dismissal.
 
-const props = defineProps<{
+// dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
+// `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
+// drawer non-dismissible (no Esc, no backdrop, no close button) — the opposite of the default.
+const props = withDefaults(defineProps<{
   open: boolean;
   title: string;
   side?: 'left' | 'right';
   dismissible?: boolean;
-}>();
+}>(), { dismissible: true });
 
 const emit = defineEmits<{
   close: [];

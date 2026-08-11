@@ -1,0 +1,49 @@
+/* Freeday — Page composition & type roles.
+ *
+ * The kit stops at the component; these primitives encode *how a page is assembled* so screens
+ * built by different people cohere. They carry the usage doctrine (see USAGE.md) in markup: a
+ * named type role gets used, a doc gets skimmed. Everything here is token-driven layout — no new
+ * colours, no new shadows. Pair with .fdy-app (the shell) and the components inside.
+ */
+
+/* ---- Type roles (three title levels + supporting text) -------------------------------------
+ * One role per level of hierarchy. Reach for these instead of re-using .fdy-card__title for a
+ * page title (the mistake that collapses three levels into one grey mush). */
+.fdy-eyebrow{font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-subtle);}
+.fdy-title-page{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:var(--leading-tight);color:var(--color-text);margin:0;text-wrap:balance;}
+.fdy-title-section{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);line-height:var(--leading-snug);color:var(--color-text);margin:0;text-wrap:balance;}
+.fdy-title-card{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0;}
+.fdy-text-muted{color:var(--color-text-muted);}
+.fdy-text-subtle{color:var(--color-text-subtle);}
+.fdy-text-caption{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;}
+
+/* ---- Page: the vertical stack of sections, with the section rhythm between them ------------- */
+.fdy-page{display:flex;flex-direction:column;gap:var(--space-8);}
+
+/* ---- Page header: eyebrow + title + description on the left, primary action(s) on the right -- */
+.fdy-page__header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;}
+.fdy-page__heading{display:flex;flex-direction:column;gap:var(--space-2);min-width:0;}
+.fdy-page__desc{font-size:var(--text-base);color:var(--color-text-muted);margin:0;max-width:62ch;line-height:var(--leading-normal);}
+.fdy-page__actions{display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
+
+/* ---- Page section: a heading (+ optional toolbar) and its body, with the intra-group rhythm --- */
+.fdy-page-section{display:flex;flex-direction:column;gap:var(--space-4);}
+.fdy-page-section__head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;}
+
+/* ---- Toolbar: a horizontal control row (search + actions), wraps cleanly ---------------------- */
+.fdy-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;}
+.fdy-toolbar__spacer{flex:1;}
+.fdy-toolbar__search{max-width:18rem;flex:1 1 12rem;}
+
+/* ---- Stat tile: a KPI metric that is deliberately NOT a card, so a KPI strip doesn't become an
+ * identical-white-card grid. Flat by default; wrap the .fdy-stats grid in one card if you want a
+ * single boxed strip, or use .fdy-stats--boxed for shared surface + dividers. */
+.fdy-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:var(--space-5);}
+.fdy-stat{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;}
+.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-subtle);}
+.fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
+.fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
+.fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
+.fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
+.fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
+.fdy-stats--boxed .fdy-stat:last-child{border-right:0;}

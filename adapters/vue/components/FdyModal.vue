@@ -10,12 +10,15 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 // Native <dialog> already provides the focus trap, focus restore, top-layer stacking and inert
 // background — the wrapper only avoids breaking them. `dismissible` (default true) gates Esc + backdrop.
 
-const props = defineProps<{
+// dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
+// `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
+// modal non-dismissible (no Esc, no backdrop, no close button) — the opposite of the default.
+const props = withDefaults(defineProps<{
   open: boolean;
   title: string;
   size?: 'sm' | 'md' | 'lg' | 'wide';
   dismissible?: boolean;
-}>();
+}>(), { dismissible: true });
 
 const emit = defineEmits<{
   close: [];

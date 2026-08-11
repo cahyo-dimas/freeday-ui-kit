@@ -57,6 +57,10 @@ export interface FdyTableProps<Row extends object> {
   rowClass?: (row: Row) => string | undefined;
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   onRowActivate?: (row: Row) => void;
+  /** Called with the processed page of rows (after filter/sort/paginate) plus the total row count —
+   *  in BOTH modes, whenever they change. Lets a consumer render the SAME processed set elsewhere
+   *  (a `< md` card list, a "selected" summary, export-to-CSV) without re-deriving the pipeline. */
+  onProcess?: (result: { rows: Row[]; total: number }) => void;
   /** Controlled: row keys whose detail is shown as a full-width row beneath them. */
   expandedKeys?: ReadonlyArray<string | number>;
   /** Renders the expandable detail row for an expanded row (React equivalent of Vue's `row-detail` slot). */
@@ -109,6 +113,13 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
   useEffect((): void => {
     if (!serverPaged && internalPageIndex > totalPages - 1) setInternalPageIndex(Math.max(0, totalPages - 1));
   }, [serverPaged, internalPageIndex, totalPages]);
+
+  // Surface the processed page + total to the parent (both modes), so the same result can drive a
+  // responsive card list / summary / export without re-implementing filter/sort/paginate.
+  const onProcess = props.onProcess;
+  useEffect((): void => {
+    onProcess?.({ rows: displayRows, total: totalCount });
+  }, [onProcess, displayRows, totalCount]);
 
   function ariaSortOf(col: FdyTableColumn<Row>): 'ascending' | 'descending' | undefined {
     if (effectiveSort === null || effectiveSort.key !== col.key) return undefined;

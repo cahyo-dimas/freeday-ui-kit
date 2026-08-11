@@ -3,6 +3,9 @@
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
+/* The global reduced-motion reset kills the ANIMATION; drop the -3px shift too so the card
+ * doesn't jump. The shadow still communicates the affordance. */
+@media (prefers-reduced-motion:reduce){.fdy-card--interactive:hover{transform:none;}}
 /* When the whole card IS the control — a real <button> so the row is keyboard-reachable and
  * announced — reset the UA button box. Note: it does NOT reset background/border, because
  * .fdy-card already sets its own surface + border (resetting them here would strip the card). */
