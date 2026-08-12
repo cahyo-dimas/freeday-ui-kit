@@ -3,6 +3,168 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.20.0] — 2026-08-12
+Two bodies of work in one release (1.19.0 was prepared but never committed, tagged or published, so
+it is folded in here rather than left as a phantom version):
+**(a)** make the kit consumable by an **AI coding agent** in a new or migrating project, and clean the
+repo to production level; **(b)** act on the fourth round of real-app consumption feedback — five
+confirmed gaps, one rejected premise, and one documentation bug of our own that chasing it exposed.
+### Added — from consumption round 4
+- **`.fdy-list` / `.fdy-list__row` — the flat row container** (`src/components/list.css`). One bordered
+  surface, `--color-border-muted` hairline dividers, **no shadow**; `--interactive` for hover, and
+  `--button` for when the row *is* the control (UA box reset without losing the list surface), plus
+  `__main` / `__title` / `__meta` / `__aside` internals. `USAGE.md` §3 has always said list rows should
+  be flat, but the only container the kit shipped was `.fdy-card` — which carries `--shadow-lift`, a
+  real 34px lift, so a responsive table that becomes a list below `md` had to choose between ten
+  floating cards or a hand-built box that needs a colour and escapes the token system.
+- **`FdyTable`: controlled client-side page index.** `pageIndex` + `update:pageIndex` (Vue) /
+  `pageIndex` + `onPageIndexChange` (React) / `PageIndex` + `PageIndexChanged` (Blazor). The table
+  still filters/sorts/paginates; only *which page* moves to the parent. This is what makes the
+  `process` event from 1.18 pay off on a **responsive** screen: the pager renders inside
+  `.fdy-datatable`, so a screen that hides the table below `md` loses it — and in client mode the index
+  was a private ref with no prop, no event and no `goTo`. The two available options were "lose
+  pagination on mobile" or "own the page index in server mode", where `process` hands back exactly the
+  array you passed in. One index can now also span several tables, which is what a grouped list needs.
+  Reported after a real rebuild where `process` deleted, by measurement, zero lines.
+- **`breakpoints.nav` (721)** in `tokens/breakpoints.mjs` + its type. `.fdy-app` switches the sidebar
+  between off-canvas drawer and static column at 721px — a number that was in `app-shell.css` and
+  nowhere else, so every consumer of the shell hand-mirrored it. Getting it wrong is not cosmetic:
+  aligning to `md` (960) leaves 721–959px with a static sidebar that the script still treats as an
+  overlay, so opening the nav makes the page `inert` around a user with no way back out. A new test
+  asserts `nav` equals the CSS's `min-width` and that the `max-width` query is `nav - 1`, so the two
+  cannot drift.
+- **Blazor `FdyTable` gained `Process`** (+ the `FdyTableProcess<TRow>` record) — 1.18 added the
+  `process` event to Vue and React only, which left Blazor unable to drive a card list from the
+  processed set at all.
+- **Browser guards for the controlled page index**, Vue and React, in `browser/adapter.mjs`: a table
+  whose pager lives *outside* the component, asserting both directions (parent → rows, and internal
+  pager → parent event). Mutation-checked: reverting the component to its private index fails them.
+### Changed — from consumption round 4
+- **`data-density="compact"` is no longer root-scoped.** The generated selector was
+  `:root[data-density="compact"]`; it is now a bare `[data-density="compact"]`. These are inheriting
+  custom properties, so density can be set on a route wrapper or a single section — which is how it is
+  actually decided (per screen), not on `<html>` for the whole app. Setting it on the root still works
+  identically. A build test now asserts the selector is not root-scoped.
+### Fixed — from consumption round 4
+- **`USAGE.md` §3 misdescribed the kit's own elevation scale** — our bug, found while checking the
+  report. It prescribed `--shadow-1` for "a card" and `--shadow-4` for "modal / drawer", but `.fdy-card`
+  uses `--shadow-lift` (≈6× heavier than `--shadow-1`) and `.fdy-modal` uses `--shadow-lift-hover`;
+  `--shadow-1` is what the *data containers* use. §3 now carries the real component→token map, names
+  the two shadow families, and points rows at `.fdy-list`. Exactly the drift the repo's own invariant
+  warns about: docs restating a scale the components don't follow.
+- **`.fdy-toolbar` vs `.fdy-filterbar` is now documented.** `.fdy-toolbar` is `align-items:center`
+  (right for bare controls); a `.fdy-field` with a *visible* label sits half a label-height low in it.
+  Labelled fields belong in `.fdy-filterbar` (`align-items:flex-end` — which is why 1.11.2 had to
+  arbitrate the composed case). The difference existed but was written down nowhere, so the wrong
+  choice was only visible once rendered. Documented in `USAGE.md` §7 and `COMPONENTS.md`; no CSS
+  changed, so no existing screen shifts.
+### Notes — one report item rejected
+- **"`.fdy-page-section` and `.fdy-table-scroll` do not compose" does not reproduce, and the proposed
+  `min-width:0` fix is a no-op.** Measured on `docs/reference-screen.html` (the same
+  section → datatable → scroller chain) with the table forced to 1400px in a 688px column: page
+  overflow **0px**, the datatable held its column, the scroller scrolled internally — and adding
+  `min-width:0` changed nothing. Two mechanisms explain it: `.fdy-page-section` is flex **column**, so
+  `min-width:auto` (a main-axis rule) cannot cause horizontal growth; and `.fdy-table-scroll` has
+  `overflow-x:auto`, which gives it an automatic minimum size of **0**, so no ancestor flex can stretch
+  it. The kit also already sets `min-width:0` at the one row-flex boundary it owns
+  (`.fdy-app__content`). The 129px overflow the reporter measured is real but originates in their own
+  wrapper chain; to locate it, walk the datatable's ancestors at the failing width and find the first
+  with `scrollWidth > clientWidth`. Third round in a row where a proposed fix would have changed
+  nothing — the premise gets verified before the patch, every time.
+### Added
+- **`COMPONENTS.md` — the complete public class surface in one flat file.** Every component with its
+  block/element/modifier classes, a minimal markup skeleton, its enhancer hook and its a11y contract,
+  plus the full enhancer table (markup hook → script → global → events). The gap it closes: 425
+  `.fdy-*` classes exist in `src/components/`, but only ~33 appeared as literal strings anywhere in
+  the shipped docs — the rest lived in a 2,552-line HTML page and in the CSS source, neither of which
+  an agent (or a hurried human) reads.
+- **`docs/agent-onboarding.md`** — the entry point for an agent working in a *consuming* project: a
+  paste-ready block for that project's `CLAUDE.md`/`AGENTS.md`, what ships in the package and which
+  question each file answers, the order to build a new screen in, a **migration mapping table**
+  (Bootstrap / MudBlazor / utility-class conventions → Freeday) with a safe conversion order, and a
+  pre-completion verification checklist.
+- **`docs/reference-screen.html`** — one complete business screen assembled the intended way:
+  `.fdy-app` → `.fdy-page` → `.fdy-page__header` → `.fdy-stats` → sections holding a chart and a
+  full data table, plus a native-`<dialog>` modal, theme/density toggles and the shell's nav-toggle
+  wiring. v1.18.0 shipped the composition primitives but nothing demonstrated them end-to-end.
+- **`test/docs.test.mjs` — drift guard for the agent-facing docs.** Every fully-written `.fdy-*`
+  class named in `COMPONENTS.md`, `USAGE.md`, `docs/agent-onboarding.md` and
+  `docs/reference-screen.html` must exist in the kit (CSS selectors ∪ classes the enhancers
+  query/set), and every stylesheet in `src/components/` must be represented in `COMPONENTS.md`. An
+  API doc that names a class the CSS never defines is worse than an omission: it invites markup that
+  silently does nothing.
+- **`reference/` — the two source assets moved out of the repo root** (`git mv`, so history follows):
+  `Foundation Design System.html` → `reference/foundation-design-system.html`, and
+  `auth_web_ui_layout_patterns.png` → `reference/layout-patterns.png` (the `auth_` prefix was
+  misleading — the sheet is about app layout archetypes, not authentication). Neither was ever in the
+  tarball and neither is now; the folder name states that. `reference/README.md` carries their
+  provenance plus a **15 archetypes → Freeday primitives** table that names, per archetype, what the
+  kit covers and which shapes it has **no** component for (kanban columns, calendar month grid, chat
+  bubbles, canvas) — so those get built as layout instead of as invented `fdy-` classes. The drift
+  guard checks this file too.
+### Removed
+- **`src/*.js` no longer ships.** All 24 enhancers in `src/` were **byte-identical** to their `dist/`
+  copies, and no `exports` path points into `src/` — so a bundler-based consumer could never import
+  them. `files` now lists `src/base.css` + `src/components` (kept: per-component CSS is genuinely
+  easier to read than the 117 kB bundle, and `docs/agent-onboarding.md` points agents at it).
+  **−25 files, −196 kB unpacked** per install (the compressed tarball barely moves — identical files
+  deflate to almost nothing — but the install footprint and "what am I even looking at" do).
+- **4 completed SDD implementation plans + 1 superseded spec deleted** (`docs/superpowers/plans/*`,
+  `specs/2026-07-22-…-polish-design.md`, **−1452 lines**). Cited by nobody, served publicly by Pages,
+  and describing work that shipped months of releases ago — `CHANGELOG.md` plus git history already
+  record it. Only the canonical design spec remains.
+- **`NEXT-UP.md`: 421 → ~125 lines.** Held 15 `Update …` release-log blocks (v1.8.0–v1.18.0), three
+  2026-07-27 post-mortems of resolved items, and a frozen "current condition" snapshot still claiming
+  `main` = **v1.7.0** with `npm test` 9/9. A stale snapshot is worse than no snapshot. What's left is
+  purely forward-looking: the demand-driven backlog, the deliberate YAGNI list, two durable invariants,
+  and the release runbook.
+- **`HANDOFF.md`: 134 → 85 lines.** Its "where we are" section was 90 lines re-narrating every release
+  back to v1.3.1 — a third copy of the changelog. Now: current state, then a pointer.
+- `src/components/.gitkeep`, in a directory holding 47 stylesheets.
+### Fixed
+- **`CLAUDE.md`'s roadmap said "v0.1 (sekarang, token-first)"** at v1.19.0, and listed datepicker,
+  data grid, filter bar, pagination, states and wizard as *future* work — all shipped long ago. It is
+  the first file every agent session reads, so it was the most expensive stale text in the repo.
+  Replaced with the actual status (feature-complete, demand-driven) plus a real structure map that
+  distinguishes authored `src/` from generated `dist/`, and names `freeday.bundle.css` as the file to link.
+- **The release runbook listed version-reference locations from memory, and was wrong** — it named
+  `examples/*/README.md` (no version in them) and claimed `docs/getting-started.md` has 4 (it has 1).
+  Replaced the hand-maintained list with the command that derives it:
+  `git grep -n '<old-version>' -- . | grep -v CHANGELOG`.
+- Stale counts trued up: `node --test` 20/20 → **28/28**, "46 komponen" → 47 stylesheets (44 components
+  + composition/breakpoints primitives), and the "one-off harness in the session scratchpad" note now
+  points at the permanent `browser/` harness.
+- **`CLAUDE.md` claimed the Foundation artifact has base64-embedded fonts that can be re-extracted.**
+  It does not: its `@font-face` rules point at dead UUID resources left over from the tool that
+  exported it, there is no `data:…;base64` font anywhere in the file, and it renders via the Google
+  Fonts CDN it preconnects to. Corrected, so no future session goes looking for fonts that aren't there.
+- **`docs/getting-started.md` §5 pointed consumers at `Foundation Design System.html` for component
+  markup** — a file that is not in the npm package, which became a dangling reference the moment this
+  release started shipping that doc. Now points at `COMPONENTS.md` and `reference-screen.html`.
+- **`docs/getting-started.md`'s app-shell snippet was structurally wrong** — and it is the first thing
+  a consumer copies. It showed `__topbar` as a direct child *before* `__sidebar`, put `__brand` inside
+  the topbar, and nested `__content` *inside* `__main`. `.fdy-app` is a flex **row** of
+  `[__sidebar | __content]`, `__content` is the column holding `__topbar` + `__main` (it gives the
+  sticky topbar a tall containing block), and `__brand` belongs in the sidebar. Copying the old
+  snippet rendered the topbar *below* the content, off-screen. Corrected, and the correct nesting is
+  now stated in `COMPONENTS.md` and `USAGE.md` too. Caught by driving
+  `docs/reference-screen.html` in real Chrome: the nav toggle sat at y≈1021 in a 900px viewport.
+- Same file: "compose the screen inside `__content`" → **`__main`** (which is the padded area).
+### Changed
+- **`files` now ships the docs an agent needs**: `COMPONENTS.md`, `docs/getting-started.md`,
+  `docs/integrations.md`, `docs/agent-onboarding.md`, `docs/reference-screen.html` — listed
+  **file-by-file, not as `"docs"`**, so the internal planning docs under `docs/superpowers/` stay out
+  of the tarball. (`files` does not honour `.gitignore`; whitelisting a directory ships whatever sits
+  inside it — the v1.16.0 `bin/obj` lesson.) Tarball 263.6 kB → 297.9 kB, 177 → 182 files.
+  The `examples/` apps are deliberately **not** shipped (127 MB of `node_modules` + 208 MB of .NET
+  `bin/obj` live under them); the repo link in `docs/agent-onboarding.md` covers that need.
+### Notes
+- Documenting the surface surfaced one inconsistency, recorded rather than patched (this release
+  touches no CSS): **`.fdy-pagination` has no CSS rule** — the block class on the `<nav>` is a naming
+  hook only, its `__list`/`__link`/`__ellipsis` elements carry all the styling, and the data table
+  targets `data-fdy-table-pagination`. `COMPONENTS.md` says so, and the drift guard lists it as a
+  known structural hook.
+
 ## [1.18.0] — 2026-08-11
 ### Fixed
 - **`FdyModal` / `FdyDrawer` (Vue) were non-dismissible when `dismissible` was omitted — an

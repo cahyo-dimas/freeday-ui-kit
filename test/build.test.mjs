@@ -44,6 +44,9 @@ test('buildTokensCss: emits root, primitive, semantic-as-var, dark, density', ()
   assert.match(css, /prefers-color-scheme:\s*dark/);
   assert.match(css, /\[data-theme="dark"\][\s\S]*--color-primary:\s*var\(--indigo-500\)/);
   assert.match(css, /\[data-density="compact"\][\s\S]*--control-h:\s*2rem/);
+  /* Density must NOT be root-scoped: custom properties inherit, so the attribute has to work on
+   * any ancestor (a route wrapper densifying one screen). :root still matches the bare selector. */
+  assert.doesNotMatch(css, /:root\[data-density="compact"\]/);
 });
 
 test('bundleCss: concatenates parts in order with header', () => {

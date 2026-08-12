@@ -68,27 +68,48 @@ the scrolling content. Don't hand-roll one from flexbox; the responsive sidebar 
 The nav toggle is one line: toggle `.fdy-app--nav-open` (mobile drawer) / `.fdy-app--nav-collapsed`
 (desktop) on the `.fdy-app` element from the `__navtoggle` button's click.
 
+The nesting is not free-form — `.fdy-app` is a flex **row** of `[sidebar | content]`, and `__content`
+is the column that holds the topbar and the main area (it gives the sticky topbar a tall containing
+block to travel in). The brand belongs in the **sidebar**, sized to match the topbar's height:
+
 ```html
 <div class="fdy-app">
-  <header class="fdy-app__topbar">
-    <button class="fdy-app__navtoggle" aria-label="Toggle menu"><!-- hamburger svg --></button>
+  <a class="fdy-skip" href="#main">Skip to content</a>
+
+  <aside class="fdy-app__sidebar">
     <a class="fdy-app__brand" href="/">
       <span class="fdy-app__brand-mark"><!-- logo --></span>
-      <span class="fdy-app__brand-text"><span class="fdy-app__brand-title">eMate</span></span>
+      <span class="fdy-app__brand-text">
+        <span class="fdy-app__brand-title">Acme</span>
+        <span class="fdy-app__brand-subtitle">Finance</span><!-- optional -->
+      </span>
     </a>
-    <!-- topbar actions … -->
-  </header>
-  <aside class="fdy-app__sidebar"><nav class="fdy-nav"><!-- .fdy-nav items … --></nav></aside>
-  <main class="fdy-app__main">
-    <div class="fdy-app__content">
+    <nav class="fdy-nav"><!-- .fdy-nav__item … --></nav>
+  </aside>
+
+  <div class="fdy-app__content">
+    <header class="fdy-app__topbar">
+      <button class="fdy-app__navtoggle" aria-label="Toggle navigation"><!-- hamburger svg --></button>
+      <h1 class="fdy-app__title">Invoices</h1><!-- auto-spacer: what follows goes right -->
+      <!-- topbar actions … -->
+    </header>
+    <main class="fdy-app__main" id="main">
       <!-- YOUR SCREEN: a .fdy-page … (see USAGE.md) -->
-    </div>
-  </main>
+    </main>
+  </div>
+
   <div class="fdy-app__backdrop"></div>
 </div>
 ```
 
-Then compose the screen inside `__content` with `.fdy-page` / `.fdy-page__header` / `.fdy-page-section`
+`.fdy-app__main` already carries the page padding (`--space-8`, `--space-5` on mobile) — don't wrap
+your screen in another padded box. The toggle's two states split at **720px**: above it,
+`.fdy-app--nav-collapsed` collapses the sidebar to zero width; at or below it,
+`.fdy-app--nav-open` slides the sidebar in as an off-canvas drawer over the backdrop. A complete,
+working version of all of this — including the toggle script — is
+[`reference-screen.html`](reference-screen.html).
+
+Then compose the screen inside `__main` with `.fdy-page` / `.fdy-page__header` / `.fdy-page-section`
 / `.fdy-stats` and the type roles. The live **App shell** + **Sidebar menu** demos in
 [`docs/index.html`](index.html) are copy-pasteable; **[`USAGE.md`](../USAGE.md)** says which role and
 token to use where.
@@ -144,7 +165,9 @@ Listen for events as needed; for DOM you add **dynamically** after load, re-hydr
 ```
 
 ### 5. Copy component markup
-From the live docs (View Source) or `Foundation Design System.html`. **Replace** the old classes → `fdy-*`.
+From **[`COMPONENTS.md`](../COMPONENTS.md)** (every component's classes + minimal markup, shipped in
+the package) or **[`reference-screen.html`](reference-screen.html)** for a whole assembled screen. The
+live docs also have a copy button per component.
 
 ---
 
@@ -154,7 +177,7 @@ From the live docs (View Source) or `Foundation Design System.html`. **Replace**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.18.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.20.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

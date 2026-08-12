@@ -6,61 +6,49 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.18.0 — sudah di-release & di-push** (`main` = `origin/main` = tag `v1.18.0`). Terbit di npm publik
-sebagai `@cahyo-dimas/freeday`. **v1.18.0 = "design-system completeness" dari feedback app nyata ronde 3**
-(+ sisa ronde 1–2): FIX bug a11y Vue `FdyModal`/`FdyDrawer` `dismissible` (Vue cast omitted Boolean→false
-→ non-dismissible; `withDefaults`), primitif komposisi halaman (`.fdy-page`/`-header`/`-section`/`.fdy-toolbar`/`.fdy-stats`+`.fdy-stat`)
-+ role tipe (`.fdy-title-page/-section/-card`), **`USAGE.md`** (doktrin pemakaian), palet kategorikal
-`--tone-1..8` + `.fdy-chip--tone-N`, `FdyTable` emit rows terproses (`process`/`onProcess`) + export
-`./table-model`, `data-density=compact` kini step `--space-3..6`, docs pimpin `.fdy-app` + "muat font
-sendiri". Sebelumnya **v1.17.0 = perbaikan aditif dari feedback pemakaian app nyata** (2 ronde
-improvement note): avatar `--tone-1..8` (kontras **AA** terang+gelap, di-gate), skeleton
-`--avatar`/`-sm`/`-lg` seukuran avatar, `.fdy-card--button`, `.fdy-list-reset`, toast `key`
-(replace-in-place) + `Freeday.dismiss(node|key)`, plus docs (batas scope: komponen+token **bukan**
-layout; `aria-invalid` sebagai pola field aksesibel kanonik). Sebelumnya **v1.16.0 = rilis pertama
-library komponen Blazor native** (RCL
-`Freeday.Blazor`, net8.0) — 10/10 parity dgn Vue/React (Modal · Drawer · Combo · Datepicker · Autocomplete ·
-Cascade · DateRange · Cfl · Chart · Table), plus bridge `chartUpdate`/`onOutside` + `setValue` aditif di
-`freeday-select.js`; `.NET bin/obj` dijaga keluar tarball via `adapters/blazor/.npmignore`. Sebelumnya
-v1.15.0 = deklarasi tipe untuk **semua** export, aditif/MINOR #40: dulu hanya
-`./vue` & `./react` punya kondisi `types`; delapan export lain tak punya → konsumen TS gagal resolve
-side-effect import `./css` & root, plus `./enhancers/*`/`./breakpoints`, dan `window.Freeday` ditebak-tangan
-tiap konsumen (TS6 `noUncheckedSideEffectImports` menjadikannya error keras). Kini tiap export menamai
-`types`: `dist/asset.d.ts` (stub 1-baris untuk import side-effect css/enhancer), `tokens/breakpoints.d.ts`
-(skala breakpoint), `dist/freeday.d.ts` (global `window.Freeday.toast` di-author DARI source —
-`variant`/`title`/`message`/`timeout` semua opsional, return `HTMLElement`; lebih longgar & benar dari
-tebakan konsumen). `files` kini kirim `breakpoints.d.ts`. Runtime tak berubah. Divalidasi empiris: `npm pack`
-tarball → konsumen TS `noUncheckedSideEffectImports` — **4 error SEBELUM, bersih SESUDAH**; cek negatif
-(variant salah, number→string) buktikan tipe nyata, bukan `any`.
-Sebelumnya 1.14.0 = cakupan STATE komponen, aditif/MINOR: **readonly** — rule
-`[readonly]` input/textarea (full-contrast di surface muted, beda dari `:disabled` yang dim) + prop
-`readonly` di 6 adapter select-type (Combo/Cascade/Datepicker/DateRange/Autocomplete/Cfl × Vue+React;
-tetap fokusabel + `aria-readonly`, tak bisa buka/ubah) — note #39. **disabled** ditambah ke timepicker/
-rating/tree/tabs/file-upload/datepicker; **invalid** ke rating. Composer **datetime** meneruskan
-`data-fdy-disabled`/`data-fdy-invalid` ke KEDUA anak (pakai `setTimeout(0)`, bukan microtask — microtask
-drain di antara listener DOMContentLoaded, sebelum enhancer timepicker jalan). Diverifikasi browser.
-Sebelumnya 1.13.1 = fix note #38: `FdyCombo` mouse-select (`@mousedown.prevent` di opsi supaya `@focusout`
-tak menutup list sebelum klik mendarat; dua adapter). Sebelumnya 1.13.0 = note #37 pada `FdyDatepicker` Vue+React:
-**A** prop `clearable` → tombol × di trigger meng-emit `''` untuk mengosongkan tanggal opsional; **B**
-label nav bulan bisa di-override (`prevMonthLabel`/`nextMonthLabel` + `clearLabel`) & default UI string
-kini **Inggris** (selaras docs English-first) — enhancer vanilla tetap Indonesia.
-Sebelumnya 1.12.0 = note #36 aditif: `data-fdy-colors` & `<FdyChart colors>` kini bisa menamai slot palet
-kategorikal `chart-1..8` (→ `var(--chart-N)`), bukan hanya token semantik — `colorVar` memetakan nama
-`chart-N`. Backward-compatible; diverifikasi browser. Sebelumnya 1.11.2 = fix-only note #35: `.fdy-filterbar` (align-items:flex-end)
-& `.fdy-table-toolbar` (align-items:center) sama-sama single-class → saat digabung di satu elemen yang
-belakangan di bundle (toolbar) menang → kontrol ter-center, actions ngambang. Ditambah rule 2-kelas
-`.fdy-table-toolbar.fdy-filterbar{align-items:flex-end}` (0,2,0) — aditif, cuma kena elemen dgn kedua kelas.
-Diverifikasi browser: composed bar satu baseline.) Sebelumnya: 1.11.1 = fix note #34 (`.fdy-modal`
-flex-column — body scroll, footer tak ke-clip); 1.11.0 = notes #31–#33, aditif/korektif: **#31**
-`.fdy-badge` + `white-space:nowrap` (badge dua kata tak lagi mbungkus/rusak pill); **#33** donut
-hormati `data-fdy-legend="none"` (dulu selalu render legend); **#32** modifier opt-in
-`.fdy-filterbar--actions-inline` + dokumentasi wrap — **proposal margin note #32 diuji di browser & TAK
-bekerja** (margin tak mengubah flex line-breaking), jadi cuma modifier + doc yang diambil.) Sebelumnya:
-1.10.0 = notes #27–#30 (fieldset reset · `--w-2xl` · fix label chart · `FdyTable` detail rows); 1.9.0 =
-`FdyTable` #25/#26; 1.8.0 = `FdyTable` + `FdyModal`/`FdyDrawer` + `.fdy-mono`.
-Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + chart native parity + fix daterange) → v1.4.1 (dropdown lepas clipping card/scroll via Popover API: combo/datepicker/cascade/autocomplete/timepicker/menu, vanilla + Vue) → v1.5.0 (React adapter parity: FdyCombo/FdyDatepicker/FdyCfl/FdyChart + usePopover) → v1.6.0 (wrapper input ekstra Vue+React: FdyDateRange/FdyAutocomplete/FdyCascade; layout primitive `.fdy-filterbar`) → v1.6.1 (fix: `freeday-select.js` — memilih opsi combo dengan **mouse** tak berfungsi; menekan opsi mem-blur tombol → `focusout` menutup listbox sebelum klik mendarat. `preventDefault` pada mousedown listbox menjaga fokus) → v1.6.2 (lisensi **MIT** + file `LICENSE`; tak ada perubahan kode) → v1.7.0 (tree checkbox cascading `freeday-tree.js` + `.fdy-tree--checkbox`; layout `.fdy-form-grid`; file-upload melebar `.fdy-dropzone--row`/`.fdy-filelist--grid`; tiga section docs full-width) → v1.7.1 (docs English-first + `README.id.md`; kode identik 1.7.0) → v1.8.0 (`FdyTable` controlled Vue+React + core `adapters/core/table-model.js`; `FdyModal`/`FdyDrawer` controlled Vue+React; utilitas `.fdy-mono`; `.fdy-drawer__footer`) → v1.9.0 (`FdyTable` #25 generic `extends object` untuk row ber-`interface` + #26 aktivasi baris `rowActivatable`/`row-activate`/`rowClass` + `.fdy-table__row--activatable`) → v1.10.0 (#27 reset `fieldset.fdy-field` · #28 `.fdy-field--w-2xl` + min-width picker daterange · #29 fix tabrakan label sumbu-x chart · #30 `FdyTable` baris detail expandable `row-detail`/`expandedKeys`) → v1.11.0 (#31 `.fdy-badge` nowrap · #32 modifier `.fdy-filterbar--actions-inline` + doc wrap · #33 donut hormati `legend="none"`) → v1.11.1 (#34 `.fdy-modal` flex column — body scroll, footer tak ke-clip) → v1.11.2 (#35 `.fdy-table-toolbar.fdy-filterbar` align-items:flex-end — komposisi toolbar+filterbar satu baseline) → v1.12.0 (#36 override warna chart bisa menunjuk slot palet kategorikal `chart-1..8` → `var(--chart-N)`) → v1.13.0 (#37 `FdyDatepicker` prop `clearable` × + label nav bulan overridable + default UI string English) → v1.13.1 (#38 fix `FdyCombo` mouse-select: `@mousedown.prevent` di opsi supaya `@focusout` tak menutup list sebelum klik mendarat) → v1.14.0 (#39 + cakupan state: `readonly` input + 6 adapter select-type, disabled/invalid ke komponen yang bolong, datetime propagasi state ke 2 anak) → v1.15.0 (#40 deklarasi tipe untuk semua export: `dist/asset.d.ts` stub side-effect + `dist/freeday.d.ts` global `window.Freeday` + `tokens/breakpoints.d.ts` + kondisi `types` di `exports`; `files` kirim `breakpoints.d.ts`) → v1.16.0 (library komponen **Blazor** native — RCL `Freeday.Blazor` net8.0, 10/10 parity Vue/React: Modal/Drawer/Combo/Datepicker/Autocomplete/Cascade/DateRange/Cfl/Chart/Table; `TableModel` port C# dari `table-model.js`; bridge `chartUpdate`/`onOutside`; `setValue` aditif `freeday-select.js`; `.npmignore` jaga `.NET bin/obj` keluar tarball) → v1.17.0 (aditif, dari 2 ronde improvement note pemakaian app nyata: avatar `--tone-1..8` dekoratif AA-gated, skeleton `--avatar/-sm/-lg` seukuran avatar, `.fdy-card--button` reset tombol tanpa buang surface/border, `.fdy-list-reset`, toast `key` replace-in-place + `Freeday.dismiss`; docs batas scope komponen+token bukan layout + `aria-invalid` pola kanonik; `test/contrast.test.mjs` dapat evaluator `color-mix()` + 8 tone di-gate) → v1.18.0 (design-system completeness, ronde 3 improvement note: FIX a11y `dismissible` Vue Modal/Drawer via `withDefaults`; primitif komposisi `composition.css` + role tipe; `USAGE.md` doktrin; palet `--tone-1..8` + `.fdy-chip--tone-N`; `FdyTable` `process`/`onProcess` + export `./table-model`; `data-density=compact` step `--space-3..6`; docs pimpin `.fdy-app` + muat-font-sendiri).
+**v1.20.0 — siap di-commit, BELUM di-push/publish.** Dua badan kerja dalam satu rilis (v1.19.0
+disiapkan tapi tak pernah di-commit/tag/publish, jadi dilebur ke sini daripada meninggalkan versi
+hantu).
 
-- **46 komponen** CSS (`src/components/*.css`) — termasuk `.fdy-filterbar` (baris filter) & `.fdy-form-grid` (grid header/dokumen)
+**(b) Dari improvement note ronde 4** (`improvement-notes/004`, untracked): 5 keluhan terkonfirmasi,
+1 premis ditolak, 1 bug dokumentasi milik sendiri yang tersingkap saat mengejarnya.
+- **`.fdy-list`/`__row`** — container baris **rata** (border hairline, pembatas `--color-border-muted`,
+  tanpa shadow). Doktrin §3 sudah lama bilang baris list harus rata, tapi satu-satunya container yang
+  dikirim kit adalah `.fdy-card` yang memakai `--shadow-lift` (angkat 34px).
+- **`FdyTable` `pageIndex` terkontrol** di **tiga** adapter (Vue/React/Blazor) — pager-nya ter-render di
+  dalam `.fdy-datatable`, jadi layar yang menyembunyikan tabel di bawah `md` kehilangan pager; index
+  client dulu ref privat tanpa prop/event/`goTo`. Blazor sekalian dapat `Process` (1.18 cuma Vue+React).
+- **`breakpoints.nav` (721)** — angka switch sidebar tadinya cuma ada di `app-shell.css`; test baru
+  memastikan ia tak bisa hanyut dari CSS-nya.
+- **`data-density` tak lagi terikat `:root`** → bisa per-screen (custom property itu inherit).
+- **FIX milik sendiri:** `USAGE.md` §3 salah mendeskripsikan skala elevasi kit (bilang `.fdy-card`
+  pakai `--shadow-1`, padahal `--shadow-lift`; modal bukan `--shadow-4` tapi `--shadow-lift-hover`).
+- **DITOLAK:** klaim "`.fdy-page-section` + `.fdy-table-scroll` tak compose" **tak tereproduksi**
+  (diukur: tabel 1400px di kolom 688px → overflow halaman 0px) dan `min-width:0` yang diusulkan no-op.
+  Ronde ketiga berturut-turut sebuah usulan fix ternyata tak mengubah apa pun.
+
+**(a) Docs + pembersihan repo:** **`COMPONENTS.md`** (seluruh permukaan class publik dalam satu file rata — 425 class ada di
+`src/components/`, tapi cuma ~33 yang muncul sebagai string literal di docs yang ter-ship),
+**`docs/agent-onboarding.md`** (blok siap-tempel untuk `CLAUDE.md`/`AGENTS.md` project konsumen +
+tabel mapping migrasi Bootstrap/MudBlazor → Freeday + checklist verifikasi),
+**`docs/reference-screen.html`** (satu layar bisnis utuh dirakit `.fdy-app` → `.fdy-page` →
+`.fdy-stats` → section; v1.18.0 mengirim primitif komposisi tapi tak ada yang mendemokannya
+end-to-end), **`test/docs.test.mjs`** (drift guard: tiap class yang disebut dokumen harus ada di
+kit — mutation-checked), dan `files` kini mengirim dokumen-dokumen itu **per-file, bukan `"docs"`**,
+supaya `docs/superpowers/` tetap di luar tarball. Tarball 263.6 kB → 297.9 kB, 177 → 182 file.
+`examples/` **sengaja tidak** dikirim (127 MB `node_modules` + 208 MB .NET `bin/obj` di bawahnya).
+Dua temuan dicatat, bukan ditambal: `.fdy-pagination` tak punya rule CSS (hook penamaan saja) dan
+`freeday-table.js` hard-code string Indonesia tanpa override — keduanya di backlog
+[`NEXT-UP.md`](NEXT-UP.md) #6/#7.
+
+Gate saat ini: `npm test` **29/29** · `npm run test:browser` **8/8** (dua guard baru untuk
+`pageIndex`, mutation-checked) · `typecheck:react` 0 error · `dotnet build` RCL 0 error/0 warning.
+
+Riwayat lengkap per-versi (termasuk jalur rilis v0.x → v1.20.0, alasan tiap fix, dan
+bukti verifikasinya) ada di **[`CHANGELOG.md`](CHANGELOG.md)** — tidak diulang di sini.
+
+
+- **48 file CSS** di `src/components/` (45 komponen + primitif `composition.css`/`breakpoints.css`) — termasuk `.fdy-filterbar` (baris filter) & `.fdy-form-grid` (grid header/dokumen)
 - **24 enhancer** JS 0-dependency + bundel `dist/freeday.js` (`dist/*.js`, auto-init via `data-*`) — termasuk `freeday-tree.js` (cascade tree checkbox)
 - **3 adapter framework** terbukti — Vue / React / Blazor (`adapters/`), tiap-tiap dengan
   contoh faktur nyata yang diverifikasi headless (`examples/{vue,react,blazor}-faktur/`)
@@ -72,7 +60,7 @@ Jalur rilis: … → v1.3.1 (buang rail "eyebrow") → v1.4.0 (motion pass + cha
   (WAI-ARIA APG, dropdown/popover top-layer lewat Popover API). Vue lewat
   `freeday/vue` (`v-model`), React lewat `freeday/react` (`value`/`onChange`). Tak ada lagi
   jembatan event manual untuk kontrol-kontrol ini.
-- **Kontras WCAG AA** ditegakkan sebagai regression test — `node --test` **20/20** hijau
+- **Kontras WCAG AA** ditegakkan sebagai regression test — `node --test` **28/28** hijau
 - `dist/` di-commit & deterministik (rebuild = tanpa diff)
 
 Definisi v1.0 terpenuhi: AA lolos audit · installable via git · ≥1 integrasi framework
@@ -89,29 +77,31 @@ terbukti · docs adopsi lengkap.
 
 ```bash
 node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css + freeday.css + copy dist/*.js
-npm test                # node --test (20/20) — default gate, no browser
+npm test                # node --test (28/28) — default gate, no browser
 npm run test:browser    # real-Chrome interaction guards (focus/blur/pointer) — dev-only, auto-skips without Chrome. See browser/README.md
 ```
 
 ## Lokasi
 
 - `tokens/tokens.json` · `tokens/build.mjs` — pipeline token (Tier-1/2/3)
-- `src/components/*.css` — komponen · `dist/` — hasil build (di-commit): `*.css` + `*.js`
+- `src/components/*.css` + `src/freeday-*.js` — authored · `dist/` — hasil build (di-commit)
 - `adapters/{vue,react,blazor}/` — integrasi framework · `examples/*-faktur/` — bukti pakai
-- `docs/index.html` — demo-site · `docs/getting-started.md` · `docs/integrations.md`
-- `docs/superpowers/specs/` — spec/blueprint (sumber-kebenaran desain). Plan v0.1–v0.3
-  historis diarsipkan di git tag `v0.2`/`v0.3`, tak lagi di working tree.
+- `COMPONENTS.md` — seluruh class publik · `USAGE.md` — doktrin · `docs/agent-onboarding.md` — untuk AI agent
+- `docs/index.html` — demo-site · `docs/reference-screen.html` — 1 layar utuh · `getting-started.md` · `integrations.md`
+- `docs/superpowers/specs/` — spec/blueprint (sumber-kebenaran desain). **Hanya spec kanonik yang
+  tersisa**; plan-plan implementasi yang sudah tuntas dibuang di v1.20.0 (tak dikutip siapa pun,
+  riwayatnya ada di CHANGELOG + git history).
+- `reference/` — material input (artefak asal port + 15 arketipe layout), tak pernah di-ship
 
 ## Selanjutnya
 
 Backlog aktif + titik lanjut ada di **[`NEXT-UP.md`](NEXT-UP.md)** — buka itu dulu kalau mau
-nerusin. Ringkasnya: **tak ada yang mendesak**. Ketiga item lama sudah ditangani (2026-07-27):
-kontras AA soft-badge **ternyata sudah tertutup sejak v0.2** (cuma prosa spec §12 yang basi,
-sudah di-truth-up) · review independen v1.6.0 **selesai, tak ada bug korektnes** · distribusi #8
-**diputuskan & terbit (npm publik ber-scope `@cahyo-dimas/freeday`)**. Rilis kini **otomatis
-via OIDC** (GitHub Actions, tanpa token/OTP) tiap tag `v*` — sudah jalan untuk v1.8.0–v1.11.2.
-Runbook rilis tetap di `NEXT-UP.md` item 3.
+nerusin. Ringkasnya: **tak ada yang mendesak**; sikap default = tunggu demand dari app nyata.
+
+Rilis **otomatis via OIDC** (GitHub Actions, tanpa token/OTP) tiap kali tag `v*` di-push;
+workflow-nya menggerbangi `node tokens/build.mjs` → `node --test` → `npm run typecheck:react`
+sebelum `npm publish`. Runbook di `NEXT-UP.md`.
 
 Cakupan komponen praktis lengkap. Sisa spec §7 — **data grid virtualisasi, form master-detail /
-2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya (filter-bar sudah
-mendarat di v1.6.0). Design system tak pernah "selesai", dia ber-versi.
+2-kolom** — sengaja ditunda: dibuat hanya saat project nyata membutuhkannya. Design system tak
+pernah "selesai", dia ber-versi.

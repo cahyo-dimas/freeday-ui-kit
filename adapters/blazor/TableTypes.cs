@@ -21,6 +21,12 @@ public sealed record FdySortState(string Key, FdySortDir Dir);
 /// <see cref="FdyTable{TRow}.Page"/> switches the table into server mode.</summary>
 public sealed record FdyPageState(int Index, int Size, int Total);
 
+/// <summary>The processed page of rows (after filter/sort/paginate) plus the total row count, as
+/// raised by <see cref="FdyTable{TRow}.Process"/>. Lets a consumer render the same processed set
+/// somewhere else — a card list below the <c>md</c> breakpoint, a summary, an export — without
+/// re-deriving the pipeline. Mirrors the <c>process</c> event in the Vue/React adapters.</summary>
+public sealed record FdyTableProcess<TRow>(IReadOnlyList<TRow> Rows, int Total);
+
 /// <summary>The active filter for a single column (a closed set of shapes, one per filter type).</summary>
 public abstract record FdyColumnFilter
 {

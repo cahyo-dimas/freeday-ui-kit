@@ -5,13 +5,21 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.18.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.18.0)
+[![Release](https://img.shields.io/badge/release-v1.20.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.20.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
 **Referensi hidup:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — atau buka `docs/index.html` langsung di browser.
 
 > 🚀 **Baru mau pakai di project?** Langkah demi langkah per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
+>
+> 📘 **Class apa saja yang ada, dan markup-nya?** Seluruh permukaan publik dalam satu file:
+> **[`COMPONENTS.md`](COMPONENTS.md)**. **Kapan pakai yang mana:** **[`USAGE.md`](USAGE.md)**.
+> Satu layar utuh yang sudah dirakit: **[`docs/reference-screen.html`](docs/reference-screen.html)**.
+>
+> 🤖 **Ngoding pakai AI agent (atau vibe code)?** Tak ada model yang tahu Freeday dari training —
+> berikan **[`docs/agent-onboarding.md`](docs/agent-onboarding.md)** (blok instruksi siap-tempel +
+> tabel mapping migrasi).
 
 ## Build
 ```bash

@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freeday — reference screen</title>
+
+<!-- The kit in one file: tokens + components (this is what @cahyo-dimas/freeday/css resolves to).
+     Note the file name: dist/freeday.css is components ONLY — link that alone and every
+     var(--color-*) / var(--space-*) silently falls back, which looks like a broken stylesheet.
+     Paths are relative, so this works both in the repo and in node_modules/@cahyo-dimas/freeday/docs/. -->
+<link rel="stylesheet" href="../dist/freeday.bundle.css">
+
+<!-- Fonts are NOT shipped by the package. Load them yourself (Fontsource, self-hosted, or a
+     <link> to a provider) or override --font-display / --font-body / --font-mono. Without them
+     the kit renders in the system fallback, which reads as an unfinished design. -->
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════════════════════
+     REFERENCE SCREEN — one business screen, assembled the intended way.
+
+     Structure, outermost to innermost:
+       .fdy-app                 the shell (topbar · sidebar · main)
+         └ .fdy-page            the screen body — vertical section rhythm
+             ├ .fdy-page__header   eyebrow + page title + desc | ONE primary action
+             ├ .fdy-page-section   KPI strip (.fdy-stats — deliberately not cards)
+             ├ .fdy-page-section   chart
+             └ .fdy-page-section   the data table
+
+     Every class here exists in COMPONENTS.md. Every value comes from a token — search this file
+     for "#" or "px" and you will find none outside the demo-only sizing on the chart wrappers.
+     Doctrine behind the choices: USAGE.md.
+     ══════════════════════════════════════════════════════════════════════════════════════════ -->
+
+<div class="fdy-app" id="app">
+  <a class="fdy-skip" href="#main">Skip to main content</a>
+
+  <!-- Sidebar comes FIRST: .fdy-app is a flex row of [sidebar | content]. The brand lives in the
+       sidebar (it is sized to match the topbar height), not in the topbar. -->
+  <aside class="fdy-app__sidebar" id="sidebar" aria-label="Main navigation">
+    <a class="fdy-app__brand" href="#app">
+      <span class="fdy-app__brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h6"/></svg>
+      </span>
+      <span class="fdy-app__brand-text">
+        <span class="fdy-app__brand-title">Acme Books</span>
+        <span class="fdy-app__brand-subtitle">Finance</span>
+      </span>
+    </a>
+    <nav class="fdy-nav">
+      <a class="fdy-nav__item" href="#app">
+        <span class="fdy-nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+        <span class="fdy-nav__label">Dashboard</span>
+      </a>
+      <a class="fdy-nav__item" href="#app" aria-current="page">
+        <span class="fdy-nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
+        <span class="fdy-nav__label">Invoices</span>
+        <span class="fdy-nav__badge">12</span>
+      </a>
+      <a class="fdy-nav__item" href="#app">
+        <span class="fdy-nav__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+        <span class="fdy-nav__label">Customers</span>
+      </a>
+      <details class="fdy-nav__group" open>
+        <summary class="fdy-nav__grouplabel">Reports</summary>
+        <a class="fdy-nav__item" href="#app"><span class="fdy-nav__label">Aging</span></a>
+        <a class="fdy-nav__item" href="#app"><span class="fdy-nav__label">Collections</span></a>
+      </details>
+    </nav>
+  </aside>
+
+  <!-- __content is the column wrapper holding the topbar + main. It exists so the sticky topbar
+       has a tall containing block to travel in — a bare flex cell cannot do that. -->
+  <div class="fdy-app__content">
+
+  <header class="fdy-app__topbar">
+    <button class="fdy-app__navtoggle" type="button" aria-label="Toggle navigation" aria-expanded="true" aria-controls="sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+
+    <!-- .fdy-app__title carries an auto-spacer (margin-right:auto): everything after it sits at
+         the right edge. -->
+    <h1 class="fdy-app__title fdy-hide-below-md">Receivables</h1>
+
+    <div class="fdy-input-group fdy-hide-below-md" style="max-width:14rem">
+      <span class="fdy-input-group__addon fdy-input-group__addon--icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      </span>
+      <input class="fdy-input" type="search" placeholder="Search…" aria-label="Search the app">
+    </div>
+
+    <span class="fdy-badge-wrap">
+      <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" type="button" aria-label="Notifications — 3 new">
+        <span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+      </button>
+      <span class="fdy-badge-ov fdy-badge-ov--danger" aria-hidden="true">3</span>
+    </span>
+
+    <div class="fdy-menu-wrap" data-fdy-menu>
+      <button class="fdy-btn fdy-btn--ghost" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="User menu">
+        <span class="fdy-avatar fdy-avatar--sm fdy-avatar--tone-3">AK</span>
+      </button>
+      <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+        <li role="none"><button class="fdy-menu__item" role="menuitem" type="button">Profile</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem" type="button" id="toggle-theme">Toggle theme</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem" type="button" id="toggle-density">Toggle density</button></li>
+        <li role="none"><hr class="fdy-menu__sep"></li>
+        <li role="none"><button class="fdy-menu__item fdy-menu__item--danger" role="menuitem" type="button">Sign out</button></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- __main is the padded content area (--space-8). The screen goes straight inside it. -->
+  <main class="fdy-app__main" id="main" tabindex="-1">
+
+      <!-- ═══ THE SCREEN ═══ -->
+      <div class="fdy-page">
+
+        <!-- One page header. One primary action — everything else is ghost. -->
+        <header class="fdy-page__header">
+          <div class="fdy-page__heading">
+            <p class="fdy-eyebrow">Sales</p>
+            <h2 class="fdy-title-page">Receivables</h2>
+            <p class="fdy-page__desc">Every open invoice, with the amount still outstanding per customer.</p>
+          </div>
+          <div class="fdy-page__actions">
+            <button class="fdy-btn fdy-btn--ghost" type="button" id="btn-export">Export</button>
+            <button class="fdy-btn" type="button" id="btn-new">New invoice</button>
+          </div>
+        </header>
+
+        <!-- KPI strip: .fdy-stat tiles, NOT cards — a metric row must not read as a card grid. -->
+        <section class="fdy-page-section" aria-labelledby="kpi-h">
+          <h3 class="fdy-title-section fdy-visually-hidden" id="kpi-h">Key figures</h3>
+          <div class="fdy-stats fdy-stats--boxed">
+            <div class="fdy-stat">
+              <span class="fdy-stat__label">Outstanding</span>
+              <span class="fdy-stat__value">8.42<small> M</small></span>
+              <span class="fdy-stat__meta">across 34 invoices</span>
+            </div>
+            <div class="fdy-stat">
+              <span class="fdy-stat__label">Overdue</span>
+              <span class="fdy-stat__value">1.19<small> M</small></span>
+              <span class="fdy-stat__meta"><span class="fdy-badge fdy-badge--warning">7 invoices</span></span>
+            </div>
+            <div class="fdy-stat">
+              <span class="fdy-stat__label">Collected (MTD)</span>
+              <span class="fdy-stat__value">5.60<small> M</small></span>
+              <span class="fdy-stat__meta">target 6.00 M</span>
+            </div>
+            <div class="fdy-stat">
+              <span class="fdy-stat__label">Avg. days to pay</span>
+              <span class="fdy-stat__value">27</span>
+              <span class="fdy-stat__meta">terms: 30 days</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- A section with a chart. Flat section, one card holding the chart. -->
+        <section class="fdy-page-section" aria-labelledby="trend-h">
+          <div class="fdy-page-section__head">
+            <h3 class="fdy-title-section" id="trend-h">Collection trend</h3>
+            <p class="fdy-text-caption">Last six months</p>
+          </div>
+          <div class="fdy-card">
+            <div class="fdy-card__body">
+              <div data-fdy-chart="line"
+                   data-labels="Feb,Mar,Apr,May,Jun,Jul"
+                   data-series='[{"label":"Invoiced","values":[62,68,75,71,83,88]},{"label":"Collected","values":[54,60,66,69,74,81]}]'
+                   data-fdy-format="number"
+                   role="img"
+                   aria-label="Invoiced versus collected, in millions: invoiced rose from 62 to 88, collected from 54 to 81">
+                <table>
+                  <caption>Invoiced vs collected (millions)</caption>
+                  <tr><th scope="col">Month</th><th scope="col">Invoiced</th><th scope="col">Collected</th></tr>
+                  <tr><td>Jul</td><td>88</td><td>81</td></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- The data table, with its filter bar composed onto the toolbar baseline.
+             KNOWN GAP: the vanilla freeday-table.js writes its footer/bulk strings in Indonesian
+             ("Menampilkan 1–5 dari 7", "N dipilih") and offers no override, so they stay Indonesian
+             on this English page. The Vue/React/Blazor <FdyTable> components default to English.
+             If you need English in a static page, render those two nodes yourself from the
+             fdy-table-change event instead of using data-fdy-table-info / -bulk-count. -->
+        <section class="fdy-page-section" aria-labelledby="list-h">
+          <div class="fdy-page-section__head">
+            <h3 class="fdy-title-section" id="list-h">Open invoices</h3>
+          </div>
+
+          <!-- md and up: the table. Below md it is hidden and the flat list below takes over. -->
+          <div class="fdy-datatable fdy-hide-below-md" data-fdy-table data-page-size="5">
+            <div class="fdy-table-toolbar fdy-filterbar">
+              <div class="fdy-field fdy-field--w-grow">
+                <span class="fdy-label" id="f-q">Search</span>
+                <div class="fdy-input-group">
+                  <span class="fdy-input-group__addon fdy-input-group__addon--icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                  </span>
+                  <input class="fdy-input" type="search" placeholder="Invoice or customer…" data-fdy-table-search aria-labelledby="f-q">
+                </div>
+              </div>
+              <div class="fdy-field fdy-field--w-sm">
+                <span class="fdy-label" id="f-st">Status</span>
+                <div class="fdy-combo" data-fdy-combo data-value="all">
+                  <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="f-st f-st-v">
+                    <span class="fdy-combo__value" id="f-st-v">All</span>
+                  </button>
+                  <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="f-st" hidden>
+                    <li class="fdy-combo__option" role="option" data-value="all" aria-selected="true"><span class="fdy-combo__check">✓</span>All</li>
+                    <li class="fdy-combo__option" role="option" data-value="open" aria-selected="false"><span class="fdy-combo__check"></span>Open</li>
+                    <li class="fdy-combo__option" role="option" data-value="overdue" aria-selected="false"><span class="fdy-combo__check"></span>Overdue</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="fdy-field fdy-field--w-2xl">
+                <span class="fdy-label">Issued between</span>
+                <div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Issued between">
+                  <div data-fdy-datepicker data-role="from" data-placeholder="From" data-label="Issued from"></div>
+                  <span class="fdy-daterange__sep" aria-hidden="true">–</span>
+                  <div data-fdy-datepicker data-role="to" data-placeholder="To" data-label="Issued to"></div>
+                </div>
+              </div>
+              <div class="fdy-filterbar__actions">
+                <button class="fdy-btn fdy-btn--ghost" type="button">Reset</button>
+              </div>
+            </div>
+
+            <div class="fdy-table-bulkbar" data-fdy-table-bulk hidden role="region" aria-label="Bulk actions">
+              <span class="fdy-table-bulkbar__count" data-fdy-table-bulk-count aria-live="polite">0 selected</span>
+              <span class="fdy-table-bulkbar__spacer"></span>
+              <div class="fdy-table-bulkbar__actions">
+                <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button">Send reminder</button>
+                <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" data-fdy-table-bulk-clear>Clear</button>
+              </div>
+            </div>
+
+            <div class="fdy-table-scroll">
+              <table class="fdy-table">
+                <caption class="fdy-visually-hidden">Open invoices, sortable and filterable</caption>
+                <thead>
+                  <tr>
+                    <th class="fdy-table__selcol" scope="col"><input type="checkbox" class="fdy-checkbox" data-fdy-select-all aria-label="Select all rows"></th>
+                    <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Invoice</button></th>
+                    <th scope="col" data-fdy-filter="text"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Customer</button></th>
+                    <th scope="col" data-fdy-filter="enum"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Status</button></th>
+                    <th scope="col">Due</th>
+                    <th scope="col" class="fdy-table__num" data-fdy-filter="number"><button type="button" class="fdy-table__sortbtn" data-fdy-sort="number">Amount</button></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2041"></td>
+                    <td class="fdy-mono">INV-2041</td><td>Acme Ltd</td>
+                    <td><span class="fdy-badge fdy-badge--success">Paid</span></td>
+                    <td>30 Jul 2026</td><td class="fdy-table__num" data-sort-value="1240000">1,240,000</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2042"></td>
+                    <td class="fdy-mono">INV-2042</td><td>Northwind Trading</td>
+                    <td><span class="fdy-badge fdy-badge--warning">Overdue</span></td>
+                    <td>12 Jul 2026</td><td class="fdy-table__num" data-sort-value="290000">290,000</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2043"></td>
+                    <td class="fdy-mono">INV-2043</td><td>Globex Supply</td>
+                    <td><span class="fdy-badge fdy-badge--info">Draft</span></td>
+                    <td>—</td><td class="fdy-table__num" data-sort-value="0">0</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2044"></td>
+                    <td class="fdy-mono">INV-2044</td><td>Initech Partners</td>
+                    <td><span class="fdy-badge fdy-badge--success">Paid</span></td>
+                    <td>02 Aug 2026</td><td class="fdy-table__num" data-sort-value="4750000">4,750,000</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2045"></td>
+                    <td class="fdy-mono">INV-2045</td><td>Umbra Logistics</td>
+                    <td><span class="fdy-badge fdy-badge--warning">Overdue</span></td>
+                    <td>08 Jul 2026</td><td class="fdy-table__num" data-sort-value="820000">820,000</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2046"></td>
+                    <td class="fdy-mono">INV-2046</td><td>Stark Materials</td>
+                    <td><span class="fdy-badge fdy-badge--danger">Cancelled</span></td>
+                    <td>—</td><td class="fdy-table__num" data-sort-value="150000">150,000</td>
+                  </tr>
+                  <tr>
+                    <td class="fdy-table__selcol"><input type="checkbox" class="fdy-checkbox" data-fdy-row-select aria-label="Select INV-2047"></td>
+                    <td class="fdy-mono">INV-2047</td><td>Acme Ltd</td>
+                    <td><span class="fdy-badge fdy-badge--success">Paid</span></td>
+                    <td>21 Aug 2026</td><td class="fdy-table__num" data-sort-value="3120000">3,120,000</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="fdy-table-footer">
+              <span class="fdy-table-footer__info" data-fdy-table-info></span>
+              <nav class="fdy-pagination" aria-label="Table pages" data-fdy-table-pagination></nav>
+            </div>
+          </div>
+
+          <!-- Below md: the SAME rows as a flat list. .fdy-list is the flat container the doctrine
+               asks for — a stack of .fdy-card would put a 34px lift under every row.
+               In a framework app you would not duplicate the markup: hide <FdyTable> below md, feed
+               this list from its `process` event, and drive both from a controlled `pageIndex` with
+               ONE pager rendered outside the table. See COMPONENTS.md §Data table. -->
+          <ul class="fdy-list fdy-hide-above-md">
+            <li>
+              <button type="button" class="fdy-list__row fdy-list__row--button">
+                <span class="fdy-list__main">
+                  <span class="fdy-list__title">Acme Ltd</span>
+                  <span class="fdy-list__meta"><span class="fdy-mono">INV-2041</span> · due 30 Jul <span class="fdy-badge fdy-badge--success">Paid</span></span>
+                </span>
+                <span class="fdy-list__aside fdy-mono">1,240,000</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="fdy-list__row fdy-list__row--button">
+                <span class="fdy-list__main">
+                  <span class="fdy-list__title">Northwind Trading</span>
+                  <span class="fdy-list__meta"><span class="fdy-mono">INV-2042</span> · due 12 Jul <span class="fdy-badge fdy-badge--warning">Overdue</span></span>
+                </span>
+                <span class="fdy-list__aside fdy-mono">290,000</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="fdy-list__row fdy-list__row--button">
+                <span class="fdy-list__main">
+                  <span class="fdy-list__title">Globex Supply</span>
+                  <span class="fdy-list__meta"><span class="fdy-mono">INV-2043</span> · draft <span class="fdy-badge fdy-badge--info">Draft</span></span>
+                </span>
+                <span class="fdy-list__aside fdy-mono">0</span>
+              </button>
+            </li>
+          </ul>
+        </section>
+
+        <!-- A detail region: key-value pairs + a timeline. Flat section, one card each. -->
+        <section class="fdy-page-section" aria-labelledby="detail-h">
+          <div class="fdy-page-section__head">
+            <h3 class="fdy-title-section" id="detail-h">INV-2042 — detail</h3>
+            <button class="fdy-btn fdy-btn--text" type="button">Open full record</button>
+          </div>
+          <div class="fdy-card">
+            <div class="fdy-card__body">
+              <h4 class="fdy-title-card">Northwind Trading</h4>
+              <dl class="fdy-dl">
+                <dt>Invoice</dt><dd class="fdy-mono">INV-2042</dd>
+                <dt>Status</dt><dd><span class="fdy-badge fdy-badge--warning">Overdue</span></dd>
+                <dt>Issued</dt><dd>12 Jun 2026</dd>
+                <dt>Due</dt><dd>12 Jul 2026</dd>
+                <dt>Amount</dt><dd>290,000</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      <!-- ═══ /THE SCREEN ═══ -->
+
+  </main>
+
+  </div><!-- /.fdy-app__content -->
+
+  <div class="fdy-app__backdrop"></div>
+</div>
+
+<!-- Native <dialog>: focus trap, Esc and backdrop are the browser's job, not yours. -->
+<dialog class="fdy-modal" id="new-invoice" aria-labelledby="new-invoice-t">
+  <form method="dialog" data-fdy-validate>
+    <div class="fdy-modal__header">
+      <h2 class="fdy-modal__title" id="new-invoice-t">New invoice</h2>
+      <button class="fdy-modal__close" type="button" aria-label="Close" data-close>&times;</button>
+    </div>
+    <div class="fdy-modal__body">
+      <div class="fdy-form-grid">
+        <label class="fdy-field">
+          <span class="fdy-label">Customer</span>
+          <input class="fdy-input" name="customer" required data-fdy-msg-required="Customer is required.">
+        </label>
+        <label class="fdy-field">
+          <span class="fdy-label">Invoice no.</span>
+          <input class="fdy-input fdy-mono" name="no" value="INV-2048" readonly>
+        </label>
+        <div class="fdy-field">
+          <span class="fdy-label">Issue date</span>
+          <div data-fdy-datepicker data-value="2026-08-12" data-label="Issue date"></div>
+        </div>
+        <label class="fdy-field">
+          <span class="fdy-label">Amount</span>
+          <div class="fdy-input-group">
+            <span class="fdy-input-group__addon">Rp</span>
+            <input class="fdy-input" name="amount" inputmode="numeric" required data-fdy-msg-required="Amount is required.">
+          </div>
+        </label>
+        <label class="fdy-field fdy-field--full fdy-switch">
+          <input type="checkbox" checked> Email the invoice to the customer
+        </label>
+      </div>
+    </div>
+    <div class="fdy-modal__footer">
+      <button class="fdy-btn fdy-btn--ghost" type="button" data-close>Cancel</button>
+      <button class="fdy-btn" type="submit">Save invoice</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Enhancers: only the ones this screen actually uses. Zero dependencies, load order free. -->
+<script src="../dist/freeday-popover.js"></script>
+<script src="../dist/freeday-select.js"></script>
+<script src="../dist/freeday-datepicker.js"></script>
+<script src="../dist/freeday-menu.js"></script>
+<script src="../dist/freeday-table.js"></script>
+<script src="../dist/freeday-chart.js"></script>
+<script src="../dist/freeday-form.js"></script>
+<script src="../dist/freeday-toast.js"></script>
+
+<script>
+  // The shell's only wiring: the nav toggle. Two state classes, no library.
+  // Above 720px the sidebar collapses to zero width (--nav-collapsed); at or below it slides in as
+  // an off-canvas drawer (--nav-open). 720px is where app-shell.css switches — keep them in step.
+  const app = document.getElementById('app');
+  const toggle = app.querySelector('.fdy-app__navtoggle');
+  const wide = () => window.matchMedia('(min-width: 721px)').matches;
+  toggle.addEventListener('click', () => {
+    const cls = wide() ? 'fdy-app--nav-collapsed' : 'fdy-app--nav-open';
+    const open = app.classList.toggle(cls);
+    toggle.setAttribute('aria-expanded', String(wide() ? !open : open));
+  });
+  app.querySelector('.fdy-app__backdrop').addEventListener('click', () => {
+    app.classList.remove('fdy-app--nav-open');
+    toggle.setAttribute('aria-expanded', 'false');
+  });
+
+  // Theme + density live on <html>, set once — never per component.
+  const root = document.documentElement;
+  document.getElementById('toggle-theme').addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+  document.getElementById('toggle-density').addEventListener('click', () => {
+    root.dataset.density = root.dataset.density === 'compact' ? 'comfortable' : 'compact';
+  });
+
+  document.getElementById('btn-new').addEventListener('click', () => {
+    document.getElementById('new-invoice').showModal();
+  });
+  document.querySelectorAll('#new-invoice [data-close]').forEach(b => {
+    b.addEventListener('click', () => document.getElementById('new-invoice').close());
+  });
+  document.getElementById('btn-export').addEventListener('click', () => {
+    Freeday.toast({ variant: 'info', title: 'Export queued', message: 'The file will download shortly.', key: 'export' });
+  });
+</script>
+</body>
+</html>

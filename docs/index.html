@@ -280,6 +280,7 @@
           <a class="fdy-nav__item" href="#sec-badge">Badge</a>
           <a class="fdy-nav__item" href="#sec-avatar">Avatar</a>
           <a class="fdy-nav__item" href="#sec-chip">Chip</a>
+          <a class="fdy-nav__item" href="#sec-list">List (baris rata)</a>
           <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
           <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
           <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
@@ -328,13 +329,14 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.18.0</p>
+          <p class="doc-eyebrow">Design System · v1.20.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
-          <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 44 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
+          <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
             <a class="fdy-btn" href="#sec-tombol" data-i18n="cta.explore">Jelajahi komponen</a>
             <a class="fdy-btn fdy-btn--ghost" href="#sec-integrasi" data-i18n="cta.integrate">Integrasi framework</a>
           </div>
+          <p class="doc-desc" data-i18n="hero.docs">Referensi lengkap: <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/COMPONENTS.md">COMPONENTS.md</a> (semua class + markup) · <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/USAGE.md">USAGE.md</a> (kapan pakai yang mana) · <a href="reference-screen.html">satu layar utuh</a> · <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/agent-onboarding.md">panduan AI agent</a>.</p>
           <div class="doc-install"><b>$</b>&nbsp;<span class="doc-install__cmd" id="install-cmd">npm i @cahyo-dimas/freeday</span><button class="doc-install__copy" id="install-copy" type="button" aria-label="Salin perintah install" title="Salin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div>
         </div>
         <aside class="doc-showcase" aria-label="Contoh komponen Freeday">
@@ -361,7 +363,7 @@
     </section>
 
     <div class="doc-stats" role="list" aria-label="Ringkasan Freeday">
-      <div class="doc-stat" role="listitem"><b>44</b><span data-i18n="stat.components">komponen</span></div>
+      <div class="doc-stat" role="listitem"><b>45</b><span data-i18n="stat.components">komponen</span></div>
       <div class="doc-stat" role="listitem"><b>22</b><span data-i18n="stat.enhancers">enhancer · 0-dep</span></div>
       <div class="doc-stat" role="listitem"><b>3</b><span data-i18n="stat.adapters">adapter framework</span></div>
       <div class="doc-stat" role="listitem"><b>AA</b><span data-i18n="stat.contrast">kontras · terang &amp; gelap</span></div>
@@ -1569,6 +1571,41 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-list">
+      <h2>List (baris rata)</h2>
+      <p class="doc-desc">Container <strong>rata</strong> untuk baris: satu permukaan ber-border, pembatas hairline, <strong>tanpa shadow</strong>. Ini yang dipakai saat <code>.fdy-datatable</code> berubah jadi daftar di bawah <code>md</code> — <em>bukan</em> tumpukan <code>.fdy-card</code>, yang memakai <code>--shadow-lift</code> sehingga sepuluh baris jadi sepuluh objek mengapung. Baris bisa jadi kontrol: render sebagai <code>&lt;button&gt;</code> + <code>--button</code>. Nol JS.</p>
+      <div class="doc-demo doc-demo--block" style="max-width:34rem">
+        <ul class="fdy-list">
+          <li>
+            <button type="button" class="fdy-list__row fdy-list__row--button">
+              <span class="fdy-list__main">
+                <span class="fdy-list__title">Northwind Trading</span>
+                <span class="fdy-list__meta">INV-2042 · jatuh tempo 12 Jul <span class="fdy-badge fdy-badge--warning">Tertunda</span></span>
+              </span>
+              <span class="fdy-list__aside fdy-mono">290.000</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="fdy-list__row fdy-list__row--button">
+              <span class="fdy-list__main">
+                <span class="fdy-list__title">PT Sumber Makmur</span>
+                <span class="fdy-list__meta">INV-2041 · jatuh tempo 30 Jul <span class="fdy-badge fdy-badge--success">Lunas</span></span>
+              </span>
+              <span class="fdy-list__aside fdy-mono">1.240.000</span>
+            </button>
+          </li>
+          <li class="fdy-list__row">
+            <span class="fdy-list__main">
+              <span class="fdy-list__title">Globex Supply</span>
+              <span class="fdy-list__meta">INV-2043 · draft</span>
+            </span>
+            <span class="fdy-list__aside fdy-mono">0</span>
+          </li>
+        </ul>
+      </div>
+      <p class="doc-desc" style="margin-top:var(--space-3)">Beda dari <code>.fdy-list-reset</code> (utilitas yang cuma membuang bullet/indent bawaan browser).</p>
+    </section>
+
     <section class="doc-section" id="sec-dl">
       <h2>Detail (key-value)</h2>
       <p class="doc-desc">Tampilan ringkas untuk halaman detail faktur / pelanggan.</p>
@@ -1937,7 +1974,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.18.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.20.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -1988,9 +2025,10 @@
   // Landing language toggle (ID ⇄ EN) — swaps [data-i18n] content on the landing section.
   const I18N = {
     'hero.h1': 'From <em>token</em> to a business screen — consistently.',
-    'hero.lead': 'Freeday — a <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong> source of truth. Colour, type, spacing, and 44 accessible components you assemble into real screens in Vue, React, or Blazor. Zero runtime dependencies, WCAG AA contrast in light &amp; dark.',
+    'hero.lead': 'Freeday — a <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong> source of truth. Colour, type, spacing, and 45 accessible components you assemble into real screens in Vue, React, or Blazor. Zero runtime dependencies, WCAG AA contrast in light &amp; dark.',
     'cta.explore': 'Explore components',
     'cta.integrate': 'Framework integration',
+    'hero.docs': 'Full reference: <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/COMPONENTS.md">COMPONENTS.md</a> (every class + markup) · <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/USAGE.md">USAGE.md</a> (which one, when) · <a href="reference-screen.html">a complete screen</a> · <a href="https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/docs/agent-onboarding.md">AI-agent guide</a>.',
     'sc.invoice': 'Invoice · INV-1042',
     'sc.paid': 'Paid',
     'sc.customer': 'Customer',
@@ -2052,6 +2090,7 @@
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
     'sec-avatar': { h2: 'Avatar', desc: 'Sizes <code>--sm</code> / default / <code>--lg</code>, plus a stacked group. To tell apart same-initial avatars (e.g. many "PT …" names), use <strong><code>--tone-1</code>…<code>--tone-8</code></strong> — decorative tints that stay <strong>AA</strong>-contrast in light &amp; dark; hash a stable index off the full name (not the initials).' },
     'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>freeday-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
+    'sec-list': { h2: 'List (flat rows)', desc: 'The FLAT row container: one bordered surface, hairline dividers, no shadow. This is what a .fdy-datatable should become below md — not a stack of .fdy-card, which carries --shadow-lift and turns ten rows into ten floating objects. A row can BE the control: render it as a &lt;button&gt; plus --button. Zero JS.' },
     'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages.' },
     'sec-progress': { h2: 'Progress &amp; Spinner' },
     'sec-skeleton': { h2: 'Skeleton', desc: '<code>--title</code>/<code>--text</code> for text, <code>--circle</code> for round shapes, and <strong><code>--avatar</code></strong> (+<code>--avatar-sm</code>/<code>--avatar-lg</code>) which are <strong>size-matched to <code>.fdy-avatar</code></strong> — so the placeholder reserves the exact same box and data landing causes no layout shift.' },
@@ -2067,7 +2106,7 @@
     'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>freeday-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
     'sec-a11y': { h2: 'Accessibility', desc: 'A contract every component keeps — not an afterthought.' },
   };
-  const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-playground': 'Playground', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-filterbar': 'Filter bar', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };
+  const NAV = { '#sec-ikhtisar': 'Overview', '#sec-integrasi': 'Framework integration', '#sec-playground': 'Playground', '#sec-prinsip': 'Principles', '#sec-warna': 'Colour', '#sec-tipografi': 'Typography', '#sec-spasi': 'Spacing', '#sec-radius': 'Radius &amp; Elevation', '#sec-motion': 'Motion', '#sec-tombol': 'Button', '#sec-input': 'Input', '#sec-select': 'Select', '#sec-pilihan': 'Checkbox · Radio · Switch', '#sec-inputgroup': 'Input group', '#sec-cfl': 'Choose-from-list', '#sec-datepicker': 'Date picker', '#sec-timepicker': 'Time picker', '#sec-datetimepicker': 'Datetime picker', '#sec-upload': 'File upload', '#sec-menu': 'Menu &amp; split', '#sec-stepper': 'Stepper', '#sec-slider': 'Slider', '#sec-rating': 'Rating', '#sec-autocomplete': 'Autocomplete', '#sec-cascade': 'Cascade select', '#sec-mask': 'Password &amp; mask', '#sec-form': 'Form validation', '#sec-filterbar': 'Filter bar', '#sec-alert': 'Alert', '#sec-toast': 'Toast', '#sec-tooltip': 'Tooltip', '#sec-tabs': 'Tabs', '#sec-breadcrumb': 'Breadcrumb', '#sec-pagination': 'Pagination', '#sec-table': 'Table', '#sec-datatable': 'Data table', '#sec-states': 'States', '#sec-charts': 'Charts', '#sec-tree': 'Tree view', '#sec-card': 'Card', '#sec-badge': 'Badge', '#sec-avatar': 'Avatar', '#sec-chip': 'Chip', '#sec-list': 'List (flat rows)', '#sec-dl': 'Detail (key-value)', '#sec-progress': 'Progress · Spinner', '#sec-skeleton': 'Skeleton', '#sec-carousel': 'Carousel', '#sec-timeline': 'Timeline', '#sec-appbar': 'App bar', '#sec-sidenav': 'Sidebar menu', '#sec-drawer': 'Drawer', '#sec-accordion': 'Accordion', '#sec-modal': 'Modal', '#sec-screen': 'Business screen', '#sec-util': 'Divider · Kbd', '#sec-breakpoint': 'Breakpoint', '#sec-a11y': 'Accessibility' };
   const GROUPS = { 'Fondasi': 'Foundation', 'Aksi & Form': 'Action & Form', 'Feedback': 'Feedback', 'Navigasi': 'Navigation', 'Data': 'Data', 'Tampilan': 'Display', 'Layout': 'Layout', 'Utilitas': 'Utilities', 'Tentang': 'About' };
   const UI = { title: 'Components', density: 'Density' };
 

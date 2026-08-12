@@ -44,6 +44,17 @@ export interface FdyTableProps<Row extends object> {
   onPageChange?: (page: FdyPageState) => void;
   /** Client-side page size when `page` is absent; 0/undefined = render all rows (no pager). */
   pageSize?: number;
+  /**
+   * Controlled client-side page index (0-based). Provide it — with `pageSize`, without `page` — to
+   * own the page while the table keeps doing filter/sort/paginate. This is what lets an EXTERNAL
+   * pager drive the table: a responsive screen that hides `.fdy-datatable` below `md` and renders a
+   * card list from `onProcess` can render one pager for both breakpoints and point it here.
+   * Omit for the internal index (unchanged default).
+   */
+  pageIndex?: number;
+  /** Client mode with `pageIndex` provided: the table asks for a new 0-based index (pager click, a
+   *  reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
+  onPageIndexChange?: (index: number) => void;
   loading?: boolean;
   emptyText?: string;
   ariaLabel?: string;
@@ -95,14 +106,26 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
 
   const totalCount: number = serverPaged ? (props.page as FdyPageState).total : filteredSorted.length;
 
+  /* Client-side page index: the prop when the parent owns it, internal state otherwise. Every read
+   * goes through clientPageIndex and every write through setClientPage, so controlled and
+   * uncontrolled behave identically apart from where the number lives. */
+  const pageIndexControlled: boolean = props.pageIndex !== undefined;
+  const clientPageIndex: number = pageIndexControlled ? Math.max(0, props.pageIndex as number) : internalPageIndex;
+  const onPageIndexChange = props.onPageIndexChange;
+  function setClientPage(index0: number): void {
+    if (pageIndexControlled) {
+      if (index0 !== props.pageIndex) onPageIndexChange?.(index0);
+    } else setInternalPageIndex(index0);
+  }
+
   const displayRows: Row[] = useMemo(() => {
     if (serverPaged) return props.rows.slice();
-    if (props.pageSize && props.pageSize > 0) return paginate(filteredSorted, internalPageIndex, props.pageSize);
+    if (props.pageSize && props.pageSize > 0) return paginate(filteredSorted, clientPageIndex, props.pageSize);
     return filteredSorted;
-  }, [serverPaged, props.rows, props.pageSize, filteredSorted, internalPageIndex]);
+  }, [serverPaged, props.rows, props.pageSize, filteredSorted, clientPageIndex]);
 
   const pageSizeEff: number = serverPaged ? (props.page as FdyPageState).size : (props.pageSize ?? 0);
-  const currentPage1: number = (serverPaged ? (props.page as FdyPageState).index : internalPageIndex) + 1;
+  const currentPage1: number = (serverPaged ? (props.page as FdyPageState).index : clientPageIndex) + 1;
   const totalPages: number = pageSizeEff > 0 ? Math.max(1, Math.ceil(totalCount / pageSizeEff)) : 1;
   const hasPager: boolean = pageSizeEff > 0 && totalPages > 1;
   const pages: Array<number | 'ellipsis'> = pageWindow(currentPage1, totalPages);
@@ -111,8 +134,9 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
 
   // Client mode: keep the page in range when a filter shrinks the row set.
   useEffect((): void => {
-    if (!serverPaged && internalPageIndex > totalPages - 1) setInternalPageIndex(Math.max(0, totalPages - 1));
-  }, [serverPaged, internalPageIndex, totalPages]);
+    if (!serverPaged && clientPageIndex > totalPages - 1) setClientPage(Math.max(0, totalPages - 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setClientPage is derived from these
+  }, [serverPaged, clientPageIndex, totalPages]);
 
   // Surface the processed page + total to the parent (both modes), so the same result can drive a
   // responsive card list / summary / export without re-implementing filter/sort/paginate.
@@ -134,7 +158,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
     if (sortControlled) props.onSortChange?.(next);
     else {
       setInternalSort(next);
-      setInternalPageIndex(0);
+      setClientPage(0);
     }
   }
   function onFilterChange(col: FdyTableColumn<Row>, filter: FdyColumnFilter | null): void {
@@ -144,7 +168,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
     if (filtersControlled) props.onFiltersChange?.(nextMap);
     else {
       setInternalFilters(nextMap);
-      setInternalPageIndex(0);
+      setClientPage(0);
     }
   }
   function goTo(page1: number): void {
@@ -154,7 +178,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
       const p: FdyPageState = props.page as FdyPageState;
       props.onPageChange?.({ index: index0, size: p.size, total: p.total });
     } else {
-      setInternalPageIndex(index0);
+      setClientPage(index0);
     }
   }
 

@@ -166,7 +166,16 @@ function Panel(): JSX.Element {
 > server-paged table; `interface`-typed rows infer through; opt-in `rowActivatable` +
 > `row-activate`/`onRowActivate` for click-to-detail rows; expandable detail rows via
 > `row-detail`/`renderRowDetail` + controlled `expandedKeys`); `FdyModal`/`FdyDrawer` take `open` +
-> `onClose`. The same set is available
+> `onClose`.
+>
+> **Responsive list screens — drive the page from outside the table.** `FdyTable`'s pager renders
+> inside `.fdy-datatable`, so a screen that hides the table below `md` and shows a card list loses it.
+> Pass **`pageIndex`** (+ `update:pageIndex` / `onPageIndexChange` / `PageIndexChanged`) to own the
+> client-side index while the table still does filter/sort/paginate: render **one** pager outside for
+> both breakpoints, feed the card list from the **`process`** event (`{ rows, total }`), and build the
+> pager's page window with `pageWindow` from `@cahyo-dimas/freeday/table-model` so it is literally the
+> same computation the table uses. One page index can then span several tables — which is what a
+> grouped list needs. The same set is available
 > in `@cahyo-dimas/freeday/vue` via `v-model` / props — both adapters are fully symmetric. See
 > [`getting-started.md` §React](getting-started.md#react-vite) and
 > `examples/react-faktur/src/App.tsx`. **Vite** transpiles the `.tsx` source with no extra config;

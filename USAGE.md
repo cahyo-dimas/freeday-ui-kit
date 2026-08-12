@@ -41,12 +41,22 @@ empty state). Don't scatter `--space-6` everywhere — a page with one gap value
 
 ## 3. Elevation — most surfaces are flat
 
-Shadow is a signal, not decoration. Spend it sparingly:
+Shadow is a signal, not decoration. There are two families, and the difference matters:
 
-- **Flat** (no shadow, border only, or nothing): the default. Page sections, list rows, the app shell.
-- **`--shadow-1`:** a card that is a distinct object you could pick up — a workspace tile, a panel.
-- **`--shadow-2`/`3`:** something that *floats over* the page — a popover, menu, or dropdown.
-- **`--shadow-4`:** a modal / drawer overlay only.
+| Level | Token | What actually uses it |
+|---|---|---|
+| Flat | *(none)* | Page sections, `.fdy-page`, the app shell, `.fdy-toolbar` |
+| Hairline | `--shadow-1` | Bordered data containers: `.fdy-list`, `.fdy-table-wrap`, `.fdy-datatable`, `.fdy-stats--boxed` |
+| Raised | `--shadow-2` | `.fdy-tooltip`, `.fdy-appbar--elevated` |
+| Floating | `--shadow-3` | Things that float over the page: `.fdy-menu`, `.fdy-filter`, `.fdy-toast`, `.fdy-fab` |
+| Overlay | `--shadow-4` | `.fdy-drawer` |
+| **Lift** | `--shadow-lift` / `--shadow-lift-hover` | **`.fdy-card`** (and `--elevated` / `--interactive:hover`), `.fdy-modal` |
+
+**`.fdy-card` is a lifted surface, not a hairline one** — `--shadow-lift` is a real 34px lift, ~6×
+heavier than `--shadow-1`. That is the whole point of a card, and it is also why a *stack* of them
+reads wrong: a list of ten cards is ten objects floating off the page. For rows, use the flat
+container **`.fdy-list` / `.fdy-list__row`** (hairline border, `--color-border-muted` dividers, no
+shadow). Reach for `.fdy-card` when something genuinely is one pickable object.
 
 If every box on the screen has the same card shadow, none of them read as special — that's the
 "identical card grid" failure. Prefer flat sections with **one** raised element that matters.
@@ -74,21 +84,34 @@ point, everything around it quiet.
 
 ## 6. Density — `compact` for data-dense screens
 
-`data-density="compact"` on `<html>` tightens control height **and** the mid-range spacing scale
+`data-density="compact"` tightens control height **and** the mid-range spacing scale
 (`--space-3`…`--space-6` step down a notch), so cards, toolbars and tables get denser. Use it on
-table-heavy back-office screens; leave `comfortable` (the default) for forms and marketing-adjacent
-pages. Set it once at the app root, not per component.
+table-heavy back-office screens; leave `comfortable` (the default) for forms.
+
+**It is per-subtree, not only global.** The selector is a bare `[data-density="compact"]` and these
+are inheriting custom properties, so the attribute works on `<html>` *or* on any wrapper — a route
+container, a single `<section>`. An app whose two list screens are dense and whose three form screens
+are not should scope it per screen rather than densifying everything. Set it at one level per screen,
+never per component.
 
 ## 7. Assemble the page from the frame down
 
-1. **Shell:** every application starts inside **`.fdy-app`** (`__topbar`, `__sidebar`, `__main`,
-   `__content`, `__navtoggle`, `__backdrop`). Don't hand-roll a shell from flexbox — the toggle and
-   backdrop plumbing are already there. See `docs/getting-started.md`.
+1. **Shell:** every application starts inside **`.fdy-app`** — a flex row of `__sidebar` (with
+   `__brand` + `.fdy-nav`) and `__content` (which holds `__topbar` + `__main`, plus `__navtoggle`
+   and `__backdrop`). The nesting is fixed; don't hand-roll a shell from flexbox — the toggle and
+   backdrop plumbing are already there. Skeleton: `COMPONENTS.md` §App shell; a working screen:
+   `docs/reference-screen.html`.
 2. **Page:** wrap the screen body in **`.fdy-page`** (vertical section rhythm), opening with a
    **`.fdy-page__header`** (eyebrow + `.fdy-title-page` + `.fdy-page__desc` on the left, the one
    primary action on the right).
 3. **Sections:** each region is a **`.fdy-page-section`** (a `.fdy-title-section` + optional
    `.fdy-toolbar`, then its body).
+   **Toolbar or filter bar — pick by whether the fields carry visible labels.** `.fdy-toolbar` is
+   `align-items:center`, right for bare controls (buttons, a search box, chips); put a labelled
+   `.fdy-field` in it and that field sits half a label-height low against its neighbours. Fields
+   with visible labels belong in **`.fdy-filterbar`**, which is `align-items:flex-end` for exactly
+   this reason (and has the width rhythm `--w-sm`…`--w-grow`). In a toolbar, label fields with
+   `.fdy-visually-hidden` or a placeholder.
 4. **KPIs:** a **`.fdy-stats`** grid of **`.fdy-stat`** tiles — deliberately *not* cards, so a metric
    strip doesn't become an identical-card grid. Wrap in `.fdy-stats--boxed` for one shared strip.
 5. **Content:** components (`.fdy-card`, `.fdy-datatable`, `.fdy-chart`, …) go inside sections.

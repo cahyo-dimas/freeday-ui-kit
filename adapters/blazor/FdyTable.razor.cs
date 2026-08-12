@@ -29,6 +29,24 @@ public partial class FdyTable<TRow>
     /// <summary>Client-side page size when <see cref="Page"/> is absent; 0 = render all rows (no pager).</summary>
     [Parameter] public int PageSize { get; set; }
 
+    /// <summary>
+    /// Controlled client-side page index (0-based). Set it — with <see cref="PageSize"/>, without
+    /// <see cref="Page"/> — to own the page while the table keeps doing filter/sort/paginate. That is
+    /// what lets an EXTERNAL pager drive the table: a responsive screen that hides the datatable below
+    /// the <c>md</c> breakpoint and renders a card list from <see cref="Process"/> can render one pager
+    /// for both breakpoints and bind it here. Leave null for the internal index (unchanged default).
+    /// </summary>
+    [Parameter] public int? PageIndex { get; set; }
+
+    /// <summary>Raised in client mode with <see cref="PageIndex"/> set: the table asks for a new
+    /// 0-based index (pager click, reset to 0 after sort/filter, or a clamp after filtering).</summary>
+    [Parameter] public EventCallback<int> PageIndexChanged { get; set; }
+
+    /// <summary>Raised whenever the processed page of rows (after filter/sort/paginate) or the total
+    /// changes, in BOTH modes — so the same processed set can drive a card list, a summary or an
+    /// export without re-deriving the pipeline. Mirrors <c>process</c> in the Vue/React adapters.</summary>
+    [Parameter] public EventCallback<FdyTableProcess<TRow>> Process { get; set; }
+
     [Parameter] public bool Loading { get; set; }
     [Parameter] public string LoadingText { get; set; } = "Loading…";
     [Parameter] public string EmptyText { get; set; } = "No data";
@@ -55,10 +73,19 @@ public partial class FdyTable<TRow>
 
     private List<TRow> _displayRows = new();
     private int _totalCount;
+    // Recompute() is synchronous (it runs from OnParametersSet), but notifying the parent is async.
+    // Both notifications are therefore queued here and flushed in OnAfterRenderAsync.
+    private int? _pendingClamp;
+    private bool _processDirty;
 
     private static readonly IReadOnlyDictionary<string, FdyColumnFilter> EmptyFilters = new Dictionary<string, FdyColumnFilter>();
 
     private bool ServerPaged => Page is not null;
+
+    // Client-side page index: the parameter when the parent owns it, the field otherwise. Every read
+    // goes through ClientPageIndex and every write through SetClientPageAsync.
+    private bool PageIndexControlled => PageIndex is not null;
+    private int ClientPageIndex => PageIndexControlled ? Math.Max(0, PageIndex!.Value) : _internalPageIndex;
     private bool SortControlled => ServerPaged || SortChanged.HasDelegate;
     private bool FiltersControlled => ServerPaged || FiltersChanged.HasDelegate;
 
@@ -67,7 +94,7 @@ public partial class FdyTable<TRow>
         FiltersControlled ? (Filters ?? EmptyFilters) : _internalFilters;
 
     private int PageSizeEff => ServerPaged ? Page!.Size : PageSize;
-    private int CurrentPage1 => (ServerPaged ? Page!.Index : _internalPageIndex) + 1;
+    private int CurrentPage1 => (ServerPaged ? Page!.Index : ClientPageIndex) + 1;
     private int TotalCount => _totalCount;
     private int TotalPages => PageSizeEff > 0 ? Math.Max(1, (int)Math.Ceiling((double)TotalCount / PageSizeEff)) : 1;
     private bool HasPager => PageSizeEff > 0 && TotalPages > 1;
@@ -76,6 +103,20 @@ public partial class FdyTable<TRow>
     private int RangeTo => TotalCount == 0 ? 0 : RangeFrom - 1 + _displayRows.Count;
 
     protected override void OnParametersSet() => Recompute();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingClamp is int clamp)
+        {
+            _pendingClamp = null;
+            await PageIndexChanged.InvokeAsync(clamp);
+        }
+        if (_processDirty)
+        {
+            _processDirty = false;
+            if (Process.HasDelegate) await Process.InvokeAsync(new FdyTableProcess<TRow>(_displayRows, _totalCount));
+        }
+    }
 
     // Recompute the visible rows from the current effective sort/filter/page. Called on every
     // parameter change and after any internal-state mutation (sort/filter/page click).
@@ -91,13 +132,19 @@ public partial class FdyTable<TRow>
         {
             // Keep the page in range when a filter shrank the row set.
             int tp = Math.Max(1, (int)Math.Ceiling((double)_totalCount / PageSize));
-            if (_internalPageIndex > tp - 1) _internalPageIndex = Math.Max(0, tp - 1);
-            _displayRows = TableModel.Paginate(filteredSorted, _internalPageIndex, PageSize);
+            if (ClientPageIndex > tp - 1)
+            {
+                if (PageIndexControlled) _pendingClamp = Math.Max(0, tp - 1);
+                else _internalPageIndex = Math.Max(0, tp - 1);
+            }
+            _displayRows = TableModel.Paginate(filteredSorted, Math.Min(ClientPageIndex, tp - 1), PageSize);
         }
         else
         {
             _displayRows = filteredSorted;
         }
+
+        _processDirty = true;
     }
 
     private FdyColumnFilter? GetFilter(string key) => EffectiveFilters.TryGetValue(key, out FdyColumnFilter? f) ? f : null;
@@ -126,8 +173,7 @@ public partial class FdyTable<TRow>
         else
         {
             _internalSort = next;
-            _internalPageIndex = 0;
-            Recompute();
+            await SetClientPageAsync(0);
         }
     }
 
@@ -143,8 +189,7 @@ public partial class FdyTable<TRow>
         else
         {
             _internalFilters = next;
-            _internalPageIndex = 0;
-            Recompute();
+            await SetClientPageAsync(0);
         }
     }
 
@@ -155,6 +200,20 @@ public partial class FdyTable<TRow>
         if (ServerPaged)
         {
             await PageChanged.InvokeAsync(new FdyPageState(index0, Page!.Size, Page.Total));
+        }
+        else
+        {
+            await SetClientPageAsync(index0);
+        }
+    }
+
+    // One write path for the client index: ask the parent when controlled, mutate the field when not.
+    private async Task SetClientPageAsync(int index0)
+    {
+        if (PageIndexControlled)
+        {
+            if (index0 != PageIndex) await PageIndexChanged.InvokeAsync(index0);
+            else Recompute();
         }
         else
         {

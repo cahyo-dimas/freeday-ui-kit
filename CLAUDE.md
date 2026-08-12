@@ -2,7 +2,7 @@
 
 **Design source-of-truth** yang token-driven dan *framework-agnostic*. Bukan component
 library ter-compile; ini satu file token kanonik + halaman referensi hidup, tempat semua
-warna/tipografi/spasi berasal. Diturunkan dari `Foundation Design System.html`.
+warna/tipografi/spasi berasal. Diturunkan dari `reference/foundation-design-system.html`.
 
 > **Baca dulu spec sebelum implement:** [docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md)
 > Itu sumber kebenaran untuk semua nilai token, keputusan, dan roadmap. CLAUDE.md ini hanya ringkasan operasional.
@@ -46,18 +46,36 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 
 ## Struktur
 ```
-tokens/tokens.json     tokens/build.mjs
-src/components/*.css
-dist/freeday.tokens.css  dist/freeday.css   (dist DI-COMMIT — lihat .gitignore)
-docs/index.html
+tokens/tokens.json  tokens/build.mjs   sumber token + generator (Node murni)
+src/base.css  src/components/*.css     satu file per komponen (authored)
+src/freeday-*.js                       enhancer (authored; dist/ = salinan identik)
+dist/  (DI-COMMIT — lihat .gitignore)  freeday.tokens.css · freeday.css (komponen SAJA)
+                                       freeday.bundle.css (token+komponen ← ini yang dipakai)
+                                       freeday.js + freeday-*.js
+COMPONENTS.md                          seluruh class publik + skeleton markup + kontrak a11y
+USAGE.md                               doktrin pemakaian (token/role mana, kapan)
+docs/index.html                        referensi hidup · reference-screen.html (1 layar utuh)
+docs/agent-onboarding.md               onboarding untuk AI agent di project konsumen
+reference/                             material input, TAK PERNAH di-ship
 ```
+`files` di package.json memuat jalur ter-ship **satu per satu** (bukan direktori) — `src/*.js` sengaja
+tak dikirim karena byte-identik dengan `dist/*.js` dan tak ada jalur `exports` yang menyentuhnya.
 
-## Roadmap ringkas
-- **v0.1 (sekarang, token-first):** tokens.json + build.mjs + theming + docs skeleton + button, input, card, badge. Buktikan pipeline end-to-end.
-- **v0.2:** app shell, table, modal, alert/toast, form controls lain → satu layar bisnis nyata.
-- **v0.3+:** data grid, datepicker, filter bar, pagination, states, wizard, dst. (spec §7)
+## Status — **feature-complete**, demand-driven
+Kit ini sudah lewat fase roadmap: 44 komponen + 22 enhancer, paritas 10/10 komponen typed di
+**4 stack** (vanilla · Vue · React · Blazor), terbit publik di npm. **Sikap default sekarang =
+tunggu demand**, bukan bangun spekulatif — friksi dari app nyata yang menentukan rilis berikutnya.
+Riwayat per-versi: [`CHANGELOG.md`](CHANGELOG.md) · kandidat kerja berikutnya (dengan pemicunya):
+[`NEXT-UP.md`](NEXT-UP.md) · kondisi terkini: [`HANDOFF.md`](HANDOFF.md).
 
-## Aset tersedia
-- `Foundation Design System.html` — sumber referensi untuk **port** komponen (⬆ di spec §7).
-- Font latin (Sora/IBM Plex Sans/Manrope/JetBrains Mono) sudah ter-embed base64 di file Foundation itu — bisa diekstrak ulang bila perlu.
-- `auth_web_ui_layout_patterns.png` — 15 arketipe layout aplikasi web (dashboard/admin, master-detail, kanban, feed, chat, canvas, kalender, editor dokumen, media, e-commerce, analytics/BI, POS, wizard, file manager, forum) sebagai referensi wireframe saat menyusun layar bisnis nyata dengan kit.
+## Aset tersedia — semuanya di `reference/` (material input, **tak pernah** di-ship)
+Lihat [`reference/README.md`](reference/README.md): isinya provenance tiap file + tabel **15 arketipe
+layout → primitif Freeday mana** (mana yang sudah tertutup komponen, mana yang framenya tetap milikmu).
+- `reference/foundation-design-system.html` — artefak asal tempat kit ini di-port (historis: 44/44
+  komponen sudah di-port, jadi ini catatan provenance, bukan daftar kerja).
+  **Tak ada font yang bisa diekstrak dari file ini** — `@font-face`-nya menunjuk UUID mati sisa
+  ekspor tool asalnya; file itu merender via CDN Google Fonts. (Klaim lama "ter-embed base64" salah.)
+- `reference/layout-patterns.png` — 15 arketipe layout aplikasi web (dashboard/admin, master-detail,
+  kanban, feed, chat, canvas, kalender, editor dokumen, media, e-commerce, analytics/BI, POS, wizard,
+  file manager, forum) sebagai referensi wireframe saat menyusun layar bisnis nyata. Di-generate
+  dengan Claude atas permintaan author — tak ada hak pihak ketiga.

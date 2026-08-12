@@ -3,7 +3,7 @@
 - **Status:** Draft for review
 - **Date:** 2026-07-21
 - **Owner:** Cahyo D. Kurnianto (Inti Data Utama)
-- **Sumber inspirasi:** `Foundation Design System.html` (starter design system, token-driven)
+- **Sumber inspirasi:** `reference/foundation-design-system.html` (starter design system, token-driven)
 - **Nama produk:** **Freeday** · prefix kelas `fdy-` · package `freeday`
 
 ---

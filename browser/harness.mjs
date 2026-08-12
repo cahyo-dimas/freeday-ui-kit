@@ -198,7 +198,12 @@ const vueSfcPlugin = {
  */
 export async function buildEntries() {
   await esbuild.build({
-    entryPoints: [join(HERE, 'entries', 'vue-combo.js'), join(HERE, 'entries', 'react-combo.tsx')],
+    entryPoints: [
+      join(HERE, 'entries', 'vue-combo.js'),
+      join(HERE, 'entries', 'react-combo.tsx'),
+      join(HERE, 'entries', 'vue-table-pageindex.js'),
+      join(HERE, 'entries', 'react-table-pageindex.tsx'),
+    ],
     outdir: join(HERE, '.build'),
     bundle: true,
     format: 'iife',

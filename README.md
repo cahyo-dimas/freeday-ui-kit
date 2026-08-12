@@ -5,13 +5,21 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.18.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.18.0)
+[![Release](https://img.shields.io/badge/release-v1.20.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.20.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
 **Living reference:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — or open `docs/index.html` directly in a browser.
 
 > 🚀 **Starting a project?** Step-by-step per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
+>
+> 📘 **Which class exists, and what's its markup?** The whole public surface in one flat file:
+> **[`COMPONENTS.md`](COMPONENTS.md)**. **Which one to reach for, and when:** **[`USAGE.md`](USAGE.md)**.
+> A full screen assembled: **[`docs/reference-screen.html`](docs/reference-screen.html)**.
+>
+> 🤖 **Building with an AI agent (or vibe-coding)?** No model knows Freeday from training — give it
+> **[`docs/agent-onboarding.md`](docs/agent-onboarding.md)** (paste-ready project instructions +
+> a migration mapping table).
 
 ## Build
 ```bash
@@ -187,10 +195,16 @@ src/components/*.css    one file per component (fdy-*)
 src/*.js               optional JS enhancers (reference, vanilla)
 dist/                  build output (COMMITTED):
   freeday.tokens.css   semantic tokens (light/dark/compact)
-  freeday.css          bundle of every component
+  freeday.css          every component (NO tokens)
+  freeday.bundle.css   tokens + components — link this one
   freeday.js           bundle of every enhancer (single <script>)
   freeday-*.js         per-file enhancers
+COMPONENTS.md          every class + markup skeleton + a11y contract
+USAGE.md               the usage doctrine (which token/role when)
 docs/index.html        living reference / demo site
+docs/reference-screen.html  one complete screen, assembled
+docs/agent-onboarding.md    onboarding for AI coding agents
+reference/             input material, never shipped (port source + layout archetypes)
 ```
 
 ## Component inventory
