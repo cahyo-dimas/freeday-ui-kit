@@ -10,6 +10,14 @@
 .fdy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.26);}
 .fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
 .fdy-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+/* Pressed / toggle. `aria-pressed` is already the right attribute for a toggle button, so this adds
+   no class and no new markup contract — and it is what makes .fdy-btn-group a complete segmented
+   control: the group joins the borders, this says which segment you are on. Each fill variant
+   defines its OWN pressed look below; a single shared rule cannot work, because a gradient is a
+   background-IMAGE and would blank the ghost variant's background-color. Solid: invert the gradient
+   and sink the shadow inward, so a held button reads as depressed, not merely primary-coloured. */
+.fdy-btn[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 12%,var(--color-primary)),var(--color-primary));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
+.fdy-btn[aria-pressed="true"]:hover{transform:none;box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
 
 .fdy-btn--ghost{background:var(--color-surface);color:var(--color-primary-strong);border-color:var(--color-border-strong);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
@@ -18,6 +26,7 @@
 .fdy-btn--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-danger-btn) 46%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-danger-btn) 54%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:active{transform:translateY(1px);}
+.fdy-btn--danger[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 14%,var(--color-danger-btn)),var(--color-danger-btn));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 24%,transparent);}
 
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}
 .fdy-btn--lg{height:calc(var(--control-h) + var(--space-2));padding:0 var(--space-6);font-size:var(--text-base);border-radius:var(--radius-lg);}
@@ -30,6 +39,11 @@
 .fdy-btn--text{background:none;color:var(--color-primary-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text:hover{transform:none;background:var(--color-primary-soft);box-shadow:none;}
 .fdy-btn--text:active{transform:translateY(1px);box-shadow:none;}
+/* Ghost/text pressed: the kit's selected-surface pair (soft fill + strong ink) — the same pairing
+   .fdy-nav__item uses for the current page, and one the AA contrast gate already covers. This is
+   the realistic segmented control: a row of --ghost buttons with exactly one aria-pressed. */
+.fdy-btn--ghost[aria-pressed="true"],.fdy-btn--text[aria-pressed="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);border-color:var(--color-primary-border);box-shadow:none;}
+.fdy-btn--ghost[aria-pressed="true"]:hover,.fdy-btn--text[aria-pressed="true"]:hover{background:var(--color-primary-soft);transform:none;box-shadow:none;}
 
 /* Icon-only — square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
 .fdy-btn--icon{width:var(--control-h);padding:0;}

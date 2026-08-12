@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — nav orientation + pressed state</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- Top-nav application: primary navigation lives in the bar, not a sidebar -->
+  <header class="fdy-appbar">
+    <a class="fdy-appbar__brand" href="/">Acme</a>
+    <nav class="fdy-nav fdy-nav--horizontal" id="nav" aria-label="Main">
+      <a class="fdy-nav__item" id="nav-current" href="/a" aria-current="page">Invoices</a>
+      <a class="fdy-nav__item" id="nav-idle" href="/b">Customers</a>
+    </nav>
+  </header>
+
+  <header class="fdy-appbar fdy-appbar--primary">
+    <nav class="fdy-nav fdy-nav--horizontal" aria-label="Main (on colour)">
+      <a class="fdy-nav__item" id="pnav-current" href="/a" aria-current="page">Invoices</a>
+      <a class="fdy-nav__item" id="pnav-idle" href="/b">Customers</a>
+    </nav>
+  </header>
+
+  <!-- Segmented control: a joined row of ghost buttons, exactly one aria-pressed -->
+  <div class="fdy-btn-group" role="group" aria-label="View mode">
+    <button class="fdy-btn fdy-btn--ghost" id="seg-on" type="button" aria-pressed="true">List</button>
+    <button class="fdy-btn fdy-btn--ghost" id="seg-off" type="button" aria-pressed="false">Grid</button>
+  </div>
+  <button class="fdy-btn" id="solid-on" type="button" aria-pressed="true">Solid</button>
+  <button class="fdy-btn" id="solid-off" type="button" aria-pressed="false">Solid</button>
+
+  <!-- Routed sub-navigation: the tab LOOK on real links, marked with aria-current (never aria-selected) -->
+  <div class="fdy-tabs">
+    <div class="fdy-tabs__list">
+      <a class="fdy-tabs__tab" id="rtab-current" href="/profile" aria-current="page">Profile</a>
+      <a class="fdy-tabs__tab" id="rtab-idle" href="/billing">Billing</a>
+    </div>
+  </div>
+</body>
+</html>

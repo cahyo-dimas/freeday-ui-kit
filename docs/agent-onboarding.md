@@ -18,8 +18,38 @@ the **root of the consuming project**:
 ```markdown
 ## UI: Freeday design system (@cahyo-dimas/freeday)
 
-All UI in this project is built from Freeday. It is a **token-driven CSS kit + zero-dependency JS
-enhancers**, not a component framework — components are plain markup with `fdy-*` classes.
+All UI in this project is built from Freeday: a **token-driven CSS kit** (`fdy-*` classes on plain
+markup) with **typed components for Vue, React and Blazor** layered on top. Most of the kit is
+markup + classes; ten interactive components also ship a typed wrapper, and in those three stacks
+the wrapper is the correct way to use them.
+
+**0. First decide which entry point this project uses. This is not an optimisation — get it wrong
+and the code looks correct and fails later.**
+
+| This project's stack | Import the ten components from | Binding |
+|---|---|---|
+| Vue 3 | `@cahyo-dimas/freeday/vue` | `v-model` |
+| React 18/19 | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
+| Blazor (net8.0) | `@using Freeday.Blazor` (RCL) | `@bind-Value` |
+| Static HTML, Svelte, server-rendered templates… | no wrapper — raw markup + the enhancer script | `fdy-*` DOM events |
+
+The ten: **FdyCombo · FdyDatepicker · FdyDateRange · FdyAutocomplete · FdyCascade · FdyCfl ·
+FdyChart · FdyTable · FdyModal · FdyDrawer**. In Vue/React/Blazor, **never hand-write the raw
+markup + enhancer for these ten.** The raw path *appears* to work — the enhancer auto-initialises
+once on `DOMContentLoaded` and the first render is correct — then fails quietly: DOM your framework
+renders later is never hydrated, and the widget's state lives in the DOM instead of in your
+framework's state.
+
+Everything else is the same in every stack: plain `fdy-*` markup (button, card, badge, alert,
+table markup, layout…). For the *other* interactive components (chips, stepper, input mask, file
+upload, tree, tabs, menu, rating, slider, form validation, carousel, timepicker) there is no
+wrapper — use the raw markup and hydrate it:
+
+- **Vue / React** — `useFreeday(rootRef)` from the same import path, plus `import '@cahyo-dimas/freeday'`
+  once at app entry to register the enhancers. (The ten typed components do **not** need this: they
+  are native Vue/React implementations of the same markup, not wrappers over the enhancer.)
+- **Blazor** — `FreedayBlazor.initAll` interop. (Here the typed components *are* thin wrappers over
+  the enhancers, so the enhancer script is always required.)
 
 **Before writing or editing any markup/CSS, read these (they ship inside the package):**
 - `node_modules/@cahyo-dimas/freeday/COMPONENTS.md` — every class that exists, with minimal markup
@@ -40,8 +70,9 @@ enhancers**, not a component framework — components are plain markup with `fdy
 5. Assemble from the frame down: `.fdy-app` → `.fdy-page` → `.fdy-page-section` → components.
 6. Form errors: `aria-invalid="true"` + `aria-describedby` → a `.fdy-help.fdy-help--error`.
    Icon-only buttons need `aria-label`. Status is never colour-only.
-7. Interactive components need their enhancer script loaded (see the table in COMPONENTS.md);
-   in an SPA, re-hydrate dynamic DOM (`useFreeday` in Vue/React does this).
+7. Interactive components need their enhancer script loaded (see the table in COMPONENTS.md); in an
+   SPA, re-hydrate dynamic DOM with `useFreeday` / `FreedayBlazor.initAll`. This applies to the
+   components **without** a typed wrapper — for the ten in step 0, use the wrapper instead.
 8. Freeday owns components + tokens, **not layout**. Grids/stacks/one-off gaps come from our own
    layout layer — build its theme on `var(--space-N)` so both systems stay in step.
 ```

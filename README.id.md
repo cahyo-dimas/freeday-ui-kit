@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.21.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.21.0)
+[![Release](https://img.shields.io/badge/release-v1.22.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.22.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -30,6 +30,28 @@ npm test                # tes transformasi build + kontras WCAG (node:test)
 `dist/` di-commit — konsumen tak perlu build sendiri.
 
 ## Pakai di project
+
+### Pertama: pintu masuk mana yang kamu pakai?
+
+Sebagian besar Freeday itu markup + kelas `fdy-*` dan sama di mana pun. **Sepuluh komponen
+interaktif juga punya wrapper typed** — di stack berikut, pakai wrapper-nya, bukan markup mentah +
+enhancer:
+
+| Stack-mu | Impor kesepuluhnya dari | Binding |
+|---|---|---|
+| **Vue 3** | `@cahyo-dimas/freeday/vue` | `v-model` |
+| **React 18/19** | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
+| **Blazor (net8.0)** | RCL `Freeday.Blazor` | `@bind-Value` |
+| HTML statis · Svelte · template server-rendered | *(tanpa wrapper)* markup mentah + enhancer, di bawah | event `fdy-*` |
+
+Kesepuluhnya: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
+`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer`. Menulis markup mentah untuk
+kesepuluh ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja — render pertama benar — lalu
+rusak diam-diam: DOM yang di-render framework belakangan tak pernah ter-hydrate, dan state widget
+berakhir di DOM alih-alih di state framework-mu. Selebihnya (button, card, badge, alert, markup
+tabel, layout, dan komponen interaktif yang tak punya wrapper) sama persis di semua stack — untuk
+yang terakhir, hydrate dengan `useFreeday` (Vue/React) atau `FreedayBlazor.initAll` (Blazor).
+Panduan lengkap per stack: [`docs/getting-started.md`](docs/getting-started.md).
 
 **Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
 ```bash

@@ -17,10 +17,15 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
 1. **Static vs interactive.** Static components (button, card, badge, plain input, layout) need
    only the **`fdy-*` classes** — no JS. Interactive components (select/combo, cascade, date/time
    picker, table, dropzone, form validation, input mask, chip) need the **JS enhancers**.
-2. **The enhancer is the source of truth.** You don't re-implement components; the enhancer owns
-   the widget's DOM. You **listen for `fdy-*` events** (all bubbling `CustomEvent`s, data in
-   `event.detail`) → store them in your framework state. Event/API contract table:
-   [`integrations.md` §Event & API contract](integrations.md).
+2. **The enhancer is the source of truth — *on the raw path*.** You don't re-implement components;
+   the enhancer owns the widget's DOM. You **listen for `fdy-*` events** (all bubbling
+   `CustomEvent`s, data in `event.detail`) → store them in your framework state. Event/API contract
+   table: [`integrations.md` §Event & API contract](integrations.md).
+   **On Vue, React or Blazor this is not the path to take for ten of the components** — `FdyCombo`,
+   `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`, `FdyChart`,
+   `FdyTable`, `FdyModal`, `FdyDrawer` ship typed wrappers that own the state properly (Vue and
+   React re-implement the interaction natively; Blazor wraps the enhancer over interop). Use them;
+   the raw path is for the components without a wrapper, and for stacks without an adapter.
 3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
    **after** that must be re-hydrated: `window.Freeday<X>.initAll(el)` (idempotent, safe to repeat).
    Each framework's adapter wraps this — you don't call it manually.
@@ -179,7 +184,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.21.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.22.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

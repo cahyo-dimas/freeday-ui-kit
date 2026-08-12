@@ -6,6 +6,26 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.22.0 — 3 temuan lanjutan ronde 5 (§5-§7) + kit sekarang MERUTEKAN per stack.**
+
+- **`.fdy-nav--horizontal`** — link nav yang SAMA disusun jadi baris, untuk app top-nav tanpa
+  sidebar. Sengaja modifier, bukan blok baru: item, state, dan `aria-current="page"` tak berubah.
+  Di `.fdy-appbar--primary` otomatis on-colour. Sebelumnya `.fdy-appbar` punya
+  `__brand`/`__spacer`/`__actions` tapi tak punya tempat untuk *link*-nya.
+- **`.fdy-tabs__tab` menerima `aria-current="page"`** → tampilan tab sah dipakai untuk sub-navigasi
+  ber-rute dari `<a>` asli (`aria-selected` itu ARIA tak valid di anchor). Role tab + enhancer tetap
+  untuk tab in-page.
+- **State pressed** via `aria-pressed="true"` (ghost/text: soft+strong; solid: gradient terbalik +
+  inset; danger: hue-nya sendiri) → `.fdy-btn-group` jadi segmented control **utuh**. Pelajaran:
+  satu rule bersama `.fdy-btn[aria-pressed]` TAK BISA — gradient itu background-*image*, jadi
+  shorthand-nya mereset `background-color` ke transparan dan pada spesifisitas sama rule terakhir
+  menang → ghost kehilangan fill. Hanya kelihatan di engine asli → guard-nya di `browser/state.mjs`.
+- **Hard rule 1 dapat pengecualiannya**: `.fdy-input-group__addon--icon` memang standalone.
+
+**Routing per stack (semula disiapkan sebagai 1.21.1, dilebur ke sini).** Ditemukan dari project nyata yang terlanjur dibangun pakai markup mentah + enhancer padahal stack-nya punya wrapper typed. Akar masalahnya struktural, bukan redaksional: di **v1.18.0** `docs/getting-started.md` (satu-satunya perute per-stack) **tak ada di `files`**, jadi `npm i` mengirim README yang link "per stack"-nya menunjuk path yang tak ada di dalam `node_modules` — sementara `adapters/` ikut terkirim, jadi wrapper-nya nangkring tak terpakai. Blok paste `agent-onboarding.md` (satu-satunya teks yang dibaca agent tiap task) bahkan membuka dengan "**not a component framework**" — menjauhkan project Vue/React dari adapter. Sekarang: step 0 tabel rute di blok paste · penanda wrapper di **10** seksi `COMPONENTS.md` beserta binding aslinya (bukan seragam — modal/drawer `open`+`close`, chart data props, table `columns`+`rows`+event) · hard rule 7 · tabel rute di atas blok import pertama di kedua README · core concept 2 getting-started dibatasi ke jalur mentah.
+
+---
+
 **v1.21.0 — ronde 5 consumption feedback (`improvement-notes/005`, untracked): 3 temuan, semuanya
 bug/gap kit, semuanya diukur di Chrome asli sebelum & sesudah fix.**
 - **Label tersembunyi bisa men-scroll seluruh halaman.** `.fdy-visually-hidden` itu
@@ -39,7 +59,7 @@ bug/gap kit, semuanya diukur di Chrome asli sebelum & sesudah fix.**
   ikut ganti token) · `test/build.test.mjs` (bentuk selector tema + urutan blok yang jadi sandaran
   cascade). Semuanya mutation-checked.
 
-Gate: `npm test` **32/32** · `npm run test:browser` **10/10** · `typecheck:react` 0 error ·
+Gate: `npm test` **32/32** · `npm run test:browser` **11/11** · `typecheck:react` 0 error ·
 `dotnet build` RCL 0 error/0 warning · rebuild byte-identical.
 
 ---

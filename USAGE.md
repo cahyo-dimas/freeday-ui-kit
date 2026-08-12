@@ -115,6 +115,27 @@ container, a single `<section>`. An app whose two list screens are dense and who
 are not should scope it per screen rather than densifying everything. Set it at one level per screen,
 never per component.
 
+## 6b. Navigation: one component, two orientations — and never a tab role
+
+A navigation link is an `<a class="fdy-nav__item">` marked **`aria-current="page"`**. That does not
+change with the layout:
+
+- **Sidebar app** — `.fdy-nav` inside `.fdy-app__sidebar` (the default).
+- **Top-nav app** — `.fdy-nav.fdy-nav--horizontal` inside `.fdy-appbar` or `.fdy-app__topbar`, with
+  no sidebar. Same items, same states; on `.fdy-appbar--primary` the links go on-colour for you.
+- **Routed sub-navigation that should look like tabs** (`/settings/profile` · `/settings/billing`) —
+  put `.fdy-tabs__list` / `.fdy-tabs__tab` on plain `<a>`s. Those classes honour `aria-current="page"`
+  as well as `aria-selected="true"` precisely for this. Do **not** add `role="tab"`/`role="tablist"`
+  or `freeday-tabs.js`: those promise a roving-tabindex, arrow-key, one-panel-per-tab contract that
+  route links do not honour, and `aria-selected` is invalid ARIA on an anchor in the first place.
+
+Reserve the full `.fdy-tabs` component (with its roles and its enhancer) for **in-page** tabs, where
+nothing navigates.
+
+**Toggles:** a button that is on/off carries `aria-pressed`, and the kit styles it — soft primary
+fill on `--ghost`/`--text`, a sunken gradient on the solid button. A `.fdy-btn-group` of `--ghost`
+buttons with exactly one `aria-pressed="true"` **is** the segmented control; don't hand-tint it.
+
 ## 7. Assemble the page from the frame down
 
 1. **Shell:** every application starts inside **`.fdy-app`** — a flex row of `__sidebar` (with

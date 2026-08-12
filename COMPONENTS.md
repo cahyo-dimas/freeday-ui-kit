@@ -15,6 +15,10 @@ live docs.
 1. **Prefix is `fdy-`, pattern is compact BEM**: block `fdy-card`, element `fdy-card__title`,
    modifier `fdy-card--elevated`. A modifier is **always** written alongside its block class:
    `class="fdy-btn fdy-btn--ghost"`, never `fdy-btn--ghost` alone.
+   **One documented exception:** `.fdy-input-group__addon--icon` is **standalone** — it is a
+   borderless leading glyph, and adding the base `.fdy-input-group__addon` would give it the grey
+   fill and divider of a `Rp` / `%` prefix, which is not what a search icon is. Written
+   `class="fdy-input-group__addon--icon"`, alone. It is the only one; everywhere else the rule holds.
 2. **Never invent a class.** If it is not in this file, it does not exist. Freeday has no
    `fdy-grid`, no `fdy-flex`, no `fdy-mt-4`, no `fdy-primary`.
 3. **Never write a raw hex or px value** in app CSS. Use the tokens — `var(--color-primary)`,
@@ -30,6 +34,14 @@ live docs.
    invalid state does not belong to the control itself.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
+7. **On Vue, React or Blazor, ten components have a typed wrapper — use it.** `FdyCombo` ·
+   `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` ·
+   `FdyTable` · `FdyModal` · `FdyDrawer`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
+   `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
+   those stacks *looks* right — the enhancer initialises once and the first render is correct — then
+   breaks quietly: later-rendered DOM is never hydrated and the widget's state sits in the DOM
+   instead of your framework's. Everything else is the same markup everywhere; hydrate the other
+   interactive components with `useFreeday` (Vue/React) or `FreedayBlazor.initAll` (Blazor).
 
 ### Containment — why the kit's containers are `position:relative`
 
@@ -227,6 +239,10 @@ rest of the app is not.
 - Modifiers: `--ghost` `--danger` `--text` `--icon` (square, icon-only) `--sm` `--lg`
 - Parts: `.fdy-btn__icon` (wraps the `<svg>`) · `.fdy-btn-group` (segmented row, `role="group"` +
   `aria-label`)
+- **Toggle / segmented:** `aria-pressed="true"` gives a real pressed state (soft primary fill on
+  `--ghost`/`--text`, an inset-sunk gradient on the solid button). No extra class — `aria-pressed`
+  is already the right attribute, and it is what turns `.fdy-btn-group` from a joined row into a
+  complete segmented control.
 - A11y: `--icon` **requires** `aria-label`. Use `<button type="button">` unless it submits.
 
 ```html
@@ -312,6 +328,8 @@ Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrap
 ```
 
 ## Select / combobox — `.fdy-combo`
+> **Typed wrapper: `<FdyCombo>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
 - `.fdy-combo` (+`--error`, `--no-icon`) · `__button` `__value` (+`--placeholder`) `__listbox`
@@ -334,6 +352,8 @@ Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 ```
 
 ## Autocomplete — `.fdy-autocomplete`
+> **Typed wrapper: `<FdyAutocomplete>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 
 - `.fdy-autocomplete` · `__listbox` `__option` `__empty`
@@ -341,6 +361,8 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
   `aria-controls` → the listbox `id`, `autocomplete="off"`.
 
 ## Cascade select — `.fdy-cascade`
+> **Typed wrapper: `<FdyCascade>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Hierarchical drill-down. The data model is a **nested `<ul>`** inside the wrapper: an `<li>` with a
 child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
 
@@ -360,6 +382,8 @@ child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
 ```
 
 ## Choose-from-list (CFL) — `data-fdy-cfl`
+> **Typed wrapper: `<FdyCfl>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 A read-only field backed by master data: the button opens a searchable dialog, the picked row fills
 the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 
@@ -410,6 +434,8 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 ```
 
 ## Date picker — `data-fdy-datepicker`
+> **Typed wrapper: `<FdyDatepicker>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author an empty `<div>`**
 — the enhancer builds everything.
 
@@ -417,6 +443,7 @@ Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author
   `__panel`; calendar internals `.fdy-cal__head` `__nav` `__title` `__grid` `__dow` `__day`
 - Range: wrap two pickers in `.fdy-daterange` + `data-fdy-daterange` (`role="group"`), children
   get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start.
+  **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor) — use it in those stacks.
 - Attributes: `data-value="YYYY-MM-DD"`, `data-placeholder`, `data-label`, `data-fdy-no-icon`
 
 ```html
@@ -517,6 +544,8 @@ Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-tab
 ```
 
 ## Data table — `.fdy-datatable`
+> **Typed wrapper: `<FdyTable>`** — controlled: `columns` + `rows`, with sort/filter/page events (`update:pageIndex` · `onPageIndexChange` · `PageIndexChanged`) and `process` for driving a card list off the same processed set. The markup below is the raw enhancer path.
+
 The interactive table: global search, sort, per-column filters, row selection + bulk bar,
 pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` + `data-fdy-table`
 (`data-page-size="N"`).
@@ -556,6 +585,8 @@ Empty / error placeholder for a data area. `--danger` for failures. Parts: `__ic
 replaces.
 
 ## Charts — `data-fdy-chart`
+> **Typed wrapper: `<FdyChart>`** — data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
+
 Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`; call
 `FreedayChart.update(el)` after changing data (or use `FdyChart` in Vue/React/Blazor).
 
@@ -662,18 +693,43 @@ Size-matched placeholders so nothing shifts when data lands: `--title` `--text` 
 
 # Navigation
 
-## Nav (sidebar menu) — `.fdy-nav`
-Vertical navigation, used by the app shell. Items are `<a class="fdy-nav__item">` with
+## Nav (menu) — `.fdy-nav`
+Navigation links — **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with
 `__icon` / `__label` / `__badge`; the current one gets `aria-current="page"`.
 `--flat` drops the surface. Nested groups are native `<details>`:
 
 - `.fdy-nav__tree` + `<summary class="fdy-nav__item">` + `.fdy-nav__caret` → children in
   `.fdy-nav__sub`
 - `.fdy-nav__group` + `<summary class="fdy-nav__grouplabel">` → a collapsible section
+- **`--horizontal`** lays the same links out as a row, for a **top-nav application** (primary
+  navigation in `.fdy-appbar` or `.fdy-app__topbar`, no sidebar). Same item, same states, same
+  `aria-current="page"`; the row scrolls if it runs out of width. On `.fdy-appbar--primary` the
+  links go on-colour automatically.
+
+```html
+<header class="fdy-appbar">
+  <a class="fdy-appbar__brand" href="/">Acme</a>
+  <nav class="fdy-nav fdy-nav--horizontal" aria-label="Main">
+    <a class="fdy-nav__item" href="/invoices" aria-current="page">Invoices</a>
+    <a class="fdy-nav__item" href="/customers">Customers</a>
+  </nav>
+  <span class="fdy-appbar__spacer"></span>
+  <div class="fdy-appbar__actions"><!-- buttons --></div>
+</header>
+```
+
+> **Which one for navigation?** A nav link is a link marked `aria-current="page"` — never
+> `aria-selected` (invalid ARIA on an anchor) and never `role="tab"`. Use `.fdy-nav--horizontal`
+> for an application's **primary** navigation. For **routed sub-navigation** that should look like
+> tabs (`/settings/profile` · `/settings/billing`), put `.fdy-tabs__list` / `.fdy-tabs__tab` on
+> plain `<a>`s — those classes honour `aria-current="page"` too — and do **not** add the tab roles
+> or `freeday-tabs.js`, which promise a keyboard contract routes do not have.
 
 ## App bar — `.fdy-appbar`
 Standalone top bar (distinct from the shell's `.fdy-app__topbar`). Modifiers `--sticky`
 `--elevated` `--dense` `--primary` (on-colour controls). Parts `__brand` `__spacer` `__actions`.
+It ships **no link class of its own** — put `<nav class="fdy-nav fdy-nav--horizontal">` in it
+for primary navigation (see Nav above).
 
 ## Breadcrumb — `.fdy-breadcrumb`
 `<nav class="fdy-breadcrumb" aria-label="Breadcrumb">` → `<ol class="fdy-breadcrumb__list">` with
@@ -682,6 +738,8 @@ Standalone top bar (distinct from the shell's `.fdy-app__topbar`). Modifiers `--
 
 ## Tabs — `.fdy-tabs`
 APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
+`.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
+so the same look serves routed sub-navigation built from plain links — see the note under Nav.
 
 ```html
 <div class="fdy-tabs" data-fdy-tabs>
@@ -699,12 +757,16 @@ APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 # Overlays
 
 ## Modal — `.fdy-modal`
+> **Typed wrapper: `<FdyModal>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--sm` `--md` `--lg`
 `--wide`; `--cfl` for the choose-from-list dialog. Parts `__header` `__title` `__body` `__footer`
 `__close`. The body scrolls; the footer never clips. `aria-labelledby` → the title's `id`;
 `data-close` on any button that should close it.
 
 ## Drawer — `.fdy-drawer`
+> **Typed wrapper: `<FdyDrawer>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 Temporary side panel on native `<dialog>` — left by default, `--right` to flip. Parts `__header`
 `__title` `__body` `__footer` `__close`. Open it from any
 `<button data-fdy-drawer="<dialog id>">`. Needs `freeday-drawer.js`.

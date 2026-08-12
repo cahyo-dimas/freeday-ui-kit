@@ -5,7 +5,7 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.21.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.21.0)
+[![Release](https://img.shields.io/badge/release-v1.22.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.22.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -30,6 +30,27 @@ npm test                # build-transform tests + WCAG contrast (node:test)
 `dist/` is committed — consumers don't have to build it themselves.
 
 ## Use in a project
+
+### First: which entry point is yours?
+
+Most of Freeday is markup + `fdy-*` classes and is identical everywhere. **Ten interactive
+components also ship a typed wrapper** — in these stacks, use the wrapper, not raw markup + enhancer:
+
+| Your stack | Import the ten from | Binding |
+|---|---|---|
+| **Vue 3** | `@cahyo-dimas/freeday/vue` | `v-model` |
+| **React 18/19** | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
+| **Blazor (net8.0)** | `Freeday.Blazor` RCL | `@bind-Value` |
+| Static HTML · Svelte · server-rendered templates | *(no wrapper)* raw markup + enhancers, below | `fdy-*` events |
+
+The ten: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
+`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer`. Hand-writing the raw markup for
+these inside Vue/React/Blazor *looks* fine — the first render is correct — and then breaks quietly:
+DOM the framework renders later is never hydrated, and the widget's state ends up in the DOM instead
+of your framework's. Everything else (button, card, badge, alert, table markup, layout, and the
+interactive components with no wrapper) is the same plain markup in every stack — hydrate the latter
+with `useFreeday` (Vue/React) or `FreedayBlazor.initAll` (Blazor). Full walkthrough per stack:
+[`docs/getting-started.md`](docs/getting-started.md).
 
 **As a package (projects with a bundler — Vue/React/Blazor/Vite):**
 ```bash

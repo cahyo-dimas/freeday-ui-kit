@@ -3,6 +3,69 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.22.0] — 2026-08-12
+Two bodies of work. **(a)** three more findings from consumption round 5 — the report grew §5-§7
+after 1.21.0 was cut; **(b)** a **routing** failure found in the same adopted project, which had been
+built on raw markup + enhancers inside a framework that has typed wrappers because nothing in the
+package ever told it otherwise. (b) was prepared as 1.21.1 and folded in here rather than shipped as
+a separate patch minutes earlier.
+### Added — from consumption round 5 (§5, §6)
+- **`.fdy-nav--horizontal`** — the same navigation links laid out as a **row**, for a top-nav
+  application that puts its primary nav in `.fdy-appbar` / `.fdy-app__topbar` and has no sidebar.
+  Deliberately a modifier, not a new block: the item, its states and `aria-current="page"` are
+  unchanged. On `.fdy-appbar--primary` the links go on-colour automatically (full on-colour ink in
+  every state; the current page is carried by the background wash plus the semibold weight the base
+  rule already applies, so no dimmed variant trades away the bar's guaranteed contrast).
+  Reported as "there is no horizontal navigation component": `.fdy-nav` was the sidebar's vertical
+  menu and `.fdy-appbar` had `__brand`/`__spacer`/`__actions` but nothing to put *links* in — so a
+  top-nav app had a component for the bar and none for what the bar is mostly made of.
+- **`.fdy-tabs__tab` also honours `aria-current="page"`**, so the tab *look* legitimately serves
+  **routed** sub-navigation (`/settings/profile` · `/settings/billing`) built from real links. A link
+  cannot be `aria-selected` — that is invalid ARIA on an anchor — so the app that borrowed the class
+  had to restate the active style for a second attribute. Keep `role="tab"` + `freeday-tabs.js` for
+  **in-page** tabs, where the roving-tabindex / one-panel-per-tab contract is real.
+- **Pressed state for toggle buttons** — `aria-pressed="true"` now styles: soft primary fill + strong
+  ink on `--ghost`/`--text`, an inverted-gradient sunken look on the solid button, and the same
+  treatment in the danger hue. No new class or markup contract, since `aria-pressed` is already the
+  correct attribute — and it is what turns `.fdy-btn-group` from a joined row into a **complete**
+  segmented control. Previously "which one am I on" was left to each app to hand-tint, which is a
+  colour decision the kit should own.
+  *Found while building it:* one shared `.fdy-btn[aria-pressed="true"]` rule **cannot** work. A
+  gradient is a background-**image**, so the `background` shorthand resets `background-color` to
+  transparent — at equal specificity the later rule won and the ghost segment lost its fill entirely.
+  Each fill variant now defines its own pressed look. The CSS read correctly in the file; only a real
+  engine showed it, which is why the new guard lives in `browser/`.
+### Fixed — from consumption round 5 (§7)
+- **Hard rule 1 in `COMPONENTS.md` now records its one exception.** The rule says a modifier is
+  always written beside its block class, but `.fdy-input-group__addon--icon` is standalone by design
+  — adding the base `__addon` gives a search glyph the grey fill and divider of a `Rp` / `%` prefix.
+  An agent following the rule literally produced the wrong control; one following the CSS comment
+  broke the stated rule. The exception is now written down, and it is the only one.
+### Fixed — the package now routes by stack
+- **The paste-block in `docs/agent-onboarding.md` never mentioned the adapters.** That block is the
+  only text that lands in a consuming project's agent instructions, so it is the only text an agent
+  re-reads on every task — and it opened with "a CSS kit + enhancers, **not a component framework**",
+  which actively steers a Vue/React project away from the typed components. It now opens with a
+  **step 0 routing table** (Vue → `/vue` · React → `/react` · Blazor → RCL · everything else → raw
+  markup), names the ten wrapped components, and states the failure mode: the raw path renders
+  correctly the first time and then silently stops hydrating.
+- **`COMPONENTS.md` flags the wrapper at each of the ten sections**, so the choice is visible at the
+  point of use rather than only on an onboarding page read once — with each component's *real*
+  binding (`v-model` / `value`+`onChange` / `@bind-Value` for the six value-bound ones; `open`+`close`
+  for modal and drawer; data props for chart; `columns`+`rows`+events for table). Hard rule 7 states
+  it up front.
+- **Both READMEs lead with the routing table**, above the first import block. Previously the first
+  runnable snippet was the vanilla one and the adapter table sat ~130 lines below it.
+- **`docs/getting-started.md`** core concept 2 ("the enhancer is the source of truth") is now scoped
+  to the raw path, and notes that Vue/React re-implement the ten natively while Blazor wraps the
+  enhancer over interop.
+### Notes
+- Root cause was structural, not editorial: at **v1.18.0** `docs/getting-started.md` — the only
+  per-stack router the kit had — was **not in `files`**, so `npm i` delivered a README whose
+  "Starting a project? per stack" link pointed at a path that does not exist inside `node_modules`.
+  `adapters/` *was* shipped, so the wrappers sat in the install, unused, with nothing pointing at
+  them. v1.20.0 started shipping the docs; this release makes them route.
+
 ## [1.21.0] — 2026-08-12
 Fifth round of real-app consumption feedback, written while that app adopted 1.20.0. Two findings —
 and a **withdrawal**: the reporter retracted 1.20's rejected §A themselves after isolating the real
@@ -57,6 +120,11 @@ reproduce here, so the rejection stands and the withdrawal is recorded rather th
   hidden labels in a wide table, asserting the page cannot scroll horizontally *and* that the scroller
   still scrolls. A static test cannot see this failure; only a layout engine can. Both guards
   mutation-checked — reverting any single `position:relative` fails them.
+- **`browser/state.mjs`** — pressed toggles and nav orientation in a real engine: the pressed ghost
+  segment must keep a flat background-colour (the mutation that reproduces the shorthand bug fails
+  it), the solid toggle must read as inset, `--horizontal` must actually be a row with the current
+  link marked, on-colour nav ink must stay on-colour in both states, and a routed tab must take its
+  underline from `aria-current`. Mutation-checked against all three fixes.
 - **`browser/theme.mjs`** — subtree theming end-to-end: a `.fdy-title-page` and a `.fdy-card` inside
   `<section data-theme="dark">` take the dark tokens, a nested light island goes back, and
   `data-theme` on `<html>` still themes everything. `test/build.test.mjs` guards the selector shape
