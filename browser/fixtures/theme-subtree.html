@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Freeday — data-theme on a subtree</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- No data-theme on <html>: the app default. The dark panel is a plain <section>, which is the
+       whole point — a dark brand half beside a light form half needs no per-component work. -->
+  <main>
+    <h1 class="fdy-title-page" id="app-title">Light app</h1>
+    <div class="fdy-card" id="app-card"><div class="fdy-card__body">card in the app</div></div>
+
+    <section data-theme="dark" id="dark-panel">
+      <h1 class="fdy-title-page" id="panel-title">Dark panel</h1>
+      <div class="fdy-card" id="panel-card"><div class="fdy-card__body">card in the panel</div></div>
+
+      <div data-theme="light" id="light-island">
+        <h1 class="fdy-title-page" id="island-title">Light island</h1>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

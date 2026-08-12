@@ -82,6 +82,27 @@ point, everything around it quiet.
 - **Surfaces:** most backgrounds are `--color-surface`; `--color-surface-2`/`-3` for a recessed area;
   `--color-primary-soft` only when you want a tinted callout, not as a default panel colour.
 
+## 5b. Theme — global by default, per-subtree when a region is inverted
+
+`data-theme="light|dark"` redefines the semantic tokens. Set it on `<html>` and it themes the app;
+that is the normal case and nothing about it has changed.
+
+**It is also per-subtree.** The two explicit selectors are bare `[data-theme="dark"]` /
+`[data-theme="light"]`, and semantic tokens are inheriting custom properties — so a
+`<section data-theme="dark">` inverts that region and **every Freeday component inside it follows**:
+card surfaces, inputs, buttons, and text roles like `.fdy-title-page` that set
+`color: var(--color-text)` explicitly. A dark brand panel beside a light sign-in form needs no
+per-element re-colouring, and a `[data-theme="light"]` island nested back inside a dark region wins
+in turn.
+
+Do **not** invert a region by hand with `--color-inverse-*` plus `color-mix`. That pair is right for
+a one-off band of your own markup, but it stops scaling the moment the region contains a real
+component — anything that sets its own colour from a token never sees your override, and you end up
+restating colours per element.
+
+The **system** default (`@media (prefers-color-scheme: dark)`) stays root-scoped on purpose: that
+rule is about the document, and un-rooting it would re-darken the children of a light island.
+
 ## 6. Density — `compact` for data-dense screens
 
 `data-density="compact"` tightens control height **and** the mid-range spacing scale

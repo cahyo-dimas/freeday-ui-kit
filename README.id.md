@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.20.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.20.0)
+[![Release](https://img.shields.io/badge/release-v1.21.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.21.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -121,6 +121,8 @@ container-nya, bukan scroll sendiri.
 
 ### 3. Theming — 3 sumbu lewat `data-*` di root
 - `data-theme="light|dark"` — redefinisi token semantic (bind ke state tema app-mu).
+  Berlaku di **ancestor mana pun**, tak harus root: `<section data-theme="dark">` membalik region itu
+  dan semua komponen di dalamnya ikut (lihat [`USAGE.md`](USAGE.md) §5b).
 - `data-density="comfortable|compact"` — tinggi kontrol (`--control-h`) untuk layar padat data.
   Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
   custom/hand-built harus baca `--control-h` sendiri (mis. `height: var(--control-h)`) supaya ikut

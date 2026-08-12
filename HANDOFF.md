@@ -6,7 +6,45 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**v1.20.0 — siap di-commit, BELUM di-push/publish.** Dua badan kerja dalam satu rilis (v1.19.0
+**v1.21.0 — ronde 5 consumption feedback (`improvement-notes/005`, untracked): 3 temuan, semuanya
+bug/gap kit, semuanya diukur di Chrome asli sebelum & sesudah fix.**
+- **Label tersembunyi bisa men-scroll seluruh halaman.** `.fdy-visually-hidden` itu
+  `position:absolute` dan `clip` menyembunyikan *painting*, bukan *layout* — tanpa ancestor
+  ber-posisi, containing block-nya = dokumen, dan `overflow` hanya meng-clip yang containing
+  block-nya ada di dalam kotak overflow. Jadi label tersembunyi di tabel yang scroll horizontal
+  (cara kit sendiri menamai icon button) parkir di static position-nya dan menyeret dokumen ke
+  samping: **1351px** dari 11 span; `overflow-x:hidden` di scroller/shell/`body`/`html` **0px**
+  efeknya. Semua container yang meng-clip + menampung markup konsumen kini `position:relative`
+  (`.fdy-table-scroll` · `.fdy-table-wrap` · `.fdy-list` · `.fdy-card` · `.fdy-tabs__list` ·
+  `.fdy-carousel__viewport` · `.fdy-accordion`). Yang menarik: `.fdy-accordion` selama ini aman
+  **hanya** karena animasi reveal panelnya (transform ⇒ containing block) — dan animasi itu di balik
+  `prefers-reduced-motion: no-preference`, jadi bug-nya cuma kena pembaca yang minta reduced motion.
+- **`--button` row/card mengabaikan `:disabled`** — hover tint + cursor pointer tetap hidup saat
+  kontrol menolak input. Kini `:disabled` / `[aria-disabled="true"]` meredupkan + menarik hover,
+  ikut konvensi kit (`opacity:.5` + `not-allowed`), bukan `cursor:default` seperti usul note.
+- **`data-theme` tak lagi terikat `:root`** — langkah yang sama dengan density di v1.20.0. Dua
+  selector eksplisit kini bare (`[data-theme="dark"]`/`[data-theme="light"]`), jadi
+  `<section data-theme="dark">` membalik region itu dan **semua komponen di dalamnya ikut** —
+  termasuk role tipografi seperti `.fdy-title-page` yang menyetel `color: var(--color-text)` sendiri
+  sehingga tak pernah kena override tangan konsumen. **Default sistem sengaja tetap root-scoped:**
+  note minta "dua selector", padahal ada tiga — meng-un-root blok `@media (prefers-color-scheme:
+  dark)` bikin `:not([data-theme="light"])` cocok dengan *setiap* elemen, termasuk anak-anak dari
+  light island (diukur: island jadi tinta terang di atas permukaan terang).
+- **Ditolak & ditarik:** §A note 004 ("`.fdy-page-section` + `.fdy-table-scroll` tak compose")
+  dicabut sendiri oleh pelapor setelah mengisolasi mekanisme sebenarnya. Kedua paruh penolakan
+  v1.20.0 tereproduksi lagi di sini.
+- **Guard baru:** `test/css.test.mjs` (invariant: rule ber-`overflow` wajib ber-posisi, atau
+  terdaftar beserta ancestor yang sudah menampungnya) · `browser/layout.mjs` (bug escape yang sama
+  end-to-end di Chrome asli) · `browser/theme.mjs` (komponen di dalam region ter-invert benar-benar
+  ikut ganti token) · `test/build.test.mjs` (bentuk selector tema + urutan blok yang jadi sandaran
+  cascade). Semuanya mutation-checked.
+
+Gate: `npm test` **32/32** · `npm run test:browser` **10/10** · `typecheck:react` 0 error ·
+`dotnet build` RCL 0 error/0 warning · rebuild byte-identical.
+
+---
+
+**v1.20.0.** Dua badan kerja dalam satu rilis (v1.19.0
 disiapkan tapi tak pernah di-commit/tag/publish, jadi dilebur ke sini daripada meninggalkan versi
 hantu).
 
@@ -41,7 +79,7 @@ Dua temuan dicatat, bukan ditambal: `.fdy-pagination` tak punya rule CSS (hook p
 `freeday-table.js` hard-code string Indonesia tanpa override — keduanya di backlog
 [`NEXT-UP.md`](NEXT-UP.md) #6/#7.
 
-Gate saat ini: `npm test` **29/29** · `npm run test:browser` **8/8** (dua guard baru untuk
+Gate saat itu: `npm test` **29/29** · `npm run test:browser` **8/8** (dua guard baru untuk
 `pageIndex`, mutation-checked) · `typecheck:react` 0 error · `dotnet build` RCL 0 error/0 warning.
 
 Riwayat lengkap per-versi (termasuk jalur rilis v0.x → v1.20.0, alasan tiap fix, dan

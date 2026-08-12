@@ -1,5 +1,7 @@
 /* Freeday — Card */
-.fdy-card{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
+/* position:relative — containing block for out-of-flow card content (see base.css); it also gives
+   consumers the anchor a corner ribbon/badge needs. */
+.fdy-card{position:relative;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
@@ -10,6 +12,10 @@
  * announced — reset the UA button box. Note: it does NOT reset background/border, because
  * .fdy-card already sets its own surface + border (resetting them here would strip the card). */
 .fdy-card--button{display:block;width:100%;text-align:inherit;color:inherit;appearance:none;-webkit-appearance:none;}
+/* Disabled card-as-control — same contract as .fdy-list__row--button: dim + not-allowed, and the
+   --interactive lift is withdrawn so a refusing control stops answering the pointer. */
+.fdy-card--button:disabled,.fdy-card--button[aria-disabled="true"],.fdy-card--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-card--interactive:disabled:hover,.fdy-card--interactive[aria-disabled="true"]:hover{box-shadow:var(--shadow-lift);transform:none;}
 .fdy-card__body{padding:var(--space-5);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}

@@ -3,6 +3,71 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.21.0] — 2026-08-12
+Fifth round of real-app consumption feedback, written while that app adopted 1.20.0. Two findings —
+and a **withdrawal**: the reporter retracted 1.20's rejected §A themselves after isolating the real
+mechanism, which turned out to be a genuine kit bug hiding behind it. Both halves of that rejection
+reproduce here, so the rejection stands and the withdrawal is recorded rather than re-litigated.
+### Fixed
+- **Hidden labels could scroll the whole page.** `.fdy-visually-hidden` is `position:absolute`, and
+  `clip` hides *painting*, not *layout*. With no positioned ancestor its containing block is the
+  document, and `overflow` clips only what is contained inside the overflow box — so a hidden label in
+  a horizontally scrolling table (the kit's own recommended way to name an icon button) parks at its
+  static position and drags the document sideways. Measured in Chrome: **1351px** of phantom page
+  scroll from 11 spans in one table; `overflow-x:hidden` on the scroller, the shell, `body` and `html`
+  each changed it by **0px**; removing the spans took it to 0. Every clipping/scrolling container that
+  holds consumer markup now declares `position:relative` — `.fdy-table-scroll`, `.fdy-table-wrap`,
+  `.fdy-list`, `.fdy-card`, `.fdy-tabs__list`, `.fdy-carousel__viewport`, `.fdy-accordion` — each
+  measured to take its own case to 0 with the scroller still scrolling internally. The rest are
+  already inside something the kit positions (`<dialog>`, the sticky sidebar, a fixed popover) and are
+  listed with that reason in the new test.
+  **`.fdy-accordion` is the one to note:** it was contained only by its panel's reveal *animation*
+  (a transform makes a containing block), and that animation sits behind
+  `prefers-reduced-motion: no-preference` — so the bug was reachable **only** by readers who asked for
+  reduced motion. Measured with the animation off: 2906px → 0.
+  *Possible migration:* if you absolutely positioned something inside a card, list or table scroller
+  and relied on it escaping, it now anchors to that container. Anchoring is the reason for the change.
+- **`--button` rows and cards ignored `:disabled`.** `.fdy-list__row--button` adopts the UA button box
+  but not its disabled state, so a row disabled mid-flight kept its hover tint and pointer cursor — a
+  control answering the pointer while refusing input. `:disabled` and `[aria-disabled="true"]` now dim
+  it and withdraw hover, for `.fdy-list__row--button`, `.fdy-list__row--interactive`,
+  `.fdy-card--button` and `.fdy-card--interactive`. The report suggested `cursor:default`; the kit uses
+  `opacity:.5` + `cursor:not-allowed` on every other disabled control, and consistency wins.
+### Changed
+- **`data-theme` is no longer root-scoped** — the same move density made in 1.20.0, and for the same
+  reason. The two *explicit* selectors are now bare `[data-theme="dark"]` / `[data-theme="light"]`, so
+  a `<section data-theme="dark">` inverts that region and **every component inside it follows** —
+  card surfaces, inputs, and text roles like `.fdy-title-page` that set `color: var(--color-text)`
+  explicitly and therefore never saw a consumer's hand-rolled override. A dark brand panel beside a
+  light sign-in form is an ordinary layout; it should not cost a re-colouring pass. Setting the
+  attribute on `<html>` is unchanged, and a `[data-theme="light"]` island nested inside a dark region
+  wins in turn.
+  **The system default stays root-scoped, deliberately** — the report asked for "the two generated
+  selectors", but there are three. Un-rooting `@media (prefers-color-scheme: dark) { :root:not(...) }`
+  would make it match every element that does not itself carry `data-theme="light"`, including the
+  *children* of a light island, dragging them back to dark. Measured: with the un-rooted variant that
+  island renders light ink on a light surface; root-scoped, it stays correct.
+### Added — guards
+- **`test/css.test.mjs`** — the containment invariant, CI-gated: a rule that declares `overflow` must
+  also be positioned, or be listed with the ancestor that already contains it. Single-line truncation
+  (`text-overflow:ellipsis` on a label) is excluded by shape, not by name, so new truncating labels
+  don't accumulate in an allowlist. A new clipping container fails the test until someone decides
+  which case it is.
+- **`browser/layout.mjs`** — the same bug end-to-end in real Chrome (`npm run test:browser`): ten
+  hidden labels in a wide table, asserting the page cannot scroll horizontally *and* that the scroller
+  still scrolls. A static test cannot see this failure; only a layout engine can. Both guards
+  mutation-checked — reverting any single `position:relative` fails them.
+- **`browser/theme.mjs`** — subtree theming end-to-end: a `.fdy-title-page` and a `.fdy-card` inside
+  `<section data-theme="dark">` take the dark tokens, a nested light island goes back, and
+  `data-theme` on `<html>` still themes everything. `test/build.test.mjs` guards the selector shape
+  (not root-scoped, media block still is, and the block order the cascade depends on); this guards the
+  behaviour that shape exists for. Mutation-checked: re-rooting the selectors fails it.
+### Notes
+- Not adopted from the report, deliberately: `.fdy-datatable`, `.fdy-modal__body`, `.fdy-drawer__body`
+  were listed as needing the same fix. Measured: they do not escape — `<dialog>` is `position:fixed`
+  and is already their containing block, and the datatable's own scrolling child now carries it. They
+  are in the test's allowlist with that reason instead of carrying a declaration that does nothing.
+
 ## [1.20.0] — 2026-08-12
 Two bodies of work in one release (1.19.0 was prepared but never committed, tagged or published, so
 it is folded in here rather than left as a phantom version):

@@ -1,6 +1,9 @@
 /* Freeday — Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
 .fdy-carousel{position:relative;}
-.fdy-carousel__viewport{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
+/* position:relative — the arrows are positioned against .fdy-carousel (the parent), so this only
+   catches out-of-flow content inside the SLIDES, which would otherwise escape the viewport
+   entirely and scroll the page by one slide-offset per slide (see base.css). */
+.fdy-carousel__viewport{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
 .fdy-carousel__viewport::-webkit-scrollbar{display:none;}
 .fdy-carousel__slide{flex:0 0 100%;min-width:0;scroll-snap-align:center;}
 .fdy-carousel__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border:0;border-radius:var(--radius-full);background:color-mix(in srgb,var(--color-surface) 86%,transparent);color:var(--color-text);box-shadow:var(--shadow-2);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard);}

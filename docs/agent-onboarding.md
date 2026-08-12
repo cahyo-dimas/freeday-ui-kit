@@ -82,8 +82,10 @@ The order matters; skipping to components is what produces flat, identical-card 
    you build the frame instead of inventing a class. Not in the npm package — read it on GitHub.
 1. **Shell** — is `.fdy-app` already in place (usually once, in the app layout)? If not, copy it
    from `docs/getting-started.md` §The app shell.
-2. **Theme** — `data-theme="light|dark"` + `data-density="comfortable|compact"` on `<html>`, set
-   once at the root. Use `compact` for table-heavy back-office screens.
+2. **Theme** — `data-theme="light|dark"` + `data-density="comfortable|compact"`, normally on
+   `<html>`, set once at the root. Use `compact` for table-heavy back-office screens. Both attributes
+   also work on **any ancestor**: `<section data-theme="dark">` inverts that region and every
+   component inside it follows, so never hand-colour an inverted panel.
 3. **Fonts** — the package ships **no** `@font-face`. Load Sora / IBM Plex Sans / JetBrains Mono
    yourself, or override `--font-display`/`--font-body`/`--font-mono`. Skipping this reads as
    "unfinished design", not "missing dependency".

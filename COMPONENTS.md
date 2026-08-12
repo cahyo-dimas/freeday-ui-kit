@@ -31,6 +31,25 @@ live docs.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
 
+### Containment — why the kit's containers are `position:relative`
+
+`.fdy-visually-hidden` is `position:absolute`, and `clip` hides **painting**, not **layout**. An
+absolutely positioned box resolves against its nearest *positioned* ancestor, and `overflow` clips
+only what is contained that way — so in an unpositioned scroller, a hidden label parks at its static
+position (possibly thousands of px to the right) and drags the **whole document** sideways. It is
+invisible in the DOM and immune to `overflow-x: hidden` on every wrapper.
+
+Every kit container that clips or scrolls therefore declares `position: relative` —
+`.fdy-table-scroll`, `.fdy-table-wrap`, `.fdy-list`, `.fdy-card`, `.fdy-tabs__list`,
+`.fdy-carousel__viewport`, `.fdy-accordion` (the rest are already inside a positioned ancestor).
+Two consequences for you:
+
+- **Do the same in your own scrollers.** A container with `overflow` that holds arbitrary markup
+  needs `position: relative`, or the hidden labels *you* write will escape it.
+- **Diagnose it correctly.** `document.documentElement.scrollWidth` sees the escaped box;
+  `document.body.scrollWidth` does not. The honest check is `window.scrollTo(9999, 0)` then reading
+  `window.scrollX`.
+
 ## Enhancers — hook, script, global, events
 
 Every enhancer is zero-dependency, auto-initialises once on `DOMContentLoaded`, and is idempotent:
@@ -572,6 +591,10 @@ responsive `.fdy-datatable` should become below `md` — not a stack of `.fdy-ca
   control (render it as a real `<button>`/`<a>`; the UA box is reset without losing the list surface)
 - Row internals: `.fdy-list__main` (truncating stack) → `.fdy-list__title` + `.fdy-list__meta`, and
   `.fdy-list__aside` pinned right
+- **Disabled** — `disabled` on the `<button>` (or `aria-disabled="true"` when the row is an `<a>`/
+  `<div>`) dims the row and withdraws the hover tint and the pointer cursor, same as every other
+  control in the kit. Do not hand-roll it: an undimmed row that still lights up under the pointer
+  reads as clickable while it is refusing input.
 - Not `.fdy-list-reset` — that utility only strips UA bullets/indent from a semantic list.
 
 ```html
@@ -709,6 +732,10 @@ Parts `__body` `__title` `__desc` `__footer`. Modifiers:
   the UA button box **without** losing the card surface/border
 - `.fdy-card--button` never replaces keyboard semantics — a clickable card must be a real
   `<button>` or `<a>`.
+- **Disabled** — `disabled` (or `aria-disabled="true"`) dims the card and withdraws the pointer
+  cursor and the `--interactive` hover-lift.
+- The card is `position:relative`, so a badge or ribbon you absolutely position inside it anchors
+  to the card. That is also what keeps hidden labels inside it from escaping — see *Containment*.
 
 ## Badge — `.fdy-badge`
 Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Never colour-only —

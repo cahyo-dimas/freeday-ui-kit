@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
@@ -71,7 +71,7 @@
   "scripts": {
     "build": "node tokens/build.mjs",
     "test": "node --test",
-    "test:browser": "node --test browser/vanilla.mjs browser/adapter.mjs",
+    "test:browser": "node --test browser/vanilla.mjs browser/adapter.mjs browser/layout.mjs browser/theme.mjs",
     "prepack": "node tokens/build.mjs",
     "version": "node tokens/build.mjs && git add dist",
     "typecheck:react": "tsc -p adapters/react/tsconfig.json --noEmit"

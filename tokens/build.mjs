@@ -41,15 +41,24 @@ export function buildTokensCss(tokens) {
 :root {
 ${root}
 }
+/* The SYSTEM default stays root-scoped: it is a statement about the document, and dropping :root
+ * here would match every element that is not itself [data-theme="light"] — which would re-darken
+ * the children of a light panel, since they carry no attribute of their own. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
 ${dark}
   }
 }
-:root[data-theme="dark"] {
+/* The two EXPLICIT opt-ins are deliberately NOT scoped to :root, for the same reason as density
+ * below: these are inheriting custom properties, so data-theme on any ancestor re-themes just that
+ * subtree — a dark brand panel beside a light form is an ordinary layout, and it should not require
+ * re-colouring each component by hand. The root still matches, so data-theme on <html> is unchanged.
+ * Both keep the same specificity (0,1,0) as :root and come after it, so they still win there; and
+ * --light after --dark means a light island inside a dark region wins in turn. */
+[data-theme="dark"] {
 ${dark}
 }
-:root[data-theme="light"] {
+[data-theme="light"] {
 ${lightReassert}
 }
 /* Density is deliberately NOT scoped to :root. These are custom properties, so they inherit —

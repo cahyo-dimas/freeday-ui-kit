@@ -8,7 +8,8 @@
  *
  * Not to be confused with .fdy-list-reset (base.css), which only strips UA bullets/indent.
  * Works on <ul>/<ol> (list-style is reset here) or on plain <div>s. */
-.fdy-list{list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
+/* position:relative — containing block for out-of-flow row content (see base.css). */
+.fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
 .fdy-list__row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);min-width:0;}
 /* Divider between rows. Two shapes are supported and both are load-bearing: rows as direct children
  * of the list, and rows wrapped in <li> (the semantic shape, where the ADJACENT siblings are the
@@ -21,6 +22,12 @@
 .fdy-list__row--button:hover,.fdy-list__row--interactive:hover{background:var(--color-surface-2);}
 .fdy-list__row--button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--color-primary);}
 .fdy-list__row--interactive{cursor:pointer;}
+/* Disabled row. The reset above adopts the UA button box, but not its disabled state — so a row
+   disabled mid-flight (a redirect in progress, say) kept lighting up and kept a pointer cursor:
+   a control answering the pointer while refusing input. Same contract as every other disabled
+   control in the kit (dim + not-allowed), hover withdrawn, both the native and the aria- form. */
+.fdy-list__row--button:disabled,.fdy-list__row--button[aria-disabled="true"],.fdy-list__row--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-list__row--button:disabled:hover,.fdy-list__row--button[aria-disabled="true"]:hover,.fdy-list__row--interactive[aria-disabled="true"]:hover{background:none;}
 /* Row internals: a title/meta stack that truncates, and a trailing slot pinned right. */
 .fdy-list__main{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1;}
 .fdy-list__title{font-weight:var(--weight-medium);color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}

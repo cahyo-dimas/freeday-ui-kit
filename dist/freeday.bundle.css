@@ -177,6 +177,9 @@
   --focus-ring: var(--azure-600);
   --focus-ring-width: 2px;
 }
+/* The SYSTEM default stays root-scoped: it is a statement about the document, and dropping :root
+ * here would match every element that is not itself [data-theme="light"] — which would re-darken
+ * the children of a light panel, since they carry no attribute of their own. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
   --shadow-1: 0 1px 2px rgba(0,0,0,.4);
@@ -235,7 +238,13 @@
   --focus-ring: var(--azure-400);
   }
 }
-:root[data-theme="dark"] {
+/* The two EXPLICIT opt-ins are deliberately NOT scoped to :root, for the same reason as density
+ * below: these are inheriting custom properties, so data-theme on any ancestor re-themes just that
+ * subtree — a dark brand panel beside a light form is an ordinary layout, and it should not require
+ * re-colouring each component by hand. The root still matches, so data-theme on <html> is unchanged.
+ * Both keep the same specificity (0,1,0) as :root and come after it, so they still win there; and
+ * --light after --dark means a light island inside a dark region wins in turn. */
+[data-theme="dark"] {
   --shadow-1: 0 1px 2px rgba(0,0,0,.4);
   --shadow-2: 0 2px 6px rgba(0,0,0,.45);
   --shadow-3: 0 6px 20px -2px rgba(0,0,0,.6),0 1px 3px rgba(0,0,0,.5);
@@ -291,7 +300,7 @@
   --chart-tick: var(--slate-600);
   --focus-ring: var(--azure-400);
 }
-:root[data-theme="light"] {
+[data-theme="light"] {
   --shadow-1: 0 1px 2px rgba(16,14,30,.06);
   --shadow-2: 0 2px 6px rgba(16,14,30,.07),0 1px 2px rgba(16,14,30,.05);
   --shadow-3: 0 4px 16px -2px rgba(16,14,30,.14),0 1px 3px rgba(16,14,30,.10);
@@ -376,6 +385,21 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bol
 a { color: var(--color-primary); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
+/* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still
+ * has a position, and because it is position:absolute its containing block is the nearest
+ * POSITIONED ancestor — with none, the initial containing block (the document itself).
+ *
+ * That matters, because `overflow` only clips a descendant whose containing block is inside the
+ * overflow box. So a hidden span in a horizontally scrolling table (the kit's own recommended way
+ * to name an icon button) parks at its static position — possibly thousands of px to the right —
+ * and drags the whole DOCUMENT sideways: invisible, and immune to `overflow-x:hidden` on every
+ * wrapper. Measured before the fix: 1351px of phantom page scroll from 11 spans.
+ *
+ * The fix is not here — it is on the containers: every clipping/scrolling container in the kit
+ * that holds consumer markup declares `position:relative` so it becomes the containing block for
+ * its own out-of-flow content (see test/css.test.mjs, which will not let a new one skip it).
+ * Note the measurement trap: documentElement.scrollWidth sees it, body.scrollWidth does not —
+ * the honest check is `window.scrollTo(9999, 0)` then reading `window.scrollX`. */
 .fdy-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 /* Opt-in list reset. base.css is intentionally a *light* reset — it does NOT strip list/paragraph
  * margins (see the kit's own list components, which each reset themselves). If you run a utility
@@ -387,7 +411,11 @@ a { color: var(--color-primary); }
 }
 
 /* Freeday — Accordion (native <details>/<summary>, zero-JS) */
-.fdy-accordion{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--color-surface);}
+/* position:relative — containing block for out-of-flow panel content (see base.css). NOT redundant
+   with the panel's reveal animation: that animation gives the panel a transform (which happens to
+   make it a containing block too), but it lives behind prefers-reduced-motion:no-preference — so
+   without this line the escape bug appears ONLY for readers who asked for reduced motion. */
+.fdy-accordion{position:relative;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--color-surface);}
 .fdy-accordion__item + .fdy-accordion__item{border-top:var(--bw) solid var(--color-border);}
 .fdy-accordion__item > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);font-weight:var(--weight-medium);color:var(--color-text);}
 .fdy-accordion__item > summary::-webkit-details-marker{display:none;}
@@ -673,7 +701,9 @@ a { color: var(--color-primary); }
 .fdy-fab--accent{background:linear-gradient(180deg,var(--color-accent),color-mix(in srgb,#000 10%,var(--color-accent)));color:var(--color-on-accent);}
 
 /* Freeday — Card */
-.fdy-card{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
+/* position:relative — containing block for out-of-flow card content (see base.css); it also gives
+   consumers the anchor a corner ribbon/badge needs. */
+.fdy-card{position:relative;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
@@ -684,6 +714,10 @@ a { color: var(--color-primary); }
  * announced — reset the UA button box. Note: it does NOT reset background/border, because
  * .fdy-card already sets its own surface + border (resetting them here would strip the card). */
 .fdy-card--button{display:block;width:100%;text-align:inherit;color:inherit;appearance:none;-webkit-appearance:none;}
+/* Disabled card-as-control — same contract as .fdy-list__row--button: dim + not-allowed, and the
+   --interactive lift is withdrawn so a refusing control stops answering the pointer. */
+.fdy-card--button:disabled,.fdy-card--button[aria-disabled="true"],.fdy-card--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-card--interactive:disabled:hover,.fdy-card--interactive[aria-disabled="true"]:hover{box-shadow:var(--shadow-lift);transform:none;}
 .fdy-card__body{padding:var(--space-5);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}
@@ -691,7 +725,10 @@ a { color: var(--color-primary); }
 
 /* Freeday — Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
 .fdy-carousel{position:relative;}
-.fdy-carousel__viewport{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
+/* position:relative — the arrows are positioned against .fdy-carousel (the parent), so this only
+   catches out-of-flow content inside the SLIDES, which would otherwise escape the viewport
+   entirely and scroll the page by one slide-offset per slide (see base.css). */
+.fdy-carousel__viewport{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
 .fdy-carousel__viewport::-webkit-scrollbar{display:none;}
 .fdy-carousel__slide{flex:0 0 100%;min-width:0;scroll-snap-align:center;}
 .fdy-carousel__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border:0;border-radius:var(--radius-full);background:color-mix(in srgb,var(--color-surface) 86%,transparent);color:var(--color-text);box-shadow:var(--shadow-2);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard);}
@@ -1198,7 +1235,8 @@ fieldset.fdy-field>legend{padding:0;float:none;}
  *
  * Not to be confused with .fdy-list-reset (base.css), which only strips UA bullets/indent.
  * Works on <ul>/<ol> (list-style is reset here) or on plain <div>s. */
-.fdy-list{list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
+/* position:relative — containing block for out-of-flow row content (see base.css). */
+.fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
 .fdy-list__row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);min-width:0;}
 /* Divider between rows. Two shapes are supported and both are load-bearing: rows as direct children
  * of the list, and rows wrapped in <li> (the semantic shape, where the ADJACENT siblings are the
@@ -1211,6 +1249,12 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-list__row--button:hover,.fdy-list__row--interactive:hover{background:var(--color-surface-2);}
 .fdy-list__row--button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--color-primary);}
 .fdy-list__row--interactive{cursor:pointer;}
+/* Disabled row. The reset above adopts the UA button box, but not its disabled state — so a row
+   disabled mid-flight (a redirect in progress, say) kept lighting up and kept a pointer cursor:
+   a control answering the pointer while refusing input. Same contract as every other disabled
+   control in the kit (dim + not-allowed), hover withdrawn, both the native and the aria- form. */
+.fdy-list__row--button:disabled,.fdy-list__row--button[aria-disabled="true"],.fdy-list__row--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
+.fdy-list__row--button:disabled:hover,.fdy-list__row--button[aria-disabled="true"]:hover,.fdy-list__row--interactive[aria-disabled="true"]:hover{background:none;}
 /* Row internals: a title/meta stack that truncates, and a trailing slot pinned right. */
 .fdy-list__main{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1;}
 .fdy-list__title{font-weight:var(--weight-medium);color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -1395,7 +1439,10 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-step-nav{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-5);}
 
 /* Freeday — Table */
-.fdy-table-wrap{overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
+/* position:relative on every scroller/clipper — it makes the box the containing block for its own
+   absolutely positioned content (.fdy-visually-hidden above all), which `overflow` alone does NOT
+   clip. Without it a hidden label in a wide table scrolls the whole page. See base.css. */
+.fdy-table-wrap{position:relative;overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
 .fdy-table{width:100%;border-collapse:collapse;font-size:var(--text-sm);}
 .fdy-table caption{text-align:left;padding:var(--space-3) var(--space-4);font-weight:var(--weight-semibold);color:var(--color-text);}
 .fdy-table th{text-align:left;padding:var(--space-3) var(--space-4);font-size:var(--text-xs);font-weight:var(--weight-semibold);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--color-text-muted);background:var(--color-surface-2);border-bottom:var(--bw) solid var(--color-border);white-space:nowrap;}
@@ -1432,7 +1479,7 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 
 /* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
 .fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
-.fdy-table-scroll{overflow-x:auto;}
+.fdy-table-scroll{position:relative;overflow-x:auto;}
 .fdy-table-toolbar{display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-table-toolbar__search{max-width:18rem;}
 .fdy-table-toolbar__spacer{flex:1;}
@@ -1465,7 +1512,8 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-table-bulkbar__actions{display:flex;gap:var(--space-2);}
 
 /* Freeday — Tabs (WAI-ARIA APG) */
-.fdy-tabs__list{display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
+/* position:relative — containing block for out-of-flow content in the tabs (see base.css). */
+.fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
 .fdy-tabs__tab:disabled,.fdy-tabs__tab[aria-disabled="true"]{opacity:.5;cursor:not-allowed;color:var(--color-text-muted);}

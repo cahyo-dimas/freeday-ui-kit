@@ -47,6 +47,26 @@ test('buildTokensCss: emits root, primitive, semantic-as-var, dark, density', ()
   /* Density must NOT be root-scoped: custom properties inherit, so the attribute has to work on
    * any ancestor (a route wrapper densifying one screen). :root still matches the bare selector. */
   assert.doesNotMatch(css, /:root\[data-density="compact"\]/);
+  /* Same for the two EXPLICIT theme opt-ins — a dark panel beside a light form is an ordinary
+   * layout, and every component inside it should re-theme by inheritance, not by hand. */
+  assert.doesNotMatch(css, /:root\[data-theme="dark"\]/);
+  assert.doesNotMatch(css, /:root\[data-theme="light"\]/);
+  /* But the SYSTEM default must stay root-scoped. Un-rooted, `:not([data-theme="light"])` matches
+   * every element that does not itself carry the attribute — including the children of a light
+   * panel, which would be dragged back to dark. Verified in Chrome: the light island inside a dark
+   * region renders light-on-light with the un-rooted variant. */
+  assert.match(css, /@media[^{]*prefers-color-scheme:\s*dark[^{]*\{\s*:root:not\(\[data-theme="light"\]\)/);
+  /* Order is load-bearing: both opt-ins carry the same specificity as :root, so they only win by
+   * coming after it, and --light only beats --dark (a light island inside a dark region) by
+   * coming after that. */
+  /* Anchored to the start of a line so it reads the RULES, not the prose about them: the comments
+   * above each block name the other selectors too. */
+  const at = (re) => css.search(re);
+  assert.ok(
+    at(/^:root \{/m) < at(/^\[data-theme="dark"\] \{/m)
+      && at(/^\[data-theme="dark"\] \{/m) < at(/^\[data-theme="light"\] \{/m),
+    'order must be :root -> [data-theme="dark"] -> [data-theme="light"]',
+  );
 });
 
 test('bundleCss: concatenates parts in order with header', () => {

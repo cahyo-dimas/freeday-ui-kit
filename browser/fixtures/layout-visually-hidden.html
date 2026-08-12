@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — hidden labels must not scroll the page</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  /* A page column narrower than the viewport, like a real screen's main area. The table inside is
+     deliberately wider than BOTH, which is the only condition under which the bug is visible. */
+  .probe-col { width: 380px; }
+  .probe-cell { white-space: nowrap; }
+</style>
+</head>
+<body>
+  <div class="probe-col">
+    <div class="fdy-datatable">
+      <div class="fdy-table-scroll" id="scroll">
+        <table class="fdy-table">
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<script>
+  /* Ten rows, each ending in the kit's own recommended pattern for naming an icon button:
+     an aria-hidden glyph plus a .fdy-visually-hidden label. */
+  const tbody = document.getElementById('tbody');
+  for (let r = 0; r < 10; r++) {
+    const tr = document.createElement('tr');
+    for (let c = 0; c < 6; c++) {
+      const td = document.createElement('td');
+      td.className = 'probe-cell';
+      td.textContent = 'a reasonably long cell value ' + r + '-' + c;
+      tr.appendChild(td);
+    }
+    const td = document.createElement('td');
+    td.innerHTML = '<button class="fdy-btn fdy-btn--ghost" type="button">'
+      + '<span aria-hidden="true">&times;</span>'
+      + '<span class="fdy-visually-hidden">Delete row ' + r + '</span></button>';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+
+  /* documentElement.scrollWidth sees the escaped boxes but body.scrollWidth does not — they are not
+     in body's flow at all. The honest check is to actually try to scroll the page. */
+  window.pageEscape = () => {
+    window.scrollTo(9999, 0);
+    const x = window.scrollX;
+    window.scrollTo(0, 0);
+    return x;
+  };
+  window.scrollerRange = () => {
+    const el = document.getElementById('scroll');
+    el.scrollLeft = 9999;
+    const max = el.scrollLeft;
+    el.scrollLeft = 0;
+    return max;
+  };
+</script>
+</body>
+</html>

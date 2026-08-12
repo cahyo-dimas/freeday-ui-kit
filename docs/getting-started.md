@@ -24,9 +24,11 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
 3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
    **after** that must be re-hydrated: `window.Freeday<X>.initAll(el)` (idempotent, safe to repeat).
    Each framework's adapter wraps this — you don't call it manually.
-4. **Theme via `data-*` on `<html>`.** `data-theme="light|dark"` (all semantic tokens switch) +
-   `data-density="comfortable|compact"` (control height, for data-dense screens). Change at runtime:
-   `document.documentElement.dataset.theme = 'dark'`.
+4. **Theme via `data-*`.** `data-theme="light|dark"` (all semantic tokens switch) +
+   `data-density="comfortable|compact"` (control height, for data-dense screens). Normally on
+   `<html>`; change at runtime with `document.documentElement.dataset.theme = 'dark'`. Both also
+   work on **any ancestor** — these are inheriting custom properties, so `<section data-theme="dark">`
+   inverts just that region and every component inside it follows. See [`USAGE.md`](../USAGE.md) §5b.
 5. **3-tier token rule.** Components only touch **Tier 2/3** (`var(--color-primary)`,
    `var(--space-4)`, `var(--radius-md)`…). **Never** write raw hex/px.
 6. **Scope: components + tokens, deliberately *not* layout.** Freeday ships components and tokens;
@@ -177,7 +179,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.20.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^1.21.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

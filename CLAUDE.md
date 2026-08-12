@@ -35,7 +35,9 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 - **Satu file per komponen** di `src/components/*.css`; digabung ke `dist/freeday.css`.
 
 ## Theming — 3 sumbu via `data-*` di `<html>`
-- `data-theme="light|dark"` → re-definisi token **semantic** (wajib).
+- `data-theme="light|dark"` → re-definisi token **semantic** (wajib). Selector-nya bare (bukan
+  `:root`), jadi bisa dipasang di ancestor mana pun untuk membalik satu region; default sistem
+  (`prefers-color-scheme`) sengaja tetap root-scoped.
 - `data-density="comfortable|compact"` → `--control-h` (compact untuk layar data-dense).
 - `data-style="soft"` → default; gaya lain (glass/neumorph/…) = roadmap, jangan diimplement di v1.
 
