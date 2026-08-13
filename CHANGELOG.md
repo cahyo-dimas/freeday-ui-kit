@@ -3,6 +3,36 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.25.0] — 2026-08-13
+Improvement note #42, found while adopting 1.24.0 — the other half of the same integration.
+### Fixed
+- **`fdy-upload-remove` now fires on the dropzone**, the same element as `fdy-upload-add`. It was
+  dispatched on the *row*, which lives in the file list — and the kit's own markup contract puts that
+  list as a **sibling** of the dropzone, so the event never bubbled through the zone. A consumer
+  following the documentation got `add` and never got `remove`: no error, right event name, right
+  element, and the other event on that element working. Their state kept a file the user had already
+  taken away.
+  The kit's own header comment was the source of the mistake — it said both events are emitted "on the
+  dropzone" while the code dispatched one of them somewhere else. It now states the target for each,
+  and why (a row in a sibling list can never reach the zone). `COMPONENTS.md` says it once beside the
+  row state table, with the removal listener in the worked example.
+### Notes on the shape of the fix
+- The report proposed dispatching on **both** the row and the zone, for backward compatibility. Not
+  taken, and the guard proves why: when the file list is **nested inside** the dropzone — which
+  `data-filelist` permits — the row already bubbles through the zone, so a second dispatch makes a
+  plain zone listener fire **twice** per removal. Firing on both also leaves the pair asymmetric (one
+  `add`, two `remove`s for anyone delegating on a common ancestor), which is the same class of silent
+  bug this note is about. One canonical target is the honest fix.
+- Dispatching on the zone also fixes the **listless** case from 1.24.0: a row that was never attached
+  to the document bubbles to nothing at all, so its × was previously unobservable.
+- *Migration:* a consumer that worked around the old behaviour by listening on the file list must
+  move that listener to the dropzone. That position was never documented — it was the bug.
+### Added — guards
+- `browser/upload-states.mjs` gains a second spec: removal fires on the dropzone **exactly once**, in
+  both layouts (list as sibling, list nested inside the zone), and delegation on a shared ancestor
+  sees no duplicates. Mutation-checked against *both* rejected designs — reverting to the row target
+  fails it, and so does the report's dispatch-on-both.
+
 ## [1.24.0] — 2026-08-13
 Improvement note #41: the upload row had no "chosen, not yet sent" state, so every consumer-driven
 integration showed a transfer that had not started.

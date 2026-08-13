@@ -482,6 +482,10 @@ Click/Enter opens the file dialog; drop works too. Needs `freeday-upload.js`.
   — the kit fakes a transfer to `done()`; never set it in an app)
 - A11y: the dropzone is `role="button" tabindex="0"` + `aria-label`.
 
+**Both events fire on the dropzone** — `fdy-upload-add` *and* `fdy-upload-remove`. One listener, one
+element. (The file list may be anywhere in the document; nothing is dispatched on the row, because a
+row in a sibling list would never bubble through the zone.)
+
 **The row is yours to drive.** `fdy-upload-add` carries `detail.row`, a small state machine over the
 rendered `.fdy-file`. A dropped file **rests** — it shows its size and nothing else — until you say a
 transfer started; the kit never claims one it is not performing.
@@ -506,6 +510,7 @@ zone.addEventListener('fdy-upload-add', (e) => {
     row.done();
   };
 });
+zone.addEventListener('fdy-upload-remove', (e) => forget(e.detail.file));   // same element
 ```
 
 **Bring your own row:** omit the file list entirely (no `data-filelist`, and no `.fdy-filelist`

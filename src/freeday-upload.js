@@ -15,8 +15,15 @@
  *  </div>
  *  <div class="fdy-filelist" id="dz-list"></div>
  *
- * Emits bubbling CustomEvents on the dropzone: "fdy-upload-add" {file, rejected, reason, row}
- * (row exposes .uploading()/.setProgress(pct)/.done()/.fail(msg)) and "fdy-upload-remove" {file}.
+ * Emits bubbling CustomEvents — BOTH on the dropzone element, which is the one target a consumer
+ * needs to listen on:
+ *   "fdy-upload-add"    {file, rejected, reason, row}
+ *   "fdy-upload-remove" {file}
+ * `row` is the state machine over the rendered .fdy-file:
+ *   .ready() (rest — where a dropped file starts) / .uploading() / .setProgress(pct) / .done() /
+ *   .fail(msg) / .el
+ * Note the file list is a SIBLING of the dropzone above, so nothing dispatched on a row would ever
+ * bubble through the zone — which is why removal fires on the zone and not on the row.
  */
 (function () {
   'use strict';
@@ -43,7 +50,7 @@
     });
   }
 
-  function makeRow(file) {
+  function makeRow(file, zone) {
     var el = document.createElement('div');
     el.className = 'fdy-file';
     var icon = document.createElement('span');
@@ -65,7 +72,14 @@
     remove.setAttribute('aria-label', 'Hapus ' + file.name);
     remove.innerHTML = '&times;';
     remove.addEventListener('click', function () {
-      el.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
+      /* Dispatched on the ZONE, not on the row — the same target as fdy-upload-add, so one listener
+         on the dropzone gets both. The row lives in the file list, which the kit's own markup
+         contract puts as a SIBLING of the dropzone, so a row event never bubbles through the zone:
+         a consumer following the docs saw `add` arrive and `remove` never fire, with no error.
+         Firing on both would look safer, but it makes the pair asymmetric — one `add` and, for
+         anyone delegating on a common ancestor, two `remove`s — which is its own silent bug. It
+         also fixes the listless case: a row that was never attached bubbles to nothing at all. */
+      zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
       el.remove();
     });
     el.appendChild(icon);
@@ -191,7 +205,7 @@
         var reason = null;
         if (!accepts(file, acceptAttr)) reason = 'Tipe berkas tidak didukung.';
         else if (maxSize && file.size > maxSize) reason = 'Ukuran melebihi batas (' + fmtSize(maxSize) + ').';
-        var row = makeRow(file);
+        var row = makeRow(file, zone);
         if (list) list.appendChild(row.el);
         if (reason) {
           row.fail(reason);

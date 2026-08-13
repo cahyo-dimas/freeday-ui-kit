@@ -54,3 +54,30 @@ test('a dropped file rests until the consumer starts the transfer', { skip }, as
     assert.equal(await p.evalJS('typeof window.lastRow.ready'), 'function', 'detail.row exposes ready()');
   });
 });
+
+test('removal fires on the dropzone, once, in both list layouts', { skip }, async () => {
+  await withPage(fixture('vanilla-upload-states.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete" && window.FreedayUpload');
+    await p.evalJS('window.watchZone("dzA"); window.watchZone("dzD");');
+
+    /* A: the documented layout — the list is a SIBLING of the dropzone, so a row event could never
+       bubble through the zone. This is the case that silently dropped every removal. */
+    await p.evalJS('window.dropOn("dzA", "report.txt", 1234)');
+    assert.equal(await p.evalJS('window.clickRemove("listA")'), 'clicked');
+    let zoneHits = JSON.parse(await p.evalJS('JSON.stringify(window.removals.zone)'));
+    assert.deepEqual(zoneHits, ['dzA'],
+      `a listener on the dropzone must get exactly one removal, got ${JSON.stringify(zoneHits)}`);
+
+    /* D: the list NESTED inside the dropzone. Dispatching on the row as well would double-fire here,
+       because the row already bubbles through the zone. */
+    await p.evalJS('window.dropOn("dzD", "nested.txt", 512)');
+    assert.equal(await p.evalJS('window.clickRemove("listD")'), 'clicked');
+    zoneHits = JSON.parse(await p.evalJS('JSON.stringify(window.removals.zone)'));
+    assert.deepEqual(zoneHits, ['dzA', 'dzD'], 'still exactly one removal per click when the list is nested');
+
+    // And a consumer delegating further up sees one per removal too — the pair stays symmetric.
+    const docHits = JSON.parse(await p.evalJS('JSON.stringify(window.removals.doc)'));
+    assert.deepEqual(docHits, ['dzA', 'dzD'],
+      `delegation on an ancestor must not see duplicates, got ${JSON.stringify(docHits)}`);
+  });
+});

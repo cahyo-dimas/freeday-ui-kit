@@ -6,6 +6,25 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.25.0 — note #42 (ketemu saat mengadopsi 1.24.0): `fdy-upload-remove` tak pernah sampai.**
+- Event-nya di-dispatch di **row**, yang tinggal di file list — dan markup contract kit sendiri
+  menaruh list itu sebagai **sibling** dropzone, jadi ia tak pernah mem-bubble lewat zone.
+  Konsumen yang mengikuti dokumentasi dapat `add`, tak pernah dapat `remove`: tanpa error, nama
+  event benar, elemen benar, dan event satunya di elemen yang sama jalan.
+- **Header file kit sendiri sumber kesalahannya** — tertulis kedua event "on the dropzone"
+  padahal kode-nya lain. Sekarang header menyebut target masing-masing + alasannya.
+- **Usulan note (dispatch di KEDUANYA) ditolak, dan guard membuktikan kenapa:** kalau list
+  bersarang di dalam dropzone (`data-filelist` mengizinkan), row sudah mem-bubble lewat zone →
+  listener zone kena **dua kali** per penghapusan. Satu target kanonik = fix yang jujur.
+- Sekalian menutup kasus **tanpa list** dari 1.24.0: row yang tak pernah ter-attach mem-bubble ke
+  mana pun tidak.
+- **Migrasi:** konsumen yang tadinya mengakali dengan mendengarkan di file list harus pindah ke
+  dropzone. Posisi itu memang tak pernah terdokumentasi — itulah bug-nya.
+
+Gate: `npm test` **32/32** · `npm run test:browser` **14/14**.
+
+---
+
 **v1.24.0 — note #41: baris upload tak punya state "sudah dipilih, belum dikirim".**
 - `handleFiles` memanggil `row.uploading()` tanpa syarat, dan **sebelum** `fdy-upload-add`
   di-dispatch — jadi konsumen tak bisa mendahuluinya. Antara drop dan tombol submit milik app

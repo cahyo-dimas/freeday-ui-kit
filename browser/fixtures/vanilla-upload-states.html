@@ -23,8 +23,25 @@
     <div class="fdy-dropzone" id="dzC" data-fdy-dropzone role="button" tabindex="0">no list</div>
   </div>
 
+<!-- D: the list NESTED inside the dropzone. Dispatching removal on both the row and the zone would
+       double-fire for a zone listener here, since the row already bubbles through the zone. -->
+  <div class="fdy-dropzone" id="dzD" data-fdy-dropzone data-filelist="#listD" role="button" tabindex="0">
+    drop
+    <div class="fdy-filelist" id="listD"></div>
+  </div>
+
 <script>
   window.events = [];
+  window.removals = { zone: [], doc: [] };
+  document.addEventListener('fdy-upload-remove', (e) => window.removals.doc.push(e.target.id));
+  window.watchZone = (id) => document.getElementById(id)
+    .addEventListener('fdy-upload-remove', (e) => window.removals.zone.push(e.target.id));
+  window.clickRemove = (listId) => {
+    const btn = document.querySelector('#' + listId + ' .fdy-file__remove');
+    if (!btn) return 'NO ROW';
+    btn.click();
+    return 'clicked';
+  };
   window.lastRow = null;
   document.addEventListener('fdy-upload-add', (e) => {
     window.events.push({ zone: e.target.id, name: e.detail.file.name, rejected: e.detail.rejected });
