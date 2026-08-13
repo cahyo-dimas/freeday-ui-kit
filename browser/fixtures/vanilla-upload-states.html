@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — upload row states</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- A: the default. The consumer owns the transfer, so a dropped file must REST. -->
+  <div class="fdy-dropzone" id="dzA" data-fdy-dropzone data-filelist="#listA" role="button" tabindex="0">drop</div>
+  <div class="fdy-filelist" id="listA"></div>
+
+  <!-- B: the demo path. The kit drives the transfer, so showing one is correct. -->
+  <div class="fdy-dropzone" id="dzB" data-fdy-dropzone data-filelist="#listB" data-fdy-upload-simulate role="button" tabindex="0">drop</div>
+  <div class="fdy-filelist" id="listB"></div>
+
+  <!-- C: bring your own row — no list at all. The event must still arrive.
+       Wrapped in its own container ON PURPOSE: with no data-filelist the enhancer falls back to
+       `zone.parentNode.querySelector('.fdy-filelist')`, so a bare dropzone sharing <body> with the
+       lists above would silently bind to the FIRST one and this would not be testing "no list". -->
+  <div id="wrapC">
+    <div class="fdy-dropzone" id="dzC" data-fdy-dropzone role="button" tabindex="0">no list</div>
+  </div>
+
+<script>
+  window.events = [];
+  window.lastRow = null;
+  document.addEventListener('fdy-upload-add', (e) => {
+    window.events.push({ zone: e.target.id, name: e.detail.file.name, rejected: e.detail.rejected });
+    window.lastRow = e.detail.row;
+  });
+
+  /* A file drop cannot be synthesised through CDP's trusted Input.* the way a click can, so this
+     dispatches a real DragEvent carrying a real DataTransfer. That is sound here: the bug under test
+     is which STATE the row renders in, not pointer or focus semantics — the class of bug that needs
+     a trusted gesture (see browser/README.md). */
+  window.dropOn = (zoneId, name, bytes) => {
+    const dt = new DataTransfer();
+    dt.items.add(new File([new Uint8Array(bytes)], name, { type: 'text/plain' }));
+    document.getElementById(zoneId).dispatchEvent(
+      new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+    return true;
+  };
+
+  window.rowState = (listId) => {
+    const row = document.querySelector('#' + listId + ' .fdy-file');
+    if (!row) return null;
+    return {
+      sub: row.querySelector('.fdy-file__sub').textContent,
+      progressbar: !!row.querySelector('[role="progressbar"]'),
+      cls: row.className,
+    };
+  };
+</script>
+</body>
+</html>

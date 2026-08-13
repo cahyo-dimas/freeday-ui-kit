@@ -3,6 +3,49 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.24.0] — 2026-08-13
+Improvement note #41: the upload row had no "chosen, not yet sent" state, so every consumer-driven
+integration showed a transfer that had not started.
+### Fixed
+- **A dropped file now rests until the consumer starts the transfer.** `handleFiles` called
+  `row.uploading()` unconditionally — and *before* dispatching `fdy-upload-add`, so a consumer could
+  not pre-empt it. Between the drop and the app's own submit button (which may be a minute, while the
+  user fills in the rest of the form) the row claimed to be uploading, with a progress bar that never
+  moved. A user watching that reasonably concludes the upload has hung and reports a bug against a
+  transfer that was never started. The state machine was missing its start state: `done()` claims
+  success, `fail()` claims an error, and `uploading()` was where it already was.
+  The demo path is unchanged — with `data-fdy-upload-simulate` the kit *is* performing a transfer, so
+  showing one stays correct. That attribute already marks the only place the old default was right,
+  which is why this changes the default rather than adding an opt-in: making correct integrations opt
+  in to correctness is backwards.
+- **`fdy-upload-add` no longer depends on rendering a row.** The guard was `if (!list || !fileList)
+  return;`, so a dropzone with no file list lost the event that tells the app a file arrived —
+  "bring your own row" silently cost you the notification. Rendering and announcing are now separate:
+  no list means no row is attached, and the event still fires with a working `detail.row`.
+  Deliberately **no new attribute** for this. The reporter proposed `data-rows="off"`; `list` is used
+  in exactly two places, so decoupling covers the same case without growing the API surface, and no
+  page can be relying on "no event".
+### Added
+- **`row.ready()`** — the rest state, and the way back to it (a failed attempt the user will retry).
+  It reuses the existing `dropProgress()`, so the bar is removed exactly as `done()`/`fail()` do it.
+### Docs
+- **`COMPONENTS.md` documents the row state machine at all.** `uploading()` / `setProgress()` /
+  `done()` / `fail()` had **zero** mentions anywhere in the shipped docs — a consumer holding
+  `detail.row` had no supported way to know they existed, which is a fair part of why the old default
+  went unquestioned. The section now carries the state table, a worked example, the
+  bring-your-own-row position, and `data-fdy-upload-simulate` marked demo-only.
+  Two corrections to the report while transcribing it: the function is `handleFiles` (not `addFiles`)
+  and the attribute is `data-fdy-upload-simulate` (not `data-simulate`) — the latter matters, since
+  documenting the wrong name would have consumers set an attribute that does nothing.
+### Added — guards
+- **`browser/upload-states.mjs`** — drops a real `File` and asserts the rest state shows no progress
+  bar, that `uploading()` → `setProgress()` → `done()` still chains, that the simulate path is
+  untouched, and that a listless dropzone still dispatches. Mutation-checked on both halves.
+  The fixture wraps the listless dropzone in its own container **on purpose**: with no
+  `data-filelist` the enhancer falls back to `parentNode.querySelector('.fdy-filelist')`, so a bare
+  dropzone sharing a parent with another list adopts it — the first version of this guard was
+  testing nothing, and the mutation run is what exposed that.
+
 ## [1.23.0] — 2026-08-13
 Consumption round 6 (`improvement-notes/006`). The reporter filed two of the three as **their own**
 bugs rather than the kit's — and they were right about the code, but in both cases the kit had a way

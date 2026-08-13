@@ -95,6 +95,16 @@
     }
     return {
       el: el,
+      /* The state a row starts in: chosen, not yet sent. The size alone — it makes no claim about
+         a transfer, and no progress bar is shown, because nothing is in flight. Without this the
+         state machine had no start state: done() claims success, fail() claims an error, and
+         uploading() is a lie until the consumer actually sends the file. */
+      ready: function () {
+        el.classList.remove('fdy-file--error', 'fdy-file--success');
+        icon.innerHTML = FILE_ICON;
+        sub.textContent = fmtSize(file.size);
+        dropProgress();
+      },
       uploading: function () {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
@@ -171,19 +181,30 @@
     });
     if (input) input.addEventListener('change', function () { handleFiles(input.files); input.value = ''; });
 
+    /* The list is optional: rendering a row and announcing the file are separate jobs. A consumer
+       that wants its own markup simply provides no list — it still gets `fdy-upload-add`, and
+       `detail.row` still works (its element is just never attached). Gating the EVENT on the list
+       meant "bring your own row" silently cost you the notification that a file had arrived. */
     function handleFiles(fileList) {
-      if (!list || !fileList) return;
+      if (!fileList) return;
       Array.prototype.slice.call(fileList).forEach(function (file) {
         var reason = null;
         if (!accepts(file, acceptAttr)) reason = 'Tipe berkas tidak didukung.';
         else if (maxSize && file.size > maxSize) reason = 'Ukuran melebihi batas (' + fmtSize(maxSize) + ').';
         var row = makeRow(file);
-        list.appendChild(row.el);
+        if (list) list.appendChild(row.el);
         if (reason) {
           row.fail(reason);
-        } else {
+        } else if (simulate) {
+          /* The kit is driving (demo path): keep showing a transfer, because there is one. */
           row.uploading();
-          if (simulate) simulateUpload(row);
+          simulateUpload(row);
+        } else {
+          /* The CONSUMER owns the transfer. Rest until it says otherwise by calling row.uploading():
+             a file that has only been chosen must not claim to be uploading. A progress bar that
+             never moves reads as a hung upload, and gets reported as a bug against a transfer that
+             was never started. */
+          row.ready();
         }
         zone.dispatchEvent(new CustomEvent('fdy-upload-add', {
           bubbles: true, detail: { file: file, rejected: !!reason, reason: reason, row: row }

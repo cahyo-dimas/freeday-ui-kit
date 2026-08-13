@@ -9,7 +9,7 @@ ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat h
 
 ---
 
-## Roadmap ke depan (per v1.23.0) — default: **tunggu demand**
+## Roadmap ke depan (per v1.24.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -118,7 +118,7 @@ versi, dan "getting-started 4×" padahal 1×). **Cari saja** — inilah daftar o
 git grep -n '<versi-lama>' -- . | grep -v CHANGELOG    # semua yang harus di-bump
 ```
 
-Per v1.23.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
+Per v1.24.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
 `README.id.md` (badge + link tag) · `docs/index.html` (eyebrow + footer) ·
 `docs/getting-started.md` (contoh `^versi`) · `HANDOFF.md` · `NEXT-UP.md`.
 

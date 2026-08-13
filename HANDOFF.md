@@ -6,6 +6,32 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.24.0 — note #41: baris upload tak punya state "sudah dipilih, belum dikirim".**
+- `handleFiles` memanggil `row.uploading()` tanpa syarat, dan **sebelum** `fdy-upload-add`
+  di-dispatch — jadi konsumen tak bisa mendahuluinya. Antara drop dan tombol submit milik app
+  (bisa semenit, selama user mengisi sisa form) baris itu mengaku sedang mengunggah dengan
+  progress bar yang tak pernah bergerak → dibaca sebagai upload hang, dilaporkan sebagai bug atas
+  transfer yang tak pernah dimulai. State machine-nya memang kehilangan **start state**.
+  Sekarang default = **rest**; jalur demo (`data-fdy-upload-simulate`) tak berubah karena di situ
+  kit memang sedang mentransfer.
+- **`fdy-upload-add` tak lagi bergantung pada rendering row.** Guard `if (!list || !fileList)`
+  membuat dropzone tanpa list kehilangan event-nya juga. Rendering & pengumuman kini terpisah —
+  **tanpa atribut baru** (`data-rows="off"` yang diusulkan tak perlu: `list` cuma dipakai di dua
+  tempat).
+- **`row.ready()`** ditambahkan, memakai `dropProgress()` yang sudah ada.
+- **API row akhirnya terdokumentasi.** `uploading`/`setProgress`/`done`/`fail` **nol sebutan** di
+  seluruh docs ter-ship sebelum ini — itu sebagian alasan default lama tak pernah dipertanyakan.
+- Dua koreksi atas note: fungsinya `handleFiles` (bukan `addFiles`), atributnya
+  `data-fdy-upload-simulate` (bukan `data-simulate`).
+- **Guard:** `browser/upload-states.mjs`. Fixture-nya membungkus dropzone tanpa-list di container
+  sendiri **dengan sengaja** — tanpa `data-filelist`, enhancer jatuh ke
+  `parentNode.querySelector('.fdy-filelist')` dan mengadopsi list tetangga; versi pertama guard ini
+  tak menguji apa pun, dan mutation run yang membongkarnya.
+
+Gate: `npm test` **32/32** · `npm run test:browser` **13/13**.
+
+---
+
 **v1.23.0 — ronde 6 (`improvement-notes/006`): 3 temuan, 2 di antaranya dilaporkan sebagai bug
 pelapor sendiri — dan memang benar, tapi di kedua kasus kit punya cara membuat kesalahan itu
 MUSTAHIL dan tak mengambilnya. Justru dua itu yang paling berharga.**

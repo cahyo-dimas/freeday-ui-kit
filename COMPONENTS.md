@@ -478,9 +478,41 @@ Click/Enter opens the file dialog; drop works too. Needs `freeday-upload.js`.
   `<input type="file">`
 - List: `.fdy-filelist` (+`--grid`) of `.fdy-file` (+`--success`, `--error`) · `__icon` `__meta`
   `__name` `__sub` `__progress` `__remove`
-- Attributes: `data-max-size` (bytes), `data-filelist="#id"`
+- Attributes: `data-max-size` (bytes), `data-filelist="#id"`, `data-fdy-upload-simulate` (demo only
+  — the kit fakes a transfer to `done()`; never set it in an app)
 - A11y: the dropzone is `role="button" tabindex="0"` + `aria-label`.
-- Wire `fdy-upload-add` to your real upload; render explicit progress/success/error state.
+
+**The row is yours to drive.** `fdy-upload-add` carries `detail.row`, a small state machine over the
+rendered `.fdy-file`. A dropped file **rests** — it shows its size and nothing else — until you say a
+transfer started; the kit never claims one it is not performing.
+
+| `detail.row` | State it renders |
+|---|---|
+| *(initial)* | **rest** — chosen, not sent. Size only, no progress bar. |
+| `.uploading()` | in flight — adds the progress bar |
+| `.setProgress(pct)` | moves the bar (0–100) |
+| `.done()` | success — drops the bar, `.fdy-file--success` |
+| `.fail(msg)` | error — drops the bar, `.fdy-file--error`, `msg` replaces the sub-line |
+| `.ready()` | back to **rest** (e.g. after a failed attempt the user will retry) |
+| `.el` | the row element |
+
+```js
+zone.addEventListener('fdy-upload-add', (e) => {
+  if (e.detail.rejected) return;              // the kit already rendered the reason
+  const { file, row } = e.detail;             // row is at rest — nothing is in flight yet
+  submitBtn.onclick = async () => {
+    row.uploading();
+    await send(file, (pct) => row.setProgress(pct));
+    row.done();
+  };
+});
+```
+
+**Bring your own row:** omit the file list entirely (no `data-filelist`, and no `.fdy-filelist`
+sibling) and the enhancer renders nothing while still dispatching `fdy-upload-add` — `detail.row`
+still works, its element simply isn't attached. Note the fallback when `data-filelist` is absent is
+`parentNode.querySelector('.fdy-filelist')`, so a bare dropzone will adopt a list that happens to
+share its parent; give the dropzone its own container if you mean "no list".
 
 ## Form validation — `data-fdy-validate`
 Native Constraint Validation wired to accessible inline errors: `aria-invalid` +
