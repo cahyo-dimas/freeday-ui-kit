@@ -495,10 +495,16 @@ transfer started; the kit never claims one it is not performing.
 | *(initial)* | **rest** — chosen, not sent. Size only, no progress bar. |
 | `.uploading()` | in flight — adds the progress bar |
 | `.setProgress(pct)` | moves the bar (0–100) |
+| `.waiting(label)` | **sent, waiting on the server** — indeterminate bar, no `aria-valuenow`; `label` is yours (default *Menunggu server…*) |
 | `.done()` | success — drops the bar, `.fdy-file--success` |
 | `.fail(msg)` | error — drops the bar, `.fdy-file--error`, `msg` replaces the sub-line |
 | `.ready()` | back to **rest** (e.g. after a failed attempt the user will retry) |
 | `.el` | the row element |
+
+**If your request outlives the transfer, drive `waiting()`.** Server-side work after the last byte —
+OCR, extraction, virus scanning, transcoding — is not uploading, and `setProgress(100)` left standing
+is read as a hang. `waiting()` is the state for it: the label says what the server is doing, and the
+bar stops claiming a percentage it no longer has.
 
 ```js
 zone.addEventListener('fdy-upload-add', (e) => {
@@ -507,6 +513,8 @@ zone.addEventListener('fdy-upload-add', (e) => {
   submitBtn.onclick = async () => {
     row.uploading();
     await send(file, (pct) => row.setProgress(pct));
+    row.waiting('Membaca dokumen…');            // bytes gone, server still working
+    await serverFinished();
     row.done();
   };
 });

@@ -6,6 +6,30 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.26.0 — note #43: baris file tak bisa bilang "sudah terkirim, sekarang menunggu server".**
+- Satu-satunya state panjang baris upload dinamai menurut **transfer**-nya. Untuk konsumen yang
+  uploadnya diikuti kerja server (OCR/ekstraksi/scan), label "Mengunggah…" jadi salah begitu byte
+  terakhir keluar — dan `setProgress(100)` memperburuk: bar penuh yang lalu diam adalah sinyal
+  "hang" paling meyakinkan yang bisa dihasilkan UI. Tak ada jalan keluar di API baris: `done()`
+  bohong, `fail()` bohong, `ready()` mundur. Konsumen akhirnya merender baris status kedua di luar
+  row — dua komponen yang saling bertentangan.
+- **`row.waiting(label)`** mengisi celah itu: bar jadi **indeterminate**, `aria-valuenow` dilepas
+  (progressbar tanpa nilai = definisi indeterminate di ARIA — kontrak yang sudah tertulis di
+  `COMPONENTS.md` untuk `.fdy-progress`), label milik konsumen (default `Menunggu server…`).
+- **Patch di note-nya justru mengirim balik gejalanya:** modifier ditaruh di **bar** (padahal
+  `.fdy-progress--indeterminate` menata `.fdy-progress__bar`, jadi tempatnya di kontainer) plus
+  inline `width:100%` yang mengalahkan lebar modifier — dua-duanya merender bar penuh yang beku.
+- **Keluar dari state ini lebih rawan daripada masuk:** `.fdy-progress__bar` itu block div, tanpa
+  width ia memenuhi track. Jadi `uploading()`/`setProgress()` mengembalikan width eksplisit saat
+  melepas modifier — kalau tidak, baris yang di-retry menggambar bar **penuh** untuk 0%.
+- Tak ada kelas `.fdy-file--waiting` (`uploading` juga tak punya; hanya `--success`/`--error` yang
+  membawa warna). Catatan: di `prefers-reduced-motion` bar indeterminate kit memang bar penuh yang
+  diredupkan — perilaku lama, di situ yang jujur adalah label, bukan bar.
+
+Gate: `npm test` **32/32** · `npm run test:browser` **15/15**.
+
+---
+
 **v1.25.0 — note #42 (ketemu saat mengadopsi 1.24.0): `fdy-upload-remove` tak pernah sampai.**
 - Event-nya di-dispatch di **row**, yang tinggal di file list — dan markup contract kit sendiri
   menaruh list itu sebagai **sibling** dropzone, jadi ia tak pernah mem-bubble lewat zone.

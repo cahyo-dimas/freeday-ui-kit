@@ -3595,8 +3595,8 @@
  *   "fdy-upload-add"    {file, rejected, reason, row}
  *   "fdy-upload-remove" {file}
  * `row` is the state machine over the rendered .fdy-file:
- *   .ready() (rest — where a dropped file starts) / .uploading() / .setProgress(pct) / .done() /
- *   .fail(msg) / .el
+ *   .ready() (rest — where a dropped file starts) / .uploading() / .setProgress(pct) /
+ *   .waiting(label) (sent, awaiting the server) / .done() / .fail(msg) / .el
  * Note the file list is a SIBLING of the dropzone above, so nothing dispatched on a row would ever
  * bubble through the zone — which is why removal fires on the zone and not on the row.
  */
@@ -3682,6 +3682,13 @@
     function dropProgress() {
       if (progressWrap) { progressWrap.remove(); progressWrap = null; bar = null; progressEl = null; }
     }
+    /* Back to a measured bar. While the indeterminate modifier is on it owns the bar's width, so an
+       explicit one has to be restored when it comes off: .fdy-progress__bar is a plain block div, and
+       with no width at all it fills the track — a full bar, which is the opposite of what 0% means. */
+    function determinate() {
+      progressEl.classList.remove('fdy-progress--indeterminate');
+      if (!bar.style.width) bar.style.width = '0%';
+    }
     return {
       el: el,
       /* The state a row starts in: chosen, not yet sent. The size alone — it makes no claim about
@@ -3699,12 +3706,33 @@
         icon.innerHTML = FILE_ICON;
         sub.textContent = fmtSize(file.size) + ' · Mengunggah…';
         ensureProgress();
+        determinate();
       },
       setProgress: function (pct) {
         ensureProgress();
+        determinate();
         var v = Math.max(0, Math.min(100, pct));
         bar.style.width = v + '%';
         progressEl.setAttribute('aria-valuenow', String(Math.round(v)));
+      },
+      /* The bytes are gone and the server has not answered yet — extraction, scanning, transcoding.
+         "Mengunggah…" turns false the moment the last byte leaves, and a determinate bar parked at
+         100% is the most convincing "hung" signal a UI can produce, so this state reports no
+         percentage: the bar goes indeterminate and the label belongs to the consumer, because only
+         they know what the server is doing ("Membaca PDF…", "Memindai…"). done()/fail()/ready() need
+         no counterpart here — they drop the progress element outright, modifier and all. */
+      waiting: function (label) {
+        el.classList.remove('fdy-file--error', 'fdy-file--success');
+        icon.innerHTML = FILE_ICON;
+        sub.textContent = fmtSize(file.size) + ' · ' + (label || 'Menunggu server…');
+        ensureProgress();
+        progressEl.classList.add('fdy-progress--indeterminate');
+        /* The modifier styles .fdy-progress__bar, so it must sit on the CONTAINER, and the inline
+           width setProgress wrote has to go — an inline style beats any rule the modifier brings.
+           aria-valuenow goes with it: a progressbar with no value is precisely what ARIA calls
+           indeterminate, which is the contract COMPONENTS.md already states for this component. */
+        bar.style.width = '';
+        progressEl.removeAttribute('aria-valuenow');
       },
       done: function () {
         el.classList.add('fdy-file--success');

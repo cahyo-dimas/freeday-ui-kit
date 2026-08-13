@@ -63,10 +63,18 @@
   window.rowState = (listId) => {
     const row = document.querySelector('#' + listId + ' .fdy-file');
     if (!row) return null;
+    const track = row.querySelector('[role="progressbar"]');
+    const bar = row.querySelector('.fdy-progress__bar');
     return {
       sub: row.querySelector('.fdy-file__sub').textContent,
-      progressbar: !!row.querySelector('[role="progressbar"]'),
+      progressbar: !!track,
       cls: row.className,
+      indeterminate: !!track && track.classList.contains('fdy-progress--indeterminate'),
+      valuenow: track ? track.getAttribute('aria-valuenow') : null,
+      /* Rendered, not declared: an inline width would beat the modifier's own, and a bar with no
+         width at all fills the track. Both read as 100% here and only the engine can tell us. */
+      barPct: bar ? Math.round((bar.getBoundingClientRect().width
+        / track.getBoundingClientRect().width) * 100) : null,
     };
   };
 </script>

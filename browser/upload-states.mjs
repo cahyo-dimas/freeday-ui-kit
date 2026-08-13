@@ -55,6 +55,55 @@ test('a dropped file rests until the consumer starts the transfer', { skip }, as
   });
 });
 
+/* A request can outlive its transfer: the bytes land in a second, the server then spends a minute
+ * reading the document. The row's only long-running state was named after the transfer, so it kept
+ * saying "Mengunggah…" — and a determinate bar parked at 100% is the most convincing "hung" signal a
+ * UI can give. waiting() is that state; the asserts below are about what the ENGINE renders, because
+ * both plausible ways to get this wrong (modifier on the bar instead of the track, or leaving an
+ * inline width behind) produce a full, frozen bar that no source reading reveals. */
+test('waiting() reports no percentage, and the bar comes back measured', { skip }, async () => {
+  await withPage(fixture('vanilla-upload-states.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete" && window.FreedayUpload');
+    const state = async () => JSON.parse(await p.evalJS('JSON.stringify(window.rowState("listA"))'));
+    const settle = () => sleep(300);   // --dur-base is 180ms; measure the bar after it stops moving
+    /* Under reduced motion the kit's indeterminate treatment is deliberately a dimmed FULL bar
+       (progress.css) — no animation to carry the meaning, so opacity does. The width assert below
+       only applies where the animation runs; the state's other signals hold either way. */
+    const animates = (await p.evalJS('String(!matchMedia("(prefers-reduced-motion: reduce)").matches)')) === 'true';
+
+    await p.evalJS('window.dropOn("dzA", "scan.pdf", 640000)');
+    await p.evalJS('window.lastRow.uploading(); window.lastRow.setProgress(100);');
+    await settle();
+    const sent = await state();
+    assert.equal(sent.valuenow, '100', 'the transfer itself still reports a percentage');
+    assert.equal(sent.indeterminate, false, 'a measured transfer is not indeterminate');
+
+    await p.evalJS('window.lastRow.waiting()');
+    await settle();
+    const wait = await state();
+    assert.match(wait.sub, /Menunggu server…/, `waiting() falls back to the kit's label, got "${wait.sub}"`);
+    assert.equal(wait.indeterminate, true, 'the modifier belongs on .fdy-progress, the element role="progressbar" is on');
+    assert.equal(wait.valuenow, null, 'an indeterminate progressbar must not carry aria-valuenow');
+    if (animates) assert.ok(wait.barPct > 20 && wait.barPct < 60,
+      `the bar must stop claiming a percentage — expected the modifier's own width, got ${wait.barPct}%`);
+
+    await p.evalJS('window.lastRow.waiting("Membaca PDF…")');
+    assert.match((await state()).sub, /Membaca PDF…/, 'the label is the consumer\'s');
+
+    // Retry: leaving the indeterminate width behind would paint a FULL bar at 0%.
+    await p.evalJS('window.lastRow.uploading()');
+    await settle();
+    const again = await state();
+    assert.equal(again.indeterminate, false, 'uploading() returns the bar to determinate');
+    assert.ok(again.barPct < 10, `a restarted transfer shows an empty bar, got ${again.barPct}%`);
+
+    await p.evalJS('window.lastRow.done()');
+    const done = await state();
+    assert.equal(done.progressbar, false, 'done() drops the bar, taking the modifier with it');
+    assert.match(done.cls, /fdy-file--success/, 'and marks success');
+  });
+});
+
 test('removal fires on the dropzone, once, in both list layouts', { skip }, async () => {
   await withPage(fixture('vanilla-upload-states.html'), async (p) => {
     await p.waitFor('document.readyState === "complete" && window.FreedayUpload');

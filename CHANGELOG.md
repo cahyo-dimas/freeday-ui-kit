@@ -3,6 +3,46 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.26.0] — 2026-08-14
+Improvement note #43, found while chasing a "the upload is stuck" report on a 626 KB PDF: the
+transfer took about a second, the server then spent nearly a minute reading the document.
+### Added
+- **`row.waiting(label)`** — the state between `setProgress` and `done`: the bytes are gone, the
+  server has not answered. The row's only long-running state was named after the *transfer*, so it
+  kept saying "Mengunggah…" for the whole minute of server-side work — and `setProgress(100)` made it
+  worse, because a full bar that then sits still is the most convincing "hung" signal a UI can
+  produce. There was no way out within the row's API: `done()` claims success, `fail()` claims an
+  error, `ready()` walks backwards. Consumers were rendering a second status line outside the row and
+  leaving the row to contradict it.
+  The bar goes **indeterminate** and drops `aria-valuenow` — a progressbar with no value is exactly
+  what ARIA calls indeterminate, which is the contract `COMPONENTS.md` already stated for
+  `.fdy-progress`. The label is the consumer's, because only they know what the server is doing
+  (`Membaca PDF…`, `Memindai…`); it falls back to `Menunggu server…`.
+- `COMPONENTS.md` gains the state in the row table plus the sentence that would have saved the
+  round-trip: **if your request outlives the transfer, drive `waiting()`**.
+### Notes on the shape of the fix
+- The report's patch would have shipped the symptom it set out to remove. It put the modifier on the
+  **bar** (`.fdy-progress--indeterminate` styles `.fdy-progress__bar`, so it belongs on the
+  container — on the bar it matches nothing) and then set an inline `width:100%`, which beats the
+  modifier's own width anyway. Both mistakes render a full, frozen bar. The note also hedged that
+  `.fdy-progress--indeterminate` might not exist; it has all along.
+- **Leaving the state needs more care than entering it.** `.fdy-progress__bar` is a plain block div:
+  with no width it fills its track. So `uploading()`/`setProgress()` restore an explicit width when
+  they clear the modifier, or a retried row paints a *full* bar while meaning 0%. `done()`, `fail()`
+  and `ready()` need no counterpart — they drop the progress element outright, modifier and all
+  (contrary to the note, which expected a line in each).
+- **No `.fdy-file--waiting` class.** `uploading` has none either; only `--success`/`--error` do,
+  because they carry colour. A documented class with no rule is markup that looks like it does
+  something.
+- Under `prefers-reduced-motion: reduce` the kit's indeterminate treatment is a dimmed **full** bar
+  (no animation left to carry the meaning) — pre-existing behaviour for every indeterminate progress,
+  not introduced here. For those users the honest signal is the label, not the bar.
+### Added — guards
+- `browser/upload-states.mjs` gains a third spec, measuring what the **engine renders** rather than
+  what the source declares: both ways to get this wrong are invisible in a code read. Mutation-checked
+  against five defects, including the report's own two — modifier-on-bar, inline `width:100%`, no
+  width restored on return, `aria-valuenow` kept, and label ignored.
+
 ## [1.25.0] — 2026-08-13
 Improvement note #42, found while adopting 1.24.0 — the other half of the same integration.
 ### Fixed
