@@ -100,6 +100,9 @@
 
   function initAll(context) {
     var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-mask]')) initMask(root);
+    if (root.matches && root.matches('[data-fdy-password]')) initReveal(root);
     Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-mask]'), initMask);
     Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-password]'), initReveal);
   }

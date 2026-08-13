@@ -179,28 +179,33 @@
     };
   }
 
+  function bindGroup(group) {
+    if (group.dataset.fdyCflBound === '1') return;
+    var dialog = document.getElementById(group.getAttribute('data-fdy-cfl'));
+    if (!dialog) return;
+    initDialog(dialog);
+    var opener = group.querySelector('[data-fdy-cfl-trigger], .fdy-input-group__btn');
+    if (!opener) return;
+    group.dataset.fdyCflBound = '1';
+    opener.addEventListener('click', function () { dialog.fdyCflOpen(group, opener); });
+  }
+
+  function bindOpener(opener) {
+    if (opener.dataset.fdyCflBound === '1') return;
+    var dialog = document.getElementById(opener.getAttribute('data-fdy-cfl-open'));
+    if (!dialog) return;
+    initDialog(dialog);
+    opener.dataset.fdyCflBound = '1';
+    opener.addEventListener('click', function () { dialog.fdyCflOpen(null, opener); });
+  }
+
   function initTriggers(context) {
     var ctx = context || document;
-
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl]'), function (group) {
-      if (group.dataset.fdyCflBound === '1') return;
-      var dialog = document.getElementById(group.getAttribute('data-fdy-cfl'));
-      if (!dialog) return;
-      initDialog(dialog);
-      var opener = group.querySelector('[data-fdy-cfl-trigger], .fdy-input-group__btn');
-      if (!opener) return;
-      group.dataset.fdyCflBound = '1';
-      opener.addEventListener('click', function () { dialog.fdyCflOpen(group, opener); });
-    });
-
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl-open]'), function (opener) {
-      if (opener.dataset.fdyCflBound === '1') return;
-      var dialog = document.getElementById(opener.getAttribute('data-fdy-cfl-open'));
-      if (!dialog) return;
-      initDialog(dialog);
-      opener.dataset.fdyCflBound = '1';
-      opener.addEventListener('click', function () { dialog.fdyCflOpen(null, opener); });
-    });
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (ctx.matches && ctx.matches('[data-fdy-cfl]')) bindGroup(ctx);
+    if (ctx.matches && ctx.matches('[data-fdy-cfl-open]')) bindOpener(ctx);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl]'), bindGroup);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl-open]'), bindOpener);
   }
 
   if (document.readyState === 'loading') {

@@ -168,7 +168,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-validate]'), initForm);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-validate]')) initForm(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-validate]'), initForm);
   }
 
   if (document.readyState === 'loading') {

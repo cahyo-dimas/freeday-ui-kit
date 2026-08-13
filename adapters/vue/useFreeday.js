@@ -10,6 +10,11 @@
  *   useFreeday(root);            // scopes init to this component's subtree
  *   // <div ref="root"> ...[data-fdy-*] markup... </div>
  *
+ * The ref may also sit ON the widget itself — <div ref="root" data-fdy-menu> — which is what you
+ * write when the component's root element IS the widget. initAll() matches its own root as
+ * well as descendants, so both shapes work. (Before 1.23.0 only the wrapping shape did, and
+ * the other failed silently: querySelectorAll never matches its root.)
+ *
  * Events come straight through as native bubbling CustomEvents — bind them with
  * plain v-on (e.g. @fdy-cascade-change) and read event.detail. See index.d.ts
  * for the detail types.

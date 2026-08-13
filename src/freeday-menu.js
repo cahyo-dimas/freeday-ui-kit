@@ -80,7 +80,10 @@
   }
 
   function initAll(ctx) {
-    Array.prototype.forEach.call((ctx || document).querySelectorAll('[data-fdy-menu]'), initMenu);
+    var root = ctx || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-menu]')) initMenu(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-menu]'), initMenu);
   }
 
   if (document.readyState === 'loading') {

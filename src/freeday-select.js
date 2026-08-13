@@ -189,11 +189,10 @@
   }
 
   function initAll(context) {
-    var scope = context || document;
-    Array.prototype.forEach.call(
-      scope.querySelectorAll('[data-fdy-combo]'),
-      initCombo
-    );
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-combo]')) initCombo(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-combo]'), initCombo);
   }
 
   // One global handler closes the open combo on an outside click.

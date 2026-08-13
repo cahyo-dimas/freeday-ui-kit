@@ -6,6 +6,30 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.23.0 — ronde 6 (`improvement-notes/006`): 3 temuan, 2 di antaranya dilaporkan sebagai bug
+pelapor sendiri — dan memang benar, tapi di kedua kasus kit punya cara membuat kesalahan itu
+MUSTAHIL dan tak mengambilnya. Justru dua itu yang paling berharga.**
+- **`initAll(ctx)` kini juga meng-enhance `ctx` itu sendiri.** `querySelectorAll` tak pernah cocok
+  dengan root-nya sendiri, jadi ref framework yang dipasang **di** widget-nya (`<div ref="menu"
+  data-fdy-menu>` — bentuk biasa kalau root komponen ITU widget-nya) membuat satu-satunya elemen
+  yang butuh di-enhance jadi satu-satunya yang tak bisa ditemukan. Gagal **tanpa error, tanpa
+  warning, UI terlihat jadi**. Satu baris `matches()` per selector di **21 enhancer** (drawer & cfl
+  perlu callback inline-nya di-hoist dulu). `useFreeday` + `FreedayBlazor.initAll` mendelegasikan ke
+  sini, jadi ikut terperbaiki tanpa perubahan.
+- **Garis konektor stepper tak lagi menembus angka** saat `__btn` dihilangkan: lift-nya dipindah ke
+  `.fdy-step__marker` (bagian yang selalu ada). Konektor itu `position:absolute;z-index:0`, dan box
+  ber-posisi dilukis SETELAH konten inline in-flow di stacking context yang sama — jadi marker yang
+  cuma inline tertimpa, bukan karena tak punya z-index tapi karena tak ber-posisi.
+- **`.fdy-avatar--xs` (1.5rem)** — `.fdy-btn--sm` itu tepat 2rem, sama dengan `--sm`, jadi avatar
+  kecil di tombol kecil mengisi habis dan border ghost memotong lingkarannya. Usul note `--text-2xs`
+  TAK ADA di kit; dipakai `--text-xs` (terkecil yang ada).
+- **Guard:** `browser/root-init.mjs` — mount setelah load, init via root sendiri, lalu **klik asli**
+  untuk membuktikan terbuka. Mutation-checked.
+
+Gate: `npm test` **32/32** · `npm run test:browser` **12/12** · `typecheck:react` 0 error.
+
+---
+
 **v1.22.0 — 3 temuan lanjutan ronde 5 (§5-§7) + kit sekarang MERUTEKAN per stack.**
 
 - **`.fdy-nav--horizontal`** — link nav yang SAMA disusun jadi baris, untuk app top-nav tanpa

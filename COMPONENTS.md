@@ -65,7 +65,9 @@ Two consequences for you:
 ## Enhancers — hook, script, global, events
 
 Every enhancer is zero-dependency, auto-initialises once on `DOMContentLoaded`, and is idempotent:
-re-hydrate SPA-rendered DOM with `window.Freeday<X>.initAll(root)`. Events are bubbling
+re-hydrate SPA-rendered DOM with `window.Freeday<X>.initAll(root)`. **`root` may be the widget
+itself or an ancestor of it** — both work, so a framework ref placed directly on the enhanced
+element is fine. Events are bubbling
 `CustomEvent`s; the payload is in `event.detail`.
 
 | Markup hook | Script | Global | Emits |
@@ -526,6 +528,18 @@ Linear multi-step flow: marker → check, one panel at a time, back/next. Needs
 
 # Data
 
+**`__btn` is optional.** For a **read-only indicator** put `__marker` + `__label` straight in the
+`<li>`; for a **navigable** stepper wrap them in `<button class="fdy-step__btn">` (add `disabled`
+for a step that is not reachable yet). Both render identically — the marker carries its own lift
+over the connector line, so omitting `__btn` cannot make the connector draw through the numbers.
+
+```html
+<ol class="fdy-stepper">
+  <li class="fdy-step is-complete"><span class="fdy-step__marker">1</span><span class="fdy-step__label">Email</span></li>
+  <li class="fdy-step is-active"><span class="fdy-step__marker">2</span><span class="fdy-step__label">Verify</span></li>
+</ol>
+```
+
 ## Table — `.fdy-table`
 Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-table-scroll`
 (horizontal scroll). Always a `<caption>` (use `.fdy-visually-hidden` if it shouldn't show) and
@@ -812,6 +826,10 @@ Put the count in the wrapper's `aria-label` and mark the overlay `aria-hidden="t
 Initials or image. Sizes `--sm` / default / `--lg`; `.fdy-avatar-group` stacks them (label the
 group). `--tone-1`…`--tone-8` are decorative tints (WCAG AA in both themes) to distinguish
 same-initial avatars — hash the index off the **full** name, not the initials.
+
+Sizes: `--xs` 1.5rem · *(base)* 2.5rem · `--sm` 2rem · `--lg` 3.5rem. Use **`--xs` inside a control**
+— `.fdy-btn--sm` is itself 2rem tall, so an `--sm` avatar fills a small button edge to edge and the
+ghost border cuts across the circle.
 
 ## Chip — `.fdy-chip`
 Three roles inside a `.fdy-chips` row:

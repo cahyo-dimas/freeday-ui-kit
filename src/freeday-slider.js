@@ -21,7 +21,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-slider]'), initSlider);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-slider]')) initSlider(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-slider]'), initSlider);
   }
 
   if (document.readyState === 'loading') {

@@ -306,9 +306,12 @@
   }
 
   function initAll(context) {
-    var ctx = context || document;
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-daterange]'), initRange);
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-datepicker]'), initPicker);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-daterange]')) initRange(root);
+    if (root.matches && root.matches('[data-fdy-datepicker]')) initPicker(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-daterange]'), initRange);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-datepicker]'), initPicker);
   }
 
   if (document.readyState === 'loading') {

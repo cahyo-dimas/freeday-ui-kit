@@ -3,6 +3,49 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.23.0] — 2026-08-13
+Consumption round 6 (`improvement-notes/006`). The reporter filed two of the three as **their own**
+bugs rather than the kit's — and they were right about the code, but in both cases the kit had a way
+to make the mistake impossible and had not taken it. Those are the two most valuable findings here.
+### Fixed
+- **`initAll(ctx)` now enhances `ctx` itself, not just its descendants.** `querySelectorAll` never
+  matches its own root, so a framework ref placed **on** the widget — `<div ref="menu" data-fdy-menu>`,
+  which is the ordinary shape when a component's root element *is* the widget — meant the one element
+  that needed enhancing was the only one that could not be found. It failed with **no error, no
+  warning, and a UI that looked finished**: the markup rendered and simply never opened. Measured
+  before the fix: `data-fdy-menu-ready` stayed `null` and `aria-expanded` stayed `"false"` while
+  `initAll` was present and callable the whole time; `initAll(parent)` worked. One `matches()` line
+  per selector, in **all 21 enhancers** (`drawer` and `cfl` needed their inline trigger callbacks
+  hoisted first). Init was already idempotent via each widget's `-ready` flag, so a root that is also
+  matched by the descendant query costs nothing. `useFreeday` (Vue/React) and `FreedayBlazor.initAll`
+  delegate to these, so they inherit the fix with no change of their own.
+- **The stepper connector no longer draws through the markers when `__btn` is omitted.** The lift now
+  lives on `.fdy-step__marker` — the part that must always exist — instead of only on
+  `.fdy-step__btn`. The connector is `position:absolute; z-index:0`, and a positioned box paints
+  *after* in-flow inline content in the same stacking context, so a marker that was merely inline got
+  painted over: not for lack of a z-index, but for lack of being positioned at all. An
+  indicator-only stepper (no navigation, so no button) is a reasonable thing to write and it produced
+  a visible defect in shipped UI. Measured: hit-testing the marker's centre returned the connector's
+  own `.fdy-step` before, the marker after. `__btn` keeps its z-index for the navigable case.
+### Added
+- **`.fdy-avatar--xs`** (1.5rem, `--text-xs`) — an avatar inside a control had nothing to reach for:
+  `.fdy-btn--sm` is `calc(var(--control-h) - var(--space-2))` = **2rem**, exactly `--avatar--sm`'s
+  size, so the monogram filled a small button edge to edge and the ghost border crossed the circle
+  (measured: trigger 32px tall, avatar 32×32). 1.5rem inside 2rem leaves the ~4px the kit's other
+  controls give their icons. The report suggested `--text-2xs`; that token does not exist — `--text-xs`
+  is the smallest the kit has, and inventing a type step for one avatar size is not worth it.
+### Added — guards
+- **`browser/root-init.mjs`** — mounts a widget *after* load, initialises it through its own root, and
+  drives a **real click** to prove it opens; repeated for a second enhancer so the fix reads as the
+  shared pattern rather than a one-off. Mutation-checked on both. Being marked `-ready` is explicitly
+  not accepted as passing: an early version of this check reported success against markup the enhancer
+  had actually bailed on.
+### Docs
+- `COMPONENTS.md`: `initAll(root)` documents that the root may be the widget itself; the stepper
+  section states that `__btn` is **optional** and shows the read-only indicator markup (the parts list
+  never said which parts were optional); avatar gains its size table with the in-control guidance.
+- Both `useFreeday` docstrings now show the ref-on-the-widget shape alongside the wrapping one.
+
 ## [1.22.0] — 2026-08-12
 Two bodies of work. **(a)** three more findings from consumption round 5 — the report grew §5-§7
 after 1.21.0 was cut; **(b)** a **routing** failure found in the same adopted project, which had been

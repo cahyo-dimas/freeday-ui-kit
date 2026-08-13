@@ -16,19 +16,24 @@
     });
   }
 
+  function bindTrigger(btn) {
+    if (btn.dataset.fdyDrawerBound === '1') return;
+    var dialog = document.getElementById(btn.getAttribute('data-fdy-drawer'));
+    if (!dialog) return;
+    initDrawer(dialog);
+    btn.dataset.fdyDrawerBound = '1';
+    btn.addEventListener('click', function () {
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else dialog.setAttribute('open', '');
+    });
+  }
+
   function initTriggers(context) {
     var ctx = context || document;
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-drawer]'), function (btn) {
-      if (btn.dataset.fdyDrawerBound === '1') return;
-      var dialog = document.getElementById(btn.getAttribute('data-fdy-drawer'));
-      if (!dialog) return;
-      initDrawer(dialog);
-      btn.dataset.fdyDrawerBound = '1';
-      btn.addEventListener('click', function () {
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else dialog.setAttribute('open', '');
-      });
-    });
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (ctx.matches && ctx.matches('[data-fdy-drawer]')) bindTrigger(ctx);
+    if (ctx.matches && ctx.matches('.fdy-drawer')) initDrawer(ctx);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-drawer]'), bindTrigger);
     // Init any drawer dialogs even without a wired trigger (backdrop/close still work).
     Array.prototype.forEach.call(ctx.querySelectorAll('.fdy-drawer'), initDrawer);
   }

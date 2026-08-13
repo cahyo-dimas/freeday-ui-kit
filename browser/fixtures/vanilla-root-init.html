@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — initAll(ctx) must enhance ctx itself</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- Nothing enhanced at load. The spec mounts the widget AFTER DOMContentLoaded — the SPA case —
+       with the "ref" on the widget itself, then calls initAll(thatElement). querySelectorAll never
+       matches its own root, so before the fix this was a silent no-op: markup rendered, nothing
+       opened, no error. -->
+  <div id="host"></div>
+<script>
+  window.mountAndInit = (which) => {
+    const host = document.getElementById('host');
+    host.innerHTML = '';
+    const el = document.createElement('div');
+    if (which === 'menu') {
+      el.className = 'fdy-menu-wrap';
+      el.setAttribute('data-fdy-menu', '');
+      el.innerHTML = '<button class="fdy-btn" id="trig" aria-haspopup="menu" aria-expanded="false">Account</button>'
+        + '<ul class="fdy-menu" role="menu" hidden>'
+        + '<li role="none"><button class="fdy-menu__item" role="menuitem">Profile</button></li></ul>';
+      host.appendChild(el);
+      window.FreedayMenu.initAll(el);          // ctx IS the widget
+      return el.getAttribute('data-fdy-menu-ready');
+    }
+    el.className = 'fdy-tabs';
+    el.setAttribute('data-fdy-tabs', '');
+    el.innerHTML = '<div class="fdy-tabs__list" role="tablist">'
+      + '<button class="fdy-tabs__tab" id="tab1" role="tab" aria-controls="p1" aria-selected="true">One</button>'
+      + '<button class="fdy-tabs__tab" id="tab2" role="tab" aria-controls="p2" aria-selected="false">Two</button></div>'
+      + '<div class="fdy-tabs__panel" role="tabpanel" id="p1">1</div>'
+      + '<div class="fdy-tabs__panel" role="tabpanel" id="p2" hidden>2</div>';
+    host.appendChild(el);
+    window.FreedayTabs.initAll(el);            // ctx IS the widget
+    return el.getAttribute('data-fdy-tabs-ready');
+  };
+</script>
+</body>
+</html>

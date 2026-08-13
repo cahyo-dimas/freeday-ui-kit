@@ -124,7 +124,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-autocomplete]'), initAutocomplete);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-autocomplete]')) initAutocomplete(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-autocomplete]'), initAutocomplete);
   }
 
   if (document.readyState === 'loading') {
@@ -288,7 +291,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-carousel]'), initCarousel);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-carousel]')) initCarousel(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-carousel]'), initCarousel);
   }
 
   if (document.readyState === 'loading') {
@@ -545,7 +551,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-cascade]'), initCascade);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-cascade]')) initCascade(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-cascade]'), initCascade);
   }
 
   if (document.readyState === 'loading') {
@@ -738,28 +747,33 @@
     };
   }
 
+  function bindGroup(group) {
+    if (group.dataset.fdyCflBound === '1') return;
+    var dialog = document.getElementById(group.getAttribute('data-fdy-cfl'));
+    if (!dialog) return;
+    initDialog(dialog);
+    var opener = group.querySelector('[data-fdy-cfl-trigger], .fdy-input-group__btn');
+    if (!opener) return;
+    group.dataset.fdyCflBound = '1';
+    opener.addEventListener('click', function () { dialog.fdyCflOpen(group, opener); });
+  }
+
+  function bindOpener(opener) {
+    if (opener.dataset.fdyCflBound === '1') return;
+    var dialog = document.getElementById(opener.getAttribute('data-fdy-cfl-open'));
+    if (!dialog) return;
+    initDialog(dialog);
+    opener.dataset.fdyCflBound = '1';
+    opener.addEventListener('click', function () { dialog.fdyCflOpen(null, opener); });
+  }
+
   function initTriggers(context) {
     var ctx = context || document;
-
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl]'), function (group) {
-      if (group.dataset.fdyCflBound === '1') return;
-      var dialog = document.getElementById(group.getAttribute('data-fdy-cfl'));
-      if (!dialog) return;
-      initDialog(dialog);
-      var opener = group.querySelector('[data-fdy-cfl-trigger], .fdy-input-group__btn');
-      if (!opener) return;
-      group.dataset.fdyCflBound = '1';
-      opener.addEventListener('click', function () { dialog.fdyCflOpen(group, opener); });
-    });
-
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl-open]'), function (opener) {
-      if (opener.dataset.fdyCflBound === '1') return;
-      var dialog = document.getElementById(opener.getAttribute('data-fdy-cfl-open'));
-      if (!dialog) return;
-      initDialog(dialog);
-      opener.dataset.fdyCflBound = '1';
-      opener.addEventListener('click', function () { dialog.fdyCflOpen(null, opener); });
-    });
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (ctx.matches && ctx.matches('[data-fdy-cfl]')) bindGroup(ctx);
+    if (ctx.matches && ctx.matches('[data-fdy-cfl-open]')) bindOpener(ctx);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl]'), bindGroup);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-cfl-open]'), bindOpener);
   }
 
   if (document.readyState === 'loading') {
@@ -1189,7 +1203,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-chart]'), initChart);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-chart]')) initChart(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-chart]'), initChart);
   }
 
   if (document.readyState === 'loading') {
@@ -1272,6 +1289,9 @@
 
   function initAll(context) {
     var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-chips]')) initGroup(root);
+    if (root.matches && root.matches('.fdy-chip__remove')) initRemove(root);
     Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-chips]'), initGroup);
     Array.prototype.forEach.call(root.querySelectorAll('.fdy-chip__remove'), initRemove);
   }
@@ -1593,9 +1613,12 @@
   }
 
   function initAll(context) {
-    var ctx = context || document;
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-daterange]'), initRange);
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-datepicker]'), initPicker);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-daterange]')) initRange(root);
+    if (root.matches && root.matches('[data-fdy-datepicker]')) initPicker(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-daterange]'), initRange);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-datepicker]'), initPicker);
   }
 
   if (document.readyState === 'loading') {
@@ -1679,7 +1702,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-datetimepicker]'), initDatetime);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-datetimepicker]')) initDatetime(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-datetimepicker]'), initDatetime);
   }
 
   if (document.readyState === 'loading') {
@@ -1709,19 +1735,24 @@
     });
   }
 
+  function bindTrigger(btn) {
+    if (btn.dataset.fdyDrawerBound === '1') return;
+    var dialog = document.getElementById(btn.getAttribute('data-fdy-drawer'));
+    if (!dialog) return;
+    initDrawer(dialog);
+    btn.dataset.fdyDrawerBound = '1';
+    btn.addEventListener('click', function () {
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else dialog.setAttribute('open', '');
+    });
+  }
+
   function initTriggers(context) {
     var ctx = context || document;
-    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-drawer]'), function (btn) {
-      if (btn.dataset.fdyDrawerBound === '1') return;
-      var dialog = document.getElementById(btn.getAttribute('data-fdy-drawer'));
-      if (!dialog) return;
-      initDrawer(dialog);
-      btn.dataset.fdyDrawerBound = '1';
-      btn.addEventListener('click', function () {
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else dialog.setAttribute('open', '');
-      });
-    });
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (ctx.matches && ctx.matches('[data-fdy-drawer]')) bindTrigger(ctx);
+    if (ctx.matches && ctx.matches('.fdy-drawer')) initDrawer(ctx);
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-drawer]'), bindTrigger);
     // Init any drawer dialogs even without a wired trigger (backdrop/close still work).
     Array.prototype.forEach.call(ctx.querySelectorAll('.fdy-drawer'), initDrawer);
   }
@@ -1905,7 +1936,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-validate]'), initForm);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-validate]')) initForm(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-validate]'), initForm);
   }
 
   if (document.readyState === 'loading') {
@@ -2019,6 +2053,9 @@
 
   function initAll(context) {
     var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-mask]')) initMask(root);
+    if (root.matches && root.matches('[data-fdy-password]')) initReveal(root);
     Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-mask]'), initMask);
     Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-password]'), initReveal);
   }
@@ -2114,7 +2151,10 @@
   }
 
   function initAll(ctx) {
-    Array.prototype.forEach.call((ctx || document).querySelectorAll('[data-fdy-menu]'), initMenu);
+    var root = ctx || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-menu]')) initMenu(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-menu]'), initMenu);
   }
 
   if (document.readyState === 'loading') {
@@ -2235,7 +2275,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-rating]'), initRating);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-rating]')) initRating(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-rating]'), initRating);
   }
 
   if (document.readyState === 'loading') {
@@ -2438,11 +2481,10 @@
   }
 
   function initAll(context) {
-    var scope = context || document;
-    Array.prototype.forEach.call(
-      scope.querySelectorAll('[data-fdy-combo]'),
-      initCombo
-    );
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-combo]')) initCombo(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-combo]'), initCombo);
   }
 
   // One global handler closes the open combo on an outside click.
@@ -2489,7 +2531,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-slider]'), initSlider);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-slider]')) initSlider(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-slider]'), initSlider);
   }
 
   if (document.readyState === 'loading') {
@@ -2580,7 +2625,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-stepper]'), initStepper);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-stepper]')) initStepper(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-stepper]'), initStepper);
   }
 
   if (document.readyState === 'loading') {
@@ -3053,10 +3101,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call(
-      (context || document).querySelectorAll('[data-fdy-table]'),
-      initTable
-    );
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-table]')) initTable(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-table]'), initTable);
   }
 
   if (document.readyState === 'loading') {
@@ -3122,10 +3170,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call(
-      (context || document).querySelectorAll('[data-fdy-tabs]'),
-      initTabs
-    );
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-tabs]')) initTabs(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-tabs]'), initTabs);
   }
 
   if (document.readyState === 'loading') {
@@ -3306,7 +3354,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-timepicker]'), initTime);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-timepicker]')) initTime(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-timepicker]'), initTime);
   }
 
   if (document.readyState === 'loading') {
@@ -3507,7 +3558,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-tree]'), initTree);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-tree]')) initTree(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-tree]'), initTree);
   }
 
   if (document.readyState === 'loading') {
@@ -3714,7 +3768,10 @@
   }
 
   function initAll(context) {
-    Array.prototype.forEach.call((context || document).querySelectorAll('[data-fdy-dropzone]'), initDropzone);
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-dropzone]')) initDropzone(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-dropzone]'), initDropzone);
   }
 
   if (document.readyState === 'loading') {

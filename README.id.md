@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.22.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.22.0)
+[![Release](https://img.shields.io/badge/release-v1.23.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.23.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
