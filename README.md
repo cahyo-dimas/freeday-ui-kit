@@ -5,7 +5,7 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.26.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.26.0)
+[![Release](https://img.shields.io/badge/release-v1.27.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.27.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -129,6 +129,7 @@ Each one auto-inits `[data-fdy-*]` on `DOMContentLoaded` — idempotent, progres
 | `freeday-datetime` | `[data-fdy-datetimepicker]` | `fdy-datetime-change` `{date,time,value}` · `window.FreedayDatetime` |
 | `freeday-cascade` | `[data-fdy-cascade]` (nested `<ul>` model) | `fdy-cascade-change` `{value,path,labels}` · `window.FreedayCascade` |
 | `freeday-mask` | `[data-fdy-mask]`, `[data-fdy-password]` | `fdy-mask` `{value,raw}` · `window.FreedayMask` |
+| `freeday-number` | `[data-fdy-number]` | — (native `input`/`change`) · `window.FreedayNumber` |
 | `freeday-form` | `[data-fdy-validate]` (form) | `fdy-form-invalid`/`-valid` · `window.FreedayForm` |
 | `freeday-chip` | `[data-fdy-chips]`, `.fdy-chip__remove` | `fdy-chip-change`/`fdy-chip-remove` · `window.FreedayChip` |
 | `freeday-upload` | `[data-fdy-dropzone]` | `fdy-upload-add`/`-remove` · `window.FreedayUpload` |

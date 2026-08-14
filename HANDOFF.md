@@ -6,6 +6,34 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.27.0 — note #44: `type="number"` memakai tombol spin bawaan browser.**
+- Tombol itu widget OS berwarna OS — tak terjangkau tema mana pun. Di permukaan gelap ia jadi
+  artefak abu-abu yang menempel di field yang sudah berteme: **satu-satunya kontrol tak berteme**
+  di halaman yang semua kontrolnya berteme. Dinetralkan dua-duanya karena beda mesin:
+  `appearance:textfield` (Firefox) + pseudo-element `::-webkit-*-spin-button` (Blink/WebKit).
+- **`[data-fdy-number]` + `freeday-number.js`** mengembalikan afordansinya. **Bukan blok baru** —
+  `.fdy-input-group` + dua `__btn`, jadi border bersama, ring `:focus-within`, dan promosi error
+  `:has()` ikut gratis. Usulan note (`.fdy-number` blok sendiri) akan menduplikasi semuanya.
+- **Tanpa event kustom:** stepping men-dispatch `input` + `change` native, jadi `v-model`/`onChange`/
+  `@bind` jalan tanpa adapter — input tetap sumber kebenaran. Itu juga alasan komponen ini tak butuh
+  typed wrapper di empat stack.
+- Tombol nonaktif di batas, di field `disabled`/`readonly`, dan saat `step="any"` (tak punya
+  increment; `stepUp()` melempar). `MutationObserver` mengawasi atribut-atribut itu — framework
+  mengubahnya tanpa event, dan tombol yang tampak aktif tapi tak berbuat apa-apa persis kebohongan
+  yang mesin state ini ada untuk mencegah. Observer pertama di kit.
+- **`type="search"` sengaja tak disentuh** — tombol × bawaannya juga tak berteme (dan ada 10 di
+  halaman docs kit sendiri), tapi itu satu-satunya cara mengosongkan field: menghapusnya membuang
+  fungsi, bukan chrome. `date`/`time` sama; kit sudah punya picker sendiri, jadi jawabannya docs.
+- **Kenapa tak pernah ketahuan:** `type="number"` dipakai **nol kali** di seluruh docs + examples
+  (vs `search` 10×, `text` 12×, `date` 4×). Kit tak pernah memakai input yang ia kirim. Sekarang
+  halaman docs memuat field angka betulan.
+- `browser/harness.mjs` dapat `pressKey` — urutan tab cuma bergerak oleh tombol tepercaya, jadi
+  klaim "tombol step bukan tab stop" diukur, bukan dibaca dari atribut.
+
+Gate: `npm test` **33/33** · `npm run test:browser` **18/18**.
+
+---
+
 **v1.26.0 — note #43: baris file tak bisa bilang "sudah terkirim, sekarang menunggu server".**
 - Satu-satunya state panjang baris upload dinamai menurut **transfer**-nya. Untuk konsumen yang
   uploadnya diikuti kerja server (OCR/ekstraksi/scan), label "Mengunggah…" jadi salah begitu byte

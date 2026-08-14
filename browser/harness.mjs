@@ -164,7 +164,16 @@ export async function withPage(fileUrl, fn) {
       await clickAt(c.x, c.y);
     };
 
-    return await fn({ evalJS, waitFor, clickCenter });
+    /* A real key, not a synthetic KeyboardEvent — only a trusted one moves focus, which is the whole
+       point when the claim under test is about tab order. */
+    const pressKey = async (key, { shift = false } = {}) => {
+      const params = { key, code: key, windowsVirtualKeyCode: key === 'Tab' ? 9 : 0, modifiers: shift ? 8 : 0 };
+      await cmd('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...params });
+      await cmd('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+      await sleep(40);
+    };
+
+    return await fn({ evalJS, waitFor, clickCenter, pressKey });
   } finally {
     if (ws !== null) {
       try {

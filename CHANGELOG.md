@@ -3,6 +3,59 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.27.0] — 2026-08-14
+Improvement note #44, found while building a settings screen whose only numeric field looked like it
+belonged to a different application.
+### Fixed
+- **`.fdy-input[type="number"]` no longer shows the user agent's spin buttons.** They are OS widgets
+  in OS colours that no theme reaches, so on a dark surface they read as a light-grey artefact glued
+  to an otherwise themed field — the one unthemed control on a page where everything else is themed
+  to the last pixel. Both halves ship, because they cover different engines: `appearance: textfield`
+  (Firefox) and `::-webkit-outer/inner-spin-button { appearance: none }` (Blink/WebKit).
+### Added
+- **`[data-fdy-number]` + `freeday-number.js`** — the increment affordance back on the kit's terms,
+  since hiding the native buttons removes it. **Not a new block:** it is an `.fdy-input-group` with
+  two `__btn`s, so it inherits the shared border, `:focus-within` ring and `:has()` error promotion
+  that already existed. The reported `.fdy-number` block would have duplicated all of it.
+  - **No custom event.** Stepping dispatches native bubbling `input` + `change` on the input, so
+    `v-model` / `onChange` / `@bind` work with no adapter and no new API — the input stays the source
+    of truth. That is also why this needs no typed wrapper in any of the four stacks.
+  - `min`/`max`/`step` live on the input and the buttons never redo the arithmetic (`stepUp()`/
+    `stepDown()` clamp for free). They go `disabled` at a bound, on a `disabled`/`readonly` field,
+    and when `step="any"` — which has no defined increment and makes `stepUp()` throw, so a stepper
+    cannot honestly express it.
+  - A `MutationObserver` watches `disabled`/`readonly`/`min`/`max`/`step`: a framework changes those
+    without firing an event, and a button that still looks enabled while doing nothing is the exact
+    lie this state machine exists to prevent. (First observer in the kit — the alternative was a
+    button whose appearance silently drifts from its behaviour.)
+  - The buttons are **not tab stops** (`tabindex="-1"`): the input is already focusable and ↑/↓
+    already step it, so two extra stops per field cost every keyboard user and buy nothing. They keep
+    an `aria-label`, and `type="button"` so they cannot submit their form.
+- `.fdy-input-group__btn` gains a **leading-position** rule (divider on the correct side when the
+  button comes first) and a **`:disabled`** state — dim + `not-allowed`, with `:hover` withdrawn,
+  because a disabled button still matches `:hover`.
+- `COMPONENTS.md` now answers **which `type` `.fdy-input` covers**, which is the question that would
+  have prevented this note: every text-like type themes identically, and the two that keep a native
+  widget are named with what to do about each.
+### Notes on the shape of the fix
+- **`type="search"` deliberately left alone.** Its WebKit clear (×) button is unthemed too — and it
+  is on the kit's own docs pages, 10 of them — but it is the only way to empty the field. Stripping
+  it removes function, not chrome; the number arrows only removed a mouse-only increment that ↑/↓
+  still provides. `type="date"`/`time` likewise keep their picker indicator; the kit ships its own
+  datepicker/timepicker and the docs now say to use those instead.
+- **Why this was never caught:** `type="number"` appears **zero** times across `docs/index.html`,
+  `docs/reference-screen.html` and `examples/` (against `search` ×10, `text` ×12, `date` ×4). The kit
+  never used the input it shipped. The docs page now carries a real number field, in the input-group
+  section where it belongs.
+### Added — guards
+- `test/css.test.mjs` asserts both engine halves survive (each is invisible in review and each brings
+  the artefact back on one engine only), and states in-file why `search`/`date` are excluded.
+- `browser/number.mjs` drives real clicks and a real Tab: stepping fires native `input` + `change`,
+  bounds disable the right button, a disabled button changes nothing, `readonly` and `step="any"`
+  are inert without throwing, and Tab skips the buttons. Mutation-checked against five defects.
+- `browser/harness.mjs` gains `pressKey` — tab order only moves for a trusted key, so the claim is
+  measured rather than read off an attribute.
+
 ## [1.26.0] — 2026-08-14
 Improvement note #43, found while chasing a "the upload is stuck" report on a 626 KB PDF: the
 transfer took about a second, the server then spent nearly a minute reading the document.

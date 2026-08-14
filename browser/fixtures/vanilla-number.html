@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — number field</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- A: the documented shape. Bounded 0..3 so both limits are reachable in a test. -->
+  <div class="fdy-input-group" id="grpA" data-fdy-number>
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="-1" tabindex="-1" aria-label="Kurangi">−</button>
+    <input class="fdy-input" id="numA" type="number" min="0" max="3" step="1" value="1" aria-label="Jumlah">
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="1" tabindex="-1" aria-label="Tambah">+</button>
+  </div>
+
+  <!-- B: read-only. The value is real and copyable; stepping it is not. -->
+  <div class="fdy-input-group" id="grpB" data-fdy-number>
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="-1" tabindex="-1" aria-label="Kurangi">−</button>
+    <input class="fdy-input" id="numB" type="number" min="0" max="9" step="1" value="5" readonly aria-label="Read-only">
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="1" tabindex="-1" aria-label="Tambah">+</button>
+  </div>
+
+  <!-- C: step="any" — there is no defined increment, so stepUp() would throw. -->
+  <div class="fdy-input-group" id="grpC" data-fdy-number>
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="-1" tabindex="-1" aria-label="Kurangi">−</button>
+    <input class="fdy-input" id="numC" type="number" step="any" value="1.5" aria-label="Stepless">
+    <button type="button" class="fdy-input-group__btn" data-fdy-number-step="1" tabindex="-1" aria-label="Tambah">+</button>
+  </div>
+
+  <!-- D: a tab-order neighbour, so "the buttons are not tab stops" can be measured rather than asserted. -->
+  <input class="fdy-input" id="after" type="text" aria-label="Next field">
+
+<script>
+  window.events = [];
+  document.addEventListener('input', (e) => window.events.push({ type: 'input', id: e.target.id, value: e.target.value }));
+  document.addEventListener('change', (e) => window.events.push({ type: 'change', id: e.target.id, value: e.target.value }));
+
+  window.state = (groupId) => {
+    const group = document.getElementById(groupId);
+    const btns = [...group.querySelectorAll('[data-fdy-number-step]')];
+    return {
+      value: group.querySelector('input').value,
+      down: btns[0].disabled,
+      up: btns[1].disabled,
+      ready: group.dataset.fdyNumberReady === '1',
+    };
+  };
+  /* Errors thrown inside a click listener don't reject anything the test can see, so record them. */
+  window.pageErrors = [];
+  window.addEventListener('error', (e) => window.pageErrors.push(String(e.message)));
+</script>
+</body>
+</html>

@@ -98,6 +98,24 @@ test('the containers the escape was measured on keep their position', () => {
   }
 });
 
+test('the native spin buttons stay hidden on .fdy-input[type="number"] (#44)', () => {
+  /* A themed field with the user agent's own spin buttons inside it is the one unthemed control on
+   * the page — OS widget colours no stylesheet reaches. Both halves are load-bearing and neither is
+   * visible in a code review: `appearance` is the Firefox path, the pseudo-elements the Blink/WebKit
+   * one, and dropping either brings the artefact back on that engine only.
+   *
+   * Deliberately NOT extended to `type="search"` or `type="date"`: their native widgets are the only
+   * way to clear the field / open the picker, so hiding them removes function rather than chrome.
+   * COMPONENTS.md states that split — if this test ever grows a search clause, that decision changed. */
+  const number = rules(css).filter(r => r.selector.includes('.fdy-input[type="number"]'));
+  assert.ok(number.length >= 2, `expected the appearance rule and the spin-button rule, got ${number.length}`);
+  assert.ok(number.some(r => /appearance:\s*textfield/.test(r.body)), 'the Firefox half (appearance:textfield) is gone');
+  const pseudo = number.find(r => r.selector.includes('-webkit-inner-spin-button'));
+  assert.ok(pseudo !== undefined, 'the ::-webkit-inner-spin-button rule is gone');
+  assert.match(pseudo.body, /appearance:\s*none/, 'the WebKit half must neutralise the pseudo-element');
+  assert.ok(pseudo.selector.includes('-webkit-outer-spin-button'), 'the outer spin button is neutralised too');
+});
+
 test('.fdy-visually-hidden still documents why the containers carry it', () => {
   /* The fix is spread across seven files; the explanation lives in exactly one place. If the
    * comment goes, the next reader deletes a `position:relative` that looks decorative. */

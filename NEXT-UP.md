@@ -9,7 +9,7 @@ ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat h
 
 ---
 
-## Roadmap ke depan (per v1.26.0) — default: **tunggu demand**
+## Roadmap ke depan (per v1.27.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -31,6 +31,7 @@ Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang — pemicunya di kol
 | 6 | **String UI vanilla bisa di-override** — `freeday-table.js` hard-code bahasa Indonesia (`'Menampilkan … dari …'`, `'N dipilih'`) tanpa hook; adapter Vue/React/Blazor sudah English. Ketemu saat menulis `docs/reference-screen.html` (v1.20.0): halaman English jadi campur. Opsi termurah = baca `data-fdy-i18n-*` di root `.fdy-datatable`, fallback ke default sekarang | ada layar non-Indonesia yang pakai enhancer vanilla (bukan adapter) |
 | 7 | **`groupBy` di `FdyTable`** — layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
 | 8 | **Perilaku drawer `.fdy-app` tak ikut dikirim** — kit mengirim `__navtoggle`, `__backdrop`, dan kelas state `--nav-open`/`--nav-collapsed`, tapi **nol JS**: tiap konsumen merakit sendiri toggle + Escape + focus trap + restore focus + `inert`, dan satu di antaranya sudah salah merakitnya (nav terbuka, konten di-`inert`, pengguna tanpa jalan keluar — itu yang melahirkan `breakpoints.nav` di v1.20.0). Dilaporkan **dua kali** (note 004 §B footer & note 005 tail, keduanya salah menyebutnya "003 §8" — note 003 cuma punya 7 seksi). Bentuknya jelas: satu enhancer `freeday-app-shell.js` bergaya rumah (`data-fdy-app`, auto-init, idempotent, `initAll`), pakai `breakpoints.nav` untuk membedakan mode overlay vs kolom statis, dan `docs/index.html` + `docs/reference-screen.html` berhenti merakit sendiri (itu sekaligus buktinya) | **pemicunya sudah ada** — ini kandidat #1 yang nyata sekarang, bukan spekulatif; tinggal keputusan apakah kit mau memiliki perilaku shell |
+| 10 | **Tombol clear ber-teme untuk `type="search"`** — tombol × bawaan WebKit tak berteme sama seperti spin button di #44 (v1.27.0), tapi **sengaja tak distrip**: ia satu-satunya cara mengosongkan field, jadi menghapusnya membuang fungsi. Kalau mau konsisten visual, bentuknya bukan CSS melainkan `.fdy-input-group__btn` yang mengosongkan input (pola yang sudah dipakai FdyDatepicker clearable v1.13.0), dengan `type="text"` supaya × bawaan tak muncul. Ditulis di COMPONENTS.md sebagai keputusan, bukan kelalaian | ada layar yang mempermasalahkan × bawaan itu — jangan spekulatif |
 | 9 | **`.fdy-pagination` tanpa rule CSS** — class blok di `<nav>` cuma hook penamaan; `__list`/`__link`/`__ellipsis` yang menata. Konsisten secara dokumentasi (COMPONENTS.md + guard `STRUCTURAL_HOOKS`), tapi kalau nanti wrapper butuh style (mis. `justify-content`), di situlah tempatnya | wrapper paginasi butuh style sendiri |
 
 Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras AA gate wajib hijau;
@@ -118,7 +119,7 @@ versi, dan "getting-started 4×" padahal 1×). **Cari saja** — inilah daftar o
 git grep -n '<versi-lama>' -- . | grep -v CHANGELOG    # semua yang harus di-bump
 ```
 
-Per v1.26.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
+per v1.27.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
 `README.id.md` (badge + link tag) · `docs/index.html` (eyebrow + footer) ·
 `docs/getting-started.md` (contoh `^versi`) · `HANDOFF.md` · `NEXT-UP.md`.
 

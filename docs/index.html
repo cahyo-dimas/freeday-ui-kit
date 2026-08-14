@@ -329,7 +329,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.26.0</p>
+          <p class="doc-eyebrow">Design System · v1.27.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -632,7 +632,7 @@
 
     <section class="doc-section" id="sec-inputgroup">
       <h2>Input group</h2>
-      <p class="doc-desc">Addon prefix/suffix bebas — teks (Rp / %), ikon dekoratif (<code>__addon--icon</code>), tombol aksi (<code>__btn</code>), atau tanpa addon sama sekali. Jadi "dengan ikon / tanpa ikon / ikon custom" cukup dari markup addon.</p>
+      <p class="doc-desc">Addon prefix/suffix bebas — teks (Rp / %), ikon dekoratif (<code>__addon--icon</code>), tombol aksi (<code>__btn</code>), atau tanpa addon sama sekali. Jadi "dengan ikon / tanpa ikon / ikon custom" cukup dari markup addon. Field angka = grup yang sama dengan dua tombol step — <code>data-fdy-number</code>.</p>
       <div class="doc-demo" style="align-items:flex-start">
         <div class="fdy-input-group">
           <span class="fdy-input-group__addon">Rp</span>
@@ -645,6 +645,11 @@
         <div class="fdy-input-group">
           <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
           <input class="fdy-input" type="search" placeholder="Cari…" aria-label="Cari (ikon depan)">
+        </div>
+        <div class="fdy-input-group" data-fdy-number>
+          <button type="button" class="fdy-input-group__btn" data-fdy-number-step="-1" tabindex="-1" aria-label="Kurangi">−</button>
+          <input class="fdy-input" type="number" min="0" max="10" step="1" value="1" aria-label="Jumlah konfirmasi">
+          <button type="button" class="fdy-input-group__btn" data-fdy-number-step="1" tabindex="-1" aria-label="Tambah">+</button>
         </div>
         <div class="fdy-input-group" data-fdy-cfl="cfl-customer" data-fdy-cfl-display="code">
           <input class="fdy-input" type="text" placeholder="Pilih pelanggan…" aria-label="Kode pelanggan" readonly>
@@ -1974,7 +1979,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.26.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.27.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -2059,7 +2064,7 @@
     'sec-tombol': { h2: 'Button', desc: 'Dark-to-bottom gradient + coloured glow. One primary action per screen; the rest are ghost.' },
     'sec-menu': { h2: 'Menu &amp; Split button', desc: 'Action popup (WAI-ARIA APG menu-button pattern) — keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/Home/End/<kbd class="fdy-kbd">Esc</kbd>. Split button = primary action + menu toggle. Needs <code>freeday-menu.js</code>.' },
     'sec-input': { h2: 'Input', desc: 'Inner shadow + focus glow. <strong>For errors, set <code>aria-invalid="true"</code></strong> — it does both jobs (the visual state <em>and</em> the one screen readers can act on), then <code>aria-describedby</code> links the message (a help element with a matching <code>id</code>). <code>.fdy-input--error</code> is only for cases where the invalid state is not the field\'s own.' },
-    'sec-inputgroup': { h2: 'Input group', desc: 'Free prefix/suffix addons — text (Rp / %), a decorative icon (<code>__addon--icon</code>), an action button (<code>__btn</code>), or none at all. So "with icon / without / custom icon" is just addon markup.' },
+    'sec-inputgroup': { h2: 'Input group', desc: 'Free prefix/suffix addons — text (Rp / %), a decorative icon (<code>__addon--icon</code>), an action button (<code>__btn</code>), or none at all. So "with icon / without / custom icon" is just addon markup. The number field is the same group with two step buttons — <code>data-fdy-number</code>.' },
     'sec-cfl': { h2: 'Choose-from-list', desc: 'A read-only field backed by master data (customers, items, warehouses…). The magnifier on the right opens a search dialog; the picked row fills the field (code + name at once). The value is always <strong>picked</strong>, never typed. Needs <code>freeday-cfl.js</code>.' },
     'sec-datepicker': { h2: 'Date picker', desc: 'Input-styled trigger + calendar popover — consistent across browsers &amp; themeable. (Native <code>&lt;input type="date"&gt;</code> stays a light option when you don\'t need theming.) A range is two linked pickers; the end can\'t precede the start. Full keyboard support. Needs <code>freeday-datepicker.js</code>.' },
     'sec-timepicker': { h2: 'Time picker', desc: 'Input-styled trigger + a time-list popup (WAI-ARIA listbox). 24-hour <code>HH:MM</code>; range &amp; step set via <code>data-min</code>/<code>data-max</code>/<code>data-step</code> (default every 30 min). Full keyboard support. Needs <code>freeday-timepicker.js</code>.' },

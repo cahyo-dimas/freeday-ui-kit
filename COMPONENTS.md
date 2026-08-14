@@ -91,6 +91,7 @@ element is fine. Events are bubbling
 | `data-fdy-tree` | `freeday-tree.js` | `FreedayTree` | — |
 | `data-fdy-rating` | `freeday-rating.js` | `FreedayRating` | — (native `change`) |
 | `data-fdy-slider` | `freeday-slider.js` | `FreedaySlider` | — (native `input`) |
+| `data-fdy-number` | `freeday-number.js` | `FreedayNumber` | — (native `input`, `change`) |
 | `data-fdy-drawer="id"` | `freeday-drawer.js` | `FreedayDrawer` | — |
 | `data-fdy-chart="type"` | `freeday-chart.js` | `FreedayChart` | — (`.update(el)` to repaint) |
 | — (imperative) | `freeday-toast.js` | `Freeday.toast()` / `Freeday.dismiss()` | — |
@@ -307,6 +308,17 @@ native control, otherwise a `<div>` + explicitly associated label.
 </label>
 ```
 
+**Which `type` does `.fdy-input` cover?** Every text-like type — `text` `email` `password` `tel`
+`url` `search` `number` — themes identically. Two carry a native widget the kit does *not* override:
+
+| Type | What the UA still draws | What to do |
+|---|---|---|
+| `search` | WebKit's clear (×) button, in OS colours | **Left alone on purpose** — it is the only way to empty the field. Want it themed? Drop the type back to `text` and add a `.fdy-input-group__btn` that clears. |
+| `date` `time` `datetime-local` | the picker indicator glyph, and the whole native picker | Use `.fdy-datepicker` / `.fdy-timepicker` / `.fdy-datetimepicker` instead — the kit ships its own. |
+
+`number` used to be a third: the UA spin buttons are unthemeable, so `.fdy-input[type="number"]`
+now hides them and `[data-fdy-number]` below gives the affordance back.
+
 ## Input group — `.fdy-input-group`
 Prefix/suffix addons around an input: text (`Rp`, `%`), a decorative icon
 (`__addon--icon`), or an action button (`__btn`).
@@ -319,6 +331,31 @@ Prefix/suffix addons around an input: text (`Rp`, `%`), a decorative icon
   <input class="fdy-input" inputmode="numeric" aria-label="Amount">
 </div>
 ```
+
+## Number field — `[data-fdy-number]`
+A number input with its increment/decrement affordance back, after `.fdy-input` removed the
+browser's own. **Not a new block** — it is an `.fdy-input-group` with two `__btn`s, so it inherits
+the shared border, focus ring and error promotion. Needs `freeday-number.js`.
+
+```html
+<div class="fdy-input-group" data-fdy-number>
+  <button type="button" class="fdy-input-group__btn" data-fdy-number-step="-1"
+          tabindex="-1" aria-label="Kurangi">−</button>
+  <input class="fdy-input" type="number" min="0" max="10" step="1" value="1" aria-label="Konfirmasi">
+  <button type="button" class="fdy-input-group__btn" data-fdy-number-step="1"
+          tabindex="-1" aria-label="Tambah">+</button>
+</div>
+```
+
+- **No custom event.** Stepping fires native bubbling `input` + `change` on the input, so `v-model`,
+  `onChange` and `@bind` work with no adapter — the input stays the source of truth.
+- `min` / `max` / `step` live on the **input**; the buttons never do the arithmetic themselves
+  (`stepUp()`/`stepDown()` clamp for free) and go `disabled` at a bound, on a `disabled`/`readonly`
+  field, and when `step="any"` (a stepper cannot express "no defined increment").
+- The buttons are **not tab stops** (`tabindex="-1"`): the input is already focusable and ↑/↓
+  already step it, so extra stops would cost every keyboard user and buy nothing. Keep the
+  `aria-label` — pointer and browse-mode users still get a named control.
+- `type="button"` is required. Inside a `<form>`, a bare `<button>` submits it.
 
 ## Checkbox · radio · switch
 Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrapping `<label>`;
