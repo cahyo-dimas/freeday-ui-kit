@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-density="compact">
+<head>
+<meta charset="utf-8">
+<title>Freeday — density opts back out</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- The app is compact at the root: 30 of its 40 screens are data grids. -->
+  <button class="fdy-btn" id="dense">Dense</button>
+
+  <!-- ...but this region is chrome shared with a sibling product, which is comfortable. Before
+       [data-density="comfortable"] existed this wrapper matched no rule and changed nothing, so the
+       shared header was 4px off in two places — which reads as sloppiness, not as a token. -->
+  <div data-density="comfortable" id="chrome">
+    <button class="fdy-btn" id="roomy">Roomy</button>
+  </div>
+
+  <!-- Density must still nest back the other way. -->
+  <div data-density="comfortable">
+    <div data-density="compact"><button class="fdy-btn" id="dense2">Dense again</button></div>
+  </div>
+<script>
+  window.metrics = () => {
+    const h = (id) => Math.round(document.getElementById(id).getBoundingClientRect().height);
+    const spaceIn = (id) => getComputedStyle(document.getElementById(id)).getPropertyValue('--space-4').trim();
+    return { dense: h('dense'), roomy: h('roomy'), dense2: h('dense2'),
+             space4Root: spaceIn('dense'), space4Chrome: spaceIn('roomy') };
+  };
+</script>
+</body>
+</html>

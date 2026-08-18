@@ -130,6 +130,13 @@ container, a single `<section>`. An app whose two list screens are dense and who
 are not should scope it per screen rather than densifying everything. Set it at one level per screen,
 never per component.
 
+**And it goes both ways.** `data-density="comfortable"` is a real rule, not just the absence of
+`compact`, so an app that is dense *at the root* can opt one region back out — a header, a toolbar,
+a footer shared with a sibling product that has to line up pixel for pixel. Inheritance only runs
+downhill; without that rule a compact root left every subtree compact and a `comfortable` wrapper
+changed nothing. Do not restate the five values by hand: that copy goes stale the moment the kit
+retunes a step.
+
 ## 6b. Navigation: one component, two orientations — and never a tab role
 
 A navigation link is an `<a class="fdy-nav__item">` marked **`aria-current="page"`**. That does not

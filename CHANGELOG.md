@@ -3,6 +3,35 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.31.0] — 2026-08-18
+Improvement note 002: density was a one-way door.
+### Added
+- **`[data-density="comfortable"]` is now a real rule.** The kit shipped only the `compact` block,
+  and its own comment promised per-subtree density — true in one direction only. These are
+  inheriting custom properties, so once `<html>` is compact *every* subtree is compact and a
+  `comfortable` wrapper matched nothing at all. An app that is dense overall (a back office where
+  most screens are data grids) could not opt its shared chrome back out: measured against a sibling
+  product, the logo sat 12px from the edge instead of 16 and the avatar 12 instead of 20 — four
+  pixels in two places, from `--space-4` and `--control-h`, which reads as sloppiness rather than as
+  a token. The workaround, restating the five defaults on a local class, is exactly the copy that
+  goes stale when the kit retunes a step.
+  Note the kit's own README has been telling people to write `data-density="comfortable"` on `<html>`
+  since long before a rule existed for it — harmless there, because it matched the defaults by
+  accident, and broken the moment anyone needed it on a wrapper.
+### Notes on the shape of the fix
+- The five values are **derived from the tokens' own defaults** at build time, not written out a
+  second time. Same key set by construction, so a token that gains a `$compact` value automatically
+  gains its way back out, and a retuned default can never leave the two blocks disagreeing. The
+  report's hand-written block was correct in all five values — this only removes the chance for it
+  to stop being correct.
+### Added — guards
+- `test/build.test.mjs` asserts the two density blocks cover the *same* tokens, that every
+  comfortable value equals the `:root` default, and that none of them equals its compact counterpart
+  (a block that resets nothing is as green as one that works).
+- `browser/theme.mjs` measures it in a real engine: a compact root, a `comfortable` island that
+  returns to a 40px control and `--space-4: 1rem`, and a `compact` island nested back inside that —
+  because the point of the rule is the box that comes out, not the declaration going in.
+
 ## [1.30.0] — 2026-08-18
 Note 008 (adopting 1.29.0) plus a direct design report: *"the input border looks too dark next to the
 card and button-group borders."*

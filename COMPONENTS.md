@@ -232,7 +232,8 @@ utility variant that has to agree with the shell must use `nav`; using `md` leav
 
 Density: `data-density="compact"` works on `<html>` **or any wrapper** — the selector is a bare
 `[data-density="compact"]` over inheriting custom properties, so one screen can be dense while the
-rest of the app is not.
+rest of the app is not. `data-density="comfortable"` is a real rule too, so the reverse also works:
+a compact root with one region opted back out (shared chrome that must match a sibling product).
 
 ---
 

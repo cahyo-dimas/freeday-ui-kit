@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss } from '../tokens/build.mjs';
 
 test('bundleFullCss: tokens then components, both present', () => {
@@ -79,4 +80,31 @@ test('bundleJs: concatenates enhancers in order with header', () => {
   const out = bundleJs(['(function(){/*a*/})();', '(function(){/*b*/})();']);
   assert.match(out, /GENERATED/);
   assert.ok(out.indexOf('/*a*/') < out.indexOf('/*b*/'), 'urutan dipertahankan');
+});
+
+test('density opts back out, and its values are derived rather than restated (#002)', () => {
+  /* Custom properties only inherit downhill: once <html> is compact, every subtree is compact and
+   * `data-density="comfortable"` on a wrapper used to match nothing at all — the shipped comment
+   * promised per-subtree density in both directions and delivered one.
+   *
+   * The values must come from the DEFAULTS, not be written out again: same key set by construction,
+   * and a retuned default cannot leave the two blocks disagreeing. This asserts exactly that seam. */
+  const css = buildTokensCss(JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url))));
+  const block = (sel) => {
+    const m = css.match(new RegExp(`\\[data-density="${sel}"\\]\\s*\\{([\\s\\S]*?)\\n\\}`));
+    assert.ok(m, `no [data-density="${sel}"] rule`);
+    return Object.fromEntries([...m[1].matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(x => [x[1], x[2].trim()]));
+  };
+  const root = Object.fromEntries(
+    [...css.match(/^:root \{([\s\S]*?)\n\}/m)[1].matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(x => [x[1], x[2].trim()]),
+  );
+  const compact = block('compact');
+  const comfortable = block('comfortable');
+
+  assert.deepEqual(Object.keys(comfortable), Object.keys(compact),
+    'the two density blocks must cover the same tokens, or one of them is a partial reset');
+  for (const [k, v] of Object.entries(comfortable)) {
+    assert.equal(v, root[k], `${k} must restate the default (${root[k]}), got ${v} — derive it, do not copy it`);
+    assert.notEqual(v, compact[k], `${k} is identical in both densities, so one of them does nothing`);
+  }
 });

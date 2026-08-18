@@ -50,3 +50,20 @@ test('data-theme re-themes a subtree, and a nested island wins back', { skip }, 
     assert.equal(await read('island-title', 'color'), appInk, 'the light island still wins inside a dark app');
   });
 });
+
+/* Density is a two-way switch now (#002). Custom properties only inherit downhill, so an app that is
+ * compact at the root could not opt a shared region back out — a header carried between two products
+ * came out 4px narrower on one of them, from --space-4 and --control-h alone. Measured rather than
+ * asserted from the CSS: the whole point is what the box ends up being. */
+test('a comfortable island inside a compact root really relaxes', { skip }, async () => {
+  await withPage(fixture('density-subtree.html'), async (p) => {
+    await p.waitFor('typeof window.metrics === "function"');
+    const m = JSON.parse(await p.evalJS('JSON.stringify(window.metrics())'));
+
+    assert.equal(m.dense, 32, `compact root gives a 2rem control, got ${m.dense}px`);
+    assert.equal(m.roomy, 40, `the comfortable island must return to 2.5rem, got ${m.roomy}px`);
+    assert.equal(m.space4Root, '0.75rem', 'the root stays compact');
+    assert.equal(m.space4Chrome, '1rem', 'the island restores the default spacing step');
+    assert.equal(m.dense2, 32, 'and density still nests back the other way');
+  });
+});

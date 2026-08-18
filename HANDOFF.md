@@ -6,6 +6,23 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.31.0 — note 002: density cuma satu arah.**
+- Kit hanya mengirim blok `compact`, padahal komentarnya menjanjikan density per-subtree. Karena ini
+  custom property yang mewaris, begitu `<html>` compact maka SELURUH subtree compact, dan
+  `data-density="comfortable"` di wrapper tak cocok dengan aturan apa pun. App yang padat secara
+  keseluruhan tak bisa mengembalikan satu region — chrome bersama dengan produk saudaranya meleset
+  4px di dua tempat (logo 12 vs 16, avatar 12 vs 20), murni dari `--space-4` + `--control-h`.
+- Sekarang `[data-density="comfortable"]` nyata, dan **nilainya diturunkan dari default token** saat
+  build — bukan ditulis ulang. Key set sama secara konstruksi; default yang di-retune tak bisa bikin
+  dua blok itu berselisih.
+- README kit sendiri sudah lama menyuruh menulis `data-density="comfortable"` di `<html>` padahal
+  belum ada aturannya — di root kebetulan benar (sama dengan default), baru rusak saat dipakai di
+  subtree.
+
+Gate: `npm test` **41/41** · `npm run test:browser` **25/25**.
+
+---
+
 **v1.30.0 — note 008 + laporan desain langsung soal border input.**
 - **Gate kontras tak pernah benar-benar menguji tema GELAP sejak v1.21.0.** Regex-nya mencari
   `:root[data-theme="dark"]`, padahal un-rooting 1.21.0 mengubah selectornya jadi
