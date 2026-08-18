@@ -6,6 +6,31 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.33.0 — tiga note dari app back-office, empat temuan, semuanya dikerjakan.**
+- **`pager={false}` di `FdyTable`** (Vue/React/Blazor). Server mode selalu menggambar footer-nya
+  sendiri — `hasPager` tak punya pintu masuk — jadi layar responsif (tabel di `lg`, `.fdy-list` di
+  bawahnya, satu pager melayani keduanya) menampilkan footer kit DAN pager app, bertumpuk. Satu-satunya
+  akal-akalan adalah `display:none` ke internal komponen.
+- **`usePopover` diekspor dari adapter Vue.** Setiap dropdown kit memakainya untuk lolos dari klip
+  overflow leluhur (`.fdy-card` itu `overflow:hidden`). KOREKSI atas note: React sudah mengekspornya
+  sejak dulu; yang bolong hanya Vue. Blazor tak punya lapisan composable.
+- **Tombol destruktif yang tenang.** `--danger` dulu hanya berarti isian solid, jadi
+  `--ghost --danger` justru merender tombol SOLID kedua di sebelah Simpan — cacat hierarki, bukan
+  kosmetik. `.fdy-menu__item--danger` sudah lama memodelkan bentuk tenangnya.
+- **`.fdy-eyebrow` + `.fdy-nav__grouplabel` pindah ke tinta teks.** Keduanya menata TYPE dengan
+  `--color-text-subtle` (di-gate 3.0 untuk dekorasi) = 4.41:1, dilaporkan axe sebagai serious. Sama
+  persis dengan `.fdy-stat__label` di 1.30.0. Group label adalah temuan sapuan — dan aturannya sudah
+  mencerahkan diri ke `--color-text-muted` saat hover, pengakuan bahwa keadaan diamnya terlalu pucat.
+- **Invariant baru:** aturan yang menyetel `font-size` DAN memakai `--color-text-subtle` = gagal.
+  Dicocokkan lewat BENTUK, bukan daftar nama, supaya kasus ketiga tak datang lewat pintu yang sama.
+- **Regresi yang kutulis lalu ketangkap guard lama:** Vue meng-cast prop Boolean yang tak diisi jadi
+  `false`, jadi `props.pager !== false` menyembunyikan footer di SEMUA tabel. `withDefaults` — jebakan
+  yang sama dengan `dismissible` di v1.18.0.
+
+Gate: `npm test` **42/42** · `npm run test:browser` **30/30**.
+
+---
+
 **v1.32.0 — note 004: kalender yang tak bisa dikemudikan + tanda centang yang ikut bicara.**
 - **Judul kalender kini kontrol.** Dulu `<div>` — satu-satunya yang menyebut bulan, dan tak bisa
   diklik — jadi satu-satunya rute pointer ke bulan lain adalah satu klik per bulan: Agustus 2026 ke

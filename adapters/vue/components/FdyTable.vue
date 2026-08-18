@@ -29,7 +29,10 @@ import FdyTableFilter from './FdyTableFilter.vue';
 //     (`update:sort` / `update:filters` / `update:page`) for the caller to feed back into its query.
 // Column filters (text/enum/number/date) apply live; in server mode, debounce the emit if needed.
 
-const props = defineProps<{
+/* `pager` MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop `false`,
+   not `undefined`, so a plain `props.pager !== false` would withhold the footer from every table that
+   never mentions it. Same trap as FdyModal's `dismissible`. */
+const props = withDefaults(defineProps<{
   columns: ReadonlyArray<FdyTableColumn<Row>>;
   rows: ReadonlyArray<Row>;
   rowKey: (row: Row) => string | number;
@@ -48,6 +51,11 @@ const props = defineProps<{
    * card list from the `process` event can render one pager for both breakpoints and point it here.
    * Omit for the internal index (unchanged default).
    */
+  /** Withhold the table's own footer (pager + range) so the screen can render one. Server mode had
+   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control —
+   *  a responsive list that shows a table at one breakpoint and cards at another ended up with the
+   *  kit's pager stacked under its own. Client mode's counterpart is `pageIndex`. Default true. */
+  pager?: boolean;
   pageIndex?: number;
   loading?: boolean;
   emptyText?: string;
@@ -58,7 +66,7 @@ const props = defineProps<{
   rowClass?: (row: Row) => string | undefined;
   /** Controlled: row keys whose `row-detail` slot is shown as a full-width row beneath them. */
   expandedKeys?: ReadonlyArray<string | number>;
-}>();
+}>(), { pager: true });
 
 const emit = defineEmits<{
   'update:sort': [sort: FdySortState | null];
@@ -137,7 +145,7 @@ const currentPage1: ComputedRef<number> = computed((): number =>
 const totalPages: ComputedRef<number> = computed((): number =>
   pageSizeEff.value > 0 ? Math.max(1, Math.ceil(totalCount.value / pageSizeEff.value)) : 1,
 );
-const hasPager: ComputedRef<boolean> = computed((): boolean => pageSizeEff.value > 0 && totalPages.value > 1);
+const hasPager: ComputedRef<boolean> = computed((): boolean => props.pager !== false && pageSizeEff.value > 0 && totalPages.value > 1);
 const pages: ComputedRef<Array<number | 'ellipsis'>> = computed((): Array<number | 'ellipsis'> =>
   pageWindow(currentPage1.value, totalPages.value),
 );

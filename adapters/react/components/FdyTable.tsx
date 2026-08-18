@@ -51,6 +51,11 @@ export interface FdyTableProps<Row extends object> {
    * card list from `onProcess` can render one pager for both breakpoints and point it here.
    * Omit for the internal index (unchanged default).
    */
+  /** Withhold the table's own footer (pager + range) so the screen can render one. Server mode had
+   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control —
+   *  a responsive list that shows a table at one breakpoint and cards at another ended up with the
+   *  kit's pager stacked under its own. Client mode's counterpart is `pageIndex`. Default true. */
+  pager?: boolean;
   pageIndex?: number;
   /** Client mode with `pageIndex` provided: the table asks for a new 0-based index (pager click, a
    *  reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
@@ -127,7 +132,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
   const pageSizeEff: number = serverPaged ? (props.page as FdyPageState).size : (props.pageSize ?? 0);
   const currentPage1: number = (serverPaged ? (props.page as FdyPageState).index : clientPageIndex) + 1;
   const totalPages: number = pageSizeEff > 0 ? Math.max(1, Math.ceil(totalCount / pageSizeEff)) : 1;
-  const hasPager: boolean = pageSizeEff > 0 && totalPages > 1;
+  const hasPager: boolean = props.pager !== false && pageSizeEff > 0 && totalPages > 1;
   const pages: Array<number | 'ellipsis'> = pageWindow(currentPage1, totalPages);
   const rangeFrom: number = totalCount === 0 ? 0 : (currentPage1 - 1) * pageSizeEff + 1;
   const rangeTo: number = totalCount === 0 ? 0 : rangeFrom - 1 + displayRows.length;

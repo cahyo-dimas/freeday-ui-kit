@@ -52,6 +52,17 @@ test('pressed toggles and nav orientation resolve as intended', { skip }, async 
     assert.equal(await css('pnav-current', 'color'), onColour, 'nav ink on --primary stays on-colour in both states');
     assert.notEqual(await css('pnav-current', 'background-color'), await css('pnav-idle', 'background-color'));
 
+    /* --- Quiet destructive (#006 §2). The solid fill is a background-IMAGE (a gradient), so this is
+       the same shape as the aria-pressed lesson: the CSS reads fine either way and only a real engine
+       shows that `--ghost --danger` was rendering the solid treatment. */
+    assert.notEqual(await css('danger-solid', 'background-image'), 'none',
+      'the un-modified --danger button is the solid one');
+    assert.equal(await css('danger-ghost', 'background-image'), 'none',
+      '--ghost --danger must keep the ghost ground — a solid Delete beside Save is a second primary');
+    assert.equal(await css('danger-text', 'background-image'), 'none', '--text --danger likewise');
+    assert.notEqual(await css('danger-ghost', 'color'), await css('ghost-plain', 'color'),
+      'and it must still read as destructive: the ink turns even though the ground does not');
+
     // --- Routed sub-navigation: plain links, aria-current, tab look.
     assert.notEqual(
       await css('rtab-current', 'border-bottom-color'),

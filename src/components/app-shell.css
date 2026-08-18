@@ -48,7 +48,11 @@
 /* Collapsible section: <details class="fdy-nav__group"><summary class="fdy-nav__grouplabel"> */
 .fdy-nav__group{margin:0;}
 .fdy-nav__group + .fdy-nav__group,.fdy-nav__item + .fdy-nav__group{border-top:var(--bw) solid var(--color-border-muted);margin-top:var(--space-1);padding-top:var(--space-1);}
-.fdy-nav__grouplabel{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-1);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);font-weight:var(--weight-semibold);color:var(--color-text-subtle);}
+/* Prose, and a control name: this is the <summary> of a nav group, at --text-xs uppercase. It is
+   the second class found spending the decorative ink on type (after .fdy-eyebrow) — and it was
+   already brightening to --color-text-muted on hover, which is the rule admitting its resting
+   state was too faint to read. */
+.fdy-nav__grouplabel{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-1);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-nav__grouplabel::-webkit-details-marker{display:none;}
 .fdy-nav__grouplabel:hover{color:var(--color-text-muted);}
 .fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}

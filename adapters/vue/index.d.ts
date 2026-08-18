@@ -12,6 +12,19 @@ export interface UseFreedayReturn {
  */
 export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreedayReturn;
 
+/**
+ * Anchor a dropdown panel to its trigger in the top layer, so it escapes any ancestor overflow clip
+ * — `.fdy-card` is `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's
+ * edge. The panel element must carry `popover="manual"`. This is the plumbing every kit dropdown
+ * uses; it is exported so a control the kit does not ship can behave like one that it does, instead
+ * of each app re-implementing it from the description.
+ */
+export declare function usePopover(
+  panelRef: Ref<HTMLElement | null>,
+  triggerRef: Ref<HTMLElement | null>,
+  open: Ref<boolean>,
+): void;
+
 export { default as FdyCombo } from './components/FdyCombo.vue';
 export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
 export { default as FdyDateRange } from './components/FdyDateRange.vue';

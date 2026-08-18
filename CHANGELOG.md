@@ -3,6 +3,57 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.33.0] — 2026-08-18
+Three notes from the back-office app, four findings, all four executed.
+### Added
+- **`pager={false}` on `FdyTable`** (Vue · React · Blazor). Server mode rendered its own footer
+  unconditionally: `hasPager` was `pageSize > 0 && totalPages > 1` with no way in, so a responsive
+  list — a table at `lg`, `.fdy-list` below it, one pager serving both so the views cannot disagree —
+  showed the kit's footer *and* the app's, stacked, on every list with more than one page. The only
+  workaround was `display:none` on `.fdy-table-footer`, an app reaching into a component's internals.
+  Client mode already had its hatch (`pageIndex`); this gives server mode one, and in server mode it
+  is the honest shape — the app owns the page there anyway, it was simply being handed a second
+  control.
+- **`usePopover` is exported from the Vue adapter.** Every kit dropdown uses it to escape an
+  ancestor's overflow clip (`.fdy-card` is `overflow:hidden`, so a panel inside one is cut at the
+  card's edge), and a consuming app that had to build a control the kit does not ship had to
+  re-implement it — ~70 lines, from the kit's own description, that will not improve when the kit's
+  positioning does. *Correction to the report: React has exported it all along; only Vue was missing
+  it. Blazor has no composable layer — its panels go through the JS bridge.*
+- **Quiet destructive buttons.** `--danger` was the solid treatment and nothing else, so
+  `fdy-btn--ghost fdy-btn--danger` — which every reader parses as "quiet destructive" — rendered a
+  second SOLID button. That is a hierarchy defect: the base class is already the one primary per
+  screen, and a solid Delete beside Save is a second primary in all but name.
+  `.fdy-menu__item--danger` has always modelled the quiet form; it now reaches `.fdy-btn`.
+### Fixed
+- **`.fdy-eyebrow` and `.fdy-nav__grouplabel` spend a text ink.** Both set type in
+  `--color-text-subtle`, which is gated at 3.0 *by design* (placeholders, separators, decorative
+  glyphs) and measures 4.41:1 — axe reports it as a serious `color-contrast` failure. Identical to
+  `.fdy-stat__label` in 1.30.0, one release earlier: same ink, same 4.41, same argument.
+  The nav group label is the one the report did not know about — the sweep it asked for found it,
+  and that rule was *already* brightening to `--color-text-muted` on hover, which is the CSS
+  admitting its resting state was too faint.
+### Notes on the shape of the fix
+- The report proposed scoping the solid danger with `:not(.fdy-btn--ghost):not(.fdy-btn--text)`.
+  Shipped without it: the pairing rules are more specific and come later, so they already win —
+  the `:not()` would be a second mechanism expressing the same intent, and the mutation run proved
+  it changed nothing.
+- **A regression written and caught inside this change:** Vue casts an omitted Boolean prop to
+  `false`, not `undefined`, so `props.pager !== false` withheld the footer from every table that
+  never mentions `pager`. The existing controlled-`pageIndex` guard failed within seconds. `pager`
+  now goes through `withDefaults`, the same trap `FdyModal`'s `dismissible` hit in v1.18.0.
+### Added — guards
+- **The prose-ink invariant** note 007 asked for: any rule that sets a `font-size` *and* spends
+  `--color-text-subtle` is typesetting prose in an ink gated for decoration, and fails. Matched by
+  shape, not by a list of names, so the third instance cannot arrive the way the second did. Two
+  documented exemptions carry their reason.
+- `pager={false}` is measured in a real browser with two tables sharing one server page state: the
+  footer must be **absent from the DOM**, not hidden (a visually hidden pager is still a tab stop
+  and still announced), and the other table's pager must still work.
+- Quiet destructive is measured as a rendered `background-image`, the same reason the `aria-pressed`
+  fills are: a gradient is a background-*image*, so the CSS reads fine either way and only the engine
+  shows which treatment won.
+
 ## [1.32.1] — 2026-08-18
 Docs only. Asked by a consumer: *"if I upgrade, will the agent in my project know what it gained?"*
 The answer was no, and two reasons why.

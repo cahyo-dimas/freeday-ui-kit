@@ -27,6 +27,13 @@
     <button class="fdy-btn fdy-btn--ghost" id="seg-on" type="button" aria-pressed="true">List</button>
     <button class="fdy-btn fdy-btn--ghost" id="seg-off" type="button" aria-pressed="false">Grid</button>
   </div>
+  <!-- #006 §2: "quiet destructive". --danger was unscoped, so combining it with a quiet variant
+       rendered a second SOLID button beside the screen's one primary. -->
+  <button class="fdy-btn fdy-btn--danger" id="danger-solid" type="button">Delete</button>
+  <button class="fdy-btn fdy-btn--ghost fdy-btn--danger" id="danger-ghost" type="button">Delete</button>
+  <button class="fdy-btn fdy-btn--text fdy-btn--danger" id="danger-text" type="button">Delete</button>
+  <button class="fdy-btn fdy-btn--ghost" id="ghost-plain" type="button">Cancel</button>
+
   <button class="fdy-btn" id="solid-on" type="button" aria-pressed="true">Solid</button>
   <button class="fdy-btn" id="solid-off" type="button" aria-pressed="false">Solid</button>
 

@@ -23,9 +23,20 @@
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:active{transform:translateY(1px);}
 
+/* --danger used to be the SOLID treatment and nothing else, so `fdy-btn--ghost fdy-btn--danger` —
+   which every reader parses as "quiet destructive" — rendered a second SOLID button beside Save.
+   That is a hierarchy defect, not a cosmetic one: the base class is already the one primary per
+   screen. `.fdy-menu__item--danger` has always modelled the quiet form (red text, not a red block);
+   the pairing rules below bring it to the button. They are more specific than this one and come
+   after it, so this rule needs no :not() guard of its own — one mechanism, not two. */
 .fdy-btn--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-danger-btn) 46%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-danger-btn) 54%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:active{transform:translateY(1px);}
+/* Quiet destructive: the variant keeps its own ground and only the ink turns. */
+.fdy-btn--ghost.fdy-btn--danger{background:transparent;color:var(--color-danger-strong);border-color:color-mix(in srgb,var(--color-danger) 40%,transparent);box-shadow:none;}
+.fdy-btn--ghost.fdy-btn--danger:hover{background:var(--color-danger-soft);border-color:var(--color-danger);color:var(--color-danger-strong);}
+.fdy-btn--text.fdy-btn--danger{background:none;color:var(--color-danger-strong);border-color:transparent;box-shadow:none;}
+.fdy-btn--text.fdy-btn--danger:hover{background:var(--color-danger-soft);color:var(--color-danger-strong);}
 .fdy-btn--danger[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 14%,var(--color-danger-btn)),var(--color-danger-btn));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 24%,transparent);}
 
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}

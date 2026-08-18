@@ -1,4 +1,5 @@
 export { useFreeday } from './useFreeday.js';
+export { usePopover } from './usePopover.ts';
 export { default as FdyCombo } from './components/FdyCombo.vue';
 export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
 export { default as FdyDateRange } from './components/FdyDateRange.vue';

@@ -36,6 +36,11 @@ public partial class FdyTable<TRow>
     /// the <c>md</c> breakpoint and renders a card list from <see cref="Process"/> can render one pager
     /// for both breakpoints and bind it here. Leave null for the internal index (unchanged default).
     /// </summary>
+    /// <summary>Withhold the table's own footer (pager + range) so the screen can render one.
+    /// Server mode had no way to do this: the app owns the page there anyway, and was still handed a
+    /// second control. Client mode's counterpart is <see cref="PageIndex"/>. Default true.</summary>
+    [Parameter] public bool Pager { get; set; } = true;
+
     [Parameter] public int? PageIndex { get; set; }
 
     /// <summary>Raised in client mode with <see cref="PageIndex"/> set: the table asks for a new
@@ -97,7 +102,7 @@ public partial class FdyTable<TRow>
     private int CurrentPage1 => (ServerPaged ? Page!.Index : ClientPageIndex) + 1;
     private int TotalCount => _totalCount;
     private int TotalPages => PageSizeEff > 0 ? Math.Max(1, (int)Math.Ceiling((double)TotalCount / PageSizeEff)) : 1;
-    private bool HasPager => PageSizeEff > 0 && TotalPages > 1;
+    private bool HasPager => Pager && PageSizeEff > 0 && TotalPages > 1;
     private List<int?> Pages => TableModel.PageWindow(CurrentPage1, TotalPages);
     private int RangeFrom => TotalCount == 0 ? 0 : (CurrentPage1 - 1) * PageSizeEff + 1;
     private int RangeTo => TotalCount == 0 ? 0 : RangeFrom - 1 + _displayRows.Count;

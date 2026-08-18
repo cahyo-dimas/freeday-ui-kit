@@ -196,6 +196,31 @@ test('inline state text uses the inks the contrast gate covers (#001 §5)', () =
   }
 });
 
+/* Any rule that TYPESETS (sets a font-size) is rendering prose, and prose needs a text ink.
+ * --color-text-subtle is gated at 3.0 on purpose — placeholders, separators, decorative glyphs —
+ * and measures 4.41:1 on surface-2, under AA for text. Two components shipped with it on type
+ * before this generalised: .fdy-stat__label (fixed 1.30.0) and .fdy-eyebrow + .fdy-nav__grouplabel
+ * (found by axe in a consuming app, one release later). Shape, not a name list, so the third one
+ * cannot arrive the same way. */
+const SUBTLE_ON_TYPE_OK = new Map([
+  ['.fdy-text-subtle', 'the utility IS the decorative role — naming it is opting in'],
+  ['.fdy-cal__day.is-outside', 'a date from the adjacent month, repeated in that month\'s own view; paired with opacity as de-emphasis, not as the only copy of the information'],
+]);
+
+test('nothing typesets prose in the decorative ink (#007)', () => {
+  const offenders = [];
+  for (const { selector, body } of rules(css)) {
+    if (!/color:\s*var\(--color-text-subtle\)/.test(body)) continue;
+    if (!/font-size:/.test(body)) continue;              // sets type -> it is prose
+    if (SUBTLE_ON_TYPE_OK.has(selector)) continue;
+    offenders.push(selector);
+  }
+  assert.deepEqual(offenders, [],
+    'These rules set a font-size AND spend --color-text-subtle, which is gated at 3.0 (non-text). '
+      + 'Use --color-text-muted (gated 4.5), or add the selector to SUBTLE_ON_TYPE_OK with the reason '
+      + 'its text is decorative.');
+});
+
 test('a stat label spends a TEXT ink, not the decorative one (#006 §6)', () => {
   /* --color-text-subtle is gated at 3.0 by design — placeholders, dividers, decorative glyphs. A stat
    * label is text, and often the only thing naming the number above it; on surface-2 -subtle measures

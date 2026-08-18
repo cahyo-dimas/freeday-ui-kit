@@ -157,3 +157,23 @@ test('Vue FdyDatepicker: the title drills to a month grid', { skip }, async () =
 test('React FdyDatepicker: the title drills to a month grid', { skip }, async () => {
   await assertMonthDrill('react-cal-drill.html');
 });
+
+/* Server mode owned the pager and would not let go (note 005). Two tables, same server page state:
+ * one with pager={false}, one without. The escape hatch has to remove the footer from the DOM, not
+ * just hide it — a visually hidden pager is still in the tab order and still announced. */
+test('Vue FdyTable: pager={false} withholds the footer in server mode', { skip }, async () => {
+  await withPage(fixture('vue-table-pager-off.html'), async (p) => {
+    await p.waitFor(`document.querySelectorAll('.fdy-datatable').length === 2`);
+    const footers = await p.evalJS('document.querySelectorAll(".fdy-table-footer").length');
+    assert.equal(footers, 1, `only the table that asked for a pager may render one, got ${footers}`);
+
+    const owner = await p.evalJS(`(() => {
+      const tables = [...document.querySelectorAll('.fdy-datatable')];
+      return tables.map((t) => t.querySelector('.fdy-table-footer') !== null).join(',');
+    })()`);
+    assert.equal(owner, 'false,true', 'and it must be the second one — the first opted out');
+
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-pagination__link").length > 0'), true,
+      'the surviving pager still works — this is not "hide every pager"');
+  });
+});

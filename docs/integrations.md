@@ -319,3 +319,17 @@ web-based add-ons (Service Layer + .NET), Freeday + enhancers over JS interop wo
 *Library recommendations reflect what's common and stable as of 2026; choose based on your
 project's license and bundle-size budget. Freeday locks you into none of them — everything is
 optional and replaceable.*
+
+## Building a control the kit does not ship
+
+Use the `app-` prefix for its classes, and reuse the kit's plumbing rather than re-deriving it:
+
+```ts
+import { usePopover } from '@cahyo-dimas/freeday/vue';   // or '/react'
+usePopover(panelRef, triggerRef, open);                  // panel needs popover="manual"
+```
+
+This is what every kit dropdown uses to escape an ancestor's overflow clip — `.fdy-card` is
+`overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's edge. It is
+exported so a control you build behaves like one the kit ships, and improves when the kit's
+positioning does.

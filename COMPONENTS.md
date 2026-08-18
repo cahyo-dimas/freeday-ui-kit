@@ -259,6 +259,11 @@ a compact root with one region opted back out (shared chrome that must match a s
 </button>
 ```
 
+**Quiet destructive:** combine `--danger` with `--ghost` or `--text`. The ground stays quiet and only
+the ink turns red — `.fdy-menu__item--danger` has always worked this way. Use it whenever Delete
+shares a screen with the one primary action; a solid Delete beside Save is a second primary in all
+but name.
+
 ## FAB — `.fdy-fab`
 Floating circular action. Modifiers: `--sm` `--accent` `--danger` `--extended` (pill with a label).
 Always `aria-label` unless `--extended` carries visible text.
@@ -716,6 +721,18 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
 accessible name (`Filter <column>`) — a dialog named after its trigger is the normal pattern. In a
 Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
 reach for `getByRole('button', { name: 'Filter Name' })` instead.
+
+**Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
+than one page. Two ways to take it over:
+
+- **client mode** — pass `pageIndex` (with `pageSize`, without `page`) and drive it yourself;
+- **either mode** — pass `pager={false}` (Vue `:pager="false"`, Blazor `Pager="false"`) and render
+  your own control. In server mode this is the only way: the app already owns the page there, and
+  was still being handed a second control. The typical shape is a responsive list — a table at `lg`,
+  `.fdy-list` below it — where one pager has to serve both views so they cannot disagree.
+
+Do not hide the footer with CSS. `display:none` works, but it reaches into a component's internals
+and breaks the moment the class changes.
 
 ## Pagination — `.fdy-pagination`
 The block class on the `<nav>` is a **structural hook only** — it carries no rule of its own; the
