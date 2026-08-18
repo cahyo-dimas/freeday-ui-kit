@@ -37,6 +37,11 @@ public partial class FdyCfl<TRow>
     /// <summary>Locked/view mode: shows the value but the search dialog can't be opened.</summary>
     [Parameter] public bool Readonly { get; set; }
     [Parameter] public bool Invalid { get; set; }
+    /// <summary>Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset.
+    /// <c>Value</c> is already <c>TRow?</c>; without this the component can never produce null.</summary>
+    [Parameter] public bool Clearable { get; set; }
+    /// <summary>aria-label for the clear button (when <see cref="Clearable"/>).</summary>
+    [Parameter] public string ClearLabel { get; set; } = "Clear selection";
     [Parameter] public string? AriaLabelledby { get; set; }
 
     /// <summary>Debounce (ms) between a keystroke and the search request.</summary>
@@ -128,6 +133,14 @@ public partial class FdyCfl<TRow>
     private Task LoadMoreAsync() => _hasMore && !_loading ? LoadAsync(reset: false) : Task.CompletedTask;
 
     private Task RetryAsync() => LoadAsync(reset: true);
+
+    /// <summary>Unset the value. Not "choosing nothing": the dialog is not involved, so this neither
+    /// opens nor closes it.</summary>
+    private async Task ClearAsync()
+    {
+        Value = default;
+        await ValueChanged.InvokeAsync(default);
+    }
 
     private async Task ChooseAsync(TRow row)
     {

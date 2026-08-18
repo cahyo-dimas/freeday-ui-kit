@@ -681,6 +681,22 @@ a { color: var(--color-primary); }
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}
 
+/* Icon box (#001 §4). The kit ships no icons on purpose, but every icon slot it DOES ship
+   (.fdy-btn__icon, .fdy-nav__icon, .fdy-state__icon) assumes something sensible inside, so a
+   standalone icon had no contract and every app invented one. 1em keeps the glyph matched to the
+   text beside it at every scale — bring your own paths, use our box. Works on the <svg> itself or
+   on a wrapper around it. */
+.fdy-icon{display:inline-block;width:1em;height:1em;flex:none;vertical-align:-0.125em;}
+.fdy-icon>svg{display:block;width:100%;height:100%;}
+
+/* Inline text that carries STATE (#001 §5). The three roles above all de-emphasise; a sentence like
+   "Amount changed from X to Y" or "No approver assigned" needs the opposite, and is neither a badge
+   (those are statuses, not sentences) nor an .fdy-alert (those are blocks, not one line inside a
+   row). Same -strong inks the badges use, gated by contrast.test.mjs on plain surfaces too. */
+.fdy-text-success{color:var(--color-success-strong);}
+.fdy-text-warning{color:var(--color-warning-strong);}
+.fdy-text-danger{color:var(--color-danger-strong);}
+
 /* Freeday — Date picker (input-styled trigger + calendar popover).
  * Built by freeday-datepicker.js from an empty [data-fdy-datepicker] wrapper. */
 .fdy-datepicker{position:relative;display:inline-block;width:100%;max-width:14rem;}
@@ -907,7 +923,10 @@ a { color: var(--color-primary); }
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
 fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
-fieldset.fdy-field>legend{padding:0;float:none;}
+/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it —
+   measured 0px between legend and first control. This is the spacing contract a grouped field
+   needs; it matches .fdy-field's own gap so the group reads as one rhythm. */
+fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-label{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);}
 .fdy-input,.fdy-textarea{width:100%;height:var(--control-h);padding:0 var(--space-3);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input::placeholder,.fdy-textarea::placeholder{color:var(--color-text-subtle);}
@@ -931,6 +950,11 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-input[type="number"]::-webkit-outer-spin-button,.fdy-input[type="number"]::-webkit-inner-spin-button{appearance:none;-webkit-appearance:none;margin:0;}
 .fdy-input--error,.fdy-input[aria-invalid="true"],.fdy-textarea[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+/* Required marker. The control already carries `required`, so the asterisk is decoration: the
+   `/ ""` is CSS alt text — the glyph is painted but exposes NOTHING to the accessibility tree, so a
+   screen reader does not read "star" after every label. That is stricter than a <span> an app has to
+   remember to mark aria-hidden, and it cannot be forgotten. */
+.fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
 .fdy-help--error{color:var(--color-danger);}
 
@@ -981,7 +1005,10 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-menu--end{left:auto;right:0;}
 .fdy-menu__item{display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-2) var(--space-3);border:0;background:transparent;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);text-align:left;cursor:pointer;white-space:nowrap;}
 .fdy-menu__item:hover,.fdy-menu__item.is-highlighted{background:var(--color-surface-3);}
-.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);}
+/* Focus is not hover. The enhancer moves real DOM focus (freeday-menu.js `.focus()`), so this is
+   the only thing a keyboard user has to go on — with the hover fill alone, arrowing through the
+   menu is invisible. Same ring as .fdy-nav__item, which got this right. Reported twice. */
+.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-menu__item:disabled{opacity:.5;cursor:not-allowed;background:transparent;}
 .fdy-menu__item--danger{color:var(--color-danger-strong);}
 .fdy-menu__item svg{display:block;width:1rem;height:1rem;flex:none;}

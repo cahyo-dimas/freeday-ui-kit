@@ -47,3 +47,19 @@
 .fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}
+
+/* Icon box (#001 §4). The kit ships no icons on purpose, but every icon slot it DOES ship
+   (.fdy-btn__icon, .fdy-nav__icon, .fdy-state__icon) assumes something sensible inside, so a
+   standalone icon had no contract and every app invented one. 1em keeps the glyph matched to the
+   text beside it at every scale — bring your own paths, use our box. Works on the <svg> itself or
+   on a wrapper around it. */
+.fdy-icon{display:inline-block;width:1em;height:1em;flex:none;vertical-align:-0.125em;}
+.fdy-icon>svg{display:block;width:100%;height:100%;}
+
+/* Inline text that carries STATE (#001 §5). The three roles above all de-emphasise; a sentence like
+   "Amount changed from X to Y" or "No approver assigned" needs the opposite, and is neither a badge
+   (those are statuses, not sentences) nor an .fdy-alert (those are blocks, not one line inside a
+   row). Same -strong inks the badges use, gated by contrast.test.mjs on plain surfaces too. */
+.fdy-text-success{color:var(--color-success-strong);}
+.fdy-text-warning{color:var(--color-warning-strong);}
+.fdy-text-danger{color:var(--color-danger-strong);}

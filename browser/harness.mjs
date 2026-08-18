@@ -212,6 +212,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-combo.tsx'),
       join(HERE, 'entries', 'vue-table-pageindex.js'),
       join(HERE, 'entries', 'react-table-pageindex.tsx'),
+      join(HERE, 'entries', 'vue-cfl-clear.js'),
+      join(HERE, 'entries', 'react-cfl-clear.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

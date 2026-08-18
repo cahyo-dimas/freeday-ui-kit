@@ -4,7 +4,10 @@
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
 fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
-fieldset.fdy-field>legend{padding:0;float:none;}
+/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it —
+   measured 0px between legend and first control. This is the spacing contract a grouped field
+   needs; it matches .fdy-field's own gap so the group reads as one rhythm. */
+fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-label{font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);}
 .fdy-input,.fdy-textarea{width:100%;height:var(--control-h);padding:0 var(--space-3);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input::placeholder,.fdy-textarea::placeholder{color:var(--color-text-subtle);}
@@ -28,5 +31,10 @@ fieldset.fdy-field>legend{padding:0;float:none;}
 .fdy-input[type="number"]::-webkit-outer-spin-button,.fdy-input[type="number"]::-webkit-inner-spin-button{appearance:none;-webkit-appearance:none;margin:0;}
 .fdy-input--error,.fdy-input[aria-invalid="true"],.fdy-textarea[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+/* Required marker. The control already carries `required`, so the asterisk is decoration: the
+   `/ ""` is CSS alt text — the glyph is painted but exposes NOTHING to the accessibility tree, so a
+   screen reader does not read "star" after every label. That is stricter than a <span> an app has to
+   remember to mark aria-hidden, and it cannot be forgotten. */
+.fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
 .fdy-help--error{color:var(--color-danger);}

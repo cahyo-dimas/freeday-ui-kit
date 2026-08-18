@@ -146,6 +146,54 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   assert.match(positioned.body, /position:\s*relative/);
 });
 
+test('menu focus is distinguishable from hover (#001 §6)', () => {
+  /* freeday-menu.js moves REAL DOM focus with .focus(), so :focus-visible is the only thing a
+   * keyboard user has. It used to be the hover fill and nothing else — arrowing through a menu was
+   * invisible, and hover and focus were identical to everyone. Reported by two different apps before
+   * it was fixed, so it is worth a gate: whatever focus renders, it must not be only what hover does. */
+  const all = rules(css);
+  const hover = all.find(r => r.selector.includes('.fdy-menu__item:hover'));
+  const focus = all.find(r => r.selector === '.fdy-menu__item:focus-visible');
+  assert.ok(hover !== undefined && focus !== undefined, 'the menu item lost a state rule');
+  const extra = focus.body.replace(/outline:\s*none;?/, '').trim();
+  assert.notEqual(extra, hover.body.trim(), 'focus must render as more than the hover fill');
+  assert.match(focus.body, /box-shadow:/, 'focus needs a ring of its own (same one .fdy-nav__item uses)');
+});
+
+test('the required marker never reaches the accessibility tree (#001 §2)', () => {
+  /* The control already carries `required`; the asterisk is decoration. CSS alt text (`content:"*" / ""`)
+   * paints the glyph while exposing nothing — drop the `/ ""` and every screen reader starts reading
+   * "star" after the label. */
+  const rule = rules(css).find(r => r.selector === '.fdy-label--required::after');
+  assert.ok(rule !== undefined, '.fdy-label--required::after is gone');
+  assert.match(rule.body, /content:\s*"\*"\s*\/\s*""/, 'the alt-text half of `content` is what makes this accessible');
+});
+
+test('inline state text uses the inks the contrast gate covers (#001 §5)', () => {
+  /* contrast.test.mjs asserts TOKENS, not the classes that spend them, so a class quietly switched
+   * from `-strong` to the base ink would keep the suite green while dropping below AA on a plain
+   * surface. This is the seam between the two tests. */
+  for (const [selector, token] of [
+    ['.fdy-text-success', '--color-success-strong'],
+    ['.fdy-text-warning', '--color-warning-strong'],
+    ['.fdy-text-danger', '--color-danger-strong'],
+  ]) {
+    const rule = rules(css).find(r => r.selector === selector);
+    assert.ok(rule !== undefined, `${selector} is gone`);
+    assert.match(rule.body, new RegExp(`color:\\s*var\\(${token}\\)`),
+      `${selector} must use ${token} — the ink contrast.test.mjs proves readable on plain surfaces`);
+  }
+});
+
+test('.fdy-icon has a display that accepts a width (#001 §4)', () => {
+  /* Measured: as a bare inline element the box ignored width:1em entirely and rendered 936px wide —
+   * `width` does not apply to non-replaced inline boxes. */
+  const rule = rules(css).find(r => r.selector === '.fdy-icon');
+  assert.ok(rule !== undefined, '.fdy-icon is gone');
+  assert.match(rule.body, /width:\s*1em/);
+  assert.match(rule.body, /display:\s*inline-block|display:\s*inline-flex/, 'without this the width is ignored');
+});
+
 test('.fdy-visually-hidden still documents why the containers carry it', () => {
   /* The fix is spread across seven files; the explanation lives in exactly one place. If the
    * comment goes, the next reader deletes a `position:relative` that looks decorative. */

@@ -3,6 +3,62 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.29.0] — 2026-08-18
+Improvement note 001 from a second consuming app (a 40-screen back office). Eight findings; six
+executed, one already documented, one left as an owner decision.
+### Added
+- **`clearable` on `FdyCfl`** (Vue · React · Blazor). The value type already said `Row | null`, but
+  the emit was `Row` only — a choose-from-list could be **set and never unset**, which breaks every
+  *optional* foreign key (a device with no project, an expense with no workflow, a top-level record
+  with no parent). A user who picked the wrong row had to reload the form. The clear control is a
+  second `.fdy-input-group__btn`, emits `null`, returns focus to the trigger, and never touches the
+  dialog.
+- **`.fdy-label--required`** — the marker is painted through `::after` with **CSS alt text**
+  (`content:"*" / ""`), so the glyph appears and the accessibility tree gets nothing. The control
+  already carries `required`; a `<span>` an app has to remember to mark `aria-hidden` can be
+  forgotten, this cannot.
+- **`.fdy-icon`** — a `1em` square, `flex:none` box for the icons the kit deliberately does not
+  ship. Every icon slot it *does* ship (`.fdy-btn__icon`, `.fdy-nav__icon`, `.fdy-state__icon`)
+  already assumed something sensible inside; a standalone icon had no contract.
+- **`.fdy-text-success` · `.fdy-text-warning` · `.fdy-text-danger`** — the kit had three
+  *de-emphasis* text roles and no *state* role, so a consequential sentence ("Amount changed from X
+  to Y", "No approver assigned") had to fall back to `.fdy-text-caption`, which de-emphasises
+  exactly the line that should stand out. A badge is wrong (prose, not a status) and an alert is
+  wrong (a block, not one line in a row).
+### Fixed
+- **`.fdy-menu__item:focus-visible` gets a real ring.** It marked focus with the same fill as
+  `:hover`, and `freeday-menu.js` moves real DOM focus — so arrowing through a menu was invisible,
+  and hover and focus were identical to everyone else. `.fdy-nav__item`, in the same kit, has always
+  done it correctly. Reported by two different apps before it was fixed.
+- **A grouped `<fieldset>` now has its spacing.** `fieldset.fdy-field` already reset the UA border,
+  but the **rendered legend is laid out outside the flex flow**, so `gap` never reached it —
+  measured 0px between legend and first control. One declaration on the reset the kit already
+  ships, not a new block; `COMPONENTS.md` documents the compose (`.fdy-field` on the fieldset,
+  `.fdy-label` on the legend), which is what was actually missing.
+### Notes on the shape of the fix
+- **§7 (an Indonesian `aria-label`) is not what it looked like.** The report assumed the rest of the
+  kit's output is English; it is not — *every* user-visible string the vanilla enhancers write is
+  Indonesian (`Sebelumnya`, `Berikutnya`, `Berisi teks`, `Reset`, `Tutup`, `Menampilkan …`,
+  `Bulan berikutnya`, `Format tidak valid.`). Translating one would **create** the mixed interface
+  the note objects to. The real choice — an override hook, or switching the defaults and breaking
+  every Indonesian consumer — is recorded in `NEXT-UP.md` #6 with its trigger; `COMPONENTS.md` now
+  states the caveat in full and points English apps at the typed wrappers.
+- **§8 needed no code**, only the line it asked for: the filter button and its dialog share an
+  accessible name on purpose, so a test suite wants `getByRole`, not `getByLabel`.
+- Two traps found by measuring rather than reading: `.fdy-icon` as a bare inline element **ignored
+  `width` entirely** (it does not apply to non-replaced inline boxes) and rendered 936px wide until
+  it got a `display`; and stacking two colour roles (`.fdy-help.fdy-text-warning`) silently loses to
+  whichever rule the bundle happens to emit later — documented, and the docs page no longer does it.
+### Added — guards
+- Adapter specs for `clearable` in both Vue and React (real clicks: emits `null`, empties the field,
+  the control disappears with the value it cleared, focus lands on the trigger, dialog stays shut).
+- CSS gate: menu focus must render as more than the hover fill; the required marker must keep its
+  alt text; `.fdy-icon` must keep a display that accepts a width; the state roles must spend the
+  exact inks the contrast gate proves readable — that last one closes the seam between the two test
+  files, where a class could drift to a weaker token while every token assertion stayed green.
+- `contrast.test.mjs` now also asserts the state inks on **plain** surfaces, not just over their own
+  `-soft` fills.
+
 ## [1.28.0] — 2026-08-18
 Improvement note 007, written while fixing a workspace picker whose cards showed a pointer cursor
 and swallowed every click.

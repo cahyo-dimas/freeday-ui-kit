@@ -22,7 +22,7 @@ export interface CflPage<Row> {
 
 export interface FdyCflProps<Row extends Record<string, unknown>> {
   value: Row | null;
-  onChange: (value: Row) => void;
+  onChange: (value: Row | null) => void;
   fetchPage: (query: string, page: number) => Promise<CflPage<Row>>;
   columns: ReadonlyArray<CflColumn<Row>>;
   display: (row: Row) => string;
@@ -34,6 +34,11 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset. Without it
+   *  `value` accepts `Row | null` but the component can only ever produce a `Row`. */
+  clearable?: boolean;
+  /** aria-label for the clear button (when `clearable`). Default 'Clear selection'. */
+  clearLabel?: string;
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
@@ -45,6 +50,14 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   const titleId: string = `${baseId}-title`;
   const resultsId: string = `${baseId}-results`;
   const rowId = (index: number): string => `${baseId}-row-${index}`;
+
+  /* Unsetting is not "picking nothing": it must not touch the dialog, and focus must land on a
+     control that still exists — the trigger beside it, since this button disappears with the value. */
+  const clearLabelText: string = props.clearLabel ?? 'Clear selection';
+  const clearValue = (): void => {
+    props.onChange(null);
+    triggerRef.current?.focus();
+  };
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -71,6 +84,8 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
   const isDisabled: boolean = props.disabled === true;
   const isReadonly: boolean = props.readonly === true;
+  const showClear: boolean =
+    props.clearable === true && props.value !== null && isDisabled === false && isReadonly === false;
   const isInvalid: boolean = props.invalid === true;
   const displayValue: string = props.value !== null ? props.display(props.value) : '';
   // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
@@ -253,6 +268,18 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         aria-describedby={props.describedby}
         disabled={isDisabled}
       />
+      {showClear ? (
+        <button
+          type="button"
+          className="fdy-input-group__btn"
+          aria-label={clearLabelText}
+          onClick={clearValue}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      ) : null}
       <button
         ref={triggerRef}
         type="button"

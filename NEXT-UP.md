@@ -9,7 +9,7 @@ ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat h
 
 ---
 
-## Roadmap ke depan (per v1.28.0) — default: **tunggu demand**
+## Roadmap ke depan (per v1.29.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 10/10 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -28,7 +28,7 @@ Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang — pemicunya di kol
 | 3 | **Row selection + bulk-action bar** di `FdyTable` (ketiga adapter) — enhancer vanilla punya `.fdy-table-bulkbar` + kolom pilih, adapter controlled belum (gap lintas-stack, bukan Blazor saja) | ada layar butuh aksi massal multi-baris |
 | 4 | **Deferred YAGNI** (tak berubah): data grid virtualized · form master-detail 2-kolom · `data-style` lain (glass/neumorph) | on-demand murni |
 | 5 | _Opsional infra:_ bUnit `dotnet test` guard komponen Blazor di CI (kini manual runtime-verify via `drive-*.mjs` + CDP) | mau safety-net regresi Blazor |
-| 6 | **String UI vanilla bisa di-override** — `freeday-table.js` hard-code bahasa Indonesia (`'Menampilkan … dari …'`, `'N dipilih'`) tanpa hook; adapter Vue/React/Blazor sudah English. Ketemu saat menulis `docs/reference-screen.html` (v1.20.0): halaman English jadi campur. Opsi termurah = baca `data-fdy-i18n-*` di root `.fdy-datatable`, fallback ke default sekarang | ada layar non-Indonesia yang pakai enhancer vanilla (bukan adapter) |
+| 6 | **String UI vanilla bisa di-override** — SELURUH string enhancer vanilla berbahasa Indonesia (`freeday-table.js`: `Menampilkan …`, `N dipilih`, `Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`; juga `Bulan berikutnya`, `Format tidak valid.` di enhancer lain), sementara adapter Vue/React/Blazor English. **Pemicunya sudah datang** (note 001 §7: app back-office berbahasa Inggris ketemu `aria-label="Filter kolom"`). TOLAK menerjemahkan satu-dua string — itu justru menciptakan antarmuka campur yang dikeluhkan; pilihannya cuma dua dan keduanya keputusan owner: (a) hook override (`FreedayTable.setStrings({…})` global atau `data-fdy-i18n-*` per root), default tetap ID — aditif, tak memecah siapa pun; (b) ganti default ke English (samakan dengan adapter + README + npm) — **breaking secara visual** untuk app ID yang sudah pakai enhancer. Sementara ini COMPONENTS.md menyebutnya sebagai caveat + arahan: app English pakai typed wrapper, bukan enhancer | owner memilih (a) atau (b) — jangan setengah-setengah |
 | 7 | **`groupBy` di `FdyTable`** — layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
 | 8 | **Perilaku drawer `.fdy-app` tak ikut dikirim** — kit mengirim `__navtoggle`, `__backdrop`, dan kelas state `--nav-open`/`--nav-collapsed`, tapi **nol JS**: tiap konsumen merakit sendiri toggle + Escape + focus trap + restore focus + `inert`, dan satu di antaranya sudah salah merakitnya (nav terbuka, konten di-`inert`, pengguna tanpa jalan keluar — itu yang melahirkan `breakpoints.nav` di v1.20.0). Dilaporkan **dua kali** (note 004 §B footer & note 005 tail, keduanya salah menyebutnya "003 §8" — note 003 cuma punya 7 seksi). Bentuknya jelas: satu enhancer `freeday-app-shell.js` bergaya rumah (`data-fdy-app`, auto-init, idempotent, `initAll`), pakai `breakpoints.nav` untuk membedakan mode overlay vs kolom statis, dan `docs/index.html` + `docs/reference-screen.html` berhenti merakit sendiri (itu sekaligus buktinya) | **pemicunya sudah ada** — ini kandidat #1 yang nyata sekarang, bukan spekulatif; tinggal keputusan apakah kit mau memiliki perilaku shell |
 | 9 | **`.fdy-pagination` tanpa rule CSS** — class blok di `<nav>` cuma hook penamaan; `__list`/`__link`/`__ellipsis` yang menata. Konsisten secara dokumentasi (COMPONENTS.md + guard `STRUCTURAL_HOOKS`), tapi kalau nanti wrapper butuh style (mis. `justify-content`), di situlah tempatnya | wrapper paginasi butuh style sendiri |
@@ -119,7 +119,7 @@ versi, dan "getting-started 4×" padahal 1×). **Cari saja** — inilah daftar o
 git grep -n '<versi-lama>' -- . | grep -v CHANGELOG    # semua yang harus di-bump
 ```
 
-per v1.28.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
+per v1.29.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
 `README.id.md` (badge + link tag) · `docs/index.html` (eyebrow + footer) ·
 `docs/getting-started.md` (contoh `^versi`) · `HANDOFF.md` · `NEXT-UP.md`.
 

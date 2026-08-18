@@ -6,6 +6,31 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.29.0 — note 001 dari app konsumen KEDUA (back office 40 layar): 8 temuan, 6 dieksekusi.**
+- **`clearable` di `FdyCfl`** (Vue/React/Blazor) — tipe nilainya sudah `Row | null` tapi emit-nya
+  `Row` saja, jadi choose-from-list bisa DIISI tapi tak bisa DIKOSONGKAN: setiap foreign key opsional
+  rusak, dan user yang salah pilih harus reload form. Tombol clear = `.fdy-input-group__btn` kedua,
+  emit `null`, fokus balik ke trigger, dialog tak tersentuh.
+- **`.fdy-label--required`** — penanda lewat `::after` dengan **CSS alt text** (`content:"*" / ""`):
+  glyph-nya tampil, accessibility tree tak dapat apa-apa. Kontrolnya sudah punya `required`.
+- **`.fdy-icon`** (kotak 1em) · **`.fdy-text-success/-warning/-danger`** (teks inline ber-STATE; kit
+  cuma punya tiga role de-emphasis, jadi kalimat paling penting malah diredupkan).
+- **`.fdy-menu__item:focus-visible` dapat ring sungguhan** — sebelumnya fokus = fill hover, padahal
+  `freeday-menu.js` memindahkan fokus DOM asli, jadi menyusuri menu dengan panah tak terlihat.
+  Dilaporkan dua app berbeda.
+- **`<fieldset>` bergrup dapat spasinya** — legend dirender di luar flex flow, jadi `gap` tak pernah
+  sampai ke sana (terukur 0px). Satu deklarasi di reset yang sudah ada, bukan blok baru.
+- **§7 bukan seperti yang terlihat:** SELURUH string enhancer vanilla berbahasa Indonesia, jadi
+  menerjemahkan satu `aria-label` justru MENCIPTAKAN campuran yang dikeluhkan. Pilihannya (hook
+  override vs ganti default) = keputusan owner, tercatat di NEXT-UP #6.
+- Dua jebakan yang cuma ketahuan lewat pengukuran: `.fdy-icon` sebagai elemen inline **mengabaikan
+  `width`** (936px) sampai diberi `display`; dan menumpuk dua role warna (`.fdy-help.fdy-text-warning`)
+  kalah senyap ke aturan yang kebetulan belakangan.
+
+Gate: `npm test` **38/38** · `npm run test:browser` **23/23**.
+
+---
+
 **v1.28.0 — note 007: kartu yang bisa diklik dengan dua aksi.**
 - Kit tak punya bentuk untuk kasus paling umum: **satu kartu, satu aksi utama, satu pintu keluar**.
   `--button` = kartu yang *adalah* kontrol; `--interactive` = kartu yang *punya* kontrol; kartu

@@ -212,6 +212,8 @@ One role per level of hierarchy — never re-use a card title for a page title.
 | `.fdy-title-card` | `<h3>` | A title inside a card or row (`.fdy-card__title` is equivalent). |
 | `.fdy-text-muted` · `.fdy-text-subtle` | any | Secondary / tertiary text colour. |
 | `.fdy-text-caption` | `<p>` | Small muted text: timestamps, help. |
+| `.fdy-text-success` · `.fdy-text-warning` · `.fdy-text-danger` | any | Inline text that carries **state** — a sentence, not a status. Use when a badge is wrong (it is prose) and an alert is wrong (it is one line inside a row): "Amount changed from X to Y", "No approver assigned". **Do not stack two colour roles** (`.fdy-help.fdy-text-warning`): both are single classes, so the one that happens to come later in the stylesheet wins — put the state class on its own element, and use `.fdy-help--error` for help text. |
+| `.fdy-icon` | `<svg>` or a wrapper | Icon box: `1em` square, `flex:none`, so the glyph tracks the text beside it at every scale. The kit ships no paths — bring your own, use the box. |
 | `.fdy-mono` | any | Tabular/monospace data (codes, amounts, ids). |
 
 ## Utilities
@@ -291,7 +293,23 @@ native control, otherwise a `<div>` + explicitly associated label.
 
 - `.fdy-field` (+ `--full` inside `.fdy-form-grid`; widths `--w-sm` `--w-lg` `--w-xl` `--w-2xl`
   `--w-grow` inside `.fdy-filterbar`)
-- `.fdy-label` · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
+- `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
+
+**Grouped controls are a `<fieldset>`, not a new block.** Put `.fdy-field` on the fieldset and
+`.fdy-label` on the legend — the kit already resets the UA border/padding and supplies the spacing:
+
+```html
+<fieldset class="fdy-field">
+  <legend class="fdy-label">Working week</legend>
+  <label class="fdy-check"><input type="checkbox"> Monday</label>
+  <label class="fdy-check"><input type="checkbox"> Tuesday</label>
+</fieldset>
+```
+
+**`--required` marks the label, not the accessibility tree.** The control already carries
+`required`; the asterisk is painted through `::after` with CSS alt text, so a screen reader never
+reads "star" after the label — something a `<span>` you have to remember to mark `aria-hidden`
+cannot guarantee.
 - `[readonly]` is styled on input/textarea: full contrast, focusable, copyable.
 
 ```html
@@ -471,6 +489,13 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
   </div>
 </dialog>
 ```
+
+**`clearable` makes the value removable.** Without it a choose-from-list can be set but never unset,
+which breaks every *optional* foreign key — the value type already allows null, only the component
+could not produce it. With it, a clear button appears beside the trigger whenever a row is picked
+and the field is editable; it emits `null` (Vue `update:modelValue`/`change`, React `onChange`,
+Blazor `ValueChanged`) and returns focus to the trigger. It is a second `.fdy-input-group__btn`, not
+a new class.
 
 ## Date picker — `data-fdy-datepicker`
 > **Typed wrapper: `<FdyDatepicker>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
@@ -660,10 +685,19 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
 - Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + `<nav class="fdy-pagination"
   data-fdy-table-pagination>`
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
-- **Language caveat:** the vanilla enhancer writes the footer and bulk-count strings in Indonesian
-  (`Menampilkan 1–5 dari 7`, `N dipilih`) and has no override hook. The Vue/React/Blazor `FdyTable`
-  components are English. For an English static page, render those two nodes yourself from the
-  `fdy-table-change` event instead of using `data-fdy-table-info` / `data-fdy-table-bulk-count`.
+- **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian —
+  the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and filter
+  UI (`Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`), and the same
+  applies elsewhere (`Bulan berikutnya`, `Format tidak valid.`). There is no override hook. The
+  Vue/React/Blazor components are English throughout, so **an English app should use the typed
+  wrapper**, not the enhancer. For an English static page, render the footer/bulk nodes yourself
+  from the `fdy-table-change` event instead of using `data-fdy-table-info` /
+  `data-fdy-table-bulk-count`; the filter button's `aria-label` has no such escape today.
+
+**Testing note:** a column's filter button and the dialog it opens deliberately share one
+accessible name (`Filter <column>`) — a dialog named after its trigger is the normal pattern. In a
+Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
+reach for `getByRole('button', { name: 'Filter Name' })` instead.
 
 ## Pagination — `.fdy-pagination`
 The block class on the `<nav>` is a **structural hook only** — it carries no rule of its own; the

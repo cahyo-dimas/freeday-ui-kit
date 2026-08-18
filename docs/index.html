@@ -329,7 +329,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.28.0</p>
+          <p class="doc-eyebrow">Design System · v1.29.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -617,6 +617,16 @@
       <h2>Input</h2>
       <p class="doc-desc">Inner-shadow + focus glow. <strong>Untuk error, pakai <code>aria-invalid="true"</code></strong> — atribut ini melakukan dua hal sekaligus (state visual <em>dan</em> yang bisa dibaca screen reader), lalu <code>aria-describedby</code> menautkan pesan (help ber-<code>id</code> sama). <code>.fdy-input--error</code> hanya untuk kasus di mana state invalid bukan milik field itu sendiri.</p>
       <div class="doc-demo" style="align-items:flex-start">
+        <fieldset class="fdy-field">
+          <legend class="fdy-label">Hari kerja</legend>
+          <label class="fdy-check"><input type="checkbox" checked> Senin</label>
+          <label class="fdy-check"><input type="checkbox"> Selasa</label>
+        </fieldset>
+        <label class="fdy-field">
+          <span class="fdy-label fdy-label--required">Nama pelanggan</span>
+          <input class="fdy-input" type="text" required placeholder="Wajib diisi">
+          <span class="fdy-text-warning">Belum ada penyetuju untuk pelanggan ini.</span>
+        </label>
         <label class="fdy-field">
           <span class="fdy-label">Nama pelanggan</span>
           <input class="fdy-input" placeholder="cth. PT Sumber Makmur" aria-describedby="cust-help">
@@ -1989,7 +1999,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.28.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.29.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

@@ -51,6 +51,12 @@ for (const s of SURF) {
 }
 for (const [strong, soft] of [['--color-primary-strong', '--color-primary-soft'], ['--color-success-strong', '--color-success-soft'], ['--color-warning-strong', '--color-warning-soft'], ['--color-danger-strong', '--color-danger-soft'], ['--color-info-strong', '--color-info-soft']])
   for (const s of SURF) add(strong, { soft, on: s }, AA_TEXT, `${strong.replace('--color-', '')} on ${soft.replace('--color-', '')}/${s.replace('--color-surface', 'surf')}`);
+/* Inline state text (.fdy-text-success/-warning/-danger, note 001 §5) puts these inks on a PLAIN
+ * surface — the pairing above only covers them over their own -soft fill, which is a different
+ * background. A role that de-emphasises nothing must still be readable. */
+for (const strong of ['--color-success-strong', '--color-warning-strong', '--color-danger-strong'])
+  for (const s of SURF)
+    add(strong, s, AA_TEXT, `inline state text ${strong.replace('--color-', '')} on ${s.replace('--color-surface', 'surf')}`);
 add('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
 add('--color-on-danger', '--color-danger-btn', AA_TEXT, 'danger button label');
 add('--color-on-accent', '--color-accent', AA_UI, 'accent FAB icon (icon-only, non-text 3:1)');

@@ -35,14 +35,19 @@ const props = defineProps<{
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset. Without it
+   *  `modelValue` accepts `Row | null` but the component can only ever produce a `Row`. */
+  clearable?: boolean;
+  /** aria-label for the clear button (when `clearable`). Default 'Clear selection'. */
+  clearLabel?: string;
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: Row];
-  change: [value: Row];
+  'update:modelValue': [value: Row | null];
+  change: [value: Row | null];
 }>();
 
 const baseId: string = useId();
@@ -67,6 +72,12 @@ const activeIndex: Ref<number> = ref(-1);
 
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
 const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
+
+const showClear: ComputedRef<boolean> = computed(
+  (): boolean =>
+    props.clearable === true && props.modelValue != null && isDisabled.value === false && isReadonly.value === false,
+);
+const clearLabelText: ComputedRef<string> = computed((): string => props.clearLabel ?? 'Clear selection');
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 const displayValue: ComputedRef<string> = computed((): string =>
   props.modelValue !== null ? props.display(props.modelValue) : '',
@@ -154,10 +165,18 @@ function setActive(index: number): void {
   });
 }
 
-function commit(row: Row): void {
+function commit(row: Row | null): void {
   emit('update:modelValue', row);
   emit('change', row);
   closeDialog();
+}
+
+/* Unsetting is not "picking nothing" — it must not open or close the dialog, and it must leave focus
+   on a control that still exists, so focus returns to the trigger beside it. */
+function clearValue(): void {
+  emit('update:modelValue', null);
+  emit('change', null);
+  triggerEl.value?.focus();
 }
 
 function onKeydown(e: KeyboardEvent): void {
@@ -256,6 +275,17 @@ onBeforeUnmount((): void => {
       :aria-describedby="describedby"
       :disabled="isDisabled"
     />
+    <button
+      v-if="showClear"
+      type="button"
+      class="fdy-input-group__btn"
+      :aria-label="clearLabelText"
+      @click="clearValue"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"></path>
+      </svg>
+    </button>
     <button
       ref="triggerEl"
       type="button"

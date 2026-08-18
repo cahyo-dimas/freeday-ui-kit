@@ -78,3 +78,38 @@ test('Vue FdyTable: controlled pageIndex round-trips with an external pager', { 
 test('React FdyTable: controlled pageIndex round-trips with an external pager', { skip }, async () => {
   await assertControlledPageIndex('react-table-pageindex.html');
 });
+
+/* Clearable choose-from-list (note 001 §3). The failure this guards is an API asymmetry, not a
+ * rendering bug: `modelValue`/`value` accept `Row | null`, but the emit was typed and implemented as
+ * `Row` only — so an OPTIONAL foreign key could be set and never unset, and a user who picked the
+ * wrong row had to reload the form. Driven with a real click because the clear control disappears
+ * with the value it clears; a synthetic click would not prove focus survives that. */
+async function assertClearable(fixtureName) {
+  await withPage(fixture(fixtureName), async (p) => {
+    await p.waitFor(`document.querySelector('.fdy-input-group__btn')`);
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-input-group__btn").length'), 2,
+      'a picked value shows a clear button beside the search trigger');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-input").value'), 'WF-1', 'starts with a row picked');
+
+    await p.clickCenter('.fdy-input-group__btn');   // the clear button comes first in the group
+    const cleared = await p.waitFor('window.__val === null');
+    assert.ok(cleared, `clearing must emit null, got ${JSON.stringify(await p.evalJS('window.__val'))}`);
+    assert.equal(await p.evalJS('document.querySelector(".fdy-input").value'), '', 'and empty the field');
+
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-input-group__btn").length'), 1,
+      'the clear button goes away with the value — there is nothing left to clear');
+    assert.equal(await p.evalJS('document.activeElement.getAttribute("aria-haspopup")'), 'dialog',
+      'focus must land on the trigger, not on the button that just vanished (or on <body>)');
+
+    assert.equal(await p.evalJS('document.querySelector("dialog")?.open === true'), false,
+      'clearing is not picking — the dialog must stay shut');
+  });
+}
+
+test('Vue FdyCfl: clearable emits null and keeps focus', { skip }, async () => {
+  await assertClearable('vue-cfl-clear.html');
+});
+
+test('React FdyCfl: clearable emits null and keeps focus', { skip }, async () => {
+  await assertClearable('react-cfl-clear.html');
+});
