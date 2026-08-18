@@ -143,6 +143,27 @@ export function distinctValues(rows, column) {
 }
 
 /**
+ * The page to land on when the page SIZE changes: whichever page still holds the first row you were
+ * already looking at.
+ *
+ * The two obvious answers are both wrong. Jumping to page 1 throws away your place on a long list —
+ * you asked to see more rows, not to start over. Keeping the same INDEX can land past the end: page
+ * 5 of 5 at twenty rows is page 2 of 2 at fifty, and index 4 is nowhere. Anchoring on the first
+ * visible row is the only one that always resolves, and it is what the reader expects: the row they
+ * were looking at is still on screen.
+ *
+ * @param {number} pageIndex current 0-based page index
+ * @param {number} oldSize rows per page now
+ * @param {number} newSize rows per page wanted
+ * @returns {number} 0-based page index that still contains the old first row
+ */
+export function pageIndexForSize(pageIndex, oldSize, newSize) {
+  if (!newSize || newSize <= 0) return 0;
+  const firstRow = Math.max(0, pageIndex) * Math.max(0, oldSize);
+  return Math.floor(firstRow / newSize);
+}
+
+/**
  * Page-number window for a pager: first and last page always shown, current ±1, "ellipsis"
  * gaps between. `current` and the returned page numbers are 1-based.
  */

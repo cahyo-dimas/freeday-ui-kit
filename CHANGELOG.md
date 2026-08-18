@@ -3,6 +3,56 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.34.0] — 2026-08-18
+One note from the back-office app (IDU_EMATE_APPL_WEB, #008), and the second half of #005 it
+finally makes answerable.
+### Added
+- **`pageSizes` on `FdyTable`** (Vue · React · Blazor) and `data-fdy-table-page-size` for the
+  enhancer. The footer stated the range and moved the page and stopped there — no control for **how
+  many rows a page holds**, which is the first thing anybody changes on a ninety-row list. The three
+  numbers are one object: the component already receives `index`, `size` and `total`, rendered two
+  of them, and left the third to the caller — so the caller withheld the whole footer with
+  `pager={false}` and rebuilt all three to add the one. Give it `pageSizes` and it grows the control
+  between the range and the pager. Server mode reports the pick through the existing
+  `update:page` / `onPageChange` / `PageChanged`, carrying a new `size`; client mode applies it
+  itself (so it works with nothing wired) and also emits `update:pageSize` / `onPageSizeChange` /
+  `PageSizeChanged` for a caller that wants to persist it.
+- **`FdyTableFooter`** (Vue · React · Blazor) — the footer as a component of its own. This is the
+  half of #005 that `pager={false}` could only get out of the way: a **responsive** list renders one
+  page of rows twice, a `.fdy-datatable` at `lg` and a `.fdy-list` below it, and a footer that lives
+  inside the table lives inside the half a phone hides. Those screens took the footer over and
+  re-implemented it. Now they render the kit's, once, outside both. `FdyTable` uses the same
+  component internally, so there is one footer in the kit and not two that drift.
+- **`pageIndexForSize(pageIndex, oldSize, newSize)`** in the shared table model. Resizing the page
+  has two obvious answers and both are wrong: back to page 1 throws away the reader's place, and
+  keeping the same index can land past the end (page 5 of 5 at twenty rows is page 2 of 2 at fifty).
+  Anchoring on the first visible row always resolves, and it is what the reader expects — the row
+  they were looking at is still on screen.
+### Notes on the shape of the fix
+- **A footer with a size control stays visible on a single page.** The old rule withheld the whole
+  band whenever `totalPages === 1`, which would have made "100 rows" on a ninety-row list a one-way
+  door: the control that got you there disappears with the pager. Visibility is now "there is a
+  pager **or** there is a size control", and it lives in `FdyTableFooter` — one decision, four
+  stacks.
+- **No wrapper element.** `.fdy-table-footer__size` takes `margin-left:auto`, so the size control and
+  the pager travel together on the right while the range stays left. The footer's DOM is byte-
+  identical for every table that does not offer one.
+- **A native `<select>`, not `.fdy-combo`.** Three one-word options do not need a custom listbox: the
+  platform's own is better on a phone, needs no enhancer in the raw path, and keeps the footer
+  working in a static page.
+### Added — guards
+- `pageIndexForSize` is unit-tested at the boundaries (first page, both directions, same-size no-op,
+  a negative index, a zero size).
+- The control is measured in a real browser, on two tables sharing one page state: the server-mode
+  pick must reach the caller **with the right index** (page 3 of five-row pages → page 2 of ten), and
+  the client-mode table — deliberately wired to nothing — must still grow to 25 rows, because a
+  control that only reports is a control that lies.
+### Fixed — the kit's own suite
+- `browser/fixtures/theme-subtree.html` had no explicit theme on `<html>`, so its "light app" probe
+  fell to `prefers-color-scheme`. On a machine in dark mode both probes read the dark ink and the
+  test failed claiming `data-theme` had gone back to being root-scoped. Pinned; the subtree
+  behaviour under test is unchanged.
+
 ## [1.33.0] — 2026-08-18
 Three notes from the back-office app, four findings, all four executed.
 ### Added

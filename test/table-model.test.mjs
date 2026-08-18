@@ -10,6 +10,7 @@ import {
   paginate,
   distinctValues,
   pageWindow,
+  pageIndexForSize,
 } from '../adapters/core/table-model.js';
 
 // Rows resembling an admin table: a text id, a numeric amount, an ISO date, an enum status.
@@ -107,6 +108,21 @@ test('cellText: null/undefined -> empty string, else trimmed', () => {
   assert.equal(cellText({ code: '  x ' }, { key: 'code', label: 'C' }), 'x');
   assert.equal(cellText({ code: null }, { key: 'code', label: 'C' }), '');
   assert.equal(cellText({}, { key: 'missing', label: 'M' }), '');
+});
+
+test('pageIndexForSize: the reader keeps the row they were looking at (#008)', () => {
+  // Page 3 of twenty-row pages starts at row 40. At fifty a page, row 40 is on page 1 (index 0).
+  assert.equal(pageIndexForSize(2, 20, 50), 0);
+  // ...and going the other way it is on page 5 (index 4): 40 / 10.
+  assert.equal(pageIndexForSize(2, 20, 10), 4);
+  // The first page stays the first page whatever the size.
+  assert.equal(pageIndexForSize(0, 20, 50), 0);
+  assert.equal(pageIndexForSize(0, 50, 20), 0);
+  // Same size in and out is a no-op, so a re-pick of the current value cannot move the reader.
+  assert.equal(pageIndexForSize(3, 20, 20), 3);
+  // Nonsense in: never a negative index, never a divide by zero.
+  assert.equal(pageIndexForSize(-2, 20, 20), 0);
+  assert.equal(pageIndexForSize(4, 20, 0), 0);
 });
 
 test('pageWindow: first/last always, current +/-1, ellipsis gaps', () => {

@@ -158,6 +158,38 @@ test('React FdyDatepicker: the title drills to a month grid', { skip }, async ()
   await assertMonthDrill('react-cal-drill.html');
 });
 
+/* The footer paginated but could not resize the page (note 008), so every app that wanted a
+ * rows-per-page control withheld the whole footer and rebuilt all three parts to add the fourth.
+ * Two things have to hold: the pick must LAND (the rows change), and it must keep the reader on the
+ * row they were looking at rather than dropping them back on page 1. */
+test('Vue FdyTable: the footer resizes the page and keeps your place', { skip }, async () => {
+  await withPage(fixture('vue-table-pagesize.html'), async (p) => {
+    await p.waitFor(`document.querySelectorAll('.fdy-table-footer__sizeselect').length === 2`);
+
+    // Server mode: page index 2 of 5-row pages starts at row 10. At ten a page that is index 1.
+    await p.evalJS(`(() => {
+      const s = document.querySelectorAll('.fdy-table-footer__sizeselect')[0];
+      s.value = '10';
+      s.dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    const landed = await p.waitFor(`JSON.parse(window.__page()).size === 10`);
+    assert.ok(landed, `the size never reached the caller: ${await p.evalJS('window.__page()')}`);
+    assert.equal(JSON.parse(await p.evalJS('window.__page()')).index, 1,
+      'row 10 is on page 2 of ten-row pages — resizing must not send the reader back to page 1');
+
+    // Client mode: nothing is wired, so the table has to apply the pick itself or the control lies.
+    const before = await p.evalJS(`document.querySelectorAll('.fdy-datatable')[1].querySelectorAll('tbody tr').length`);
+    assert.equal(before, 5, `client table starts at its pageSize, got ${before}`);
+    await p.evalJS(`(() => {
+      const s = document.querySelectorAll('.fdy-table-footer__sizeselect')[1];
+      s.value = '25';
+      s.dispatchEvent(new Event('change', { bubbles: true }));
+    })()`);
+    const grew = await p.waitFor(`document.querySelectorAll('.fdy-datatable')[1].querySelectorAll('tbody tr').length === 25`);
+    assert.ok(grew, 'an unwired client table must still honour its own footer');
+  });
+});
+
 /* Server mode owned the pager and would not let go (note 005). Two tables, same server page state:
  * one with pager={false}, one without. The escape hatch has to remove the footer from the DOM, not
  * just hide it — a visually hidden pager is still in the tab order and still announced. */

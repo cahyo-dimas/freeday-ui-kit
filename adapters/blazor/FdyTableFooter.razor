@@ -1,0 +1,63 @@
+@* The band under a table: what you are looking at, how much of it you see, where you are.
+
+   FdyTable renders this itself, so most screens never use it directly. It is public for the one
+   shape that cannot use the table's own — a RESPONSIVE list, where a .fdy-datatable at lg and a
+   .fdy-list below it are two renderings of ONE page of rows. A footer inside the table is inside the
+   half that is hidden on a phone, so those screens render it once, outside both (improvement notes
+   #005 and #008, from IDU_EMATE_APPL_WEB). *@
+
+@if (Visible)
+{
+    <div class="fdy-table-footer">
+        <span class="fdy-table-footer__info">Showing @RangeFrom–@RangeTo of @Page.Total</span>
+
+        @if (Sizes.Count > 0)
+        {
+            <label class="fdy-table-footer__size">
+                Rows
+                <select class="fdy-table-footer__sizeselect" aria-label="Rows per page"
+                        value="@Page.Size" @onchange="OnSize">
+                    @foreach (int size in Sizes)
+                    {
+                        <option value="@size">@size</option>
+                    }
+                </select>
+            </label>
+        }
+
+        @if (HasPager)
+        {
+            <nav aria-label="Pagination">
+                <ul class="fdy-pagination__list">
+                    <li>
+                        <button type="button" class="fdy-pagination__link" aria-label="Previous page"
+                                disabled="@(CurrentPage1 == 1)" @onclick="() => GoTo(CurrentPage1 - 1)">‹</button>
+                    </li>
+                    @foreach (int? p in Pages)
+                    {
+                        <li>
+                            @if (p is null)
+                            {
+                                <span class="fdy-pagination__ellipsis">…</span>
+                            }
+                            else if (p == CurrentPage1)
+                            {
+                                <span class="fdy-pagination__link" aria-current="page">@p</span>
+                            }
+                            else
+                            {
+                                int page = p.Value;
+                                <button type="button" class="fdy-pagination__link" aria-label="@($"Go to page {page}")"
+                                        @onclick="() => GoTo(page)">@(page)</button>
+                            }
+                        </li>
+                    }
+                    <li>
+                        <button type="button" class="fdy-pagination__link" aria-label="Next page"
+                                disabled="@(CurrentPage1 == TotalPages)" @onclick="() => GoTo(CurrentPage1 + 1)">›</button>
+                    </li>
+                </ul>
+            </nav>
+        }
+    </div>
+}

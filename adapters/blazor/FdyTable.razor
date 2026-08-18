@@ -100,41 +100,8 @@
         </table>
     </div>
 
-    @if (HasPager)
+    @if (Pager)
     {
-        <div class="fdy-table-footer">
-            <span class="fdy-table-footer__info">Showing @RangeFrom–@RangeTo of @TotalCount</span>
-            <nav aria-label="Pagination">
-                <ul class="fdy-pagination__list">
-                    <li>
-                        <button type="button" class="fdy-pagination__link" aria-label="Previous page"
-                                disabled="@(CurrentPage1 == 1)" @onclick="() => GoTo(CurrentPage1 - 1)">‹</button>
-                    </li>
-                    @foreach (int? p in Pages)
-                    {
-                        <li>
-                            @if (p is null)
-                            {
-                                <span class="fdy-pagination__ellipsis">…</span>
-                            }
-                            else if (p == CurrentPage1)
-                            {
-                                <span class="fdy-pagination__link" aria-current="page">@p</span>
-                            }
-                            else
-                            {
-                                int page = p.Value;
-                                <button type="button" class="fdy-pagination__link" aria-label="@($"Go to page {page}")"
-                                        @onclick="() => GoTo(page)">@(page)</button>
-                            }
-                        </li>
-                    }
-                    <li>
-                        <button type="button" class="fdy-pagination__link" aria-label="Next page"
-                                disabled="@(CurrentPage1 == TotalPages)" @onclick="() => GoTo(CurrentPage1 + 1)">›</button>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <FdyTableFooter Page="FooterPage" PageSizes="PageSizes" PageChanged="OnFooterPage" />
     }
 </div>

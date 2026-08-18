@@ -41,6 +41,20 @@ public partial class FdyTable<TRow>
     /// second control. Client mode's counterpart is <see cref="PageIndex"/>. Default true.</summary>
     [Parameter] public bool Pager { get; set; } = true;
 
+    /// <summary>
+    /// Offer a rows-per-page control in the footer, beside the range and the pager. Leave null for
+    /// none (unchanged default). Every back office has one, and a table that renders two thirds of
+    /// its own footer forces the app to rebuild all three to add the last (#008).
+    /// Server mode reports the pick through <see cref="PageChanged"/> — same callback as a page
+    /// click, with a new size. Client mode applies it internally and also raises
+    /// <see cref="PageSizeChanged"/>, so the control works with nothing wired.
+    /// </summary>
+    [Parameter] public IReadOnlyList<int>? PageSizes { get; set; }
+
+    /// <summary>Raised in client mode when the reader picks a new rows-per-page. The table has
+    /// already applied it — this is for a caller that wants to persist the choice.</summary>
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+
     [Parameter] public int? PageIndex { get; set; }
 
     /// <summary>Raised in client mode with <see cref="PageIndex"/> set: the table asks for a new
@@ -98,16 +112,29 @@ public partial class FdyTable<TRow>
     private IReadOnlyDictionary<string, FdyColumnFilter> EffectiveFilters =>
         FiltersControlled ? (Filters ?? EmptyFilters) : _internalFilters;
 
-    private int PageSizeEff => ServerPaged ? Page!.Size : PageSize;
+    /* Client-mode rows-per-page. PageSize is a plain parameter with no callback, so a footer control
+     * that only reported would do nothing in the app that wired nothing — the table applies the pick
+     * itself and reports it. An explicit change to the parameter wins back (see OnParametersSet). */
+    private int? _internalPageSize;
+    private int _prevPageSize;
+
+    private int PageSizeEff => ServerPaged ? Page!.Size : (_internalPageSize ?? PageSize);
     private int CurrentPage1 => (ServerPaged ? Page!.Index : ClientPageIndex) + 1;
     private int TotalCount => _totalCount;
     private int TotalPages => PageSizeEff > 0 ? Math.Max(1, (int)Math.Ceiling((double)TotalCount / PageSizeEff)) : 1;
-    private bool HasPager => Pager && PageSizeEff > 0 && TotalPages > 1;
-    private List<int?> Pages => TableModel.PageWindow(CurrentPage1, TotalPages);
-    private int RangeFrom => TotalCount == 0 ? 0 : (CurrentPage1 - 1) * PageSizeEff + 1;
-    private int RangeTo => TotalCount == 0 ? 0 : RangeFrom - 1 + _displayRows.Count;
+    /// What the footer needs, in both modes: the range, the pager and the size control are all
+    /// derived from these three numbers, so the table hands them over rather than restating them.
+    private FdyPageState FooterPage => new(CurrentPage1 - 1, PageSizeEff, TotalCount);
 
-    protected override void OnParametersSet() => Recompute();
+    protected override void OnParametersSet()
+    {
+        if (_prevPageSize != PageSize)
+        {
+            _prevPageSize = PageSize;
+            _internalPageSize = null;
+        }
+        Recompute();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -133,16 +160,16 @@ public partial class FdyTable<TRow>
 
         _totalCount = ServerPaged ? Page!.Total : filteredSorted.Count;
 
-        if (!ServerPaged && PageSize > 0)
+        if (!ServerPaged && PageSizeEff > 0)
         {
             // Keep the page in range when a filter shrank the row set.
-            int tp = Math.Max(1, (int)Math.Ceiling((double)_totalCount / PageSize));
+            int tp = Math.Max(1, (int)Math.Ceiling((double)_totalCount / PageSizeEff));
             if (ClientPageIndex > tp - 1)
             {
                 if (PageIndexControlled) _pendingClamp = Math.Max(0, tp - 1);
                 else _internalPageIndex = Math.Max(0, tp - 1);
             }
-            _displayRows = TableModel.Paginate(filteredSorted, Math.Min(ClientPageIndex, tp - 1), PageSize);
+            _displayRows = TableModel.Paginate(filteredSorted, Math.Min(ClientPageIndex, tp - 1), PageSizeEff);
         }
         else
         {
@@ -210,6 +237,26 @@ public partial class FdyTable<TRow>
         {
             await SetClientPageAsync(index0);
         }
+    }
+
+    // One callback carries both intents, so which one it was is read off Size.
+    private async Task OnFooterPage(FdyPageState next)
+    {
+        if (next.Size != PageSizeEff)
+        {
+            if (ServerPaged)
+            {
+                await PageChanged.InvokeAsync(next);
+            }
+            else
+            {
+                _internalPageSize = next.Size;
+                await PageSizeChanged.InvokeAsync(next.Size);
+                await SetClientPageAsync(next.Index);
+            }
+            return;
+        }
+        await GoTo(next.Index + 1);
     }
 
     // One write path for the client index: ask the parent when controlled, mutate the field when not.

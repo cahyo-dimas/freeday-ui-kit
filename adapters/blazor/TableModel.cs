@@ -183,6 +183,18 @@ public static class TableModel
 
     /// <summary>Page-number window: first and last page always shown, current ±1, null for the
     /// "ellipsis" gaps between. <paramref name="current"/> and returned page numbers are 1-based.</summary>
+    /// <summary>
+    /// The page to land on when the page SIZE changes: whichever page still holds the first row the
+    /// reader was already looking at. Jumping to page 1 loses their place; keeping the same index can
+    /// land past the end (page 5 of 5 at twenty rows is page 2 of 2 at fifty).
+    /// </summary>
+    public static int PageIndexForSize(int pageIndex, int oldSize, int newSize)
+    {
+        if (newSize <= 0) return 0;
+        int firstRow = Math.Max(0, pageIndex) * Math.Max(0, oldSize);
+        return firstRow / newSize;
+    }
+
     public static List<int?> PageWindow(int current, int totalPages)
     {
         List<int?> outList = new();

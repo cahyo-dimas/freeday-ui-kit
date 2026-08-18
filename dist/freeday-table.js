@@ -8,7 +8,8 @@
  * a `<table class="fdy-table">` whose sortable headers hold
  * `<button class="fdy-table__sortbtn" data-fdy-sort[="number"]>`, optional
  * selection checkboxes (`[data-fdy-select-all]`, `[data-fdy-row-select]`), and a
- * `.fdy-table-footer` (with `[data-fdy-table-info]`, `[data-fdy-table-pagination]`).
+ * `.fdy-table-footer` (with `[data-fdy-table-info]`, `[data-fdy-table-pagination]`, and an
+ * optional `<select data-fdy-table-page-size>` whose options are row counts).
  * Numeric columns should give each cell a `data-sort-value`.
  *
  * Column filters: mark a header `<th data-fdy-filter="text|enum|number">` and a funnel
@@ -44,6 +45,7 @@
     var countEl = root.querySelector('[data-fdy-table-count]');
     var infoEl = root.querySelector('[data-fdy-table-info]');
     var pagerEl = root.querySelector('[data-fdy-table-pagination]');
+    var pageSizeEl = root.querySelector('[data-fdy-table-page-size]');
     var selectAll = root.querySelector('[data-fdy-select-all]');
     var pageSize = parseInt(root.getAttribute('data-page-size'), 10) || 0; // 0 = no pagination
 
@@ -439,6 +441,22 @@
       syncSelectAll(slice);
       updateBulk();
     });
+
+    /* Rows per page. The select is app-authored markup (its options ARE the offer), so this only
+     * wires it: adopt whatever it currently shows, and on a change keep the reader on the row they
+     * were looking at rather than sending them back to page 1. */
+    if (pageSizeEl) {
+      var chosen = parseInt(pageSizeEl.value, 10);
+      if (chosen > 0) pageSize = chosen;
+      pageSizeEl.addEventListener('change', function () {
+        var next = parseInt(pageSizeEl.value, 10);
+        if (!(next > 0) || next === pageSize) return;
+        var firstRow = (page - 1) * pageSize;
+        pageSize = next;
+        page = Math.floor(firstRow / next) + 1;
+        render();
+      });
+    }
 
     if (bulkClear) bulkClear.addEventListener('click', clearSelection);
 

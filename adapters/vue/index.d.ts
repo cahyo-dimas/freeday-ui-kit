@@ -35,6 +35,9 @@ export type { CascadeNode } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
 export { default as FdyChart } from './components/FdyChart.vue';
 export { default as FdyTable } from './components/FdyTable.vue';
+/** The table's own footer, standalone — for a responsive list whose table is hidden at some
+ *  breakpoints and so cannot host it. */
+export { default as FdyTableFooter } from './components/FdyTableFooter.vue';
 export { default as FdyModal } from './components/FdyModal.vue';
 export { default as FdyDrawer } from './components/FdyDrawer.vue';
 

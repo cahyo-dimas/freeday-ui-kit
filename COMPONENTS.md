@@ -705,8 +705,10 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
 - Selection: `.fdy-table__selcol` cells with `data-fdy-select-all` / `data-fdy-row-select`
 - Rows: `.fdy-table__row--activatable` (clickable rows), `.fdy-table__detailrow` (expandable
   detail), `.fdy-table__state` (in-table empty/loading row)
-- Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + `<nav class="fdy-pagination"
-  data-fdy-table-pagination>`
+- Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + optional `__size` (a `<label>`
+  wrapping a `.fdy-table-footer__sizeselect` — a native `<select data-fdy-table-page-size>` whose
+  options are row counts) + `<nav class="fdy-pagination" data-fdy-table-pagination>`. The size
+  control is app-authored markup: its options *are* the offer, and the enhancer only wires it.
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
 - **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian —
   the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and filter
@@ -721,6 +723,26 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
 accessible name (`Filter <column>`) — a dialog named after its trigger is the normal pattern. In a
 Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
 reach for `getByRole('button', { name: 'Filter Name' })` instead.
+
+**Rows per page.** Pass `pageSizes` (Vue/React `:page-sizes="[10, 20, 50]"`, Blazor
+`PageSizes="…"`) and the footer grows a rows-per-page control between the range and the pager.
+Omit it for none — unchanged default. Picking a size keeps the reader on the row they were looking
+at rather than dropping them on page 1.
+
+- **server mode** — reported through `update:page` / `onPageChange` / `PageChanged`, the same event
+  as a page click, carrying the new `size`. Read `size` to tell the two apart.
+- **client mode** — the table applies it itself, so the control works with nothing wired, and also
+  emits `update:pageSize` / `onPageSizeChange` / `PageSizeChanged` for a caller that wants to
+  persist the choice. Changing the `pageSize` prop wins back.
+
+A footer with a size control stays visible on a single page — otherwise picking "100" on a
+ninety-row list would remove the only way back to twenty.
+
+**Typed wrapper: `<FdyTableFooter>`** — the footer alone (`page` in, `update:page` /
+`onPageChange` / `PageChanged` out), for the one shape that cannot use the table's own: a
+**responsive** list, where a `.fdy-datatable` at `lg` and a `.fdy-list` below it are two renderings
+of one page of rows. A footer inside the table is inside the half a phone hides, so those screens
+render it once, outside both, with `pager={false}` on the table.
 
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:

@@ -236,6 +236,7 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-cal-drill.js'),
       join(HERE, 'entries', 'react-cal-drill.tsx'),
       join(HERE, 'entries', 'vue-table-pager-off.js'),
+      join(HERE, 'entries', 'vue-table-pagesize.js'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

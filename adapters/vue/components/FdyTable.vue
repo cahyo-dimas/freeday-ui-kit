@@ -7,7 +7,6 @@ import {
   filterRows,
   sortRows,
   paginate,
-  pageWindow,
 } from '../../core/table-model.js';
 import type {
   FdyTableColumn,
@@ -17,6 +16,7 @@ import type {
   FdyPageState,
 } from '../../core/table-model';
 import FdyTableFilter from './FdyTableFilter.vue';
+import FdyTableFooter from './FdyTableFooter.vue';
 
 // A controlled Vue data table over freeday's `.fdy-datatable` / `.fdy-table*` / `.fdy-filter*` /
 // `.fdy-pagination__*` classes. Unlike the freeday-table.js enhancer (which snapshots static rows
@@ -56,6 +56,16 @@ const props = withDefaults(defineProps<{
    *  a responsive list that shows a table at one breakpoint and cards at another ended up with the
    *  kit's pager stacked under its own. Client mode's counterpart is `pageIndex`. Default true. */
   pager?: boolean;
+  /**
+   * Offer a rows-per-page control in the footer, beside the range and the pager. Omit for none
+   * (unchanged default). Every back office has one, and a table that renders two thirds of its own
+   * footer forces the app to rebuild all three to add the last (#008).
+   *
+   * Server mode reports the pick through `update:page` — same event as a page click, with a new
+   * `size`. Client mode keeps it internally and also emits `update:pageSize`, so the control works
+   * with nothing wired and can still be persisted.
+   */
+  pageSizes?: readonly number[];
   pageIndex?: number;
   loading?: boolean;
   emptyText?: string;
@@ -75,6 +85,9 @@ const emit = defineEmits<{
   /** Client mode with `pageIndex` provided: the table asks for a new 0-based index (pager click, or
    *  a reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
   'update:pageIndex': [index: number];
+  /** Client mode with `pageSizes`: the reader picked a new rows-per-page. The table has already
+   *  applied it — this is for a caller that wants to persist the choice. */
+  'update:pageSize': [size: number];
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   'row-activate': [row: Row];
   /** The processed page of rows (after filter/sort/paginate) plus the total row count — fires in
@@ -86,6 +99,11 @@ const emit = defineEmits<{
 const internalSort: Ref<FdySortState | null> = ref(null);
 const internalFilters: Ref<FdyFilterMap> = ref({});
 const internalPageIndex: Ref<number> = ref(0);
+/* Client-mode rows-per-page. `pageSize` is a plain prop with no event, so a footer control that only
+ * emitted would do nothing in the app that wired nothing — the table applies the pick itself and
+ * reports it. An explicit change to the prop wins back: the parent said something newer. */
+const internalPageSize: Ref<number | null> = ref(null);
+watch((): number | undefined => props.pageSize, (): void => { internalPageSize.value = null; });
 
 const serverPaged: ComputedRef<boolean> = computed((): boolean => props.page != null);
 const sortControlled: ComputedRef<boolean> = computed((): boolean => serverPaged.value || props.sort !== undefined);
@@ -130,31 +148,28 @@ function setClientPage(index0: number): void {
   } else internalPageIndex.value = index0;
 }
 
+const pageSizeEff: ComputedRef<number> = computed((): number =>
+  serverPaged.value ? (props.page as FdyPageState).size : (internalPageSize.value ?? props.pageSize ?? 0),
+);
+
 const displayRows: ComputedRef<Row[]> = computed((): Row[] => {
   if (serverPaged.value) return props.rows.slice();
-  if (props.pageSize && props.pageSize > 0) return paginate(filteredSorted.value, clientPageIndex.value, props.pageSize);
+  if (pageSizeEff.value > 0) return paginate(filteredSorted.value, clientPageIndex.value, pageSizeEff.value);
   return filteredSorted.value;
 });
-
-const pageSizeEff: ComputedRef<number> = computed((): number =>
-  serverPaged.value ? (props.page as FdyPageState).size : (props.pageSize ?? 0),
-);
 const currentPage1: ComputedRef<number> = computed((): number =>
   (serverPaged.value ? (props.page as FdyPageState).index : clientPageIndex.value) + 1,
 );
 const totalPages: ComputedRef<number> = computed((): number =>
   pageSizeEff.value > 0 ? Math.max(1, Math.ceil(totalCount.value / pageSizeEff.value)) : 1,
 );
-const hasPager: ComputedRef<boolean> = computed((): boolean => props.pager !== false && pageSizeEff.value > 0 && totalPages.value > 1);
-const pages: ComputedRef<Array<number | 'ellipsis'>> = computed((): Array<number | 'ellipsis'> =>
-  pageWindow(currentPage1.value, totalPages.value),
-);
-const rangeFrom: ComputedRef<number> = computed((): number =>
-  totalCount.value === 0 ? 0 : (currentPage1.value - 1) * pageSizeEff.value + 1,
-);
-const rangeTo: ComputedRef<number> = computed((): number =>
-  totalCount.value === 0 ? 0 : rangeFrom.value - 1 + displayRows.value.length,
-);
+/* What the footer needs, in both modes: the range, the pager and the size control are all derived
+ * from these three numbers, so the table hands them over rather than restating them. */
+const footerPage: ComputedRef<FdyPageState> = computed((): FdyPageState => ({
+  index: currentPage1.value - 1,
+  size: pageSizeEff.value,
+  total: totalCount.value,
+}));
 
 // Client mode: keep the page in range when a filter shrinks the row set.
 watch(totalPages, (tp: number): void => {
@@ -206,6 +221,20 @@ function goTo(page1: number): void {
   } else {
     setClientPage(index0);
   }
+}
+
+/* One event carries both intents, so which one it was is read off `size`. */
+function onFooterPage(next: FdyPageState): void {
+  if (next.size !== pageSizeEff.value) {
+    if (serverPaged.value) emit('update:page', next);
+    else {
+      internalPageSize.value = next.size;
+      emit('update:pageSize', next.size);
+      setClientPage(next.index);
+    }
+    return;
+  }
+  goTo(next.index + 1);
 }
 
 function cellClass(col: FdyTableColumn<Row>): string | undefined {
@@ -295,35 +324,11 @@ function isExpanded(row: Row): boolean {
       </table>
     </div>
 
-    <div v-if="hasPager" class="fdy-table-footer">
-      <span class="fdy-table-footer__info">Showing {{ rangeFrom }}–{{ rangeTo }} of {{ totalCount }}</span>
-      <nav aria-label="Pagination">
-        <ul class="fdy-pagination__list">
-          <li>
-            <button
-              type="button"
-              class="fdy-pagination__link"
-              aria-label="Previous page"
-              :disabled="currentPage1 === 1"
-              @click="goTo(currentPage1 - 1)"
-            >‹</button>
-          </li>
-          <li v-for="(p, i) in pages" :key="typeof p === 'number' ? p : `gap-${i}`">
-            <span v-if="p === 'ellipsis'" class="fdy-pagination__ellipsis">…</span>
-            <span v-else-if="p === currentPage1" class="fdy-pagination__link" aria-current="page">{{ p }}</span>
-            <button v-else type="button" class="fdy-pagination__link" :aria-label="`Go to page ${p}`" @click="goTo(p)">{{ p }}</button>
-          </li>
-          <li>
-            <button
-              type="button"
-              class="fdy-pagination__link"
-              aria-label="Next page"
-              :disabled="currentPage1 === totalPages"
-              @click="goTo(currentPage1 + 1)"
-            >›</button>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <FdyTableFooter
+      v-if="pager !== false"
+      :page="footerPage"
+      :page-sizes="pageSizes"
+      @update:page="onFooterPage"
+    />
   </div>
 </template>

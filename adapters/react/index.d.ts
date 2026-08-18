@@ -36,6 +36,9 @@ export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components
 export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';
 export { FdyTable, type FdyTableProps } from './components/FdyTable';
+/** The table's own footer, standalone — for a responsive list whose table is hidden at some
+ *  breakpoints and so cannot host it. */
+export { FdyTableFooter, type FdyTableFooterProps } from './components/FdyTableFooter';
 export { FdyModal, type FdyModalProps } from './components/FdyModal';
 export { FdyDrawer, type FdyDrawerProps } from './components/FdyDrawer';
 

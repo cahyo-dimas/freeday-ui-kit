@@ -122,6 +122,8 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `.fdy-text-warning` / `-danger` / `-success` | a caption class on a line that should stand out |
 | `.fdy-icon` | your own `width:1em;height:1em` rule, once per project |
 | `data-density="comfortable"` | restating the default spacing tokens on a wrapper |
+| `pageSizes` on `FdyTable` | a rows-per-page control bolted above the table, away from the pager |
+| `FdyTableFooter` | rebuilding the range + pager to add a size control, on a responsive list |
 | the calendar's month grid (press the title) | clicking "previous month" thirty times |
 
 ## 3. Starting a new screen

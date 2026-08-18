@@ -8,5 +8,6 @@ export { FdyCascade } from './components/FdyCascade.tsx';
 export { FdyCfl } from './components/FdyCfl.tsx';
 export { FdyChart } from './components/FdyChart.tsx';
 export { FdyTable } from './components/FdyTable.tsx';
+export { FdyTableFooter } from './components/FdyTableFooter.tsx';
 export { FdyModal } from './components/FdyModal.tsx';
 export { FdyDrawer } from './components/FdyDrawer.tsx';

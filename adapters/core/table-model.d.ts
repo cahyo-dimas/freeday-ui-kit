@@ -76,3 +76,5 @@ export function sortRows<T>(
 export function paginate<T>(rows: readonly T[], pageIndex: number, pageSize: number): T[];
 export function distinctValues<T>(rows: readonly T[], column: FdyTableColumn<T>): string[];
 export function pageWindow(current: number, totalPages: number): Array<number | 'ellipsis'>;
+/** The 0-based page still holding the old first row after a page-size change. */
+export function pageIndexForSize(pageIndex: number, oldSize: number, newSize: number): number;

@@ -6,6 +6,33 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.34.0 — note 008: footer yang bisa memaginasi tapi tak bisa mengubah ukuran halaman.**
+- **`pageSizes` di `FdyTable`** (Vue/React/Blazor) + `data-fdy-table-page-size` untuk enhancer.
+  Footer menyebut rentang dan memindah halaman, lalu berhenti — tak ada kontrol **berapa baris per
+  halaman**, padahal itu hal pertama yang orang ubah di list 91 baris. Ketiganya SATU objek:
+  komponen sudah menerima `index`, `size`, `total`, merender dua, menyerahkan yang ketiga ke
+  pemanggil — jadi pemanggil menahan seluruh footer (`pager={false}`) dan membangun ulang ketiganya
+  demi menambah satu.
+- **`FdyTableFooter`** — footer sebagai komponen tersendiri. Ini separuh note 005 yang
+  `pager={false}` cuma bisa MENYINGKIRKAN: layar responsif merender satu halaman baris DUA kali
+  (`.fdy-datatable` di `lg`, `.fdy-list` di bawahnya), jadi footer di dalam tabel ikut tersembunyi di
+  ponsel. Sekarang layar seperti itu merender footer KIT, sekali, di luar keduanya. `FdyTable`
+  memakai komponen yang sama secara internal — satu footer di kit, bukan dua yang bisa berbeda.
+- **`pageIndexForSize`** di table model bersama: ganti ukuran halaman → tetap di baris yang sedang
+  dilihat. Balik ke halaman 1 membuang tempat pembaca; menahan index bisa mendarat di luar data
+  (halaman 5 dari 5 @20 = halaman 2 dari 2 @50).
+- **Footer dengan kontrol ukuran TETAP tampil di satu halaman.** Aturan lama menyembunyikan seluruh
+  band saat `totalPages === 1` — itu akan membuat "100" di list 91 baris jadi pintu satu arah.
+- Native `<select>`, bukan `.fdy-combo`: tiga opsi satu kata tak butuh listbox custom, dan jalur raw
+  jadi tetap hidup tanpa enhancer.
+- **Guard suite kit sendiri:** `browser/fixtures/theme-subtree.html` tak menyetel tema eksplisit di
+  `<html>`, jadi probe "light app"-nya jatuh ke `prefers-color-scheme` — di mesin ber-mode gelap
+  kedua probe membaca tinta gelap dan test gagal sambil menuduh `data-theme` kembali root-scoped.
+
+Gate: `npm test` **43/43** · `npm run test:browser` adapter **10/10**.
+
+---
+
 **v1.33.0 — tiga note dari app back-office, empat temuan, semuanya dikerjakan.**
 - **`pager={false}` di `FdyTable`** (Vue/React/Blazor). Server mode selalu menggambar footer-nya
   sendiri — `hasPager` tak punya pintu masuk — jadi layar responsif (tabel di `lg`, `.fdy-list` di
