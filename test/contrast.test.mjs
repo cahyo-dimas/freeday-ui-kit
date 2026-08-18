@@ -14,8 +14,21 @@ const css = buildTokensCss(JSON.parse(readFileSync(new URL('../tokens/tokens.jso
 const scope = (re) => { const m = css.match(re); return m ? m[1] : ''; };
 const vars = (t) => { const o = {}; for (const m of t.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) o[m[1]] = m[2].trim(); return o; };
 const base = vars(scope(/:root\s*\{([\s\S]*?)\n\}/));
-const dark = { ...base, ...vars(scope(/:root\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/)) };
+/* The explicit theme selectors were un-rooted in v1.21.0 so a `data-theme` on any ancestor re-themes
+ * that subtree — and this regex still said `:root[data-theme="dark"]`, so it matched NOTHING and
+ * `dark` silently fell back to the light values. Every DARK assertion below was re-testing LIGHT
+ * from v1.21.0 until this was found (v1.30.0). The shape is asserted immediately after, because a
+ * scope that resolves to nothing is exactly as green as one that passes. */
+const darkVars = vars(scope(/\n\[data-theme="dark"\]\s*\{([\s\S]*?)\n\}/));
+const dark = { ...base, ...darkVars };
 const THEMES = { LIGHT: base, DARK: dark };
+
+test('the dark scope actually resolves', () => {
+  /* Guard for the guard. If the emitted selector changes shape again, this fails loudly instead of
+   * quietly re-running the light theme under a dark label. */
+  assert.ok(Object.keys(darkVars).length > 20, `dark scope parsed ${Object.keys(darkVars).length} vars — the selector shape changed`);
+  assert.notEqual(dark['--color-surface'], base['--color-surface'], 'dark must not resolve to the light surface');
+});
 
 // --- color math -----------------------------------------------------------
 function parse(v, theme, depth = 0) {
@@ -60,8 +73,14 @@ for (const strong of ['--color-success-strong', '--color-warning-strong', '--col
 add('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
 add('--color-on-danger', '--color-danger-btn', AA_TEXT, 'danger button label');
 add('--color-on-accent', '--color-accent', AA_UI, 'accent FAB icon (icon-only, non-text 3:1)');
-add('--color-control-border', '--color-surface', AA_UI, 'control border (input/select/checkbox…) on surface');
-add('--color-control-border', '--color-surface-2', AA_UI, 'control border on surface-2');
+/* A control's boundary is a UI component boundary (WCAG 1.4.11, 3:1) — and it must hold on the
+ * DARKEST surface it can sit on, not just the lightest. surface-3 was the missing one; it is the
+ * case that pinned the dark theme to 3.02 before --slate-450. */
+/* 3.25, not 3.0: a boundary that clears the floor by 0.02 has no headroom at all, and that is exactly
+ * where the dark theme sat (3.02 on surface-3) until --slate-450. The margin is the guard — reverting
+ * the token to the old slate-500 passes WCAG and silently returns the dark theme to the cliff. */
+const UI_MARGIN = 3.25;
+for (const s of SURF) add('--color-control-border', s, UI_MARGIN, `control border (input/select/checkbox…) on ${s}`);
 add('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
 add('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
 for (const s of SURF) add('--color-accent', s, AA_UI, `accent on ${s}`);

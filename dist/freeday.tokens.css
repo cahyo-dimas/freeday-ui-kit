@@ -17,6 +17,7 @@
   --slate-200: #e0e3ea;
   --slate-300: #cbd0da;
   --slate-400: #99a1b3;
+  --slate-450: #798295;
   --slate-500: #6b7488;
   --slate-600: #4d5568;
   --slate-700: #3a4152;
@@ -137,7 +138,7 @@
   --color-border: var(--slate-200);
   --color-border-strong: var(--slate-300);
   --color-border-muted: var(--slate-100);
-  --color-control-border: var(--slate-500);
+  --color-control-border: var(--slate-450);
   --color-switch-thumb: var(--slate-0);
   --color-shadow-inset: rgba(16,14,30,.06);
   --color-inverse-surface: var(--slate-900);
@@ -208,7 +209,7 @@
   --color-border: var(--slate-800);
   --color-border-strong: var(--slate-700);
   --color-border-muted: #1c2130;
-  --color-control-border: var(--slate-500);
+  --color-control-border: var(--slate-450);
   --color-inverse-surface: var(--slate-100);
   --color-inverse-text: var(--slate-900);
   --color-success: var(--green-500);
@@ -271,7 +272,7 @@
   --color-border: var(--slate-800);
   --color-border-strong: var(--slate-700);
   --color-border-muted: #1c2130;
-  --color-control-border: var(--slate-500);
+  --color-control-border: var(--slate-450);
   --color-inverse-surface: var(--slate-100);
   --color-inverse-text: var(--slate-900);
   --color-success: var(--green-500);
@@ -327,7 +328,7 @@
   --color-border: var(--slate-200);
   --color-border-strong: var(--slate-300);
   --color-border-muted: var(--slate-100);
-  --color-control-border: var(--slate-500);
+  --color-control-border: var(--slate-450);
   --color-inverse-surface: var(--slate-900);
   --color-inverse-text: var(--slate-0);
   --color-success: var(--green-600);

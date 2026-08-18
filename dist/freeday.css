@@ -409,13 +409,13 @@ a { color: var(--color-primary); }
    because forgetting it fails SILENTLY: the secondary control looks and hovers exactly as before and
    simply never receives the click, which is the very symptom the pattern exists to cure. Matched by
    shape (anything focusable) so a control the kit does not ship yet is covered too. */
-.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
+:is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
 /* The position is a DEFAULT, not an override: z-index needs a positioned box (or a flex/grid item),
    but an app that deliberately pins a control inside the card — a corner dismiss, a favourite star —
    must keep its own `position:absolute`. Wrapped in :where() so this whole selector weighs nothing
    and ANY app rule wins it; measured, because at normal specificity the kit silently dragged an
    absolutely positioned dismiss button back into the flow. Do not merge these two rules. */
-:where(.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
+:where(:is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
 .fdy-card__body{padding:var(--space-5);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}
@@ -673,7 +673,10 @@ a { color: var(--color-primary); }
  * single boxed strip, or use .fdy-stats--boxed for shared surface + dividers. */
 .fdy-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:var(--space-5);}
 .fdy-stat{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;}
-.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-subtle);}
+/* --color-text-muted, not -subtle: this is a LABEL, i.e. text, and -subtle is deliberately gated at
+   3.0 (placeholders, dividers, decorative glyphs). On surface-2 -subtle measures 4.41 — under AA
+   for text, and a stat label is often the only thing naming the number above it. */
+.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
@@ -973,6 +976,13 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
  * Works on <ul>/<ol> (list-style is reset here) or on plain <div>s. */
 /* position:relative — containing block for out-of-flow row content (see base.css). */
 .fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
+/* A row that hosts a stretched target has to be the anchor itself (#008 §1). Without this the
+   overlay resolves against .fdy-list — which IS positioned — so EVERY row's target covers the whole
+   list and the last one in the DOM wins: measured, a click on row one opens row two, under row one's
+   name, which looks exactly like working software. Opt-in via :has(), so a row that doesn't use the
+   pattern is untouched and nothing an app absolutely positions inside a plain row starts resolving
+   against a new containing block. The escape-hatch raise lives in card.css beside the card's. */
+.fdy-list__row:has(.fdy-btn--stretch){position:relative;}
 .fdy-list__row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);min-width:0;}
 /* Divider between rows. Two shapes are supported and both are load-bearing: rows as direct children
  * of the list, and rows wrapped in <li> (the semantic shape, where the ADJACENT siblings are the

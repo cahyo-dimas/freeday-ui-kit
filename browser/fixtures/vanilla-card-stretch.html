@@ -28,9 +28,20 @@
     </div>
   </article>
 
+<!-- #008 §1: the same pattern in a list. .fdy-list is positioned, .fdy-list__row was not, so before
+     the row anchor every row's overlay covered the WHOLE list and the last one in the DOM won —
+     clicking row one opened row two, under row one's name. -->
+  <ul class="fdy-list" id="list">
+    <li class="fdy-list__row"><span id="r1">Row one</span>
+      <button class="fdy-btn fdy-btn--text fdy-btn--sm" id="det1">Details</button>
+      <button class="fdy-btn fdy-btn--sm fdy-btn--stretch" id="open1">Open one</button></li>
+    <li class="fdy-list__row"><span id="r2">Row two</span>
+      <button class="fdy-btn fdy-btn--sm fdy-btn--stretch" id="open2">Open two</button></li>
+  </ul>
+
 <script>
   window.clicks = [];
-  for (const id of ['open', 'details', 'dismiss', 'policy']) {
+  for (const id of ['open', 'details', 'dismiss', 'policy', 'open1', 'open2', 'det1']) {
     document.getElementById(id).addEventListener('click', () => window.clicks.push(id));
   }
   /* What the browser fired the click on, whatever handler ran — the reported failure is that the

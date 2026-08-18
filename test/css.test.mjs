@@ -132,8 +132,9 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   assert.ok(neutralised !== undefined, 'both :hover and :active must neutralise the transform in one rule');
   assert.match(neutralised.body, /transform:\s*none/, 'the nudge must be off, or the overlay re-anchors mid-gesture');
 
-  /* Forgetting to raise the escape hatch fails silently, so the kit does it rather than documenting it. */
-  const raised = rules(css).find(r => r.selector.startsWith('.fdy-card:has(.fdy-btn--stretch)'));
+  /* Forgetting to raise the escape hatch fails silently, so the kit does it rather than documenting it.
+   * The host list is `:is(.fdy-card,.fdy-list__row)` — see the row anchor assert below. */
+  const raised = rules(css).find(r => /^:is\(\.fdy-card,\.fdy-list__row\):has\(\.fdy-btn--stretch\)/.test(r.selector));
   assert.ok(raised !== undefined, 'focusable controls in the card must be raised above the overlay');
   assert.match(raised.body, /z-index:\s*1/);
 
@@ -144,6 +145,16 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   const positioned = rules(css).find(r => r.selector.startsWith(':where(') && r.selector.includes('.fdy-btn--stretch'));
   assert.ok(positioned !== undefined, 'the position default must be wrapped in :where()');
   assert.match(positioned.body, /position:\s*relative/);
+
+  /* A list row must anchor the overlay itself (#008 §1). Without this rule the overlay resolves
+   * against .fdy-list, every row's target covers the whole list, and the last one in the DOM wins —
+   * a click on row one opens row two. Opt-in via :has() so plain rows are untouched. */
+  const rowAnchor = rules(css).find(r => r.selector === '.fdy-list__row:has(.fdy-btn--stretch)');
+  assert.ok(rowAnchor !== undefined, 'a row hosting a stretched target has no anchor of its own');
+  assert.match(rowAnchor.body, /position:\s*relative/);
+  assert.ok(!/^\.fdy-list__row\s*\{/m.test(css.slice(css.indexOf('.fdy-list__row:has'))) ||
+    !/position:\s*relative/.test(rules(css).find(r => r.selector === '.fdy-list__row').body),
+    'plain rows must NOT be positioned — that would newly contain anything an app pinned inside one');
 });
 
 test('menu focus is distinguishable from hover (#001 §6)', () => {
@@ -183,6 +194,17 @@ test('inline state text uses the inks the contrast gate covers (#001 §5)', () =
     assert.match(rule.body, new RegExp(`color:\\s*var\\(${token}\\)`),
       `${selector} must use ${token} — the ink contrast.test.mjs proves readable on plain surfaces`);
   }
+});
+
+test('a stat label spends a TEXT ink, not the decorative one (#006 §6)', () => {
+  /* --color-text-subtle is gated at 3.0 by design — placeholders, dividers, decorative glyphs. A stat
+   * label is text, and often the only thing naming the number above it; on surface-2 -subtle measures
+   * 4.41, under AA. The token gate cannot see this: both inks pass their OWN thresholds, so the defect
+   * only exists in the pairing of class and token. */
+  const rule = rules(css).find(r => r.selector === '.fdy-stat__label');
+  assert.ok(rule !== undefined, '.fdy-stat__label is gone');
+  assert.match(rule.body, /color:\s*var\(--color-text-muted\)/,
+    'a label is text: use --color-text-muted (gated 4.5), not --color-text-subtle (gated 3.0)');
 });
 
 test('.fdy-icon has a display that accepts a width (#001 §4)', () => {

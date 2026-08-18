@@ -3,6 +3,53 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.30.0] — 2026-08-18
+Note 008 (adopting 1.29.0) plus a direct design report: *"the input border looks too dark next to the
+card and button-group borders."*
+### Fixed
+- **The dark theme's contrast has not actually been tested since v1.21.0.** `contrast.test.mjs` looked
+  for `:root[data-theme="dark"]`; un-rooting the theme selectors in 1.21.0 changed the emitted
+  selector to `[data-theme="dark"]`, so the regex matched nothing, `dark` fell back to the **light**
+  values, and every `WCAG contrast — DARK` assertion re-tested the light theme under a dark label —
+  54 declarations ignored, all green. Fixed, and the scope now has a guard of its own: a dark scope
+  that parses to nothing, or that resolves to the light surface, fails loudly. *No latent dark-theme
+  failures were hiding behind it — the theme passes on its own merits.*
+- **`--color-control-border` retuned** to a new ramp step `--slate-450` (`#798295`). It was
+  `--slate-500`, the same ink as `--color-text-subtle`: a control **boundary** carrying text-level
+  contrast (4.69:1 on surface where WCAG 1.4.11 asks 3:1), which is what makes a form look heavier
+  than the cards around it. Now ≈3.9/3.6/3.4 across the three light surfaces. The same step
+  *strengthens* the dark theme, which was sitting at **3.02:1** on `surface-3` — 0.02 above the
+  floor, and unguarded because of the bug above; it is now 3.66:1.
+- **`.fdy-stat__label` uses `--color-text-muted`.** It spent `--color-text-subtle`, which is gated at
+  3.0 *on purpose* (placeholders, dividers, decorative glyphs) and measures 4.41:1 on `surface-2` —
+  under AA for text, on the only thing naming the number above it. Reported in 006 §6 and still
+  carried by the app at 1.29.0.
+### Added
+- **`.fdy-btn--stretch` now works in a `.fdy-list__row`** (note 008 §1). The pattern existed for
+  "one card, one primary action, one escape hatch" and had no equivalent for the same sentence with
+  *row* in it — an app rendering both grid and list from one component had to hand-roll the row half.
+  The row anchors the overlay itself, opt-in through `:has(.fdy-btn--stretch)` so a plain row is
+  untouched and nothing an app pinned inside one starts resolving against a new containing block.
+  Measured before the fix: **every** row's overlay covered the whole list and the last one in the DOM
+  won, so a click on row one opened row two — under row one's name.
+### Notes on the shape of the fix
+- **Note 008 §2 is not reproducible** and no code shipped for it. With a positive control to prove
+  the measurement works (pointing at the card body *does* put the stretched target in `:hover`),
+  pointing at the escape hatch leaves it at rest: the hover chain is `HTML > BODY > card > footer >
+  hatch`, and the stretched button is a sibling, not an ancestor. The `pointer-events:none` rule the
+  report carries fixes something the kit's own composition does not do.
+- The report's contrast figures (4.41 / 4.69) were re-derived from the 1.29 ramp and are exact.
+### Added — guards
+- `contrast.test.mjs`: the control border is now asserted on **all three** surfaces (`surface-3` was
+  missing, and it is the worst case that pinned the dark theme to the floor) and at **3.25**, not
+  3.0 — a boundary that clears the floor by 0.02 has no headroom, and the margin is what catches a
+  revert to the old ink.
+- `css.test.mjs`: a stat label must spend a *text* ink, and a list row hosting a stretched target
+  must anchor it — both are class↔token pairings that every token-level assertion passes straight
+  through.
+- `browser/card-stretch.mjs`: the list case, asserting **row one** (the point that hides the bug is
+  row two, which passes even when the overlay belongs to another row).
+
 ## [1.29.0] — 2026-08-18
 Improvement note 001 from a second consuming app (a 40-screen back office). Eight findings; six
 executed, one already documented, one left as an owner decision.

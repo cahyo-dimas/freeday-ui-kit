@@ -89,3 +89,28 @@ test('the kit does not outweigh a control the app positions itself', { skip }, a
       `a pinned control keeps its own click, got ${JSON.stringify(clicks)}`);
   });
 });
+
+test('a list row anchors its own stretched target (#008 §1)', { skip }, async () => {
+  await withPage(fixture('vanilla-card-stretch.html'), async (p) => {
+    await p.waitFor('typeof window.hitAt === "function"');
+
+    /* Row ONE is the assert that matters. With the overlay resolving against .fdy-list instead of the
+       row, BOTH rows hit-test to the LAST row's target — so a test that only checked row two passes
+       against the bug. (It did, when I first measured it.) */
+    assert.equal(await p.evalJS('window.hitAt("#r1")'), 'open1', 'row one must belong to row one');
+    assert.equal(await p.evalJS('window.hitAt("#r2")'), 'open2', 'row two must belong to row two');
+
+    await p.evalJS('window.reset()');
+    await p.clickCenter('#r1');
+    let clicks = JSON.parse(await p.evalJS('JSON.stringify(window.clicks)'));
+    assert.ok(clicks.includes('open1') && !clicks.includes('open2'),
+      `pressing row one must open row one, got ${JSON.stringify(clicks)}`);
+
+    // The escape hatch is raised inside a row too — the raise rule now lists both hosts.
+    await p.evalJS('window.reset()');
+    await p.clickCenter('#det1');
+    clicks = JSON.parse(await p.evalJS('JSON.stringify(window.clicks)'));
+    assert.ok(clicks.includes('det1') && !clicks.includes('open1'),
+      `a row's escape hatch keeps its own click, got ${JSON.stringify(clicks)}`);
+  });
+});

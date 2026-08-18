@@ -40,7 +40,10 @@
  * single boxed strip, or use .fdy-stats--boxed for shared surface + dividers. */
 .fdy-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:var(--space-5);}
 .fdy-stat{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;}
-.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-subtle);}
+/* --color-text-muted, not -subtle: this is a LABEL, i.e. text, and -subtle is deliberately gated at
+   3.0 (placeholders, dividers, decorative glyphs). On surface-2 -subtle measures 4.41 — under AA
+   for text, and a stat label is often the only thing naming the number above it. */
+.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}

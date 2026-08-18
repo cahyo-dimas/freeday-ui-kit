@@ -24,13 +24,13 @@
    because forgetting it fails SILENTLY: the secondary control looks and hovers exactly as before and
    simply never receives the click, which is the very symptom the pattern exists to cure. Matched by
    shape (anything focusable) so a control the kit does not ship yet is covered too. */
-.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
+:is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
 /* The position is a DEFAULT, not an override: z-index needs a positioned box (or a flex/grid item),
    but an app that deliberately pins a control inside the card — a corner dismiss, a favourite star —
    must keep its own `position:absolute`. Wrapped in :where() so this whole selector weighs nothing
    and ANY app rule wins it; measured, because at normal specificity the kit silently dragged an
    absolutely positioned dismiss button back into the flow. Do not merge these two rules. */
-:where(.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
+:where(:is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
 .fdy-card__body{padding:var(--space-5);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}

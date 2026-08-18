@@ -6,6 +6,30 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.30.0 — note 008 + laporan desain langsung soal border input.**
+- **Gate kontras tak pernah benar-benar menguji tema GELAP sejak v1.21.0.** Regex-nya mencari
+  `:root[data-theme="dark"]`, padahal un-rooting 1.21.0 mengubah selectornya jadi
+  `[data-theme="dark"]` — jadi `dark` diam-diam jatuh balik ke nilai TERANG dan seluruh assert
+  "DARK" menguji tema terang berlabel gelap (54 deklarasi diabaikan, semua hijau). Sudah diperbaiki,
+  plus guard-untuk-guard: scope gelap yang tak resolve = gagal berisik. Tak ada kegagalan tersembunyi.
+- **`--color-control-border` diturunkan** ke ramp baru `--slate-450` (`#798295`). Sebelumnya
+  `--slate-500` — tinta yang SAMA dengan `--color-text-subtle`: batas kontrol membawa kontras
+  setingkat teks (4.69:1 padahal WCAG 1.4.11 minta 3:1). Itu sebabnya form terasa lebih berat dari
+  kartu di sekitarnya. Sekarang ≈3.9/3.6/3.4 di tiga surface terang. Langkah yang sama justru
+  MENGUATKAN tema gelap yang tadinya 3.02:1 (0.02 di atas lantai, dan tak terjaga karena bug di atas)
+  → 3.66:1.
+- **`.fdy-stat__label`** pindah ke `--color-text-muted` (006 §6): `-subtle` sengaja di-gate 3.0 untuk
+  placeholder/dekoratif, dan 4.41 di surface-2 itu di bawah AA untuk teks.
+- **`--stretch` kini jalan di `.fdy-list__row`** (008 §1), opt-in via `:has()`. Terukur sebelum fix:
+  overlay tiap baris menutupi SELURUH list dan yang terakhir di DOM menang — klik baris satu membuka
+  baris dua, atas nama baris satu.
+- **008 §2 tak bisa direproduksi** — dengan kontrol positif (menunjuk badan kartu MEMANG membuat
+  target `:hover`), menunjuk pintu keluar tidak. Tak ada kode yang dikirim untuknya.
+
+Gate: `npm test` **40/40** · `npm run test:browser` **24/24**.
+
+---
+
 **v1.29.0 — note 001 dari app konsumen KEDUA (back office 40 layar): 8 temuan, 6 dieksekusi.**
 - **`clearable` di `FdyCfl`** (Vue/React/Blazor) — tipe nilainya sudah `Row | null` tapi emit-nya
   `Row` saja, jadi choose-from-list bisa DIISI tapi tak bisa DIKOSONGKAN: setiap foreign key opsional

@@ -10,6 +10,13 @@
  * Works on <ul>/<ol> (list-style is reset here) or on plain <div>s. */
 /* position:relative — containing block for out-of-flow row content (see base.css). */
 .fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
+/* A row that hosts a stretched target has to be the anchor itself (#008 §1). Without this the
+   overlay resolves against .fdy-list — which IS positioned — so EVERY row's target covers the whole
+   list and the last one in the DOM wins: measured, a click on row one opens row two, under row one's
+   name, which looks exactly like working software. Opt-in via :has(), so a row that doesn't use the
+   pattern is untouched and nothing an app absolutely positions inside a plain row starts resolving
+   against a new containing block. The escape-hatch raise lives in card.css beside the card's. */
+.fdy-list__row:has(.fdy-btn--stretch){position:relative;}
 .fdy-list__row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);min-width:0;}
 /* Divider between rows. Two shapes are supported and both are load-bearing: rows as direct children
  * of the list, and rows wrapped in <li> (the semantic shape, where the ADJACENT siblings are the

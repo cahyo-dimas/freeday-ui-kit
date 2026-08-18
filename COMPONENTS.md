@@ -962,9 +962,13 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
 - **Do not add `.fdy-btn--stretch` to more than one control per card** — the last one wins the
   overlap, and which one that is depends on source order.
 - Text under the overlay is no longer selectable; that is the cost of the pattern, not a bug.
-- **Cards only.** The overlay anchors to the nearest *positioned* ancestor, and in the kit that is
-  `.fdy-card`. A `.fdy-list__row` is **not** positioned (`.fdy-list` is), so a stretched target in a
-  list row would cover the **whole list** — for clickable rows use `.fdy-list__row--button`.
+- **Cards and list rows.** The overlay anchors to the nearest *positioned* ancestor, and both hosts
+  supply one: `.fdy-card` always, `.fdy-list__row` when it contains a stretched target. Everything
+  above applies to a row unchanged — same markup, same automatic raise. In any *other* container,
+  make the element `position:relative` yourself, or the overlay resolves against whatever is
+  positioned further up (in a list that used to be `.fdy-list` itself, so every row's target covered
+  the whole list and the last one in the DOM won — a click on row one opened row two).
+  A row whose *whole* surface is one control is still better as `.fdy-list__row--button`.
 - `.fdy-btn` nudges itself on `:hover`/`:active`, and a transformed element becomes the containing
   block for its own absolutely positioned descendants — so a hand-rolled `::after{inset:0}` overlay
   **re-anchors to the button mid-gesture** and the click never lands. `--stretch` neutralises those

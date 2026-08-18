@@ -27,6 +27,21 @@ the single biggest cause of "flat grey mush". Pick the role, not the size:
 Everything else is body. If you reach for a fourth title size, you probably need a section, not a
 font size.
 
+
+## Borders: two roles, two contrast contracts
+
+`--color-border` (and `-muted` / `-strong`) is **decoration** — a card edge, a table rule, a
+separator. Nothing in WCAG requires it to be visible, and it is deliberately faint (≈1.3:1).
+
+`--color-control-border` is the **boundary of a control** — input, textarea, checkbox, radio,
+switch, dropzone. WCAG 1.4.11 requires 3:1 against every surface it can sit on, so it is
+necessarily darker than a card edge; that difference is the contract, not an inconsistency.
+
+It is tuned to clear that floor with margin (≈3.4–3.9 depending on surface) rather than to be as
+dark as it can be: a boundary that reads as loud as body text makes a form feel heavier than it is.
+Do not "harmonise" a control border down to `--color-border` — that drops a required 3:1 boundary to
+1.3:1.
+
 ## 2. Spacing rhythm — three gaps, always from the scale
 
 Never a loose value; always `var(--space-N)` (a 4px scale). Three rhythms carry most layouts, and the
