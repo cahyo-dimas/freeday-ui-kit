@@ -307,7 +307,7 @@ native control, otherwise a `<div>` + explicitly associated label.
 </fieldset>
 ```
 
-**`--required` marks the label, not the accessibility tree.** The control already carries
+**`.fdy-label--required` marks the label, not the accessibility tree.** The control already carries
 `required`; the asterisk is painted through `::after` with CSS alt text, so a screen reader never
 reads "star" after the label — something a `<span>` you have to remember to mark `aria-hidden`
 cannot guarantee.
@@ -517,7 +517,8 @@ Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author
   get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start.
   **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor) — use it in those stacks.
 **Getting to a distant month.** The title is a **button**: press it and the day grid becomes a
-12-cell month grid for the current year, where the arrows step **years** instead of months. Pick a
+12-cell month grid (`.fdy-cal__grid--months` of `.fdy-cal__month`) for the current year, where the
+arrows step **years** instead of months. Pick a
 month and you are back on days — choosing a month is navigation, so nothing is committed until a day
 is selected. From August 2026 to March 2022 that is 7 clicks; walking month by month is 53.
 

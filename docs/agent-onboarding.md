@@ -91,6 +91,7 @@ Blazor). Then verify the agent can actually read those files — an agent that c
 | `docs/integrations.md` | How to bridge third-party libraries (validation, charts, dates, i18n…). |
 | `docs/reference-screen.html` | A full screen assembled from the shell down. Open it in a browser. |
 | `docs/agent-onboarding.md` | This file. |
+| `CHANGELOG.md` | **What changed between the version this project had and the one it has now** — read it after every upgrade; each entry says what broke, what is new, and why. |
 | `dist/` | Built CSS + enhancers. **`freeday.bundle.css` = tokens + components** (what `@cahyo-dimas/freeday/css` resolves to); `freeday.css` is components **only**, `freeday.tokens.css` tokens only — linking `freeday.css` alone leaves every `var(--…)` unresolved. Plus `freeday-*.js` and the `.d.ts` files. |
 | `src/components/*.css` | The authoritative source for every class, when a doc is ambiguous. |
 | `tokens/tokens.json` | Every token in W3C DTCG format — machine-readable. |
@@ -100,6 +101,28 @@ The live docs (with an interactive playground) are at
 <https://cahyo-dimas.github.io/freeday-ui-kit/>, and the repo — including three complete example
 apps under `examples/` (Vue, React, Blazor) that are **not** in the npm tarball — is at
 <https://github.com/cahyo-dimas/freeday-ui-kit>.
+
+### After an upgrade, read the changelog first
+
+`npm i @cahyo-dimas/freeday@latest` does not tell you what you gained. Read
+`node_modules/@cahyo-dimas/freeday/CHANGELOG.md` down to the version this project was on before —
+it is written for exactly this moment, and it is the difference between adopting a new affordance
+and re-implementing it locally.
+
+Recent additions most likely to replace something an app hand-rolled (all detailed in
+`COMPONENTS.md`):
+
+| Reach for | Instead of |
+|---|---|
+| `.fdy-btn--stretch` | a hand-rolled overlay to make a card or list row clickable |
+| `[data-fdy-number]` | a bare `<input type="number">` with the browser's own spin buttons |
+| `clearable` on `FdyCfl` / `FdyDatepicker` | a value that can be set but never unset |
+| `row.waiting(label)` on an upload row | a second status line saying the server is still working |
+| `.fdy-label--required` | a `<span>` asterisk you have to remember to `aria-hidden` |
+| `.fdy-text-warning` / `-danger` / `-success` | a caption class on a line that should stand out |
+| `.fdy-icon` | your own `width:1em;height:1em` rule, once per project |
+| `data-density="comfortable"` | restating the default spacing tokens on a wrapper |
+| the calendar's month grid (press the title) | clicking "previous month" thirty times |
 
 ## 3. Starting a new screen
 

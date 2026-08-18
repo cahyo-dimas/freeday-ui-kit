@@ -3,6 +3,22 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.32.1] — 2026-08-18
+Docs only. Asked by a consumer: *"if I upgrade, will the agent in my project know what it gained?"*
+The answer was no, and two reasons why.
+### Fixed
+- **`docs/agent-onboarding.md` never mentioned the changelog.** It is the file a consuming agent
+  reads first, and it listed everything in the package except the one file that says what changed
+  between the version the project had and the one it now has. It now points at
+  `node_modules/@cahyo-dimas/freeday/CHANGELOG.md` explicitly, plus a short *reach for this instead
+  of hand-rolling that* table covering the last nine releases — the additions most likely to replace
+  something an app already worked around.
+- **Three classes existed only in shorthand** in `COMPONENTS.md` — `.fdy-label--required`,
+  `.fdy-cal__month` and `.fdy-cal__grid--months` were written as `(+--required)` and `__month`, so
+  the full name appeared **zero** times and a grep for the class found nothing. The drift guard
+  cannot see this either: it verifies fully-written names and skips shorthand by design, so a class
+  introduced only in shorthand is invisible to both the reader and the test.
+
 ## [1.32.0] — 2026-08-18
 Improvement note 004, both halves: a calendar you could not steer, and a check mark that talked.
 ### Added
