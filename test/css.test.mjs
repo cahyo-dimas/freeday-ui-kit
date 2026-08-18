@@ -116,6 +116,36 @@ test('the native spin buttons stay hidden on .fdy-input[type="number"] (#44)', (
   assert.ok(pseudo.selector.includes('-webkit-outer-spin-button'), 'the outer spin button is neutralised too');
 });
 
+test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
+  /* The overlay is only half the pattern. `.fdy-btn` nudges itself with a transform on :hover and
+   * :active, and a transformed element becomes the containing block for its own absolutely
+   * positioned descendants — so the overlay silently re-anchors from the card to the button's own
+   * box mid-gesture, and the click lands on a common ancestor instead of the button. Neutralising
+   * BOTH states is load-bearing: --text/--ghost break on press, the default and --danger fills
+   * break one step earlier, on hover. */
+  const overlay = rules(css).find(r => r.selector === '.fdy-btn--stretch::after');
+  assert.ok(overlay !== undefined, 'the stretched hit area (::after) is gone');
+  assert.match(overlay.body, /position:\s*absolute/, 'the overlay must be out of flow');
+  assert.match(overlay.body, /inset:\s*0/, 'the overlay must fill its containing block');
+
+  const neutralised = rules(css).find(r => /\.fdy-btn--stretch:hover/.test(r.selector) && /:active/.test(r.selector));
+  assert.ok(neutralised !== undefined, 'both :hover and :active must neutralise the transform in one rule');
+  assert.match(neutralised.body, /transform:\s*none/, 'the nudge must be off, or the overlay re-anchors mid-gesture');
+
+  /* Forgetting to raise the escape hatch fails silently, so the kit does it rather than documenting it. */
+  const raised = rules(css).find(r => r.selector.startsWith('.fdy-card:has(.fdy-btn--stretch)'));
+  assert.ok(raised !== undefined, 'focusable controls in the card must be raised above the overlay');
+  assert.match(raised.body, /z-index:\s*1/);
+
+  /* ...but `position` must stay a DEFAULT. Merged into the rule above it outweighs the app's own
+   * single-class rule and drags an absolutely positioned corner control back into the flow —
+   * measured. :where() weighs nothing, so any app rule wins. Splitting these is the fix. */
+  assert.doesNotMatch(raised.body, /position:/, 'position must NOT ride along at this specificity');
+  const positioned = rules(css).find(r => r.selector.startsWith(':where(') && r.selector.includes('.fdy-btn--stretch'));
+  assert.ok(positioned !== undefined, 'the position default must be wrapped in :where()');
+  assert.match(positioned.body, /position:\s*relative/);
+});
+
 test('.fdy-visually-hidden still documents why the containers carry it', () => {
   /* The fix is spread across seven files; the explanation lives in exactly one place. If the
    * comment goes, the next reader deletes a `position:relative` that looks decorative. */

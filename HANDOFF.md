@@ -6,6 +6,33 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.28.0 — note 007: kartu yang bisa diklik dengan dua aksi.**
+- Kit tak punya bentuk untuk kasus paling umum: **satu kartu, satu aksi utama, satu pintu keluar**.
+  `--button` = kartu yang *adalah* kontrol; `--interactive` = kartu yang *punya* kontrol; kartu
+  dengan dua aksi bukan keduanya (konten interaktif di dalam `<button>` = HTML tak sah).
+- **`.fdy-btn--stretch`** membentangkan area klik tombol utama ke seluruh kartu. Dikirim sebagai pola,
+  bukan sebagai satu baris dokumentasi, karena **tak bisa dirakit tangan di atas `.fdy-btn`**:
+  tombol menaikkan dirinya lewat `transform` saat hover/active, elemen ber-transform jadi containing
+  block bagi turunan absolut-nya, jadi overlay-nya pindah anchor ke kotak tombol di tengah gestur —
+  `mousedown` di tombol, `mouseup` di elemen lain, `click` jatuh ke leluhur bersama. Gejalanya persis
+  sama dengan bug yang mau diperbaiki.
+- Note melihatnya di `--text`/`--ghost` (pecah saat ditekan). Aturan **dasar** kit
+  `.fdy-btn:hover{transform:translateY(-1px)}` bikin isian default & `--danger` pecah lebih awal lagi,
+  saat hover — jadi memperbaiki `:active` saja (perbaikan setengah yang paling mungkin ditulis) tetap bocor.
+- **Pintu keluar dinaikkan otomatis** (bukan konvensi), karena lupa menaikkan gagal senyap.
+- **Bug yang kutemukan di perubahanku sendiri saat recheck:** `position:relative` di spesifisitas
+  normal menimpa aturan aplikasi — tombol dismiss yang di-`absolute` tertarik balik ke aliran normal.
+  Sekarang `z-index` tetap menang, tapi `position`-nya jadi default ber-`:where()` (bobot nol) yang
+  dikalahkan aturan aplikasi mana pun. **Dua aturan itu jangan digabung** — dijaga di gate.
+- **Kartu saja.** `.fdy-list__row` tak positioned (`.fdy-list` yang positioned), jadi `--stretch` di
+  baris list akan menutupi seluruh list. Untuk baris yang bisa diklik: `.fdy-list__row--button`.
+- `--interactive` kini tertulis **presentasional** — satu-satunya afordansi di kit yang kebenarannya
+  ada di luar dirinya; gagal senyap di dua arah.
+
+Gate: `npm test` **34/34** · `npm run test:browser` **21/21**.
+
+---
+
 **v1.27.0 — note #44: `type="number"` memakai tombol spin bawaan browser.**
 - Tombol itu widget OS berwarna OS — tak terjangkau tema mana pun. Di permukaan gelap ia jadi
   artefak abu-abu yang menempel di field yang sudah berteme: **satu-satunya kontrol tak berteme**

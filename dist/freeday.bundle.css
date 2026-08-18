@@ -711,6 +711,22 @@ a { color: var(--color-primary); }
 .fdy-btn--ghost[aria-pressed="true"],.fdy-btn--text[aria-pressed="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);border-color:var(--color-primary-border);box-shadow:none;}
 .fdy-btn--ghost[aria-pressed="true"]:hover,.fdy-btn--text[aria-pressed="true"]:hover{background:var(--color-primary-soft);transform:none;box-shadow:none;}
 
+/* Stretched hit area (#007) — spread this button's click target over its nearest positioned
+ * ancestor, so "one card, one primary action, one escape hatch" needs no click handler on the
+ * <article>: the real control stays a real <button>/<a> and keeps its keyboard semantics.
+ * `.fdy-card` is already position:relative, so it is the anchor.
+ *
+ * The transforms MUST go, and this is the whole reason the modifier exists rather than a docs line:
+ * a transformed element becomes the containing block for its own absolutely-positioned descendants,
+ * so `inset:0` re-anchors from the card to the button's own box the moment the button is hovered or
+ * pressed. Measured: mousedown lands on the button, the overlay collapses under the pointer, mouseup
+ * lands on some other element, and the browser fires `click` on their common ancestor — the button
+ * never gets one. It demos fine on hover for --text/--ghost (their hover is already transform:none)
+ * and only a real press reveals it; the default and --danger fills break one step earlier, on hover.
+ * Press feedback moves to the card, which is the object actually being pressed (see card.css). */
+.fdy-btn--stretch::after{content:'';position:absolute;inset:0;}
+.fdy-btn--stretch:hover,.fdy-btn--stretch:active{transform:none;}
+
 /* Icon-only — square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
 .fdy-btn--icon{width:var(--control-h);padding:0;}
 .fdy-btn--icon.fdy-btn--sm{width:calc(var(--control-h) - var(--space-2));}
@@ -744,9 +760,13 @@ a { color: var(--color-primary); }
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
+/* Pressing a stretched target (see .fdy-btn--stretch) is pressing the CARD — the button's own
+   nudge had to go, and the object under the pointer is the card. Ordered before the reduced-motion
+   block and the disabled rules so both still win at equal specificity. */
+.fdy-card--interactive:has(.fdy-btn--stretch:active){transform:translateY(-1px);}
 /* The global reduced-motion reset kills the ANIMATION; drop the -3px shift too so the card
  * doesn't jump. The shadow still communicates the affordance. */
-@media (prefers-reduced-motion:reduce){.fdy-card--interactive:hover{transform:none;}}
+@media (prefers-reduced-motion:reduce){.fdy-card--interactive:hover,.fdy-card--interactive:has(.fdy-btn--stretch:active){transform:none;}}
 /* When the whole card IS the control — a real <button> so the row is keyboard-reachable and
  * announced — reset the UA button box. Note: it does NOT reset background/border, because
  * .fdy-card already sets its own surface + border (resetting them here would strip the card). */
@@ -755,6 +775,17 @@ a { color: var(--color-primary); }
    --interactive lift is withdrawn so a refusing control stops answering the pointer. */
 .fdy-card--button:disabled,.fdy-card--button[aria-disabled="true"],.fdy-card--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-card--interactive:disabled:hover,.fdy-card--interactive[aria-disabled="true"]:hover{box-shadow:var(--shadow-lift);transform:none;}
+/* Escape hatches stay clickable above a stretched target — automatic, not a documented convention,
+   because forgetting it fails SILENTLY: the secondary control looks and hovers exactly as before and
+   simply never receives the click, which is the very symptom the pattern exists to cure. Matched by
+   shape (anything focusable) so a control the kit does not ship yet is covered too. */
+.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
+/* The position is a DEFAULT, not an override: z-index needs a positioned box (or a flex/grid item),
+   but an app that deliberately pins a control inside the card — a corner dismiss, a favourite star —
+   must keep its own `position:absolute`. Wrapped in :where() so this whole selector weighs nothing
+   and ANY app rule wins it; measured, because at normal specificity the kit silently dragged an
+   absolutely positioned dismiss button back into the flow. Do not merge these two rules. */
+:where(.fdy-card:has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
 .fdy-card__body{padding:var(--space-5);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}

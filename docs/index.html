@@ -329,7 +329,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.27.0</p>
+          <p class="doc-eyebrow">Design System · v1.28.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -1466,8 +1466,18 @@
 
     <section class="doc-section" id="sec-card">
       <h2>Card</h2>
-      <p class="doc-desc"><code>--interactive</code> = kursor + hover-lift untuk kartu yang <em>diberi</em> handler klik. Kalau kartunya <strong>adalah</strong> kontrol (baris pemilih yang keyboard-reachable &amp; diumumkan), render sebagai <code>&lt;button&gt;</code> dan tambah <strong><code>--button</code></strong> — reset kotak tombol UA tanpa membuang surface/border kartu.</p>
+      <p class="doc-desc"><code>--interactive</code> = kursor + hover-lift untuk kartu yang <em>diberi</em> handler klik. Modifier ini <strong>presentasional</strong> — CSS tak bisa tahu handler-nya ada; pasangkan dengan kontrol nyata, biasanya <code>.fdy-btn--stretch</code> yang membentangkan area kliknya ke seluruh kartu. Kalau kartunya <strong>adalah</strong> kontrol (baris pemilih yang keyboard-reachable &amp; diumumkan), render sebagai <code>&lt;button&gt;</code> dan tambah <strong><code>--button</code></strong> — reset kotak tombol UA tanpa membuang surface/border kartu.</p>
       <div class="doc-demo doc-cardgrid">
+        <article class="fdy-card fdy-card--interactive">
+          <div class="fdy-card__body">
+            <h3 class="fdy-card__title">Workspace Alpha</h3>
+            <p class="fdy-card__desc">Satu kartu, satu aksi utama, satu pintu keluar. Klik di mana saja &rarr; tombol utama; "Detail" tetap miliknya sendiri.</p>
+          </div>
+          <div class="fdy-card__footer">
+            <button class="fdy-btn fdy-btn--text fdy-btn--sm" type="button">Detail</button>
+            <button class="fdy-btn fdy-btn--sm fdy-btn--stretch" type="button">Buka workspace Alpha</button>
+          </div>
+        </article>
         <div class="fdy-card">
           <div class="fdy-card__body">
             <h3 class="fdy-card__title">Faktur INV-1042</h3>
@@ -1979,7 +1989,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.27.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.28.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -2091,7 +2101,7 @@
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
     'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, line, area, and donut — pure SVG/CSS, <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; multi-series uses the validated categorical palette <code>--chart-1</code>…<code>--chart-8</code>, overridable with <code>data-fdy-colors</code> — a semantic token name or a slot <code>chart-1</code>…<code>chart-8</code> to pin a colour per category. Each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
     'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code> — expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row. The <strong>checkbox</strong> variant (right) adds cascading selection: check a branch → all children follow; some children → the branch turns <em>indeterminate</em>. Needs <code>freeday-tree.js</code> for the cascade; a checkbox never expands/collapses the branch.' },
-    'sec-card': { h2: 'Card', desc: '<code>--interactive</code> = cursor + hover-lift for a card you <em>attach</em> a click handler to. When the card <strong>is</strong> the control (a keyboard-reachable, announced picker row), render it as a <code>&lt;button&gt;</code> and add <strong><code>--button</code></strong> — it resets the UA button box without stripping the card\'s own surface/border.' },
+    'sec-card': { h2: 'Card', desc: '<code>--interactive</code> = cursor + hover-lift for a card you <em>attach</em> a click handler to. When the card <strong>is</strong> the control (a keyboard-reachable, announced picker row), render it as a <code>&lt;button&gt;</code> and add <strong><code>--button</code></strong> — it resets the UA button box without stripping the card\'s own surface/border. The modifier is <strong>presentational</strong> — the CSS cannot know whether a handler exists, so pair it with a real control, normally a <code>.fdy-btn--stretch</code> whose hit area covers the whole card.' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
     'sec-avatar': { h2: 'Avatar', desc: 'Sizes <code>--sm</code> / default / <code>--lg</code>, plus a stacked group. To tell apart same-initial avatars (e.g. many "PT …" names), use <strong><code>--tone-1</code>…<code>--tone-8</code></strong> — decorative tints that stay <strong>AA</strong>-contrast in light &amp; dark; hash a stable index off the full name (not the initials).' },
     'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>freeday-chip.js</code> — wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },

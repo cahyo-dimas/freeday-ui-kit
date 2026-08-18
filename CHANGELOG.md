@@ -3,6 +3,51 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.28.0] — 2026-08-18
+Improvement note 007, written while fixing a workspace picker whose cards showed a pointer cursor
+and swallowed every click.
+### Added
+- **`.fdy-btn--stretch`** — the pattern for **one card, one primary action, one escape hatch**, which
+  the kit had no shape for: `--button` is a card that *is* one control, `--interactive` a card that
+  merely *has* one, and a card with two actions can be neither (interactive content nested in a
+  `<button>` is invalid HTML). The primary control keeps its real `<button>`/`<a>` semantics and
+  spreads its hit area over the card with a pseudo-element.
+  This is shipped rather than documented because it **cannot be hand-rolled on a `.fdy-btn`**: the
+  button nudges itself with a transform on `:hover`/`:active`, a transformed element becomes the
+  containing block for its own absolutely positioned descendants, and the overlay therefore
+  re-anchors from the card to the button's own box mid-gesture. `mousedown` lands on the button,
+  `mouseup` somewhere else, and the browser fires `click` on their common ancestor — the button never
+  gets one. The symptom is identical to the bug being fixed.
+  The report found this on `--text`/`--ghost`, which break on press. The kit's **base** rule is
+  `.fdy-btn:hover{transform:translateY(-1px)}`, so the default and `--danger` fills break one step
+  earlier, on hover: neutralising only `:active` — the obvious half-fix — still leaks.
+- **Escape hatches are raised automatically.** Every focusable element in a card holding a stretched
+  target sits above the overlay without markup or CSS from the consumer, because forgetting a
+  `z-index` here fails silently — the control looks and hovers exactly as before and simply never
+  receives the click.
+### Fixed
+- `--interactive` is now documented as **presentational**: the only affordance in the kit whose
+  correctness lives outside it. The CSS cannot know whether a handler exists, so the modifier without
+  a control and a control without the modifier both fail silently. It now points at the shape that
+  makes the promise true.
+### Notes on the shape of the fix
+- **Raising the escape hatch must not outweigh the app.** The first version declared
+  `position:relative` at normal specificity and *measurably* dragged an absolutely positioned corner
+  dismiss button back into the flow — a control the app had pinned itself, moved by the kit, with no
+  error. `z-index` still wins, but the `position` it needs is now a zero-specificity `:where()`
+  default that any app rule beats. The two rules must stay split; the gate asserts it.
+- **Cards only.** The overlay anchors to the nearest *positioned* ancestor. `.fdy-list__row` is not
+  positioned (`.fdy-list` is), so a stretched target in a list row would cover the whole list —
+  documented, with `.fdy-list__row--button` as the answer for clickable rows.
+### Added — guards
+- `browser/card-stretch.mjs` drives real presses: the target receives clicks from anywhere on the
+  card, the click is dispatched **on the button** rather than on a common ancestor, the secondary
+  action and an inline link keep their own clicks, and an app-pinned control keeps its own
+  `position`. A synthetic `.click()` never enters `:active` and passes against the broken CSS, which
+  is why this spec is worth its weight.
+- `test/css.test.mjs` guards all of it at the CI gate. Mutation-checked against six defects,
+  including both of the ones written during this change.
+
 ## [1.27.0] — 2026-08-14
 Improvement note #44, found while building a settings screen whose only numeric field looked like it
 belonged to a different application.

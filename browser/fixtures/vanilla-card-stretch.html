@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — card with a stretched target</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  /* The app pins its own control inside the card. Single class = specificity (0,1,0): the kit must
+     not outweigh it, or the button snaps back into the flow. */
+  .card-dismiss{position:absolute;top:.5rem;right:.5rem;}
+</style>
+</head>
+<body style="padding:2rem">
+  <!-- One card, one primary action, one escape hatch. The primary control must receive the click
+       from anywhere on the card; the secondary must keep its own. -->
+  <article class="fdy-card fdy-card--interactive" id="card" style="max-width:22rem">
+    <button class="fdy-btn fdy-btn--icon fdy-btn--ghost fdy-btn--sm card-dismiss" type="button" id="dismiss" aria-label="Tutup">&times;</button>
+    <div class="fdy-card__body">
+      <h3 class="fdy-card__title" id="title">Workspace Alpha</h3>
+      <p class="fdy-card__desc" id="desc">12 members · 4 boards</p>
+      <!-- A link in the BODY, not in the flex footer: z-index alone does nothing here, so this is the
+           case that proves the position default is load-bearing. -->
+      <a href="#policy" id="policy">Kebijakan workspace</a>
+    </div>
+    <div class="fdy-card__footer">
+      <button class="fdy-btn fdy-btn--text" type="button" id="details">Details</button>
+      <button class="fdy-btn fdy-btn--stretch" type="button" id="open">Open workspace Alpha</button>
+    </div>
+  </article>
+
+<script>
+  window.clicks = [];
+  for (const id of ['open', 'details', 'dismiss', 'policy']) {
+    document.getElementById(id).addEventListener('click', () => window.clicks.push(id));
+  }
+  /* What the browser fired the click on, whatever handler ran — the reported failure is that the
+     click lands on a common ancestor instead of the button. */
+  document.addEventListener('click', (e) => window.clicks.push('target:' + (e.target.id || e.target.className)));
+
+  window.hitAt = (selector, dx, dy) => {
+    const r = document.querySelector(selector).getBoundingClientRect();
+    const el = document.elementFromPoint(Math.round(r.x + r.width / 2 + (dx || 0)), Math.round(r.y + r.height / 2 + (dy || 0)));
+    return el ? (el.id || el.className) : null;
+  };
+  window.reset = () => { window.clicks = []; };
+  window.boxOf = (id) => {
+    const el = document.getElementById(id), cs = getComputedStyle(el), r = el.getBoundingClientRect();
+    const card = document.getElementById('card').getBoundingClientRect();
+    return { position: cs.position, zIndex: cs.zIndex, fromRight: Math.round(card.right - r.right) };
+  };
+</script>
+</body>
+</html>

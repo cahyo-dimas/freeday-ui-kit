@@ -885,7 +885,11 @@ is `role="group" aria-roledescription="slide"`.
 Parts `__body` `__title` `__desc` `__footer`. Modifiers:
 
 - `--elevated` — raise it (use sparingly; most surfaces are flat)
-- `--interactive` — cursor + hover-lift for a card that *has* a click handler
+- `--interactive` — cursor + hover-lift for a card that *has* a click handler. **Presentational
+  only:** it is the one affordance in the kit whose correctness lives outside it — the CSS cannot
+  know whether a handler exists, so the modifier without a control (a card that looks clickable and
+  swallows every click) and a control without the modifier both fail silently. Pair it with a real
+  control — normally the stretched target below.
 - `--button` — for a card that **is** the control: render it as `<button>` and add this to reset
   the UA button box **without** losing the card surface/border
 - `.fdy-card--button` never replaces keyboard semantics — a clickable card must be a real
@@ -894,6 +898,44 @@ Parts `__body` `__title` `__desc` `__footer`. Modifiers:
   cursor and the `--interactive` hover-lift.
 - The card is `position:relative`, so a badge or ribbon you absolutely position inside it anchors
   to the card. That is also what keeps hidden labels inside it from escaping — see *Containment*.
+
+### One card, one primary action, one escape hatch
+
+A card with **two** actions cannot be `--button`: interactive content nested in a `<button>` is
+invalid HTML. Give the primary control `.fdy-btn--stretch` — its hit area covers the whole card,
+while it stays a real `<button>`/`<a>` with real keyboard semantics.
+
+```html
+<article class="fdy-card fdy-card--interactive">
+  <div class="fdy-card__body">
+    <h3 class="fdy-card__title">Workspace Alpha</h3>
+    <p class="fdy-card__desc">12 members · 4 boards</p>
+  </div>
+  <div class="fdy-card__footer">
+    <button class="fdy-btn fdy-btn--text" type="button">Details</button>   <!-- escape hatch -->
+    <button class="fdy-btn fdy-btn--stretch" type="button">Open workspace Alpha</button>
+  </div>
+</article>
+```
+
+- **The escape hatch needs nothing.** Every focusable element in a card that holds a stretched
+  target is raised above the overlay automatically — forgetting a `z-index` here fails silently, and
+  a silent failure is what this pattern exists to remove. The `position` that raising needs is only a
+  **default** (zero-specificity), so a control you pin yourself — a corner dismiss, a favourite star —
+  keeps its own `position:absolute` and is raised anyway.
+- **Name the stretched button for what the whole card does** ("Open workspace Alpha", not "Open").
+  Its label is the accessible name of the entire hit area.
+- **Do not add `.fdy-btn--stretch` to more than one control per card** — the last one wins the
+  overlap, and which one that is depends on source order.
+- Text under the overlay is no longer selectable; that is the cost of the pattern, not a bug.
+- **Cards only.** The overlay anchors to the nearest *positioned* ancestor, and in the kit that is
+  `.fdy-card`. A `.fdy-list__row` is **not** positioned (`.fdy-list` is), so a stretched target in a
+  list row would cover the **whole list** — for clickable rows use `.fdy-list__row--button`.
+- `.fdy-btn` nudges itself on `:hover`/`:active`, and a transformed element becomes the containing
+  block for its own absolutely positioned descendants — so a hand-rolled `::after{inset:0}` overlay
+  **re-anchors to the button mid-gesture** and the click never lands. `--stretch` neutralises those
+  transforms and moves the press feedback to the card. This is why the pattern is shipped rather
+  than documented.
 
 ## Badge — `.fdy-badge`
 Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Never colour-only —
