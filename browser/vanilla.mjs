@@ -78,3 +78,58 @@ test('vanilla combo: programmatic setValue updates selection silently (no fdy-ch
     assert.equal(state.changed, 'button', 'setValue is silent — fdy-change NOT fired, window.__val unchanged');
   });
 });
+
+/* The month drill and the accessible-name invariant, both from note 004. */
+test('the calendar title drills to a month grid, and picking a month commits nothing', { skip }, async () => {
+  await withPage(fixture('vanilla-cal-drill.html'), async (p) => {
+    await p.waitFor('window.FreedayDatepicker');
+    await p.clickCenter('.fdy-datepicker__trigger');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-cal__title").tagName'), 'BUTTON',
+      'the title must be a control — it was the only thing naming the month, and it was a <div>');
+
+    await p.clickCenter('.fdy-cal__title');
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__month").length'), 12, 'drills to a month grid');
+    assert.equal(await p.evalJS('document.activeElement.className.includes("fdy-cal__month")'), true,
+      'focus follows into the grid, or a keyboard user is stranded');
+
+    for (let i = 0; i < 4; i++) await p.clickCenter('.fdy-cal__nav');    // ‹ steps a YEAR here
+    assert.equal(await p.evalJS('document.querySelector(".fdy-cal__title").textContent'), '2022',
+      'the arrows step years while the month grid is open');
+
+    const before = await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()');
+    await p.clickCenter('.fdy-cal__month:nth-child(3)');
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__day").length'), 42, 'back to the day grid');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()'), before,
+      'picking a month is navigation, not selection — nothing may be committed until a DAY is chosen');
+
+    await p.clickCenter('.fdy-cal__day:not(.is-outside)');
+    assert.match(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent'), /2022/,
+      'and then the day commits');
+  });
+});
+
+test('an option keeps its accessible name when it becomes selected', { skip }, async () => {
+  await withPage(fixture('vanilla-cal-drill.html'), async (p) => {
+    await p.waitFor('window.FreedayCombo');
+    /* The tick used to be text INSIDE role="option", so the selected option's name was "✓Badge"
+       while every other was "Badge": the state was announced twice, and getByRole('option',
+       { name: 'Badge' }) stopped matching the one option that was selected. The invariant is the
+       name, not the glyph — so this asserts names are identical either side of selection. */
+    /* Asked of the ENGINE, not of textContent: the tick is CSS generated content now, which never
+       shows up in textContent — a DOM-level assert would pass even with the glyph back in the name.
+       The listbox has to be OPEN first: a hidden option is not in the accessibility tree at all. */
+    await p.clickCenter('.fdy-combo__button');
+    const unselected = await p.axName('.fdy-combo__option[data-value="button"]');
+    const selected = await p.axName('.fdy-combo__option[data-value="badge"]');
+    assert.equal(unselected, 'Button');
+    assert.equal(selected, 'Badge',
+      `the selected option's accessible name must not carry the tick, got ${JSON.stringify(selected)}`);
+
+    await p.clickCenter('.fdy-combo__option[data-value="button"]');
+    await p.clickCenter('.fdy-combo__button');
+    assert.equal(await p.axName('.fdy-combo__option[data-value="button"]'), 'Button',
+      'the name must not change under you as a side effect of becoming selected');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-combo__option[data-value=\'button\']").getAttribute("aria-selected")'), 'true',
+      'only aria-selected carries the state');
+  });
+});

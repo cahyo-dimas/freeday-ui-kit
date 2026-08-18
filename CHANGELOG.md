@@ -3,6 +3,49 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.32.0] — 2026-08-18
+Improvement note 004, both halves: a calendar you could not steer, and a check mark that talked.
+### Added
+- **The calendar title is a control.** It was a `<div>` — the only thing naming the month, and not
+  clickable — so the only pointer route to another month was one click per month: August 2026 to
+  March 2022 is **53 clicks**. `Shift`+`PageUp` already jumped a year (APG, correct) but had no
+  affordance whatsoever; the reporting repo's own Playwright helper clicked "previous month"
+  **twenty-four times** and shipped, which is the strongest possible evidence that nobody finds a
+  shortcut nothing mentions.
+  Pressing the title now drills to a 12-cell month grid where the arrows step **years**. Same
+  journey: **7 clicks**. Picking a month is navigation, not selection — the day grid comes back with
+  the roving cell clamped into the new month and nothing is committed until a day is chosen.
+  Shipped in the vanilla enhancer, Vue and React; `FdyDateRange` composes the picker in both
+  adapters and the Blazor `FdyDatepicker` wraps the enhancer, so all of them inherit it.
+  New classes: `.fdy-cal__grid--months`, `.fdy-cal__month`. The month grid mirrors the day grid's
+  keyboard contract (arrows ±1/±3, Home/End, PageUp/PageDown a year, Enter/Space to choose), and
+  `COMPONENTS.md` now states the `Shift`+`PageUp` shortcut it never mentioned.
+### Fixed
+- **A combo option's accessible name no longer changes when it is selected.** The tick lived inside
+  `role="option"` as text, so the selected option announced `✓August` while every other announced
+  `August`: the state was read twice — once as `aria-selected`, once as decoration — and
+  `getByRole('option', { name: 'August' })` stopped matching the one option that was selected. The
+  glyph is now painted by CSS with alt text (`content:"✓" / ""`), the same technique
+  `.fdy-label--required` uses. The conditional disappears from all four stacks, and the vanilla
+  enhancer's `optionLabel` loses the sibling-walk it needed to skip a glyph.
+### Notes on the shape of the fix
+- **A bug written and caught inside this change:** swapping the calendar head with `v-if`/`v-else`
+  destroys the very button the user just pressed, focus falls to `<body>`, and the panel's own
+  `focusout` handler closes it mid-navigation. The head is now one element set whose labels and
+  handlers switch, and `focusout` ignores a **null** `relatedTarget` — focus lost because an element
+  was removed is not focus leaving the control, and a pointer that really lands outside is handled
+  by the mousedown path.
+- The report's `aria-hidden` suggestion would also have worked; CSS alt text was chosen because it
+  removes the conditional from four implementations instead of adding an attribute to each.
+### Added — guards
+- `browser/harness.mjs` gains **`axName(selector)`** — the accessible name as the *engine* computes
+  it (CDP `Accessibility.getPartialAXTree`). This mattered immediately: the first version of the
+  name invariant read `textContent`, which never contains CSS generated content, so it passed with
+  the tick back in the accessibility tree. With `axName`, that mutation reports `"✓ Badge"`.
+- Real-click drill specs for the vanilla enhancer, Vue and React: the title is a `<button>`, drilling
+  shows 12 months and moves focus into the grid, the arrows step years, and picking a month commits
+  nothing.
+
 ## [1.31.0] — 2026-08-18
 Improvement note 002: density was a one-way door.
 ### Added

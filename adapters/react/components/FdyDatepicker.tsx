@@ -21,6 +21,16 @@ interface DayCell {
   focusable: boolean;
 }
 
+interface MonthCell {
+  index: number;
+  label: string;
+  ariaLabel: string;
+  selected: boolean;
+  today: boolean;
+  disabled: boolean;
+  focusable: boolean;
+}
+
 export interface FdyDatepickerProps {
   value: string | null;
   onChange: (value: string) => void;
@@ -38,6 +48,11 @@ export interface FdyDatepickerProps {
   /** Show a clear (×) button in the trigger when a date is set, so an optional date can be unset. Calls onChange('') to reset. Off by default. */
   clearable?: boolean;
   /** aria-label for the previous-month nav button. Default 'Previous month' — override for non-English UIs (month/weekday names already follow `locale`). */
+  /** aria-label for the title button that drills to the month grid. Default 'Choose month'. */
+  chooseMonthLabel?: string;
+  /** aria-labels for the year arrows shown in the month grid. Defaults 'Previous year' / 'Next year'. */
+  prevYearLabel?: string;
+  nextYearLabel?: string;
   prevMonthLabel?: string;
   /** aria-label for the next-month nav button. Default 'Next month'. */
   nextMonthLabel?: string;
@@ -104,6 +119,12 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const pendingFocusRef = useRef<string | null>(null);
 
   const [open, setOpen] = useState<boolean>(false);
+  /* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the
+     title. Before this the only pointer route to another month was one click per month. */
+  const [mode, setMode] = useState<'days' | 'months'>('days');
+  const [focusMonth, setFocusMonth] = useState<number>(0);
+  const monthRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  const pendingMonthFocusRef = useRef<number | null>(null);
 
   // Render the calendar panel in the top layer (popover) so it never gets clipped by a card or
   // scroll container; positions against the trigger.
@@ -122,6 +143,17 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const isInvalid: boolean = props.invalid === true;
   const displayPlaceholder: string = props.placeholder ?? 'Select date';
   const showClear: boolean = props.clearable === true && selectedDate !== null && !isDisabled && !isReadonly;
+  const chooseMonthLabelText: string = props.chooseMonthLabel ?? 'Choose month';
+  const prevYearLabelText: string = props.prevYearLabel ?? 'Previous year';
+  const nextYearLabelText: string = props.nextYearLabel ?? 'Next year';
+  const monthCellFmt: Intl.DateTimeFormat = useMemo(
+    (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'short' }),
+    [props.locale],
+  );
+  const monthNameFmt: Intl.DateTimeFormat = useMemo(
+    (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }),
+    [props.locale],
+  );
   const prevMonthLabelText: string = props.prevMonthLabel ?? 'Previous month';
   const nextMonthLabelText: string = props.nextMonthLabel ?? 'Next month';
   const clearLabelText: string = props.clearLabel ?? 'Clear date';
@@ -167,6 +199,35 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     return false;
   }
 
+  /** A month is only unreachable when the WHOLE month falls outside min/max — a range that sits
+   *  inside one month disables both ends while the middle is perfectly selectable. */
+  function isMonthDisabled(year: number, month: number): boolean {
+    const first: Date = new Date(year, month, 1);
+    const last: Date = new Date(year, month + 1, 0);
+    if (minDate !== null && startOfDay(last).getTime() < startOfDay(minDate).getTime()) return true;
+    if (maxDate !== null && startOfDay(first).getTime() > startOfDay(maxDate).getTime()) return true;
+    return false;
+  }
+
+  const monthCells: MonthCell[] = useMemo((): MonthCell[] => {
+    const year: number = viewMonth.getFullYear();
+    const today: Date = new Date();
+    const sel: Date | null = parseISO(props.value);
+    return Array.from({ length: 12 }, (_unused: unknown, index: number): MonthCell => {
+      const cellDate: Date = new Date(year, index, 1);
+      return {
+        index,
+        label: monthCellFmt.format(cellDate),
+        ariaLabel: monthNameFmt.format(cellDate),
+        selected: sel !== null && sel.getFullYear() === year && sel.getMonth() === index,
+        today: today.getFullYear() === year && today.getMonth() === index,
+        disabled: isMonthDisabled(year, index),
+        focusable: index === focusMonth,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewMonth, props.value, focusMonth, monthCellFmt, monthNameFmt, minDate, maxDate]);
+
   const gridCells: DayCell[] = useMemo((): DayCell[] => {
     const first: Date = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
     const offset: number = (first.getDay() + 6) % 7; // Monday-first
@@ -202,6 +263,57 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     pendingFocusRef.current = null;
     dayRefs.current[iso]?.focus();
   });
+
+  useEffect((): void => {
+    if (pendingMonthFocusRef.current === null) return;
+    const index: number = pendingMonthFocusRef.current;
+    pendingMonthFocusRef.current = null;
+    monthRefs.current[index]?.focus();
+  });
+
+  function openMonthGrid(): void {
+    setFocusMonth(viewMonth.getMonth());
+    setMode('months');
+    pendingMonthFocusRef.current = viewMonth.getMonth();
+  }
+
+  /* Picking a month is NAVIGATION, not selection: back to the day grid with the roving cell clamped
+     into the new month, so nothing is committed until a day is chosen. */
+  function openMonth(index: number): void {
+    const year: number = viewMonth.getFullYear();
+    const daysInMonth: number = new Date(year, index + 1, 0).getDate();
+    const next: Date = new Date(year, index, Math.min(focusDate.getDate(), daysInMonth));
+    setViewMonth(new Date(year, index, 1));
+    setFocusDate(next);
+    setMode('days');
+    pendingFocusRef.current = toISO(next);
+  }
+
+  function moveMonthFocus(index: number, yearDelta: number): void {
+    if (yearDelta !== 0) setViewMonth(addMonths(viewMonth, yearDelta * 12));
+    const next: number = (index + 12) % 12;
+    setFocusMonth(next);
+    pendingMonthFocusRef.current = next;
+  }
+
+  function onMonthKeydown(e: React.KeyboardEvent): void {
+    let handled: boolean = true;
+    switch (e.key) {
+      case 'ArrowLeft': moveMonthFocus(focusMonth - 1, 0); break;
+      case 'ArrowRight': moveMonthFocus(focusMonth + 1, 0); break;
+      case 'ArrowUp': moveMonthFocus(focusMonth - 3, 0); break;
+      case 'ArrowDown': moveMonthFocus(focusMonth + 3, 0); break;
+      case 'Home': moveMonthFocus(0, 0); break;
+      case 'End': moveMonthFocus(11, 0); break;
+      case 'PageUp': moveMonthFocus(focusMonth, -1); break;
+      case 'PageDown': moveMonthFocus(focusMonth, 1); break;
+      case 'Enter':
+      case ' ': openMonth(focusMonth); break;
+      case 'Escape': closePanel(true); break;
+      default: handled = false;
+    }
+    if (handled) e.preventDefault();
+  }
 
   function moveFocus(next: Date): void {
     setFocusDate(next);
@@ -295,8 +407,14 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   }
 
   // Close when focus leaves the control entirely (e.g. Shift+Tab off the trigger).
+  /* A null relatedTarget means focus fell to <body> — which is what happens when the element the
+     user just pressed is REMOVED by the click it triggered (drilling into the month grid replaces
+     the grid, and with it the cell that had focus). That is not focus leaving the control, and
+     closing on it made the panel vanish mid-navigation. A pointer that really lands outside is
+     handled by the mousedown listener, which is the reliable path for that case. */
   const onFocusout = (e: React.FocusEvent<HTMLDivElement>): void => {
     const next: EventTarget | null = e.relatedTarget;
+    if (next === null) return;
     if (rootRef.current !== null && !(next instanceof Node && rootRef.current.contains(next))) closePanel(false);
   };
 
@@ -352,15 +470,55 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
       ) : null}
 
       <div ref={panelRef} className="fdy-datepicker__panel" role="dialog" aria-modal="false" aria-labelledby={titleId} hidden={!open}>
+        {/* ONE head for both modes on purpose: swapping it destroys the very button the user just
+            pressed, focus falls to <body>, and the panel's own focusout handler closes it. */}
         <div className="fdy-cal__head">
-          <button type="button" className="fdy-cal__nav" aria-label={prevMonthLabelText} onClick={(): void => setViewMonth(addMonths(viewMonth, -1))}>
+          <button
+            type="button"
+            className="fdy-cal__nav"
+            aria-label={mode === 'months' ? prevYearLabelText : prevMonthLabelText}
+            onClick={(): void => { if (mode === 'months') moveMonthFocus(focusMonth, -1); else setViewMonth(addMonths(viewMonth, -1)); }}
+          >
             &lsaquo;
           </button>
-          <div id={titleId} className="fdy-cal__title">{monthFmt.format(viewMonth)}</div>
-          <button type="button" className="fdy-cal__nav" aria-label={nextMonthLabelText} onClick={(): void => setViewMonth(addMonths(viewMonth, 1))}>
+          <button
+            id={titleId}
+            type="button"
+            className="fdy-cal__title"
+            aria-label={mode === 'months' ? undefined : chooseMonthLabelText}
+            onClick={(): void => { if (mode === 'months') setMode('days'); else openMonthGrid(); }}
+          >
+            {mode === 'months' ? String(viewMonth.getFullYear()) : monthFmt.format(viewMonth)}
+          </button>
+          <button
+            type="button"
+            className="fdy-cal__nav"
+            aria-label={mode === 'months' ? nextYearLabelText : nextMonthLabelText}
+            onClick={(): void => { if (mode === 'months') moveMonthFocus(focusMonth, 1); else setViewMonth(addMonths(viewMonth, 1)); }}
+          >
             &rsaquo;
           </button>
         </div>
+        {mode === 'months' ? (
+          <div className="fdy-cal__grid fdy-cal__grid--months" role="grid" aria-labelledby={titleId} onKeyDown={onMonthKeydown}>
+            {monthCells.map((cell: MonthCell) => (
+              <button
+                key={cell.index}
+                ref={(el: HTMLButtonElement | null): void => { monthRefs.current[cell.index] = el; }}
+                type="button"
+                className={['fdy-cal__month', cell.today ? 'is-today' : '', cell.selected ? 'is-selected' : ''].filter(Boolean).join(' ')}
+                role="gridcell"
+                aria-label={cell.ariaLabel}
+                aria-selected={cell.selected ? true : undefined}
+                disabled={cell.disabled}
+                tabIndex={cell.focusable ? 0 : -1}
+                onClick={(): void => openMonth(cell.index)}
+              >
+                {cell.label}
+              </button>
+            ))}
+          </div>
+        ) : (
         <div className="fdy-cal__grid" role="grid" aria-labelledby={titleId} onKeyDown={onGridKeydown}>
           {weekdayHeaders.map((w: string): JSX.Element => (
             <div key={w} className="fdy-cal__dow" role="columnheader" aria-label={w}>{w}</div>
@@ -384,6 +542,8 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
             </button>
           ))}
         </div>
+        )}
+
       </div>
     </div>
   );

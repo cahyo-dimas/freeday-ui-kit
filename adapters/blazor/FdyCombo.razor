@@ -21,7 +21,7 @@
             bool selected = Equals(opt.Value, Value);
             <li class="fdy-combo__option" role="option" data-value="@KeyOf(opt.Value)"
                 aria-selected="@(selected ? "true" : "false")">
-                <span class="fdy-combo__check">@(selected ? "✓" : "")</span>@opt.Label
+                <span class="fdy-combo__check"></span>@opt.Label
             </li>
         }
     </ul>

@@ -29,7 +29,20 @@
 
 /* Calendar grid */
 .fdy-cal__head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2);}
-.fdy-cal__title{flex:1;text-align:center;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;}
+/* The title is a CONTROL now (#004 §1): it drills to the month grid, so it needs the UA button box
+   reset and the same hover/focus treatment as the arrows beside it. */
+.fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
+.fdy-cal__title:hover{background:var(--color-surface-2);}
+.fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+/* Month grid — 3×4 over the same track width as the 7-column day grid, so the panel does not resize
+   when you drill and the pointer does not have to travel. */
+.fdy-cal__grid--months{grid-template-columns:repeat(3,1fr);gap:var(--space-1);}
+.fdy-cal__month{display:inline-flex;align-items:center;justify-content:center;height:2.25rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-family:inherit;font-size:var(--text-sm);text-transform:capitalize;cursor:pointer;}
+.fdy-cal__month:hover{background:var(--color-surface-2);}
+.fdy-cal__month:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__month:disabled{opacity:.4;cursor:not-allowed;background:transparent;}
+.fdy-cal__month.is-today{font-weight:var(--weight-bold);box-shadow:inset 0 0 0 1.5px var(--color-border-strong);}
+.fdy-cal__month.is-selected{background:var(--color-primary);color:var(--color-on-primary);font-weight:var(--weight-semibold);}
 .fdy-cal__nav{display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;flex:none;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
 .fdy-cal__nav:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-cal__nav:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}

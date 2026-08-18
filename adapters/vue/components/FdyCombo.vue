@@ -233,7 +233,7 @@ onBeforeUnmount((): void => {
         @click="choose(i)"
         @mousemove="setHighlight(i)"
       >
-        <span class="fdy-combo__check">{{ opt.value === modelValue ? '✓' : '' }}</span>{{ opt.label }}
+        <span class="fdy-combo__check"></span>{{ opt.label }}
       </li>
     </ul>
   </div>

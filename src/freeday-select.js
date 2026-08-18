@@ -13,7 +13,7 @@
  *     </button>
  *     <ul class="fdy-combo__listbox" role="listbox" hidden>
  *       <li class="fdy-combo__option" role="option" data-value="x"
- *           aria-selected="true"><span class="fdy-combo__check">✓</span>Label</li>
+ *           aria-selected="true"><span class="fdy-combo__check"></span>Label</li>
  *     </ul>
  *   </div>
  *
@@ -25,10 +25,9 @@
   var seq = 0;
   var openClose = null; // close() of the currently-open combo, or null
 
+  /* The tick lives in CSS now, so the option's text IS its label — no sibling walk to skip a glyph. */
   function optionLabel(opt) {
-    var check = opt.querySelector('.fdy-combo__check');
-    var node = check && check.nextSibling ? check.nextSibling.textContent : opt.textContent;
-    return (node || '').trim();
+    return (opt.textContent || '').trim();
   }
 
   function initCombo(root) {
@@ -99,8 +98,6 @@
       options.forEach(function (other) {
         var on = other === opt;
         other.setAttribute('aria-selected', on ? 'true' : 'false');
-        var check = other.querySelector('.fdy-combo__check');
-        if (check) check.textContent = on ? '✓' : '';
       });
       root.setAttribute('data-value', opt.getAttribute('data-value') || '');
       valueEl.textContent = optionLabel(opt);

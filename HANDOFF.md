@@ -6,6 +6,32 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**v1.32.0 — note 004: kalender yang tak bisa dikemudikan + tanda centang yang ikut bicara.**
+- **Judul kalender kini kontrol.** Dulu `<div>` — satu-satunya yang menyebut bulan, dan tak bisa
+  diklik — jadi satu-satunya rute pointer ke bulan lain adalah satu klik per bulan: Agustus 2026 ke
+  Maret 2022 = **53 klik**. `Shift+PageUp` sudah melompat setahun (APG, benar) tapi tanpa afordansi
+  sama sekali; helper Playwright di repo pelapor mengklik "bulan sebelumnya" **24 kali** dan itu
+  di-ship — bukti terkuat bahwa shortcut yang tak disebut siapa pun memang tak ditemukan.
+- Tekan judul → grid 12 bulan, panahnya melangkah **tahun**. Perjalanan yang sama = **7 klik**.
+  Memilih bulan itu navigasi, bukan seleksi: nilai baru ter-commit saat TANGGAL dipilih.
+  Dikirim di enhancer vanilla + Vue + React; `FdyDateRange` mengomposisi picker dan Blazor
+  membungkus enhancer, jadi semuanya ikut. Kelas baru: `.fdy-cal__grid--months`, `.fdy-cal__month`.
+- **Nama aksesibel opsi combo tak lagi berubah saat terpilih.** Centangnya teks di dalam
+  `role="option"`, jadi opsi terpilih berbunyi `✓August` sementara yang lain `August`: state dibaca
+  dua kali, dan `getByRole('option', {name})` berhenti cocok tepat pada opsi yang terpilih. Sekarang
+  glyph-nya dilukis CSS dengan alt text — teknik yang sama dengan `.fdy-label--required`.
+- **Bug yang kutulis lalu kutangkap sendiri di perubahan ini:** menukar head kalender dengan
+  `v-if`/`v-else` menghancurkan tombol yang barusan ditekan → fokus jatuh ke `<body>` → handler
+  `focusout` menutup panel di tengah navigasi. Head kini satu set elemen yang labelnya berganti, dan
+  `focusout` mengabaikan `relatedTarget` null.
+- `browser/harness.mjs` dapat **`axName(selector)`** — nama aksesibel versi mesin (CDP
+  `Accessibility.getPartialAXTree`). Langsung berguna: versi pertama guard-ku membaca `textContent`,
+  yang TAK PERNAH memuat generated content, jadi lolos padahal centangnya kembali ke pohon a11y.
+
+Gate: `npm test` **41/41** · `npm run test:browser` **29/29**.
+
+---
+
 **v1.31.0 — note 002: density cuma satu arah.**
 - Kit hanya mengirim blok `compact`, padahal komentarnya menjanjikan density per-subtree. Karena ini
   custom property yang mewaris, begitu `<html>` compact maka SELURUH subtree compact, dan

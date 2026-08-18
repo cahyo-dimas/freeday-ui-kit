@@ -113,3 +113,47 @@ test('Vue FdyCfl: clearable emits null and keeps focus', { skip }, async () => {
 test('React FdyCfl: clearable emits null and keeps focus', { skip }, async () => {
   await assertClearable('react-cfl-clear.html');
 });
+
+/* The month drill (note 004 §1). The calendar's only pointer route to another month was one click
+ * per month — August 2026 to March 2022 is fifty-three — and the Shift+PageUp year jump had no
+ * affordance at all. The title is a control now. Driven with real clicks because the thing being
+ * tested is the route a pointer takes. */
+async function assertMonthDrill(fixtureName) {
+  await withPage(fixture(fixtureName), async (p) => {
+    await p.waitFor(`document.querySelector('.fdy-datepicker__trigger')`);
+    await p.clickCenter('.fdy-datepicker__trigger');
+    await p.waitFor(`document.querySelector('.fdy-cal__title')`);
+
+    assert.equal(await p.evalJS(`document.querySelector('.fdy-cal__title').tagName`), 'BUTTON',
+      'the month title must be a control, not a <div> that only names the month');
+
+    await p.clickCenter('.fdy-cal__title');
+    assert.ok(await p.waitFor(`document.querySelectorAll('.fdy-cal__month').length === 12`),
+      'drilling shows a 12-cell month grid');
+    assert.equal(await p.evalJS(`document.querySelectorAll('.fdy-cal__day').length`), 0,
+      'and replaces the day grid rather than stacking beside it');
+
+    for (let i = 0; i < 4; i++) await p.clickCenter('.fdy-cal__nav');   // ‹ steps a YEAR here
+    assert.equal(await p.evalJS(`document.querySelector('.fdy-cal__title').textContent.trim()`), '2022',
+      'the arrows step years while the month grid is open');
+
+    await p.clickCenter('.fdy-cal__month:nth-child(3)');                // March
+    assert.ok(await p.waitFor(`document.querySelectorAll('.fdy-cal__day').length > 0`), 'picking a month returns to days');
+    assert.match(await p.evalJS(`document.querySelector('.fdy-cal__title').textContent`), /March 2022|Mar 2022/,
+      'in the month that was chosen');
+
+    /* Navigation, not selection: nothing may be committed until a DAY is picked. */
+    assert.equal(await p.evalJS('window.__val'), '2026-08-14',
+      'choosing a month must not change the value');
+    await p.clickCenter('.fdy-cal__day:not(.is-outside)');
+    assert.match(await p.evalJS('window.__val'), /^2022-03-/, `picking a day commits it, got ${await p.evalJS('window.__val')}`);
+  });
+}
+
+test('Vue FdyDatepicker: the title drills to a month grid', { skip }, async () => {
+  await assertMonthDrill('vue-cal-drill.html');
+});
+
+test('React FdyDatepicker: the title drills to a month grid', { skip }, async () => {
+  await assertMonthDrill('react-cal-drill.html');
+});

@@ -173,7 +173,26 @@ export async function withPage(fileUrl, fn) {
       await sleep(40);
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey });
+    /* The ACCESSIBLE NAME as the browser computes it — not textContent. CSS generated content never
+       appears in textContent, so a tick painted through ::after is invisible to a DOM-level assert
+       while a screen reader still reads it. Two kit features now hinge on that difference
+       (.fdy-label--required and the combo's selected tick), so the guard has to ask the engine. */
+    const axName = async (selector) => {
+      await cmd('DOM.enable');
+      await cmd('Accessibility.enable');
+      const doc = await cmd('DOM.getDocument', { depth: -1 });
+      const root = doc.result && doc.result.root ? doc.result.root.nodeId : null;
+      if (root === null) throw new Error('no DOM root');
+      const found = await cmd('DOM.querySelector', { nodeId: root, selector });
+      const nodeId = found.result ? found.result.nodeId : 0;
+      if (!nodeId) throw new Error('axName: no element for ' + selector);
+      const ax = await cmd('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false });
+      const nodes = (ax.result && ax.result.nodes) || [];
+      const self = nodes[nodes.length - 1];
+      return self && self.name ? self.name.value : null;
+    };
+
+    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName });
   } finally {
     if (ws !== null) {
       try {
@@ -214,6 +233,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-table-pageindex.tsx'),
       join(HERE, 'entries', 'vue-cfl-clear.js'),
       join(HERE, 'entries', 'react-cfl-clear.tsx'),
+      join(HERE, 'entries', 'vue-cal-drill.js'),
+      join(HERE, 'entries', 'react-cal-drill.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

@@ -1010,7 +1010,14 @@ a { color: var(--color-primary); }
 .fdy-combo__option.is-highlighted{background:var(--color-surface-3);}
 .fdy-combo__option[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 .fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
+/* The tick is CSS, not content (#004 §2). Inside role="option" it joined the option's ACCESSIBLE
+   NAME, so the selected option announced "✓August" while every other announced "August": the state
+   was read twice — once as aria-selected, once as decoration — and a test asking for an option by
+   its own label stopped matching the one that was selected. The `/ ""` is alt text: the glyph is
+   painted, the accessibility tree gets nothing. Same reasoning as .fdy-label--required (1.29.0).
+   The empty box still reserves its width, so labels stay aligned whether selected or not. */
 .fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary);}
+.fdy-combo__option[aria-selected="true"] .fdy-combo__check::after{content:"✓" / "";}
 @media (prefers-reduced-motion:no-preference){.fdy-combo__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 @keyframes fdy-combo-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
 
@@ -1114,7 +1121,20 @@ a { color: var(--color-primary); }
 
 /* Calendar grid */
 .fdy-cal__head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2);}
-.fdy-cal__title{flex:1;text-align:center;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;}
+/* The title is a CONTROL now (#004 §1): it drills to the month grid, so it needs the UA button box
+   reset and the same hover/focus treatment as the arrows beside it. */
+.fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
+.fdy-cal__title:hover{background:var(--color-surface-2);}
+.fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+/* Month grid — 3×4 over the same track width as the 7-column day grid, so the panel does not resize
+   when you drill and the pointer does not have to travel. */
+.fdy-cal__grid--months{grid-template-columns:repeat(3,1fr);gap:var(--space-1);}
+.fdy-cal__month{display:inline-flex;align-items:center;justify-content:center;height:2.25rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-family:inherit;font-size:var(--text-sm);text-transform:capitalize;cursor:pointer;}
+.fdy-cal__month:hover{background:var(--color-surface-2);}
+.fdy-cal__month:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__month:disabled{opacity:.4;cursor:not-allowed;background:transparent;}
+.fdy-cal__month.is-today{font-weight:var(--weight-bold);box-shadow:inset 0 0 0 1.5px var(--color-border-strong);}
+.fdy-cal__month.is-selected{background:var(--color-primary);color:var(--color-on-primary);font-weight:var(--weight-semibold);}
 .fdy-cal__nav{display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;flex:none;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
 .fdy-cal__nav:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-cal__nav:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}

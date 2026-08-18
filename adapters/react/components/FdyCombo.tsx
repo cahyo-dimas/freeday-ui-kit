@@ -165,7 +165,7 @@ export function FdyCombo<T extends string>(props: FdyComboProps<T>): JSX.Element
             onClick={(): void => choose(i)}
             onMouseMove={(): void => setHighlight(i)}
           >
-            <span className="fdy-combo__check">{opt.value === props.value ? '✓' : ''}</span>{opt.label}
+            <span className="fdy-combo__check" />{opt.label}
           </li>
         ))}
       </ul>

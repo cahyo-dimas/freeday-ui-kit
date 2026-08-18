@@ -39,6 +39,8 @@
   var monthFmt = new Intl.DateTimeFormat(LOCALE, { month: 'long', year: 'numeric' });
   var valueFmt = new Intl.DateTimeFormat(LOCALE, { day: '2-digit', month: 'short', year: 'numeric' });
   var dayLabelFmt = new Intl.DateTimeFormat(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var monthCellFmt = new Intl.DateTimeFormat(LOCALE, { month: 'short' });
+  var monthNameFmt = new Intl.DateTimeFormat(LOCALE, { month: 'long', year: 'numeric' });
 
   function weekdayHeaders() {
     var monday = new Date(2024, 0, 1); // a known Monday
@@ -64,6 +66,13 @@
     var view = startOfDay(selected || new Date());
     view = new Date(view.getFullYear(), view.getMonth(), 1);
     var focusDate = null;
+    /* 'days' | 'months' — the calendar drills one level up rather than growing furniture beside the
+       title. Before this, the only pointer route to another month was one click per month: from
+       August 2026 to March 2022 is fifty-three of them. Shift+PageUp already jumped a year, but a
+       shortcut nobody can see is not an affordance — the repo's own test helper clicked "previous
+       month" twenty-four times to reach a date two years back. */
+    var mode = 'days';
+    var focusMonth = null;
 
     var trigger = document.createElement('button');
     trigger.type = 'button';
@@ -111,6 +120,25 @@
       return false;
     }
 
+    function monthDisabled(year, month) {
+      var last = new Date(year, month + 1, 0);
+      var first = new Date(year, month, 1);
+      if (minDate && startOfDay(last).getTime() < startOfDay(minDate).getTime()) return true;
+      if (maxDate && startOfDay(first).getTime() > startOfDay(maxDate).getTime()) return true;
+      return false;
+    }
+
+    function titleButton(text, aria, onClick) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'fdy-cal__title';
+      b.id = uid('fdy-cal-title');
+      b.textContent = text;
+      b.setAttribute('aria-label', aria);
+      b.addEventListener('click', onClick);
+      return b;
+    }
+
     function navButton(glyph, aria, onClick) {
       var b = document.createElement('button');
       b.type = 'button';
@@ -122,13 +150,16 @@
     }
 
     function render() {
+      if (mode === 'months') { renderMonths(); return; }
       panel.innerHTML = '';
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = document.createElement('div');
-      title.className = 'fdy-cal__title';
-      title.id = uid('fdy-cal-title');
-      title.textContent = monthFmt.format(view);
+      var title = titleButton(monthFmt.format(view), monthFmt.format(view) + ', pilih bulan', function () {
+        mode = 'months';
+        focusMonth = view.getMonth();
+        render();
+        focusMonthCell();
+      });
       panel.setAttribute('aria-labelledby', title.id);
       head.appendChild(navButton('‹', 'Bulan sebelumnya', function () { view = addMonths(view, -1); render(); }));
       head.appendChild(title);
@@ -184,6 +215,93 @@
       panel.appendChild(grid);
     }
 
+    function renderMonths() {
+      panel.innerHTML = '';
+      var year = view.getFullYear();
+      var head = document.createElement('div');
+      head.className = 'fdy-cal__head';
+      var title = titleButton(String(year), year + ', kembali ke tanggal', function () {
+        mode = 'days';
+        render();
+        focusFocusDate();
+      });
+      panel.setAttribute('aria-labelledby', title.id);
+      head.appendChild(navButton('‹', 'Tahun sebelumnya', function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
+      head.appendChild(title);
+      head.appendChild(navButton('›', 'Tahun berikutnya', function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
+      panel.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'fdy-cal__grid fdy-cal__grid--months';
+      grid.setAttribute('role', 'grid');
+      grid.setAttribute('aria-labelledby', title.id);
+      var today = new Date();
+      if (focusMonth === null) focusMonth = view.getMonth();
+      for (var m = 0; m < 12; m++) {
+        var cellDate = new Date(year, m, 1);
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'fdy-cal__month';
+        btn.setAttribute('role', 'gridcell');
+        btn.setAttribute('aria-label', monthNameFmt.format(cellDate));
+        btn.textContent = monthCellFmt.format(cellDate);
+        if (today.getFullYear() === year && today.getMonth() === m) btn.classList.add('is-today');
+        if (selected && selected.getFullYear() === year && selected.getMonth() === m) {
+          btn.classList.add('is-selected');
+          btn.setAttribute('aria-selected', 'true');
+        }
+        if (monthDisabled(year, m)) btn.disabled = true;
+        btn.tabIndex = m === focusMonth ? 0 : -1;
+        btn.addEventListener('click', (function (mm) { return function () { openMonth(mm); }; })(m));
+        grid.appendChild(btn);
+      }
+      grid.addEventListener('keydown', onMonthKey);
+      panel.appendChild(grid);
+    }
+
+    function focusMonthCell() {
+      var cell = panel.querySelector('.fdy-cal__month[tabindex="0"]');
+      if (cell) cell.focus();
+    }
+
+    /* Picking a month is navigation, not selection: it drops back to the day grid with the roving
+       cell clamped into the new month, so nothing is committed until a DAY is chosen. */
+    function openMonth(m) {
+      var dim = new Date(view.getFullYear(), m + 1, 0).getDate();
+      var day = focusDate ? Math.min(focusDate.getDate(), dim) : 1;
+      view = new Date(view.getFullYear(), m, 1);
+      focusDate = new Date(view.getFullYear(), m, day);
+      mode = 'days';
+      render();
+      focusFocusDate();
+    }
+
+    function moveMonthFocus(index, yearDelta) {
+      if (yearDelta) view = addMonths(view, yearDelta * 12);
+      focusMonth = (index + 12) % 12;
+      render();
+      focusMonthCell();
+    }
+
+    function onMonthKey(e) {
+      var handled = true;
+      switch (e.key) {
+        case 'ArrowLeft': moveMonthFocus(focusMonth - 1, 0); break;
+        case 'ArrowRight': moveMonthFocus(focusMonth + 1, 0); break;
+        case 'ArrowUp': moveMonthFocus(focusMonth - 3, 0); break;
+        case 'ArrowDown': moveMonthFocus(focusMonth + 3, 0); break;
+        case 'Home': moveMonthFocus(0, 0); break;
+        case 'End': moveMonthFocus(11, 0); break;
+        case 'PageUp': moveMonthFocus(focusMonth, -1); break;
+        case 'PageDown': moveMonthFocus(focusMonth, 1); break;
+        case 'Enter':
+        case ' ': openMonth(focusMonth); break;
+        case 'Escape': close(true); break;
+        default: handled = false;
+      }
+      if (handled) e.preventDefault();
+    }
+
     function focusFocusDate() {
       var cell = panel.querySelector('.fdy-cal__day[tabindex="0"]');
       if (cell) cell.focus();
@@ -232,6 +350,7 @@
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
       if (!panel.hidden) return;
+      mode = 'days';
       focusDate = selected || focusDate || new Date();
       view = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
       var p = popCtl(); if (p) p.show(); else panel.hidden = false;

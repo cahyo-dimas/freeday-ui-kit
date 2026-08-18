@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Freeday — calendar month drill</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script></head>
+<body style="padding:2rem">
+  <div data-fdy-datepicker id="dp" data-value="2026-08-14" data-label="Tanggal"></div>
+<!-- §2: the selected option's accessible NAME must not change when it becomes selected. -->
+  <div class="fdy-combo" data-fdy-combo data-value="badge" id="combo">
+    <button class="fdy-combo__button" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="fdy-combo__value">Badge</span></button>
+    <ul class="fdy-combo__listbox" role="listbox" hidden>
+      <li class="fdy-combo__option" role="option" data-value="button" aria-selected="false"><span class="fdy-combo__check"></span>Button</li>
+      <li class="fdy-combo__option" role="option" data-value="badge" aria-selected="true"><span class="fdy-combo__check"></span>Badge</li>
+    </ul>
+  </div>
+
+<script>
+  window.optionNames = () => [...document.querySelectorAll('.fdy-combo__option')]
+    .map((o) => ({ name: o.textContent.trim(), selected: o.getAttribute('aria-selected') }));
+  window.state = () => {
+    const panel = document.querySelector('.fdy-datepicker__panel, [class*="cal"]').closest('div');
+    const title = document.querySelector('.fdy-cal__title');
+    return {
+      title: title ? title.textContent : null,
+      titleIsButton: title ? title.tagName : null,
+      months: document.querySelectorAll('.fdy-cal__month').length,
+      days: document.querySelectorAll('.fdy-cal__day').length,
+      value: document.querySelector('.fdy-datepicker__value')?.textContent.trim(),
+      focused: document.activeElement.className,
+      focusedText: document.activeElement.textContent,
+    };
+  };
+</script>
+</body></html>

@@ -45,6 +45,11 @@ const props = defineProps<{
   nextMonthLabel?: string;
   /** aria-label for the clear button (when `clearable`). Default 'Clear date'. */
   clearLabel?: string;
+  /** aria-label for the title button that drills to the month grid. Default 'Choose month'. */
+  chooseMonthLabel?: string;
+  /** aria-labels for the year arrows shown in the month grid. Defaults 'Previous year' / 'Next year'. */
+  prevYearLabel?: string;
+  nextYearLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -116,6 +121,9 @@ const showClear: ComputedRef<boolean> = computed(
 const prevMonthLabelText: ComputedRef<string> = computed((): string => props.prevMonthLabel ?? 'Previous month');
 const nextMonthLabelText: ComputedRef<string> = computed((): string => props.nextMonthLabel ?? 'Next month');
 const clearLabelText: ComputedRef<string> = computed((): string => props.clearLabel ?? 'Clear date');
+const chooseMonthLabelText: ComputedRef<string> = computed((): string => props.chooseMonthLabel ?? 'Choose month');
+const prevYearLabelText: ComputedRef<string> = computed((): string => props.prevYearLabel ?? 'Previous year');
+const nextYearLabelText: ComputedRef<string> = computed((): string => props.nextYearLabel ?? 'Next year');
 
 const view: Ref<Date> = ref(startOfMonth(selectedDate.value ?? new Date()));
 const focusDate: Ref<Date> = ref(selectedDate.value ?? new Date());
@@ -127,6 +135,58 @@ const effectiveFocusDate: ComputedRef<Date> = computed((): Date => {
   if (f.getMonth() === view.value.getMonth() && f.getFullYear() === view.value.getFullYear()) return f;
   const daysInMonth: number = new Date(view.value.getFullYear(), view.value.getMonth() + 1, 0).getDate();
   return new Date(view.value.getFullYear(), view.value.getMonth(), Math.min(f.getDate(), daysInMonth));
+});
+
+/* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the title.
+   Before this the only pointer route to another month was one click per month: August 2026 to March
+   2022 is fifty-three of them, and the Shift+PageUp jump had no affordance at all. */
+const mode: Ref<'days' | 'months'> = ref('days');
+const focusMonth: Ref<number> = ref(0);
+
+const monthCellFmt: ComputedRef<Intl.DateTimeFormat> = computed(
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'short' }),
+);
+const monthNameFmt: ComputedRef<Intl.DateTimeFormat> = computed(
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }),
+);
+
+interface MonthCell {
+  index: number;
+  label: string;
+  ariaLabel: string;
+  selected: boolean;
+  today: boolean;
+  disabled: boolean;
+  focusable: boolean;
+}
+
+/** A month is only unreachable when the WHOLE month falls outside min/max. Checked against the
+ *  bounds directly, not by testing both ends with isDayDisabled: a range that sits INSIDE one month
+ *  disables both ends while the middle is perfectly selectable. */
+function isMonthDisabled(year: number, month: number): boolean {
+  const first: Date = new Date(year, month, 1);
+  const last: Date = new Date(year, month + 1, 0);
+  if (minDate.value !== null && startOfDay(last).getTime() < startOfDay(minDate.value).getTime()) return true;
+  if (maxDate.value !== null && startOfDay(first).getTime() > startOfDay(maxDate.value).getTime()) return true;
+  return false;
+}
+
+const monthCells: ComputedRef<MonthCell[]> = computed((): MonthCell[] => {
+  const year: number = view.value.getFullYear();
+  const today: Date = new Date();
+  const sel: Date | null = selectedDate.value;
+  return Array.from({ length: 12 }, (_unused: unknown, index: number): MonthCell => {
+    const cellDate: Date = new Date(year, index, 1);
+    return {
+      index,
+      label: monthCellFmt.value.format(cellDate),
+      ariaLabel: monthNameFmt.value.format(cellDate),
+      selected: sel !== null && sel.getFullYear() === year && sel.getMonth() === index,
+      today: today.getFullYear() === year && today.getMonth() === index,
+      disabled: isMonthDisabled(year, index),
+      focusable: index === focusMonth.value,
+    };
+  });
 });
 
 const monthFmt: ComputedRef<Intl.DateTimeFormat> = computed(
@@ -193,6 +253,54 @@ function moveFocus(next: Date): void {
   focusDate.value = next;
   view.value = new Date(next.getFullYear(), next.getMonth(), 1);
   void nextTick((): void => focusCell());
+}
+
+function openMonthGrid(): void {
+  focusMonth.value = view.value.getMonth();
+  mode.value = 'months';
+  void nextTick((): void => focusMonthCell());
+}
+
+function focusMonthCell(): void {
+  const cell: HTMLElement | null = panelEl.value?.querySelector('.fdy-cal__month[tabindex="0"]') ?? null;
+  cell?.focus();
+}
+
+/* Picking a month is NAVIGATION, not selection: it drops back to the day grid with the roving cell
+   clamped into the new month, so nothing is committed until a day is chosen. */
+function openMonth(index: number): void {
+  const year: number = view.value.getFullYear();
+  const daysInMonth: number = new Date(year, index + 1, 0).getDate();
+  const day: number = Math.min(focusDate.value.getDate(), daysInMonth);
+  view.value = new Date(year, index, 1);
+  focusDate.value = new Date(year, index, day);
+  mode.value = 'days';
+  void nextTick((): void => focusCell());
+}
+
+function moveMonthFocus(index: number, yearDelta: number): void {
+  if (yearDelta !== 0) view.value = addMonths(view.value, yearDelta * 12);
+  focusMonth.value = (index + 12) % 12;
+  void nextTick((): void => focusMonthCell());
+}
+
+function onMonthKeydown(e: KeyboardEvent): void {
+  let handled: boolean = true;
+  switch (e.key) {
+    case 'ArrowLeft': moveMonthFocus(focusMonth.value - 1, 0); break;
+    case 'ArrowRight': moveMonthFocus(focusMonth.value + 1, 0); break;
+    case 'ArrowUp': moveMonthFocus(focusMonth.value - 3, 0); break;
+    case 'ArrowDown': moveMonthFocus(focusMonth.value + 3, 0); break;
+    case 'Home': moveMonthFocus(0, 0); break;
+    case 'End': moveMonthFocus(11, 0); break;
+    case 'PageUp': moveMonthFocus(focusMonth.value, -1); break;
+    case 'PageDown': moveMonthFocus(focusMonth.value, 1); break;
+    case 'Enter':
+    case ' ': openMonth(focusMonth.value); break;
+    case 'Escape': closePanel(true); break;
+    default: handled = false;
+  }
+  if (handled) e.preventDefault();
 }
 
 function pick(d: Date): void {
@@ -290,8 +398,14 @@ function onDocPointerDown(e: MouseEvent): void {
 }
 
 // Close when focus leaves the control entirely (e.g. Shift+Tab off the trigger).
+/* A null relatedTarget means focus fell to <body> — which is what happens when the element the
+ * user just pressed is REMOVED by the click it triggered (drilling into the month grid replaces
+ * the grid, and with it the cell that had focus). That is not focus leaving the control, and
+ * closing on it made the panel vanish mid-navigation. A pointer that really lands outside is
+ * handled by the mousedown listener, which is the reliable path for that case. */
 function onFocusout(e: FocusEvent): void {
   const next: EventTarget | null = e.relatedTarget;
+  if (next === null) return;
   if (rootEl.value !== null && !(next instanceof Node && rootEl.value.contains(next))) {
     closePanel(false);
   }
@@ -344,12 +458,46 @@ onBeforeUnmount((): void => {
     </button>
 
     <div ref="panelEl" class="fdy-datepicker__panel" role="dialog" aria-modal="false" popover="manual" :aria-labelledby="titleId" :hidden="!open">
+      <!-- ONE head for both modes on purpose: swapping it with v-if destroys the very button the user
+           just pressed, focus falls to <body>, and the panel's own focusout handler closes it. The
+           labels and handlers switch; the elements do not. -->
       <div class="fdy-cal__head">
-        <button type="button" class="fdy-cal__nav" :aria-label="prevMonthLabelText" @click="view = addMonths(view, -1)">‹</button>
-        <div :id="titleId" class="fdy-cal__title">{{ monthFmt.format(view) }}</div>
-        <button type="button" class="fdy-cal__nav" :aria-label="nextMonthLabelText" @click="view = addMonths(view, 1)">›</button>
+        <button
+          type="button"
+          class="fdy-cal__nav"
+          :aria-label="mode === 'months' ? prevYearLabelText : prevMonthLabelText"
+          @click="mode === 'months' ? moveMonthFocus(focusMonth, -1) : (view = addMonths(view, -1))"
+        >‹</button>
+        <button
+          :id="titleId"
+          type="button"
+          class="fdy-cal__title"
+          :aria-label="mode === 'months' ? undefined : chooseMonthLabelText"
+          @click="mode === 'months' ? (mode = 'days') : openMonthGrid()"
+        >{{ mode === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
+        <button
+          type="button"
+          class="fdy-cal__nav"
+          :aria-label="mode === 'months' ? nextYearLabelText : nextMonthLabelText"
+          @click="mode === 'months' ? moveMonthFocus(focusMonth, 1) : (view = addMonths(view, 1))"
+        >›</button>
       </div>
-      <div class="fdy-cal__grid" role="grid" :aria-labelledby="titleId" @keydown="onGridKeydown">
+      <div v-if="mode === 'months'" class="fdy-cal__grid fdy-cal__grid--months" role="grid" :aria-labelledby="titleId" @keydown="onMonthKeydown">
+        <button
+          v-for="cell in monthCells"
+          :key="cell.index"
+          type="button"
+          class="fdy-cal__month"
+          :class="{ 'is-today': cell.today, 'is-selected': cell.selected }"
+          role="gridcell"
+          :aria-label="cell.ariaLabel"
+          :aria-selected="cell.selected ? 'true' : undefined"
+          :disabled="cell.disabled"
+          :tabindex="cell.focusable ? 0 : -1"
+          @click="openMonth(cell.index)"
+        >{{ cell.label }}</button>
+      </div>
+      <div v-else class="fdy-cal__grid" role="grid" :aria-labelledby="titleId" @keydown="onGridKeydown">
         <div v-for="w in weekdayHeaders" :key="w" class="fdy-cal__dow" role="columnheader" :aria-label="w">{{ w }}</div>
         <button
           v-for="cell in gridCells"

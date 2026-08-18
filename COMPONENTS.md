@@ -403,11 +403,17 @@ Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
     </button>
     <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="st-l" hidden>
       <li class="fdy-combo__option" role="option" data-value="paid" aria-selected="false"><span class="fdy-combo__check"></span>Paid</li>
-      <li class="fdy-combo__option" role="option" data-value="pending" aria-selected="true"><span class="fdy-combo__check">✓</span>Pending</li>
+      <li class="fdy-combo__option" role="option" data-value="pending" aria-selected="true"><span class="fdy-combo__check"></span>Pending</li>
     </ul>
   </div>
 </div>
 ```
+
+**The selected tick is CSS.** `.fdy-combo__check` is an empty box in the markup; the glyph is painted
+by the stylesheet on `[aria-selected="true"]` with alt text, so it never enters the accessibility
+tree. That keeps an option's accessible name **identical whether or not it is selected** — the state
+is carried by `aria-selected` alone, announced once, and `getByRole('option', { name: 'August' })`
+keeps matching after selection. Do not put a glyph in that span.
 
 ## Autocomplete — `.fdy-autocomplete`
 > **Typed wrapper: `<FdyAutocomplete>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
@@ -505,10 +511,20 @@ Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author
 — the enhancer builds everything.
 
 - `.fdy-datepicker` (+`--error`) · `__trigger` `__value` (+`--placeholder`) `__icon` `__clear`
-  `__panel`; calendar internals `.fdy-cal__head` `__nav` `__title` `__grid` `__dow` `__day`
+  `__panel`; calendar internals `.fdy-cal__head` `__nav` `__title` `__grid` (+`--months`) `__dow`
+  `__day` `__month`
 - Range: wrap two pickers in `.fdy-daterange` + `data-fdy-daterange` (`role="group"`), children
   get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start.
   **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor) — use it in those stacks.
+**Getting to a distant month.** The title is a **button**: press it and the day grid becomes a
+12-cell month grid for the current year, where the arrows step **years** instead of months. Pick a
+month and you are back on days — choosing a month is navigation, so nothing is committed until a day
+is selected. From August 2026 to March 2022 that is 7 clicks; walking month by month is 53.
+
+Keyboard, in the day grid: arrows move a day, `Home`/`End` the week, `PageUp`/`PageDown` a month,
+and **`Shift`+`PageUp`/`PageDown` a year** (WAI-ARIA APG). The month grid mirrors it: arrows ±1/±3
+months, `Home`/`End` January/December, `PageUp`/`PageDown` a year, `Enter`/`Space` to choose.
+
 - Attributes: `data-value="YYYY-MM-DD"`, `data-placeholder`, `data-label`, `data-fdy-no-icon`
 
 ```html
