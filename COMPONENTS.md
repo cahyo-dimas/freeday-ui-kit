@@ -705,10 +705,12 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
 - Selection: `.fdy-table__selcol` cells with `data-fdy-select-all` / `data-fdy-row-select`
 - Rows: `.fdy-table__row--activatable` (clickable rows), `.fdy-table__detailrow` (expandable
   detail), `.fdy-table__state` (in-table empty/loading row)
-- Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + optional `__size` (a `<label>`
-  wrapping a `.fdy-table-footer__sizeselect` — a native `<select data-fdy-table-page-size>` whose
-  options are row counts) + `<nav class="fdy-pagination" data-fdy-table-pagination>`. The size
-  control is app-authored markup: its options *are* the offer, and the enhancer only wires it.
+- Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + optional `__size` (a label and a
+  rows-per-page control) + `<nav class="fdy-pagination" data-fdy-table-pagination>`. The typed
+  wrappers render `FdyCombo` there — **never a native `<select>`**, whose open list is an OS menu no
+  stylesheet reaches. In the raw path the control is app-authored markup (its options *are* the
+  offer) carrying `data-fdy-table-page-size`; the enhancer only wires it, and listens for both
+  `change` and the `fdy-change` a `.fdy-combo` emits, so either kind works.
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
 - **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian —
   the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and filter

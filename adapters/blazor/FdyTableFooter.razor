@@ -13,16 +13,13 @@
 
         @if (Sizes.Count > 0)
         {
-            <label class="fdy-table-footer__size">
-                Rows
-                <select class="fdy-table-footer__sizeselect" aria-label="Rows per page"
-                        value="@Page.Size" @onchange="OnSize">
-                    @foreach (int size in Sizes)
-                    {
-                        <option value="@size">@size</option>
-                    }
-                </select>
-            </label>
+            <div class="fdy-table-footer__size">
+                <span id="@SizeLabelId">Rows</span>
+                @* The kit's own listbox, not a native <select>: an OS menu is unthemeable, and on
+                   macOS it drops a dark panel into a light page. FdyCombo's own header says so. *@
+                <FdyCombo TValue="string" Value="@Page.Size.ToString()" Options="SizeOptions"
+                          AriaLabelledby="@SizeLabelId" ValueChanged="OnSize" />
+            </div>
         }
 
         @if (HasPager)

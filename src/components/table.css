@@ -48,12 +48,14 @@
 .fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
 /* Rows per page. `margin-left:auto` eats the free space, so the size control and the pager travel
    together on the right while the range stays left — no wrapper element, which is what keeps the
-   footer's DOM byte-identical for the tables that don't offer one (#008). Native <select>: three
-   one-word options need the platform's own listbox, not a custom one. */
+   footer's DOM byte-identical for the tables that don't offer one (#008). The control is the kit's
+   own `.fdy-combo`, never a native <select>: an OS menu is unthemeable, and on macOS it drops a
+   dark panel into a light page — which is the reason FdyCombo exists at all. Sized to its content:
+   `.fdy-combo` is display:block at max-width 22rem, which in a footer is a bar-wide box for two
+   digits. */
 .fdy-table-footer__size{display:inline-flex;align-items:center;gap:var(--space-2);margin-left:auto;font-size:var(--text-sm);color:var(--color-text-muted);}
-.fdy-table-footer__sizeselect{height:2.25rem;padding:0 var(--space-2);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:var(--bw) solid var(--color-control-border);border-radius:var(--radius-md);cursor:pointer;}
-.fdy-table-footer__sizeselect:hover{border-color:var(--color-text-muted);}
-.fdy-table-footer__sizeselect:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table-footer__size .fdy-combo{width:5.5rem;}
+.fdy-table-footer__size .fdy-combo__button{height:2.25rem;}
 
 /* Column filter — funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}

@@ -1,6 +1,8 @@
-import type { ChangeEvent, JSX } from 'react';
+import type { JSX } from 'react';
+import { useId } from 'react';
 import { pageWindow, pageIndexForSize } from '../../core/table-model.js';
 import type { FdyPageState } from '../../core/table-model.js';
+import { FdyCombo } from './FdyCombo';
 
 /*
  * The band under a table: what you are looking at, how much of it you see, where you are.
@@ -27,6 +29,9 @@ export interface FdyTableFooterProps {
 
 export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
   const { index, size, total } = props.page;
+  /* The combo is labelled by the visible word beside it — a <label htmlFor> cannot reach inside a
+   * component, and an aria-label would leave that word attached to nothing. */
+  const sizeLabelId: string = useId();
 
   const totalPages: number = size > 0 ? Math.max(1, Math.ceil(total / size)) : 1;
   const currentPage1: number = index + 1;
@@ -45,8 +50,8 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
     props.onPageChange?.({ index: clamped - 1, size, total });
   }
 
-  function onSize(event: ChangeEvent<HTMLSelectElement>): void {
-    const next: number = Number(event.target.value);
+  function onSize(value: string): void {
+    const next: number = Number(value);
     if (!Number.isFinite(next) || next <= 0 || next === size) return;
     props.onPageChange?.({ index: pageIndexForSize(index, size, next), size: next, total });
   }
@@ -56,12 +61,17 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
       <span className="fdy-table-footer__info">Showing {rangeFrom}–{rangeTo} of {total}</span>
 
       {sizes.length > 0 && (
-        <label className="fdy-table-footer__size">
-          Rows
-          <select className="fdy-table-footer__sizeselect" aria-label="Rows per page" value={String(size)} onChange={onSize}>
-            {sizes.map((n: number): JSX.Element => <option key={n} value={String(n)}>{n}</option>)}
-          </select>
-        </label>
+        <div className="fdy-table-footer__size">
+          <span id={sizeLabelId}>Rows</span>
+          {/* The kit's own listbox, not a native <select>: an OS menu is unthemeable, and on macOS
+              it drops a dark panel into a light page. FdyCombo's own header says exactly that. */}
+          <FdyCombo
+            value={String(size)}
+            options={sizes.map((n: number) => ({ value: String(n), label: String(n) }))}
+            ariaLabelledby={sizeLabelId}
+            onChange={onSize}
+          />
+        </div>
       )}
 
       {hasPager && (

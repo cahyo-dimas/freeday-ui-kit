@@ -37,16 +37,20 @@ finally makes answerable.
 - **No wrapper element.** `.fdy-table-footer__size` takes `margin-left:auto`, so the size control and
   the pager travel together on the right while the range stays left. The footer's DOM is byte-
   identical for every table that does not offer one.
-- **A native `<select>`, not `.fdy-combo`.** Three one-word options do not need a custom listbox: the
-  platform's own is better on a phone, needs no enhancer in the raw path, and keeps the footer
-  working in a static page.
+- **`.fdy-combo`, not a native `<select>`.** The first cut of this shipped a native one, reasoning
+  that three one-word options do not need a custom listbox. They do: an OS menu is unthemeable, and
+  on macOS it drops a dark grey panel into a light page — which is the reason `FdyCombo` exists, and
+  its own source header says so. Caught by a consuming app in a screenshot within the hour, before
+  the release reached npm. The raw path still accepts either: the enhancer listens for `change` *and*
+  for the `fdy-change` a `.fdy-combo` emits.
 ### Added — guards
 - `pageIndexForSize` is unit-tested at the boundaries (first page, both directions, same-size no-op,
   a negative index, a zero size).
-- The control is measured in a real browser, on two tables sharing one page state: the server-mode
-  pick must reach the caller **with the right index** (page 3 of five-row pages → page 2 of ten), and
-  the client-mode table — deliberately wired to nothing — must still grow to 25 rows, because a
-  control that only reports is a control that lies.
+- The control is measured in a real browser, on two tables sharing one page state, **driven by real
+  clicks on the popup** rather than a synthetic `change`: the server-mode pick must reach the caller
+  **with the right index** (page 3 of five-row pages → page 2 of ten), and the client-mode table —
+  deliberately wired to nothing — must still grow to 25 rows, because a control that only reports is
+  a control that lies. Opening the popup is the half that would have caught the native `<select>`.
 ### Fixed — the kit's own suite
 - `browser/fixtures/theme-subtree.html` had no explicit theme on `<html>`, so its "light app" probe
   fell to `prefers-color-scheme`. On a machine in dark mode both probes read the dark ink and the

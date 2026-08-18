@@ -1332,13 +1332,17 @@
           </div>
           <div class="fdy-table-footer">
             <span class="fdy-table-footer__info" data-fdy-table-info></span>
-            <label class="fdy-table-footer__size">Baris
-              <select class="fdy-table-footer__sizeselect" data-fdy-table-page-size aria-label="Baris per halaman">
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="25">25</option>
-              </select>
-            </label>
+            <div class="fdy-table-footer__size">
+              <span id="tbl-rows-l">Baris</span>
+              <div class="fdy-combo" data-fdy-combo data-value="5" data-fdy-table-page-size>
+                <button type="button" class="fdy-combo__button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="tbl-rows-l tbl-rows-v"><span class="fdy-combo__value" id="tbl-rows-v">5</span></button>
+                <ul class="fdy-combo__listbox" role="listbox" aria-labelledby="tbl-rows-l" hidden>
+                  <li class="fdy-combo__option" role="option" data-value="5" aria-selected="true"><span class="fdy-combo__check"></span>5</li>
+                  <li class="fdy-combo__option" role="option" data-value="10" aria-selected="false"><span class="fdy-combo__check"></span>10</li>
+                  <li class="fdy-combo__option" role="option" data-value="25" aria-selected="false"><span class="fdy-combo__check"></span>25</li>
+                </ul>
+              </div>
+            </div>
             <nav class="fdy-pagination" aria-label="Paginasi tabel" data-fdy-table-pagination></nav>
           </div>
         </div>

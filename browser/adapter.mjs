@@ -164,14 +164,23 @@ test('React FdyDatepicker: the title drills to a month grid', { skip }, async ()
  * row they were looking at rather than dropping them back on page 1. */
 test('Vue FdyTable: the footer resizes the page and keeps your place', { skip }, async () => {
   await withPage(fixture('vue-table-pagesize.html'), async (p) => {
-    await p.waitFor(`document.querySelectorAll('.fdy-table-footer__sizeselect').length === 2`);
+    await p.waitFor(`document.querySelectorAll('.fdy-table-footer__size .fdy-combo').length === 2`);
 
-    // Server mode: page index 2 of 5-row pages starts at row 10. At ten a page that is index 1.
-    await p.evalJS(`(() => {
-      const s = document.querySelectorAll('.fdy-table-footer__sizeselect')[0];
-      s.value = '10';
-      s.dispatchEvent(new Event('change', { bubbles: true }));
-    })()`);
+    /* Driven by real clicks on the kit's own listbox. The control was briefly a native <select>
+     * (1.34.0, unreleased) — the one component FdyCombo exists to replace, because an OS menu is
+     * unthemeable and drops a dark panel into a light page. Caught by a consuming app in a
+     * screenshot, so this test opens the popup the way a user does. */
+    const scope = (which) => `.fdy-datatable:nth-of-type(${which + 1}) .fdy-table-footer__size`;
+    /* By position, not `data-value`: that attribute belongs to the RAW markup contract the enhancer
+     * reads. The typed component renders options from its `options` prop and does not emit it. */
+    const pick = async (which, nth) => {
+      await p.clickCenter(`${scope(which)} .fdy-combo__button`);
+      await p.waitFor(`document.querySelector('${scope(which)} .fdy-combo__button').getAttribute('aria-expanded') === 'true'`);
+      await p.clickCenter(`${scope(which)} .fdy-combo__option:nth-child(${nth})`);
+    };
+
+    // Server mode: page index 2 of five-row pages starts at row 10. At ten a page that is index 1.
+    await pick(0, 2); // sizes are [5, 10, 25]
     const landed = await p.waitFor(`JSON.parse(window.__page()).size === 10`);
     assert.ok(landed, `the size never reached the caller: ${await p.evalJS('window.__page()')}`);
     assert.equal(JSON.parse(await p.evalJS('window.__page()')).index, 1,
@@ -180,11 +189,7 @@ test('Vue FdyTable: the footer resizes the page and keeps your place', { skip },
     // Client mode: nothing is wired, so the table has to apply the pick itself or the control lies.
     const before = await p.evalJS(`document.querySelectorAll('.fdy-datatable')[1].querySelectorAll('tbody tr').length`);
     assert.equal(before, 5, `client table starts at its pageSize, got ${before}`);
-    await p.evalJS(`(() => {
-      const s = document.querySelectorAll('.fdy-table-footer__sizeselect')[1];
-      s.value = '25';
-      s.dispatchEvent(new Event('change', { bubbles: true }));
-    })()`);
+    await pick(1, 3);
     const grew = await p.waitFor(`document.querySelectorAll('.fdy-datatable')[1].querySelectorAll('tbody tr').length === 25`);
     assert.ok(grew, 'an unwired client table must still honour its own footer');
   });

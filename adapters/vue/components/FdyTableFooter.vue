@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, type ComputedRef } from 'vue';
+import { computed, useId, type ComputedRef } from 'vue';
 import { pageWindow, pageIndexForSize } from '../../core/table-model.js';
 import type { FdyPageState } from '../../core/table-model';
+import FdyCombo from './FdyCombo.vue';
 
 /*
  * The band under a table: what you are looking at, how much of it you see, where you are.
@@ -28,6 +29,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'update:page': [page: FdyPageState] }>();
 
+/* The combo is labelled by the visible word beside it — a `<label for>` cannot reach inside a
+ * component, and an aria-label would leave that word unattached to anything. */
+const sizeLabelId: string = `fdy-rows-${useId()}`;
+
 const totalPages: ComputedRef<number> = computed((): number =>
   props.page.size > 0 ? Math.max(1, Math.ceil(props.page.total / props.page.size)) : 1,
 );
@@ -44,6 +49,11 @@ const pages: ComputedRef<Array<number | 'ellipsis'>> = computed((): Array<number
 
 const hasPager: ComputedRef<boolean> = computed((): boolean => props.page.size > 0 && totalPages.value > 1);
 const sizes: ComputedRef<readonly number[]> = computed((): readonly number[] => props.pageSizes ?? []);
+/* Just the number. The control sits beside a label reading "Rows", so "20 per page" states the same
+ * fact twice and truncates doing it. */
+const sizeOptions: ComputedRef<Array<{ value: string; label: string }>> = computed(() =>
+  sizes.value.map((size: number) => ({ value: String(size), label: String(size) })),
+);
 /* One page and no size control means there is nothing here to say — the table has always withheld
  * the whole band in that case, and this is where that decision now lives. */
 const visible: ComputedRef<boolean> = computed((): boolean => hasPager.value || sizes.value.length > 0);
@@ -53,8 +63,8 @@ function goTo(page1: number): void {
   emit('update:page', { index: clamped - 1, size: props.page.size, total: props.page.total });
 }
 
-function onSize(event: Event): void {
-  const size: number = Number((event.target as HTMLSelectElement).value);
+function onSize(value: string): void {
+  const size: number = Number(value);
   if (!Number.isFinite(size) || size <= 0 || size === props.page.size) return;
   emit('update:page', {
     index: pageIndexForSize(props.page.index, props.page.size, size),
@@ -68,17 +78,17 @@ function onSize(event: Event): void {
   <div v-if="visible" class="fdy-table-footer">
     <span class="fdy-table-footer__info">Showing {{ rangeFrom }}–{{ rangeTo }} of {{ page.total }}</span>
 
-    <label v-if="sizes.length > 0" class="fdy-table-footer__size">
-      Rows
-      <select
-        class="fdy-table-footer__sizeselect"
-        aria-label="Rows per page"
-        :value="String(page.size)"
-        @change="onSize"
-      >
-        <option v-for="size in sizes" :key="size" :value="String(size)">{{ size }}</option>
-      </select>
-    </label>
+    <div v-if="sizes.length > 0" class="fdy-table-footer__size">
+      <span :id="sizeLabelId">Rows</span>
+      <!-- The kit's own listbox, not a native <select>: an OS menu is unthemeable, and on macOS it
+           drops a dark panel into a light page. FdyCombo's own header says exactly that. -->
+      <FdyCombo
+        :model-value="String(page.size)"
+        :options="sizeOptions"
+        :aria-labelledby="sizeLabelId"
+        @update:model-value="onSize"
+      />
+    </div>
 
     <nav v-if="hasPager" aria-label="Pagination">
       <ul class="fdy-pagination__list">

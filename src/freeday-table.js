@@ -448,14 +448,19 @@
     if (pageSizeEl) {
       var chosen = parseInt(pageSizeEl.value, 10);
       if (chosen > 0) pageSize = chosen;
-      pageSizeEl.addEventListener('change', function () {
-        var next = parseInt(pageSizeEl.value, 10);
+      var onPageSize = function (e) {
+        var raw = (e && e.detail && e.detail.value != null) ? e.detail.value : pageSizeEl.value;
+        var next = parseInt(raw, 10);
         if (!(next > 0) || next === pageSize) return;
         var firstRow = (page - 1) * pageSize;
         pageSize = next;
         page = Math.floor(firstRow / next) + 1;
         render();
-      });
+      };
+      /* Both kinds: a native <select> fires `change`, and `.fdy-combo` (freeday-select.js) fires
+       * `fdy-change` with the value in `detail`. A raw page may use either. */
+      pageSizeEl.addEventListener('change', onPageSize);
+      pageSizeEl.addEventListener('fdy-change', onPageSize);
     }
 
     if (bulkClear) bulkClear.addEventListener('click', clearSelection);

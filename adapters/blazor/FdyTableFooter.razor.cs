@@ -23,6 +23,15 @@ public partial class FdyTableFooter
 
     private IReadOnlyList<int> Sizes => PageSizes ?? Array.Empty<int>();
 
+    // Just the number: the control sits beside a label reading "Rows", so "20 per page" states the
+    // same fact twice and truncates doing it.
+    private IReadOnlyList<FdyComboOption<string>> SizeOptions =>
+        Sizes.Select(size => new FdyComboOption<string>(size.ToString(), size.ToString())).ToList();
+
+    // The combo is labelled by the visible word beside it — a <label for> cannot reach inside a
+    // component, and an aria-label would leave that word attached to nothing.
+    private readonly string SizeLabelId = $"fdy-rows-{Guid.NewGuid():N}";
+
     private int TotalPages => Page.Size > 0 ? Math.Max(1, (int)Math.Ceiling((double)Page.Total / Page.Size)) : 1;
     private int CurrentPage1 => Page.Index + 1;
     private int RangeFrom => Page.Total == 0 ? 0 : Page.Index * Page.Size + 1;
@@ -41,9 +50,9 @@ public partial class FdyTableFooter
         await PageChanged.InvokeAsync(new FdyPageState(clamped - 1, Page.Size, Page.Total));
     }
 
-    private async Task OnSize(ChangeEventArgs e)
+    private async Task OnSize(string value)
     {
-        if (!int.TryParse(e.Value?.ToString(), out int size) || size <= 0 || size == Page.Size) return;
+        if (!int.TryParse(value, out int size) || size <= 0 || size == Page.Size) return;
         await PageChanged.InvokeAsync(
             new FdyPageState(TableModel.PageIndexForSize(Page.Index, Page.Size, size), size, Page.Total));
     }
