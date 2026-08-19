@@ -31,7 +31,7 @@
 .fdy-cal__head{display:flex;align-items:center;gap:var(--space-2);margin-bottom:var(--space-2);}
 /* The title is a CONTROL now (#004 §1): it drills to the month grid, so it needs the UA button box
    reset and the same hover/focus treatment as the arrows beside it. */
-.fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
+.fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;margin:0;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
 .fdy-cal__title:hover{background:var(--color-surface-2);}
 .fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-cal__month{display:inline-flex;align-items:center;justify-content:center;height:2.25rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-family:inherit;font-size:var(--text-sm);text-transform:capitalize;cursor:pointer;}

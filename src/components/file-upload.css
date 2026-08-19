@@ -8,7 +8,7 @@
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
 .fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
-.fdy-dropzone__title{font-weight:var(--weight-medium);color:var(--color-text);}
+.fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
 .fdy-dropzone__hint{font-size:var(--text-xs);}
 /* Wide (horizontal) layout — icon beside the copy instead of stacked, for full-width
  * sections. Wrap the title + hint in .fdy-dropzone__text. */

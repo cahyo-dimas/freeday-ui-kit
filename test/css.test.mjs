@@ -272,6 +272,42 @@ test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
   assert.deepEqual(missing, [], `these are documented on a <p> and never clear its UA margin: ${missing.join(', ')}`);
 });
 
+test('a title class renders the same whatever element carries it (#011)', () => {
+  /* #010 was the same defect one element over: a class that does not clear the UA's `margin`
+   * inherits spacing nobody wrote. That guard scans the classes the docs show on a `<p>`, which is
+   * why it could not see this one — `.fdy-list__title` is documented on a `<span>`, and the app put
+   * it on an `<h3>`, because a row title IS a heading and the document outline is the APP's call to
+   * make, not the kit's. An `<h3>` brings three UA declarations, not one: `font-size:1.17em`,
+   * `font-weight:bold` and a block margin. The title rendered a size and a weight the kit never
+   * chose, in ten places.
+   *
+   * So the invariant is not "clear the margin" — it is that a class whose job is to NAME something
+   * must be element-independent, because the kit does not own the element. It has to state its own
+   * size, weight and margin rather than inherit whichever the app's semantics dropped on it.
+   *
+   * Scoped to title roles ON PURPOSE. Asserted over every class that sets type, it fails 53 times
+   * on things no app puts on a heading (`.fdy-btn--sm`, `.fdy-avatar--xs`, `.fdy-mono`) and the
+   * guard becomes noise somebody silences. A `__title` suffix is the kit's own word for "this names
+   * the thing", so a new one is covered by being named like its siblings. */
+  const TITLE_ROLE = /^\.fdy-[a-z0-9_-]*title$/;
+  const SETS_TYPE = /(^|;)\s*font-(family|size|weight)\s*:/;
+  /* A flex/grid box named `__heading` is the STACK around a title (eyebrow + h1), not the title. */
+  const IS_CONTAINER = /(^|;)\s*display\s*:\s*(inline-)?(flex|grid)/;
+
+  const titles = rules(css).filter(r => TITLE_ROLE.test(r.selector) && SETS_TYPE.test(r.body) && !IS_CONTAINER.test(r.body));
+  assert.ok(titles.length >= 10, `expected the kit to ship many title classes, found ${titles.length}`);
+
+  const missing = titles.flatMap(r => {
+    const gaps = [];
+    if (!/(^|;)\s*margin[:-]/.test(r.body)) gaps.push('margin');
+    if (!/(^|;)\s*font-size\s*:/.test(r.body)) gaps.push('font-size');
+    if (!/(^|;)\s*font-weight\s*:/.test(r.body)) gaps.push('font-weight');
+    return gaps.length ? [`${r.selector} (${gaps.join(', ')})`] : [];
+  });
+  assert.deepEqual(missing, [],
+    `a title class must state its own type — an <h1>-<h6> would otherwise decide it: ${missing.join('; ')}`);
+});
+
 test('the month grid outranks the day grid it modifies (#010)', () => {
   /* Both classes sit on the same element and weigh the same, so SOURCE ORDER decides. Declared
    * before `.fdy-cal__grid`, the modifier lost to the base and twelve months rendered seven across —

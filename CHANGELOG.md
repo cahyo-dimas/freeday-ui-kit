@@ -3,7 +3,7 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
-## [1.34.0] — 2026-08-18
+## [1.34.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #008), and the second half of #005 it
 finally makes answerable.
 ### Added
@@ -89,6 +89,25 @@ finally makes answerable.
   base.css's display-font rule made it 18.7px Sora. A phone row's name then shouted over its meta,
   and a long one wrapped to two lines instead of ellipsising. A class that names a role owns the type
   for that role.
+- **Seven more title classes let the element decide their type** (#011). The fix above was written
+  for one class; asserting it as an invariant found the rest. `.fdy-alert__title`,
+  `.fdy-dropzone__title` and `.fdy-toast__title` stated no `font-size` and no `margin`;
+  `.fdy-state__title`, `.fdy-cal__title`, `.fdy-app__brand-title` and `.fdy-app__brand-subtitle`
+  stated no `margin`. On the elements the docs show, all eight rendered correctly and always had —
+  a `<span>` brings no margin and no size of its own. On a heading, which is the honest markup for
+  an empty state's title or a row that names a record, the UA supplied `1.17em`, `bold` and `1em 0`
+  and the kit's type scale simply did not apply. `font-size:inherit` is the fix where the class had
+  no size of its own: it is what the documented span already did, and on a heading it declines the
+  UA's `em` instead of inheriting it. **No rendering changes for markup that follows the docs.**
+### Added — guards
+- **A title class must render the same whatever element carries it** (#011). `npm test` asserts
+  `margin`, `font-size` and `font-weight` on every `.fdy-*title` rule that sets type and is not a
+  flex/grid box. This is #010's guard with the right invariant: that one checks the classes the docs
+  show on a `<p>`, so it could only ever see the documented element, and the kit does not own that
+  choice — heading level is the consuming app's semantics. Scoped to title roles deliberately:
+  asserted over every class that sets type it fails 53 times on `.fdy-btn--sm`, `.fdy-avatar--xs`
+  and friends, and a guard that loud is one somebody silences. It found the eighth class after the
+  fix list had been written by eye. Mutation-tested.
 - **The month grid rendered seven months across** (#010). `.fdy-cal__grid--months` sets three
   columns and `.fdy-cal__grid` sets seven; both sit on the same element and weigh the same, so
   source order decides — and the modifier was declared *before* the base it modifies, with a comment

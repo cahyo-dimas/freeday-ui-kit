@@ -7,7 +7,7 @@
 .fdy-toast--danger .fdy-toast__accent{background:var(--color-danger);}
 .fdy-toast--info .fdy-toast__accent{background:var(--color-info);}
 .fdy-toast__body{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-1);font-size:var(--text-sm);}
-.fdy-toast__title{font-weight:var(--weight-semibold);}
+.fdy-toast__title{font-size:inherit;font-weight:var(--weight-semibold);margin:0;}
 .fdy-toast__text{opacity:.88;line-height:var(--leading-normal);}
 .fdy-toast__close{flex:none;border:0;background:transparent;color:var(--color-inverse-text);opacity:.7;cursor:pointer;font-size:var(--text-lg);line-height:1;padding:0 var(--space-1);border-radius:var(--radius-sm);}
 .fdy-toast__close:hover{opacity:1;}
