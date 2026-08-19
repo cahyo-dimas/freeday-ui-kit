@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — control heights</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <div style="display:flex;gap:8px;align-items:flex-start">
+    <button class="fdy-btn" id="btn">Button</button>
+    <span class="fdy-input-group" id="grp"><input class="fdy-input" id="inp"></span>
+    <input class="fdy-input" id="plain">
+    <span class="fdy-combo" id="cmb"><button class="fdy-combo__button" type="button">x</button></span>
+  </div>
+  <div data-density="compact" style="display:flex;gap:8px;align-items:flex-start;margin-top:8px">
+    <button class="fdy-btn" id="cbtn">Button</button>
+    <span class="fdy-input-group" id="cgrp"><input class="fdy-input"></span>
+  </div>
+<script>
+  window.heights = function () {
+    var h = function (id) { return Math.round(document.getElementById(id).getBoundingClientRect().height * 100) / 100; };
+    var cs = getComputedStyle(document.getElementById('grp'));
+    return {
+      dpr: window.devicePixelRatio,
+      btn: h('btn'), group: h('grp'), plain: h('plain'), combo: h('cmb'),
+      compactBtn: h('cbtn'), compactGroup: h('cgrp'),
+      borderTop: cs.borderTopWidth, boxSizing: cs.boxSizing
+    };
+  };
+</script>
+</body>
+</html>

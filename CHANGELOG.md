@@ -3,6 +3,30 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.41.0] — 2026-08-19
+One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised from that repo.
+### Fixed
+- **`.fdy-input-group` rendered 1px shorter than every control beside it** (#018). The group
+  declares a `1.5px` border and its inner input subtracted `3px` to compensate, so the border box
+  should land on `--control-h`. **At `devicePixelRatio: 1` the engine resolves each 1.5px border to
+  1px**, the compensation over-subtracts, and a search field beside a button measured 39px against
+  40px. At dpr 2 the halves survive and the arithmetic is right — which is why it shipped: it is
+  invisible on a retina display and visible on every 1× monitor.
+  The group now states `height: var(--control-h)` (it is already `border-box`) and the input
+  `height: auto; align-self: stretch`. The group is `align-items: stretch` already, so the input and
+  the addons fill whatever the border leaves — at any border width, any rounding, and under
+  `data-density="compact"` without a second `calc` to keep in step. The defect was not the number;
+  it was compensating in one rule for a value declared in another.
+### Added — guards
+- **Control heights are measured in a real browser** (#018). No stylesheet assertion could have
+  caught this: the CSS reads as correct arithmetic, and the value it is correct about is one the
+  engine rounds. `browser/control-heights.mjs` measures `.fdy-input-group` against `.fdy-btn`,
+  `.fdy-input` and `.fdy-combo` with `getBoundingClientRect`, at both densities. Written **failing
+  first** against 1.40.0 — it reproduced 39 vs 40 before the fix landed.
+- The note's own sweep is recorded: `calc(var(--control-h)` has five uses in `src/`, and the four in
+  `button.css` step a control deliberately by a spacing token. This was the last compensation of its
+  kind.
+
 ## [1.40.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
 ### Fixed
