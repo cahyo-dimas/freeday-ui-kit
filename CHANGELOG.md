@@ -14,6 +14,18 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
   / `> .fdy-daterange` drop the cap; a picker standing on its own keeps its narrower width, which
   is right for a short value.
 
+### Added — guards
+- **The enhancer string contract is asserted in a real browser** (#016). 1.39.0 moved every
+  user-facing string in **nine** enhancers into a `TEXT` table read through `textOf()`, and only
+  **one of the nine** — upload — had any browser coverage at all. The node guard proves the
+  literals *sit* in the table; it reads the source as text and cannot prove the wiring *runs*, so a
+  `zone` out of scope or a `getAttribute` on a non-element would have thrown at init with all 51
+  node tests still green. `browser/text-override.mjs` initialises table, stepper, mask, carousel,
+  cascade, form and toast on real markup and asserts **both halves**: the documented Indonesian
+  default still renders, and `data-fdy-text-*` wins. The default is a contract too — an enhancer
+  that quietly turned English would be a breaking change wearing a bugfix's clothes.
+  Mutation-tested: making `textOf()` ignore the attribute fails it by name and value.
+
 ## [1.39.0] — 2026-08-19
 The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are reachable now.
 ### Added

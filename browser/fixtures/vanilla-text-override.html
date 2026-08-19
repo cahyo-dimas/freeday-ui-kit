@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — enhancer text overrides</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- Each enhancer twice: the documented Indonesian default, and the same markup with
+       data-fdy-text-* supplying English. Both halves must hold — the default is a contract too. -->
+
+  <!-- TABLE -->
+  <div class="fdy-datatable" id="tblA" data-fdy-table>
+    <table class="fdy-table"><tbody>
+      <tr><td>a</td></tr><tr><td>b</td></tr>
+    </tbody></table>
+    <div class="fdy-table-footer"><span data-fdy-table-info></span><span data-fdy-table-count></span></div>
+  </div>
+  <div class="fdy-datatable" id="tblB" data-fdy-table
+       data-fdy-text-info="Showing {from}–{to} of {total}" data-fdy-text-rows="{n} rows">
+    <table class="fdy-table"><tbody>
+      <tr><td>a</td></tr><tr><td>b</td></tr>
+    </tbody></table>
+    <div class="fdy-table-footer"><span data-fdy-table-info></span><span data-fdy-table-count></span></div>
+  </div>
+
+  <!-- STEPPER -->
+  <div id="stepA" data-fdy-stepper>
+    <ol class="fdy-stepper">
+      <li class="fdy-step"><button class="fdy-step__btn"><span class="fdy-step__label">1</span></button></li>
+      <li class="fdy-step"><button class="fdy-step__btn"><span class="fdy-step__label">2</span></button></li>
+    </ol>
+    <div class="fdy-step-panels"><div class="fdy-step-panel">A</div><div class="fdy-step-panel">B</div></div>
+    <div class="fdy-step-nav"><button data-fdy-step-prev>P</button><button data-fdy-step-next></button></div>
+  </div>
+  <div id="stepB" data-fdy-stepper data-fdy-text-next="Next" data-fdy-text-done="Done">
+    <ol class="fdy-stepper">
+      <li class="fdy-step"><button class="fdy-step__btn"><span class="fdy-step__label">1</span></button></li>
+      <li class="fdy-step"><button class="fdy-step__btn"><span class="fdy-step__label">2</span></button></li>
+    </ol>
+    <div class="fdy-step-panels"><div class="fdy-step-panel">A</div><div class="fdy-step-panel">B</div></div>
+    <div class="fdy-step-nav"><button data-fdy-step-prev>P</button><button data-fdy-step-next></button></div>
+  </div>
+
+  <!-- MASK (password reveal) -->
+  <input class="fdy-input" id="pwA" type="password" data-fdy-password>
+  <input class="fdy-input" id="pwB" type="password" data-fdy-password
+         data-fdy-text-show="Show password" data-fdy-text-hide="Hide password">
+
+  <!-- CAROUSEL -->
+  <div class="fdy-carousel" id="carA" data-fdy-carousel role="region">
+    <div class="fdy-carousel__viewport">
+      <div class="fdy-carousel__slide" role="group">1</div>
+      <div class="fdy-carousel__slide" role="group">2</div>
+    </div>
+    <div class="fdy-carousel__dots"></div>
+  </div>
+  <div class="fdy-carousel" id="carB" data-fdy-carousel role="region"
+       data-fdy-text-position="{n} of {total}" data-fdy-text-slide="Slide {n}">
+    <div class="fdy-carousel__viewport">
+      <div class="fdy-carousel__slide" role="group">1</div>
+      <div class="fdy-carousel__slide" role="group">2</div>
+    </div>
+    <div class="fdy-carousel__dots"></div>
+  </div>
+
+  <!-- CASCADE -->
+  <div id="casA" data-fdy-cascade>
+    <ul><li data-value="1">One<ul><li data-value="1a">One A</li></ul></li></ul>
+  </div>
+  <div id="casB" data-fdy-cascade data-fdy-text-back="Back one level" data-fdy-text-submenu="{label}, submenu">
+    <ul><li data-value="1">One<ul><li data-value="1a">One A</li></ul></li></ul>
+  </div>
+
+  <!-- FORM -->
+  <form id="frmA" data-fdy-validate><input class="fdy-input" name="a" required><button>go</button></form>
+  <form id="frmB" data-fdy-validate data-fdy-text-required="This field is required.">
+    <input class="fdy-input" name="a" required><button>go</button>
+  </form>
+
+<script>
+  window.textReport = function () {
+    var q = function (sel) { var n = document.querySelector(sel); return n ? (n.textContent || '').trim() : null; };
+    var aria = function (sel) { var n = document.querySelector(sel); return n ? n.getAttribute('aria-label') : null; };
+    return {
+      tableInfoA: q('#tblA [data-fdy-table-info]'),   tableInfoB: q('#tblB [data-fdy-table-info]'),
+      tableRowsA: q('#tblA [data-fdy-table-count]'),  tableRowsB: q('#tblB [data-fdy-table-count]'),
+      stepNextA:  q('#stepA [data-fdy-step-next]'),   stepNextB:  q('#stepB [data-fdy-step-next]'),
+      pwA: aria('#pwA ~ .fdy-input-group__btn, .fdy-input-group:has(#pwA) .fdy-input-group__btn'),
+      pwB: aria('.fdy-input-group:has(#pwB) .fdy-input-group__btn'),
+      slideA: aria('#carA .fdy-carousel__slide'),     slideB: aria('#carB .fdy-carousel__slide'),
+      dotA:   aria('#carA .fdy-carousel__dot'),       dotB:   aria('#carB .fdy-carousel__dot'),
+      backA:  aria('#casA .fdy-cascade__back'),       backB:  aria('#casB .fdy-cascade__back')
+    };
+  };
+  // Toast writes its close button itself; the Blazor bridge is what defaults it to English.
+  window.toastLabels = function () {
+    window.Freeday.toast({ message: 'x' });
+    var a = document.querySelector('.fdy-toast .fdy-toast__close').getAttribute('aria-label');
+    window.Freeday.toast({ message: 'y', closeLabel: 'Close' });
+    var all = document.querySelectorAll('.fdy-toast .fdy-toast__close');
+    return { def: a, override: all[all.length - 1].getAttribute('aria-label') };
+  };
+  window.formMessages = function () {
+    var out = {};
+    ['frmA', 'frmB'].forEach(function (id) {
+      var f = document.getElementById(id);
+      f.querySelector('button').click();
+      var e = f.querySelector('[data-fdy-error]');
+      out[id] = e ? (e.textContent || '').trim() : null;
+    });
+    return out;
+  };
+</script>
+</body>
+</html>
