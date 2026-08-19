@@ -435,7 +435,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                       >
                         {isMultiple ? (
                           <td className="fdy-cfl__check">
-                            <input className="fdy-check" type="checkbox" tabIndex={-1} checked={isPicked(row)} readOnly aria-hidden="true" />
+                            <input className="fdy-checkbox" type="checkbox" tabIndex={-1} checked={isPicked(row)} readOnly aria-hidden="true" />
                           </td>
                         ) : null}
                         {props.columns.map((col: CflColumn<Row>): JSX.Element => (

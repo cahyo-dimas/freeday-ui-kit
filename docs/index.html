@@ -268,6 +268,7 @@
         <div class="doc-navgroup__items">
           <a class="fdy-nav__item" href="#sec-table">Table</a>
           <a class="fdy-nav__item" href="#sec-datatable">Data table</a>
+          <a class="fdy-nav__item" href="#sec-frozen">Tabel beku</a>
           <a class="fdy-nav__item" href="#sec-states">States</a>
           <a class="fdy-nav__item" href="#sec-charts">Charts</a>
           <a class="fdy-nav__item" href="#sec-tree">Tree view</a>
@@ -303,6 +304,7 @@
         <summary class="doc-navgroup__summary">Utilitas</summary>
         <div class="doc-navgroup__items">
           <a class="fdy-nav__item" href="#sec-util">Divider · Kbd</a>
+          <a class="fdy-nav__item" href="#sec-strings">Teks enhancer (i18n)</a>
           <a class="fdy-nav__item" href="#sec-breakpoint">Breakpoint</a>
         </div>
       </details>
@@ -329,7 +331,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.34.0</p>
+          <p class="doc-eyebrow">Design System · v1.43.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -680,7 +682,7 @@
 
     <section class="doc-section" id="sec-cfl">
       <h2>Choose-from-list</h2>
-      <p class="doc-desc">Field read-only yang di-<em>backing</em> master data (pelanggan, item, gudang…). Ikon kaca pembesar di kanan membuka dialog pencari; baris yang dipilih mengisi field (kode + nama sekaligus). Nilai selalu <strong>dipilih</strong>, tak pernah diketik. Butuh <code>freeday-cfl.js</code>.</p>
+      <p class="doc-desc">Field read-only yang di-<em>backing</em> master data (pelanggan, item, gudang…). Ikon kaca pembesar di kanan membuka dialog pencari; baris yang dipilih mengisi field (kode + nama sekaligus). Nilai selalu <strong>dipilih</strong>, tak pernah diketik. <strong>Multi-pilih</strong>: <code>data-fdy-cfl-multiple</code> pada dialog untuk jalur enhancer, atau prop <code>multiple</code> pada wrapper Vue/React (model melebar jadi <code>Row[] | null</code>) dan <code>Multiple</code> + <code>Values</code> pada Blazor. Baris dicentang, footer menghitung, dan <strong>Confirm</strong> yang meng-commit — menutup dialog tanpa Confirm tak mengubah nilai sama sekali. Butuh <code>freeday-cfl.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label" id="lbl-cust">Kode pelanggan</span>
@@ -780,7 +782,7 @@
 
     <section class="doc-section" id="sec-datepicker">
       <h2>Date picker</h2>
-      <p class="doc-desc">Trigger bergaya input + kalender popover — konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Butuh <code>freeday-datepicker.js</code>.</p>
+      <p class="doc-desc">Trigger bergaya input + kalender popover — konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Judul kalender <strong>menelusuri dua tingkat</strong> — hari → bulan → tahun (12 tahun per halaman, sejajar: 2016–2027, lalu 2028–2039) — jadi tanggal lahir tak lagi berarti puluhan klik panah. Tiap tingkat di atas grid hari hanyalah navigasi: tak ada yang di-commit sampai sebuah hari dipilih. Butuh <code>freeday-datepicker.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label">Tanggal faktur</span>
@@ -1347,6 +1349,39 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="doc-section" id="sec-frozen">
+      <h2>Tabel beku (frozen)</h2>
+      <p class="doc-desc">Matriks yang dibaca terhadap <strong>dua sumbu sekaligus</strong> — kurs per mata uang (melintang) per tanggal (menurun) — kehilangan maknanya begitu judulnya ter-scroll keluar. <code>.fdy-table--sticky</code> mengganti <code>border-collapse</code> jadi <code>separate</code> supaya garis dipegang oleh sel yang membeku: di bawah <code>collapse</code>, garis antar sel digambar oleh <em>tabel</em>, jadi kolom beku ter-scroll keluar dari garisnya sendiri.</p>
+      <p class="doc-desc">Dua sumbu itu <strong>terpisah</strong>, dan sengaja: membekukan baris butuh scrollport vertikal, sedangkan tabel pemetaan yang ikut scroll halaman tidak punya — memaksakan keduanya jadi satu modifier membuat <code>top:0</code> menempel di tepi viewport, menutupi app bar. Kolom pakai <code>.fdy-table__freeze</code> + <code>--fdy-freeze-left</code> per sel (offset harus datang dari pemanggil: itu jumlah lebar kolom <em>ter-render</em>, dan CSS tak bisa menjumlahkannya), header pakai <code>.fdy-table--sticky-head</code> di dalam <code>.fdy-table-scroll--frozen</code> yang tingginya diatur <code>--fdy-table-frozen-h</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-table-scroll fdy-table-scroll--frozen" style="--fdy-table-frozen-h:13rem">
+          <table class="fdy-table fdy-table--sticky fdy-table--sticky-head" style="min-width:46rem">
+            <caption class="fdy-visually-hidden">Kurs harian per mata uang</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">Tanggal</th>
+                <th scope="col" class="fdy-table__num">USD</th><th scope="col" class="fdy-table__num">EUR</th>
+                <th scope="col" class="fdy-table__num">SGD</th><th scope="col" class="fdy-table__num">JPY</th>
+                <th scope="col" class="fdy-table__num">AUD</th><th scope="col" class="fdy-table__num">GBP</th>
+                <th scope="col" class="fdy-table__num">CNY</th><th scope="col" class="fdy-table__num">MYR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">01 Jul</th><td class="fdy-table__num">16.240</td><td class="fdy-table__num">17.610</td><td class="fdy-table__num">12.010</td><td class="fdy-table__num">101</td><td class="fdy-table__num">10.780</td><td class="fdy-table__num">20.640</td><td class="fdy-table__num">2.235</td><td class="fdy-table__num">3.440</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">02 Jul</th><td class="fdy-table__num">16.255</td><td class="fdy-table__num">17.588</td><td class="fdy-table__num">12.024</td><td class="fdy-table__num">101</td><td class="fdy-table__num">10.802</td><td class="fdy-table__num">20.611</td><td class="fdy-table__num">2.238</td><td class="fdy-table__num">3.446</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">03 Jul</th><td class="fdy-table__num">16.198</td><td class="fdy-table__num">17.640</td><td class="fdy-table__num">11.998</td><td class="fdy-table__num">100</td><td class="fdy-table__num">10.755</td><td class="fdy-table__num">20.702</td><td class="fdy-table__num">2.231</td><td class="fdy-table__num">3.431</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">04 Jul</th><td class="fdy-table__num">16.301</td><td class="fdy-table__num">17.522</td><td class="fdy-table__num">12.077</td><td class="fdy-table__num">102</td><td class="fdy-table__num">10.844</td><td class="fdy-table__num">20.560</td><td class="fdy-table__num">2.244</td><td class="fdy-table__num">3.459</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">05 Jul</th><td class="fdy-table__num">16.277</td><td class="fdy-table__num">17.559</td><td class="fdy-table__num">12.041</td><td class="fdy-table__num">101</td><td class="fdy-table__num">10.819</td><td class="fdy-table__num">20.588</td><td class="fdy-table__num">2.240</td><td class="fdy-table__num">3.452</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">08 Jul</th><td class="fdy-table__num">16.150</td><td class="fdy-table__num">17.701</td><td class="fdy-table__num">11.962</td><td class="fdy-table__num">100</td><td class="fdy-table__num">10.711</td><td class="fdy-table__num">20.780</td><td class="fdy-table__num">2.226</td><td class="fdy-table__num">3.421</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge" style="--fdy-freeze-left:0">09 Jul</th><td class="fdy-table__num">16.212</td><td class="fdy-table__num">17.633</td><td class="fdy-table__num">12.005</td><td class="fdy-table__num">101</td><td class="fdy-table__num">10.769</td><td class="fdy-table__num">20.667</td><td class="fdy-table__num">2.233</td><td class="fdy-table__num">3.437</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="doc-sublabel">Scroll ke kanan dan ke bawah — kolom tanggal dan baris judul tetap, dengan garisnya.</p>
+      </div>
+      <p class="doc-desc">Kolom beku memakai ground <em>body</em>, bukan ground header: tanpa itu, baris yang di-hover terputus di garis beku dan pelacakan baris melintasi grid lebar hilang — hal yang justru jadi alasan membekukannya.</p>
     </section>
 
     <section class="doc-section" id="sec-states">
@@ -1981,6 +2016,54 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-strings">
+      <h2>Teks enhancer (i18n)</h2>
+      <p class="doc-desc">Tiap string yang ditulis <strong>enhancer vanilla</strong> berbahasa Indonesia secara default — itu disengaja, dan aplikasi di jalur mentah sudah mengadopsinya. Yang dulu keliru bukan bahasanya, melainkan bahwa string itu <strong>tak bisa diubah</strong>. Sejak <code>1.39.0</code> setiap enhancer menyimpan teksnya dalam satu tabel <code>TEXT</code> yang dibaca lewat <code>textOf()</code>, jadi semuanya bisa diganti per elemen dengan <code>data-fdy-text-&lt;key&gt;</code> — tanpa fork, tanpa merender ulang node-nya sendiri.</p>
+      <p class="doc-desc">Placeholder <code>{n}</code>, <code>{from}</code>, <code>{to}</code>, <code>{total}</code>, <code>{name}</code>, <code>{max}</code> dan <code>{label}</code> disubstitusi bila string-nya mendukung. Pesan validasi memakai bentuk sama pada <code>&lt;form&gt;</code> (<code>data-fdy-text-required</code>, …), lebih longgar dari <code>data-fdy-msg-&lt;alias&gt;</code> per field yang tetap menang. <code>Freeday.toast()</code> menerima <code>closeLabel</code> lewat objek opsinya. Komponen bertipe Vue/React/Blazor <strong>sudah English</strong> dan tak butuh ini.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="fdy-datatable" data-fdy-table data-page-size="3"
+             data-fdy-text-info="Showing {from}–{to} of {total}"
+             data-fdy-text-rows="{n} rows"
+             data-fdy-text-prev="Previous" data-fdy-text-next="Next"
+             data-fdy-text-filter="Column filter" data-fdy-text-close="Close" data-fdy-text-reset="Reset"
+             data-fdy-text-filter-text="Contains text" data-fdy-text-filter-text-placeholder="Contains…">
+          <div class="fdy-table-toolbar">
+            <div class="fdy-input-group fdy-table-toolbar__search">
+              <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
+              <input class="fdy-input" type="search" placeholder="Search customers…" data-fdy-table-search aria-label="Search table">
+            </div>
+            <span class="fdy-table-toolbar__spacer"></span>
+            <span class="fdy-table-toolbar__count" data-fdy-table-count aria-live="polite"></span>
+          </div>
+          <div class="fdy-table-scroll">
+            <table class="fdy-table">
+              <caption class="fdy-visually-hidden">Enhancer strings overridden to English</caption>
+              <thead>
+                <tr>
+                  <th scope="col"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Invoice</button></th>
+                  <th scope="col" data-fdy-filter="text"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Customer</button></th>
+                  <th scope="col" class="fdy-table__num" data-fdy-filter="number"><button type="button" class="fdy-table__sortbtn" data-fdy-sort="number">Amount</button></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>INV-1042</td><td>PT Sumber Makmur</td><td class="fdy-table__num" data-sort-value="1240000">1,240,000</td></tr>
+                <tr><td>INV-1043</td><td>CV Bangun Jaya</td><td class="fdy-table__num" data-sort-value="880000">880,000</td></tr>
+                <tr><td>INV-1044</td><td>PT Andalan Niaga</td><td class="fdy-table__num" data-sort-value="2310000">2,310,000</td></tr>
+                <tr><td>INV-1045</td><td>UD Terang Abadi</td><td class="fdy-table__num" data-sort-value="415000">415,000</td></tr>
+                <tr><td>INV-1046</td><td>PT Cahaya Timur</td><td class="fdy-table__num" data-sort-value="1690000">1,690,000</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="fdy-table-footer">
+            <span class="fdy-table-footer__info" data-fdy-table-info></span>
+            <nav class="fdy-pagination" aria-label="Table pagination" data-fdy-table-pagination></nav>
+          </div>
+        </div>
+        <p class="doc-sublabel">Tabel yang sama dengan di atas — hanya atributnya yang berbeda. Buka corong filter pada kolom Customer: judul dan tombolnya ikut English.</p>
+      </div>
+      <p class="doc-desc">Adapter Blazor menjangkau enhancer ini lewat <code>FreedayBlazor.initAll</code>, yang menjalankan <em>semua</em> enhancer terdaftar — itulah kenapa jangkauan ini penting, dan kenapa default-nya tetap tidak berubah. <code>npm test</code> menjaga tak ada string enhancer yang ditulis di luar tabel <code>TEXT</code>-nya, jadi string baru datang dalam keadaan bisa di-override atau tidak sama sekali.</p>
+    </section>
+
     <section class="doc-section" id="sec-breakpoint">
       <h2>Breakpoint</h2>
       <p class="doc-desc">Utilitas tampilan responsif + provider JS. Skala (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. Kelas <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> menyembunyikan per rentang. <code>freeday-breakpoint.js</code> menstempel <code>&lt;html data-breakpoint&gt;</code> + memancarkan <code>fdy-breakpoint-change</code>. Ubah ukuran jendela untuk melihatnya.</p>
@@ -2010,7 +2093,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.34.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.43.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

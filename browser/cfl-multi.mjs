@@ -30,6 +30,21 @@ for (const stack of ['vue', 'react']) {
       await p.evalJS('document.querySelector(".fdy-input-group__btn").click()');
       await p.waitFor('document.querySelectorAll(".fdy-cfl__row").length === 3');
 
+      /* The tick has to be the KIT's checkbox, not the browser's (#022).
+       *
+       * All three adapters shipped `.fdy-check` on this bare input. That class
+       * styles a wrapping <label> and its `input` DESCENDANT — on the input
+       * itself it applies inline-flex and a cursor and nothing else, so the box
+       * rendered as the raw UA control in the middle of a styled dialog.
+       * `.fdy-checkbox` is the class for a bare input in a table, and the tell
+       * is `appearance:none`: the kit paints its own box, the browser's does not.
+       * Every behavioural assertion below passed while it was wrong, which is
+       * why this one measures the rendering. */
+      assert.equal(
+        await p.evalJS('getComputedStyle(document.querySelector(".fdy-cfl__check input")).appearance'),
+        'none',
+        `${stack}: the row tick must be the kit's checkbox — .fdy-checkbox, not .fdy-check`);
+
       /* A click must TICK, not commit — the dialog stays open and the caller's value is untouched. */
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[0].click()');
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[2].click()');

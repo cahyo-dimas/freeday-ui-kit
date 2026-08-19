@@ -3,6 +3,22 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.45.0] — 2026-08-19
+Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (IDU_EMATE_APPL_WEB, #022).
+### Fixed
+- **The row tick rendered as the browser's checkbox, not the kit's** (#022), in all three adapters.
+  They shipped `class="fdy-check"` on a bare `<input>`; that class styles a wrapping `<label>` and
+  its `input` DESCENDANT, so on the input itself it applied `inline-flex` and a cursor and nothing
+  else — a raw UA control in the middle of a styled dialog. `COMPONENTS.md` already said which class
+  a bare input in a table takes: `.fdy-checkbox`. Every behavioural assertion in `browser/cfl-multi`
+  passed while it was wrong, because none of them looked at the rendering.
+- **`aria-selected` broke `vue-tsc` in consuming apps** (#022). `String(isPicked(row))` widens to
+  `string`, and Vue types the attribute as `Booleanish` — so a strict app type-checking the kit's own
+  `.vue` source failed on a file it does not own. Now `'true' : 'false'`.
+### Added — guards
+- `browser/cfl-multi.mjs` asserts the tick's computed `appearance` is `none`, which is the tell that
+  the kit painted the box rather than the UA. Mutation-tested.
+
 ## [1.44.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
 ### Added

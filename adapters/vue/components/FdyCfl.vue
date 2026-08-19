@@ -426,12 +426,12 @@ onBeforeUnmount((): void => {
                   :key="rowKey(row)"
                   class="fdy-cfl__row"
                   :class="{ 'is-active': i === activeIndex }"
-                  :aria-selected="multiple === true ? String(isPicked(row)) : i === activeIndex ? 'true' : undefined"
+                  :aria-selected="multiple === true ? (isPicked(row) ? 'true' : 'false') : i === activeIndex ? 'true' : undefined"
                   @click="onRowClick(row)"
                   @mousemove="setActive(i)"
                 >
                   <td v-if="multiple === true" class="fdy-cfl__check">
-                    <input class="fdy-check" type="checkbox" tabindex="-1" :checked="isPicked(row)" aria-hidden="true" />
+                    <input class="fdy-checkbox" type="checkbox" tabindex="-1" :checked="isPicked(row)" aria-hidden="true" />
                   </td>
                   <td v-for="col in columns" :key="col.key">{{ cellText(row, col.key) }}</td>
                 </tr>
