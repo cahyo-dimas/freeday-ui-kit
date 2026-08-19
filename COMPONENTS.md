@@ -639,7 +639,11 @@ Responsive two-column document header. Children are `.fdy-field`; `.fdy-field--f
 ## Filter bar — `.fdy-filterbar`
 A consistent filter row of `.fdy-field`s with a width rhythm (`--w-sm` · default · `--w-lg` ·
 `--w-xl` · `--w-2xl`), one `--w-grow` field (usually search) absorbing the slack, and
-`.fdy-filterbar__actions` pinned at the end. `--actions-inline` keeps the actions on the control
+`.fdy-filterbar__actions` pinned at the end. A control with **no label of its own** (a
+`.fdy-check`, `.fdy-switch`, `.fdy-radio`, or a lone `.fdy-btn`) is given `--control-h` so it
+centres on the input line instead of hanging below it — the bar aligns `flex-end` to line up
+labelled fields, which would otherwise drop a 20px checkbox below a 32px input's centre.
+`--actions-inline` keeps the actions on the control
 line. Zero JS. Composes with `.fdy-table-toolbar` on a shared baseline.
 
 ## Slider — `.fdy-slider`
@@ -695,20 +699,36 @@ Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-tab
 ```
 
 **Frozen axes — `.fdy-table--sticky`.** For a grid read against two axes at once (a rate
-matrix, a timetable). Put `.fdy-table-scroll--frozen` on the wrapper — it scrolls both ways
-and is the scrollport the frozen cells stick to — and size it with `--fdy-table-frozen-h`
-(default `30rem`). `<thead>` freezes at the top, `<th scope="row">` freezes at the left, and
-the first header cell is the corner. Do not reach for `position:sticky` directly: the base
-table collapses its borders, and a collapsed border belongs to the table rather than the
-cell, so it scrolls out from under whatever you froze.
+matrix, a timetable) or a wide one whose identity columns must stay visible. `.fdy-table--sticky`
+is the enabler: it separates the borders, because a collapsed border belongs to the table rather
+than the cell and scrolls out from under whatever you froze. Then ask for the axes you have:
+
+- **Header row** — add `.fdy-table--sticky-head`, and put `.fdy-table-scroll--frozen` on the
+  wrapper (it scrolls both ways and is the scrollport the freeze resolves against; size it with
+  `--fdy-table-frozen-h`, default `30rem`). It is a separate modifier because a table that only
+  freezes columns scrolls with the **page**, and `top:0` against the page sticks the header under
+  the viewport edge — over the app's own top bar.
+- **Columns** — put `.fdy-table__freeze` on **every cell of the column, header included**, and give
+  each frozen column its own `--fdy-freeze-left`: `0` for the first, then the summed widths of the
+  frozen columns to its left. Mark the last one `.fdy-table__freeze--edge` so the reader can see
+  where the frozen block ends. One frozen column needs no variable at all.
+
+The offsets are the caller's job because they depend on rendered column widths, which CSS cannot
+sum — measure them once after render (and on resize) and set the variable.
 
 ```html
 <div class="fdy-table-scroll fdy-table-scroll--frozen" style="--fdy-table-frozen-h:26rem">
-  <table class="fdy-table fdy-table--sticky">
+  <table class="fdy-table fdy-table--sticky fdy-table--sticky-head">
     <caption class="fdy-visually-hidden">Exchange rates, August 2026</caption>
-    <thead><tr><th scope="col">Date</th><th scope="col" class="fdy-table__num">USD</th></tr></thead>
+    <thead><tr>
+      <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge">Date</th>
+      <th scope="col" class="fdy-table__num">USD</th>
+    </tr></thead>
     <tbody>
-      <tr><th scope="row">1 Aug</th><td class="fdy-table__num">16,240</td></tr>
+      <tr>
+        <th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">1 Aug</th>
+        <td class="fdy-table__num">16,240</td>
+      </tr>
     </tbody>
   </table>
 </div>

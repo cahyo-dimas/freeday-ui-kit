@@ -915,6 +915,14 @@ a { color: var(--color-primary); }
  * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width — so the grow basis,
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
+/* A control that carries NO label of its own — a checkbox, a switch, a lone
+   button — in a bar whose `align-items:flex-end` exists to line up LABELLED
+   fields. Flex-end puts such a control's bottom on the inputs' bottom, so a
+   20px checkbox sits well below the 32px input's centre line and reads as
+   dropped. Giving it the height of a control lands its box exactly where an
+   input's box ends, and its own centring then puts it on the input's centre
+   line. Raised from IDU_EMATE_APPL_WEB (#014). */
+.fdy-filterbar>.fdy-check,.fdy-filterbar>.fdy-radio,.fdy-filterbar>.fdy-switch,.fdy-filterbar>.fdy-btn{min-height:var(--control-h);}
 .fdy-filterbar__actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;}
 /* Opt-in: sit the actions inline right after the last field instead of at the far edge — so when the
  * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
@@ -1284,15 +1292,34 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    back on the cell that sticks. */
 .fdy-table--sticky{border-collapse:separate;border-spacing:0;}
 .fdy-table--sticky th,.fdy-table--sticky td{border-bottom:var(--bw) solid var(--color-border-muted);}
-.fdy-table--sticky thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
-/* The row header freezes sideways over the data cells, so it needs an opaque
-   background of its own — and it takes the BODY surface, not the header one, so a
-   hovered row stays one continuous band across the freeze line. Losing that is
-   losing the only way to track a row across a wide grid. */
-.fdy-table--sticky tbody th{position:sticky;left:0;z-index:1;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);}
-.fdy-table--sticky tbody tr:hover th{background:var(--color-surface-2);}
-/* The corner cell is frozen on both axes, so it has to outrank both. */
-.fdy-table--sticky thead th:first-child{left:0;z-index:3;border-right:var(--bw) solid var(--color-border);}
+
+/* Freezing the HEADER ROW is its own modifier because it needs a vertical
+   scrollport (`.fdy-table-scroll--frozen`). A table that only freezes columns
+   scrolls with the PAGE, and `top:0` against the page sticks the header under
+   the viewport edge — over the app's own top bar — which is worse than not
+   freezing it. Ask for the axis you actually have. */
+.fdy-table--sticky-head thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
+
+/* Freezing a COLUMN: put `.fdy-table__freeze` on every cell of it, header
+   included, and give each frozen column its own `--fdy-freeze-left` — 0 for the
+   first, the summed widths of the frozen columns left of it after that. One
+   frozen column needs no variable at all. Mark the last one `--edge` so the
+   reader can see where the frozen block ends.
+
+   The offsets are the caller's job on purpose: they depend on rendered column
+   widths, which CSS cannot sum, and hard-coding them here would only work for
+   tables whose columns are all the same width. */
+.fdy-table--sticky .fdy-table__freeze{position:sticky;left:var(--fdy-freeze-left,0);}
+/* A frozen body cell slides OVER the data, so it must paint. It takes the BODY
+   surface, not the header one, so a hovered row stays one continuous band across
+   the freeze line — losing that loses the only way to track a row on a wide grid.
+   Header cells keep the tint the base `th` rule already gives them. */
+.fdy-table--sticky tbody .fdy-table__freeze{z-index:1;background:var(--color-surface);}
+.fdy-table--sticky tbody tr:hover .fdy-table__freeze{background:var(--color-surface-2);}
+/* A frozen header cell is stuck on both axes wherever the head is frozen too, so
+   it has to outrank both. */
+.fdy-table--sticky thead .fdy-table__freeze{z-index:3;}
+.fdy-table--sticky .fdy-table__freeze--edge{border-right:var(--bw) solid var(--color-border);}
 
 /* The scrollport a sticky cell sticks to. Both axes scroll here, and the height is a
    custom property so a page can size it without out-specifying this rule. */

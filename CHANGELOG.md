@@ -3,6 +3,27 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.37.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
+### Added
+- **`.fdy-table__freeze` + `--fdy-freeze-left`** — freeze **any number** of columns, not just the
+  first. 1.35.0 froze `tbody th` at a hard-coded `left:0`, which suits a rate matrix's single row
+  header and cannot express a wide table with two identity columns: they all landed on 0 and
+  stacked. Mark every cell of a frozen column and give that column its offset; the offsets belong
+  to the caller because they are sums of *rendered* widths, which CSS cannot compute.
+  `.fdy-table__freeze--edge` marks where the frozen block ends.
+- **A bare control in a `.fdy-filterbar` gets `--control-h`.** The bar aligns `flex-end` so
+  labelled fields line up on their inputs; a `.fdy-check` / `.fdy-switch` / `.fdy-radio` / lone
+  `.fdy-btn` has no label row, so flex-end left it sitting below the input's centre line. Now its
+  box ends where an input's box ends and the control centres on that line.
+### Changed
+- **BREAKING (from 1.35.0): the header freeze moved to `.fdy-table--sticky-head`.** Freezing a row
+  needs a vertical scrollport; a table that only freezes columns scrolls with the **page**, where
+  `top:0` sticks the header under the viewport edge — over the consuming app's own top bar.
+  `.fdy-table--sticky` is now the enabler (separate borders) and each axis is asked for
+  explicitly. `tbody th` no longer freezes implicitly; use `.fdy-table__freeze`. 1.35.0 and 1.36.0
+  are unpublished, so no released version carried the old contract.
+
 ## [1.36.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
 ### Added

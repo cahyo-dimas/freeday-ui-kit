@@ -342,18 +342,30 @@ test('a frozen table cell keeps its own border (#012)', () => {
   assert.ok(/border-collapse:\s*separate/.test(root.body),
     '.fdy-table--sticky must set border-collapse:separate — a collapsed border belongs to the table, so it scrolls out from under the cell that sticks');
 
-  const frozen = all.filter(r => /\.fdy-table--sticky/.test(r.selector) && /position:\s*sticky/.test(r.body));
-  assert.ok(frozen.some(r => /(^|;)\s*top:/.test(r.body)), 'nothing freezes the header row');
-  assert.ok(frozen.some(r => /(^|;)\s*left:/.test(r.body)), 'nothing freezes the row header');
+  const frozen = all.filter(r => /position:\s*sticky/.test(r.body) && /\.fdy-table--sticky/.test(r.selector));
+  assert.ok(frozen.some(r => /(^|;)\s*top:/.test(r.body) || /--sticky-head/.test(r.selector)),
+    'nothing freezes the header row');
+  assert.ok(frozen.some(r => /(^|;)\s*left:/.test(r.body)), 'nothing freezes a column');
+
+  /* The row freeze needs a VERTICAL scrollport; the column freeze does not. Bundling them
+     made a page-scrolled table stick its header under the app's own top bar, so they are
+     separate modifiers and must stay separate. */
+  const head = all.find(r => /--sticky-head/.test(r.selector) && /position:\s*sticky/.test(r.body));
+  assert.ok(head && /(^|;)\s*top:/.test(head.body),
+    'the header freeze must live on its own modifier, not on .fdy-table--sticky');
+  assert.ok(!/(^|;)\s*top:/.test(root.body),
+    '.fdy-table--sticky must not freeze the header by itself — a column-only table scrolls with the page');
+
+  /* Offsets come from the caller: CSS cannot sum rendered column widths, so freezing more
+     than one column requires a per-column variable rather than a hard-coded `left`. */
+  const col = all.find(r => /\.fdy-table__freeze(\s|,|\{|$)/.test(r.selector) && /position:\s*sticky/.test(r.body));
+  assert.ok(col && /left:\s*var\(--fdy-freeze-left/.test(col.body),
+    '.fdy-table__freeze must take its offset from --fdy-freeze-left, or only the first column can ever be frozen');
 
   /* Anything frozen sideways slides OVER the data cells, so it must paint an opaque
      background — inheriting one is not enough, the cells beneath show through. */
-  for (const rule of frozen) {
-    if (!/(^|;)\s*left:/.test(rule.body)) continue;
-    const paints = /background(-color)?:/.test(rule.body)
-      || all.some(r => r.selector === '.fdy-table th' && /background:/.test(r.body) && /\bth\b/.test(rule.selector));
-    assert.ok(paints, `${rule.selector} freezes sideways without an opaque background`);
-  }
+  const painted = all.find(r => /tbody\s+\.fdy-table__freeze/.test(r.selector) && /background:/.test(r.body));
+  assert.ok(painted, 'a frozen body cell freezes without an opaque background');
 
   /* Sticky resolves against the nearest scrollport: without one that scrolls
      VERTICALLY, `top` never engages and the header only looks frozen until you scroll. */
@@ -361,3 +373,19 @@ test('a frozen table cell keeps its own border (#012)', () => {
   assert.ok(port && /overflow:\s*auto/.test(port.body),
     '.fdy-table-scroll--frozen must scroll both axes, or the sticky header has nothing to stick to');
 });
+
+/* A control with no label of its own must not be dragged below the input line (#014).
+ *
+ * `.fdy-filterbar` aligns flex-end so LABELLED fields line up on their inputs. A bare
+ * checkbox has no label row, so flex-end put its bottom on the inputs' bottom and its body
+ * a good 6px below their centre line — visible the moment one sits beside a date field. */
+test('a bare control in a filter bar keeps the height of a control (#014)', () => {
+  const all = rules(css);
+  for (const control of ['.fdy-check', '.fdy-switch', '.fdy-btn']) {
+    const rule = all.find(r =>
+      r.selector.split(',').some(sel => sel.trim() === `.fdy-filterbar>${control}`) &&
+      /min-height:\s*var\(--control-h\)/.test(r.body));
+    assert.ok(rule, `${control} in a .fdy-filterbar must be given --control-h, or it sits below the input line`);
+  }
+});
+
