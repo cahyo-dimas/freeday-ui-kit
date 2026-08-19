@@ -128,3 +128,10 @@
 .fdy-table-bulkbar__count{font-weight:var(--weight-semibold);white-space:nowrap;}
 .fdy-table-bulkbar__spacer{flex:1;}
 .fdy-table-bulkbar__actions{display:flex;gap:var(--space-2);}
+
+/* Controls inside a data row. `.fdy-input` and friends are width:100%, which in an auto-layout
+   table means they contribute NO intrinsic width — the column shrinks to whatever the header text
+   needs and the control collapses with it. A NOTE column ends up a box too narrow to read what you
+   typed into it. The floor is per-control rather than on the column, because the table does not
+   know which of its columns hold controls. */
+.fdy-table td>.fdy-input,.fdy-table td>.fdy-textarea,.fdy-table td>.fdy-combo,.fdy-table td>.fdy-input-group,.fdy-table td>.fdy-datepicker,.fdy-table td>.fdy-timepicker{min-width:7rem;}

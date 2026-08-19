@@ -3,6 +3,33 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.43.0] — 2026-08-19
+Three crowding reports from one settlement screen (IDU_EMATE_APPL_WEB, #020). All three measured in
+Chromium rather than read off the CSS — each is a layout outcome, invisible in the stylesheet.
+### Fixed
+- **A control in a table column collapsed** (#020). `.fdy-input` is `width:100%`, which in an
+  auto-layout table contributes **no intrinsic width**: the column shrank to its header text and took
+  the control with it. A NOTE box measured **36px** — too narrow to read what you typed into it.
+  Controls that are direct children of a `td` now keep a `7rem` floor (112px measured). Per-control
+  rather than per-column, because the table cannot know which columns hold controls. `width:100%` was
+  never wrong; it is only in a table that 100% of nothing is nothing.
+- **A stat value wrapped between the currency and the number** (#020). `.fdy-stat__value` is
+  `--text-3xl`; `IDR 300,000.00` needs **224px** at that size and `.fdy-stats` tracks are
+  `minmax(11rem,1fr)`, so a three-across row at 660px gave it ~205px and it broke onto two lines.
+  It now shrinks **only when its own column cannot hold it** — a 205px track renders 22.7px on one
+  line, a 420px track still renders exactly 31px. Shrinking the token instead would have taken 31px
+  from every consumer to fix a column that was 19px short. Scoped to a stat inside `.fdy-stats`,
+  where the width comes from the grid track: `container-type:inline-size` on a standalone
+  `.fdy-stat` would stop it sizing to its own content, and the unconditional rule stays as the
+  fallback where `@container` is missing.
+- **`.fdy-filelist` claimed space above itself and none below** (#020), so the "Add files" button
+  every upload UI puts after it sat flush against the last row — a measured **0px**. Symmetric now,
+  with `:last-child` dropping the bottom margin so nothing pays for room it does not need.
+### Added — guards
+- `browser/crowding.mjs` measures all three. The stat case asserts **both** directions — one line
+  when narrow, still exactly `31px` when wide — because a fix that quietly shrank every dashboard
+  would pass a "does it wrap?" test.
+
 ## [1.42.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #009 guard could not see.
 ### Added

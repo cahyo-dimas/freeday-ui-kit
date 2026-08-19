@@ -1089,6 +1089,18 @@ a { color: var(--color-primary); }
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
+/* A stat value is display type sized for a COUNT — "1,284" — and a back office puts money in it.
+   "IDR 300,000.00" needs 224px at --text-3xl and the grid's own track is 11rem, so it wrapped
+   between the currency and the number: two lines of 31px where the design says one. Measured, not
+   guessed (#020).
+   The value shrinks only when its own column is too narrow to hold it, so a wide dashboard keeps
+   exactly the type it has today. Scoped to a stat INSIDE .fdy-stats, where the width comes from the
+   grid track — `container-type:inline-size` on a standalone .fdy-stat would stop it sizing to its
+   own content. The unconditional rule above stays as the fallback wherever @container is missing. */
+@supports (container-type:inline-size){
+  .fdy-stats>.fdy-stat{container-type:inline-size;}
+  .fdy-stats>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
+}
 .fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}
@@ -1256,7 +1268,12 @@ a { color: var(--color-primary); }
 .fdy-dropzone__text{display:flex;flex-direction:column;gap:var(--space-1);}
 
 /* File rows (list of added/uploaded/rejected files) */
-.fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);}
+/* Symmetric on purpose. The list carried margin-top and nothing below, so whatever follows it —
+   an "Add files" button, in every upload UI there is — sat flush against the last row: measured
+   0px. A block that claims space on one side only is not spacing, it is a lean. */
+.fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);margin-bottom:var(--space-3);}
+/* Nothing after it, nothing to separate from — so the room is not spent. */
+.fdy-filelist:last-child{margin-bottom:0;}
 /* Side-by-side rows on wide screens (reflow to one column when narrow). */
 .fdy-filelist--grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));}
 .fdy-file{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3);border:var(--bw) solid var(--color-border);border-radius:var(--radius-md);background:var(--color-surface);}
@@ -1767,6 +1784,13 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table-bulkbar__count{font-weight:var(--weight-semibold);white-space:nowrap;}
 .fdy-table-bulkbar__spacer{flex:1;}
 .fdy-table-bulkbar__actions{display:flex;gap:var(--space-2);}
+
+/* Controls inside a data row. `.fdy-input` and friends are width:100%, which in an auto-layout
+   table means they contribute NO intrinsic width — the column shrinks to whatever the header text
+   needs and the control collapses with it. A NOTE column ends up a box too narrow to read what you
+   typed into it. The floor is per-control rather than on the column, because the table does not
+   know which of its columns hold controls. */
+.fdy-table td>.fdy-input,.fdy-table td>.fdy-textarea,.fdy-table td>.fdy-combo,.fdy-table td>.fdy-input-group,.fdy-table td>.fdy-datepicker,.fdy-table td>.fdy-timepicker{min-width:7rem;}
 
 /* Freeday — Tabs (WAI-ARIA APG) */
 /* position:relative — containing block for out-of-flow content in the tabs (see base.css). */

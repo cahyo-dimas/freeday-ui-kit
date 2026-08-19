@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Freeday — crowding</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css"></head>
+<body>
+  <!-- A control column in a table that is not generous. -->
+  <table class="fdy-table" id="tbl" style="width:660px">
+    <thead><tr><th>DOCUMENT</th><th>EXPENSE / PROJECT</th><th>CLAIMED</th><th>SETTLING</th><th>DIFFERENCE</th><th>NOTE</th><th></th></tr></thead>
+    <tbody><tr>
+      <td>SA-1</td><td>—</td><td>IDR 0.00</td>
+      <td><input class="fdy-input" id="settling" value="0"></td>
+      <td>IDR 0.00</td>
+      <td><input class="fdy-input" id="note"></td>
+      <td>Remove</td>
+    </tr></tbody>
+  </table>
+
+  <!-- Money in a stat, at a width where it does not fit, and at one where it does. -->
+  <div class="fdy-stats" id="narrow" style="width:660px">
+    <div class="fdy-stat"><span class="fdy-stat__label">ADVANCED</span><div class="fdy-stat__value" id="svNarrow">IDR 200,000.00</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">DECLARED</span><div class="fdy-stat__value">IDR 300,000.00</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">SETTLING</span><div class="fdy-stat__value">IDR 300,000.00</div></div>
+  </div>
+  <!-- 420px, not something viewport-sized: the container query measures the RENDERED width, so a
+       block wider than the window would silently be measured narrow and the guard would flake. One
+       track needs 224px to hold the string at --text-3xl; 420 is comfortably past it. -->
+  <div class="fdy-stats" id="wide" style="width:420px">
+    <div class="fdy-stat"><span class="fdy-stat__label">ADVANCED</span><div class="fdy-stat__value" id="svWide">IDR 200,000.00</div></div>
+  </div>
+
+  <!-- A file list with something after it, which is every upload UI there is. -->
+  <div style="width:640px">
+    <div class="fdy-filelist" id="fl"><div class="fdy-file" id="file"><span class="fdy-file__name">Purchase Order.pdf</span></div></div>
+    <button class="fdy-btn fdy-btn--ghost" id="add">+ Add files</button>
+  </div>
+<script>
+  window.crowding = function () {
+    var r = function (id) { return document.getElementById(id).getBoundingClientRect(); };
+    var lines = function (id) {
+      var e = document.getElementById(id);
+      return Math.round(r(id).height / parseFloat(getComputedStyle(e).lineHeight));
+    };
+    return {
+      noteWidth: Math.round(r('note').width),
+      settlingWidth: Math.round(r('settling').width),
+      narrowLines: lines('svNarrow'),
+      widePx: getComputedStyle(document.getElementById('svWide')).fontSize,
+      wideLines: lines('svWide'),
+      gapFileToButton: Math.round(r('add').top - r('file').bottom)
+    };
+  };
+</script>
+</body></html>

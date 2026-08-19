@@ -51,6 +51,18 @@
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
+/* A stat value is display type sized for a COUNT — "1,284" — and a back office puts money in it.
+   "IDR 300,000.00" needs 224px at --text-3xl and the grid's own track is 11rem, so it wrapped
+   between the currency and the number: two lines of 31px where the design says one. Measured, not
+   guessed (#020).
+   The value shrinks only when its own column is too narrow to hold it, so a wide dashboard keeps
+   exactly the type it has today. Scoped to a stat INSIDE .fdy-stats, where the width comes from the
+   grid track — `container-type:inline-size` on a standalone .fdy-stat would stop it sizing to its
+   own content. The unconditional rule above stays as the fallback wherever @container is missing. */
+@supports (container-type:inline-size){
+  .fdy-stats>.fdy-stat{container-type:inline-size;}
+  .fdy-stats>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
+}
 .fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}
