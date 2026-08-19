@@ -442,3 +442,34 @@ test('a picker inside a field is not capped narrower than the field (#017)', () 
       `${picker} needs the same release, or one picker fills its field and the next does not`);
   }
 });
+
+
+/* A status vocabulary bigger than five needs more than five looks (#021).
+ *
+ * `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` both carry the categorical scale; the badge —
+ * the component that actually renders status — did not. A back-office document list carrying
+ * ten distinct statuses in ONE column collapsed to three colours, so Approved, Closed and
+ * Completed were the same green and Draft, InDeclaration and Transferred the same grey.
+ *
+ * The three must stay on the IDENTICAL mix, because one contrast test covers all three: a badge
+ * that drifted to its own ratio would be gated by a test measuring the avatar's. */
+test('the badge carries the categorical tone scale, on the same mix as the others (#021)', () => {
+  const all = rules(css);
+
+  const shared = all.find(r =>
+    r.selector.split(',').some(sel => sel.trim() === '.fdy-badge--tone-1') &&
+    /background:/.test(r.body));
+  assert.ok(shared, '.fdy-badge--tone-* must exist, or a status set of ten has five looks');
+
+  for (let i = 1; i <= 8; i++) {
+    assert.ok(all.some(r => r.selector.split(',').some(sel => sel.trim() === `.fdy-badge--tone-${i}`) &&
+      new RegExp(`--_fdy-badge-tone:\\s*var\\(--tone-${i}\\)`).test(r.body)),
+      `.fdy-badge--tone-${i} must bind --tone-${i}: a gap in the scale silently reuses a colour`);
+  }
+
+  const mix = (body, pct, over) =>
+    new RegExp(`color-mix\\(in srgb,var\\(--_fdy-\\w+-tone\\) ${pct}%,var\\(${over}\\)\\)`).test(body);
+  assert.ok(mix(shared.body, 18, '--color-surface') && mix(shared.body, 50, '--color-text'),
+    'the badge tone mix must match .fdy-avatar--tone-* / .fdy-chip--tone-*, which is what ' +
+    'test/contrast.test.mjs actually measures');
+});

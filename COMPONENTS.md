@@ -1106,6 +1106,12 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
 Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Never colour-only —
 the text carries the meaning.
 
+`--tone-1`…`--tone-8` for a status vocabulary larger than the semantic palette. Semantics first —
+a state that IS good, bad or waiting takes `--success` / `--danger` / `--warning`; these are for
+the rest, so two states a workflow distinguishes never share a look. Map each status to a FIXED
+tone, never to a hash of the string: a status is a closed set, and a hash reassigns colours the
+moment the set grows.
+
 **Notification badge is the overlay variant**, not a separate component: wrap anything in
 `.fdy-badge-wrap` and add `.fdy-badge-ov` (`--primary` `--danger` `--accent` `--info` `--success`
 `--warning`, `--dot` for a bare dot, `--top-left` / `--bottom-right` / `--bottom-left` to move it).

@@ -3,6 +3,24 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.44.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
+### Added
+- **`--tone-1`…`--tone-8` on `.fdy-badge`** — a status vocabulary larger than the semantic palette.
+  `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` already carried the categorical scale; the badge,
+  which is the component that actually renders status, did not. The reporting app's document lists
+  carry **ten distinct statuses in one column** — Draft, Submitted, Approved, Completed, Settled,
+  Closed, Transferred, InDeclaration, Open, Rejected — against five modifiers, so Approved, Closed
+  and Completed came out the same green and Draft, InDeclaration and Transferred the same grey.
+  Semantics still come first: a state that IS good, bad or waiting takes `--success` / `--danger` /
+  `--warning`, and these are for the rest. Same `--tone-*` tokens and the same 18%/50% mix as the
+  other two, so the existing contrast test already measures them.
+### Added — guards
+- `test/css.test.mjs` asserts all eight bind their own token (a gap silently reuses a colour) and
+  that the mix stays identical to the avatar's and the chip's — one contrast test covers the three,
+  so a badge that drifted to its own ratio would be gated by a test measuring something else.
+  `test/contrast.test.mjs` renamed from "avatar tones" to "categorical tones" to say so.
+
 ## [1.43.0] — 2026-08-19
 Three crowding reports from one settlement screen (IDU_EMATE_APPL_WEB, #020). All three measured in
 Chromium rather than read off the CSS — each is a layout outcome, invisible in the stylesheet.

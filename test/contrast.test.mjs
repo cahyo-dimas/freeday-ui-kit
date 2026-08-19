@@ -95,17 +95,19 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
   });
 }
 
-// Avatar decorative tones (avatar.css): the text-leaning foreground on the tinted background
-// must keep AA text contrast. Keep the mix ratios in sync with .fdy-avatar--tone-* (bg 18%,
-// fg 50% toward --color-text over --color-surface).
+// Categorical tones: the text-leaning foreground on the tinted background must keep AA text
+// contrast. ONE test for three components — .fdy-avatar--tone-*, .fdy-chip--tone-* and
+// .fdy-badge--tone-* all use the identical mix (bg 18%, fg 50% toward --color-text over
+// --color-surface), so they pass or fail together. Keep the ratios here in sync with all three;
+// the css guard below asserts they stay identical.
 for (const [themeName, theme] of Object.entries(THEMES)) {
-  test(`WCAG contrast — avatar tones — ${themeName}`, () => {
+  test(`WCAG contrast — categorical tones — ${themeName}`, () => {
     for (let i = 1; i <= 8; i++) {
       const c = `var(--chart-${i})`;
       const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);
       const fg = parse(`color-mix(in srgb, ${c} 50%, var(--color-text))`, theme);
       const r = ratio(fg, bg);
-      assert.ok(r >= AA_TEXT, `${themeName}: avatar tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
+      assert.ok(r >= AA_TEXT, `${themeName}: tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
     }
   });
 }

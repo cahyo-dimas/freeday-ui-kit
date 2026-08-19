@@ -252,6 +252,25 @@ a { color: var(--color-primary); }
 .fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
+/* Categorical tone badges — a status vocabulary larger than the semantic palette, from the
+ * general --tone-1..8 tokens. Same validated AA formula as .fdy-avatar--tone-* and
+ * .fdy-chip--tone-* (text >=4.5:1 both themes, gated by test/contrast.test.mjs).
+ *
+ * Semantics come first: a state that IS good, bad or waiting takes --success / --danger /
+ * --warning. These are for the rest — the states a workflow distinguishes but a palette of five
+ * cannot. A back-office document list carrying Draft, Submitted, Approved, Completed, Settled,
+ * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
+ * which is the report this shipped for. */
+.fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:color-mix(in srgb,var(--_fdy-badge-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-badge-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-badge-tone) 26%,transparent);}
+.fdy-badge--tone-1{--_fdy-badge-tone:var(--tone-1);}
+.fdy-badge--tone-2{--_fdy-badge-tone:var(--tone-2);}
+.fdy-badge--tone-3{--_fdy-badge-tone:var(--tone-3);}
+.fdy-badge--tone-4{--_fdy-badge-tone:var(--tone-4);}
+.fdy-badge--tone-5{--_fdy-badge-tone:var(--tone-5);}
+.fdy-badge--tone-6{--_fdy-badge-tone:var(--tone-6);}
+.fdy-badge--tone-7{--_fdy-badge-tone:var(--tone-7);}
+.fdy-badge--tone-8{--_fdy-badge-tone:var(--tone-8);}
+
 /* Overlay badge — anchors a small count/dot/icon badge to a corner of any element
  * (icon, button, text). Wrap the content in .fdy-badge-wrap; add .fdy-badge-ov as a
  * sibling. Default is a solid neutral pill; colour + dot + position via modifiers. */
