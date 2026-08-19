@@ -172,7 +172,7 @@ watch(active, async (i: number): Promise<void> => {
         @mousemove="active = i"
         @click="choose(opt)"
       >{{ opt }}</li>
-      <li v-if="filtered.length === 0" class="fdy-autocomplete__empty">{{ emptyText ?? 'Tak ada hasil.' }}</li>
+      <li v-if="filtered.length === 0" class="fdy-autocomplete__empty">{{ emptyText ?? 'No results' }}</li>
     </ul>
   </div>
 </template>

@@ -54,7 +54,7 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
   const listId: string = `${baseId}-list`;
   const optionId = (index: number): string => `${baseId}-opt-${index}`;
   const sep: string = props.separator ?? ' / ';
-  const name: string = props.label ?? 'Pilih';
+  const name: string = props.label ?? 'Select';
 
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -85,7 +85,7 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
   const isPlaceholder: boolean = selectedTrail === null;
   const displayValue: string = selectedTrail !== null
     ? selectedTrail.map((n: CascadeNode): string => n.label).join(sep)
-    : (props.placeholder ?? 'Pilih…');
+    : (props.placeholder ?? 'Select…');
   const crumb: string = stack.length > 0 ? stack.map((n: CascadeNode): string => n.label).join(sep) : name;
 
   const openPanel = (): void => {

@@ -29,6 +29,20 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   rowKey: (row: Row) => string;
   /** Advisory only — the caller's `fetchPage` owns paging; kept for API documentation. */
   pageSize?: number;
+  /** The dialog's heading. Default 'Choose data', matching the Blazor adapter's `Title`. */
+  title?: string;
+  /** Placeholder AND accessible name of the dialog's search box. Default 'Search…'. */
+  searchPlaceholder?: string;
+  /** Default 'Loading…'. */
+  loadingText?: string;
+  /** Default 'No results.'. */
+  emptyText?: string;
+  /** Default 'Try again'. */
+  retryText?: string;
+  /** Default 'Load more'. */
+  moreText?: string;
+  /** aria-label for the dialog's close button. Default 'Close'. */
+  closeLabel?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -298,8 +312,8 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
       <dialog ref={dialogRef} className="fdy-modal fdy-modal--cfl" aria-labelledby={titleId} onClose={onClose} onKeyDown={onKeydown}>
         <div className="fdy-modal__header">
-          <h3 id={titleId} className="fdy-modal__title">Pilih data</h3>
-          <button className="fdy-modal__close" type="button" aria-label="Tutup" onClick={closeDialog}>&times;</button>
+          <h3 id={titleId} className="fdy-modal__title">{props.title ?? 'Choose data'}</h3>
+          <button className="fdy-modal__close" type="button" aria-label={props.closeLabel ?? 'Close'} onClick={closeDialog}>&times;</button>
         </div>
 
         <div className="fdy-modal__body">
@@ -316,8 +330,8 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                 className="fdy-input"
                 type="search"
                 value={query}
-                placeholder="Cari…"
-                aria-label="Cari data"
+                placeholder={props.searchPlaceholder ?? 'Search…'}
+                aria-label={props.searchPlaceholder ?? 'Search…'}
                 aria-controls={controlsId}
                 aria-activedescendant={activeDescendant}
                 onChange={onSearchInput}
@@ -327,17 +341,17 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
           <div className="fdy-cfl__results">
             {isInitialLoading ? (
-              <p className="fdy-cfl__empty" role="status">Memuat…</p>
+              <p className="fdy-cfl__empty" role="status">{props.loadingText ?? 'Loading…'}</p>
             ) : isBlockingError ? (
               <div className="fdy-cfl__empty" role="alert">
                 <p style={{ margin: '0 0 var(--space-3)' }}>{error?.message}</p>
-                <button className="fdy-btn fdy-btn--sm" type="button" onClick={retry}>Coba lagi</button>
+                <button className="fdy-btn fdy-btn--sm" type="button" onClick={retry}>{props.retryText ?? 'Try again'}</button>
               </div>
             ) : isEmpty ? (
-              <p className="fdy-cfl__empty">Tidak ada hasil.</p>
+              <p className="fdy-cfl__empty">{props.emptyText ?? 'No results.'}</p>
             ) : (
               <>
-                <table id={resultsId} className="fdy-table" aria-label="Hasil pencarian">
+                <table id={resultsId} className="fdy-table" aria-label="Search results">
                   <thead>
                     <tr>
                       {props.columns.map((col: CflColumn<Row>): JSX.Element => (
@@ -371,7 +385,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                 ) : hasMore ? (
                   <div style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center' }}>
                     <button className="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" disabled={loading} onClick={loadMore}>
-                      {loading ? 'Memuat…' : 'Muat lebih banyak'}
+                      {loading ? (props.loadingText ?? 'Loading…') : (props.moreText ?? 'Load more')}
                     </button>
                   </div>
                 ) : null}
@@ -381,9 +395,9 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         </div>
 
         <div className="fdy-modal__footer">
-          <span className="fdy-cfl__count">Klik baris untuk memilih</span>
+          <span className="fdy-cfl__count">Click a row to choose it</span>
           <div className="fdy-cfl__actions">
-            <button className="fdy-btn fdy-btn--ghost" type="button" onClick={closeDialog}>Tutup</button>
+            <button className="fdy-btn fdy-btn--ghost" type="button" onClick={closeDialog}>{props.closeLabel ?? 'Close'}</button>
           </div>
         </div>
       </dialog>

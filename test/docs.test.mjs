@@ -94,3 +94,37 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
   assert.equal(breakpoints.nav, Number(min[1]), 'breakpoints.nav must equal the min-width switch');
   assert.equal(Number(max[1]), breakpoints.nav - 1, 'the max-width query must be nav - 1');
 });
+
+/* The typed wrappers are English, and now the suite says so.
+ *
+ * COMPONENTS.md's language caveat draws one line: the vanilla ENHANCERS write Indonesian, the
+ * Vue/React/Blazor components are English throughout. That is the sentence an English app adopts the
+ * wrappers on — and `FdyCfl` broke it in nine strings, `FdyCascade` in two and `FdyAutocomplete` in
+ * one, none of which a reader of the docs could have predicted (#009, from a consuming app that
+ * rendered its forms and read them).
+ *
+ * Matched by WORD, not by a list of components, so a new adapter is covered the day it lands.
+ * Blazor is included even though it was the stack that had it right — the guard is about the
+ * promise, not about who broke it.
+ */
+test('the typed adapters speak English (#009)', () => {
+  /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
+     a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */
+  const INDONESIAN = /\b(pilih|memilih|tutup|batal|simpan|hapus|cari|memuat|muat|hasil|klik|baris|semua|dipilih|kolom|tidak|sebelumnya|berikutnya|menampilkan|tanggal|bulan)\b/i;
+  const offenders = [];
+  for (const dir of ['adapters/vue/components', 'adapters/react/components', 'adapters/blazor']) {
+    for (const file of readdirSync(join(root, dir))) {
+      if (!/\.(vue|tsx|razor|cs)$/.test(file)) continue;
+      const src = read(`${dir}/${file}`);
+      src.split('\n').forEach((line, i) => {
+        // String literals and template text only — a URL or an identifier is not a user-visible string.
+        for (const m of line.matchAll(/'([^']{2,60})'|"([^"]{2,60})"|>([^<>{}]{2,60})</g)) {
+          const text = m[1] ?? m[2] ?? m[3];
+          if (INDONESIAN.test(text)) offenders.push(`${dir}/${file}:${i + 1}  ${text.trim()}`);
+        }
+      });
+    }
+  }
+  assert.deepEqual(offenders, [],
+    'COMPONENTS.md promises the typed wrappers are English throughout:\n' + offenders.join('\n'));
+});

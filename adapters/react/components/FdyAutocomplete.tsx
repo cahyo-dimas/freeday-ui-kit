@@ -156,7 +156,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
             onClick={(): void => choose(opt)}
           >{opt}</li>
         ))}
-        {filtered.length === 0 ? <li className="fdy-autocomplete__empty">{props.emptyText ?? 'Tak ada hasil.'}</li> : null}
+        {filtered.length === 0 ? <li className="fdy-autocomplete__empty">{props.emptyText ?? 'No results'}</li> : null}
       </ul>
     </div>
   );

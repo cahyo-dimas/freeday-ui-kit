@@ -51,6 +51,24 @@ finally makes answerable.
   **with the right index** (page 3 of five-row pages → page 2 of ten), and the client-mode table —
   deliberately wired to nothing — must still grow to 25 rows, because a control that only reports is
   a control that lies. Opening the popup is the half that would have caught the native `<select>`.
+### Fixed
+- **The typed `FdyCfl` dialog was Indonesian end to end, in every stack but Blazor** (#009).
+  COMPONENTS.md promises the Vue/React/Blazor components are English throughout — that is the line an
+  English app adopts the wrappers on — and the CFL broke it in **twelve strings** (`Pilih data`,
+  `Tutup`, `Cari…`, `Memuat…`, `Coba lagi`, `Tidak ada hasil.`, `Hasil pencarian`, `Muat lebih
+  banyak`, `Klik baris untuk memilih`) with **not one prop reaching any of them**. Blazor already had
+  the whole set as English-defaulted parameters, so Vue and React now take the same props with the
+  same defaults: a parity gap closing, not a translation being chosen. `FdyCascade` (`Pilih` /
+  `Pilih…`) and `FdyAutocomplete` (`Tak ada hasil.`) get English defaults too; both were already
+  overridable. The enhancers keep their Indonesian — documented, deliberate, a separate decision
+  (NEXT-UP #6).
+
+- **A guard for it.** `npm test` scans every string literal in `adapters/{vue,react,blazor}` for
+  twenty unambiguous Indonesian words. One of the twelve was found by looking at a screen; the other
+  eleven by the sweep that one prompted — reading finds the instance, only a mechanical check finds
+  the class. Matched by word rather than by a list of components, so a new adapter is covered the day
+  it lands.
+
 ### Fixed — the kit's own suite
 - `browser/fixtures/theme-subtree.html` had no explicit theme on `<html>`, so its "light app" probe
   fell to `prefers-color-scheme`. On a machine in dark mode both probes read the dark ink and the

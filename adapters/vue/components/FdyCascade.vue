@@ -73,7 +73,7 @@ const active: Ref<number> = ref(-1);
 usePopover(panelEl, triggerEl, open);
 
 const sep: ComputedRef<string> = computed((): string => props.separator ?? ' / ');
-const name: ComputedRef<string> = computed((): string => props.label ?? 'Pilih');
+const name: ComputedRef<string> = computed((): string => props.label ?? 'Select');
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
 const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
@@ -88,7 +88,7 @@ const isPlaceholder: ComputedRef<boolean> = computed((): boolean => selectedTrai
 const displayValue: ComputedRef<string> = computed((): string =>
   selectedTrail.value !== null
     ? selectedTrail.value.map((n: CascadeNode): string => n.label).join(sep.value)
-    : (props.placeholder ?? 'Pilih…'),
+    : (props.placeholder ?? 'Select…'),
 );
 const crumb: ComputedRef<string> = computed((): string =>
   stack.value.length > 0 ? stack.value.map((n: CascadeNode): string => n.label).join(sep.value) : name.value,

@@ -30,6 +30,20 @@ const props = defineProps<{
   rowKey: (row: Row) => string;
   /** Advisory only — the caller's `fetchPage` owns paging; kept for API documentation. */
   pageSize?: number;
+  /** The dialog's heading. Default 'Choose data', matching the Blazor adapter's `Title`. */
+  title?: string;
+  /** Placeholder AND accessible name of the dialog's search box. Default 'Search…'. */
+  searchPlaceholder?: string;
+  /** Default 'Loading…'. */
+  loadingText?: string;
+  /** Default 'No results.'. */
+  emptyText?: string;
+  /** Default 'Try again'. */
+  retryText?: string;
+  /** Default 'Load more'. */
+  moreText?: string;
+  /** aria-label for the dialog's close button. Default 'Close'. */
+  closeLabel?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -304,8 +318,8 @@ onBeforeUnmount((): void => {
 
     <dialog ref="dialogEl" class="fdy-modal fdy-modal--cfl" :aria-labelledby="titleId" @close="onClose" @keydown="onKeydown">
       <div class="fdy-modal__header">
-        <h3 :id="titleId" class="fdy-modal__title">Pilih data</h3>
-        <button class="fdy-modal__close" type="button" aria-label="Tutup" @click="closeDialog">&times;</button>
+        <h3 :id="titleId" class="fdy-modal__title">{{ title ?? 'Choose data' }}</h3>
+        <button class="fdy-modal__close" type="button" :aria-label="closeLabel ?? 'Close'" @click="closeDialog">&times;</button>
       </div>
 
       <div class="fdy-modal__body">
@@ -322,8 +336,8 @@ onBeforeUnmount((): void => {
               class="fdy-input"
               type="search"
               :value="query"
-              placeholder="Cari…"
-              aria-label="Cari data"
+              :placeholder="searchPlaceholder ?? 'Search…'"
+              :aria-label="searchPlaceholder ?? 'Search…'"
               :aria-controls="controlsId"
               :aria-activedescendant="activeDescendant"
               @input="onSearchInput"
@@ -332,17 +346,17 @@ onBeforeUnmount((): void => {
         </div>
 
         <div class="fdy-cfl__results">
-          <p v-if="isInitialLoading" class="fdy-cfl__empty" role="status">Memuat…</p>
+          <p v-if="isInitialLoading" class="fdy-cfl__empty" role="status">{{ loadingText ?? 'Loading…' }}</p>
 
           <div v-else-if="isBlockingError" class="fdy-cfl__empty" role="alert">
             <p style="margin:0 0 var(--space-3)">{{ error?.message }}</p>
-            <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">Coba lagi</button>
+            <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">{{ retryText ?? 'Try again' }}</button>
           </div>
 
-          <p v-else-if="isEmpty" class="fdy-cfl__empty">Tidak ada hasil.</p>
+          <p v-else-if="isEmpty" class="fdy-cfl__empty">{{ emptyText ?? 'No results.' }}</p>
 
           <template v-else>
-            <table :id="resultsId" class="fdy-table" aria-label="Hasil pencarian">
+            <table :id="resultsId" class="fdy-table" aria-label="Search results">
               <thead>
                 <tr>
                   <th v-for="col in columns" :key="col.key" scope="col">{{ col.label }}</th>
@@ -369,7 +383,7 @@ onBeforeUnmount((): void => {
             </div>
             <div v-else-if="hasMore" style="padding:var(--space-3) var(--space-4);text-align:center">
               <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" :disabled="loading" @click="loadMore">
-                {{ loading ? 'Memuat…' : 'Muat lebih banyak' }}
+                {{ loading ? (loadingText ?? 'Loading…') : (moreText ?? 'Load more') }}
               </button>
             </div>
           </template>
@@ -377,9 +391,9 @@ onBeforeUnmount((): void => {
       </div>
 
       <div class="fdy-modal__footer">
-        <span class="fdy-cfl__count">Klik baris untuk memilih</span>
+        <span class="fdy-cfl__count">Click a row to choose it</span>
         <div class="fdy-cfl__actions">
-          <button class="fdy-btn fdy-btn--ghost" type="button" @click="closeDialog">Tutup</button>
+          <button class="fdy-btn fdy-btn--ghost" type="button" @click="closeDialog">{{ closeLabel ?? 'Close' }}</button>
         </div>
       </div>
     </dialog>
