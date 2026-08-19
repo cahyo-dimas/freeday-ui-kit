@@ -65,12 +65,15 @@
    widths, which CSS cannot sum, and hard-coding them here would only work for
    tables whose columns are all the same width. */
 .fdy-table--sticky .fdy-table__freeze{position:sticky;left:var(--fdy-freeze-left,0);}
-/* A frozen body cell slides OVER the data, so it must paint. It takes the BODY
-   surface, not the header one, so a hovered row stays one continuous band across
-   the freeze line — losing that loses the only way to track a row on a wide grid.
-   Header cells keep the tint the base `th` rule already gives them. */
-.fdy-table--sticky tbody .fdy-table__freeze{z-index:1;background:var(--color-surface);}
-.fdy-table--sticky tbody tr:hover .fdy-table__freeze{background:var(--color-surface-2);}
+/* A frozen body cell slides OVER the data, so it must be OPAQUE — otherwise the
+   cells beneath show through it. A `th` already carries the header tint from the
+   base rule, and that tint is usually the whole point: it is what marks a column
+   as identity rather than data. So only a `td` is given a surface here. A table
+   that wants its frozen `th` to read as a body row instead — a rate matrix, where
+   a hovered row should band unbroken across the freeze line — says so itself. */
+.fdy-table--sticky tbody .fdy-table__freeze{z-index:1;}
+.fdy-table--sticky tbody td.fdy-table__freeze{background:var(--color-surface);}
+.fdy-table--sticky tbody tr:hover td.fdy-table__freeze{background:var(--color-surface-2);}
 /* A frozen header cell is stuck on both axes wherever the head is frozen too, so
    it has to outrank both. */
 .fdy-table--sticky thead .fdy-table__freeze{z-index:3;}
