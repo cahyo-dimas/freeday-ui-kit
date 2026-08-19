@@ -50,6 +50,14 @@ test('every enhancer renders its default and honours data-fdy-text-*', { skip },
     assert.equal(t.def, 'Tutup', 'the raw toast keeps its documented default');
     assert.equal(t.override, 'Close', 'toast({ closeLabel }) must reach the close button');
 
+    /* A camelCase key can only be written kebab in markup — HTML lowercases attribute names, so
+     * `data-fdy-text-filterText` and `data-fdy-text-filter-text` are DIFFERENT attributes and the
+     * one an author reaches for was the one the enhancer did not read. It failed silently, which is
+     * the only way an override can fail. */
+    const filterTitle = await p.evalJS('window.openFilter()');
+    assert.equal(filterTitle, 'Contains text',
+      `a kebab-cased override of a camelCase key must win, got "${filterTitle}"`);
+
     /* The form's messages moved to a TEXT table read through the FORM element, which is the level
      * a host needs: nine messages set once instead of on every input. */
     const f = JSON.parse(await p.evalJS('JSON.stringify(window.formMessages())'));

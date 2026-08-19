@@ -773,7 +773,9 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   wrapper**.
 - **Overriding an enhancer's strings.** Each enhancer keeps its strings in one `TEXT` table and
   reads them through `textOf()`, so any of them can be replaced per element with
-  **`data-fdy-text-<key>`** — no forking, and no rendering the nodes yourself:
+  **`data-fdy-text-<key>`**, the key kebab-cased — no forking, and no rendering the nodes yourself.
+  (HTML lowercases attribute names, so a camelCase key like `filterText` is written
+  `data-fdy-text-filter-text`; the run-together spelling still resolves.):
 
   ```html
   <div data-fdy-table

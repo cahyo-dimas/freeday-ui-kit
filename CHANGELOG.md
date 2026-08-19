@@ -3,6 +3,38 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.46.0] — 2026-08-19
+The docs site catches up with the components, and writing it out as a consumer found a defect in
+#016's own contract.
+### Fixed
+- **`data-fdy-text-*` could not be written the way HTML allows** (#023). The keys in each enhancer's
+  `TEXT` table are camelCase, and `textOf` looked up `'data-fdy-text-' + key` — but **HTML lowercases
+  attribute names**, so `data-fdy-text-filterText` becomes `...filtertext` while
+  `data-fdy-text-filter-text`, the spelling anybody would actually reach for, is a DIFFERENT
+  attribute the enhancer never read. It failed silently, which is the only way an override can fail.
+  The key is kebab-cased for the lookup now; the run-together spelling still resolves, so markup
+  written against 1.39.0 keeps working. Nine enhancers.
+  It survived #016's own guard because all seven overrides that guard asserts use **single-word**
+  keys, which have no case to lose — the guard was not wrong, it was unrepresentative. The spec now
+  overrides `filterText`, reached by clicking a column filter open. Mutation-tested.
+### Docs
+- **`docs/index.html` was nine releases behind** — it stated v1.34.0 and demoed none of what landed
+  after it. Brought level with the components, as live demos rather than a feature list, because
+  that is what the rest of the page is:
+  - **New section — Tabel beku.** `.fdy-table--sticky` / `--sticky-head`, `.fdy-table__freeze` +
+    `--fdy-freeze-left`, `.fdy-table-scroll--frozen` + `--fdy-table-frozen-h` (1.35.0, 1.37.0), with
+    a rate matrix you can actually scroll on both axes, and the reason the two axes are separate
+    modifiers.
+  - **New section — Teks enhancer (i18n).** The `data-fdy-text-*` contract (1.39.0), demoed as the
+    same data table rendered entirely in English — the demo that found #023.
+  - **Badge tone scale** `--tone-1`…`--tone-8` (1.44.0), with the distinction the note drew: semantic
+    variants state a judgement, tones distinguish without implying one.
+  - **Date picker** now states the days → months → years drill (1.36.0); **Choose-from-list** states
+    `multiple` for the typed wrappers, not only the enhancer's `data-fdy-cfl-multiple` (1.42.0).
+- Verified in a browser rather than by reading the markup: the i18n demo renders `Showing 1–3 of 5`
+  and a `Previous` pager, and the frozen table computes `border-collapse:separate` with
+  `position:sticky` cells.
+
 ## [1.45.0] — 2026-08-19
 Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (IDU_EMATE_APPL_WEB, #022).
 ### Fixed

@@ -55,8 +55,13 @@
     mismatch: 'Nilai tidak cocok.',
     invalid: 'Tidak valid.'
   };
+  /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
+     names, so `data-fdy-text-filter-text` and `data-fdy-text-filtertext` are different attributes
+     and only one of them is what an author would write. */
   function textOf(root, key) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    if (!root || !root.getAttribute) return TEXT[key];
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    var custom = kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
     return custom != null && custom !== '' ? custom : TEXT[key];
   }
   var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];

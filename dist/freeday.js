@@ -219,8 +219,18 @@
     position: '{n} dari {total}',
     slide: 'Slide {n}'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -386,8 +396,18 @@
     back: 'Kembali satu tingkat',
     submenu: '{label}, submenu'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -641,8 +661,18 @@
   var TEXT = {
     selected: '{n} dipilih'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -2094,8 +2124,13 @@
     mismatch: 'Nilai tidak cocok.',
     invalid: 'Tidak valid.'
   };
+  /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
+     names, so `data-fdy-text-filter-text` and `data-fdy-text-filtertext` are different attributes
+     and only one of them is what an author would write. */
   function textOf(root, key) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    if (!root || !root.getAttribute) return TEXT[key];
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    var custom = kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
     return custom != null && custom !== '' ? custom : TEXT[key];
   }
   var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];
@@ -2294,8 +2329,18 @@
     show: 'Tampilkan kata sandi',
     hide: 'Sembunyikan kata sandi'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -2975,8 +3020,18 @@
     done: 'Selesai',
     next: 'Lanjut'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -3110,8 +3165,18 @@
     rows: '{n} baris',
     info: 'Menampilkan {from}–{to} dari {total}'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -3892,8 +3957,18 @@
   var TEXT = {
     close: 'Tutup'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;
@@ -4119,8 +4194,18 @@
     badType: 'Tipe berkas tidak didukung.',
     tooBig: 'Ukuran melebihi batas ({max}).'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;

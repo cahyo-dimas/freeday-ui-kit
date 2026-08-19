@@ -25,6 +25,14 @@
     <div class="fdy-table-footer"><span data-fdy-table-info></span><span data-fdy-table-count></span></div>
   </div>
 
+  <!-- TABLE, camelCase key written the way HTML actually allows: kebab. -->
+  <div class="fdy-datatable" id="tblC" data-fdy-table data-page-size="5" data-fdy-text-filter-text="Contains text">
+    <table class="fdy-table"><thead><tr>
+      <th scope="col" data-fdy-filter="text"><button type="button" class="fdy-table__sortbtn" data-fdy-sort>Customer</button></th>
+    </tr></thead><tbody><tr><td>a</td></tr><tr><td>b</td></tr></tbody></table>
+    <div class="fdy-table-footer"><span data-fdy-table-info></span></div>
+  </div>
+
   <!-- STEPPER -->
   <div id="stepA" data-fdy-stepper>
     <ol class="fdy-stepper">
@@ -93,6 +101,12 @@
       dotA:   aria('#carA .fdy-carousel__dot'),       dotB:   aria('#carB .fdy-carousel__dot'),
       backA:  aria('#casA .fdy-cascade__back'),       backB:  aria('#casB .fdy-cascade__back')
     };
+  };
+  /* filterText only renders once the column filter is open, so it has to be clicked. */
+  window.openFilter = function () {
+    document.querySelector('#tblC .fdy-table__filterbtn').click();
+    var t = document.querySelector('.fdy-filter__title');
+    return t ? t.textContent.trim() : null;
   };
   // Toast writes its close button itself; the Blazor bridge is what defaults it to English.
   window.toastLabels = function () {

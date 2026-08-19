@@ -26,8 +26,18 @@
     position: '{n} dari {total}',
     slide: 'Slide {n}'
   };
+  /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
+     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves, for markup written against 1.39.0. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
   function textOf(root, key, vars) {
-    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var custom = textAttr(root, key);
     var s = custom != null && custom !== '' ? custom : TEXT[key];
     if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
     return s;

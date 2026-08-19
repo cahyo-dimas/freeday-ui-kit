@@ -331,7 +331,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.43.0</p>
+          <p class="doc-eyebrow">Design System · v1.46.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -1562,6 +1562,17 @@
     <section class="doc-section" id="sec-badge">
       <h2>Badge</h2>
       <p class="doc-desc">Inline untuk status; <strong>overlay</strong> untuk angka/dot yang menempel di sudut ikon, tombol, atau teks.</p>
+      <p class="doc-desc">Varian semantik (<code>--success</code>, <code>--warning</code>, <code>--danger</code>, <code>--info</code>) menyatakan <em>penilaian</em>: lunas itu baik, batal itu buruk. Untuk kategori yang tak punya penilaian — jenis dokumen, departemen, kanal — pakai <strong>skala tone</strong> <code>--tone-1</code>…<code>--tone-8</code>: warnanya membedakan tanpa menyiratkan apa pun, dan tidak mencuri arti hijau/merah dari status yang benar-benar butuh.</p>
+      <div class="doc-demo">
+        <span class="fdy-badge fdy-badge--tone-1">Faktur</span>
+        <span class="fdy-badge fdy-badge--tone-2">Retur</span>
+        <span class="fdy-badge fdy-badge--tone-3">Pesanan</span>
+        <span class="fdy-badge fdy-badge--tone-4">Pengiriman</span>
+        <span class="fdy-badge fdy-badge--tone-5">Kuitansi</span>
+        <span class="fdy-badge fdy-badge--tone-6">Jurnal</span>
+        <span class="fdy-badge fdy-badge--tone-7">Kontrak</span>
+        <span class="fdy-badge fdy-badge--tone-8">Lainnya</span>
+      </div>
       <div class="doc-demo">
         <span class="fdy-badge">Baru</span>
         <span class="fdy-badge fdy-badge--success">Lunas</span>
@@ -2093,7 +2104,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.43.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.46.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
