@@ -1364,8 +1364,8 @@
     wrap.dataset.fdyDpReady = '1';
     wrap.classList.add('fdy-datepicker');
 
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Pilih tanggal';
-    var label = wrap.getAttribute('data-label') || 'Tanggal';
+    var placeholder = wrap.getAttribute('data-placeholder') || 'Choose a date';
+    var label = wrap.getAttribute('data-label') || 'Date';
     var selected = parseISO(wrap.getAttribute('data-value'));
     var minDate = parseISO(wrap.getAttribute('data-min'));
     var maxDate = parseISO(wrap.getAttribute('data-max'));
@@ -1380,6 +1380,7 @@
        month" twenty-four times to reach a date two years back. */
     var mode = 'days';
     var focusMonth = null;
+    var focusYear = null;
 
     var trigger = document.createElement('button');
     trigger.type = 'button';
@@ -1457,20 +1458,21 @@
     }
 
     function render() {
+      if (mode === 'years') { renderYears(); return; }
       if (mode === 'months') { renderMonths(); return; }
       panel.innerHTML = '';
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(monthFmt.format(view), monthFmt.format(view) + ', pilih bulan', function () {
+      var title = titleButton(monthFmt.format(view), monthFmt.format(view) + ', choose month', function () {
         mode = 'months';
         focusMonth = view.getMonth();
         render();
         focusMonthCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Bulan sebelumnya', function () { view = addMonths(view, -1); render(); }));
+      head.appendChild(navButton('‹', 'Previous month', function () { view = addMonths(view, -1); render(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Bulan berikutnya', function () { view = addMonths(view, 1); render(); }));
+      head.appendChild(navButton('›', 'Next month', function () { view = addMonths(view, 1); render(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -1527,15 +1529,16 @@
       var year = view.getFullYear();
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(String(year), year + ', kembali ke tanggal', function () {
-        mode = 'days';
+      var title = titleButton(String(year), year + ', choose year', function () {
+        mode = 'years';
+        focusYear = year;
         render();
-        focusFocusDate();
+        focusYearCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Tahun sebelumnya', function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('‹', 'Previous year', function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Tahun berikutnya', function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('›', 'Next year', function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -1564,6 +1567,108 @@
       }
       grid.addEventListener('keydown', onMonthKey);
       panel.appendChild(grid);
+    }
+
+    /* A page of twelve years, aligned so pages TILE: 2016-2027, 2028-2039. Anchoring the page on
+       the year in view instead would make ‹ and › land on overlapping windows, and the same year
+       would appear at a different spot every time you stepped. */
+    var YEARS_PER_PAGE = 12;
+    function yearPageStart(y) { return Math.floor(y / YEARS_PER_PAGE) * YEARS_PER_PAGE; }
+
+    /* A year is only unreachable when EVERY month in it falls outside min/max — the same rule
+       monthDisabled applies one level down, for the same reason: a bound that sits inside the year
+       disables neither end. */
+    function yearDisabled(y) {
+      if (minDate && new Date(y, 11, 31) < startOfDay(minDate)) return true;
+      if (maxDate && new Date(y, 0, 1) > startOfDay(maxDate)) return true;
+      return false;
+    }
+
+    function renderYears() {
+      panel.innerHTML = '';
+      var start = yearPageStart(view.getFullYear());
+      var end = start + YEARS_PER_PAGE - 1;
+      var head = document.createElement('div');
+      head.className = 'fdy-cal__head';
+      var title = titleButton(start + ' – ' + end, start + ' to ' + end + ', back to months', function () {
+        mode = 'months';
+        focusMonth = view.getMonth();
+        render();
+        focusMonthCell();
+      });
+      panel.setAttribute('aria-labelledby', title.id);
+      head.appendChild(navButton('‹', 'Previous years', function () { moveYearFocus(focusYear - YEARS_PER_PAGE); }));
+      head.appendChild(title);
+      head.appendChild(navButton('›', 'Next years', function () { moveYearFocus(focusYear + YEARS_PER_PAGE); }));
+      panel.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'fdy-cal__grid fdy-cal__grid--years';
+      grid.setAttribute('role', 'grid');
+      grid.setAttribute('aria-labelledby', title.id);
+      var thisYear = new Date().getFullYear();
+      if (focusYear === null) focusYear = view.getFullYear();
+      for (var i = 0; i < YEARS_PER_PAGE; i++) {
+        var y = start + i;
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'fdy-cal__year';
+        btn.setAttribute('role', 'gridcell');
+        btn.setAttribute('aria-label', String(y));
+        btn.textContent = String(y);
+        if (y === thisYear) btn.classList.add('is-today');
+        if (selected && selected.getFullYear() === y) {
+          btn.classList.add('is-selected');
+          btn.setAttribute('aria-selected', 'true');
+        }
+        if (yearDisabled(y)) btn.disabled = true;
+        btn.tabIndex = y === focusYear ? 0 : -1;
+        btn.addEventListener('click', (function (yy) { return function () { openYear(yy); }; })(y));
+        grid.appendChild(btn);
+      }
+      grid.addEventListener('keydown', onYearKey);
+      panel.appendChild(grid);
+    }
+
+    function focusYearCell() {
+      var cell = panel.querySelector('.fdy-cal__year[tabindex="0"]');
+      if (cell) cell.focus();
+    }
+
+    /* Picking a year is navigation, exactly like picking a month: it drops to the month grid of
+       that year. Nothing is committed until a DAY is chosen. */
+    function openYear(y) {
+      view = new Date(y, view.getMonth(), 1);
+      focusMonth = view.getMonth();
+      mode = 'months';
+      render();
+      focusMonthCell();
+    }
+
+    function moveYearFocus(y) {
+      focusYear = y;
+      view = new Date(y, view.getMonth(), 1);
+      render();
+      focusYearCell();
+    }
+
+    function onYearKey(e) {
+      var handled = true;
+      switch (e.key) {
+        case 'ArrowLeft': moveYearFocus(focusYear - 1); break;
+        case 'ArrowRight': moveYearFocus(focusYear + 1); break;
+        case 'ArrowUp': moveYearFocus(focusYear - 3); break;
+        case 'ArrowDown': moveYearFocus(focusYear + 3); break;
+        case 'Home': moveYearFocus(yearPageStart(focusYear)); break;
+        case 'End': moveYearFocus(yearPageStart(focusYear) + YEARS_PER_PAGE - 1); break;
+        case 'PageUp': moveYearFocus(focusYear - YEARS_PER_PAGE); break;
+        case 'PageDown': moveYearFocus(focusYear + YEARS_PER_PAGE); break;
+        case 'Enter':
+        case ' ': openYear(focusYear); break;
+        case 'Escape': close(true); break;
+        default: handled = false;
+      }
+      if (handled) { e.preventDefault(); e.stopPropagation(); }
     }
 
     function focusMonthCell() {

@@ -158,6 +158,51 @@ test('React FdyDatepicker: the title drills to a month grid', { skip }, async ()
   await assertMonthDrill('react-cal-drill.html');
 });
 
+/* The third level. The month grid solved one-click-per-month and left one-click-per-year in its
+ * place: 2026 to 1998 was twenty-eight clicks on ‹. Driven with real clicks, and asserted on the
+ * ADAPTERS specifically — a typecheck cannot tell you whether a mode ever renders. */
+async function assertYearDrill(fixtureName) {
+  await withPage(fixture(fixtureName), async (p) => {
+    await p.waitFor(`document.querySelector('.fdy-datepicker__trigger')`);
+    await p.clickCenter('.fdy-datepicker__trigger');
+    await p.waitFor(`document.querySelector('.fdy-cal__title')`);
+
+    await p.clickCenter('.fdy-cal__title');                              // days -> months
+    await p.waitFor(`document.querySelectorAll('.fdy-cal__month').length === 12`);
+    await p.clickCenter('.fdy-cal__title');                              // months -> years
+
+    assert.ok(await p.waitFor(`document.querySelectorAll('.fdy-cal__year').length === 12`),
+      'drilling twice shows a 12-cell year grid');
+    assert.equal(await p.evalJS(`document.querySelectorAll('.fdy-cal__month').length`), 0,
+      'and replaces the month grid rather than stacking beside it');
+
+    /* Pages must TILE. Centring the page on the year in view makes ‹ and › land on overlapping
+       windows, so the same year appears at a different spot every step. */
+    const title = await p.evalJS(`document.querySelector('.fdy-cal__title').textContent.trim()`);
+    assert.match(title, /^\d{4} – \d{4}$/, `the title states the page range, got ${title}`);
+    const from = Number(title.split(' – ')[0]);
+    assert.equal(from % 12, 0, 'year pages tile on a fixed boundary');
+
+    await p.clickCenter('.fdy-cal__year:nth-child(2)');
+    assert.ok(await p.waitFor(`document.querySelectorAll('.fdy-cal__month').length === 12`),
+      'picking a year drops to that year\'s month grid');
+    assert.equal(await p.evalJS(`document.querySelector('.fdy-cal__title').textContent.trim()`), String(from + 1),
+      'showing the year that was picked');
+
+    /* Navigation, not selection — same contract as the month grid one level down. */
+    assert.equal(await p.evalJS('window.__val'), '2026-08-14',
+      'choosing a year must not change the value');
+  });
+}
+
+test('Vue FdyDatepicker: the month title drills to a year grid', { skip }, async () => {
+  await assertYearDrill('vue-cal-drill.html');
+});
+
+test('React FdyDatepicker: the month title drills to a year grid', { skip }, async () => {
+  await assertYearDrill('react-cal-drill.html');
+});
+
 /* The footer paginated but could not resize the page (note 008), so every app that wanted a
  * rows-per-page control withheld the whole footer and rebuilt all three parts to add the fourth.
  * Two things have to hold: the pick must LAND (the rows change), and it must keep the reader on the

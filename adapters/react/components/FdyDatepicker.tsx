@@ -21,6 +21,14 @@ interface DayCell {
   focusable: boolean;
 }
 
+interface YearCell {
+  year: number;
+  selected: boolean;
+  today: boolean;
+  disabled: boolean;
+  focusable: boolean;
+}
+
 interface MonthCell {
   index: number;
   label: string;
@@ -53,6 +61,11 @@ export interface FdyDatepickerProps {
   /** aria-labels for the year arrows shown in the month grid. Defaults 'Previous year' / 'Next year'. */
   prevYearLabel?: string;
   nextYearLabel?: string;
+  /** aria-label for the title button that drills from the month grid to the year grid. Default 'Choose year'. */
+  chooseYearLabel?: string;
+  /** aria-labels for the page arrows shown in the year grid. Defaults 'Previous years' / 'Next years'. */
+  prevYearsLabel?: string;
+  nextYearsLabel?: string;
   prevMonthLabel?: string;
   /** aria-label for the next-month nav button. Default 'Next month'. */
   nextMonthLabel?: string;
@@ -121,10 +134,19 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const [open, setOpen] = useState<boolean>(false);
   /* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the
      title. Before this the only pointer route to another month was one click per month. */
-  const [mode, setMode] = useState<'days' | 'months'>('days');
+  const [mode, setMode] = useState<'days' | 'months' | 'years'>('days');
   const [focusMonth, setFocusMonth] = useState<number>(0);
+  const [focusYear, setFocusYear] = useState<number>(0);
+
+  /* A page of twelve years, ALIGNED so pages tile: 2016-2027, 2028-2039. Anchoring on the year in
+     view would make the arrows land on overlapping windows, and the same year would sit somewhere
+     different every step. */
+  const YEARS_PER_PAGE = 12;
+  const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
   const monthRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const pendingMonthFocusRef = useRef<number | null>(null);
+  const yearRefs = useRef<Record<number, HTMLButtonElement | null>>({});
+  const pendingYearFocusRef = useRef<number | null>(null);
 
   // Render the calendar panel in the top layer (popover) so it never gets clipped by a card or
   // scroll container; positions against the trigger.
@@ -146,6 +168,9 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const chooseMonthLabelText: string = props.chooseMonthLabel ?? 'Choose month';
   const prevYearLabelText: string = props.prevYearLabel ?? 'Previous year';
   const nextYearLabelText: string = props.nextYearLabel ?? 'Next year';
+  const chooseYearLabelText: string = props.chooseYearLabel ?? 'Choose year';
+  const prevYearsLabelText: string = props.prevYearsLabel ?? 'Previous years';
+  const nextYearsLabelText: string = props.nextYearsLabel ?? 'Next years';
   const monthCellFmt: Intl.DateTimeFormat = useMemo(
     (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'short' }),
     [props.locale],
@@ -271,6 +296,13 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     monthRefs.current[index]?.focus();
   });
 
+  useEffect((): void => {
+    if (pendingYearFocusRef.current === null) return;
+    const year: number = pendingYearFocusRef.current;
+    pendingYearFocusRef.current = null;
+    yearRefs.current[year]?.focus();
+  });
+
   function openMonthGrid(): void {
     setFocusMonth(viewMonth.getMonth());
     setMode('months');
@@ -294,6 +326,73 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     const next: number = (index + 12) % 12;
     setFocusMonth(next);
     pendingMonthFocusRef.current = next;
+  }
+
+  /** A year is unreachable only when EVERY month in it falls outside min/max. */
+  function isYearDisabled(year: number): boolean {
+    if (minDate !== null && startOfDay(new Date(year, 11, 31)).getTime() < startOfDay(minDate).getTime()) return true;
+    if (maxDate !== null && startOfDay(new Date(year, 0, 1)).getTime() > startOfDay(maxDate).getTime()) return true;
+    return false;
+  }
+
+  const yearPage: number = yearPageStart(focusYear);
+  const yearRangeLabel: string = `${yearPage} – ${yearPage + YEARS_PER_PAGE - 1}`;
+
+  const yearCells: YearCell[] = useMemo((): YearCell[] => {
+    const start: number = yearPageStart(focusYear);
+    const thisYear: number = new Date().getFullYear();
+    const sel: Date | null = parseISO(props.value);
+    return Array.from({ length: YEARS_PER_PAGE }, (_unused: unknown, index: number): YearCell => {
+      const year: number = start + index;
+      return {
+        year,
+        selected: sel !== null && sel.getFullYear() === year,
+        today: thisYear === year,
+        disabled: isYearDisabled(year),
+        focusable: year === focusYear,
+      };
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusYear, props.value, minDate, maxDate]);
+
+  function openYearGrid(): void {
+    setFocusYear(viewMonth.getFullYear());
+    setMode('years');
+    pendingYearFocusRef.current = viewMonth.getFullYear();
+  }
+
+  /* Picking a year is NAVIGATION, exactly like picking a month: it drops to that year's month grid
+     and commits nothing. */
+  function openYear(year: number): void {
+    setViewMonth(new Date(year, viewMonth.getMonth(), 1));
+    setFocusMonth(viewMonth.getMonth());
+    setMode('months');
+    pendingMonthFocusRef.current = viewMonth.getMonth();
+  }
+
+  function moveYearFocus(year: number): void {
+    setFocusYear(year);
+    setViewMonth(new Date(year, viewMonth.getMonth(), 1));
+    pendingYearFocusRef.current = year;
+  }
+
+  function onYearKeydown(e: React.KeyboardEvent): void {
+    let handled: boolean = true;
+    switch (e.key) {
+      case 'ArrowLeft': moveYearFocus(focusYear - 1); break;
+      case 'ArrowRight': moveYearFocus(focusYear + 1); break;
+      case 'ArrowUp': moveYearFocus(focusYear - 3); break;
+      case 'ArrowDown': moveYearFocus(focusYear + 3); break;
+      case 'Home': moveYearFocus(yearPageStart(focusYear)); break;
+      case 'End': moveYearFocus(yearPageStart(focusYear) + YEARS_PER_PAGE - 1); break;
+      case 'PageUp': moveYearFocus(focusYear - YEARS_PER_PAGE); break;
+      case 'PageDown': moveYearFocus(focusYear + YEARS_PER_PAGE); break;
+      case 'Enter':
+      case ' ': openYear(focusYear); break;
+      case 'Escape': closePanel(true); break;
+      default: handled = false;
+    }
+    if (handled) { e.preventDefault(); e.stopPropagation(); }
   }
 
   function onMonthKeydown(e: React.KeyboardEvent): void {
@@ -476,8 +575,12 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
           <button
             type="button"
             className="fdy-cal__nav"
-            aria-label={mode === 'months' ? prevYearLabelText : prevMonthLabelText}
-            onClick={(): void => { if (mode === 'months') moveMonthFocus(focusMonth, -1); else setViewMonth(addMonths(viewMonth, -1)); }}
+            aria-label={mode === 'years' ? prevYearsLabelText : mode === 'months' ? prevYearLabelText : prevMonthLabelText}
+            onClick={(): void => {
+              if (mode === 'years') moveYearFocus(focusYear - YEARS_PER_PAGE);
+              else if (mode === 'months') moveMonthFocus(focusMonth, -1);
+              else setViewMonth(addMonths(viewMonth, -1));
+            }}
           >
             &lsaquo;
           </button>
@@ -485,21 +588,44 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
             id={titleId}
             type="button"
             className="fdy-cal__title"
-            aria-label={mode === 'months' ? undefined : chooseMonthLabelText}
-            onClick={(): void => { if (mode === 'months') setMode('days'); else openMonthGrid(); }}
+            aria-label={mode === 'years' ? undefined : mode === 'months' ? chooseYearLabelText : chooseMonthLabelText}
+            onClick={(): void => { if (mode === 'months') openYearGrid(); else openMonthGrid(); }}
           >
-            {mode === 'months' ? String(viewMonth.getFullYear()) : monthFmt.format(viewMonth)}
+            {mode === 'years' ? yearRangeLabel : mode === 'months' ? String(viewMonth.getFullYear()) : monthFmt.format(viewMonth)}
           </button>
           <button
             type="button"
             className="fdy-cal__nav"
-            aria-label={mode === 'months' ? nextYearLabelText : nextMonthLabelText}
-            onClick={(): void => { if (mode === 'months') moveMonthFocus(focusMonth, 1); else setViewMonth(addMonths(viewMonth, 1)); }}
+            aria-label={mode === 'years' ? nextYearsLabelText : mode === 'months' ? nextYearLabelText : nextMonthLabelText}
+            onClick={(): void => {
+              if (mode === 'years') moveYearFocus(focusYear + YEARS_PER_PAGE);
+              else if (mode === 'months') moveMonthFocus(focusMonth, 1);
+              else setViewMonth(addMonths(viewMonth, 1));
+            }}
           >
             &rsaquo;
           </button>
         </div>
-        {mode === 'months' ? (
+        {mode === 'years' ? (
+          <div className="fdy-cal__grid fdy-cal__grid--years" role="grid" aria-labelledby={titleId} onKeyDown={onYearKeydown}>
+            {yearCells.map((cell: YearCell) => (
+              <button
+                key={cell.year}
+                ref={(el: HTMLButtonElement | null): void => { yearRefs.current[cell.year] = el; }}
+                type="button"
+                className={['fdy-cal__year', cell.today ? 'is-today' : '', cell.selected ? 'is-selected' : ''].filter(Boolean).join(' ')}
+                role="gridcell"
+                aria-label={String(cell.year)}
+                aria-selected={cell.selected ? true : undefined}
+                disabled={cell.disabled}
+                tabIndex={cell.focusable ? 0 : -1}
+                onClick={(): void => openYear(cell.year)}
+              >
+                {cell.year}
+              </button>
+            ))}
+          </div>
+        ) : mode === 'months' ? (
           <div className="fdy-cal__grid fdy-cal__grid--months" role="grid" aria-labelledby={titleId} onKeyDown={onMonthKeydown}>
             {monthCells.map((cell: MonthCell) => (
               <button

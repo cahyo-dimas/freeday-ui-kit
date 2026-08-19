@@ -50,6 +50,11 @@ const props = defineProps<{
   /** aria-labels for the year arrows shown in the month grid. Defaults 'Previous year' / 'Next year'. */
   prevYearLabel?: string;
   nextYearLabel?: string;
+  /** aria-label for the title button that drills from the month grid to the year grid. Default 'Choose year'. */
+  chooseYearLabel?: string;
+  /** aria-labels for the page arrows shown in the year grid. Defaults 'Previous years' / 'Next years'. */
+  prevYearsLabel?: string;
+  nextYearsLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -124,6 +129,9 @@ const clearLabelText: ComputedRef<string> = computed((): string => props.clearLa
 const chooseMonthLabelText: ComputedRef<string> = computed((): string => props.chooseMonthLabel ?? 'Choose month');
 const prevYearLabelText: ComputedRef<string> = computed((): string => props.prevYearLabel ?? 'Previous year');
 const nextYearLabelText: ComputedRef<string> = computed((): string => props.nextYearLabel ?? 'Next year');
+const chooseYearLabelText: ComputedRef<string> = computed((): string => props.chooseYearLabel ?? 'Choose year');
+const prevYearsLabelText: ComputedRef<string> = computed((): string => props.prevYearsLabel ?? 'Previous years');
+const nextYearsLabelText: ComputedRef<string> = computed((): string => props.nextYearsLabel ?? 'Next years');
 
 const view: Ref<Date> = ref(startOfMonth(selectedDate.value ?? new Date()));
 const focusDate: Ref<Date> = ref(selectedDate.value ?? new Date());
@@ -140,8 +148,15 @@ const effectiveFocusDate: ComputedRef<Date> = computed((): Date => {
 /* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the title.
    Before this the only pointer route to another month was one click per month: August 2026 to March
    2022 is fifty-three of them, and the Shift+PageUp jump had no affordance at all. */
-const mode: Ref<'days' | 'months'> = ref('days');
+const mode: Ref<'days' | 'months' | 'years'> = ref('days');
 const focusMonth: Ref<number> = ref(0);
+const focusYear: Ref<number> = ref(0);
+
+/* A page of twelve years, ALIGNED so pages tile: 2016-2027, 2028-2039. Anchoring the page on the
+   year in view would make the arrows land on overlapping windows, and the same year would sit at a
+   different spot every time you stepped. */
+const YEARS_PER_PAGE = 12;
+const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
 
 const monthCellFmt: ComputedRef<Intl.DateTimeFormat> = computed(
   (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'short' }),
@@ -188,6 +203,44 @@ const monthCells: ComputedRef<MonthCell[]> = computed((): MonthCell[] => {
     };
   });
 });
+
+interface YearCell {
+  year: number;
+  selected: boolean;
+  today: boolean;
+  disabled: boolean;
+  focusable: boolean;
+}
+
+/** A year is unreachable only when EVERY month in it falls outside min/max — the same rule
+ *  isMonthDisabled applies one level down, and for the same reason. */
+function isYearDisabled(year: number): boolean {
+  if (minDate.value !== null && startOfDay(new Date(year, 11, 31)).getTime() < startOfDay(minDate.value).getTime()) return true;
+  if (maxDate.value !== null && startOfDay(new Date(year, 0, 1)).getTime() > startOfDay(maxDate.value).getTime()) return true;
+  return false;
+}
+
+const yearPage: ComputedRef<number> = computed((): number => yearPageStart(focusYear.value));
+
+const yearCells: ComputedRef<YearCell[]> = computed((): YearCell[] => {
+  const start: number = yearPage.value;
+  const thisYear: number = new Date().getFullYear();
+  const sel: Date | null = selectedDate.value;
+  return Array.from({ length: YEARS_PER_PAGE }, (_unused: unknown, index: number): YearCell => {
+    const year: number = start + index;
+    return {
+      year,
+      selected: sel !== null && sel.getFullYear() === year,
+      today: thisYear === year,
+      disabled: isYearDisabled(year),
+      focusable: year === focusYear.value,
+    };
+  });
+});
+
+const yearRangeLabel: ComputedRef<string> = computed(
+  (): string => `${yearPage.value} – ${yearPage.value + YEARS_PER_PAGE - 1}`,
+);
 
 const monthFmt: ComputedRef<Intl.DateTimeFormat> = computed(
   (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }),
@@ -276,6 +329,51 @@ function openMonth(index: number): void {
   focusDate.value = new Date(year, index, day);
   mode.value = 'days';
   void nextTick((): void => focusCell());
+}
+
+function openYearGrid(): void {
+  focusYear.value = view.value.getFullYear();
+  mode.value = 'years';
+  void nextTick((): void => focusYearCell());
+}
+
+function focusYearCell(): void {
+  const cell: HTMLElement | null = panelEl.value?.querySelector('.fdy-cal__year[tabindex="0"]') ?? null;
+  cell?.focus();
+}
+
+/* Picking a year is NAVIGATION, exactly like picking a month: it drops to that year's month grid
+   and commits nothing. */
+function openYear(year: number): void {
+  view.value = new Date(year, view.value.getMonth(), 1);
+  focusMonth.value = view.value.getMonth();
+  mode.value = 'months';
+  void nextTick((): void => focusMonthCell());
+}
+
+function moveYearFocus(year: number): void {
+  focusYear.value = year;
+  view.value = new Date(year, view.value.getMonth(), 1);
+  void nextTick((): void => focusYearCell());
+}
+
+function onYearKeydown(e: KeyboardEvent): void {
+  let handled: boolean = true;
+  switch (e.key) {
+    case 'ArrowLeft': moveYearFocus(focusYear.value - 1); break;
+    case 'ArrowRight': moveYearFocus(focusYear.value + 1); break;
+    case 'ArrowUp': moveYearFocus(focusYear.value - 3); break;
+    case 'ArrowDown': moveYearFocus(focusYear.value + 3); break;
+    case 'Home': moveYearFocus(yearPageStart(focusYear.value)); break;
+    case 'End': moveYearFocus(yearPageStart(focusYear.value) + YEARS_PER_PAGE - 1); break;
+    case 'PageUp': moveYearFocus(focusYear.value - YEARS_PER_PAGE); break;
+    case 'PageDown': moveYearFocus(focusYear.value + YEARS_PER_PAGE); break;
+    case 'Enter':
+    case ' ': openYear(focusYear.value); break;
+    case 'Escape': closePanel(true); break;
+    default: handled = false;
+  }
+  if (handled) { e.preventDefault(); e.stopPropagation(); }
 }
 
 function moveMonthFocus(index: number, yearDelta: number): void {
@@ -465,24 +563,51 @@ onBeforeUnmount((): void => {
         <button
           type="button"
           class="fdy-cal__nav"
-          :aria-label="mode === 'months' ? prevYearLabelText : prevMonthLabelText"
-          @click="mode === 'months' ? moveMonthFocus(focusMonth, -1) : (view = addMonths(view, -1))"
+          :aria-label="mode === 'years' ? prevYearsLabelText : mode === 'months' ? prevYearLabelText : prevMonthLabelText"
+          @click="
+            mode === 'years'
+              ? moveYearFocus(focusYear - 12)
+              : mode === 'months'
+                ? moveMonthFocus(focusMonth, -1)
+                : (view = addMonths(view, -1))
+          "
         >‹</button>
         <button
           :id="titleId"
           type="button"
           class="fdy-cal__title"
-          :aria-label="mode === 'months' ? undefined : chooseMonthLabelText"
-          @click="mode === 'months' ? (mode = 'days') : openMonthGrid()"
-        >{{ mode === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
+          :aria-label="mode === 'years' ? undefined : mode === 'months' ? chooseYearLabelText : chooseMonthLabelText"
+          @click="mode === 'months' ? openYearGrid() : openMonthGrid()"
+        >{{ mode === 'years' ? yearRangeLabel : mode === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
         <button
           type="button"
           class="fdy-cal__nav"
-          :aria-label="mode === 'months' ? nextYearLabelText : nextMonthLabelText"
-          @click="mode === 'months' ? moveMonthFocus(focusMonth, 1) : (view = addMonths(view, 1))"
+          :aria-label="mode === 'years' ? nextYearsLabelText : mode === 'months' ? nextYearLabelText : nextMonthLabelText"
+          @click="
+            mode === 'years'
+              ? moveYearFocus(focusYear + 12)
+              : mode === 'months'
+                ? moveMonthFocus(focusMonth, 1)
+                : (view = addMonths(view, 1))
+          "
         >›</button>
       </div>
-      <div v-if="mode === 'months'" class="fdy-cal__grid fdy-cal__grid--months" role="grid" :aria-labelledby="titleId" @keydown="onMonthKeydown">
+      <div v-if="mode === 'years'" class="fdy-cal__grid fdy-cal__grid--years" role="grid" :aria-labelledby="titleId" @keydown="onYearKeydown">
+        <button
+          v-for="cell in yearCells"
+          :key="cell.year"
+          type="button"
+          class="fdy-cal__year"
+          :class="{ 'is-today': cell.today, 'is-selected': cell.selected }"
+          role="gridcell"
+          :aria-label="String(cell.year)"
+          :aria-selected="cell.selected ? 'true' : undefined"
+          :disabled="cell.disabled"
+          :tabindex="cell.focusable ? 0 : -1"
+          @click="openYear(cell.year)"
+        >{{ cell.year }}</button>
+      </div>
+      <div v-else-if="mode === 'months'" class="fdy-cal__grid fdy-cal__grid--months" role="grid" :aria-labelledby="titleId" @keydown="onMonthKeydown">
         <button
           v-for="cell in monthCells"
           :key="cell.index"

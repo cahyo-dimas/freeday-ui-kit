@@ -3,6 +3,28 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.36.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
+### Added
+- **A year grid in the calendar** (vanilla · Vue · React · Blazor). 1.32.0's month grid killed
+  one-click-per-month and left one-click-per-year behind it: the month grid's arrows step a year
+  each, so 2026 → 1998 was **28 clicks**. The title now drills twice — days → months → years — with
+  the arrows following the level shown, and picking a year drops to that year's months. Every level
+  above the day grid stays **navigation**: nothing is committed until a day is picked. Year pages
+  are aligned (2016–2027, 2028–2039) rather than centred on the year in view, so the pages tile
+  instead of sliding over each other. New classes `.fdy-cal__grid--years` / `.fdy-cal__year`; new
+  aria-label props `chooseYearLabel`, `prevYearsLabel`, `nextYearsLabel`.
+### Changed
+- **The month grid's title now drills UP to years rather than back down to days.** Getting back to
+  days is what picking a month already does. Nothing in the kit's own tests or in a consuming app's
+  helpers clicked the title from the month grid, so this is not expected to be breaking.
+### Fixed
+- **`freeday-datepicker.js` spoke Indonesian to the user.** Its placeholder and every nav
+  `aria-label` were Indonesian, and because `FdyDatepicker.razor` delegates to the vanilla
+  enhancer, **every Blazor app inherited them** — while #009's language guard, which scans
+  `adapters/` only, passed. The datepicker is English now. The rest of `src/` is NOT audited: see
+  improvement note #013 §2, which lists the enhancers still affected.
+
 ## [1.35.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #012).
 ### Added

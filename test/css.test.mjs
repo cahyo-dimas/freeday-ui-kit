@@ -308,17 +308,23 @@ test('a title class renders the same whatever element carries it (#011)', () => 
     `a title class must state its own type — an <h1>-<h6> would otherwise decide it: ${missing.join('; ')}`);
 });
 
-test('the month grid outranks the day grid it modifies (#010)', () => {
+test('the month and year grids outrank the day grid they modify (#010)', () => {
   /* Both classes sit on the same element and weigh the same, so SOURCE ORDER decides. Declared
    * before `.fdy-cal__grid`, the modifier lost to the base and twelve months rendered seven across —
    * with a comment directly above it describing the 3×4 layout it was failing to produce. A
-   * specificity bug no reading of either rule can reveal; only their order shows it. */
+   * specificity bug no reading of either rule can reveal; only their order shows it.
+   *
+   * Matched by INCLUSION, not by an exact selector: the two modifiers share one rule, and pinning
+   * the guard to `.fdy-cal__grid--months{` made grouping them look like a deletion. */
   const source = readFileSync(join(root, 'src', 'components', 'datepicker.css'), 'utf8');
   const base = source.indexOf('.fdy-cal__grid{');
-  const modifier = source.indexOf('.fdy-cal__grid--months{');
-  assert.ok(base !== -1 && modifier !== -1, 'one of the two grid rules is gone');
-  assert.ok(modifier > base,
-    '.fdy-cal__grid--months must come AFTER .fdy-cal__grid — same weight, so the later one wins');
+  assert.ok(base !== -1, 'the base grid rule is gone');
+  for (const modifier of ['.fdy-cal__grid--months', '.fdy-cal__grid--years']) {
+    const at = source.indexOf(modifier);
+    assert.ok(at !== -1, `${modifier} is gone`);
+    assert.ok(at > base,
+      `${modifier} must come AFTER .fdy-cal__grid — same weight, so the later one wins`);
+  }
 });
 
 /* A frozen cell must keep the border that separates it from what scrolls past.

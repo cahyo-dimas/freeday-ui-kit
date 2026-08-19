@@ -108,6 +108,40 @@ test('the calendar title drills to a month grid, and picking a month commits not
   });
 });
 
+/* The third level of the drill. Stepping years one arrow-click at a time is what the month grid
+   was added to avoid, and it left the same problem one level up: reaching 1998 from 2026 was
+   twenty-eight clicks on ‹. */
+test('the month title drills to a year grid, and picking a year commits nothing', { skip }, async () => {
+  await withPage(fixture('vanilla-cal-drill.html'), async (p) => {
+    await p.waitFor('window.FreedayDatepicker');
+    await p.clickCenter('.fdy-datepicker__trigger');
+    await p.clickCenter('.fdy-cal__title');                              // days -> months
+    await p.clickCenter('.fdy-cal__title');                              // months -> years
+
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__year").length'), 12,
+      'drills to a year grid');
+    assert.equal(await p.evalJS('document.activeElement.className.includes("fdy-cal__year")'), true,
+      'focus follows into the grid, or a keyboard user is stranded');
+
+    /* The page is ALIGNED, not centred on the year in view: pages must tile, or ‹ and › land on
+       overlapping windows and the same year sits somewhere different every step. */
+    const title = await p.evalJS('document.querySelector(".fdy-cal__title").textContent');
+    assert.match(title, /^\d{4} – \d{4}$/, 'the title states the page range');
+    const [from, to] = title.split(' – ').map(Number);
+    assert.equal(from % 12, 0, 'year pages tile on a fixed boundary');
+    assert.equal(to - from, 11, 'a page holds twelve years');
+
+    const before = await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()');
+    await p.clickCenter('.fdy-cal__year:nth-child(2)');
+    assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__month").length'), 12,
+      'picking a year drops to that year\'s month grid');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-cal__title").textContent'), String(from + 1),
+      'and the month grid is showing the year that was picked');
+    assert.equal(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()'), before,
+      'picking a year is navigation, not selection — nothing may be committed until a DAY is chosen');
+  });
+});
+
 test('an option keeps its accessible name when it becomes selected', { skip }, async () => {
   await withPage(fixture('vanilla-cal-drill.html'), async (p) => {
     await p.waitFor('window.FreedayCombo');
