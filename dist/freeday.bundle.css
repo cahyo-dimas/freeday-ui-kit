@@ -1672,10 +1672,12 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    own `.fdy-combo`, never a native <select>: an OS menu is unthemeable, and on macOS it drops a
    dark panel into a light page — which is the reason FdyCombo exists at all. Sized to its content:
    `.fdy-combo` is display:block at max-width 22rem, which in a footer is a bar-wide box for two
-   digits. */
+   digits. Its HEIGHT is left alone on purpose — `--control-h`, the same as every other control on
+   the page. It briefly carried 2.25rem to match the pager links beside it, which made the one
+   combobox in a compact app 4px taller than all the others; a pager link is a nav button, and the
+   thing this must agree with is the form controls. */
 .fdy-table-footer__size{display:inline-flex;align-items:center;gap:var(--space-2);margin-left:auto;font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-table-footer__size .fdy-combo{width:5.5rem;}
-.fdy-table-footer__size .fdy-combo__button{height:2.25rem;}
 
 /* Column filter — funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}

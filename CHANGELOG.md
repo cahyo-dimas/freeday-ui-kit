@@ -79,6 +79,10 @@ finally makes answerable.
   it as two complaints ("the gap from the category to the top bar is too big" and "the gap between
   the title and the record value is too loose"); they were one missing declaration, and it made the
   top of every page 44px against 32px at the sides.
+- **The footer's rows control was 4px taller than every other control** (#010). It carried
+  `height:2.25rem` to match the pager links beside it, which made the one combobox in a compact app
+  disagree with every input and combo on the page. A pager link is a nav button; the thing a
+  combobox has to agree with is the form controls, so the height goes back to `--control-h`.
 - **The month grid rendered seven months across** (#010). `.fdy-cal__grid--months` sets three
   columns and `.fdy-cal__grid` sets seven; both sit on the same element and weigh the same, so
   source order decides — and the modifier was declared *before* the base it modifies, with a comment
