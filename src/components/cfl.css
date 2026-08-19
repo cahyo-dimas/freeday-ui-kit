@@ -19,7 +19,7 @@
 .fdy-cfl__check input{pointer-events:none;}
 
 /* Empty result state. */
-.fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);}
+.fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);margin:0;}
 .fdy-cfl__empty[hidden]{display:none;}
 
 /* Footer — selection count (multi) sits left, actions right. */

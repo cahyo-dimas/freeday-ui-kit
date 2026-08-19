@@ -901,7 +901,7 @@ a { color: var(--color-primary); }
 .fdy-cfl__check input{pointer-events:none;}
 
 /* Empty result state. */
-.fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);}
+.fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);margin:0;}
 .fdy-cfl__empty[hidden]{display:none;}
 
 /* Footer — selection count (multi) sits left, actions right. */
@@ -1051,7 +1051,7 @@ a { color: var(--color-primary); }
    prose. -subtle is gated at 3.0 on purpose (placeholders, separators, decorative glyphs) and
    measures 4.41 on the page ground — axe reports it as a serious color-contrast failure. Same
    argument, same ink, same 4.41 as .fdy-stat__label in 1.30.0. */
-.fdy-eyebrow{font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
+.fdy-eyebrow{font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);margin:0;}
 .fdy-title-page{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:var(--leading-tight);color:var(--color-text);margin:0;text-wrap:balance;}
 .fdy-title-section{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);line-height:var(--leading-snug);color:var(--color-text);margin:0;text-wrap:balance;}
 .fdy-title-card{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0;}
@@ -1145,9 +1145,6 @@ a { color: var(--color-primary); }
 .fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
 .fdy-cal__title:hover{background:var(--color-surface-2);}
 .fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-/* Month grid — 3×4 over the same track width as the 7-column day grid, so the panel does not resize
-   when you drill and the pointer does not have to travel. */
-.fdy-cal__grid--months{grid-template-columns:repeat(3,1fr);gap:var(--space-1);}
 .fdy-cal__month{display:inline-flex;align-items:center;justify-content:center;height:2.25rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-family:inherit;font-size:var(--text-sm);text-transform:capitalize;cursor:pointer;}
 .fdy-cal__month:hover{background:var(--color-surface-2);}
 .fdy-cal__month:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
@@ -1158,6 +1155,13 @@ a { color: var(--color-primary); }
 .fdy-cal__nav:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-cal__nav:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-cal__grid{display:grid;grid-template-columns:repeat(7,2rem);gap:2px;}
+/* Month grid — 3×4 over the same track width as the 7-column day grid, so the panel does not resize
+   when you drill and the pointer does not have to travel.
+
+   AFTER `.fdy-cal__grid`, and that is the whole rule: the element carries both classes, they weigh
+   the same, so source order decides. Declared earlier, the modifier lost to the base it modifies and
+   twelve months rendered seven across — the layout the comment above described, never once applied. */
+.fdy-cal__grid--months{grid-template-columns:repeat(3,1fr);gap:var(--space-1);}
 .fdy-cal__dow{display:flex;align-items:center;justify-content:center;height:1.75rem;font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--color-text-muted);text-transform:capitalize;}
 .fdy-cal__day{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-size:var(--text-sm);font-variant-numeric:tabular-nums;cursor:pointer;}
 .fdy-cal__day:hover{background:var(--color-surface-2);}

@@ -63,11 +63,27 @@ finally makes answerable.
   overridable. The enhancers keep their Indonesian — documented, deliberate, a separate decision
   (NEXT-UP #6).
 
+- **A guard for each.** The paragraph margins are checked against the classes the DOCS show on a
+  `<p>`, so a new one is covered by documenting it — the step nobody skips. The grid ordering is
+  asserted as an ORDER, because a specificity bug is invisible in either rule and only their sequence
+  shows it. Both mutation-tested.
 - **A guard for it.** `npm test` scans every string literal in `adapters/{vue,react,blazor}` for
   twenty unambiguous Indonesian words. One of the twelve was found by looking at a screen; the other
   eleven by the sweep that one prompted — reading finds the instance, only a mechanical check finds
   the class. Matched by word rather than by a list of components, so a new adapter is covered the day
   it lands.
+
+- **`.fdy-eyebrow` and `.fdy-cfl__empty` never cleared the UA's `<p>` margin** (#010). Every other
+  class the kit documents on a paragraph sets `margin:0`; these two did not, so a browser's 1em
+  landed as spacing nobody wrote — 12px above the eyebrow and 12px below it. A consuming app reported
+  it as two complaints ("the gap from the category to the top bar is too big" and "the gap between
+  the title and the record value is too loose"); they were one missing declaration, and it made the
+  top of every page 44px against 32px at the sides.
+- **The month grid rendered seven months across** (#010). `.fdy-cal__grid--months` sets three
+  columns and `.fdy-cal__grid` sets seven; both sit on the same element and weigh the same, so
+  source order decides — and the modifier was declared *before* the base it modifies, with a comment
+  directly above it describing the 3×4 layout it was failing to produce. Moved after. Neither rule is
+  wrong on its own, which is why reading them found nothing.
 
 ### Fixed — the kit's own suite
 - `browser/fixtures/theme-subtree.html` had no explicit theme on `<html>`, so its "light app" probe

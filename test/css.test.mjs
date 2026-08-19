@@ -247,3 +247,40 @@ test('.fdy-visually-hidden still documents why the containers carry it', () => {
   assert.match(base, /containing block/i);
   assert.match(base, /\.fdy-visually-hidden\s*\{[^}]*position:\s*absolute/);
 });
+
+test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
+  /* `<p>` carries a 1em margin from the user agent, and a class that does not clear it inherits
+   * spacing nobody wrote. `.fdy-eyebrow` shipped without one: 12px above it and 12px below, which
+   * read as 44px of page padding at the top of every screen against 32px at the sides, and as a gap
+   * between the eyebrow and the title half again what the flex `gap` declared. Reported by a
+   * consuming app as two separate spacing complaints; they were one missing declaration.
+   *
+   * The list comes from the DOCS — the classes the kit itself demonstrates on a paragraph — so a new
+   * one is covered by documenting it, which is the step nobody skips. */
+  const docs =
+    readFileSync(join(root, 'COMPONENTS.md'), 'utf8') +
+    readFileSync(join(root, 'docs', 'reference-screen.html'), 'utf8');
+  const onParagraphs = [...new Set([...docs.matchAll(/<p class="([^"]*)"/g)]
+    .flatMap(m => m[1].split(/\s+/))
+    .filter(c => c.startsWith('fdy-')))];
+  assert.ok(onParagraphs.length >= 3, `expected the docs to show several <p> classes, found ${onParagraphs.length}`);
+
+  const missing = onParagraphs.filter(cls => {
+    const rule = rules(css).find(r => r.selector === `.${cls}`);
+    return rule !== undefined && !/(^|;)\s*margin[:-]/.test(rule.body);
+  });
+  assert.deepEqual(missing, [], `these are documented on a <p> and never clear its UA margin: ${missing.join(', ')}`);
+});
+
+test('the month grid outranks the day grid it modifies (#010)', () => {
+  /* Both classes sit on the same element and weigh the same, so SOURCE ORDER decides. Declared
+   * before `.fdy-cal__grid`, the modifier lost to the base and twelve months rendered seven across —
+   * with a comment directly above it describing the 3×4 layout it was failing to produce. A
+   * specificity bug no reading of either rule can reveal; only their order shows it. */
+  const source = readFileSync(join(root, 'src', 'components', 'datepicker.css'), 'utf8');
+  const base = source.indexOf('.fdy-cal__grid{');
+  const modifier = source.indexOf('.fdy-cal__grid--months{');
+  assert.ok(base !== -1 && modifier !== -1, 'one of the two grid rules is gone');
+  assert.ok(modifier > base,
+    '.fdy-cal__grid--months must come AFTER .fdy-cal__grid — same weight, so the later one wins');
+});

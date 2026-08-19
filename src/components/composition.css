@@ -13,7 +13,7 @@
    prose. -subtle is gated at 3.0 on purpose (placeholders, separators, decorative glyphs) and
    measures 4.41 on the page ground — axe reports it as a serious color-contrast failure. Same
    argument, same ink, same 4.41 as .fdy-stat__label in 1.30.0. */
-.fdy-eyebrow{font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
+.fdy-eyebrow{font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);margin:0;}
 .fdy-title-page{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:var(--leading-tight);color:var(--color-text);margin:0;text-wrap:balance;}
 .fdy-title-section{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);line-height:var(--leading-snug);color:var(--color-text);margin:0;text-wrap:balance;}
 .fdy-title-card{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0;}
