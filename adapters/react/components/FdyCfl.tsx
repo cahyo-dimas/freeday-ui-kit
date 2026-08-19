@@ -21,8 +21,11 @@ export interface CflPage<Row> {
 }
 
 export interface FdyCflProps<Row extends Record<string, unknown>> {
-  value: Row | null;
-  onChange: (value: Row | null) => void;
+  /** Single: `Row | null`. With `multiple`, an array — `Row[] | null`, where null and [] both mean
+   *  nothing picked. The enhancer has had `data-fdy-cfl-multiple` all along; this is the typed
+   *  wrappers catching up (#019). */
+  value: Row | Row[] | null;
+  onChange: (value: Row | Row[] | null) => void;
   fetchPage: (query: string, page: number) => Promise<CflPage<Row>>;
   columns: ReadonlyArray<CflColumn<Row>>;
   display: (row: Row) => string;
@@ -45,6 +48,16 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   closeLabel?: string;
   /** aria-label for the button that opens the picker. Default 'Open search'. */
   openLabel?: string;
+  /** Tick rows and commit them together, instead of committing the row that was clicked. The kit's
+   *  own enhancer offers this (`data-fdy-cfl-multiple`); a screen that gathers six expense claims
+   *  onto one document wants one dialog, not six. */
+  multiple?: boolean;
+  /** Footer label while picking, `{n}` replaced by the tick count. Default '{n} selected'. */
+  selectedText?: string;
+  /** The multi-select commit button. Default 'Confirm'. */
+  confirmText?: string;
+  /** Footer hint in single mode. Default 'Click a row to choose it'. */
+  hintText?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -71,6 +84,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
      control that still exists — the trigger beside it, since this button disappears with the value. */
   const clearLabelText: string = props.clearLabel ?? 'Clear selection';
   const clearValue = (): void => {
+    setPicked([]);
     props.onChange(null);
     triggerRef.current?.focus();
   };
@@ -86,6 +100,9 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+  /* The ticks live here, not in `value`, because a multi dialog is only committed at Confirm:
+     closing it must leave the caller's value exactly as it was. Seeded from `value` on open. */
+  const [picked, setPicked] = useState<Row[]>([]);
 
   // Out-of-order guard: every fetch takes a monotonically increasing token; a resolved or
   // rejected page is applied only if it still owns the latest token. A newer search, a
@@ -100,10 +117,25 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
   const isDisabled: boolean = props.disabled === true;
   const isReadonly: boolean = props.readonly === true;
+  /* `display()` takes one row, so in multi the field states HOW MANY — naming one of six would be a
+     lie, and naming all six does not fit a control that is 22rem wide. */
+  const currentRows: Row[] = Array.isArray(props.value)
+    ? props.value
+    : props.value !== null
+      ? [props.value as Row]
+      : [];
+  const selectedTextFor = (n: number): string => (props.selectedText ?? '{n} selected').replace('{n}', String(n));
+  const isMultiple: boolean = props.multiple === true;
   const showClear: boolean =
-    props.clearable === true && props.value !== null && isDisabled === false && isReadonly === false;
+    props.clearable === true && currentRows.length > 0 && isDisabled === false && isReadonly === false;
   const isInvalid: boolean = props.invalid === true;
-  const displayValue: string = props.value !== null ? props.display(props.value) : '';
+  const displayValue: string = isMultiple
+    ? currentRows.length === 0
+      ? ''
+      : selectedTextFor(currentRows.length)
+    : props.value !== null
+      ? props.display(props.value as Row)
+      : '';
   // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
   // search input's aria refs on rows existing — otherwise they'd dangle during loading/empty/error.
   const hasRows: boolean = rows.length > 0;
@@ -179,6 +211,31 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     document.getElementById(rowId(activeIndex))?.scrollIntoView({ block: 'nearest' });
   }, [activeIndex]);
 
+  function isPicked(row: Row): boolean {
+    const key: string = props.rowKey(row);
+    return picked.some((r: Row): boolean => props.rowKey(r) === key);
+  }
+
+  function togglePick(row: Row): void {
+    const key: string = props.rowKey(row);
+    setPicked((prev: Row[]): Row[] =>
+      prev.some((r: Row): boolean => props.rowKey(r) === key)
+        ? prev.filter((r: Row): boolean => props.rowKey(r) !== key)
+        : [...prev, row],
+    );
+  }
+
+  /* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+  function onRowClick(row: Row): void {
+    if (isMultiple) togglePick(row);
+    else commit(row);
+  }
+
+  function confirmPicks(): void {
+    props.onChange(picked);
+    closeDialog();
+  }
+
   function commit(row: Row): void {
     props.onChange(row);
     closeDialog();
@@ -210,7 +267,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         const row: Row | undefined = activeIndex >= 0 ? rows[activeIndex] : undefined;
         if (row !== undefined) {
           e.preventDefault();
-          commit(row);
+          onRowClick(row);
         }
         break;
       }
@@ -233,6 +290,8 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     setHasMore(false);
     setError(null);
     setActiveIndex(-1);
+    /* Re-seeded per open, so Cancel really is a cancel: the ticks start as whatever the caller holds. */
+    setPicked(isMultiple ? [...currentRows] : []);
     dialogRef.current?.showModal();
     searchRef.current?.focus();
     void load('', 0, false);
@@ -356,6 +415,9 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                 <table id={resultsId} className="fdy-table" aria-label="Search results">
                   <thead>
                     <tr>
+                      {isMultiple ? (
+                        <th scope="col"><span className="fdy-visually-hidden">{selectedTextFor(picked.length)}</span></th>
+                      ) : null}
                       {props.columns.map((col: CflColumn<Row>): JSX.Element => (
                         <th key={col.key} scope="col">{col.label}</th>
                       ))}
@@ -366,11 +428,16 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                       <tr
                         id={rowId(i)}
                         key={props.rowKey(row)}
-                        className="fdy-cfl__row"
-                        aria-selected={i === activeIndex ? 'true' : undefined}
-                        onClick={(): void => commit(row)}
+                        className={i === activeIndex ? 'fdy-cfl__row is-active' : 'fdy-cfl__row'}
+                        aria-selected={isMultiple ? isPicked(row) : i === activeIndex ? true : undefined}
+                        onClick={(): void => onRowClick(row)}
                         onMouseMove={(): void => setActive(i)}
                       >
+                        {isMultiple ? (
+                          <td className="fdy-cfl__check">
+                            <input className="fdy-check" type="checkbox" tabIndex={-1} checked={isPicked(row)} readOnly aria-hidden="true" />
+                          </td>
+                        ) : null}
                         {props.columns.map((col: CflColumn<Row>): JSX.Element => (
                           <td key={col.key}>{cellText(row, col.key)}</td>
                         ))}
@@ -382,7 +449,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
                 {error !== null ? (
                   <div className="fdy-cfl__empty" role="alert" style={{ padding: 'var(--space-4) var(--space-5)' }}>
                     <p style={{ margin: '0 0 var(--space-3)' }}>{error.message}</p>
-                    <button className="fdy-btn fdy-btn--sm" type="button" onClick={retry}>Coba lagi</button>
+                    <button className="fdy-btn fdy-btn--sm" type="button" onClick={retry}>{props.retryText ?? 'Try again'}</button>
                   </div>
                 ) : hasMore ? (
                   <div style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center' }}>
@@ -397,9 +464,14 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         </div>
 
         <div className="fdy-modal__footer">
-          <span className="fdy-cfl__count">Click a row to choose it</span>
+          <span className="fdy-cfl__count" aria-live="polite">
+            {isMultiple ? selectedTextFor(picked.length) : (props.hintText ?? 'Click a row to choose it')}
+          </span>
           <div className="fdy-cfl__actions">
             <button className="fdy-btn fdy-btn--ghost" type="button" onClick={closeDialog}>{props.closeLabel ?? 'Close'}</button>
+            {isMultiple ? (
+              <button className="fdy-btn" type="button" onClick={confirmPicks}>{props.confirmText ?? 'Confirm'}</button>
+            ) : null}
           </div>
         </div>
       </dialog>

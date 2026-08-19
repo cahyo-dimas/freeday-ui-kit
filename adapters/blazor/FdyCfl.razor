@@ -63,6 +63,10 @@
                 <table class="fdy-table" aria-label="@Title">
                     <thead>
                         <tr>
+                            @if (Multiple)
+                            {
+                                <th scope="col"><span class="fdy-visually-hidden">@SelectedLabel</span></th>
+                            }
                             @foreach (CflColumn<TRow> col in Columns)
                             {
                                 <th scope="col">@col.Header</th>
@@ -72,7 +76,15 @@
                     <tbody>
                         @foreach (TRow row in _rows)
                         {
-                            <tr class="fdy-cfl__row" tabindex="0" @key="RowKey(row)" @onclick="() => ChooseAsync(row)">
+                            <tr class="fdy-cfl__row" tabindex="0" @key="RowKey(row)"
+                                aria-selected="@(Multiple ? IsPicked(row).ToString().ToLowerInvariant() : null)"
+                                @onclick="() => RowClickAsync(row)">
+                                @if (Multiple)
+                                {
+                                    <td class="fdy-cfl__check">
+                                        <input class="fdy-check" type="checkbox" tabindex="-1" checked="@IsPicked(row)" aria-hidden="true" />
+                                    </td>
+                                }
                                 @foreach (CflColumn<TRow> col in Columns)
                                 {
                                     <td>@col.Cell(row)</td>
@@ -96,6 +108,17 @@
                                 disabled="@_loading" @onclick="LoadMoreAsync">@MoreText</button>
                     </div>
                 }
+            }
+        </div>
+    </div>
+
+    <div class="fdy-modal__footer">
+        <span class="fdy-cfl__count" aria-live="polite">@(Multiple ? SelectedLabel : HintText)</span>
+        <div class="fdy-cfl__actions">
+            <button class="fdy-btn fdy-btn--ghost" type="button" @onclick="CloseAsync">@CloseLabel</button>
+            @if (Multiple)
+            {
+                <button class="fdy-btn" type="button" @onclick="ConfirmAsync">@ConfirmText</button>
             }
         </div>
     </div>

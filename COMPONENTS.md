@@ -463,6 +463,12 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 - Hooks: `data-fdy-cfl-search` (the search input), `data-fdy-cfl-empty`, `data-fdy-cfl-count`,
   `data-fdy-cfl-confirm` (multi only), `data-fdy-cfl-trigger`, `data-fdy-cfl-open`
 - Rows are server state — in a real app drive them from a controlled fetch, not a global store.
+- **Multi-select in the typed wrappers** (Vue · React · Blazor): `multiple` ticks rows and commits
+  them together on **Confirm** instead of committing the row that was clicked. Vue and React widen
+  their model to an array (`Row[] | null`); Blazor takes a second pair, `Values` /
+  `ValuesChanged`, because a nullable union is not a C# shape. Closing without Confirm leaves the
+  bound value untouched, and re-opening seeds the ticks from it. The field states `{n} selected`
+  rather than one row's `display()`. Strings: `selectedText`, `confirmText`, `hintText`.
 
 ```html
 <div class="fdy-field">

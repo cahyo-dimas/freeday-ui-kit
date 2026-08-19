@@ -35,6 +35,26 @@ public partial class FdyCfl<TRow>
     /// <summary>aria-label for the button that opens the picker.</summary>
     [Parameter] public string OpenLabel { get; set; } = "Open search";
 
+    /// <summary>Tick rows and commit them together, instead of committing the row that was clicked.
+    /// The kit's own enhancer offers this (<c>data-fdy-cfl-multiple</c>); a screen that gathers six
+    /// expense claims onto one document wants one dialog, not six. Binds <see cref="Values"/>.</summary>
+    [Parameter] public bool Multiple { get; set; }
+
+    /// <summary>The committed rows when <see cref="Multiple"/> is set. Vue and React widen their
+    /// single model to an array; C# takes a second pair instead, so neither is nullable-of-union.</summary>
+    [Parameter] public IReadOnlyList<TRow>? Values { get; set; }
+
+    [Parameter] public EventCallback<IReadOnlyList<TRow>?> ValuesChanged { get; set; }
+
+    /// <summary>Footer label while picking; <c>{n}</c> is replaced by the tick count.</summary>
+    [Parameter] public string SelectedText { get; set; } = "{n} selected";
+
+    /// <summary>The multi-select commit button.</summary>
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+
+    /// <summary>Footer hint in single mode.</summary>
+    [Parameter] public string HintText { get; set; } = "Click a row to choose it";
+
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>Locked/view mode: shows the value but the search dialog can't be opened.</summary>
@@ -78,6 +98,9 @@ public partial class FdyCfl<TRow>
         if (Disabled || Readonly || _open) return;
         _open = true;
         _query = string.Empty;
+        /* Re-seeded per open, so Cancel really is a cancel: the ticks start as whatever the caller holds. */
+        _picked.Clear();
+        if (Multiple && Values is not null) _picked.AddRange(Values);
         await JS.InvokeVoidAsync("FreedayBlazor.dialogShow", Root);
         await LoadAsync(reset: true);
     }
@@ -141,8 +164,50 @@ public partial class FdyCfl<TRow>
     /// opens nor closes it.</summary>
     private async Task ClearAsync()
     {
+        _picked.Clear();
+        if (Multiple)
+        {
+            Values = null;
+            await ValuesChanged.InvokeAsync(null);
+            return;
+        }
         Value = default;
         await ValueChanged.InvokeAsync(default);
+    }
+
+    /* The ticks live here, not in Values, because a multi dialog is only committed at Confirm:
+       closing it must leave the caller's value exactly as it was. Seeded from Values on open. */
+    private readonly List<TRow> _picked = new();
+
+    private string SelectedLabel => SelectedText.Replace("{n}", _picked.Count.ToString());
+
+    private bool IsPicked(TRow row)
+    {
+        string key = RowKey(row);
+        return _picked.Exists(r => RowKey(r) == key);
+    }
+
+    private void TogglePick(TRow row)
+    {
+        string key = RowKey(row);
+        int at = _picked.FindIndex(r => RowKey(r) == key);
+        if (at == -1) _picked.Add(row);
+        else _picked.RemoveAt(at);
+    }
+
+    /* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+    private async Task RowClickAsync(TRow row)
+    {
+        if (Multiple) TogglePick(row);
+        else await ChooseAsync(row);
+    }
+
+    private async Task ConfirmAsync()
+    {
+        IReadOnlyList<TRow> picks = _picked.ToArray();
+        Values = picks;
+        await ValuesChanged.InvokeAsync(picks);
+        await CloseAsync();
     }
 
     private async Task ChooseAsync(TRow row)

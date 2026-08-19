@@ -23,7 +23,10 @@ interface CflPage {
 }
 
 const props = defineProps<{
-  modelValue: Row | null;
+  /** Single: `Row | null`. With `multiple`, an array — `Row[] | null`, where null and [] both mean
+   *  nothing picked. The enhancer has had `data-fdy-cfl-multiple` all along; this is the typed
+   *  wrappers catching up (#019). */
+  modelValue: Row | Row[] | null;
   fetchPage: (query: string, page: number) => Promise<CflPage>;
   columns: ReadonlyArray<CflColumn>;
   display: (row: Row) => string;
@@ -46,6 +49,16 @@ const props = defineProps<{
   closeLabel?: string;
   /** aria-label for the button that opens the picker. Default 'Open search'. */
   openLabel?: string;
+  /** Tick rows and commit them together, instead of committing the row that was clicked. The kit's
+   *  own enhancer offers this (`data-fdy-cfl-multiple`); a screen that gathers six expense claims
+   *  onto one document wants one dialog, not six. */
+  multiple?: boolean;
+  /** Footer label while picking, `{n}` replaced by the tick count. Default '{n} selected'. */
+  selectedText?: string;
+  /** The multi-select commit button. Default 'Confirm'. */
+  confirmText?: string;
+  /** Footer hint in single mode. Default 'Click a row to choose it'. */
+  hintText?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -62,8 +75,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: Row | null];
-  change: [value: Row | null];
+  'update:modelValue': [value: Row | Row[] | null];
+  change: [value: Row | Row[] | null];
 }>();
 
 const baseId: string = useId();
@@ -91,13 +104,20 @@ const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly 
 
 const showClear: ComputedRef<boolean> = computed(
   (): boolean =>
-    props.clearable === true && props.modelValue != null && isDisabled.value === false && isReadonly.value === false,
+    props.clearable === true && currentRows.value.length > 0 && isDisabled.value === false && isReadonly.value === false,
 );
 const clearLabelText: ComputedRef<string> = computed((): string => props.clearLabel ?? 'Clear selection');
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
-const displayValue: ComputedRef<string> = computed((): string =>
-  props.modelValue !== null ? props.display(props.modelValue) : '',
+/* `display()` takes one row, so in multi the field states HOW MANY — naming one of six would be a
+   lie, and naming all six does not fit a control that is 22rem wide. */
+const currentRows: ComputedRef<Row[]> = computed((): Row[] =>
+  Array.isArray(props.modelValue) ? props.modelValue : props.modelValue !== null ? [props.modelValue as Row] : [],
 );
+const selectedTextFor = (n: number): string => (props.selectedText ?? '{n} selected').replace('{n}', String(n));
+const displayValue: ComputedRef<string> = computed((): string => {
+  if (props.multiple === true) return currentRows.value.length === 0 ? '' : selectedTextFor(currentRows.value.length);
+  return props.modelValue !== null ? props.display(props.modelValue as Row) : '';
+});
 // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
 // search input's aria refs on rows existing — otherwise they'd dangle during loading/empty/error.
 const hasRows: ComputedRef<boolean> = computed((): boolean => rows.value.length > 0);
@@ -181,6 +201,37 @@ function setActive(index: number): void {
   });
 }
 
+/* The ticks live here, not in `modelValue`, because a multi dialog is only committed at Confirm:
+   closing it must leave the caller's value exactly as it was. Seeded from `modelValue` on open. */
+const picked: Ref<Row[]> = ref([]) as Ref<Row[]>;
+
+const pickedKeys: ComputedRef<Set<string>> = computed(
+  (): Set<string> => new Set(picked.value.map((r: Row): string => props.rowKey(r)))
+);
+
+function isPicked(row: Row): boolean {
+  return pickedKeys.value.has(props.rowKey(row));
+}
+
+function togglePick(row: Row): void {
+  const key: string = props.rowKey(row);
+  const at: number = picked.value.findIndex((r: Row): boolean => props.rowKey(r) === key);
+  if (at === -1) picked.value = [...picked.value, row];
+  else picked.value = picked.value.filter((_: Row, i: number): boolean => i !== at);
+}
+
+/* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+function onRowClick(row: Row): void {
+  if (props.multiple === true) togglePick(row);
+  else commit(row);
+}
+
+function confirmPicks(): void {
+  emit('update:modelValue', picked.value);
+  emit('change', picked.value);
+  closeDialog();
+}
+
 function commit(row: Row | null): void {
   emit('update:modelValue', row);
   emit('change', row);
@@ -190,6 +241,7 @@ function commit(row: Row | null): void {
 /* Unsetting is not "picking nothing" — it must not open or close the dialog, and it must leave focus
    on a control that still exists, so focus returns to the trigger beside it. */
 function clearValue(): void {
+  picked.value = [];
   emit('update:modelValue', null);
   emit('change', null);
   triggerEl.value?.focus();
@@ -221,7 +273,7 @@ function onKeydown(e: KeyboardEvent): void {
       const row: Row | undefined = activeIndex.value >= 0 ? rows.value[activeIndex.value] : undefined;
       if (row !== undefined) {
         e.preventDefault();
-        commit(row);
+        onRowClick(row);
       }
       break;
     }
@@ -244,6 +296,8 @@ function openDialog(): void {
   hasMore.value = false;
   error.value = null;
   activeIndex.value = -1;
+  /* Re-seeded per open, so Cancel really is a cancel: the ticks start as whatever the caller holds. */
+  picked.value = props.multiple === true ? [...currentRows.value] : [];
   dialogEl.value?.showModal();
   void nextTick((): void => searchEl.value?.focus());
   void loadPage(0, false);
@@ -361,6 +415,7 @@ onBeforeUnmount((): void => {
             <table :id="resultsId" class="fdy-table" aria-label="Search results">
               <thead>
                 <tr>
+                  <th v-if="multiple === true" scope="col"><span class="fdy-visually-hidden">{{ selectedTextFor(picked.length) }}</span></th>
                   <th v-for="col in columns" :key="col.key" scope="col">{{ col.label }}</th>
                 </tr>
               </thead>
@@ -370,10 +425,14 @@ onBeforeUnmount((): void => {
                   :id="rowId(i)"
                   :key="rowKey(row)"
                   class="fdy-cfl__row"
-                  :aria-selected="i === activeIndex ? 'true' : undefined"
-                  @click="commit(row)"
+                  :class="{ 'is-active': i === activeIndex }"
+                  :aria-selected="multiple === true ? String(isPicked(row)) : i === activeIndex ? 'true' : undefined"
+                  @click="onRowClick(row)"
                   @mousemove="setActive(i)"
                 >
+                  <td v-if="multiple === true" class="fdy-cfl__check">
+                    <input class="fdy-check" type="checkbox" tabindex="-1" :checked="isPicked(row)" aria-hidden="true" />
+                  </td>
                   <td v-for="col in columns" :key="col.key">{{ cellText(row, col.key) }}</td>
                 </tr>
               </tbody>
@@ -381,7 +440,7 @@ onBeforeUnmount((): void => {
 
             <div v-if="error !== null" class="fdy-cfl__empty" role="alert" style="padding:var(--space-4) var(--space-5)">
               <p style="margin:0 0 var(--space-3)">{{ error.message }}</p>
-              <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">Coba lagi</button>
+              <button class="fdy-btn fdy-btn--sm" type="button" @click="retry">{{ retryText ?? 'Try again' }}</button>
             </div>
             <div v-else-if="hasMore" style="padding:var(--space-3) var(--space-4);text-align:center">
               <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" :disabled="loading" @click="loadMore">
@@ -393,9 +452,12 @@ onBeforeUnmount((): void => {
       </div>
 
       <div class="fdy-modal__footer">
-        <span class="fdy-cfl__count">Click a row to choose it</span>
+        <span class="fdy-cfl__count" aria-live="polite">
+          {{ multiple === true ? selectedTextFor(picked.length) : (hintText ?? 'Click a row to choose it') }}
+        </span>
         <div class="fdy-cfl__actions">
           <button class="fdy-btn fdy-btn--ghost" type="button" @click="closeDialog">{{ closeLabel ?? 'Close' }}</button>
+          <button v-if="multiple === true" class="fdy-btn" type="button" @click="confirmPicks">{{ confirmText ?? 'Confirm' }}</button>
         </div>
       </div>
     </dialog>

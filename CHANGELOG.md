@@ -3,6 +3,44 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.42.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #009 guard could not see.
+### Added
+- **`multiple` on the typed `FdyCfl`** (Vue · React · Blazor). The enhancer has offered
+  `data-fdy-cfl-multiple` since it shipped and `COMPONENTS.md` documented it; all three wrappers were
+  single-valued **at the type level**, so there was nothing to widen from the outside. An app that
+  started on the enhancer and later adopted the wrapper silently lost a capability — which is the
+  actual defect, more than the missing feature. The settlement screen that reported it gathers six or
+  eight approved claims onto one document and was doing six open→search→click cycles.
+  Rows tick instead of committing, the footer counts them, and **Confirm** commits the set. Vue and
+  React widen their model to `Row[] | null`; Blazor takes `Values` / `ValuesChanged` instead, because
+  a nullable union is not a C# shape. New strings: `selectedText` (`{n} selected`), `confirmText`,
+  `hintText` — the last one making the single-mode footer overridable too, which it never was.
+### Notes on the shape of the fix
+- **The ticks are component state, not the model.** Closing without Confirm has to leave the caller's
+  value exactly as it was, so the dialog seeds its ticks from the bound value on every open. Binding
+  them straight to the model would make Cancel a lie.
+- **The field states `{n} selected`.** `display()` takes ONE row: naming one of six would be wrong and
+  naming all six does not fit a 22rem control.
+- **Blazor gained a modal footer**, which it never had — Vue and React both commit from one.
+- The tick checkbox is `aria-hidden` and inert. `.fdy-cfl__check input` is already
+  `pointer-events:none` in the kit's CSS, so the row owns the click and a handler on the box would
+  have been unreachable code; `aria-selected` on the row is what carries the state.
+### Fixed
+- **`FdyCfl`'s second retry button said `Coba lagi`** (Vue · React). The error state inside the
+  results branch had a hard-coded Indonesian literal while the button two states above it correctly
+  read `retryText ?? 'Try again'` — so the component both had the prop and ignored it. #009's guard
+  missed it because **neither `coba` nor `lagi` is in its word list**, which is #015's lesson landing
+  a third time: a word list is a floor, not a ceiling. Both now read `retryText`.
+### Added — guards
+- **The multi flow is driven by real clicks, in both adapters** (#019). `browser/cfl-multi.mjs`
+  asserts that a click ticks rather than commits, that the dialog stays open, that `aria-selected`
+  and the footer count follow, that a second click unticks, that Confirm hands back an **array** in
+  order, and that closing without Confirm discards the ticks *and* does not remember them on re-open.
+  Vue and React run the same script, so a divergence between the two fails here instead of in an app.
+  A typecheck cannot tell you whether a mode ever renders. Mutation-tested — committing
+  `picked[0]` instead of the array fails it by name.
+
 ## [1.41.0] — 2026-08-19
 One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised from that repo.
 ### Fixed
