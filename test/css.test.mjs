@@ -320,3 +320,38 @@ test('the month grid outranks the day grid it modifies (#010)', () => {
   assert.ok(modifier > base,
     '.fdy-cal__grid--months must come AFTER .fdy-cal__grid — same weight, so the later one wins');
 });
+
+/* A frozen cell must keep the border that separates it from what scrolls past.
+ *
+ * `position:sticky` is the obvious half and the wrong half on its own. Under
+ * `border-collapse:collapse` the shared border is painted by the TABLE, so it stays
+ * with the scrolling content and the frozen row/column arrives with no rule at all —
+ * the freeze looks like a rendering fault rather than a feature. Raised building the
+ * exchange-rate matrix in IDU_EMATE_APPL_WEB. */
+test('a frozen table cell keeps its own border (#012)', () => {
+  const all = rules(css);
+
+  const root = all.find(r => r.selector === '.fdy-table--sticky');
+  assert.ok(root, '.fdy-table--sticky is missing');
+  assert.ok(/border-collapse:\s*separate/.test(root.body),
+    '.fdy-table--sticky must set border-collapse:separate — a collapsed border belongs to the table, so it scrolls out from under the cell that sticks');
+
+  const frozen = all.filter(r => /\.fdy-table--sticky/.test(r.selector) && /position:\s*sticky/.test(r.body));
+  assert.ok(frozen.some(r => /(^|;)\s*top:/.test(r.body)), 'nothing freezes the header row');
+  assert.ok(frozen.some(r => /(^|;)\s*left:/.test(r.body)), 'nothing freezes the row header');
+
+  /* Anything frozen sideways slides OVER the data cells, so it must paint an opaque
+     background — inheriting one is not enough, the cells beneath show through. */
+  for (const rule of frozen) {
+    if (!/(^|;)\s*left:/.test(rule.body)) continue;
+    const paints = /background(-color)?:/.test(rule.body)
+      || all.some(r => r.selector === '.fdy-table th' && /background:/.test(r.body) && /\bth\b/.test(rule.selector));
+    assert.ok(paints, `${rule.selector} freezes sideways without an opaque background`);
+  }
+
+  /* Sticky resolves against the nearest scrollport: without one that scrolls
+     VERTICALLY, `top` never engages and the header only looks frozen until you scroll. */
+  const port = all.find(r => r.selector === '.fdy-table-scroll--frozen');
+  assert.ok(port && /overflow:\s*auto/.test(port.body),
+    '.fdy-table-scroll--frozen must scroll both axes, or the sticky header has nothing to stick to');
+});

@@ -1657,6 +1657,30 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table__selcol{width:1px;white-space:nowrap;}
 .fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
 
+/* Frozen header row and/or first column — a rate matrix, a timetable, any grid read
+   against two axes at once.
+
+   This modifier exists because `position:sticky` alone is NOT enough. With
+   `border-collapse:collapse` the shared border belongs to the TABLE, not to either
+   cell, so a frozen cell scrolls out from under its own rule and the frozen column
+   loses the line that separates it from the data. Separate borders put each border
+   back on the cell that sticks. */
+.fdy-table--sticky{border-collapse:separate;border-spacing:0;}
+.fdy-table--sticky th,.fdy-table--sticky td{border-bottom:var(--bw) solid var(--color-border-muted);}
+.fdy-table--sticky thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
+/* The row header freezes sideways over the data cells, so it needs an opaque
+   background of its own — and it takes the BODY surface, not the header one, so a
+   hovered row stays one continuous band across the freeze line. Losing that is
+   losing the only way to track a row across a wide grid. */
+.fdy-table--sticky tbody th{position:sticky;left:0;z-index:1;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);}
+.fdy-table--sticky tbody tr:hover th{background:var(--color-surface-2);}
+/* The corner cell is frozen on both axes, so it has to outrank both. */
+.fdy-table--sticky thead th:first-child{left:0;z-index:3;border-right:var(--bw) solid var(--color-border);}
+
+/* The scrollport a sticky cell sticks to. Both axes scroll here, and the height is a
+   custom property so a page can size it without out-specifying this rule. */
+.fdy-table-scroll--frozen{position:relative;overflow:auto;max-height:var(--fdy-table-frozen-h,30rem);}
+
 /* Data-table shell (toolbar + scroll + footer stay put while the table scrolls) */
 .fdy-datatable{border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);overflow:hidden;}
 .fdy-table-scroll{position:relative;overflow-x:auto;}

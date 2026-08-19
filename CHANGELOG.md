@@ -3,6 +3,21 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.35.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #012).
+### Added
+- **`.fdy-table--sticky` + `.fdy-table-scroll--frozen`** — a table frozen on one axis or both, for
+  a grid read against two axes at once (a rate matrix, a timetable). This is a kit class rather
+  than four lines in an app because `position:sticky` on its own produces a **visibly broken**
+  table: `.fdy-table` collapses its borders, a collapsed border is painted by the table rather than
+  by either cell, and so a frozen cell scrolls out from under its own rule — the frozen column
+  arrives with nothing separating it from the data. The modifier separates the borders and puts
+  each one back on the cell that sticks. `<thead>` freezes at the top, `<th scope="row">` at the
+  left, the first header cell is the corner, and the row header paints the **body** surface so a
+  hovered row stays one band across the freeze line. `.fdy-table-scroll--frozen` is the scrollport
+  the freeze resolves against (the base `.fdy-table-scroll` scrolls one axis, so `top:0` never
+  engages); size it with `--fdy-table-frozen-h`, default `30rem`.
+
 ## [1.34.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #008), and the second half of #005 it
 finally makes answerable.

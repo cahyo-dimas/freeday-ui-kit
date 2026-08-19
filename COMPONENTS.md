@@ -687,6 +687,26 @@ Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-tab
 </div>
 ```
 
+**Frozen axes — `.fdy-table--sticky`.** For a grid read against two axes at once (a rate
+matrix, a timetable). Put `.fdy-table-scroll--frozen` on the wrapper — it scrolls both ways
+and is the scrollport the frozen cells stick to — and size it with `--fdy-table-frozen-h`
+(default `30rem`). `<thead>` freezes at the top, `<th scope="row">` freezes at the left, and
+the first header cell is the corner. Do not reach for `position:sticky` directly: the base
+table collapses its borders, and a collapsed border belongs to the table rather than the
+cell, so it scrolls out from under whatever you froze.
+
+```html
+<div class="fdy-table-scroll fdy-table-scroll--frozen" style="--fdy-table-frozen-h:26rem">
+  <table class="fdy-table fdy-table--sticky">
+    <caption class="fdy-visually-hidden">Exchange rates, August 2026</caption>
+    <thead><tr><th scope="col">Date</th><th scope="col" class="fdy-table__num">USD</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">1 Aug</th><td class="fdy-table__num">16,240</td></tr>
+    </tbody>
+  </table>
+</div>
+```
+
 ## Data table — `.fdy-datatable`
 > **Typed wrapper: `<FdyTable>`** — controlled: `columns` + `rows`, with sort/filter/page events (`update:pageIndex` · `onPageIndexChange` · `PageIndexChanged`) and `process` for driving a card list off the same processed set. The markup below is the raw enhancer path.
 
