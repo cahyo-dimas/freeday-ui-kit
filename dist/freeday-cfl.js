@@ -33,6 +33,21 @@
       .toLowerCase();
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    selected: '{n} dipilih'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initDialog(dialog) {
     if (dialog.dataset.fdyCflReady === '1') return;
     dialog.dataset.fdyCflReady = '1';
@@ -70,7 +85,7 @@
     function updateCount() {
       if (!countEl) return;
       var n = rows.filter(function (r) { return r.getAttribute('aria-selected') === 'true'; }).length;
-      countEl.textContent = n + ' dipilih';
+      countEl.textContent = textOf(dialog, 'selected', { n: n });
     }
 
     function fillGroup(detail) {

@@ -210,6 +210,22 @@
 (function () {
   'use strict';
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    position: '{n} dari {total}',
+    slide: 'Slide {n}'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initCarousel(root) {
     if (root.dataset.fdyCarouselReady === '1') return;
     root.dataset.fdyCarouselReady = '1';
@@ -223,7 +239,7 @@
     var index = 0;
 
     slides.forEach(function (s, i) {
-      if (!s.hasAttribute('aria-label')) s.setAttribute('aria-label', (i + 1) + ' dari ' + slides.length);
+      if (!s.hasAttribute('aria-label')) s.setAttribute('aria-label', textOf(root, 'position', { n: i + 1, total: slides.length }));
     });
 
     var dots = [];
@@ -232,7 +248,7 @@
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'fdy-carousel__dot';
-        b.setAttribute('aria-label', 'Slide ' + (i + 1));
+        b.setAttribute('aria-label', textOf(root, 'slide', { n: i + 1 }));
         b.addEventListener('click', function () { goTo(i); });
         dotsWrap.appendChild(b);
         dots.push(b);
@@ -361,6 +377,22 @@
     return null;
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    back: 'Kembali satu tingkat',
+    submenu: '{label}, submenu'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initCascade(wrap) {
     if (wrap.dataset.fdyCascadeReady === '1') return;
     wrap.dataset.fdyCascadeReady = '1';
@@ -392,7 +424,7 @@
     var back = document.createElement('button');
     back.type = 'button';
     back.className = 'fdy-cascade__back';
-    back.setAttribute('aria-label', 'Kembali satu tingkat');
+    back.setAttribute('aria-label', textOf(wrap, 'back'));
     back.innerHTML = BACK;
     back.hidden = true;
     var crumb = document.createElement('span');
@@ -432,7 +464,7 @@
         li.setAttribute('data-index', String(i));
         var isBranch = !!node.children;
         li.setAttribute('aria-selected', (!isBranch && node.value === selectedValue) ? 'true' : 'false');
-        if (isBranch) li.setAttribute('aria-label', node.label + ', submenu');
+        if (isBranch) li.setAttribute('aria-label', textOf(wrap, 'submenu', { label: node.label }));
         var lbl = document.createElement('span');
         lbl.className = 'fdy-cascade__opt-label';
         lbl.textContent = node.label;
@@ -601,6 +633,21 @@
       .toLowerCase();
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    selected: '{n} dipilih'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initDialog(dialog) {
     if (dialog.dataset.fdyCflReady === '1') return;
     dialog.dataset.fdyCflReady = '1';
@@ -638,7 +685,7 @@
     function updateCount() {
       if (!countEl) return;
       var n = rows.filter(function (r) { return r.getAttribute('aria-selected') === 'true'; }).length;
-      countEl.textContent = n + ' dipilih';
+      countEl.textContent = textOf(dialog, 'selected', { n: n });
     }
 
     function fillGroup(detail) {
@@ -2030,7 +2077,12 @@
     badInput: 'type',
     customError: 'mismatch'
   };
-  var DEFAULTS = {
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
+   * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
+   * a host in another language needs: it sets nine messages once instead of on every input.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
     required: 'Wajib diisi.',
     type: 'Format tidak valid.',
     pattern: 'Format tidak sesuai.',
@@ -2039,8 +2091,13 @@
     min: 'Nilai terlalu kecil.',
     max: 'Nilai terlalu besar.',
     step: 'Nilai tidak sesuai kelipatan.',
-    mismatch: 'Nilai tidak cocok.'
+    mismatch: 'Nilai tidak cocok.',
+    invalid: 'Tidak valid.'
   };
+  function textOf(root, key) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    return custom != null && custom !== '' ? custom : TEXT[key];
+  }
   var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];
 
   function isCandidate(el) {
@@ -2074,7 +2131,7 @@
     if (matchSel) {
       var other = document.querySelector(matchSel);
       if (other && el.value !== other.value) {
-        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || DEFAULTS.mismatch);
+        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || textOf(el.form || el.closest('form'), 'mismatch'));
       }
     }
     if (el.validity.valid) return '';
@@ -2085,7 +2142,8 @@
       }
     }
     var custom = alias ? el.getAttribute('data-fdy-msg-' + alias) : null;
-    return custom || el.getAttribute('data-fdy-msg') || (alias && DEFAULTS[alias]) || el.validationMessage || 'Tidak valid.';
+    var form = el.form || el.closest('form');
+    return custom || el.getAttribute('data-fdy-msg') || (alias && textOf(form, alias)) || el.validationMessage || textOf(form, 'invalid');
   }
 
   function paint(el, message) {
@@ -2227,6 +2285,22 @@
     return out;
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    show: 'Tampilkan kata sandi',
+    hide: 'Sembunyikan kata sandi'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initMask(el) {
     if (el.dataset.fdyMaskReady === '1') return;
     el.dataset.fdyMaskReady = '1';
@@ -2262,13 +2336,13 @@
     btn.type = 'button';
     btn.className = 'fdy-input-group__btn';
     btn.setAttribute('aria-pressed', 'false');
-    btn.setAttribute('aria-label', 'Tampilkan kata sandi');
+    btn.setAttribute('aria-label', textOf(input, 'show'));
     btn.innerHTML = EYE;
     btn.addEventListener('click', function () {
       var reveal = input.type === 'password';
       input.type = reveal ? 'text' : 'password';
       btn.setAttribute('aria-pressed', reveal ? 'true' : 'false');
-      btn.setAttribute('aria-label', reveal ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+      btn.setAttribute('aria-label', reveal ? textOf(input, 'hide') : textOf(input, 'show'));
       btn.innerHTML = reveal ? EYE_OFF : EYE;
       input.focus();
     });
@@ -2892,6 +2966,22 @@
 
   var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    done: 'Selesai',
+    next: 'Lanjut'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initStepper(root) {
     if (root.dataset.fdyStepperReady === '1') return;
     root.dataset.fdyStepperReady = '1';
@@ -2926,7 +3016,7 @@
       });
       panels.forEach(function (p, i) { p.hidden = i !== active; });
       if (prevBtn) prevBtn.disabled = active === 0;
-      if (nextBtn) nextBtn.textContent = active === steps.length - 1 ? 'Selesai' : (nextLabel || 'Lanjut');
+      if (nextBtn) nextBtn.textContent = active === steps.length - 1 ? textOf(root, 'done') : (nextLabel || textOf(root, 'next'));
       root.dispatchEvent(new CustomEvent('fdy-step-change', { bubbles: true, detail: { index: active } }));
     }
 
@@ -2999,6 +3089,32 @@
     return (cell.getAttribute('data-sort-value') != null
       ? cell.getAttribute('data-sort-value')
       : cell.textContent).trim();
+  }
+
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    prev: 'Sebelumnya',
+    next: 'Berikutnya',
+    selected: '{n} dipilih',
+    filter: 'Filter kolom',
+    filterText: 'Berisi teks',
+    filterTextPlaceholder: 'Berisi…',
+    filterEnum: 'Tampilkan nilai',
+    filterRange: 'Rentang nilai',
+    reset: 'Reset',
+    close: 'Tutup',
+    rows: '{n} baris',
+    info: 'Menampilkan {from}–{to} dari {total}'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
   }
 
   function initTable(root) {
@@ -3125,7 +3241,7 @@
         ul.appendChild(li);
       }
 
-      addBtn('‹', page - 1, { disabled: page === 1, label: 'Sebelumnya' });
+      addBtn('‹', page - 1, { disabled: page === 1, label: textOf(root, 'prev') });
       var pages = [];
       for (var p = 1; p <= totalPages; p++) {
         if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) pages.push(p);
@@ -3135,7 +3251,7 @@
         if (p === '…') addEllipsis();
         else addBtn(String(p), p, { current: p === page });
       });
-      addBtn('›', page + 1, { disabled: page === totalPages, label: 'Berikutnya' });
+      addBtn('›', page + 1, { disabled: page === totalPages, label: textOf(root, 'next') });
       pagerEl.appendChild(ul);
     }
 
@@ -3150,7 +3266,7 @@
       if (!bulkBar) return;
       var n = selectedRows().length;
       bulkBar.hidden = n === 0;
-      if (bulkCount) bulkCount.textContent = n + ' dipilih';
+      if (bulkCount) bulkCount.textContent = textOf(root, 'selected', { n: n });
     }
     function clearSelection() {
       allRows.forEach(function (r) {
@@ -3206,15 +3322,15 @@
       var pop = document.createElement('div');
       pop.className = 'fdy-filter';
       pop.setAttribute('role', 'dialog');
-      pop.setAttribute('aria-label', 'Filter kolom');
+      pop.setAttribute('aria-label', textOf(root, 'filter'));
       var f = colFilters[idx] || { type: type };
 
       if (type === 'text') {
-        pop.appendChild(filterTitle('Berisi teks'));
+        pop.appendChild(filterTitle(textOf(root, 'filterText')));
         var inp = document.createElement('input');
         inp.className = 'fdy-input';
         inp.type = 'search';
-        inp.placeholder = 'Berisi…';
+        inp.placeholder = textOf(root, 'filterTextPlaceholder');
         inp.value = f.text || '';
         inp.addEventListener('input', function () {
           f.text = inp.value.trim();
@@ -3224,7 +3340,7 @@
         });
         pop.appendChild(inp);
       } else if (type === 'enum') {
-        pop.appendChild(filterTitle('Tampilkan nilai'));
+        pop.appendChild(filterTitle(textOf(root, 'filterEnum')));
         var list = document.createElement('div');
         list.className = 'fdy-filter__list';
         var set = f.set || new Set();
@@ -3247,7 +3363,7 @@
         });
         pop.appendChild(list);
       } else if (type === 'number') {
-        pop.appendChild(filterTitle('Rentang nilai'));
+        pop.appendChild(filterTitle(textOf(root, 'filterRange')));
         var range = document.createElement('div');
         range.className = 'fdy-filter__range';
         var minI = numberInput('Min', f.min);
@@ -3272,7 +3388,7 @@
       var reset = document.createElement('button');
       reset.type = 'button';
       reset.className = 'fdy-btn fdy-btn--ghost fdy-btn--sm';
-      reset.textContent = 'Reset';
+      reset.textContent = textOf(root, 'reset');
       reset.addEventListener('click', function () {
         delete colFilters[idx];
         markActive(btn, false);
@@ -3282,7 +3398,7 @@
       var done = document.createElement('button');
       done.type = 'button';
       done.className = 'fdy-btn fdy-btn--sm';
-      done.textContent = 'Tutup';
+      done.textContent = textOf(root, 'close');
       done.addEventListener('click', function () { closePopover(true); });
       foot.appendChild(reset); foot.appendChild(done);
       pop.appendChild(foot);
@@ -3307,7 +3423,7 @@
         btn.className = 'fdy-table__filterbtn';
         btn.setAttribute('aria-haspopup', 'dialog');
         btn.setAttribute('aria-pressed', 'false');
-        btn.setAttribute('aria-label', 'Filter kolom');
+        btn.setAttribute('aria-label', textOf(root, 'filter'));
         btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7z"></path></svg>';
         btn.addEventListener('click', function (e) {
           e.stopPropagation();
@@ -3338,8 +3454,8 @@
 
       var shownFrom = total === 0 ? 0 : start + 1;
       var shownTo = start + slice.length;
-      if (countEl) countEl.textContent = total + ' baris';
-      if (infoEl) infoEl.textContent = 'Menampilkan ' + shownFrom + '–' + shownTo + ' dari ' + total;
+      if (countEl) countEl.textContent = textOf(root, 'rows', { n: total });
+      if (infoEl) infoEl.textContent = textOf(root, 'info', { from: shownFrom, to: shownTo, total: total });
       buildPager(totalPages);
       syncSelectAll(slice);
       updateBulk();
@@ -3768,6 +3884,21 @@
     setTimeout(finish, 400); // fallback if transitionend never fires
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    close: 'Tutup'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -3789,7 +3920,7 @@
 
     var close = el('button', 'fdy-toast__close');
     close.type = 'button';
-    close.setAttribute('aria-label', 'Tutup');
+    close.setAttribute('aria-label', opts.closeLabel || TEXT.close);
     close.innerHTML = '&times;';
     close.addEventListener('click', function () { dismiss(node); });
 
@@ -3974,6 +4105,27 @@
     });
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    remove: 'Hapus {name}',
+    progress: 'Progres unggah {name}',
+    uploading: 'Mengunggah…',
+    waiting: 'Menunggu server…',
+    done: 'Terunggah',
+    badType: 'Tipe berkas tidak didukung.',
+    tooBig: 'Ukuran melebihi batas ({max}).'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function makeRow(file, zone) {
     var el = document.createElement('div');
     el.className = 'fdy-file';
@@ -3993,7 +4145,7 @@
     var remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'fdy-file__remove';
-    remove.setAttribute('aria-label', 'Hapus ' + file.name);
+    remove.setAttribute('aria-label', textOf(zone, 'remove', { name: file.name }));
     remove.innerHTML = '&times;';
     remove.addEventListener('click', function () {
       /* Dispatched on the ZONE, not on the row — the same target as fdy-upload-add, so one listener
@@ -4020,7 +4172,7 @@
       progressEl.setAttribute('role', 'progressbar');
       progressEl.setAttribute('aria-valuemin', '0');
       progressEl.setAttribute('aria-valuemax', '100');
-      progressEl.setAttribute('aria-label', 'Progres unggah ' + file.name);
+      progressEl.setAttribute('aria-label', textOf(zone, 'progress', { name: file.name }));
       bar = document.createElement('div');
       bar.className = 'fdy-progress__bar';
       bar.style.width = '0%';
@@ -4053,7 +4205,7 @@
       uploading: function () {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · Mengunggah…';
+        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
         ensureProgress();
         determinate();
       },
@@ -4073,7 +4225,7 @@
       waiting: function (label) {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · ' + (label || 'Menunggu server…');
+        sub.textContent = fmtSize(file.size) + ' · ' + (label || textOf(zone, 'waiting'));
         ensureProgress();
         progressEl.classList.add('fdy-progress--indeterminate');
         /* The modifier styles .fdy-progress__bar, so it must sit on the CONTAINER, and the inline
@@ -4087,7 +4239,7 @@
         el.classList.add('fdy-file--success');
         el.classList.remove('fdy-file--error');
         icon.innerHTML = OK_ICON;
-        sub.textContent = fmtSize(file.size) + ' · Terunggah';
+        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'done');
         dropProgress();
       },
       fail: function (msg) {
@@ -4155,8 +4307,8 @@
       if (!fileList) return;
       Array.prototype.slice.call(fileList).forEach(function (file) {
         var reason = null;
-        if (!accepts(file, acceptAttr)) reason = 'Tipe berkas tidak didukung.';
-        else if (maxSize && file.size > maxSize) reason = 'Ukuran melebihi batas (' + fmtSize(maxSize) + ').';
+        if (!accepts(file, acceptAttr)) reason = textOf(zone, 'badType');
+        else if (maxSize && file.size > maxSize) reason = textOf(zone, 'tooBig', { max: fmtSize(maxSize) });
         var row = makeRow(file, zone);
         if (list) list.appendChild(row.el);
         if (reason) {

@@ -50,6 +50,27 @@
     });
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    remove: 'Hapus {name}',
+    progress: 'Progres unggah {name}',
+    uploading: 'Mengunggah…',
+    waiting: 'Menunggu server…',
+    done: 'Terunggah',
+    badType: 'Tipe berkas tidak didukung.',
+    tooBig: 'Ukuran melebihi batas ({max}).'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function makeRow(file, zone) {
     var el = document.createElement('div');
     el.className = 'fdy-file';
@@ -69,7 +90,7 @@
     var remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'fdy-file__remove';
-    remove.setAttribute('aria-label', 'Hapus ' + file.name);
+    remove.setAttribute('aria-label', textOf(zone, 'remove', { name: file.name }));
     remove.innerHTML = '&times;';
     remove.addEventListener('click', function () {
       /* Dispatched on the ZONE, not on the row — the same target as fdy-upload-add, so one listener
@@ -96,7 +117,7 @@
       progressEl.setAttribute('role', 'progressbar');
       progressEl.setAttribute('aria-valuemin', '0');
       progressEl.setAttribute('aria-valuemax', '100');
-      progressEl.setAttribute('aria-label', 'Progres unggah ' + file.name);
+      progressEl.setAttribute('aria-label', textOf(zone, 'progress', { name: file.name }));
       bar = document.createElement('div');
       bar.className = 'fdy-progress__bar';
       bar.style.width = '0%';
@@ -129,7 +150,7 @@
       uploading: function () {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · Mengunggah…';
+        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
         ensureProgress();
         determinate();
       },
@@ -149,7 +170,7 @@
       waiting: function (label) {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · ' + (label || 'Menunggu server…');
+        sub.textContent = fmtSize(file.size) + ' · ' + (label || textOf(zone, 'waiting'));
         ensureProgress();
         progressEl.classList.add('fdy-progress--indeterminate');
         /* The modifier styles .fdy-progress__bar, so it must sit on the CONTAINER, and the inline
@@ -163,7 +184,7 @@
         el.classList.add('fdy-file--success');
         el.classList.remove('fdy-file--error');
         icon.innerHTML = OK_ICON;
-        sub.textContent = fmtSize(file.size) + ' · Terunggah';
+        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'done');
         dropProgress();
       },
       fail: function (msg) {
@@ -231,8 +252,8 @@
       if (!fileList) return;
       Array.prototype.slice.call(fileList).forEach(function (file) {
         var reason = null;
-        if (!accepts(file, acceptAttr)) reason = 'Tipe berkas tidak didukung.';
-        else if (maxSize && file.size > maxSize) reason = 'Ukuran melebihi batas (' + fmtSize(maxSize) + ').';
+        if (!accepts(file, acceptAttr)) reason = textOf(zone, 'badType');
+        else if (maxSize && file.size > maxSize) reason = textOf(zone, 'tooBig', { max: fmtSize(maxSize) });
         var row = makeRow(file, zone);
         if (list) list.appendChild(row.el);
         if (reason) {

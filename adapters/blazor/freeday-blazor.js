@@ -99,6 +99,11 @@
 
   // Passthrough to the Freeday toast API.
   function toast(options) {
+    /* The enhancer's own default is Indonesian — deliberate for the raw path, wrong for a Blazor
+     * app, which COMPONENTS.md promises is English throughout. Defaulted here so the promise is
+     * kept without changing what a hand-written page gets. */
+    options = options || {};
+    if (options.closeLabel == null || options.closeLabel === '') options.closeLabel = 'Close';
     if (window.Freeday && typeof window.Freeday.toast === 'function') window.Freeday.toast(options);
   }
 

@@ -107,6 +107,59 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  * Blazor is included even though it was the stack that had it right — the guard is about the
  * promise, not about who broke it.
  */
+/* The ENHANCERS are a different promise from the adapters, and need a different guard.
+ *
+ * COMPONENTS.md says the vanilla enhancers write Indonesian, and that is deliberate: an app on the
+ * raw path opted into it. So "no Indonesian here" would be the wrong assertion — it would break the
+ * documented default. What was actually wrong is that the strings could not be CHANGED: a Blazor
+ * app reaches these enhancers through `FreedayBlazor.initAll`, which runs every one of them, and
+ * COMPONENTS.md promises Blazor is English throughout. Both promises hold only if the default stays
+ * Indonesian AND every string is overridable.
+ *
+ * So the invariant is placement: a user-facing string lives in that file's `TEXT` table, which
+ * `textOf()` reads through, and nowhere else. A literal written straight into a `textContent` or an
+ * `aria-label` further down is unreachable from outside and fails here.
+ *
+ * This is #013 §2 and #015's "still open", and it is scoped by SINK rather than by a word list —
+ * #015's lesson was that a word list cannot see `pencarian` behind `\bcari\b`, and a second list
+ * would have the same hole one affix over. */
+test('an enhancer string is overridable, not hard-coded (#016)', () => {
+  const SINK = /(\.textContent\s*=|setAttribute\('(aria-label|title|placeholder)'|\.placeholder\s*=)/;
+  const offenders = [];
+
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
+    const src = read(`src/${file}`);
+    /* The table's own span, so its entries are not read as hard-coded strings. */
+    const open = src.indexOf('var TEXT = {');
+    const close = open === -1 ? -1 : src.indexOf('};', open);
+
+    src.split('\n').forEach((line, i) => {
+      if (/^\s*(\*|\/\/|\/\*)/.test(line)) return;
+      if (!SINK.test(line)) return;
+      const at = src.split('\n').slice(0, i).join('\n').length;
+      if (open !== -1 && at > open && at < close) return;
+      /* A `textOf(root, 'key')` call is the overridable path, so its KEY is not a hard-coded
+       * string. Erased from the line rather than skipping the line, so a literal concatenated
+       * beside a legitimate lookup is still caught. */
+      const scan = line.replace(/textOf\([^)]*\)/g, '');
+      for (const m of scan.matchAll(/'([^']{2,80})'/g)) {
+        const text = m[1];
+        /* A literal is PROSE when it carries two or more consecutive letters and no code
+         * punctuation. That drops `aria-label` and `fdy-x` (markup), ` · ` (a separator glyph),
+         * and the code fragment a line with three quotes hands the matcher between strings two
+         * and three — none of which a translator would ever be given. */
+        if (!/[A-Za-z]{2,}/.test(text)) continue;
+        if (/[;=()]/.test(text)) continue;
+        if (/^[a-z-]+$/.test(text) || text.startsWith('&') || text.startsWith('fdy-')) continue;
+        offenders.push(`src/${file}:${i + 1}  ${text.trim()}`);
+      }
+    });
+  }
+
+  assert.deepEqual(offenders, [],
+    'these go straight into the DOM and no consumer can change them — move them into TEXT and read with textOf():\n' + offenders.join('\n'));
+});
+
 test('the typed adapters speak English (#009)', () => {
   /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
      a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */

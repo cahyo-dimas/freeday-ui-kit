@@ -759,14 +759,29 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   offer) carrying `data-fdy-table-page-size`; the enhancer only wires it, and listens for both
   `change` and the `fdy-change` a `.fdy-combo` emits, so either kind works.
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
-- **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian —
-  the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and filter
-  UI (`Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`), and the same
-  applies elsewhere (`Bulan berikutnya`, `Format tidak valid.`). There is no override hook. The
+- **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian by
+  default — the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and
+  filter UI (`Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`), and the
+  same elsewhere (`Format tidak valid.`, `Tampilkan kata sandi`, `Menunggu server…`). The
   Vue/React/Blazor components are English throughout, so **an English app should use the typed
-  wrapper**, not the enhancer. For an English static page, render the footer/bulk nodes yourself
-  from the `fdy-table-change` event instead of using `data-fdy-table-info` /
-  `data-fdy-table-bulk-count`; the filter button's `aria-label` has no such escape today.
+  wrapper**.
+- **Overriding an enhancer's strings.** Each enhancer keeps its strings in one `TEXT` table and
+  reads them through `textOf()`, so any of them can be replaced per element with
+  **`data-fdy-text-<key>`** — no forking, and no rendering the nodes yourself:
+
+  ```html
+  <div data-fdy-table
+       data-fdy-text-info="Showing {from}–{to} of {total}"
+       data-fdy-text-selected="{n} selected"
+       data-fdy-text-filter="Column filter">…</div>
+  ```
+
+  `{n}`, `{from}`, `{to}`, `{total}`, `{name}`, `{max}` and `{label}` are substituted where the
+  string supports them. Validation messages take the same shape on the `<form>`
+  (`data-fdy-text-required`, `data-fdy-text-type`, …), narrower than the per-field
+  `data-fdy-msg-<alias>` that still wins. `Freeday.toast()` takes `closeLabel` in its options
+  object. `npm test` asserts no enhancer string is written outside its `TEXT` table, so a new one
+  arrives overridable or not at all.
 
 **Testing note:** a column's filter button and the dialog it opens deliberately share one
 accessible name (`Filter <column>`) — a dialog named after its trigger is the normal pattern. In a

@@ -12,11 +12,19 @@ public partial class FdyCascade
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
 
-    [Parameter] public string? Label { get; set; }
-    [Parameter] public string? Placeholder { get; set; }
+    /// <summary>Trigger label. English by default, matching Vue and React.</summary>
+    [Parameter] public string Label { get; set; } = "Select";
+    /// <summary>Empty-value placeholder. English by default, matching Vue and React.</summary>
+    [Parameter] public string Placeholder { get; set; } = "Select…";
 
     /// <summary>Separator between labels in the displayed path (default " / ").</summary>
     [Parameter] public string Separator { get; set; } = " / ";
+
+    /// <summary>aria-label for the button that goes up one level. Matches Vue and React.</summary>
+    [Parameter] public string BackLabel { get; set; } = "Back one level";
+
+    /// <summary>aria-label for a branch row. <c>{label}</c> is replaced with the node label.</summary>
+    [Parameter] public string SubmenuLabel { get; set; } = "{label}, submenu";
 
     protected override ValueTask HydrateAsync() => JS.InvokeVoidAsync("FreedayCascade.init", Root);
 

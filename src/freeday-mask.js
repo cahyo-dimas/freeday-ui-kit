@@ -50,6 +50,22 @@
     return out;
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    show: 'Tampilkan kata sandi',
+    hide: 'Sembunyikan kata sandi'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initMask(el) {
     if (el.dataset.fdyMaskReady === '1') return;
     el.dataset.fdyMaskReady = '1';
@@ -85,13 +101,13 @@
     btn.type = 'button';
     btn.className = 'fdy-input-group__btn';
     btn.setAttribute('aria-pressed', 'false');
-    btn.setAttribute('aria-label', 'Tampilkan kata sandi');
+    btn.setAttribute('aria-label', textOf(input, 'show'));
     btn.innerHTML = EYE;
     btn.addEventListener('click', function () {
       var reveal = input.type === 'password';
       input.type = reveal ? 'text' : 'password';
       btn.setAttribute('aria-pressed', reveal ? 'true' : 'false');
-      btn.setAttribute('aria-label', reveal ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi');
+      btn.setAttribute('aria-label', reveal ? textOf(input, 'hide') : textOf(input, 'show'));
       btn.innerHTML = reveal ? EYE_OFF : EYE;
       input.focus();
     });

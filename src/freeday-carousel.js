@@ -17,6 +17,22 @@
 (function () {
   'use strict';
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    position: '{n} dari {total}',
+    slide: 'Slide {n}'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initCarousel(root) {
     if (root.dataset.fdyCarouselReady === '1') return;
     root.dataset.fdyCarouselReady = '1';
@@ -30,7 +46,7 @@
     var index = 0;
 
     slides.forEach(function (s, i) {
-      if (!s.hasAttribute('aria-label')) s.setAttribute('aria-label', (i + 1) + ' dari ' + slides.length);
+      if (!s.hasAttribute('aria-label')) s.setAttribute('aria-label', textOf(root, 'position', { n: i + 1, total: slides.length }));
     });
 
     var dots = [];
@@ -39,7 +55,7 @@
         var b = document.createElement('button');
         b.type = 'button';
         b.className = 'fdy-carousel__dot';
-        b.setAttribute('aria-label', 'Slide ' + (i + 1));
+        b.setAttribute('aria-label', textOf(root, 'slide', { n: i + 1 }));
         b.addEventListener('click', function () { goTo(i); });
         dotsWrap.appendChild(b);
         dots.push(b);

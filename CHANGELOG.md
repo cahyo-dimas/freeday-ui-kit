@@ -3,6 +3,42 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.39.0] — 2026-08-19
+The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are reachable now.
+### Added
+- **Every enhancer string is overridable with `data-fdy-text-<key>`** (#016). The defaults stay
+  Indonesian — that is documented and deliberate for the raw path, and changing it would break
+  every app that adopted it — but they were also *unreachable*, and that is the half that was
+  wrong. A Blazor app meets these enhancers through `FreedayBlazor.initAll`, which runs every one
+  of them, while COMPONENTS.md promises Blazor is English throughout; both promises can only hold
+  if the default stays and the string can be changed. Each enhancer now keeps its strings in one
+  `TEXT` table read through `textOf()`. `{n}`, `{from}`, `{to}`, `{total}`, `{name}`, `{max}` and
+  `{label}` are substituted where the string supports them. Validation messages take the same shape
+  on the `<form>`, narrower than the per-field `data-fdy-msg-<alias>` that still wins;
+  `Freeday.toast()` takes `closeLabel`.
+- **34 strings across 9 files**, not the 19 across 7 a word-list scan had counted — `carousel`
+  (`Slide {n}`), `cascade` (`Kembali satu tingkat`), `mask` (`Tampilkan kata sandi`), `stepper`
+  (`Selesai` / `Lanjut`) and four upload status strings were all invisible to it. #015 had just
+  finished making this point about `\bcari\b` and `pencarian`; the recount was found by scanning
+  by SINK — what lands in a `textContent`, an `aria-label`, a `title` or a `placeholder` — which
+  cannot be fooled by an affix.
+### Fixed
+- **Blazor's `FdyCascade` rendered Indonesian** (#016). `Label` and `Placeholder` were `string?`
+  with no default, so an app that did not set them emitted `data-label=""` and the enhancer fell
+  back to `Pilih` / `Pilih…`. Vue and React have defaulted to `Select` / `Select…` since #015 —
+  same drift as #009 and #015, third time, and the parameter existing is what made it invisible.
+  They are non-nullable with English defaults now, and `BackLabel` / `SubmenuLabel` reach the two
+  strings the enhancer builds itself, which had no route from .NET at all.
+- **`Freeday.toast()` from Blazor labelled its close button `Tutup`.** `FreedayBlazor.toast` now
+  defaults `closeLabel` to `Close` — in the bridge, not the enhancer, so a hand-written page still
+  gets the documented Indonesian.
+### Added — guards
+- **An enhancer string is overridable, not hard-coded** (#016). `npm test` asserts that a literal
+  reaching a `textContent`, `aria-label`, `title` or `placeholder` lives in that file's `TEXT`
+  table. Scoped by SINK rather than by a word list, deliberately: a second word list would have the
+  same hole one affix over, and this one is also blind to no language. Mutation-tested — putting
+  `'Tutup'` back into the toast fails it by file and line.
+
 ## [1.38.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
 ### Fixed

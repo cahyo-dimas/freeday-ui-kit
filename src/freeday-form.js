@@ -38,7 +38,12 @@
     badInput: 'type',
     customError: 'mismatch'
   };
-  var DEFAULTS = {
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
+   * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
+   * a host in another language needs: it sets nine messages once instead of on every input.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
     required: 'Wajib diisi.',
     type: 'Format tidak valid.',
     pattern: 'Format tidak sesuai.',
@@ -47,8 +52,13 @@
     min: 'Nilai terlalu kecil.',
     max: 'Nilai terlalu besar.',
     step: 'Nilai tidak sesuai kelipatan.',
-    mismatch: 'Nilai tidak cocok.'
+    mismatch: 'Nilai tidak cocok.',
+    invalid: 'Tidak valid.'
   };
+  function textOf(root, key) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    return custom != null && custom !== '' ? custom : TEXT[key];
+  }
   var VALIDITY_KEYS = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooShort', 'tooLong', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput'];
 
   function isCandidate(el) {
@@ -82,7 +92,7 @@
     if (matchSel) {
       var other = document.querySelector(matchSel);
       if (other && el.value !== other.value) {
-        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || DEFAULTS.mismatch);
+        el.setCustomValidity(el.getAttribute('data-fdy-msg-mismatch') || el.getAttribute('data-fdy-msg') || textOf(el.form || el.closest('form'), 'mismatch'));
       }
     }
     if (el.validity.valid) return '';
@@ -93,7 +103,8 @@
       }
     }
     var custom = alias ? el.getAttribute('data-fdy-msg-' + alias) : null;
-    return custom || el.getAttribute('data-fdy-msg') || (alias && DEFAULTS[alias]) || el.validationMessage || 'Tidak valid.';
+    var form = el.form || el.closest('form');
+    return custom || el.getAttribute('data-fdy-msg') || (alias && textOf(form, alias)) || el.validationMessage || textOf(form, 'invalid');
   }
 
   function paint(el, message) {

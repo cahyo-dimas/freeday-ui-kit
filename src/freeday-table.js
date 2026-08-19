@@ -33,6 +33,32 @@
       : cell.textContent).trim();
   }
 
+
+  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+   * path — and every one overridable per element, so a host that speaks another language (the
+   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
+   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  var TEXT = {
+    prev: 'Sebelumnya',
+    next: 'Berikutnya',
+    selected: '{n} dipilih',
+    filter: 'Filter kolom',
+    filterText: 'Berisi teks',
+    filterTextPlaceholder: 'Berisi…',
+    filterEnum: 'Tampilkan nilai',
+    filterRange: 'Rentang nilai',
+    reset: 'Reset',
+    close: 'Tutup',
+    rows: '{n} baris',
+    info: 'Menampilkan {from}–{to} dari {total}'
+  };
+  function textOf(root, key, vars) {
+    var custom = root && root.getAttribute ? root.getAttribute('data-fdy-text-' + key) : null;
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   function initTable(root) {
     if (root.dataset.fdyTableReady === '1') return;
     var table = root.querySelector('table.fdy-table');
@@ -157,7 +183,7 @@
         ul.appendChild(li);
       }
 
-      addBtn('‹', page - 1, { disabled: page === 1, label: 'Sebelumnya' });
+      addBtn('‹', page - 1, { disabled: page === 1, label: textOf(root, 'prev') });
       var pages = [];
       for (var p = 1; p <= totalPages; p++) {
         if (p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)) pages.push(p);
@@ -167,7 +193,7 @@
         if (p === '…') addEllipsis();
         else addBtn(String(p), p, { current: p === page });
       });
-      addBtn('›', page + 1, { disabled: page === totalPages, label: 'Berikutnya' });
+      addBtn('›', page + 1, { disabled: page === totalPages, label: textOf(root, 'next') });
       pagerEl.appendChild(ul);
     }
 
@@ -182,7 +208,7 @@
       if (!bulkBar) return;
       var n = selectedRows().length;
       bulkBar.hidden = n === 0;
-      if (bulkCount) bulkCount.textContent = n + ' dipilih';
+      if (bulkCount) bulkCount.textContent = textOf(root, 'selected', { n: n });
     }
     function clearSelection() {
       allRows.forEach(function (r) {
@@ -238,15 +264,15 @@
       var pop = document.createElement('div');
       pop.className = 'fdy-filter';
       pop.setAttribute('role', 'dialog');
-      pop.setAttribute('aria-label', 'Filter kolom');
+      pop.setAttribute('aria-label', textOf(root, 'filter'));
       var f = colFilters[idx] || { type: type };
 
       if (type === 'text') {
-        pop.appendChild(filterTitle('Berisi teks'));
+        pop.appendChild(filterTitle(textOf(root, 'filterText')));
         var inp = document.createElement('input');
         inp.className = 'fdy-input';
         inp.type = 'search';
-        inp.placeholder = 'Berisi…';
+        inp.placeholder = textOf(root, 'filterTextPlaceholder');
         inp.value = f.text || '';
         inp.addEventListener('input', function () {
           f.text = inp.value.trim();
@@ -256,7 +282,7 @@
         });
         pop.appendChild(inp);
       } else if (type === 'enum') {
-        pop.appendChild(filterTitle('Tampilkan nilai'));
+        pop.appendChild(filterTitle(textOf(root, 'filterEnum')));
         var list = document.createElement('div');
         list.className = 'fdy-filter__list';
         var set = f.set || new Set();
@@ -279,7 +305,7 @@
         });
         pop.appendChild(list);
       } else if (type === 'number') {
-        pop.appendChild(filterTitle('Rentang nilai'));
+        pop.appendChild(filterTitle(textOf(root, 'filterRange')));
         var range = document.createElement('div');
         range.className = 'fdy-filter__range';
         var minI = numberInput('Min', f.min);
@@ -304,7 +330,7 @@
       var reset = document.createElement('button');
       reset.type = 'button';
       reset.className = 'fdy-btn fdy-btn--ghost fdy-btn--sm';
-      reset.textContent = 'Reset';
+      reset.textContent = textOf(root, 'reset');
       reset.addEventListener('click', function () {
         delete colFilters[idx];
         markActive(btn, false);
@@ -314,7 +340,7 @@
       var done = document.createElement('button');
       done.type = 'button';
       done.className = 'fdy-btn fdy-btn--sm';
-      done.textContent = 'Tutup';
+      done.textContent = textOf(root, 'close');
       done.addEventListener('click', function () { closePopover(true); });
       foot.appendChild(reset); foot.appendChild(done);
       pop.appendChild(foot);
@@ -339,7 +365,7 @@
         btn.className = 'fdy-table__filterbtn';
         btn.setAttribute('aria-haspopup', 'dialog');
         btn.setAttribute('aria-pressed', 'false');
-        btn.setAttribute('aria-label', 'Filter kolom');
+        btn.setAttribute('aria-label', textOf(root, 'filter'));
         btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18l-7 8v5l-4 2v-7z"></path></svg>';
         btn.addEventListener('click', function (e) {
           e.stopPropagation();
@@ -370,8 +396,8 @@
 
       var shownFrom = total === 0 ? 0 : start + 1;
       var shownTo = start + slice.length;
-      if (countEl) countEl.textContent = total + ' baris';
-      if (infoEl) infoEl.textContent = 'Menampilkan ' + shownFrom + '–' + shownTo + ' dari ' + total;
+      if (countEl) countEl.textContent = textOf(root, 'rows', { n: total });
+      if (infoEl) infoEl.textContent = textOf(root, 'info', { from: shownFrom, to: shownTo, total: total });
       buildPager(totalPages);
       syncSelectAll(slice);
       updateBulk();
