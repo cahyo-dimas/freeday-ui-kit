@@ -40,18 +40,47 @@ const CONTAINED_BY_ANCESTOR = new Map([
   ['.fdy-carousel__viewport::-webkit-scrollbar', 'scrollbar pseudo-element, not a container'],
 ]);
 
-/** Flatten a stylesheet into `{ selector, body }` for every top-level rule (at-rules included). */
+/** Flatten a stylesheet into `{ selector, body }` for every top-level rule (at-rules included).
+ *
+ * Comments are stripped from the WHOLE source before matching, because a comment quoting CSS —
+ * this file's neighbours do it constantly — carries braces that would otherwise split a rule in
+ * half. Stripping first is also what lets the selector be read WHOLE: the previous version kept
+ * only the last line of it, so a selector wrapped across lines arrived truncated and every guard
+ * in this file was blind to that rule. It surfaced when the first draft of the filter-bar rule was
+ * wrapped and its guard passed against nothing (#014). The kit writes one rule per line today; a
+ * guard must not depend on that holding. */
 function rules(source) {
+  const clean = source.replace(/\/\*[\s\S]*?\*\//g, '');
   const out = [];
   const re = /([^{}]+)\{([^{}]*)\}/g;
   let m;
-  while ((m = re.exec(source)) !== null) {
-    const selector = m[1].replace(/\/\*[\s\S]*?\*\//g, '').trim().split('\n').pop().trim();
+  while ((m = re.exec(clean)) !== null) {
+    const selector = m[1].trim().replace(/\s+/g, ' ');
     if (selector === '' || selector.startsWith('@')) continue;
     out.push({ selector, body: m[2] });
   }
   return out;
 }
+
+test('rules() reads a wrapped selector whole (#014)', () => {
+  /* Every guard in this file trusts `rules()`. When it kept only the last line of a selector, a
+   * rule written across lines was reported under a fragment of its own name — so a guard looking
+   * for `.fdy-filterbar>.fdy-check` found nothing and passed, which is the worst way for a test to
+   * fail. Asserted here rather than left to the CSS staying one-rule-per-line, because that is a
+   * convention and this is the thing that would silently stop enforcing it. */
+  const wrapped = rules(`
+    .fdy-a,
+    .fdy-b > .fdy-c{color:red;}
+  `);
+  assert.deepEqual(wrapped.map(r => r.selector), ['.fdy-a, .fdy-b > .fdy-c']);
+
+  /* A comment quoting CSS carries braces. Stripped before matching, it cannot split a rule. */
+  const commented = rules(`
+    /* like .fdy-x{color:blue} but not */
+    .fdy-y{color:green;}
+  `);
+  assert.deepEqual(commented.map(r => r.selector), ['.fdy-y']);
+});
 
 const CLIPS = /(^|;|\s)overflow(-x|-y)?\s*:\s*(auto|scroll|hidden)/;
 const POSITIONED = /(^|;|\s)position\s*:\s*(relative|absolute|fixed|sticky)/;

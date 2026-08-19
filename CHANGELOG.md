@@ -20,6 +20,16 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
   misses most of the UI vocabulary. Widening it is what surfaced the `FdyCascade` string nobody had
   reported.
 
+### Fixed — the test suite
+- **`rules()` read only the last line of a selector**, so a rule written across several lines was
+  reported under a fragment of its own name and every guard in `test/css.test.mjs` was blind to it
+  (#014). A guard that matches nothing PASSES, which is the worst way for a test to fail — it
+  surfaced only because the first draft of the filter-bar rule happened to be wrapped. The helper
+  now strips comments from the whole source first (a comment quoting CSS carries braces, and those
+  would split a rule in half) and reads the selector whole. Asserted directly rather than left to
+  the CSS staying one-rule-per-line: that is a convention, and this is the thing that would quietly
+  stop enforcing it. Mutation-tested — restoring the last-line read fails the new test by name.
+
 ## [1.37.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
 ### Added
