@@ -3,6 +3,23 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.38.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
+### Fixed
+- **`FdyCfl`'s trigger said `"Buka pencarian"`** (Vue · React) — the accessible name of the button
+  that opens the picker, and so the first thing a screen-reader user meets on every
+  choose-from-list. #009 replaced twelve strings around it and missed this one. It takes an
+  `openLabel` prop defaulting to `'Open search'` now. Blazor was not Indonesian but was using
+  `SearchPlaceholder` as that button's `aria-label` — a placeholder doing a label's job — and now
+  takes the same `OpenLabel`, so all four stacks name the control identically.
+- **`FdyCascade`'s up-one-level button said `"Kembali satu tingkat"`** (Vue · React) — new
+  `backLabel`, default `'Back one level'`.
+### Changed
+- **The language guard now lists derived forms, not just roots.** `\bcari\b` cannot match
+  *pen·cari·an*, and `kembali` was never listed — Indonesian derives by affix, so a whole-word list
+  misses most of the UI vocabulary. Widening it is what surfaced the `FdyCascade` string nobody had
+  reported.
+
 ## [1.37.0] — 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
 ### Added

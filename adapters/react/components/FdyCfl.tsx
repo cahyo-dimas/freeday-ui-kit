@@ -43,6 +43,8 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   moreText?: string;
   /** aria-label for the dialog's close button. Default 'Close'. */
   closeLabel?: string;
+  /** aria-label for the button that opens the picker. Default 'Open search'. */
+  openLabel?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -300,7 +302,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
         className="fdy-input-group__btn"
         aria-haspopup="dialog"
         aria-labelledby={props.ariaLabelledby}
-        aria-label={props.ariaLabelledby ? undefined : 'Buka pencarian'}
+        aria-label={props.ariaLabelledby ? undefined : (props.openLabel ?? 'Open search')}
         disabled={isDisabled || isReadonly}
         onClick={openDialog}
       >

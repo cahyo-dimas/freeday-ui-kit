@@ -32,6 +32,9 @@ public partial class FdyCfl<TRow>
     [Parameter] public string MoreText { get; set; } = "Load more";
     [Parameter] public string CloseLabel { get; set; } = "Close";
 
+    /// <summary>aria-label for the button that opens the picker.</summary>
+    [Parameter] public string OpenLabel { get; set; } = "Open search";
+
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>Locked/view mode: shows the value but the search dialog can't be opened.</summary>

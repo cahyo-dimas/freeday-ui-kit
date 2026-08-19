@@ -110,7 +110,11 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
 test('the typed adapters speak English (#009)', () => {
   /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
      a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */
-  const INDONESIAN = /\b(pilih|memilih|tutup|batal|simpan|hapus|cari|memuat|muat|hasil|klik|baris|semua|dipilih|kolom|tidak|sebelumnya|berikutnya|menampilkan|tanggal|bulan)\b/i;
+  /* Roots, not whole words. The first version of this guard listed `cari` with a \b on each
+     side and sailed straight past `Buka pencarian` — the CFL trigger's aria-label, and the one
+     string a screen-reader user meets FIRST on every picker in the app. Indonesian derives by
+     affix (peN-, -an, meN-, di-), so a word-boundary list will always miss the derived forms. */
+  const INDONESIAN = /\b(pilih|memilih|pilihan|tutup|batal|simpan|hapus|cari|pencarian|mencari|buka|membuka|memuat|muat|hasil|klik|baris|semua|dipilih|kolom|tidak|sebelumnya|berikutnya|menampilkan|tanggal|bulan|tahun|halaman|kembali|tambah|ubah)\b/i;
   const offenders = [];
   for (const dir of ['adapters/vue/components', 'adapters/react/components', 'adapters/blazor']) {
     for (const file of readdirSync(join(root, dir))) {

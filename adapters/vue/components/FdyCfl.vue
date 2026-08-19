@@ -44,6 +44,8 @@ const props = defineProps<{
   moreText?: string;
   /** aria-label for the dialog's close button. Default 'Close'. */
   closeLabel?: string;
+  /** aria-label for the button that opens the picker. Default 'Open search'. */
+  openLabel?: string;
   placeholder?: string;
   disabled?: boolean;
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
@@ -306,7 +308,7 @@ onBeforeUnmount((): void => {
       class="fdy-input-group__btn"
       aria-haspopup="dialog"
       :aria-labelledby="ariaLabelledby"
-      :aria-label="ariaLabelledby ? undefined : 'Buka pencarian'"
+      :aria-label="ariaLabelledby ? undefined : (openLabel ?? 'Open search')"
       :disabled="isDisabled || isReadonly"
       @click="openDialog"
     >

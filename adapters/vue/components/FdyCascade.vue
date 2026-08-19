@@ -36,6 +36,8 @@ const props = defineProps<{
   options: ReadonlyArray<CascadeNode>;
   /** Path separator in the display, default " / " (matches the enhancer). */
   separator?: string;
+  /** aria-label for the button that goes up one level. Default 'Back one level'. */
+  backLabel?: string;
   placeholder?: string;
   /** Accessible name for the trigger + listbox (the enhancer's data-label). */
   label?: string;
@@ -207,7 +209,7 @@ onBeforeUnmount((): void => {
         <button
           type="button"
           class="fdy-cascade__back"
-          aria-label="Kembali satu tingkat"
+          :aria-label="backLabel ?? 'Back one level'"
           :hidden="stack.length === 0"
           @click="ascend(); listEl?.focus()"
         >
