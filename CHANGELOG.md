@@ -83,6 +83,12 @@ finally makes answerable.
   `height:2.25rem` to match the pager links beside it, which made the one combobox in a compact app
   disagree with every input and combo on the page. A pager link is a nav button; the thing a
   combobox has to agree with is the form controls, so the height goes back to `--control-h`.
+- **`.fdy-list__title` did not set its own type** (#010). The class carries weight, colour and
+  truncation but inherited font-size and family, so on the `<span>` the docs show it is 16px body
+  text and on an `<h3>` — a legitimate element for a row that names a record — the UA's 1.17em and
+  base.css's display-font rule made it 18.7px Sora. A phone row's name then shouted over its meta,
+  and a long one wrapped to two lines instead of ellipsising. A class that names a role owns the type
+  for that role.
 - **The month grid rendered seven months across** (#010). `.fdy-cal__grid--months` sets three
   columns and `.fdy-cal__grid` sets seven; both sit on the same element and weigh the same, so
   source order decides — and the modifier was declared *before* the base it modifies, with a comment

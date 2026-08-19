@@ -1046,7 +1046,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-list__row--button:disabled:hover,.fdy-list__row--button[aria-disabled="true"]:hover,.fdy-list__row--interactive[aria-disabled="true"]:hover{background:none;}
 /* Row internals: a title/meta stack that truncates, and a trailing slot pinned right. */
 .fdy-list__main{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1;}
-.fdy-list__title{font-weight:var(--weight-medium);color:var(--color-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fdy-list__title{font-family:var(--font-body);font-size:var(--text-base);font-weight:var(--weight-medium);letter-spacing:normal;color:var(--color-text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-list__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
 .fdy-list__aside{flex:none;display:flex;align-items:center;gap:var(--space-2);}
 /* Density: rows tighten with the rest of the kit (--space-* mid-range steps under compact). */
