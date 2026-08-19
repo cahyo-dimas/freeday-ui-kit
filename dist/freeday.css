@@ -729,6 +729,12 @@ a { color: var(--color-primary); }
 /* Freeday — Date picker (input-styled trigger + calendar popover).
  * Built by freeday-datepicker.js from an empty [data-fdy-datepicker] wrapper. */
 .fdy-datepicker{position:relative;display:inline-block;width:100%;max-width:14rem;}
+/* Inside a labelled field, a picker fills the field like every other control.
+   The 14rem/11rem caps above suit a picker standing on its own; in a form grid
+   they leave the date box visibly short of the combo beside it — 224px against
+   319px in a two-column layout — and the row reads as ragged. The field's own
+   max-width is what should govern there. */
+.fdy-field>.fdy-datepicker,.fdy-field>.fdy-timepicker,.fdy-field>.fdy-daterange{max-width:none;}
 .fdy-datepicker__trigger{display:inline-flex;align-items:center;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-datepicker__trigger:hover{border-color:var(--color-text-muted);}
 .fdy-datepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}

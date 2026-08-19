@@ -425,3 +425,20 @@ test('a bare control in a filter bar keeps the height of a control (#014)', () =
   }
 });
 
+
+/* A picker in a labelled field is as wide as the field, like every other control (#017).
+ *
+ * `.fdy-field` and the controls that fill it cap at 22rem; the date and time pickers cap at
+ * 14rem and 11rem. In a two-column form grid that put a 224px date box beside a 319px combo,
+ * and the row read as ragged — reported from IDU_EMATE_APPL_WEB's transaction forms. The
+ * narrow caps still apply to a picker standing on its own. */
+test('a picker inside a field is not capped narrower than the field (#017)', () => {
+  const all = rules(css);
+  const rule = all.find(r =>
+    /\.fdy-field>\.fdy-datepicker/.test(r.selector) && /max-width:\s*none/.test(r.body));
+  assert.ok(rule, '.fdy-field>.fdy-datepicker must drop the standalone max-width');
+  for (const picker of ['.fdy-timepicker', '.fdy-daterange']) {
+    assert.ok(rule.selector.includes(`.fdy-field>${picker}`),
+      `${picker} needs the same release, or one picker fills its field and the next does not`);
+  }
+});

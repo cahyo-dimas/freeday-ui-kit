@@ -3,6 +3,17 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.40.0] — 2026-08-19
+One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
+### Fixed
+- **A picker inside a `.fdy-field` now fills it.** `.fdy-field`, `.fdy-combo` and
+  `.fdy-input-group` all cap at 22rem; `.fdy-datepicker` capped at 14rem and `.fdy-timepicker`
+  at 11rem. In a two-column form grid that left a **224px** date box beside a **319px** combo —
+  measured, not eyeballed — and the row read as ragged with no fix available to the consuming
+  app, because the cap sits on the component. `.fdy-field > .fdy-datepicker` / `> .fdy-timepicker`
+  / `> .fdy-daterange` drop the cap; a picker standing on its own keeps its narrower width, which
+  is right for a short value.
+
 ## [1.39.0] — 2026-08-19
 The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are reachable now.
 ### Added
