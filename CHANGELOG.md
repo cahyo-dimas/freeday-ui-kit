@@ -3,6 +3,16 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.49.0] — 2026-08-20
+### Added
+- **`FdyTableColumn.labelHidden`** (#026). A column of row CONTROLS — an edit button, a row menu —
+  could be named or quiet, not both: `label` renders as bare text in the `<th>`, so a designer who
+  does not want a word above a column of icons was left with an empty header, which assistive tech
+  announces as nothing. With `labelHidden: true` the label renders inside `.fdy-visually-hidden`:
+  the cell looks empty and the column is still named. The label keeps naming the column's filter
+  popover and sort button, so it stays meaningful either way.
+  Contract and BOTH adapters in one change — the Vue and React tables are separate codebases.
+
 ## [1.48.1] — 2026-08-20
 ### Fixed
 - **A date column sorted correctly and filtered nothing** (#025). `FdyTable`'s client-mode date

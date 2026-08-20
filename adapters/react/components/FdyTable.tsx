@@ -271,9 +271,11 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
               {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
                 <th key={col.key} scope="col" style={alignStyle(col)} aria-sort={ariaSortOf(col)}>
                   {col.sortable ? (
-                    <button type="button" className="fdy-table__sortbtn" onClick={(): void => onSort(col)}>{col.label}</button>
+                    <button type="button" className="fdy-table__sortbtn" onClick={(): void => onSort(col)}>
+                      <span className={col.labelHidden ? 'fdy-visually-hidden' : undefined}>{col.label}</span>
+                    </button>
                   ) : (
-                    col.label
+                    <span className={col.labelHidden ? 'fdy-visually-hidden' : undefined}>{col.label}</span>
                   )}
                   {col.filter && (
                     <FdyTableFilter

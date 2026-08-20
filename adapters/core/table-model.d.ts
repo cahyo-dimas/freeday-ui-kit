@@ -24,6 +24,16 @@ export interface FdyTableColumn<T> {
   key: string;
   /** Header label. */
   label: string;
+  /**
+   * Render the label for assistive tech only — the header cell looks empty.
+   *
+   * For a column of row CONTROLS (an edit button, a row menu), where a visible
+   * heading is noise above a column of icons but the column still has to be
+   * named: a `<th>` with no text is announced as nothing, and a reader tabbing
+   * the header row cannot tell what it is. The label still names the column's
+   * filter popover and its sort button, so it must stay meaningful.
+   */
+  labelHidden?: boolean;
   /** Show a sort toggle in the header. */
   sortable?: boolean;
   /** Offer a column filter of this type. */

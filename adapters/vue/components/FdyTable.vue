@@ -280,8 +280,8 @@ function isExpanded(row: Row): boolean {
                 type="button"
                 class="fdy-table__sortbtn"
                 @click="onSort(col)"
-              >{{ col.label }}</button>
-              <template v-else>{{ col.label }}</template>
+              ><span :class="col.labelHidden ? 'fdy-visually-hidden' : undefined">{{ col.label }}</span></button>
+              <span v-else :class="col.labelHidden ? 'fdy-visually-hidden' : undefined">{{ col.label }}</span>
               <FdyTableFilter
                 v-if="col.filter"
                 :label="col.label"
