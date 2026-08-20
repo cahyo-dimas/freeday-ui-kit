@@ -5,7 +5,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [1.48.0] — 2026-08-20
 ### Reverted
-- **1.47.0's readonly focus ring (#023) is withdrawn.** The report was measured wrong. The control in
+- **1.47.0's readonly focus ring (#024) is withdrawn.** The report was measured wrong. The control in
   question — a `CflField`'s readonly display input — sits inside `.fdy-input-group`, and
   `.fdy-input-group:focus-within` already carries the border and the 3px ring for the WHOLE control;
   `.fdy-input-group .fdy-input:focus` clears the inner input deliberately so the two do not nest. The

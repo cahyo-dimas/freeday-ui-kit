@@ -475,14 +475,14 @@ test('the badge carries the categorical tone scale, on the same mix as the other
 });
 
 
-/* The ring for a grouped control lives on the GROUP (#023, withdrawn).
+/* The ring for a grouped control lives on the GROUP (#024, withdrawn).
  *
  * `.fdy-input-group:focus-within` carries the border and the 3px ring, and
  * `.fdy-input-group .fdy-input:focus` deliberately clears the inner input so the
  * two do not nest. An audit that measured the INPUT concluded there was no focus
  * indicator, and a fix was written and reverted. This pins the arrangement so the
  * next reader finds the answer instead of the same wrong conclusion. */
-test('a grouped input wears its focus ring on the group (#023)', () => {
+test('a grouped input wears its focus ring on the group (#024)', () => {
   const all = rules(css);
   const group = all.find(r =>
     r.selector.split(',').some(sel => sel.trim() === '.fdy-input-group:focus-within'));
