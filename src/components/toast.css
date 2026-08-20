@@ -1,5 +1,17 @@
 /* Freeday — Toast (transient notification) */
-.fdy-toast-region{position:fixed;z-index:200;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));pointer-events:none;}
+/* The region is a POPOVER, not merely a high z-index.
+   `.fdy-modal` is a native <dialog> opened with showModal(), which puts it in the TOP LAYER — a
+   layer above the whole z-index universe, so no number here could ever beat it. A toast raised by
+   an action taken inside a modal was painted behind that modal's backdrop: dimmed, unreadable, and
+   most of it under the dialog itself. `freeday-toast.js` calls showPopover() as each toast is
+   added, which puts the region in the top layer too, and last-in wins there.
+   Everything after `pointer-events` is undoing the UA's [popover] defaults — it arrives with
+   inset:0, auto margins, a border, padding, a Canvas background and overflow:auto, none of which a
+   toast stack wants. Where showPopover() is unavailable the element is still an ordinary fixed
+   block at z-index 200, which is exactly what it was before. */
+.fdy-toast-region{position:fixed;z-index:200;inset:auto;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));height:auto;max-height:none;margin:0;padding:0;border:0;background:transparent;color:inherit;overflow:visible;pointer-events:none;}
+/* A popover gets a ::backdrop as well; a toast must not dim the page behind it. */
+.fdy-toast-region::backdrop{background:transparent;}
 .fdy-toast{pointer-events:auto;display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-inverse-surface);color:var(--color-inverse-text);box-shadow:var(--shadow-3);}
 .fdy-toast__accent{flex:none;width:.25rem;align-self:stretch;border-radius:var(--radius-full);background:var(--color-primary);}
 .fdy-toast--success .fdy-toast__accent{background:var(--color-success);}

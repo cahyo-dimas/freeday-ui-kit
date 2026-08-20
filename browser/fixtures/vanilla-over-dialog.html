@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Freeday — toast over dialog, checkbox under a long label</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday-toast.js" defer></script></head>
+<body>
+  <!-- A modal, because that is where the bug lives: a native <dialog> opened with showModal()
+       sits in the top layer, which no z-index can climb over. -->
+  <!-- Deliberately big enough to cover the bottom-right corner where the toast lands: if the
+       dialog wins, that pixel is the dialog's pale surface; if the toast wins it is the toast's
+       near-black. A subtle overlap would make the assertion a judgement call. -->
+  <dialog class="fdy-modal" id="dlg" style="width:960px;height:860px;max-height:none">
+    <div class="fdy-modal__body" style="width:340px">
+      <!-- Five checkboxes whose labels are one, two and three lines. Before `flex:none` the box
+           shrank in proportion to how much room the label wanted, so this rendered three
+           different sizes in one group. -->
+      <label class="fdy-check"><input type="checkbox" id="c1"><span>Short</span></label>
+      <label class="fdy-check"><input type="checkbox" id="c2"><span>When this role is the approver, require an extra approval from the next role</span></label>
+      <label class="fdy-check"><input type="checkbox" id="c3"><span>On overtime documents, when this role is the approver, require an extra approval from the next role in the chain above it</span></label>
+      <label class="fdy-radio"><input type="radio" name="r" id="r1"><span>On overtime documents, when this role is the approver, require an extra approval</span></label>
+      <input class="fdy-checkbox" type="checkbox" id="c4">
+    </div>
+  </dialog>
+
+<script>
+  document.getElementById('dlg').showModal();
+
+  window.overDialog = function () {
+    var box = function (id) {
+      var r = document.getElementById(id).getBoundingClientRect();
+      return { w: Math.round(r.width), h: Math.round(r.height) };
+    };
+    return { c1: box('c1'), c2: box('c2'), c3: box('c3'), r1: box('r1'), c4: box('c4') };
+  };
+
+  window.raiseToast = function () {
+    window.Freeday.toast({ variant: 'danger', message: 'Could not save this step.', timeout: 0 });
+    var el = document.querySelector('.fdy-toast');
+    var r = el.getBoundingClientRect();
+    var region = document.querySelector('.fdy-toast-region');
+    var dr = document.getElementById('dlg').getBoundingClientRect();
+    return {
+      centre: [Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2)],
+      // The assertion is only worth anything if the two boxes really do overlap.
+      overlapsDialog: !(r.right < dr.left || r.left > dr.right || r.bottom < dr.top || r.top > dr.bottom),
+      regionOpen: region.matches(':popover-open'),
+    };
+  };
+</script>
+</body>
+</html>

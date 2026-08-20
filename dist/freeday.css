@@ -1196,8 +1196,15 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-rating--sm .fdy-rating__star svg{width:1.1rem;height:1.1rem;}
 
 /* Freeday — Selection controls */
+/* `flex:none` on every box, track and standalone checkbox is load-bearing, not tidiness.
+   `.fdy-check` is an inline-flex row of [box, label], and a flex item with a WIDTH is still
+   shrinkable — so as soon as the label wrapped to a second line the box gave up horizontal space
+   to it and rendered an 18px-tall rectangle 13px wide. Squashed, off-square, and different from
+   every sibling whose label happened to be short: a form of five checkboxes showed three sizes.
+   Nothing in the declarations looked wrong, because the width was never overridden — it was
+   negotiated away. */
 .fdy-check,.fdy-radio,.fdy-switch{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}
-.fdy-check input,.fdy-radio input{appearance:none;-webkit-appearance:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-check input,.fdy-radio input{appearance:none;-webkit-appearance:none;flex:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-check input{border-radius:var(--radius-sm);}
 .fdy-radio input{border-radius:50%;}
 .fdy-check input::before{content:"";width:.62rem;height:.62rem;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);}
@@ -1207,13 +1214,13 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-check input:focus-visible,.fdy-radio input:focus-visible,.fdy-switch input:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-check input:disabled,.fdy-radio input:disabled,.fdy-switch input:disabled{opacity:.5;cursor:not-allowed;}
 .fdy-check:has(input:disabled),.fdy-radio:has(input:disabled),.fdy-switch:has(input:disabled){cursor:not-allowed;}
-.fdy-switch input{appearance:none;-webkit-appearance:none;position:relative;width:var(--control-switch-w);height:var(--control-switch-h);margin:0;border-radius:var(--radius-full);background:var(--color-control-border);cursor:pointer;transition:background var(--dur-base) var(--ease-standard);}
+.fdy-switch input{appearance:none;-webkit-appearance:none;flex:none;position:relative;width:var(--control-switch-w);height:var(--control-switch-h);margin:0;border-radius:var(--radius-full);background:var(--color-control-border);cursor:pointer;transition:background var(--dur-base) var(--ease-standard);}
 .fdy-switch input::before{content:"";position:absolute;top:2px;left:2px;width:calc(var(--control-switch-h) - 4px);height:calc(var(--control-switch-h) - 4px);border-radius:50%;background:var(--color-switch-thumb);box-shadow:var(--shadow-1);transition:transform var(--dur-base) var(--ease-spring);}
 .fdy-switch input:checked{background:var(--color-primary);}
 .fdy-switch input:checked::before{transform:translateX(calc(var(--control-switch-w) - var(--control-switch-h)));}
 
 /* Standalone checkbox (e.g. table row/select-all) — supports :indeterminate */
-.fdy-checkbox{appearance:none;-webkit-appearance:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);border-radius:var(--radius-sm);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+.fdy-checkbox{appearance:none;-webkit-appearance:none;flex:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);border-radius:var(--radius-sm);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-checkbox::before{content:"";width:.62rem;height:.62rem;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);}
 .fdy-checkbox:checked,.fdy-checkbox:indeterminate{background:var(--color-primary);border-color:var(--color-primary);}
 .fdy-checkbox:checked::before{transform:scale(1);}
@@ -1486,7 +1493,19 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 @media (prefers-reduced-motion:no-preference){.fdy-timepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
 /* Freeday — Toast (transient notification) */
-.fdy-toast-region{position:fixed;z-index:200;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));pointer-events:none;}
+/* The region is a POPOVER, not merely a high z-index.
+   `.fdy-modal` is a native <dialog> opened with showModal(), which puts it in the TOP LAYER — a
+   layer above the whole z-index universe, so no number here could ever beat it. A toast raised by
+   an action taken inside a modal was painted behind that modal's backdrop: dimmed, unreadable, and
+   most of it under the dialog itself. `freeday-toast.js` calls showPopover() as each toast is
+   added, which puts the region in the top layer too, and last-in wins there.
+   Everything after `pointer-events` is undoing the UA's [popover] defaults — it arrives with
+   inset:0, auto margins, a border, padding, a Canvas background and overflow:auto, none of which a
+   toast stack wants. Where showPopover() is unavailable the element is still an ordinary fixed
+   block at z-index 200, which is exactly what it was before. */
+.fdy-toast-region{position:fixed;z-index:200;inset:auto;bottom:var(--space-5);right:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);width:min(24rem,calc(100vw - var(--space-8)));height:auto;max-height:none;margin:0;padding:0;border:0;background:transparent;color:inherit;overflow:visible;pointer-events:none;}
+/* A popover gets a ::backdrop as well; a toast must not dim the page behind it. */
+.fdy-toast-region::backdrop{background:transparent;}
 .fdy-toast{pointer-events:auto;display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--color-inverse-surface);color:var(--color-inverse-text);box-shadow:var(--shadow-3);}
 .fdy-toast__accent{flex:none;width:.25rem;align-self:stretch;border-radius:var(--radius-full);background:var(--color-primary);}
 .fdy-toast--success .fdy-toast__accent{background:var(--color-success);}

@@ -3929,9 +3929,37 @@
       region.className = 'fdy-toast-region';
       region.setAttribute('aria-live', 'polite');
       region.setAttribute('aria-atomic', 'false');
+      /* `manual`, not `auto`: an auto popover light-dismisses on an outside click and closes
+         itself the moment another popover opens. A toast is dismissed by its timer or its own
+         close button, by nobody else. */
+      region.setAttribute('popover', 'manual');
       document.body.appendChild(region);
     }
     return region;
+  }
+
+  /* Put the region in the TOP LAYER, above any open <dialog>.
+   *
+   * A modal dialog lives in the top layer, where z-index does not reach — so a toast raised by an
+   * action taken inside a modal was painted behind that modal's backdrop, which is where an error
+   * message is least useful. showPopover() joins the same layer, and membership there is ordered by
+   * when you joined: hide-then-show re-joins at the top, so a toast shown while a dialog is open
+   * lands above it rather than under the dialog that was opened after the last toast.
+   *
+   * Guarded twice on purpose. `showPopover` is absent before Chrome 114 / Safari 17 / Firefox 125,
+   * and the call throws if the element is disconnected or already open — in every one of those
+   * cases the region stays an ordinary fixed block at z-index 200, which is what it has always
+   * been. A notification must never be the thing that throws.
+   */
+  function raise(node) {
+    if (!node || typeof node.showPopover !== 'function') return;
+    try {
+      if (node.matches(':popover-open')) node.hidePopover();
+      node.showPopover();
+    } catch (e) {
+      /* Not reachable through the guards above, but a toast is on the error path itself: if
+         raising it fails the message still has to appear, one layer down. */
+    }
   }
 
   function dismiss(toast) {
@@ -4011,6 +4039,9 @@
       keyed[opts.key] = node;
     }
     region.appendChild(node);
+    // Raised per toast, not once at startup: a dialog opened AFTER the region joined the top layer
+    // would otherwise sit above it, which is the exact case this fixes.
+    raise(region);
 
     var timeout = opts.timeout == null ? 4000 : opts.timeout;
     if (timeout > 0) setTimeout(function () { dismiss(node); }, timeout);

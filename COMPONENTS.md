@@ -935,6 +935,13 @@ Every field is optional; it returns the toast element. Classes (rendered for you
 `.fdy-toast-region`, `.fdy-toast` (+`--info` `--success` `--warning` `--danger`) · `__accent`
 `__body` `__title` `__text` `__close`.
 
+**Above modals, and not by z-index.** The region is a `popover` and re-enters the **top layer** as
+each toast lands, because `.fdy-modal` is a native `<dialog>` — see the note under Modal below. If
+a toast of yours is hidden behind something, a bigger `z-index` is not the fix; check whether that
+something is in the top layer too. Where the Popover API is unavailable (before Chrome 114 /
+Safari 17 / Firefox 125) the region falls back to a fixed block at `z-index: 200`, which cannot
+clear an open modal — the message is still announced to a screen reader.
+
 ## Tooltip — `.fdy-tooltip`
 Hover/focus only, never the sole carrier of information. Wrap in `.fdy-tooltip-wrap`; the trigger
 gets `aria-describedby` → the `.fdy-tooltip[role="tooltip"]` `id`.
@@ -1019,7 +1026,13 @@ so the same look serves routed sub-navigation built from plain links — see the
 > **Typed wrapper: `<FdyModal>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--sm` `--md` `--lg`
-`--wide`; `--cfl` for the choose-from-list dialog. Parts `__header` `__title` `__body` `__footer`
+`--wide`; `--cfl` for the choose-from-list dialog.
+
+**It is in the TOP LAYER.** `showModal()` paints the dialog above every stacking context on the
+page, so no `z-index` anywhere can put anything over it — only another top-layer element (a
+`popover`, or another modal) can. It also makes the rest of the document inert, which means
+`elementFromPoint` outside the dialog returns the dialog: do not use a hit test to check what is
+painted on top of a modal, because it will tell you the dialog is, even when it visibly is not. Parts `__header` `__title` `__body` `__footer`
 `__close`. The body scrolls; the footer never clips. `aria-labelledby` → the title's `id`;
 `data-close` on any button that should close it.
 

@@ -3,6 +3,33 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.50.0] — 2026-08-20
+### Fixed
+- **A toast raised from inside a modal was painted behind it** (#027). `.fdy-toast-region` carried
+  `z-index: 200`, which can never win: `.fdy-modal` is a native `<dialog>` opened with `showModal()`
+  and therefore lives in the **top layer**, above the whole z-index universe. An error raised by an
+  action taken inside a dialog was dimmed by that dialog's backdrop and mostly hidden under the
+  dialog — so the reader saw a confirmation still asking a question they had already answered, and
+  no reason why. The region is now `popover="manual"` and `freeday-toast.js` calls `showPopover()`
+  as each toast lands (per toast, not once — the top layer is ordered by when you joined, so a
+  dialog opened after the last toast would otherwise sit above it). Guarded: where `showPopover` is
+  unavailable or throws, the region stays exactly what it was.
+- **A checkbox shrank when its label was long** (#027). `.fdy-check` is an inline-flex row and its
+  box declared a width — but a flex item with a width is still shrinkable, so a label that wrapped
+  to three lines squeezed the box from 18px to 13px while leaving it 18px tall. A group of five
+  rendered three different sizes, none of them square. `flex: none` on `.fdy-check input`,
+  `.fdy-radio input`, the `.fdy-switch` track and the standalone `.fdy-checkbox` — all four are
+  flex children somewhere in the kit.
+### Added — guards
+- **`pixelAt(x, y)` in `browser/harness.mjs`** — a 1×1 `Page.captureScreenshot`, decoded in-process.
+  Stacking above a modal cannot be asserted with `elementFromPoint`: a modal dialog makes the rest
+  of the document inert, so a hit test outside it returns the dialog whatever the paint order is,
+  reporting a working fix as broken. The new guard measures the colour actually composited at the
+  toast's centre. It waits for both fade-ins to finish first — a screenshot taken mid-animation
+  returns a blend of the two elements and flakes in both directions.
+- **Selection controls are asserted square and equal** across a group whose labels run one to three
+  lines, so a box that shrank in both axes cannot pass a width-only comparison.
+
 ## [1.49.0] — 2026-08-20
 ### Added
 - **`FdyTableColumn.labelHidden`** (#026). A column of row CONTROLS — an edit button, a row menu —

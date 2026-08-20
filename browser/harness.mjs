@@ -14,6 +14,7 @@
  * bind a fresh --headless debug port.
  */
 import { spawn } from 'node:child_process';
+import { inflateSync } from 'node:zlib';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { existsSync, readdirSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
@@ -192,7 +193,46 @@ export async function withPage(fileUrl, fn) {
       return self && self.name ? self.name.value : null;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName });
+    /* The PIXEL the browser actually painted at a point.
+     *
+     * The only honest way to ask "is this on top?" once a modal <dialog> is involved. The obvious
+     * instrument, elementFromPoint, answers a different question: a modal dialog makes the rest of
+     * the document inert, so a hit test anywhere outside it returns the dialog whatever the paint
+     * order is — it reports the dialog as "on top" of an element that is plainly visible above it.
+     * Compositing cannot be argued with.
+     *
+     * Clipped to 1x1 so the PNG is one pixel: with no left or upper neighbour every PNG filter
+     * type reduces to the identity, so the scanline is [filter, R, G, B(, A)] and needs no
+     * unfiltering pass. scale 1 keeps one CSS pixel one device pixel.
+     */
+    const pixelAt = async (x, y) => {
+      const shot = await cmd('Page.captureScreenshot', {
+        format: 'png',
+        clip: { x, y, width: 1, height: 1, scale: 1 },
+      });
+      const data = shot.result && shot.result.data;
+      if (!data) throw new Error('pixelAt: no screenshot came back');
+      const png = Buffer.from(data, 'base64');
+      let offset = 8; // past the 8-byte signature
+      const chunks = [];
+      while (offset < png.length) {
+        const length = png.readUInt32BE(offset);
+        const type = png.toString('ascii', offset + 4, offset + 8);
+        if (type === 'IDAT') chunks.push(png.subarray(offset + 8, offset + 8 + length));
+        offset += 12 + length; // length + type + data + CRC
+      }
+      const raw = inflateSync(Buffer.concat(chunks));
+      return { r: raw[1], g: raw[2], b: raw[3] };
+    };
+
+    /* Where a selector is on screen, for pixelAt. */
+    const centerXY = async (selector) => {
+      const c = await centerOf(selector);
+      if (c === null) throw new Error('centerXY: no element for ' + selector);
+      return c;
+    };
+
+    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, pixelAt, centerXY });
   } finally {
     if (ws !== null) {
       try {
