@@ -8,8 +8,8 @@ import type { FdyTableColumn } from '../../adapters/core/table-model';
 type Row = { code: string; name: string };
 
 const COLUMNS: FdyTableColumn<Row>[] = [
-  { key: 'code', header: 'Code', sortable: true },
-  { key: 'name', header: 'Name', filter: 'text' },
+  { key: 'code', label: 'Code', sortable: true },
+  { key: 'name', label: 'Name', filter: 'text' },
 ];
 const ROWS: Row[] = Array.from({ length: 7 }, (_, i) => ({ code: `C-${i + 1}`, name: `Row ${i + 1}` }));
 

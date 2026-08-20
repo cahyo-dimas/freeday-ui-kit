@@ -239,6 +239,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-table-pagesize.js'),
       join(HERE, 'entries', 'vue-cfl-multi.js'),
       join(HERE, 'entries', 'react-cfl-multi.tsx'),
+      join(HERE, 'entries', 'vue-table-label-hidden.js'),
+      join(HERE, 'entries', 'react-table-label-hidden.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

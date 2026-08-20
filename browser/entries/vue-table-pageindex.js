@@ -6,8 +6,8 @@ import { createApp, h, ref } from 'vue';
 import FdyTable from '../../adapters/vue/components/FdyTable.vue';
 
 const COLUMNS = [
-  { key: 'code', header: 'Code', sortable: true },
-  { key: 'name', header: 'Name', filter: 'text' },
+  { key: 'code', label: 'Code', sortable: true },
+  { key: 'name', label: 'Name', filter: 'text' },
 ];
 const ROWS = Array.from({ length: 7 }, (_, i) => ({ code: `C-${i + 1}`, name: `Row ${i + 1}` }));
 

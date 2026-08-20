@@ -47,6 +47,13 @@ public sealed class FdyTableColumn<TRow>
     /// <summary>Header label.</summary>
     public required string Label { get; init; }
 
+    /// <summary>Render the label for assistive tech only — the header cell looks empty.
+    /// For a column of row CONTROLS (an edit button, a row menu), where a visible heading is noise
+    /// above a column of icons but the column still has to be named: a <c>th</c> with no text is
+    /// announced as nothing, and a reader tabbing the header row cannot tell what it is. The label
+    /// still names the column's filter popover and its sort button, so it must stay meaningful.</summary>
+    public bool LabelHidden { get; init; }
+
     /// <summary>Show a sort toggle in the header.</summary>
     public bool Sortable { get; init; }
 

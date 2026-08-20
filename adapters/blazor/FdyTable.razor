@@ -26,11 +26,11 @@
                         <th scope="col" style="@AlignStyle(col)" aria-sort="@AriaSortOf(col)">
                             @if (col.Sortable)
                             {
-                                <button type="button" class="fdy-table__sortbtn" @onclick="() => OnSortClick(col)">@col.Label</button>
+                                <button type="button" class="fdy-table__sortbtn" @onclick="() => OnSortClick(col)"><span class="@(col.LabelHidden ? "fdy-visually-hidden" : null)">@col.Label</span></button>
                             }
                             else
                             {
-                                @col.Label
+                                <span class="@(col.LabelHidden ? "fdy-visually-hidden" : null)">@col.Label</span>
                             }
                             @if (col.Filter is { } ft)
                             {

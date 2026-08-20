@@ -185,3 +185,48 @@ test('the typed adapters speak English (#009)', () => {
   assert.deepEqual(offenders, [],
     'COMPONENTS.md promises the typed wrappers are English throughout:\n' + offenders.join('\n'));
 });
+
+test('the column contract reaches all three typed adapters (#026)', () => {
+  /* `FdyTableColumn` in adapters/core/table-model.d.ts is the contract. Vue and React consume that
+     file directly, so TypeScript keeps them honest; Blazor RE-DECLARES it in C#, which is a hand
+     copy and therefore the one surface that can silently fall behind — #026 shipped `labelHidden`
+     to Vue and React and left Blazor without it. One-directional on purpose: Blazor may hold MORE
+     (Cell has no TS twin, it is a slot there), so this asserts coverage, never equality — which is
+     also why it needs no exemption list. */
+  const contract = read('adapters/core/table-model.d.ts')
+    .match(/export interface FdyTableColumn<T>\s*\{([\s\S]*?)\n\}/)[1]
+    .matchAll(/^\s{2}([a-zA-Z]+)\??:/gm);
+  const props = [...contract].map(m => m[1]);
+  assert.ok(props.length >= 10, `parsed only ${props.length} contract props — the interface moved`);
+
+  const blazor = read('adapters/blazor/TableTypes.cs');
+  const surface = blazor.match(/class FdyTableColumn<TRow>\s*\{([\s\S]*?)\n\}/)[1];
+  const missing = props
+    .map(p => p[0].toUpperCase() + p.slice(1))
+    .filter(P => !new RegExp(`\\b${P}\\b\\s*\\{\\s*get;`).test(surface));
+
+  assert.deepEqual(missing, [],
+    'declared in the TS contract, absent from Blazor\'s FdyTableColumn — a Blazor app cannot ask for it:\n' +
+    missing.join('\n'));
+});
+
+test('a hidden column label is rendered, not dropped (#026)', () => {
+  /* The type surface above can be satisfied by a property nothing reads. Each of the three tables
+     renders its own header, so each has to spend the flag on `.fdy-visually-hidden`: the cell looks
+     empty and the column is still announced. Both header branches matter — a sortable column puts
+     its label inside the sort button, a plain one does not — so this counts TWO uses per adapter. */
+  const TABLES = [
+    ['adapters/vue/components/FdyTable.vue', 'labelHidden'],
+    ['adapters/react/components/FdyTable.tsx', 'labelHidden'],
+    ['adapters/blazor/FdyTable.razor', 'LabelHidden'],
+  ];
+  const offenders = [];
+  for (const [file, flag] of TABLES) {
+    const header = read(file).match(/<thead>[\s\S]*?<\/thead>/);
+    if (!header) { offenders.push(`${file}: no <thead> found — the header markup moved`); continue; }
+    const uses = [...header[0].matchAll(new RegExp(`${flag}[^\\n]*fdy-visually-hidden`, 'g'))].length;
+    if (uses < 2) offenders.push(`${file}: ${flag} reaches .fdy-visually-hidden ${uses}x in <thead>, expected both branches`);
+  }
+  assert.deepEqual(offenders, [],
+    'a column label that is hidden must still be in the DOM for assistive tech:\n' + offenders.join('\n'));
+});

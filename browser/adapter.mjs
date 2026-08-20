@@ -259,3 +259,31 @@ test('Vue FdyTable: pager={false} withholds the footer in server mode', { skip }
       'the surviving pager still works — this is not "hide every pager"');
   });
 });
+
+/* #026 — a column of row controls could be named or quiet, not both. `labelHidden` clips the label
+ * instead of dropping it, so the cell reads as empty and the column is still announced. Asserted in
+ * a real browser because the claim is about COMPUTED geometry (clip + 1px box), which a string match
+ * on the markup cannot see: a span carrying the class but no CSS would pass a static guard and still
+ * print the word. Both adapters, and the Blazor twin renders the same markup. */
+for (const which of ['vue', 'react']) {
+  test(`${which} FdyTable: a hidden column label is clipped, not dropped (#026)`, { skip }, async () => {
+    await withPage(fixture(`${which}-table-label-hidden.html`), async (p) => {
+      await p.waitFor(`document.querySelectorAll('.fdy-table thead th').length === 4`);
+
+      const visibleText = await p.evalJS(`(() => {
+        const th = [...document.querySelectorAll('.fdy-table thead th')];
+        return JSON.stringify(th.map((c) => {
+          const hidden = c.querySelector('.fdy-visually-hidden');
+          const box = hidden && hidden.getBoundingClientRect();
+          return { text: c.textContent.trim(), clipped: !!hidden && box.width <= 1 && box.height <= 1 };
+        }));
+      })()`);
+      const cells = JSON.parse(visibleText);
+
+      assert.deepEqual(cells.map((c) => c.text), ['Code', 'Name', 'Row actions', 'Sortable actions'],
+        'every column keeps its name in the DOM — that is what assistive tech reads');
+      assert.deepEqual(cells.map((c) => c.clipped), [false, false, true, true],
+        'and only the two labelHidden columns are clipped to a 1px box — the sortable one included');
+    });
+  });
+}

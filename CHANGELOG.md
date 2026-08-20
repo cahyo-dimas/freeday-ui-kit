@@ -11,7 +11,16 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   announces as nothing. With `labelHidden: true` the label renders inside `.fdy-visually-hidden`:
   the cell looks empty and the column is still named. The label keeps naming the column's filter
   popover and sort button, so it stays meaningful either way.
-  Contract and BOTH adapters in one change — the Vue and React tables are separate codebases.
+  Contract and ALL THREE typed adapters — Vue, React and Blazor. Each renders its own header, so
+  each spends the flag itself; Blazor takes `LabelHidden` on `FdyTableColumn<TRow>`.
+### Added — guards
+- **The column contract now has to reach all three adapters** (#026). Vue and React consume
+  `table-model.d.ts` and TypeScript keeps them honest, but Blazor RE-DECLARES the column in C# — a
+  hand copy, and the surface that can fall behind silently. A test asserts every contract property
+  exists on Blazor's `FdyTableColumn<TRow>`; coverage, not equality, so it needs no exemption list.
+- **A hidden label is clipped, not dropped** — asserted in a real browser for both JS adapters
+  (`browser/adapter.mjs`), because the claim is about computed geometry: a span carrying the class
+  with no CSS behind it passes any string match and still prints the word.
 
 ## [1.48.1] — 2026-08-20
 ### Fixed
