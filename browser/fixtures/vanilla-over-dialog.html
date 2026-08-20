@@ -18,7 +18,16 @@
       <label class="fdy-check"><input type="checkbox" id="c2"><span>When this role is the approver, require an extra approval from the next role</span></label>
       <label class="fdy-check"><input type="checkbox" id="c3"><span>On overtime documents, when this role is the approver, require an extra approval from the next role in the chain above it</span></label>
       <label class="fdy-radio"><input type="radio" name="r" id="r1"><span>On overtime documents, when this role is the approver, require an extra approval</span></label>
-      <input class="fdy-checkbox" type="checkbox" id="c4">
+      <!-- The standalone checkbox in the container it actually ships in: `.fdy-filter__check` is a
+           flex row, and it is what all three typed adapters render inside a filter popover and a
+           CFL option list. Sitting in a block, as it did here first, it can never shrink — so the
+           guard passed with `flex:none` removed from `.fdy-checkbox`, which is the one box every
+           adapter puts on screen. -->
+      <label class="fdy-filter__check"><input class="fdy-checkbox" type="checkbox" id="c4"><span>On overtime documents, when this role is the approver, require an extra approval from the next role</span></label>
+      <!-- The switch track is the fourth control `flex:none` was added to, and it is not square —
+           so it is compared against a switch of its own with a short label, not against the boxes. -->
+      <label class="fdy-switch"><input type="checkbox" id="s1"><span>Short</span></label>
+      <label class="fdy-switch"><input type="checkbox" id="s2"><span>On overtime documents, when this role is the approver, require an extra approval from the next role</span></label>
     </div>
   </dialog>
 
@@ -30,7 +39,10 @@
       var r = document.getElementById(id).getBoundingClientRect();
       return { w: Math.round(r.width), h: Math.round(r.height) };
     };
-    return { c1: box('c1'), c2: box('c2'), c3: box('c3'), r1: box('r1'), c4: box('c4') };
+    return {
+      boxes: { c1: box('c1'), c2: box('c2'), c3: box('c3'), r1: box('r1'), c4: box('c4') },
+      switches: { s1: box('s1'), s2: box('s2') },
+    };
   };
 
   window.raiseToast = function () {

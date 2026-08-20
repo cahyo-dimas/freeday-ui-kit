@@ -28,7 +28,13 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   toast's centre. It waits for both fade-ins to finish first — a screenshot taken mid-animation
   returns a blend of the two elements and flakes in both directions.
 - **Selection controls are asserted square and equal** across a group whose labels run one to three
-  lines, so a box that shrank in both axes cannot pass a width-only comparison.
+  lines, so a box that shrank in both axes cannot pass a width-only comparison. All four controls
+  the fix touched are measured, each in the container it actually ships in: the standalone
+  `.fdy-checkbox` inside `.fdy-filter__check` — the flex row all three typed adapters render in a
+  filter popover and a CFL option list — and the switch track against a switch of its own, since it
+  is the one control that is not square. The first version of this guard held the standalone
+  checkbox in a plain block, where it cannot shrink at all, so removing `flex: none` from the one
+  box every adapter puts on screen left it passing.
 
 ## [1.49.0] — 2026-08-20
 ### Added

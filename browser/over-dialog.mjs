@@ -49,16 +49,21 @@ test('a toast raised from inside a modal is painted over it (#027)', { skip }, a
 test('a checkbox keeps its size however long the label is (#027)', { skip }, async () => {
   await withPage(fixture('vanilla-over-dialog.html'), async (p) => {
     await p.waitFor('document.readyState === "complete" && window.overDialog');
-    const b = JSON.parse(await p.evalJS('JSON.stringify(window.overDialog())'));
+    const { boxes, switches } = JSON.parse(await p.evalJS('JSON.stringify(window.overDialog())'));
     /* One-line label is the reference: whatever --control-box resolves to at this root font size.
        Measured 18 vs 14 before the fix, in the same group of five. */
-    const want = b.c1.w;
+    const want = boxes.c1.w;
     assert.ok(want > 0, 'the reference box must have a width to compare against');
-    for (const [name, got] of Object.entries(b)) {
+    for (const [name, got] of Object.entries(boxes)) {
       assert.equal(got.w, want, `${name} must be ${want}px wide like every other box, got ${got.w}px`);
       /* Square, not merely equal to its siblings: a box that shrank in BOTH axes would pass a
          width-only check while still being the wrong control. */
       assert.equal(got.h, want, `${name} must stay square, got ${got.w}x${got.h}`);
     }
+
+    /* The switch track is the fourth control that was shrinkable, and the only one that is not
+       square — so it is measured against a switch of its own rather than against the boxes. */
+    assert.deepEqual(switches.s2, switches.s1,
+      `a switch beside a wrapping label must keep the track's size, got ${switches.s2.w}x${switches.s2.h} against ${switches.s1.w}x${switches.s1.h}`);
   });
 });
