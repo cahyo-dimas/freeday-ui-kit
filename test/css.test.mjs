@@ -475,23 +475,21 @@ test('the badge carries the categorical tone scale, on the same mix as the other
 });
 
 
-/* A focusable control shows focus, readonly or not (#023).
+/* The ring for a grouped control lives on the GROUP (#023, withdrawn).
  *
- * `.fdy-input[readonly]:focus-visible` set `box-shadow:none` and moved the
- * border one step of grey — 1.46:1 against the field, where WCAG 2.4.11 asks
- * 3:1, and a 1.20:1 change from unfocused. In an app whose every foreign key is
- * a readonly display field in front of a picker, tabbing onto one showed
- * nothing at all. */
-test('a readonly field still shows focus (#023)', () => {
+ * `.fdy-input-group:focus-within` carries the border and the 3px ring, and
+ * `.fdy-input-group .fdy-input:focus` deliberately clears the inner input so the
+ * two do not nest. An audit that measured the INPUT concluded there was no focus
+ * indicator, and a fix was written and reverted. This pins the arrangement so the
+ * next reader finds the answer instead of the same wrong conclusion. */
+test('a grouped input wears its focus ring on the group (#023)', () => {
   const all = rules(css);
-  const rule = all.find(r =>
-    r.selector.split(',').some(sel => sel.trim() === '.fdy-input[readonly]:focus-visible'));
-  assert.ok(rule, '.fdy-input[readonly]:focus-visible must exist');
-  assert.ok(!/box-shadow:\s*none/.test(rule.body),
-    'a readonly field that can be focused must not have its focus ring removed');
-  assert.ok(/border-color:\s*var\(--color-text-muted\)/.test(rule.body),
-    'the readonly focus border must be --color-text-muted (4.41:1 on the readonly ground); ' +
-    '--color-border-strong measures 1.46:1 and is not a focus indicator');
-  assert.ok(rule.selector.includes('.fdy-textarea[readonly]:focus-visible'),
-    'the textarea needs the same treatment, or one readonly control shows focus and the next does not');
+  const group = all.find(r =>
+    r.selector.split(',').some(sel => sel.trim() === '.fdy-input-group:focus-within'));
+  assert.ok(group && /box-shadow:[^;]*0 0 0 3px/.test(group.body),
+    '.fdy-input-group:focus-within must carry the focus ring for the whole control');
+  const inner = all.find(r =>
+    r.selector.split(',').some(sel => sel.trim() === '.fdy-input-group .fdy-input:focus'));
+  assert.ok(inner && /box-shadow:\s*none/.test(inner.body),
+    'the inner input must NOT also ring, or a grouped control paints two rings');
 });

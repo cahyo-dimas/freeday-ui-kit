@@ -1040,19 +1040,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    inert, default cursor, no focus-ring escalation. */
 .fdy-input[readonly],.fdy-textarea[readonly]{background:var(--color-surface-2);border-color:var(--color-border);color:var(--color-text);cursor:default;}
 .fdy-input[readonly]:hover,.fdy-textarea[readonly]:hover{border-color:var(--color-border);}
-/* A readonly field is still FOCUSABLE, so it still has to show focus. This used
- * to set `box-shadow:none` and shift the border from --color-border to
- * --color-border-strong, which measures 1.46:1 against the field it sits on
- * where WCAG 2.4.11 asks for 3:1 — and the change from unfocused to focused is
- * 1.20:1, which is no change at all to an eye. Reported from a back-office app
- * whose every foreign key is a readonly display field in front of a picker: tab
- * to one and nothing happened on screen.
- *
- * Muted rather than primary, because the point stands that a readonly control
- * is not an editable one — but "not editable" is a different statement from
- * "not focused". --color-text-muted measures 4.41:1 on the readonly ground and
- * 4.69:1 on the page. */
-.fdy-input[readonly]:focus-visible,.fdy-textarea[readonly]:focus-visible{border-color:var(--color-text-muted);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-text-muted) 26%,transparent);}
+.fdy-input[readonly]:focus-visible,.fdy-textarea[readonly]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 /* Numbers (#44): the user agent draws its own spin buttons inside the field, in OS widget colours no
    theme reaches — on a dark surface they read as a light-grey artefact glued to a themed field, and
    it is the only unthemed control on the page. Removed so .fdy-input looks the same whatever its

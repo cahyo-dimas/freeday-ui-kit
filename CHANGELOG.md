@@ -3,20 +3,18 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
-## [1.47.0] — 2026-08-20
-One accessibility note from the back-office app (IDU_EMATE_APPL_WEB, #023).
-### Fixed
-- **A readonly field is focusable and showed no focus** (#023).
-  `.fdy-input[readonly]:focus-visible` set `box-shadow:none` and moved the border one step of grey.
-  Since `:focus` already sets `outline:none`, that left a **1.46:1** indicator against the readonly
-  ground where WCAG 2.4.11 asks 3:1 — and a **1.20:1** change from unfocused, which is no change to
-  an eye. It was reported from an app whose every foreign key is a readonly display input in front
-  of a picker: tabbing onto one showed nothing. The ring is now `--color-text-muted` — **4.41:1** on
-  the readonly ground, **4.69:1** on the page — which keeps the point that a readonly control is not
-  an editable one while making the different point that it IS focused.
+## [1.48.0] — 2026-08-20
+### Reverted
+- **1.47.0's readonly focus ring (#023) is withdrawn.** The report was measured wrong. The control in
+  question — a `CflField`'s readonly display input — sits inside `.fdy-input-group`, and
+  `.fdy-input-group:focus-within` already carries the border and the 3px ring for the WHOLE control;
+  `.fdy-input-group .fdy-input:focus` clears the inner input deliberately so the two do not nest. The
+  audit measured the INPUT, found no shadow on it, and concluded there was no focus indicator.
+  Measured on the group, focus shows `--color-primary` at full strength — 6.56:1. 1.47.0 therefore
+  painted a muted ring INSIDE the blue one, which is a regression rather than a fix.
 ### Added — guards
-- `test/css.test.mjs` asserts the readonly focus rule keeps a ring and uses the muted token, and
-  that the textarea gets the same treatment. Mutation-tested.
+- `test/css.test.mjs` pins the arrangement — the group rings, the inner input does not — so the next
+  reader finds the answer instead of repeating the conclusion.
 
 ## [1.46.0] — 2026-08-19
 The docs site catches up with the components, and writing it out as a consumer found a defect in
