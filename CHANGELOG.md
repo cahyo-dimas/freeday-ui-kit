@@ -3,6 +3,25 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.48.1] — 2026-08-20
+### Fixed
+- **A date column sorted correctly and filtered nothing** (#025). `FdyTable`'s client-mode date
+  filter read a cell with `dateOnly`, which **sliced** the string, while its date SORT reads the same
+  cell with `toTime`, which **parses**. A date column normally renders a formatted date — that is
+  what `value` is for — so `"18 Mar 2024"` sliced to `"18 Mar 202"` and compared as text against an
+  ISO bound: every row failed, silently. The working sort is what made the broken filter look
+  trustworthy.
+- **A `Date` cell was read as its UTC day, not the reader's** (#025). `toISOString()` east of
+  Greenwich turns local midnight into the previous day, so at UTC+7 filtering from the 18th dropped
+  a row dated the 18th.
+- Text that is not a date now yields `''` and is EXCLUDED by an active date filter, rather than
+  slicing to something that compares as less than every bound and matching everything.
+### Added — guards
+- Three tests in `test/table-model.test.mjs`, each verified to fail against the old body: a
+  formatted `value`, a `Date` cell at a positive UTC offset, and unparseable text. The existing date
+  test only ever filtered a column with no accessor holding an already-ISO string, which is the one
+  shape neither bug can affect.
+
 ## [1.48.0] — 2026-08-20
 ### Reverted
 - **1.47.0's readonly focus ring (#024) is withdrawn.** The report was measured wrong. The control in

@@ -23,10 +23,37 @@ function toTime(v) {
   return Number.isNaN(t) ? 0 : t;
 }
 
-/** @param {unknown} v @returns {string} ISO calendar day (yyyy-mm-dd) — lexicographically comparable */
+/** Already an ISO calendar day, so it needs no parsing. */
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}/;
+
+/** @param {Date} d @returns {string} the LOCAL calendar day, never UTC's */
+function localDay(d) {
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  return `${d.getFullYear()}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
+}
+
+/**
+ * @param {unknown} v @returns {string} ISO calendar day (yyyy-mm-dd) — lexicographically comparable
+ *
+ * Two bugs lived here, both of which let a column SORT by date correctly and
+ * FILTER by date wrongly — the worst pairing, because a working sort is what
+ * persuades you the header understands dates.
+ *
+ * 1. It sliced instead of parsing, while `toTime` (which the date SORT uses)
+ *    parses. A column whose `value` returns a formatted date — the normal way
+ *    to render one — gave `"18 Mar 2024"`, sliced to `"18 Mar 202"`, and
+ *    compared as text against `"2024-03-18"`: every row failed, silently.
+ * 2. A `Date` went through `toISOString`, which is UTC. At UTC+7 a date picked
+ *    as the 18th is `2024-03-17T17:00Z`, so filtering from the 18th dropped it.
+ *    The calendar day a person means is their own, not Greenwich's.
+ */
 function dateOnly(v) {
-  if (v instanceof Date) return Number.isNaN(v.getTime()) ? '' : v.toISOString().slice(0, 10);
-  return String(v == null ? '' : v).slice(0, 10);
+  if (v instanceof Date) return Number.isNaN(v.getTime()) ? '' : localDay(v);
+  const s = String(v == null ? '' : v);
+  if (ISO_DAY.test(s)) return s.slice(0, 10);
+  const t = Date.parse(s);
+  return Number.isNaN(t) ? '' : localDay(new Date(t));
 }
 
 /** Raw cell value for a column: the column accessor if present, else row[key]. */
