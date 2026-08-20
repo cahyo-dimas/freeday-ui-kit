@@ -473,3 +473,25 @@ test('the badge carries the categorical tone scale, on the same mix as the other
     'the badge tone mix must match .fdy-avatar--tone-* / .fdy-chip--tone-*, which is what ' +
     'test/contrast.test.mjs actually measures');
 });
+
+
+/* A focusable control shows focus, readonly or not (#023).
+ *
+ * `.fdy-input[readonly]:focus-visible` set `box-shadow:none` and moved the
+ * border one step of grey — 1.46:1 against the field, where WCAG 2.4.11 asks
+ * 3:1, and a 1.20:1 change from unfocused. In an app whose every foreign key is
+ * a readonly display field in front of a picker, tabbing onto one showed
+ * nothing at all. */
+test('a readonly field still shows focus (#023)', () => {
+  const all = rules(css);
+  const rule = all.find(r =>
+    r.selector.split(',').some(sel => sel.trim() === '.fdy-input[readonly]:focus-visible'));
+  assert.ok(rule, '.fdy-input[readonly]:focus-visible must exist');
+  assert.ok(!/box-shadow:\s*none/.test(rule.body),
+    'a readonly field that can be focused must not have its focus ring removed');
+  assert.ok(/border-color:\s*var\(--color-text-muted\)/.test(rule.body),
+    'the readonly focus border must be --color-text-muted (4.41:1 on the readonly ground); ' +
+    '--color-border-strong measures 1.46:1 and is not a focus indicator');
+  assert.ok(rule.selector.includes('.fdy-textarea[readonly]:focus-visible'),
+    'the textarea needs the same treatment, or one readonly control shows focus and the next does not');
+});

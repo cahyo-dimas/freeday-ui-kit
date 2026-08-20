@@ -3,6 +3,21 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.47.0] — 2026-08-20
+One accessibility note from the back-office app (IDU_EMATE_APPL_WEB, #023).
+### Fixed
+- **A readonly field is focusable and showed no focus** (#023).
+  `.fdy-input[readonly]:focus-visible` set `box-shadow:none` and moved the border one step of grey.
+  Since `:focus` already sets `outline:none`, that left a **1.46:1** indicator against the readonly
+  ground where WCAG 2.4.11 asks 3:1 — and a **1.20:1** change from unfocused, which is no change to
+  an eye. It was reported from an app whose every foreign key is a readonly display input in front
+  of a picker: tabbing onto one showed nothing. The ring is now `--color-text-muted` — **4.41:1** on
+  the readonly ground, **4.69:1** on the page — which keeps the point that a readonly control is not
+  an editable one while making the different point that it IS focused.
+### Added — guards
+- `test/css.test.mjs` asserts the readonly focus rule keeps a ring and uses the muted token, and
+  that the textarea gets the same treatment. Mutation-tested.
+
 ## [1.46.0] — 2026-08-19
 The docs site catches up with the components, and writing it out as a consumer found a defect in
 #016's own contract.
