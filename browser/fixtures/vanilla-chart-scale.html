@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — chart-xy scale invariance</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- The same chart in four container widths. The plot width is the whole variable: a chart-xy
+       stretches to it, so anything the renderer expresses in viewBox units is multiplied by
+       plotWidth/viewBoxWidth. The widths mirror the plot widths measured on a real console at
+       390 / 1024 / 1728 / 2560px viewports (#042). -->
+  <div style="width:350px" ><div id="w350"  data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]}]' role="img" aria-label="a"></div></div>
+  <div style="width:696px" ><div id="w696"  data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]}]' role="img" aria-label="a"></div></div>
+  <div style="width:1400px"><div id="w1400" data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]}]' role="img" aria-label="a"></div></div>
+  <div style="width:2232px"><div id="w2232" data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]}]' role="img" aria-label="a"></div></div>
+
+  <!-- A currency axis: the widest tick string the formatter can produce, to prove the y-gutter is
+       sized to the text rather than to a constant that only suited one scale. -->
+  <div style="width:696px"><div id="money" data-fdy-chart="line" data-labels="Sen,Sel,Rab,Kam,Jum" data-values="4200,5100,4800,6300,7200" data-fdy-format="currency" role="img" aria-label="a"></div></div>
+
+  <p id="body-text" style="font-size:1rem;margin:0">Body text</p>
+<script src="../../dist/freeday.js"></script>
+<script>
+  // Rendered geometry, in real screen pixels — not what the stylesheet declares.
+  window.chartScale = function () {
+    var read = function (id) {
+      var el = document.getElementById(id);
+      var svg = el.querySelector('svg');
+      var plot = el.querySelector('.fdy-chart-xy__plot');
+      var label = el.querySelector('.fdy-chart-xy__xlabel');
+      var tick = el.querySelector('.fdy-chart-xy__tick');
+      var dot = el.querySelector('.fdy-chart-xy__dot');
+      var px = function (n) { return Math.round(n * 100) / 100; };
+      var plotW = plot.getBoundingClientRect().width;
+      return {
+        plotW: px(plotW),
+        viewBoxW: svg.viewBox.baseVal.width,
+        scale: px(plotW / svg.viewBox.baseVal.width),
+        // Glyph box of a real rendered label — the size a reader actually sees.
+        labelBox: px(label.getBoundingClientRect().height),
+        declaredFontSize: getComputedStyle(label).fontSize,
+        dotW: px(dot.getBoundingClientRect().width),
+        // The leftmost tick must sit inside the element, not clipped off its left edge.
+        tickLeft: px(tick.getBoundingClientRect().left - el.getBoundingClientRect().left),
+        tickText: tick.textContent,
+      };
+    };
+    return {
+      bodyFontSize: getComputedStyle(document.getElementById('body-text')).fontSize,
+      w350: read('w350'), w696: read('w696'), w1400: read('w1400'), w2232: read('w2232'),
+      money: read('money'),
+    };
+  };
+
+  // Re-render on demand, to prove a container that changes width repaints at the new size.
+  window.widen = function () {
+    document.getElementById('w350').parentNode.style.width = '1400px';
+  };
+</script>
+</body>
+</html>

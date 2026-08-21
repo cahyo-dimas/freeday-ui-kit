@@ -331,7 +331,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v1.46.0</p>
+          <p class="doc-eyebrow">Design System · v1.51.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday — sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -1415,21 +1415,18 @@
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Posting vs draft</h3>
           <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Line multi-seri · sumbu persen</p>
           <div data-fdy-chart="line" data-labels="Jan,Feb,Mar,Apr,Mei,Jun" data-series='[{"label":"Posted","values":[62,68,75,71,83,88]},{"label":"Draft","values":[24,20,26,22,18,16]}]' data-fdy-format="percent" role="img" aria-label="Tren posting bulanan: Posted naik 62% ke 88%, Draft turun 24% ke 16%">
-            <table><caption>Posting vs draft (%)</caption><tr><th>Bulan</th><th>Posted</th><th>Draft</th></tr><tr><td>Jun</td><td>88</td><td>16</td></tr></table>
           </div>
         </div></div>
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Nilai faktur</h3>
           <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Area · sumbu USD</p>
           <div data-fdy-chart="area" data-labels="Sen,Sel,Rab,Kam,Jum" data-values="4200,5100,4800,6300,7200" data-fdy-format="currency" data-fdy-color="primary" role="img" aria-label="Nilai faktur harian dalam USD, naik dari 4.200 ke 7.200">
-            <table><caption>Nilai faktur (USD)</caption><tr><th>Hari</th><th>Nilai</th></tr><tr><td>Jum</td><td>7200</td></tr></table>
           </div>
         </div></div>
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin:0 0 var(--space-1)">Faktur per kanal</h3>
           <p style="margin:0 0 var(--space-3);color:var(--color-text-muted);font-size:var(--text-sm)">Bar bertumpuk (stacked)</p>
           <div data-fdy-chart="bar" data-fdy-stacked data-labels="Q1,Q2,Q3,Q4" data-series='[{"label":"Online","values":[32,41,38,52]},{"label":"Cabang","values":[18,15,22,19]},{"label":"Mitra","values":[9,12,8,14]}]' role="img" aria-label="Faktur per kanal per kuartal, bertumpuk: Online, Cabang, Mitra">
-            <table><caption>Faktur per kanal</caption><tr><th>Kuartal</th><th>Online</th><th>Cabang</th><th>Mitra</th></tr><tr><td>Q4</td><td>52</td><td>19</td><td>14</td></tr></table>
           </div>
         </div></div>
       </div>
@@ -2104,7 +2101,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.46.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v1.51.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -2140,6 +2137,7 @@
 <script src="../dist/freeday-form.js"></script>
 <script src="../dist/freeday-chip.js"></script>
 <script src="../dist/freeday-tree.js"></script>
+<script src="../dist/freeday-number.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');

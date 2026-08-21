@@ -3,6 +3,51 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.51.0] — 2026-08-21
+### Fixed
+- **A cartesian chart's axis text and dots grew with the container** (#042). `renderCartesian` built
+  a fixed `viewBox="0 0 320 180"` and let `.fdy-chart-xy__plot` stretch it to `width:100%`, so every
+  size the renderer expressed in user units was multiplied by `plotWidth / 320`. `font-size:9px` on
+  a tick is not nine screen pixels at any width but 320px: measured on a real console it rendered
+  13px at a 350px plot and **81px at a 2232px** one, making the chart's smallest, most secondary
+  text the largest type on the page. `r="2.2"` did the same to the dots — 4.8px across at 350px,
+  30.7px at 2232px. The chart now measures `__plot` and sizes the `viewBox` to it in CSS pixels, so
+  one user unit is one pixel and every declared size means what it says at every width; a
+  `ResizeObserver` repaints it when the box changes (a collapsing sidebar moves a plot ~300px at a
+  fixed viewport, so this is the common case, not an edge case). A chart that measures 0 — detached,
+  or inside `display:none` — falls back to the old box and repaints when it is laid out.
+- **A currency y-axis was clipped by a gutter sized for a percent one** (#042). `PL` was a constant
+  38 user units, which was ~4 characters at one scale and something else at every other. It is now
+  derived from the widest formatted tick the axis will actually draw, capped at 35% of the plot.
+### Changed
+- **Axis type is a real CSS size**, set by `--fdy-chart-tick-size` on `.fdy-chart-xy` (default
+  `var(--text-xs)`). `font-size` moved off `.fdy-chart-xy__tick` / `__xlabel` onto
+  `.fdy-chart-xy__plot`, which the SVG text inherits — one computed read gives the renderer the real
+  pixel size it needs for the y-gutter and for the x-label autoskip, so an override flows to the
+  text *and* to the geometry around it. Before this, chart text could not be restyled at all: any
+  value set was multiplied by a scale the consumer could not see or compute.
+  The dot radius went 2.2 → 3 and the bar corner 1.5 → 2, both retuned against a 1:1 scale.
+### Docs
+- **`COMPONENTS.md` claimed a `<table>` fallback that no rendered chart has** (#041). It said every
+  chart is `role="img"` + `aria-label` "with a `<table>` fallback inside the element"; the renderer
+  builds no table and wipes the element on every render path. Worse, `role="img"` makes descendants
+  presentational, so the bar values, ticks and legend the renderer *does* draw are not exposed
+  either — the author's `aria-label` is the entire text alternative, and the docs now say so and ask
+  for one that carries the numbers. The four dead fallback tables in `docs/index.html` and
+  `docs/reference-screen.html`, which no reader has ever reached, are gone with it.
+- **The kit's own chart sizing is written down** (#041): `.fdy-chart-xy__plot` is
+  `aspect-ratio:16/9` + `min-height:8rem`, `.fdy-bars` a fixed `9rem`, `.fdy-sparkline` an
+  inline-block `8rem × 2.25rem` — with the note to override those rather than the chart root, since
+  a root `height` fights `aspect-ratio` instead of setting it.
+### Added — guards
+- **`browser/chart-scale.mjs`** — the axis label box and dot diameter are measured at plot widths of
+  350 / 696 / 1400 / 2232px and must not vary by more than a pixel, must stay smaller than body
+  text, and the `viewBox` must equal the measured plot. A second spec widens a container and asserts
+  the repaint. This class of bug is invisible to a source read: `font-size:9px` and `r="2.2"` look
+  like correct sizes, and the one thing in the plot that *was* protected —
+  `vector-effect:non-scaling-stroke` on the line — is what made the other three look protected too.
+  Only a real layout tells them apart.
+
 ## [1.50.0] — 2026-08-20
 ### Fixed
 - **A toast raised from inside a modal was painted behind it** (#027). `.fdy-toast-region` carried

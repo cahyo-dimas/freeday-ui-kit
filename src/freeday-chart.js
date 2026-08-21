@@ -10,7 +10,9 @@
  * (var(--color-<name>)) OR a slot "chart-1".."chart-8" (var(--chart-N)) to pin a series to the
  * validated palette. Both data-fdy-color and data-fdy-colors accept the chart-N form.
  * Cartesian charts (line/area, multi-series/stacked bar) draw themed axes from --chart-grid /
- * --chart-tick and format ticks + tooltips via data-fdy-format (number|percent|currency).
+ * --chart-tick and format ticks + tooltips via data-fdy-format (number|percent|currency). Their
+ * viewBox is sized to the measured plot (1 user unit = 1 CSS pixel) and repainted from a
+ * ResizeObserver, so axis type stays in real pixels and is set in CSS via --fdy-chart-tick-size.
  * Charts are an enhancement — put a table/text fallback inside the element and it will be
  * replaced on render; give the element role="img" + aria-label.
  *
@@ -49,6 +51,18 @@
   }
   function ensureImg(el) { if (!el.hasAttribute('role')) el.setAttribute('role', 'img'); }
   function svgEl(name) { return document.createElementNS(NS, name); }
+
+  // Cartesian charts size their viewBox to the measured plot, so a width change needs a repaint.
+  // Guarded on width alone: a render can change the element's own height (the legend wrapping to a
+  // second row) but never its own width, so this settles instead of looping.
+  var cartesianRO = typeof ResizeObserver === 'function' ? new ResizeObserver(function (entries) {
+    entries.forEach(function (entry) {
+      var target = entry.target;
+      if (!target.isConnected) { cartesianRO.unobserve(target); return; }
+      var w = Math.round(entry.contentRect.width);
+      if (w && w !== target.__fdyChartW) renderChart(target);
+    });
+  }) : null;
 
   // Multi-series model: data-series (JSON) wins; else the data-values single-series shortcut.
   function getSeries(el) {
@@ -194,7 +208,46 @@
     var top = niceCeil(dataMax > base ? dataMax : base + 1);
     if (top <= base) top = base + 1;
 
-    var W = 320, H = 180, PL = 38, PR = 10, PT = 10, PB = 22;
+    // Lay the chrome out first so the plot can be measured, then size the viewBox to it in CSS
+    // pixels: one user unit is one pixel, so font-size / r / stroke-width mean what they say at
+    // every container width. (A fixed 320x180 viewBox stretched by CSS multiplied every declared
+    // size by plotWidth/320 instead — a 9px axis label rendered ~39px on a 1728px viewport.)
+    var legendMode = el.getAttribute('data-fdy-legend') || 'auto';
+    var showLegend = legendMode !== 'none' && (series.length >= 2 || legendMode === 'always');
+    el.classList.add('fdy-chart-xy');
+    el.innerHTML = '';
+    if (showLegend) {
+      var legend = document.createElement('ul');
+      legend.className = 'fdy-chart__legend fdy-chart__legend--row';
+      series.forEach(function (s, si) {
+        var li = document.createElement('li');
+        var sw = document.createElement('span'); sw.className = 'fdy-chart__swatch'; sw.style.background = colorFor(si);
+        li.appendChild(sw);
+        li.appendChild(document.createTextNode(s.label || ('Seri ' + (si + 1))));
+        legend.appendChild(li);
+      });
+      el.appendChild(legend);
+    }
+    var plot = document.createElement('div'); plot.className = 'fdy-chart-xy__plot';
+    el.appendChild(plot);
+
+    // Measured while empty: .fdy-chart-xy__plot carries its own width / aspect-ratio / min-height,
+    // so the box is already final. A detached or display:none chart measures 0 — fall back to the
+    // legacy box and let the ResizeObserver repaint it once it is actually laid out.
+    var box = plot.getBoundingClientRect();
+    var W = Math.round(box.width) || 320, H = Math.round(box.height) || 180;
+    var FS = parseFloat(getComputedStyle(plot).fontSize) || 12;   // axis type size, owned by CSS
+    var charW = FS * 0.6;                                         // mono/body advance is ~0.6em
+
+    // Tick values are known before the gutter is, so size PL to the widest one: a currency axis
+    // needs more room than a percent axis, and a fixed gutter only ever suited one of them.
+    var TICKS = 4;
+    var tickText = [];
+    for (var t0 = 0; t0 <= TICKS; t0++) tickText.push(fmt(base + (top - base) * t0 / TICKS));
+    var widestTick = 0;
+    tickText.forEach(function (t) { widestTick = Math.max(widestTick, t.length * charW); });
+    var PL = Math.min(Math.ceil(widestTick) + 10, Math.round(W * 0.35));
+    var PR = 10, PT = 10, PB = Math.round(FS * 2.2);
     var plotW = W - PL - PR, plotH = H - PT - PB;
     function mapY(v) { return PT + plotH * (1 - (v - base) / (top - base)); }
     var slot = plotW / n;
@@ -206,7 +259,6 @@
     svg.setAttribute('aria-hidden', 'true');
 
     // y gridlines + formatted ticks (bottom line at `base` doubles as the zero baseline).
-    var TICKS = 4;
     for (var k = 0; k <= TICKS; k++) {
       var val = base + (top - base) * k / TICKS;
       var gy = mapY(val);
@@ -216,9 +268,9 @@
       gl.setAttribute('class', 'fdy-chart-xy__grid');
       svg.appendChild(gl);
       var tk = svgEl('text');
-      tk.setAttribute('x', PL - 5); tk.setAttribute('y', (gy + 3).toFixed(1));
+      tk.setAttribute('x', PL - 5); tk.setAttribute('y', (gy + FS * 0.35).toFixed(1));
       tk.setAttribute('text-anchor', 'end'); tk.setAttribute('class', 'fdy-chart-xy__tick');
-      tk.textContent = fmt(val);
+      tk.textContent = tickText[k];
       svg.appendChild(tk);
     }
 
@@ -226,7 +278,6 @@
     // of assuming a fixed 40px slot; keep every step-th plus the last, then drop any kept label that
     // would collide with the one before it — including the forced last one (a fraction-of-a-slot
     // overlap happens when n-1 lands next to the last kept multiple of step, e.g. n=24 at most widths).
-    var charW = 5.4; // ~9px font advance (.fdy-chart-xy__xlabel)
     var widest = 0;
     for (var wi = 0; wi < n; wi++) widest = Math.max(widest, String(labels[wi] || ('#' + (wi + 1))).length * charW);
     var minGap = widest + 8;
@@ -242,7 +293,7 @@
     }
     kept.forEach(function (xk) {
       var xt = svgEl('text');
-      xt.setAttribute('x', xPos(xk).toFixed(1)); xt.setAttribute('y', H - 6);
+      xt.setAttribute('x', xPos(xk).toFixed(1)); xt.setAttribute('y', H - Math.round(FS * 0.7));
       xt.setAttribute('text-anchor', 'middle'); xt.setAttribute('class', 'fdy-chart-xy__xlabel');
       xt.textContent = labels[xk] || ('#' + (xk + 1));
       svg.appendChild(xt);
@@ -268,7 +319,7 @@
           var rect = svgEl('rect');
           rect.setAttribute('x', x.toFixed(1)); rect.setAttribute('width', Math.max(1, barW - 1).toFixed(1));
           rect.setAttribute('y', Math.min(y0, y1).toFixed(1)); rect.setAttribute('height', Math.max(0.5, Math.abs(y1 - y0)).toFixed(1));
-          rect.setAttribute('rx', '1.5'); rect.setAttribute('class', 'fdy-chart-xy__bar');
+          rect.setAttribute('rx', '2'); rect.setAttribute('class', 'fdy-chart-xy__bar');
           rect.style.fill = colorFor(si);
           svg.appendChild(rect);
         });
@@ -296,33 +347,14 @@
         }
         pts.forEach(function (p) {
           var dot = svgEl('circle');
-          dot.setAttribute('cx', p[0].toFixed(1)); dot.setAttribute('cy', p[1].toFixed(1)); dot.setAttribute('r', '2.2');
+          dot.setAttribute('cx', p[0].toFixed(1)); dot.setAttribute('cy', p[1].toFixed(1)); dot.setAttribute('r', '3');
           dot.setAttribute('class', 'fdy-chart-xy__dot'); dot.style.fill = colorFor(si);
           svg.appendChild(dot);
         });
       });
     }
 
-    // Assemble: optional legend on top, plot below, tooltip layer last.
-    var legendMode = el.getAttribute('data-fdy-legend') || 'auto';
-    var showLegend = legendMode !== 'none' && (series.length >= 2 || legendMode === 'always');
-    el.classList.add('fdy-chart-xy');
-    el.innerHTML = '';
-    if (showLegend) {
-      var legend = document.createElement('ul');
-      legend.className = 'fdy-chart__legend fdy-chart__legend--row';
-      series.forEach(function (s, si) {
-        var li = document.createElement('li');
-        var sw = document.createElement('span'); sw.className = 'fdy-chart__swatch'; sw.style.background = colorFor(si);
-        li.appendChild(sw);
-        li.appendChild(document.createTextNode(s.label || ('Seri ' + (si + 1))));
-        legend.appendChild(li);
-      });
-      el.appendChild(legend);
-    }
-    var plot = document.createElement('div'); plot.className = 'fdy-chart-xy__plot';
     plot.appendChild(svg);
-    el.appendChild(plot);
 
     // Hover: one transparent band per category → readout of every series at that x.
     var tip = makeTip(el);
@@ -342,6 +374,8 @@
       band.addEventListener('mouseleave', function () { hideTip(tip); });
       svg.appendChild(band);
     }
+    el.__fdyChartW = W;
+    if (cartesianRO) cartesianRO.observe(el);
     ensureImg(el);
   }
 

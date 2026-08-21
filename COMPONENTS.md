@@ -858,7 +858,20 @@ Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`
   validated categorical palette `--chart-1`…`--chart-8`.
 - Format: `data-fdy-format="number|percent|currency"`; legend `data-fdy-legend` (`none` to drop);
   axes `data-fdy-axes`
-- A11y: every chart is `role="img"` + `aria-label`, with a `<table>` fallback inside the element.
+- Sizing is already set by the kit — override **these**, never a `height` on the chart root (a
+  root height fights `aspect-ratio` instead of setting it): `.fdy-chart-xy__plot` is `width:100%`
+  + `aspect-ratio:16/9` + `min-height:8rem`; `.fdy-bars` is a fixed `height:9rem`; `.fdy-sparkline`
+  is an inline-block `8rem × 2.25rem`.
+- Axis type: `--fdy-chart-tick-size` (default `var(--text-xs)`) sets the y-tick and x-label size on
+  `.fdy-chart-xy`. It is a real CSS size — a cartesian chart's `viewBox` is measured to its plot, so
+  one user unit is one pixel — and the renderer reads it back to size the y-gutter and to decide how
+  many x-labels fit. Set the token rather than `font-size` on `__tick`/`__xlabel`, or the gutter and
+  the autoskip will still be computed from the old size.
+- A11y: every chart is `role="img"` + an **author-supplied** `aria-label`, and that label is the
+  *entire* text alternative — write one that carries the numbers, not just the shape. `role="img"`
+  makes descendants presentational, so rendered bar values, axis ticks and legends are not exposed
+  either; any `<table>`/text placed inside the element is **pre-render only** and is replaced on
+  render. Good: `aria-label="Monthly posting trend: Posted 62% → 88%, Draft 24% → 16%"`.
 - Internal parts (set by JS, useful for overrides): `.fdy-chart__legend` (+`--row`) `__swatch`
   `__tip`; `.fdy-bars__col` `__bar` `__track` `__label` `__val`; `.fdy-chart-xy__plot` `__grid`
   `__tick` `__xlabel` `__line` `__area` `__bar` `__dot` `__band`; `.fdy-donut__ring` `__seg`
