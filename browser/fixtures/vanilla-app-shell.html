@@ -39,6 +39,10 @@
 <script>
   var app = document.getElementById('app');
 
+  // Everything the shell announces, in order — what a host binding its own state would receive.
+  window.navEvents = [];
+  document.addEventListener('fdy-app-nav', function (e) { window.navEvents.push(e.detail.visible); });
+
   window.state = function () {
     return {
       open: app.classList.contains('fdy-app--nav-open'),

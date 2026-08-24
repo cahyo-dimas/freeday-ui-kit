@@ -1,0 +1,50 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyAppShell>
+
+@* Blazor wrapper over freeday's .fdy-app shell. Unlike FdyModal and FdyDrawer, which drive a native
+   <dialog> through the bridge, this one hands the whole behaviour to freeday-app-shell.js via
+   `data-fdy-app` and binds to it: the enhancer announces changes as a bubbling `fdy-app-nav` event
+   and accepts them through FreedayAppShell.setVisible. That is the bridge's own doctrine — the
+   enhancers stay the source of truth — and it keeps the focus trap from existing a third time. *@
+<div @ref="Root" class="fdy-app" data-fdy-app>
+    @SkipContent
+
+    <aside class="fdy-app__sidebar">
+        @BrandContent
+        @NavContent
+    </aside>
+
+    <div class="fdy-app__content">
+        <header class="fdy-app__topbar">
+            <button class="fdy-app__navtoggle" type="button" aria-label="@ToggleLabel">
+                @if (ToggleIcon is not null)
+                {
+                    @ToggleIcon
+                }
+                else
+                {
+                    <text>&#9776;</text>
+                }
+            </button>
+
+            <h1 class="fdy-app__title">
+                @if (TitleContent is not null)
+                {
+                    @TitleContent
+                }
+                else
+                {
+                    @Title
+                }
+            </h1>
+
+            @TopbarContent
+        </header>
+
+        <main class="fdy-app__main">
+            @ChildContent
+        </main>
+    </div>
+
+    <div class="fdy-app__backdrop"></div>
+</div>

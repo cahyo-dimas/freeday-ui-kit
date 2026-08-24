@@ -178,3 +178,72 @@ test('crossing the breakpoint while open does not strand the page as inert (#8)'
     assert.equal(wide.expanded, 'true');
   });
 });
+
+/* The two pieces a host with its own state needs, and the reason they exist: the Blazor wrapper
+ * binds @bind-NavOpen through them rather than owning a second copy of this behaviour. The bridge's
+ * own doctrine is that the enhancers stay the source of truth. */
+test('it announces every real change, including the ones the viewport causes (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+    /* Narrowing hid a nav that was a visible column, and that IS a change: a host whose bound value
+       stayed `true` would be describing a panel nobody can see. */
+    assert.deepEqual(JSON.parse(await p.evalJS('JSON.stringify(window.navEvents)')), [false],
+      'becoming an overlay is announced, because the nav stopped being visible');
+
+    await p.evalJS('window.navEvents.length = 0');
+    await openNav(p);
+    await p.pressKey('Escape');
+    await expectShut(p);
+    await until(p, 'window.navEvents.length === 2', 'an open and a close to be announced');
+    assert.deepEqual(JSON.parse(await p.evalJS('JSON.stringify(window.navEvents)')), [true, false],
+      'open then close, in order');
+  });
+});
+
+test('a host can drive it without touching the kit\'s class names (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+    await p.evalJS('window.navEvents.length = 0');
+
+    await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('app'), true)`);
+    await until(p, OPEN, 'setVisible(true) to open the overlay');
+    assert.equal((await state(p)).contentInert, true, 'and to do the whole job, not just the class');
+
+    await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('app'), true)`);
+    assert.equal(JSON.parse(await p.evalJS('JSON.stringify(window.navEvents)')).length, 1,
+      'setting what is already set announces nothing — a bound host would loop on the echo');
+
+    await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('app'), false)`);
+    await until(p, SHUT, 'setVisible(false) to close it');
+    assert.equal((await state(p)).contentInert, false, 'the page is given back');
+  });
+});
+
+test('a shell mounted after load is hydrated by initAll, the way the bridge does it (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+
+    /* The Blazor path: the markup does not exist at DOMContentLoaded, and FreedayBlazor.initAll
+       hands the enhancer the component's own root afterwards. If initShells only ever looked
+       INSIDE the element it is given, this would silently do nothing — the shell root is the
+       element, not a descendant of it. */
+    const wired = await p.evalJS(`(function () {
+      var host = document.createElement('div');
+      host.innerHTML = document.getElementById('app').outerHTML.replace(/id="app"/, 'id="late"');
+      var late = host.firstElementChild;
+      late.removeAttribute('data-fdy-app-shell-ready');
+      delete late.dataset.fdyAppShellReady;
+      document.body.appendChild(late);
+      window.FreedayAppShell.init(late);
+      return late.querySelector('.fdy-app__navtoggle').getAttribute('aria-expanded');
+    })()`);
+    assert.equal(wired, 'false', 'the late shell was synced on hydration, not left blank');
+
+    await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('late'), true)`);
+    await until(p, `document.getElementById('late').classList.contains('fdy-app--nav-open')`,
+      'the late shell to respond to setVisible');
+    assert.equal(
+      await p.evalJS(`document.querySelector('#late .fdy-app__content').hasAttribute('inert')`),
+      true, 'and to do the whole job for its own subtree');
+  });
+});

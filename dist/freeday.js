@@ -16,7 +16,12 @@
  *   - `__content` is inert only while the nav is an OPEN OVERLAY, so Tab cannot wander behind the
  *     backdrop.
  *
- * Emits nothing; the classes are the state. FreedayAppShell.init(root) for late-mounted markup.
+ * Emits a bubbling `fdy-app-nav` CustomEvent (detail {visible}) whenever the nav's visibility
+ * changes, and takes `FreedayAppShell.setVisible(root, visible)` from outside. Those two exist for
+ * the same reason the other enhancers have them: a host that keeps its own state — the Blazor
+ * wrapper binding @bind-NavOpen, an app persisting the collapsed preference — has to be able to
+ * hear the change and to drive it, without owning the behaviour twice.
+ * FreedayAppShell.init(root) for late-mounted markup.
  */
 (function () {
   'use strict';
@@ -53,6 +58,7 @@
 
     var mqWide = window.matchMedia(WIDE);
     var restoreTo = null;
+    var lastVisible = null;
 
     function isOverlayOpen() { return app.classList.contains('fdy-app--nav-open'); }
     function isCollapsed() { return app.classList.contains('fdy-app--nav-collapsed'); }
@@ -65,6 +71,12 @@
       toggle.setAttribute('aria-expanded', String(visible));
       setInert(sidebar, !visible);
       setInert(content, !mqWide.matches && visible);
+      /* Announce only real changes. The first sync() runs at init to describe the state the markup
+         arrived in, which is not something a host asked for and must not look like one. */
+      if (lastVisible !== null && visible !== lastVisible) {
+        app.dispatchEvent(new CustomEvent('fdy-app-nav', { bubbles: true, detail: { visible: visible } }));
+      }
+      lastVisible = visible;
     }
 
     function open() {
@@ -149,6 +161,23 @@
     });
 
     sync();
+
+    /* The same handle the other enhancers expose (`_fdyCombo` and friends): a host that binds its
+       own state needs to drive this without reaching for the class names the kit reserves. */
+    app._fdyAppShell = {
+      isVisible: navVisible,
+      setVisible: function (visible) {
+        if (visible === navVisible()) return;
+        if (mqWide.matches) {
+          app.classList.toggle('fdy-app--nav-collapsed', !visible);
+          sync();
+        } else if (visible) {
+          open();
+        } else {
+          close();
+        }
+      },
+    };
   }
 
   function initShells(context) {
@@ -165,7 +194,18 @@
     initShells();
   }
 
-  window.FreedayAppShell = { init: initShells, initAll: initShells };
+  window.FreedayAppShell = {
+    init: initShells,
+    initAll: initShells,
+    /* Both take the shell root. A missing or un-initialised root is a no-op rather than a throw:
+       a host may race the enhancer on first render, and a crash there is worse than a late sync. */
+    setVisible: function (root, visible) {
+      if (root && root._fdyAppShell) root._fdyAppShell.setVisible(visible === true);
+    },
+    isVisible: function (root) {
+      return !!(root && root._fdyAppShell && root._fdyAppShell.isVisible());
+    },
+  };
 })();
 
 /* Freeday — autocomplete enhancer (optional, zero-dependency).
