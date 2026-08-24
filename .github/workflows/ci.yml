@@ -46,7 +46,23 @@ jobs:
       # local development runs Chromium 133 from the puppeteer cache. Both engines COMPONENTS.md
       # names therefore get exercised. When Chrome ships a behaviour change this job goes red with
       # no offending commit — that is the intent, see the spec, §2.
+      # The count is asserted here, not read off a log by a human: `node --test` exits 0 for a
+      # suite that skipped every test, so "the job was green" and "the guards ran" are different
+      # facts and only one of them is enforceable. A run that skips anything fails on the spot.
       - name: Browser suite
         env:
           CHROME_BIN: /usr/bin/google-chrome
-        run: npm run test:browser
+        run: |
+          set -o pipefail
+          npm run test:browser 2>&1 | tee /tmp/browser.tap
+          passed=$(awk '/^# pass /{print $3}' /tmp/browser.tap)
+          skipped=$(awk '/^# skipped /{print $3}' /tmp/browser.tap)
+          echo "browser suite: ${passed:-?} passed, ${skipped:-?} skipped"
+          if [ "${skipped:-missing}" != "0" ]; then
+            echo "::error::Browser suite skipped ${skipped:-an unknown number of} tests — a skipped guard is not a passing guard."
+            exit 1
+          fi
+          if [ "${passed:-0}" -lt 1 ]; then
+            echo "::error::Browser suite reported no passing tests; the summary line was not found."
+            exit 1
+          fi
