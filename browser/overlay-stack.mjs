@@ -96,3 +96,58 @@ test('closing the drawer under an open modal leaves the modal up (#046)', { skip
     assert.equal(closed.modalOpen, false, 'and must still be dismissible afterwards');
   });
 });
+
+/* #048 — WHEN each stacked overlay owns its own Escape, measured rather than assumed.
+ *
+ * 1.51.1 documented this as a transient-activation window: a showModal() "after an await that
+ * outlived the click" was said to group its close watcher with the dialog below, so one Escape
+ * closed both. A consumer audited three call sites of exactly that shape against Chromium 151 and
+ * could not reproduce it — correctly, because that is not the line.
+ *
+ * Measured identically on Chromium 133 and Chrome 151, the real behaviour splits in two:
+ *   - GROUPING needs a page that has never received user input at all. Sticky activation, not
+ *     transient: six seconds after a single click the overlays are still independent. So grouping is
+ *     reachable in a test harness and nowhere else — an app has been clicked long before a second
+ *     overlay is up.
+ *   - VETOING Escape (preventDefault on `cancel`) needs BOTH overlays to have been opened by a real
+ *     gesture. Open either from script and the second overlay's cancel arrives non-cancelable: it
+ *     still closes only the topmost, but nothing can refuse it.
+ *
+ * The matrix is asserted whole, because the interesting failure is a row changing — that is the
+ * browser moving under the docs, which is the thing this file exists to notice.
+ */
+const openBy = async (p, selector, trusted) => {
+  if (trusted) await p.clickCenter(selector);
+  else await p.evalJS(`document.getElementById('${selector.slice(1)}').click()`);
+};
+
+test('who owns Escape when two overlays are stacked (#048)', { skip }, async () => {
+  const rows = [];
+  for (const [how, first, second] of [
+    ['both from a real click', true, true],
+    ['drawer clicked, modal from script', true, false],
+    ['drawer from script, modal clicked', false, true],
+    ['both from script — page never touched', false, false],
+  ]) {
+    await withPage(fixture('vanilla-overlay-stack.html'), async (p) => {
+      await p.waitFor('document.readyState === "complete" && !!window.state');
+      await openBy(p, '#open-drawer', first);
+      await p.waitFor(DRAWER_SETTLED);
+      await openBy(p, '#ask-confirm', second);
+      await p.waitFor(MODAL_SETTLED);
+
+      await p.pressKey('Escape');
+      await pause(400);
+      const state = JSON.parse(await p.evalJS('JSON.stringify(window.state())'));
+      const cancels = JSON.parse(await p.evalJS('JSON.stringify(window.cancels)'));
+      rows.push({ how, stillOpen: state.open, vetoable: cancels.map((c) => c.cancelable) });
+    });
+  }
+
+  assert.deepEqual(rows, [
+    { how: 'both from a real click', stillOpen: ['dw'], vetoable: [true] },
+    { how: 'drawer clicked, modal from script', stillOpen: ['dw'], vetoable: [false] },
+    { how: 'drawer from script, modal clicked', stillOpen: ['dw'], vetoable: [false] },
+    { how: 'both from script — page never touched', stillOpen: [], vetoable: [false, false] },
+  ], 'a changed row is news about the browser, not a regression in the kit — re-measure before editing COMPONENTS.md');
+});

@@ -3,6 +3,33 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.52.1] — 2026-08-24
+### Docs
+- **1.51.1's close-watcher caveat named the wrong condition** (#048). It said a `showModal()` with
+  no transient activation — "from a timer, or after an `await` that outlived the click" — has its
+  close watcher grouped with the dialog below, so one Escape closes both. A consumer audited three
+  call sites of exactly that shape and could not reproduce it. They were right, and the reason is
+  that the line is **sticky** activation, not transient: grouping needs a page that has received no
+  user input *at all*. Six seconds after a single click — transient activation long expired,
+  `navigator.userActivation.isActive === false` — two stacked overlays are still independent. So the
+  grouping is reachable in a test harness and nowhere else, which is exactly where the kit met it.
+- **What the advice was protecting was real, but it is a different failure.** Open either overlay
+  from script and the second one's `cancel` event arrives **non-cancelable**: Escape still closes
+  only the topmost, but `preventDefault()` on it is ignored, so an "unsaved changes, stay open" guard
+  on that dialog silently stops working. Only when both overlays are opened by a real gesture is that
+  veto available. The Modal entry now says this instead.
+- The note also proposed documenting that the typed wrappers' `@cancel.prevent` makes them immune to
+  the grouping. **Measured, they are not** — in a page with no activation the `cancel` event is not
+  cancelable at all, so preventing it does nothing and both dialogs close regardless. That claim is
+  not in the docs, and this is why.
+### Added — guards
+- `browser/overlay-stack.mjs` gains the whole matrix as one assertion — four ways to open two
+  overlays × what one Escape leaves open × whether it could be refused — so a row changing is
+  reported as news about the browser rather than a regression in the kit. Verified identical on
+  Chromium 133 (the suite's engine) and Chrome 151.
+- The fixture records each `cancel` event's `cancelable` flag; nothing prevents it, so the older
+  tests measure what they always did.
+
 ## [1.52.0] — 2026-08-24
 ### Fixed
 - **A chart's legend, bar values and donut centre were exposed to assistive tech after all** (#047).

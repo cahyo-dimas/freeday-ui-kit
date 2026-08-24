@@ -1061,10 +1061,19 @@ that. Escape closes the topmost first, so cancelling returns to the still-open d
 Escape then closes the drawer. Closing them out of order is fine too: closing the drawer while the
 modal is up leaves the modal open, painted and dismissible.
 
-One caveat, and it is the browser's rather than the kit's: **open each overlay from the gesture
-that asked for it.** A `showModal()` that runs with no user activation — from a timer, or after an
-`await` that outlived the click — has its close watcher grouped with the dialog below it, and then
-a single Escape closes both at once instead of the topmost only.
+One caveat, and it is the browser's rather than the kit's: **the second overlay's Escape can only
+be refused if both were opened by a real gesture.** A `showModal()` that runs from script — a timer,
+or after an `await` that outlived the click — still closes only the topmost, but its `cancel` event
+arrives **non-cancelable**, so `preventDefault()` on it is ignored and an "unsaved changes, stay
+open" guard silently stops working. Routing Escape through app state instead, which is what the
+typed wrappers do, is unaffected: the dialog closes and your state follows it.
+
+*Correction to 1.51.1, which said such a dialog has its close watcher grouped with the one below so
+that a single Escape closes both.* That happens only on a page that has received **no user input at
+all** — a test harness, never an app; six seconds after one click the overlays are still
+independent. Open overlays with real clicks in a test, or a stacking assertion fails for a reason
+that is not the kit. Both rules measured on Chromium 133 and 151, and pinned as a matrix in
+`browser/overlay-stack.mjs`.
 
 ## Drawer — `.fdy-drawer`
 > **Typed wrapper: `<FdyDrawer>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).

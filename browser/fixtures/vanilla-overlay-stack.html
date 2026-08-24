@@ -44,6 +44,15 @@
   // Opening a modal is the app's job — the kit ships no modal enhancer.
   document.getElementById('ask-confirm').addEventListener('click', function () { md.showModal(); });
 
+  // Escape reaches a <dialog> as `cancel`. Whether that event is CANCELABLE is the whole story of
+  // #048: on a page with no user activation the browser refuses to let script keep the dialog open,
+  // which is also when it groups the two close watchers. Recorded, never prevented — preventing it
+  // here would change what the other tests measure.
+  window.cancels = [];
+  [dw, md].forEach(function (d) {
+    d.addEventListener('cancel', function (e) { window.cancels.push({ id: d.id, cancelable: e.cancelable }); });
+  });
+
   window.state = function () {
     return {
       open: Array.prototype.map.call(document.querySelectorAll('dialog[open]'), function (d) { return d.id; }),
