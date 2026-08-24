@@ -301,65 +301,65 @@ const shellUntil = async (p, condition, what) => {
 const SHELL_OPEN = `window.state().open && document.querySelector('.fdy-app__sidebar').getBoundingClientRect().left === 0`;
 const SHELL_SHUT = `!window.state().open && getComputedStyle(document.querySelector('.fdy-app__backdrop')).visibility === 'hidden'`;
 
-test('vue FdyAppShell: unbound, it defaults by viewport rather than to a guess (#8)', { skip }, async () => {
-  await withPage(fixture('vue-app-shell.html'), async (p) => {
-    await shellUntil(p, '!!window.state', 'the shell to mount');
+for (const [stack, shellFixture] of [['vue', 'vue-app-shell.html'], ['react', 'react-app-shell.html']]) {
+  test(`${stack} FdyAppShell: unbound, it defaults by viewport rather than to a guess (#8)`, { skip }, async () => {
+    await withPage(fixture(shellFixture), async (p) => {
+      await shellUntil(p, '!!window.state', 'the shell to mount');
 
-    await p.setViewport(1000, 900);
-    await shellUntil(p, `window.matchMedia('(min-width: 721px)').matches`, 'the wide media query');
-    const wide = await shellState(p);
-    assert.equal(wide.expanded, 'true', 'a wide viewport starts with the nav as a visible column');
-    assert.equal(wide.sidebarInert, false);
+      await p.setViewport(1000, 900);
+      await shellUntil(p, `window.state().expanded === 'true'`, 'the shell to adopt the wide viewport');
+      const wide = await shellState(p);
+      assert.equal(wide.sidebarInert, false, 'a wide viewport starts with the nav as a visible column');
 
-    await p.setViewport(420, 900);
-    await shellUntil(p, `!window.matchMedia('(min-width: 721px)').matches`, 'the narrow media query');
-    await shellUntil(p, '!window.state().open', 'the overlay to stay shut on narrowing');
-    const narrow = await shellState(p);
-    /* Narrowing must not drop a panel over the page: the reader did not ask to go anywhere. */
-    assert.equal(narrow.open, false, 'narrowing does not open the overlay');
-    assert.equal(narrow.contentInert, false, 'and does not make the page inert');
-    assert.equal(narrow.sidebarInert, true, 'the off-canvas panel leaves the tab order');
+      await p.setViewport(420, 900);
+      await shellUntil(p, `window.state().expanded === 'false'`, 'the shell to adopt the narrow viewport');
+      const narrow = await shellState(p);
+      /* Narrowing must not drop a panel over the page: the reader did not ask to go anywhere. */
+      assert.equal(narrow.open, false, 'narrowing does not open the overlay');
+      assert.equal(narrow.contentInert, false, 'and does not make the page inert');
+      assert.equal(narrow.sidebarInert, true, 'the off-canvas panel leaves the tab order');
+    });
   });
-});
 
-test('vue FdyAppShell: the overlay traps focus and gives it back, like the enhancer (#8)', { skip }, async () => {
-  await withPage(fixture('vue-app-shell.html'), async (p) => {
-    await shellUntil(p, '!!window.state', 'the shell to mount');
-    await p.setViewport(420, 900);
-    await shellUntil(p, `!window.matchMedia('(min-width: 721px)').matches`, 'the narrow media query');
+  test(`${stack} FdyAppShell: the overlay traps focus and gives it back, like the enhancer (#8)`, { skip }, async () => {
+    await withPage(fixture(shellFixture), async (p) => {
+      await shellUntil(p, '!!window.state', 'the shell to mount');
+      await p.setViewport(420, 900);
+      await shellUntil(p, `window.state().expanded === 'false'`, 'the shell to adopt the narrow viewport');
 
-    await p.clickCenter('.fdy-app__navtoggle');
-    await shellUntil(p, SHELL_OPEN, 'the panel to finish sliding in');
-    const open = await shellState(p);
-    assert.equal(open.contentInert, true, 'the page behind the backdrop is inert');
-    assert.equal(open.focused, 'brand', 'focus moves into the panel');
+      await p.clickCenter('.fdy-app__navtoggle');
+      await shellUntil(p, SHELL_OPEN, 'the panel to finish sliding in');
+      const open = await shellState(p);
+      assert.equal(open.contentInert, true, 'the page behind the backdrop is inert');
+      assert.equal(open.focused, 'brand', 'focus moves into the panel');
 
-    await p.pressKey('Tab');
-    await p.pressKey('Tab');
-    assert.equal((await shellState(p)).focused, 'nav-two', 'reached the last stop');
-    await p.pressKey('Tab');
-    assert.equal((await shellState(p)).focused, 'brand', 'and wrapped rather than leaving the panel');
+      await p.pressKey('Tab');
+      await p.pressKey('Tab');
+      assert.equal((await shellState(p)).focused, 'nav-two', 'reached the last stop');
+      await p.pressKey('Tab');
+      assert.equal((await shellState(p)).focused, 'brand', 'and wrapped rather than leaving the panel');
 
-    await p.pressKey('Escape');
-    await shellUntil(p, SHELL_SHUT, 'the overlay to close');
-    const shut = await shellState(p);
-    assert.equal(shut.contentInert, false, 'the page is given back');
-    assert.equal(shut.focused, 'BUTTON', 'focus returns to the toggle that opened it');
+      await p.pressKey('Escape');
+      await shellUntil(p, SHELL_SHUT, 'the overlay to close');
+      const shut = await shellState(p);
+      assert.equal(shut.contentInert, false, 'the page is given back');
+      assert.equal(shut.focused, 'BUTTON', 'focus returns to the toggle that opened it');
+    });
   });
-});
 
-test('vue FdyAppShell: a nav item closes the overlay it was followed from (#8)', { skip }, async () => {
-  await withPage(fixture('vue-app-shell.html'), async (p) => {
-    await shellUntil(p, '!!window.state', 'the shell to mount');
-    await p.setViewport(420, 900);
-    await shellUntil(p, `!window.matchMedia('(min-width: 721px)').matches`, 'the narrow media query');
+  test(`${stack} FdyAppShell: a nav item closes the overlay it was followed from (#8)`, { skip }, async () => {
+    await withPage(fixture(shellFixture), async (p) => {
+      await shellUntil(p, '!!window.state', 'the shell to mount');
+      await p.setViewport(420, 900);
+      await shellUntil(p, `window.state().expanded === 'false'`, 'the shell to adopt the narrow viewport');
 
-    await p.clickCenter('.fdy-app__navtoggle');
-    await shellUntil(p, SHELL_OPEN, 'the panel to open');
-    assert.equal((await shellState(p)).open, true, 'precondition: it opened');
+      await p.clickCenter('.fdy-app__navtoggle');
+      await shellUntil(p, SHELL_OPEN, 'the panel to open');
+      assert.equal((await shellState(p)).open, true, 'precondition: it opened');
 
-    await p.evalJS(`document.getElementById('nav-two').click()`);
-    await shellUntil(p, SHELL_SHUT, 'the overlay to close behind the link');
-    assert.equal((await shellState(p)).open, false, 'a nav item closes it');
+      await p.evalJS(`document.getElementById('nav-two').click()`);
+      await shellUntil(p, SHELL_SHUT, 'the overlay to close behind the link');
+      assert.equal((await shellState(p)).open, false, 'a nav item closes it');
+    });
   });
-});
+}

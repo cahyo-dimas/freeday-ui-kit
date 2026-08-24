@@ -41,6 +41,7 @@ export { FdyTable, type FdyTableProps } from './components/FdyTable';
 export { FdyTableFooter, type FdyTableFooterProps } from './components/FdyTableFooter';
 export { FdyModal, type FdyModalProps } from './components/FdyModal';
 export { FdyDrawer, type FdyDrawerProps } from './components/FdyDrawer';
+export { FdyAppShell, type FdyAppShellProps } from './components/FdyAppShell';
 
 /** Controlled data-table types (shared, framework-agnostic core). */
 export type {
