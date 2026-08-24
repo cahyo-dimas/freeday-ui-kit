@@ -1,0 +1,68 @@
+# Both suites, on every push and before every publish.
+#
+# The browser suite (18 specs, 58 tests) is the half that was never running here: pixel-level paint
+# order for stacked overlays, chart accessible subtrees read off the AX tree, the user-activation
+# matrix that decides who owns Escape. Those need a real engine, so they only ever ran when someone
+# remembered to run them locally — and since 1.52.0 a tag publishes to npm with no human in the loop.
+#
+# `workflow_call` is why this is a separate file: publish.yml calls this same job rather than
+# keeping its own copy of the steps, so the list that runs at release time cannot drift from the
+# list that runs during development.
+name: CI
+
+on:
+  push: # every branch, not just main — this repo does most of its work on branches and merges them
+  pull_request:
+    branches: [main]
+  workflow_call: # invoked by publish.yml as a release gate
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # same line publish.yml runs on
+      - run: npm ci
+      - run: node tokens/build.mjs # browser fixtures load dist/, so build before testing
+      - run: node --test
+      - run: npm run typecheck:react
+
+      # Every browser spec SKIPS itself when no Chrome is found, and a skipped suite still exits 0 —
+      # so without this step a green check could mean "ran nothing at all" and look identical to a
+      # green check that ran 58 tests. Refusing to run has to be louder than passing.
+      - name: Chrome present
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          test -x "$CHROME_BIN" || {
+            echo "::error::No executable Chrome at $CHROME_BIN — the browser suite would have skipped silently."
+            exit 1
+          }
+          "$CHROME_BIN" --version
+
+      # The engine is the runner's Chrome STABLE, deliberately: it is what consumers run, while
+      # local development runs Chromium 133 from the puppeteer cache. Both engines COMPONENTS.md
+      # names therefore get exercised. When Chrome ships a behaviour change this job goes red with
+      # no offending commit — that is the intent, see the spec, §2.
+      # The count is asserted here, not read off a log by a human: `node --test` exits 0 for a
+      # suite that skipped every test, so "the job was green" and "the guards ran" are different
+      # facts and only one of them is enforceable. A run that skips anything fails on the spot.
+      - name: Browser suite
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          set -o pipefail
+          npm run test:browser 2>&1 | tee /tmp/browser.tap
+          passed=$(awk '/^# pass /{print $3}' /tmp/browser.tap)
+          skipped=$(awk '/^# skipped /{print $3}' /tmp/browser.tap)
+          echo "browser suite: ${passed:-?} passed, ${skipped:-?} skipped"
+          if [ "${skipped:-missing}" != "0" ]; then
+            echo "::error::Browser suite skipped ${skipped:-an unknown number of} tests — a skipped guard is not a passing guard."
+            exit 1
+          fi
+          if [ "${passed:-0}" -lt 1 ]; then
+            echo "::error::Browser suite reported no passing tests; the summary line was not found."
+            exit 1
+          fi
