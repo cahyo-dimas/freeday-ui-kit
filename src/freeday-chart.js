@@ -49,7 +49,21 @@
     var v = el.getAttribute(attr);
     return v ? v.split(',').map(function (s) { return s.trim(); }) : [];
   }
-  function ensureImg(el) { if (!el.hasAttribute('role')) el.setAttribute('role', 'img'); }
+  // role="img" is Children Presentational per ARIA, so the docs used to say a chart's rendered
+  // legend, bar values and donut centre are not exposed. No browser actually prunes that subtree —
+  // measured in Chrome's AX tree, every one of those nodes is live and unignored; what saves the
+  // advice is only that AT treats a NAMED role="img" as a leaf and does not descend. So the kit
+  // hides them itself, and the author's aria-label really is the whole text alternative.
+  //
+  // Only for a chart that HAS a name: hiding the contents of an unlabelled one would leave an image
+  // with no text at all, which is worse than the leak. An author who sets some other role owns the
+  // subtree and gets no help from here.
+  function ensureImg(el) {
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'img');
+    if (el.getAttribute('role') !== 'img') return;
+    if (!el.hasAttribute('aria-label') && !el.hasAttribute('aria-labelledby')) return;
+    Array.prototype.forEach.call(el.children, function (child) { child.setAttribute('aria-hidden', 'true'); });
+  }
   function svgEl(name) { return document.createElementNS(NS, name); }
 
   // Cartesian charts size their viewBox to the measured plot, so a width change needs a repaint.

@@ -3,6 +3,39 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.52.0] — 2026-08-24
+### Fixed
+- **A chart's legend, bar values and donut centre were exposed to assistive tech after all** (#047).
+  `COMPONENTS.md` explained the a11y contract with the ARIA spec — `role="img"` is *Children
+  Presentational*, therefore "rendered bar values, axis ticks and legends are not exposed". Measured
+  against Chrome's accessibility tree, that is not what happens: a donut kept `list` → three
+  `listitem` → `StaticText "posted — 76%"` and its centre total `1687`, the legacy `.fdy-bars` kept
+  every value and label (`12`, `Jan`, `30`, `Feb`…), and a two-series cartesian kept its legend — all
+  live, none ignored. What actually protected the advice was only that AT treats a *named*
+  `role="img"` as a leaf and does not descend; the docs presented a habit as a guarantee. Axis ticks
+  were the one true claim, and for an unstated reason: the renderer already sets `aria-hidden` on the
+  `<svg>` itself.
+  `ensureImg()` now marks the rendered children `aria-hidden="true"`, so the author's `aria-label`
+  really is the entire text alternative and cannot be double-announced by an AT that does descend.
+  Nothing is removed and nothing moves — the legend and the centre are still in the DOM and still
+  painted.
+- **The hiding requires a name.** A chart with no `aria-label`/`aria-labelledby` keeps its contents
+  exposed: pruning the subtree of an unlabelled chart would leave an image with no name *and* no
+  text, which is worse than the leak and harder for the author to notice. An element whose author
+  set some other `role` is left alone entirely.
+### Docs
+- The Charts a11y bullet now describes the kit instead of the spec: what is hidden, that `role="img"`
+  alone would not have hidden it, and what happens when the label is missing.
+### Added — guards
+- `browser/chart-a11y.mjs` (5 tests) over donut, legacy bars and cartesian: the accessible subtree
+  exposes no text of its own, the author label survives as the name, the legend is still rendered and
+  visible (hidden, not deleted), and an unlabelled chart still reads. The first three were verified to
+  fail against 1.51.1.
+- `axSubtree()` in the browser harness — every AX node under an element, ignored ones included. The
+  DOM cannot answer this class of question: `aria-hidden` changes no markup, so a `querySelector`
+  assert passes identically before and after the fix. Same reason the 1.51.0 scaling bug needed a
+  real measurement rather than a source read.
+
 ## [1.51.1] — 2026-08-24
 ### Docs
 - **`COMPONENTS.md` never said whether two overlays may be open at once** (#046). Modal and Drawer

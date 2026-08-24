@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — chart accessible subtree</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- Every chart the renderer builds DOM text into. The donut writes a legend AND a centre total,
+       the legacy bars write a value and a label per column, and a two-series cartesian writes a
+       legend — those are the three surfaces COMPONENTS.md claims are not exposed. -->
+  <div id="donut" data-fdy-chart="donut" data-values="1284,342,61" data-labels="posted,pending,deleted"
+       aria-label="Documents by status: posted 1,284 (76%), pending 342 (20%), deleted 61 (4%)"></div>
+
+  <div id="bars" class="fdy-bars" data-fdy-chart="bar" data-values="12,30,18" data-labels="Jan,Feb,Mar"
+       aria-label="Documents per month: Jan 12, Feb 30, Mar 18"></div>
+
+  <div style="width:600px">
+    <div id="line" data-fdy-chart="line" data-labels="Jan,Feb,Mar"
+         data-series='[{"label":"Posted","values":[62,68,75]},{"label":"Draft","values":[24,20,16]}]'
+         aria-label="Monthly posting trend: Posted 62% → 75%, Draft 24% → 16%"></div>
+  </div>
+
+  <!-- No aria-label, deliberately: the kit must NOT hide this one's contents. Hiding them would
+       leave an image with no name and no text, which is worse than the leak it fixes. -->
+  <div id="nameless" data-fdy-chart="donut" data-values="3,1" data-labels="open,closed"></div>
+
+<script src="../../dist/freeday.js"></script>
+</body>
+</html>

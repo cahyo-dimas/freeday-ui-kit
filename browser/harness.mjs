@@ -199,6 +199,27 @@ export async function withPage(fileUrl, fn) {
       return self && self.name ? self.name.value : null;
     };
 
+    /* Every AX node UNDER an element, ignored ones included — the only instrument that can tell
+       "the spec says this subtree is presentational" apart from "the browser actually prunes it".
+       role="img" is Children Presentational per ARIA, but a UA is free to keep the nodes and leave
+       the skipping to the AT, and a source read cannot see which one you got. */
+    const axSubtree = async (selector) => {
+      await cmd('DOM.enable');
+      await cmd('Accessibility.enable');
+      const doc = await cmd('DOM.getDocument', { depth: -1 });
+      const root = doc.result && doc.result.root ? doc.result.root.nodeId : null;
+      if (root === null) throw new Error('no DOM root');
+      const found = await cmd('DOM.querySelector', { nodeId: root, selector });
+      const nodeId = found.result ? found.result.nodeId : 0;
+      if (!nodeId) throw new Error('axSubtree: no element for ' + selector);
+      const q = await cmd('Accessibility.queryAXTree', { nodeId });
+      return ((q.result && q.result.nodes) || []).map((n) => ({
+        role: n.role ? n.role.value : null,
+        name: n.name ? n.name.value : '',
+        ignored: n.ignored === true,
+      }));
+    };
+
     /* The PIXEL the browser actually painted at a point.
      *
      * The only honest way to ask "is this on top?" once a modal <dialog> is involved. The obvious
@@ -238,7 +259,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, pixelAt, centerXY });
+    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axSubtree, pixelAt, centerXY });
   } finally {
     if (ws !== null) {
       try {

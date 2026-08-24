@@ -868,9 +868,14 @@ Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`
   many x-labels fit. Set the token rather than `font-size` on `__tick`/`__xlabel`, or the gutter and
   the autoskip will still be computed from the old size.
 - A11y: every chart is `role="img"` + an **author-supplied** `aria-label`, and that label is the
-  *entire* text alternative — write one that carries the numbers, not just the shape. `role="img"`
-  makes descendants presentational, so rendered bar values, axis ticks and legends are not exposed
-  either; any `<table>`/text placed inside the element is **pre-render only** and is replaced on
+  *entire* text alternative — write one that carries the numbers, not just the shape. The renderer
+  marks everything it draws `aria-hidden="true"` — legend, bar values and labels, donut centre, the
+  SVG — so nothing inside the chart competes with your label or repeats it. `role="img"` alone would
+  **not** have done that: it is Children Presentational per ARIA, but browsers keep the subtree in
+  the accessibility tree anyway, so the kit hides it rather than relying on the spec. That hiding
+  needs a name to work from — a chart with **no** `aria-label`/`aria-labelledby` keeps its contents
+  exposed, because an image with neither a name nor any text is worse than one that leaks its
+  legend. Any `<table>`/text placed inside the element is **pre-render only** and is replaced on
   render. Good: `aria-label="Monthly posting trend: Posted 62% → 88%, Draft 24% → 16%"`.
 - Internal parts (set by JS, useful for overrides): `.fdy-chart__legend` (+`--row`) `__swatch`
   `__tip`; `.fdy-bars__col` `__bar` `__track` `__label` `__val`; `.fdy-chart-xy__plot` `__grid`
