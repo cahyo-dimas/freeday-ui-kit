@@ -11,3 +11,4 @@ export { default as FdyTable } from './components/FdyTable.vue';
 export { default as FdyTableFooter } from './components/FdyTableFooter.vue';
 export { default as FdyModal } from './components/FdyModal.vue';
 export { default as FdyDrawer } from './components/FdyDrawer.vue';
+export { default as FdyAppShell } from './components/FdyAppShell.vue';
