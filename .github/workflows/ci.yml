@@ -11,7 +11,11 @@
 name: CI
 
 on:
-  push: # every branch, not just main — this repo does most of its work on branches and merges them
+  push:
+    # Every branch, not just main — this repo does most of its work on branches and merges them.
+    # Tags are excluded on purpose: publish.yml calls this workflow as its gate, so a tag that also
+    # matched here would run the identical job twice for one release.
+    tags-ignore: ['**']
   pull_request:
     branches: [main]
   workflow_call: # invoked by publish.yml as a release gate
@@ -54,7 +58,16 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome
         run: |
           set -o pipefail
-          npm run test:browser 2>&1 | tee /tmp/browser.tap
+          # `|| failed=1` rather than letting it exit here: a failing suite must be given the chance
+          # to say WHICH test failed. Run logs need a token to read, and the default annotation for a
+          # failed step is "Process completed with exit code 1" — which is how the first red run on
+          # this workflow could not be diagnosed without re-running it locally and guessing.
+          npm run test:browser 2>&1 | tee /tmp/browser.tap || failed=1
+          if [ -n "${failed:-}" ]; then
+            grep -E '^not ok ' /tmp/browser.tap | while IFS= read -r line; do echo "::error::$line"; done
+            echo "::error::Browser suite failed. The failing test names are annotated above."
+            exit 1
+          fi
           passed=$(awk '/^# pass /{print $3}' /tmp/browser.tap)
           skipped=$(awk '/^# skipped /{print $3}' /tmp/browser.tap)
           echo "browser suite: ${passed:-?} passed, ${skipped:-?} skipped"

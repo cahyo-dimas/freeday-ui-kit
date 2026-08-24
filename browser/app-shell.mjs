@@ -23,13 +23,42 @@ const skip = findChrome() === null ? 'no Chrome binary (set CHROME_BIN to run br
 const WIDE = [1000, 900];
 const NARROW = [420, 900]; // app-shell.css switches to the overlay at max-width:720px
 
-const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 const state = async (p) => JSON.parse(await p.evalJS('JSON.stringify(window.state())'));
 
+/* Wait on the LAYOUT, never on a duration. The backdrop is position:fixed inset:0 at z-index 55 and
+   leaves through a `visibility` transition, so for as long as that runs it still swallows a click
+   aimed at the toggle in the topbar underneath it. A fixed pause that is long enough on a developer
+   laptop is not long enough on a loaded CI runner, and the test then fails by clicking the wrong
+   thing — which is exactly how this spec first went red on CI while passing locally. */
+const OPEN = `window.state().open && document.getElementById('sidebar').getBoundingClientRect().left === 0`;
+const SHUT = `!window.state().open && getComputedStyle(document.getElementById('backdrop')).visibility === 'hidden'`;
+const isWide = (yes) => `window.matchMedia('(min-width: 721px)').matches === ${yes}`;
+
+/* In the wide mode the panel does not slide, it SHRINKS — and the topbar, with the toggle in it,
+   travels the whole 15.5rem while it does. Waiting only for the class to flip means the next click
+   is aimed at a button that has since moved out from under the pointer, so the wait is on the width
+   reaching its end state. */
+const COLLAPSED = `window.state().collapsed && document.getElementById('sidebar').getBoundingClientRect().width === 0`;
+const EXPANDED = `!window.state().collapsed && document.getElementById('sidebar').getBoundingClientRect().width > 100`;
+
+/* waitFor RETURNS false on timeout rather than throwing, so an unmet condition would otherwise sail
+   on and fail some later assertion with a message about the wrong thing. Say which wait expired. */
+const until = async (p, condition, what) => {
+  assert.ok(await p.waitFor(condition), `timed out waiting for ${what} — condition never became true: ${condition}`);
+};
+
 const ready = async (p, [w, h]) => {
-  await p.waitFor('document.readyState === "complete" && !!window.state');
+  await until(p, 'document.readyState === "complete" && !!window.state', 'the page and its state probe');
   await p.setViewport(w, h);
-  await pause(150);
+  await until(p, isWide(w >= 721), `the ${w >= 721 ? 'wide' : 'narrow'} media query`);
+};
+
+const openNav = async (p) => {
+  await p.clickCenter('#toggle');
+  await until(p, OPEN, 'the overlay panel to finish sliding in');
+};
+const expectShut = async (p) => {
+  await until(p, SHUT, 'the overlay to close and its backdrop to stop intercepting clicks');
 };
 
 test('wide: the toggle collapses the column, and a collapsed nav leaves the tab order (#8)', { skip }, async () => {
@@ -42,7 +71,7 @@ test('wide: the toggle collapses the column, and a collapsed nav leaves the tab 
     assert.equal(start.sidebarInert, false);
 
     await p.clickCenter('#toggle');
-    await pause(150);
+    await until(p, COLLAPSED, 'the sidebar to finish collapsing');
     const collapsed = await state(p);
     assert.equal(collapsed.collapsed, true, 'the toggle collapses it');
     assert.equal(collapsed.expanded, 'false');
@@ -52,7 +81,7 @@ test('wide: the toggle collapses the column, and a collapsed nav leaves the tab 
     assert.equal(collapsed.contentInert, false, 'the page stays usable — this is a column, not an overlay');
 
     await p.clickCenter('#toggle');
-    await pause(150);
+    await until(p, EXPANDED, 'the sidebar to finish expanding');
     assert.equal((await state(p)).sidebarInert, false, 'and comes back');
   });
 });
@@ -65,8 +94,7 @@ test('narrow: opening the overlay makes the page behind it inert (#8)', { skip }
     assert.equal(closed.open, false);
     assert.equal(closed.sidebarInert, true, 'an off-canvas panel is still on screen — translateX only moves it');
 
-    await p.clickCenter('#toggle');
-    await pause(300);
+    await openNav(p);
     const open = await state(p);
     assert.equal(open.open, true);
     assert.equal(open.expanded, 'true');
@@ -79,8 +107,7 @@ test('narrow: focus enters the panel, is trapped in it, and comes back to the to
   await withPage(fixture('vanilla-app-shell.html'), async (p) => {
     await ready(p, NARROW);
 
-    await p.clickCenter('#toggle');
-    await pause(300);
+    await openNav(p);
 
     const inside = JSON.parse(await p.evalJS('JSON.stringify(window.focusablesInSidebar())'));
     assert.deepEqual(inside, ['brand', 'nav-one', 'nav-two'], 'fixture sanity: three stops in the panel');
@@ -95,7 +122,7 @@ test('narrow: focus enters the panel, is trapped in it, and comes back to the to
     assert.equal((await state(p)).focused, 'brand', 'and wrapped back to the first');
 
     await p.pressKey('Escape');
-    await pause(300);
+    await expectShut(p);
     const after = await state(p);
     assert.equal(after.open, false, 'Escape closes it');
     assert.equal(after.contentInert, false, 'and gives the page back');
@@ -107,22 +134,22 @@ test('narrow: the backdrop and a nav item both close it (#8)', { skip }, async (
   await withPage(fixture('vanilla-app-shell.html'), async (p) => {
     await ready(p, NARROW);
 
-    await p.clickCenter('#toggle');
-    await pause(300);
+    await openNav(p);
     /* Assert it OPENED before asserting it closed: without this the test passes on a shell with no
        behaviour at all, where the nav never opens and "it is closed" is true and meaningless. */
     assert.equal((await state(p)).open, true, 'precondition: the overlay is open');
     await p.evalJS(`document.getElementById('backdrop').click()`);
-    await pause(300);
+    await expectShut(p);
     assert.equal((await state(p)).open, false, 'backdrop click closes');
 
-    await p.clickCenter('#toggle');
-    await pause(300);
+    /* Reopening REQUIRES the backdrop to have finished leaving: until then it is still on top of
+       the toggle and takes the click itself. */
+    await openNav(p);
     assert.equal((await state(p)).open, true, 'precondition: open again');
     /* Following a link inside an overlay nav means "take me there" — the panel must not stay open
        over the page just asked for. This is the behaviour the repo's own two copies disagreed on. */
     await p.evalJS(`document.getElementById('nav-two').click()`);
-    await pause(300);
+    await expectShut(p);
     assert.equal((await state(p)).open, false, 'a nav item closes it');
   });
 });
@@ -131,14 +158,14 @@ test('crossing the breakpoint while open does not strand the page as inert (#8)'
   await withPage(fixture('vanilla-app-shell.html'), async (p) => {
     await ready(p, NARROW);
 
-    await p.clickCenter('#toggle');
-    await pause(300);
+    await openNav(p);
     assert.equal((await state(p)).contentInert, true, 'open as an overlay');
 
     /* The failure this guards: the panel becomes a static column again while --nav-open and the
        content's `inert` are still set, and the page can never be clicked or read again. */
     await p.setViewport(...WIDE);
-    await pause(300);
+    await until(p, isWide(true), 'the wide media query after the resize');
+    await until(p, '!window.state().open', 'the overlay state to be dropped on crossing');
     const wide = await state(p);
     assert.equal(wide.open, false, 'the overlay state is dropped');
     assert.equal(wide.contentInert, false, 'and the page is usable again');
