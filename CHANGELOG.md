@@ -30,6 +30,29 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - The fixture records each `cancel` event's `cancelable` flag; nothing prevents it, so the older
   tests measure what they always did.
 
+### Fixed — the kit's own suite
+- **The browser guards did not run where the releases are made.** CI ran the 59 unit tests and
+  published; the 58 browser tests across 18 specs — pixel paint order for stacked overlays, chart
+  accessible subtrees, the user-activation matrix above — ran only when someone remembered to run
+  them locally. Automating the release through OIDC in 1.52.0 removed the someone. `ci.yml` now runs
+  both suites on every push and is *called* by `publish.yml` (`needs: test`), so the step list that
+  guards a release cannot drift from the one that runs during development, and a tag with red guards
+  never reaches npm.
+- **A job that merely ran the command would have been green while running nothing.** Every browser
+  spec skips itself when no Chrome is found, and a skipped suite still exits 0. So the job checks
+  the binary before it starts and then parses its own summary, failing on any skip — "the job was
+  green" and "the guards ran" were separate facts, and only one of them was enforceable. Both
+  demonstrated on real runs: the assertion green at 58/0, and a deliberately broken `CHROME_BIN`
+  red.
+- **The harness can now drive any installed Chrome.** `chrome-headless-shell` is headless by
+  construction; an ordinary Chrome binary is not and, on a machine with no display, looks for one
+  and dies. It now gets `--headless=new` (and `--no-sandbox` only under `CI`), which is what lets
+  `CHROME_BIN=<some other Chrome>` compare engines — the manoeuvre that settled #048. CI runs the
+  runner's Chrome stable, local runs Chromium 133, so both engines `COMPONENTS.md` names are
+  genuinely exercised.
+- Spec: `docs/superpowers/specs/2026-08-24-browser-guards-in-ci-design.md`. No shipped file changed —
+  `browser/` and `.github/` are not in the published tarball, so there is no release for this.
+
 ## [1.52.0] — 2026-08-24
 ### Fixed
 - **A chart's legend, bar values and donut centre were exposed to assistive tech after all** (#047).
