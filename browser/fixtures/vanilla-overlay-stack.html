@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — modal over drawer</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <button class="fdy-btn" data-fdy-drawer="dw" id="open-drawer">Open drawer</button>
+
+  <!-- The drawer is the FIRST overlay. Its body is painted a solid dark colour so that "which of
+       the two is on top here" becomes a pixel question with only one possible answer: the modal's
+       surface is near-white, this is near-black. A hit test cannot answer it — a modal dialog makes
+       the rest of the document inert, so elementFromPoint outside it returns the dialog whatever is
+       actually painted (the same trap #027 documented for toasts). -->
+  <dialog class="fdy-drawer" id="dw" aria-labelledby="dw-title">
+    <div class="fdy-drawer__header">
+      <h2 class="fdy-drawer__title" id="dw-title">Upload document</h2>
+      <button class="fdy-drawer__close" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="fdy-drawer__body" id="dw-body" style="background:#0a0c19"></div>
+    <div class="fdy-drawer__footer">
+      <button class="fdy-btn fdy-btn--primary" id="ask-confirm">Upload</button>
+    </div>
+  </dialog>
+
+  <!-- The SECOND overlay, opened from inside the first — the confirm-over-drawer shape. -->
+  <dialog class="fdy-modal fdy-modal--md" id="md" aria-labelledby="md-title">
+    <div class="fdy-modal__header">
+      <h2 class="fdy-modal__title" id="md-title">Confirm upload</h2>
+      <button class="fdy-modal__close" data-close aria-label="Close">&times;</button>
+    </div>
+    <div class="fdy-modal__body">Send this document?</div>
+    <div class="fdy-modal__footer">
+      <button class="fdy-btn fdy-btn--ghost" data-close id="md-cancel">Cancel</button>
+      <button class="fdy-btn fdy-btn--primary" id="md-confirm">Confirm</button>
+    </div>
+  </dialog>
+
+<script src="../../dist/freeday.js"></script>
+<script>
+  var dw = document.getElementById('dw'), md = document.getElementById('md');
+
+  // Opening a modal is the app's job — the kit ships no modal enhancer.
+  document.getElementById('ask-confirm').addEventListener('click', function () { md.showModal(); });
+
+  window.state = function () {
+    return {
+      open: Array.prototype.map.call(document.querySelectorAll('dialog[open]'), function (d) { return d.id; }),
+      drawerOpen: dw.open, modalOpen: md.open,
+    };
+  };
+
+  // Where the two overlays overlap on screen — the only place the question can be asked.
+  window.overlap = function () {
+    var a = dw.getBoundingClientRect(), b = md.getBoundingClientRect();
+    var x0 = Math.max(a.left, b.left), x1 = Math.min(a.right, b.right);
+    var y0 = Math.max(a.top, b.top), y1 = Math.min(a.bottom, b.bottom);
+    return { overlaps: x1 > x0 && y1 > y0,
+             centre: [Math.round((x0 + x1) / 2), Math.round((y0 + y1) / 2)],
+             drawer: [Math.round(a.left), Math.round(a.right)], modal: [Math.round(b.left), Math.round(b.right)] };
+  };
+
+  // Closing the FIRST-opened overlay while the second is still up.
+  window.closeDrawerOutOfOrder = function () {
+    dw.close();
+    return window.state();
+  };
+</script>
+</body>
+</html>

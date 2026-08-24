@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "1.51.0",
+  "version": "1.51.1",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
@@ -92,7 +92,7 @@
   "scripts": {
     "build": "node tokens/build.mjs",
     "test": "node --test",
-    "test:browser": "node --test browser/vanilla.mjs browser/adapter.mjs browser/layout.mjs browser/theme.mjs browser/state.mjs browser/root-init.mjs browser/upload-states.mjs browser/number.mjs browser/card-stretch.mjs browser/text-override.mjs browser/control-heights.mjs browser/cfl-multi.mjs browser/crowding.mjs browser/over-dialog.mjs browser/chart-scale.mjs",
+    "test:browser": "node --test browser/vanilla.mjs browser/adapter.mjs browser/layout.mjs browser/theme.mjs browser/state.mjs browser/root-init.mjs browser/upload-states.mjs browser/number.mjs browser/card-stretch.mjs browser/text-override.mjs browser/control-heights.mjs browser/cfl-multi.mjs browser/crowding.mjs browser/over-dialog.mjs browser/chart-scale.mjs browser/overlay-stack.mjs",
     "prepack": "node tokens/build.mjs",
     "version": "node tokens/build.mjs && git add dist",
     "typecheck:react": "tsc -p adapters/react/tsconfig.json --noEmit"

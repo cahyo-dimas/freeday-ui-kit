@@ -3,6 +3,33 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.51.1] — 2026-08-24
+### Docs
+- **`COMPONENTS.md` never said whether two overlays may be open at once** (#046). Modal and Drawer
+  were documented in isolation, so "can a confirm modal open over an open drawer?" had no answer in
+  the file — and the built CSS does not answer it either: the only overlay `z-index` in the bundle
+  belongs to the toast region. Both entries now state the rule, because both components are
+  `<dialog>` opened with `showModal()` and therefore enter the **top layer**, where paint order is
+  the order they were opened: the later modal is above the drawer with no `z-index` from either,
+  Escape closes the topmost first (so cancelling returns to the still-open drawer), and closing them
+  out of order leaves the survivor painted and dismissible.
+- **The one caveat is the browser's, and it is now written down**: open each overlay from the
+  gesture that asked for it. A `showModal()` with no user activation — from a timer, or after an
+  `await` that outlived the click — has its close watcher GROUPED with the dialog below it, and a
+  single Escape then closes both. Measured, not assumed: two untrusted `.click()` opens, one Escape,
+  both dialogs shut.
+### Added — guards
+- `browser/overlay-stack.mjs` (3 tests) proves that paragraph instead of restating it — the #041
+  lesson applied to a documentation change. Paint order is asserted in **pixels** at the overlap of
+  the two, because a modal dialog makes the rest of the document inert and `elementFromPoint` will
+  name the dialog whatever is really on top; the overlays are opened with **trusted** clicks, or the
+  close-watcher grouping above would fail the Escape assertion for a reason that is not the kit's.
+- **`pressKey` in the browser harness sent every key but Tab with virtual-key code 0** — delivered
+  to the page, but not acted on by the browser: Escape reached a `keydown` listener yet never closed
+  a native `<dialog>`. A dismissal guard written with it would have passed for the wrong reason and
+  reported a broken kit as fine. It now carries the real `windowsVirtualKeyCode` /
+  `nativeVirtualKeyCode` for the keys the suite presses.
+
 ## [1.51.0] — 2026-08-21
 ### Fixed
 - **A cartesian chart's axis text and dots grew with the container** (#042). `renderCartesian` built

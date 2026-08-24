@@ -1049,12 +1049,29 @@ painted on top of a modal, because it will tell you the dialog is, even when it 
 `__close`. The body scrolls; the footer never clips. `aria-labelledby` → the title's `id`;
 `data-close` on any button that should close it.
 
+**Stacking two overlays is supported.** Modal and drawer are both `<dialog>` opened with
+`showModal()`, so both enter the top layer and paint in the order they were opened — a confirm
+modal opened from inside an open drawer paints **above** it, and neither needs a `z-index` for
+that. Escape closes the topmost first, so cancelling returns to the still-open drawer; a second
+Escape then closes the drawer. Closing them out of order is fine too: closing the drawer while the
+modal is up leaves the modal open, painted and dismissible.
+
+One caveat, and it is the browser's rather than the kit's: **open each overlay from the gesture
+that asked for it.** A `showModal()` that runs with no user activation — from a timer, or after an
+`await` that outlived the click — has its close watcher grouped with the dialog below it, and then
+a single Escape closes both at once instead of the topmost only.
+
 ## Drawer — `.fdy-drawer`
 > **Typed wrapper: `<FdyDrawer>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Temporary side panel on native `<dialog>` — left by default, `--right` to flip. Parts `__header`
 `__title` `__body` `__footer` `__close`. Open it from any
 `<button data-fdy-drawer="<dialog id>">`. Needs `freeday-drawer.js`.
+
+Opened with `showModal()`, so it is in the **top layer** on the same terms as the modal — including
+opening a modal over an open drawer, which is supported and described under
+[Modal → *Stacking two overlays*](#modal--fdy-modal). It slides in on `transform` and never animates
+opacity: wait on its position, not on `opacity`, if you need to know when it has arrived.
 
 ## Accordion — `.fdy-accordion`
 Native `<details>`, zero JS: `.fdy-accordion__item` on each `<details>`, content in

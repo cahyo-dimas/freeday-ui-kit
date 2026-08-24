@@ -167,8 +167,14 @@ export async function withPage(fileUrl, fn) {
 
     /* A real key, not a synthetic KeyboardEvent — only a trusted one moves focus, which is the whole
        point when the claim under test is about tab order. */
+    /* A key without its virtual-key code is delivered to the page but not acted on by the browser:
+       Escape with vkCode 0 reaches a keydown listener yet never closes a native <dialog>, so a
+       dismissal guard written with it passes for the wrong reason and reports a broken kit as fine. */
+    const VK = { Tab: 9, Enter: 13, Escape: 27, Space: 32, End: 35, Home: 36,
+                 ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
     const pressKey = async (key, { shift = false } = {}) => {
-      const params = { key, code: key, windowsVirtualKeyCode: key === 'Tab' ? 9 : 0, modifiers: shift ? 8 : 0 };
+      const vk = VK[key] || 0;
+      const params = { key, code: key, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk, modifiers: shift ? 8 : 0 };
       await cmd('Input.dispatchKeyEvent', { type: 'rawKeyDown', ...params });
       await cmd('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
       await sleep(40);
