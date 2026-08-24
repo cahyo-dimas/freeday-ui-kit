@@ -12,7 +12,14 @@ on:
       - 'v*'
 
 jobs:
+  # Both suites, from ci.yml, so a tag whose guards are red never reaches npm. Called rather than
+  # copied: a second copy of the step list is a second thing to keep in sync, and the copy that
+  # matters is the one running at release time.
+  test:
+    uses: ./.github/workflows/ci.yml
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,7 +33,5 @@ jobs:
       - run: npm install -g npm@^11.5.1 # trusted publishing needs npm >= 11.5.1; pin the 11.x line so a future npm major can't break CI
       - run: npm ci
       - run: node tokens/build.mjs
-      - run: node --test
-      - run: npm run typecheck:react
       - run: npm publish # OIDC trusted publishing: no token, provenance automatic
 
