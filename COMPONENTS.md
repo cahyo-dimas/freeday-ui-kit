@@ -122,8 +122,21 @@ off-canvas drawer and backdrop are built in.
 - Modifiers: `--nav-open` (mobile drawer open, ≤720px) · `--nav-collapsed` (collapse to zero width,
   ≥721px) · `--static` (embed the shell in a page instead of filling the viewport)
 - Also: `.fdy-skip` — the skip-to-content link, first child of the shell.
-- JS: none. Toggle `--nav-collapsed` (≥721px) or `--nav-open` (≤720px) on the root from
-  `__navtoggle`'s click; clear `--nav-open` when `__backdrop` is clicked.
+- **Behaviour: `freeday-app-shell.js`.** Opt in with `data-fdy-app` on the root — the markup below
+  is unchanged. It owns the toggle in both modes plus everything an overlay needs that hand-rolling
+  reliably forgets: Escape, backdrop click, closing when a `.fdy-nav__item` is followed, focus moved
+  into the panel on open and returned to `__navtoggle` on close, `inert` on `__content` while the
+  overlay is up, and a Tab trap inside the panel. `aria-expanded` on `__navtoggle` answers "is the
+  nav showing?" in both modes, so you never read the state classes yourself.
+- **A hidden nav is not a tabbable nav.** `__sidebar` is `inert` whenever the nav is not visible —
+  collapsed at ≥721px (`width:0`) or off-canvas at ≤720px (`translateX(-100%)`). Both hide it from
+  the eye; neither hides it from the keyboard, so without this a nav nobody can see still swallows
+  Tab on the way to the page.
+- **Crossing the breakpoint is part of the contract**: open the overlay, then widen the window, and
+  `--nav-open` is dropped and `inert` removed. Leaving them set is how a page becomes permanently
+  unreachable.
+- Skip the enhancer and nothing breaks: the classes still mean what they always meant and the
+  behaviour is yours to write. `FreedayAppShell.init(root)` for markup mounted later.
 
 **The nesting is fixed, not free-form:** `.fdy-app` is a flex **row** of `[__sidebar | __content]`,
 and `__content` is the column holding `__topbar` + `__main` — it exists to give the sticky topbar a

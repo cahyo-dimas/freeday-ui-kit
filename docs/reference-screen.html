@@ -33,7 +33,7 @@
      Doctrine behind the choices: USAGE.md.
      ══════════════════════════════════════════════════════════════════════════════════════════ -->
 
-<div class="fdy-app" id="app">
+<div class="fdy-app" id="app" data-fdy-app>
   <a class="fdy-skip" href="#main">Skip to main content</a>
 
   <!-- Sidebar comes FIRST: .fdy-app is a flex row of [sidebar | content]. The brand lives in the
@@ -407,6 +407,7 @@
 </dialog>
 
 <!-- Enhancers: only the ones this screen actually uses. Zero dependencies, load order free. -->
+<script src="../dist/freeday-app-shell.js"></script>
 <script src="../dist/freeday-popover.js"></script>
 <script src="../dist/freeday-select.js"></script>
 <script src="../dist/freeday-datepicker.js"></script>
@@ -417,21 +418,9 @@
 <script src="../dist/freeday-toast.js"></script>
 
 <script>
-  // The shell's only wiring: the nav toggle. Two state classes, no library.
-  // Above 720px the sidebar collapses to zero width (--nav-collapsed); at or below it slides in as
-  // an off-canvas drawer (--nav-open). 720px is where app-shell.css switches — keep them in step.
-  const app = document.getElementById('app');
-  const toggle = app.querySelector('.fdy-app__navtoggle');
-  const wide = () => window.matchMedia('(min-width: 721px)').matches;
-  toggle.addEventListener('click', () => {
-    const cls = wide() ? 'fdy-app--nav-collapsed' : 'fdy-app--nav-open';
-    const open = app.classList.toggle(cls);
-    toggle.setAttribute('aria-expanded', String(wide() ? !open : open));
-  });
-  app.querySelector('.fdy-app__backdrop').addEventListener('click', () => {
-    app.classList.remove('fdy-app--nav-open');
-    toggle.setAttribute('aria-expanded', 'false');
-  });
+  // The nav toggle is the kit's now: `data-fdy-app` on the shell is the whole wiring. What used to
+  // live here handled the two state classes and nothing else — no Escape, no focus trap, no inert
+  // background, no focus restore — which is exactly why the behaviour moved into the kit.
 
   // Theme + density live on <html>, set once — never per component.
   const root = document.documentElement;

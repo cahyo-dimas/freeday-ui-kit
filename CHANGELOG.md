@@ -3,6 +3,46 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.53.0] — 2026-08-24
+### Added
+- **`freeday-app-shell.js` — the shell finally ships its own behaviour** (`NEXT-UP.md` #8, reported
+  twice). `.fdy-app` shipped `__navtoggle`, `__backdrop` and the `--nav-open` / `--nav-collapsed`
+  classes with **zero JS**, and `COMPONENTS.md` told every consumer to wire it in two sentences that
+  never mentioned Escape, focus, `inert` or focus restore. Follow that exactly and you get an
+  off-canvas overlay that cannot be closed from the keyboard and lets Tab wander behind the
+  backdrop. Opt in with `data-fdy-app`; the markup is otherwise untouched, so an existing shell
+  gains the behaviour by adding one attribute and deleting its own copy.
+  Owned now: the toggle in both modes, Escape, backdrop click, closing when a `.fdy-nav__item` is
+  followed, focus into the panel and back to `__navtoggle` on close, `inert` on `__content` while
+  the overlay is open, and a Tab trap inside the panel.
+### Fixed
+- **A hidden nav was still a tabbable nav**, in both modes and from the beginning. Collapsed at
+  ≥721px is `width:0;overflow:hidden`; off-canvas at ≤720px is `translateX(-100%)`. Both hide the
+  panel from the eye and neither hides it from the keyboard, so a nav nobody could see still
+  swallowed every Tab on the way into the page. `__sidebar` is now `inert` whenever the nav is not
+  visible — one rule for both modes rather than two patches.
+- **Crossing the breakpoint with the overlay open stranded the page.** Widening the window left
+  `--nav-open` set and `__content` `inert`, so the page underneath could never be clicked or read
+  again — the same failure that produced `breakpoints.nav` in v1.20.0. The enhancer clears the
+  overlay state on the media-query change, and deliberately does *not* move focus while doing it: a
+  resize is not a user asking to go somewhere.
+### Changed
+- **`docs/index.html` and `docs/reference-screen.html` stopped hand-rolling it**, which is the
+  proof rather than a tidy-up. The two copies had drifted: `index.html` handled Escape and
+  close-on-nav-click, `reference-screen.html` handled neither, and *neither* trapped focus, marked
+  the content `inert`, or restored focus. Two versions in one repository disagreeing is the whole
+  argument for the kit owning this.
+### Added — guards
+- `browser/app-shell.mjs` (5 tests), each verified to fail with the enhancer switched off: collapse
+  and its `inert` at ≥721px, the overlay and its `inert` at ≤720px, focus entering the panel and
+  cycling inside it under **trusted** Tab presses, Escape returning focus to the toggle, backdrop
+  and nav-item dismissal, and the breakpoint crossing. One of the five originally passed against a
+  shell with no behaviour at all — the nav never opened, so "it is closed" was true and meaningless
+  — and now asserts it opened first.
+- `setViewport()` in the browser harness (`Emulation.setDeviceMetricsOverride`). A responsive
+  contract cannot be tested at a fixed window size, and the moment a layout *crosses* a breakpoint
+  is exactly where its state gets stranded.
+
 ## [1.52.1] — 2026-08-24
 ### Docs
 - **1.51.1's close-watcher caveat named the wrong condition** (#048). It said a `showModal()` with

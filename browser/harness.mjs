@@ -209,6 +209,17 @@ export async function withPage(fileUrl, fn) {
       return self && self.name ? self.name.value : null;
     };
 
+    /* The VIEWPORT the page believes it has. Media queries and matchMedia('change') both respond
+       to it, so this is what makes a responsive contract testable at all — and the only way to
+       exercise the moment a layout CROSSES a breakpoint, which is where an app shell can strand an
+       `inert` attribute on content nobody can reach any more. */
+    const setViewport = async (width, height) => {
+      await cmd('Emulation.setDeviceMetricsOverride', {
+        width, height, deviceScaleFactor: 1, mobile: false,
+      });
+      await sleep(120); // let the media query settle before anything is measured
+    };
+
     /* Every AX node UNDER an element, ignored ones included — the only instrument that can tell
        "the spec says this subtree is presentational" apart from "the browser actually prunes it".
        role="img" is Children Presentational per ARIA, but a UA is free to keep the nodes and leave
@@ -269,7 +280,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axSubtree, pixelAt, centerXY });
+    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axSubtree, pixelAt, centerXY, setViewport });
   } finally {
     if (ws !== null) {
       try {

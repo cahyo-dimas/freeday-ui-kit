@@ -200,7 +200,7 @@
 </head>
 <body>
 <a class="fdy-skip" href="#main">Lewati ke konten utama</a>
-<div class="fdy-app">
+<div class="fdy-app" data-fdy-app>
   <aside class="fdy-app__sidebar" aria-label="Navigasi komponen">
     <div class="fdy-app__brand">Freeday</div>
     <div class="doc-search">
@@ -2114,6 +2114,7 @@
   </div>
 </div>
 
+<script src="../dist/freeday-app-shell.js"></script>
 <script src="../dist/freeday-select.js"></script>
 <script src="../dist/freeday-tabs.js"></script>
 <script src="../dist/freeday-table.js"></script>
@@ -2324,18 +2325,10 @@
   };
   langBtn.onclick = () => setLang(lang === 'id' ? 'en' : 'id');
   // Sidebar toggle: desktop collapses (hides) the rail; mobile opens an off-canvas drawer.
-  const navToggle = document.getElementById('navtoggle');
-  const app = document.querySelector('.fdy-app');
-  const navBackdrop = document.getElementById('nav-backdrop');
-  const mqMobile = window.matchMedia('(max-width: 720px)');
-  const closeMobileNav = () => { app.classList.remove('fdy-app--nav-open'); if (mqMobile.matches) navToggle.setAttribute('aria-expanded', 'false'); };
-  navToggle.onclick = () => {
-    if (mqMobile.matches) { const open = app.classList.toggle('fdy-app--nav-open'); navToggle.setAttribute('aria-expanded', String(open)); }
-    else { const collapsed = app.classList.toggle('fdy-app--nav-collapsed'); navToggle.setAttribute('aria-expanded', String(!collapsed)); }
-  };
-  navBackdrop.addEventListener('click', closeMobileNav);
-  document.getElementById('doc-nav').addEventListener('click', (e) => { if (mqMobile.matches && e.target.closest('.fdy-nav__item')) closeMobileNav(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && app.classList.contains('fdy-app--nav-open')) closeMobileNav(); });
+  // The nav toggle, backdrop, Escape and close-on-nav-click all come from freeday-app-shell.js now
+  // (`data-fdy-app` on the shell above). The copy that used to live here had Escape but no focus
+  // trap, no inert background and no focus restore; reference-screen.html's copy did not even have
+  // Escape. Two hand-rolled versions in one repo disagreeing is what moved this into the kit.
 
   // Copy the install command.
   const copyBtn = document.getElementById('install-copy');

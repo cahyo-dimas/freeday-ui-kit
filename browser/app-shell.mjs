@@ -1,0 +1,148 @@
+/* Browser regression spec — the app shell owns its nav behaviour (NEXT-UP #8).
+ * Run via `npm run test:browser`. Auto-skips without Chrome.
+ *
+ * `.fdy-app` shipped state classes and no JS, and COMPONENTS.md's instruction — toggle a class on
+ * click, clear it on backdrop click — never mentioned Escape, focus, `inert` or focus restore. A
+ * consumer following it exactly built an overlay that cannot be closed from the keyboard, and the
+ * two hand-rolled copies in this repo's own docs disagreed about which of those they implemented.
+ *
+ * Everything here is asserted with TRUSTED input and a REAL viewport: only a trusted key moves
+ * focus, and only an actual viewport change fires the media query whose crossing is what strands an
+ * `inert` attribute on the page behind the panel.
+ */
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { findChrome, withPage } from './harness.mjs';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const fixture = (name) => 'file://' + join(HERE, 'fixtures', name);
+const skip = findChrome() === null ? 'no Chrome binary (set CHROME_BIN to run browser tests)' : false;
+
+const WIDE = [1000, 900];
+const NARROW = [420, 900]; // app-shell.css switches to the overlay at max-width:720px
+
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+const state = async (p) => JSON.parse(await p.evalJS('JSON.stringify(window.state())'));
+
+const ready = async (p, [w, h]) => {
+  await p.waitFor('document.readyState === "complete" && !!window.state');
+  await p.setViewport(w, h);
+  await pause(150);
+};
+
+test('wide: the toggle collapses the column, and a collapsed nav leaves the tab order (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, WIDE);
+
+    const start = await state(p);
+    assert.equal(start.collapsed, false, 'starts as a visible column');
+    assert.equal(start.expanded, 'true', 'aria-expanded answers "is the nav showing?"');
+    assert.equal(start.sidebarInert, false);
+
+    await p.clickCenter('#toggle');
+    await pause(150);
+    const collapsed = await state(p);
+    assert.equal(collapsed.collapsed, true, 'the toggle collapses it');
+    assert.equal(collapsed.expanded, 'false');
+    /* width:0 + overflow:hidden hides a panel from the eye, not from the keyboard. Without this a
+       collapsed nav still swallows two Tab presses on the way to the page. */
+    assert.equal(collapsed.sidebarInert, true, 'a nav nobody can see must not be tabbable');
+    assert.equal(collapsed.contentInert, false, 'the page stays usable — this is a column, not an overlay');
+
+    await p.clickCenter('#toggle');
+    await pause(150);
+    assert.equal((await state(p)).sidebarInert, false, 'and comes back');
+  });
+});
+
+test('narrow: opening the overlay makes the page behind it inert (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+
+    const closed = await state(p);
+    assert.equal(closed.open, false);
+    assert.equal(closed.sidebarInert, true, 'an off-canvas panel is still on screen — translateX only moves it');
+
+    await p.clickCenter('#toggle');
+    await pause(300);
+    const open = await state(p);
+    assert.equal(open.open, true);
+    assert.equal(open.expanded, 'true');
+    assert.equal(open.contentInert, true, 'Tab must not reach the page behind the backdrop');
+    assert.equal(open.sidebarInert, false);
+  });
+});
+
+test('narrow: focus enters the panel, is trapped in it, and comes back to the toggle (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+
+    await p.clickCenter('#toggle');
+    await pause(300);
+
+    const inside = JSON.parse(await p.evalJS('JSON.stringify(window.focusablesInSidebar())'));
+    assert.deepEqual(inside, ['brand', 'nav-one', 'nav-two'], 'fixture sanity: three stops in the panel');
+    assert.equal((await state(p)).focused, 'brand', 'focus moves into the panel on open');
+
+    /* Tab to the last stop, then once more: it must cycle to the first rather than walk out of the
+       document into the browser's own chrome. */
+    await p.pressKey('Tab');
+    await p.pressKey('Tab');
+    assert.equal((await state(p)).focused, 'nav-two', 'reached the last stop');
+    await p.pressKey('Tab');
+    assert.equal((await state(p)).focused, 'brand', 'and wrapped back to the first');
+
+    await p.pressKey('Escape');
+    await pause(300);
+    const after = await state(p);
+    assert.equal(after.open, false, 'Escape closes it');
+    assert.equal(after.contentInert, false, 'and gives the page back');
+    assert.equal(after.focused, 'toggle', 'focus returns to the control that opened it, never the body');
+  });
+});
+
+test('narrow: the backdrop and a nav item both close it (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+
+    await p.clickCenter('#toggle');
+    await pause(300);
+    /* Assert it OPENED before asserting it closed: without this the test passes on a shell with no
+       behaviour at all, where the nav never opens and "it is closed" is true and meaningless. */
+    assert.equal((await state(p)).open, true, 'precondition: the overlay is open');
+    await p.evalJS(`document.getElementById('backdrop').click()`);
+    await pause(300);
+    assert.equal((await state(p)).open, false, 'backdrop click closes');
+
+    await p.clickCenter('#toggle');
+    await pause(300);
+    assert.equal((await state(p)).open, true, 'precondition: open again');
+    /* Following a link inside an overlay nav means "take me there" — the panel must not stay open
+       over the page just asked for. This is the behaviour the repo's own two copies disagreed on. */
+    await p.evalJS(`document.getElementById('nav-two').click()`);
+    await pause(300);
+    assert.equal((await state(p)).open, false, 'a nav item closes it');
+  });
+});
+
+test('crossing the breakpoint while open does not strand the page as inert (#8)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell.html'), async (p) => {
+    await ready(p, NARROW);
+
+    await p.clickCenter('#toggle');
+    await pause(300);
+    assert.equal((await state(p)).contentInert, true, 'open as an overlay');
+
+    /* The failure this guards: the panel becomes a static column again while --nav-open and the
+       content's `inert` are still set, and the page can never be clicked or read again. */
+    await p.setViewport(...WIDE);
+    await pause(300);
+    const wide = await state(p);
+    assert.equal(wide.open, false, 'the overlay state is dropped');
+    assert.equal(wide.contentInert, false, 'and the page is usable again');
+    assert.equal(wide.sidebarInert, false, 'the nav is a visible column now');
+    assert.equal(wide.expanded, 'true');
+  });
+});
