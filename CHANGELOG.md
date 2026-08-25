@@ -1316,40 +1316,40 @@ a separate patch minutes earlier.
   every state; the current page is carried by the background wash plus the semibold weight the base
   rule already applies, so no dimmed variant trades away the bar's guaranteed contrast).
   Reported as "there is no horizontal navigation component": `.fdy-nav` was the sidebar's vertical
-  menu and `.fdy-appbar` had `__brand`/`__spacer`/`__actions` but nothing to put *links* in — so a
+  menu and `.fdy-appbar` had `__brand`/`__spacer`/`__actions` but nothing to put *links* in, so a
   top-nav app had a component for the bar and none for what the bar is mostly made of.
 - **`.fdy-tabs__tab` also honours `aria-current="page"`**, so the tab *look* legitimately serves
   **routed** sub-navigation (`/settings/profile` · `/settings/billing`) built from real links. A link
-  cannot be `aria-selected` — that is invalid ARIA on an anchor — so the app that borrowed the class
+  cannot be `aria-selected`, which is invalid ARIA on an anchor, so the app that borrowed the class
   had to restate the active style for a second attribute. Keep `role="tab"` + `freeday-tabs.js` for
   **in-page** tabs, where the roving-tabindex / one-panel-per-tab contract is real.
-- **Pressed state for toggle buttons** — `aria-pressed="true"` now styles: soft primary fill + strong
+- **Pressed state for toggle buttons:** `aria-pressed="true"` now styles a soft primary fill + strong
   ink on `--ghost`/`--text`, an inverted-gradient sunken look on the solid button, and the same
   treatment in the danger hue. No new class or markup contract, since `aria-pressed` is already the
-  correct attribute — and it is what turns `.fdy-btn-group` from a joined row into a **complete**
+  correct attribute, and it is what turns `.fdy-btn-group` from a joined row into a **complete**
   segmented control. Previously "which one am I on" was left to each app to hand-tint, which is a
   colour decision the kit should own.
   *Found while building it:* one shared `.fdy-btn[aria-pressed="true"]` rule **cannot** work. A
   gradient is a background-**image**, so the `background` shorthand resets `background-color` to
-  transparent — at equal specificity the later rule won and the ghost segment lost its fill entirely.
+  transparent, so at equal specificity the later rule won and the ghost segment lost its fill entirely.
   Each fill variant now defines its own pressed look. The CSS read correctly in the file; only a real
   engine showed it, which is why the new guard lives in `browser/`.
 ### Fixed: from consumption round 5 (§7)
 - **Hard rule 1 in `COMPONENTS.md` now records its one exception.** The rule says a modifier is
   always written beside its block class, but `.fdy-input-group__addon--icon` is standalone by design
-  — adding the base `__addon` gives a search glyph the grey fill and divider of a `Rp` / `%` prefix.
+  Adding the base `__addon` gives a search glyph the grey fill and divider of a `Rp` / `%` prefix.
   An agent following the rule literally produced the wrong control; one following the CSS comment
   broke the stated rule. The exception is now written down, and it is the only one.
 ### Fixed: the package now routes by stack
 - **The paste-block in `docs/agent-onboarding.md` never mentioned the adapters.** That block is the
   only text that lands in a consuming project's agent instructions, so it is the only text an agent
-  re-reads on every task — and it opened with "a CSS kit + enhancers, **not a component framework**",
+  re-reads on every task, and it opened with "a CSS kit + enhancers, **not a component framework**",
   which actively steers a Vue/React project away from the typed components. It now opens with a
   **step 0 routing table** (Vue → `/vue` · React → `/react` · Blazor → RCL · everything else → raw
   markup), names the ten wrapped components, and states the failure mode: the raw path renders
   correctly the first time and then silently stops hydrating.
 - **`COMPONENTS.md` flags the wrapper at each of the ten sections**, so the choice is visible at the
-  point of use rather than only on an onboarding page read once — with each component's *real*
+  point of use rather than only on an onboarding page read once, with each component's *real*
   binding (`v-model` / `value`+`onChange` / `@bind-Value` for the six value-bound ones; `open`+`close`
   for modal and drawer; data props for chart; `columns`+`rows`+events for table). Hard rule 7 states
   it up front.
@@ -1359,79 +1359,79 @@ a separate patch minutes earlier.
   to the raw path, and notes that Vue/React re-implement the ten natively while Blazor wraps the
   enhancer over interop.
 ### Notes
-- Root cause was structural, not editorial: at **v1.18.0** `docs/getting-started.md` — the only
-  per-stack router the kit had — was **not in `files`**, so `npm i` delivered a README whose
+- Root cause was structural, not editorial: at **v1.18.0** `docs/getting-started.md`, the only
+  per-stack router the kit had, was **not in `files`**, so `npm i` delivered a README whose
   "Starting a project? per stack" link pointed at a path that does not exist inside `node_modules`.
   `adapters/` *was* shipped, so the wrappers sat in the install, unused, with nothing pointing at
   them. v1.20.0 started shipping the docs; this release makes them route.
 
 ## [1.21.0] - 2026-08-12
-Fifth round of real-app consumption feedback, written while that app adopted 1.20.0. Two findings —
+Fifth round of real-app consumption feedback, written while that app adopted 1.20.0. Two findings,
 and a **withdrawal**: the reporter retracted 1.20's rejected §A themselves after isolating the real
 mechanism, which turned out to be a genuine kit bug hiding behind it. Both halves of that rejection
 reproduce here, so the rejection stands and the withdrawal is recorded rather than re-litigated.
 ### Fixed
 - **Hidden labels could scroll the whole page.** `.fdy-visually-hidden` is `position:absolute`, and
   `clip` hides *painting*, not *layout*. With no positioned ancestor its containing block is the
-  document, and `overflow` clips only what is contained inside the overflow box — so a hidden label in
+  document, and `overflow` clips only what is contained inside the overflow box, so a hidden label in
   a horizontally scrolling table (the kit's own recommended way to name an icon button) parks at its
   static position and drags the document sideways. Measured in Chrome: **1351px** of phantom page
   scroll from 11 spans in one table; `overflow-x:hidden` on the scroller, the shell, `body` and `html`
   each changed it by **0px**; removing the spans took it to 0. Every clipping/scrolling container that
-  holds consumer markup now declares `position:relative` — `.fdy-table-scroll`, `.fdy-table-wrap`,
-  `.fdy-list`, `.fdy-card`, `.fdy-tabs__list`, `.fdy-carousel__viewport`, `.fdy-accordion` — each
+  holds consumer markup now declares `position:relative`: `.fdy-table-scroll`, `.fdy-table-wrap`,
+  `.fdy-list`, `.fdy-card`, `.fdy-tabs__list`, `.fdy-carousel__viewport`, `.fdy-accordion`, each
   measured to take its own case to 0 with the scroller still scrolling internally. The rest are
   already inside something the kit positions (`<dialog>`, the sticky sidebar, a fixed popover) and are
   listed with that reason in the new test.
   **`.fdy-accordion` is the one to note:** it was contained only by its panel's reveal *animation*
   (a transform makes a containing block), and that animation sits behind
-  `prefers-reduced-motion: no-preference` — so the bug was reachable **only** by readers who asked for
+  `prefers-reduced-motion: no-preference`, so the bug was reachable **only** by readers who asked for
   reduced motion. Measured with the animation off: 2906px → 0.
   *Possible migration:* if you absolutely positioned something inside a card, list or table scroller
   and relied on it escaping, it now anchors to that container. Anchoring is the reason for the change.
 - **`--button` rows and cards ignored `:disabled`.** `.fdy-list__row--button` adopts the UA button box
-  but not its disabled state, so a row disabled mid-flight kept its hover tint and pointer cursor — a
+  but not its disabled state, so a row disabled mid-flight kept its hover tint and pointer cursor, a
   control answering the pointer while refusing input. `:disabled` and `[aria-disabled="true"]` now dim
   it and withdraw hover, for `.fdy-list__row--button`, `.fdy-list__row--interactive`,
   `.fdy-card--button` and `.fdy-card--interactive`. The report suggested `cursor:default`; the kit uses
   `opacity:.5` + `cursor:not-allowed` on every other disabled control, and consistency wins.
 ### Changed
-- **`data-theme` is no longer root-scoped** — the same move density made in 1.20.0, and for the same
+- **`data-theme` is no longer root-scoped**, the same move density made in 1.20.0, and for the same
   reason. The two *explicit* selectors are now bare `[data-theme="dark"]` / `[data-theme="light"]`, so
-  a `<section data-theme="dark">` inverts that region and **every component inside it follows** —
+  a `<section data-theme="dark">` inverts that region and **every component inside it follows**,
   card surfaces, inputs, and text roles like `.fdy-title-page` that set `color: var(--color-text)`
   explicitly and therefore never saw a consumer's hand-rolled override. A dark brand panel beside a
   light sign-in form is an ordinary layout; it should not cost a re-colouring pass. Setting the
   attribute on `<html>` is unchanged, and a `[data-theme="light"]` island nested inside a dark region
   wins in turn.
-  **The system default stays root-scoped, deliberately** — the report asked for "the two generated
+  **The system default stays root-scoped, deliberately.** The report asked for "the two generated
   selectors", but there are three. Un-rooting `@media (prefers-color-scheme: dark) { :root:not(...) }`
   would make it match every element that does not itself carry `data-theme="light"`, including the
   *children* of a light island, dragging them back to dark. Measured: with the un-rooted variant that
   island renders light ink on a light surface; root-scoped, it stays correct.
 ### Added: guards
-- **`test/css.test.mjs`** — the containment invariant, CI-gated: a rule that declares `overflow` must
+- **`test/css.test.mjs`** holds the containment invariant, CI-gated: a rule that declares `overflow` must
   also be positioned, or be listed with the ancestor that already contains it. Single-line truncation
   (`text-overflow:ellipsis` on a label) is excluded by shape, not by name, so new truncating labels
   don't accumulate in an allowlist. A new clipping container fails the test until someone decides
   which case it is.
-- **`browser/layout.mjs`** — the same bug end-to-end in real Chrome (`npm run test:browser`): ten
+- **`browser/layout.mjs`** reproduces the same bug end-to-end in real Chrome (`npm run test:browser`): ten
   hidden labels in a wide table, asserting the page cannot scroll horizontally *and* that the scroller
   still scrolls. A static test cannot see this failure; only a layout engine can. Both guards
-  mutation-checked — reverting any single `position:relative` fails them.
-- **`browser/state.mjs`** — pressed toggles and nav orientation in a real engine: the pressed ghost
+  mutation-checked: reverting any single `position:relative` fails them.
+- **`browser/state.mjs`** covers pressed toggles and nav orientation in a real engine: the pressed ghost
   segment must keep a flat background-colour (the mutation that reproduces the shorthand bug fails
   it), the solid toggle must read as inset, `--horizontal` must actually be a row with the current
   link marked, on-colour nav ink must stay on-colour in both states, and a routed tab must take its
   underline from `aria-current`. Mutation-checked against all three fixes.
-- **`browser/theme.mjs`** — subtree theming end-to-end: a `.fdy-title-page` and a `.fdy-card` inside
+- **`browser/theme.mjs`** covers subtree theming end-to-end: a `.fdy-title-page` and a `.fdy-card` inside
   `<section data-theme="dark">` take the dark tokens, a nested light island goes back, and
   `data-theme` on `<html>` still themes everything. `test/build.test.mjs` guards the selector shape
   (not root-scoped, media block still is, and the block order the cascade depends on); this guards the
   behaviour that shape exists for. Mutation-checked: re-rooting the selectors fails it.
 ### Notes
 - Not adopted from the report, deliberately: `.fdy-datatable`, `.fdy-modal__body`, `.fdy-drawer__body`
-  were listed as needing the same fix. Measured: they do not escape — `<dialog>` is `position:fixed`
+  were listed as needing the same fix. Measured: they do not escape, because `<dialog>` is `position:fixed`
   and is already their containing block, and the datatable's own scrolling child now carries it. They
   are in the test's allowlist with that reason instead of carrying a declaration that does nothing.
 
@@ -1439,33 +1439,33 @@ reproduce here, so the rejection stands and the withdrawal is recorded rather th
 Two bodies of work in one release (1.19.0 was prepared but never committed, tagged or published, so
 it is folded in here rather than left as a phantom version):
 **(a)** make the kit consumable by an **AI coding agent** in a new or migrating project, and clean the
-repo to production level; **(b)** act on the fourth round of real-app consumption feedback — five
+repo to production level; **(b)** act on the fourth round of real-app consumption feedback: five
 confirmed gaps, one rejected premise, and one documentation bug of our own that chasing it exposed.
 ### Added: from consumption round 4
-- **`.fdy-list` / `.fdy-list__row` — the flat row container** (`src/components/list.css`). One bordered
+- **`.fdy-list` / `.fdy-list__row`, the flat row container** (`src/components/list.css`). One bordered
   surface, `--color-border-muted` hairline dividers, **no shadow**; `--interactive` for hover, and
   `--button` for when the row *is* the control (UA box reset without losing the list surface), plus
   `__main` / `__title` / `__meta` / `__aside` internals. `USAGE.md` §3 has always said list rows should
-  be flat, but the only container the kit shipped was `.fdy-card` — which carries `--shadow-lift`, a
+  be flat, but the only container the kit shipped was `.fdy-card`, which carries `--shadow-lift`, a
   real 34px lift, so a responsive table that becomes a list below `md` had to choose between ten
   floating cards or a hand-built box that needs a colour and escapes the token system.
 - **`FdyTable`: controlled client-side page index.** `pageIndex` + `update:pageIndex` (Vue) /
   `pageIndex` + `onPageIndexChange` (React) / `PageIndex` + `PageIndexChanged` (Blazor). The table
   still filters/sorts/paginates; only *which page* moves to the parent. This is what makes the
   `process` event from 1.18 pay off on a **responsive** screen: the pager renders inside
-  `.fdy-datatable`, so a screen that hides the table below `md` loses it — and in client mode the index
+  `.fdy-datatable`, so a screen that hides the table below `md` loses it, and in client mode the index
   was a private ref with no prop, no event and no `goTo`. The two available options were "lose
   pagination on mobile" or "own the page index in server mode", where `process` hands back exactly the
   array you passed in. One index can now also span several tables, which is what a grouped list needs.
   Reported after a real rebuild where `process` deleted, by measurement, zero lines.
 - **`breakpoints.nav` (721)** in `tokens/breakpoints.mjs` + its type. `.fdy-app` switches the sidebar
-  between off-canvas drawer and static column at 721px — a number that was in `app-shell.css` and
+  between off-canvas drawer and static column at 721px, a number that was in `app-shell.css` and
   nowhere else, so every consumer of the shell hand-mirrored it. Getting it wrong is not cosmetic:
   aligning to `md` (960) leaves 721–959px with a static sidebar that the script still treats as an
   overlay, so opening the nav makes the page `inert` around a user with no way back out. A new test
   asserts `nav` equals the CSS's `min-width` and that the `max-width` query is `nav - 1`, so the two
   cannot drift.
-- **Blazor `FdyTable` gained `Process`** (+ the `FdyTableProcess<TRow>` record) — 1.18 added the
+- **Blazor `FdyTable` gained `Process`** (+ the `FdyTableProcess<TRow>` record); 1.18 added the
   `process` event to Vue and React only, which left Blazor unable to drive a card list from the
   processed set at all.
 - **Browser guards for the controlled page index**, Vue and React, in `browser/adapter.mjs`: a table
@@ -1474,11 +1474,11 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
 ### Changed: from consumption round 4
 - **`data-density="compact"` is no longer root-scoped.** The generated selector was
   `:root[data-density="compact"]`; it is now a bare `[data-density="compact"]`. These are inheriting
-  custom properties, so density can be set on a route wrapper or a single section — which is how it is
+  custom properties, so density can be set on a route wrapper or a single section, which is how it is
   actually decided (per screen), not on `<html>` for the whole app. Setting it on the root still works
   identically. A build test now asserts the selector is not root-scoped.
 ### Fixed: from consumption round 4
-- **`USAGE.md` §3 misdescribed the kit's own elevation scale** — our bug, found while checking the
+- **`USAGE.md` §3 misdescribed the kit's own elevation scale.** Our bug, found while checking the
   report. It prescribed `--shadow-1` for "a card" and `--shadow-4` for "modal / drawer", but `.fdy-card`
   uses `--shadow-lift` (≈6× heavier than `--shadow-1`) and `.fdy-modal` uses `--shadow-lift-hover`;
   `--shadow-1` is what the *data containers* use. §3 now carries the real component→token map, names
@@ -1486,7 +1486,7 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   warns about: docs restating a scale the components don't follow.
 - **`.fdy-toolbar` vs `.fdy-filterbar` is now documented.** `.fdy-toolbar` is `align-items:center`
   (right for bare controls); a `.fdy-field` with a *visible* label sits half a label-height low in it.
-  Labelled fields belong in `.fdy-filterbar` (`align-items:flex-end` — which is why 1.11.2 had to
+  Labelled fields belong in `.fdy-filterbar` (`align-items:flex-end`, which is why 1.11.2 had to
   arbitrate the composed case). The difference existed but was written down nowhere, so the wrong
   choice was only visible once rendered. Documented in `USAGE.md` §7 and `COMPONENTS.md`; no CSS
   changed, so no existing screen shifts.
@@ -1494,7 +1494,7 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
 - **"`.fdy-page-section` and `.fdy-table-scroll` do not compose" does not reproduce, and the proposed
   `min-width:0` fix is a no-op.** Measured on `docs/reference-screen.html` (the same
   section → datatable → scroller chain) with the table forced to 1400px in a 688px column: page
-  overflow **0px**, the datatable held its column, the scroller scrolled internally — and adding
+  overflow **0px**, the datatable held its column, the scroller scrolled internally, and adding
   `min-width:0` changed nothing. Two mechanisms explain it: `.fdy-page-section` is flex **column**, so
   `min-width:auto` (a main-axis rule) cannot cause horizontal growth; and `.fdy-table-scroll` has
   `overflow-x:auto`, which gives it an automatic minimum size of **0**, so no ancestor flex can stretch
@@ -1502,48 +1502,48 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   (`.fdy-app__content`). The 129px overflow the reporter measured is real but originates in their own
   wrapper chain; to locate it, walk the datatable's ancestors at the failing width and find the first
   with `scrollWidth > clientWidth`. Third round in a row where a proposed fix would have changed
-  nothing — the premise gets verified before the patch, every time.
+  nothing: the premise gets verified before the patch, every time.
 ### Added
-- **`COMPONENTS.md` — the complete public class surface in one flat file.** Every component with its
+- **`COMPONENTS.md`, the complete public class surface in one flat file.** Every component with its
   block/element/modifier classes, a minimal markup skeleton, its enhancer hook and its a11y contract,
   plus the full enhancer table (markup hook → script → global → events). The gap it closes: 425
   `.fdy-*` classes exist in `src/components/`, but only ~33 appeared as literal strings anywhere in
-  the shipped docs — the rest lived in a 2,552-line HTML page and in the CSS source, neither of which
+  the shipped docs; the rest lived in a 2,552-line HTML page and in the CSS source, neither of which
   an agent (or a hurried human) reads.
-- **`docs/agent-onboarding.md`** — the entry point for an agent working in a *consuming* project: a
+- **`docs/agent-onboarding.md`** is the entry point for an agent working in a *consuming* project: a
   paste-ready block for that project's `CLAUDE.md`/`AGENTS.md`, what ships in the package and which
   question each file answers, the order to build a new screen in, a **migration mapping table**
   (Bootstrap / MudBlazor / utility-class conventions → Freeday) with a safe conversion order, and a
   pre-completion verification checklist.
-- **`docs/reference-screen.html`** — one complete business screen assembled the intended way:
+- **`docs/reference-screen.html`** is one complete business screen assembled the intended way:
   `.fdy-app` → `.fdy-page` → `.fdy-page__header` → `.fdy-stats` → sections holding a chart and a
   full data table, plus a native-`<dialog>` modal, theme/density toggles and the shell's nav-toggle
   wiring. v1.18.0 shipped the composition primitives but nothing demonstrated them end-to-end.
-- **`test/docs.test.mjs` — drift guard for the agent-facing docs.** Every fully-written `.fdy-*`
+- **`test/docs.test.mjs`, the drift guard for the agent-facing docs.** Every fully-written `.fdy-*`
   class named in `COMPONENTS.md`, `USAGE.md`, `docs/agent-onboarding.md` and
   `docs/reference-screen.html` must exist in the kit (CSS selectors ∪ classes the enhancers
   query/set), and every stylesheet in `src/components/` must be represented in `COMPONENTS.md`. An
   API doc that names a class the CSS never defines is worse than an omission: it invites markup that
   silently does nothing.
-- **`reference/` — the two source assets moved out of the repo root** (`git mv`, so history follows):
+- **`reference/`, the two source assets moved out of the repo root** (`git mv`, so history follows):
   `Foundation Design System.html` → `reference/foundation-design-system.html`, and
   `auth_web_ui_layout_patterns.png` → `reference/layout-patterns.png` (the `auth_` prefix was
-  misleading — the sheet is about app layout archetypes, not authentication). Neither was ever in the
+  misleading, since the sheet is about app layout archetypes rather than authentication). Neither was ever in the
   tarball and neither is now; the folder name states that. `reference/README.md` carries their
   provenance plus a **15 archetypes → Freeday primitives** table that names, per archetype, what the
   kit covers and which shapes it has **no** component for (kanban columns, calendar month grid, chat
-  bubbles, canvas) — so those get built as layout instead of as invented `fdy-` classes. The drift
+  bubbles, canvas), so those get built as layout instead of as invented `fdy-` classes. The drift
   guard checks this file too.
 ### Removed
 - **`src/*.js` no longer ships.** All 24 enhancers in `src/` were **byte-identical** to their `dist/`
-  copies, and no `exports` path points into `src/` — so a bundler-based consumer could never import
+  copies, and no `exports` path points into `src/`, so a bundler-based consumer could never import
   them. `files` now lists `src/base.css` + `src/components` (kept: per-component CSS is genuinely
   easier to read than the 117 kB bundle, and `docs/agent-onboarding.md` points agents at it).
-  **−25 files, −196 kB unpacked** per install (the compressed tarball barely moves — identical files
-  deflate to almost nothing — but the install footprint and "what am I even looking at" do).
+  **−25 files, −196 kB unpacked** per install (the compressed tarball barely moves, since identical files
+  deflate to almost nothing, but the install footprint and "what am I even looking at" do).
 - **4 completed SDD implementation plans + 1 superseded spec deleted** (`docs/superpowers/plans/*`,
   `specs/2026-07-22-…-polish-design.md`, **−1452 lines**). Cited by nobody, served publicly by Pages,
-  and describing work that shipped months of releases ago — `CHANGELOG.md` plus git history already
+  and describing work that shipped months of releases ago, when `CHANGELOG.md` plus git history already
   record it. Only the canonical design spec remains.
 - **`NEXT-UP.md`: 421 → ~125 lines.** Held 15 `Update …` release-log blocks (v1.8.0–v1.18.0), three
   2026-07-27 post-mortems of resolved items, and a frozen "current condition" snapshot still claiming
@@ -1551,11 +1551,11 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   purely forward-looking: the demand-driven backlog, the deliberate YAGNI list, two durable invariants,
   and the release runbook.
 - **`HANDOFF.md`: 134 → 85 lines.** Its "where we are" section was 90 lines re-narrating every release
-  back to v1.3.1 — a third copy of the changelog. Now: current state, then a pointer.
+  back to v1.3.1, a third copy of the changelog. Now: current state, then a pointer.
 - `src/components/.gitkeep`, in a directory holding 47 stylesheets.
 ### Fixed
 - **`CLAUDE.md`'s roadmap said "v0.1 (sekarang, token-first)"** at v1.19.0, and listed datepicker,
-  data grid, filter bar, pagination, states and wizard as *future* work — all shipped long ago. It is
+  data grid, filter bar, pagination, states and wizard as *future* work, all shipped long ago. It is
   the first file every agent session reads, so it was the most expensive stale text in the repo.
   Replaced with the actual status (feature-complete, demand-driven) plus a real structure map that
   distinguishes authored `src/` from generated `dist/`, and names `freeday.bundle.css` as the file to link.
