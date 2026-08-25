@@ -932,11 +932,11 @@ responsive `.fdy-datatable` should become below `md`, rather than a stack of `.f
   control (render it as a real `<button>`/`<a>`; the UA box is reset without losing the list surface)
 - Row internals: `.fdy-list__main` (truncating stack) → `.fdy-list__title` + `.fdy-list__meta`, and
   `.fdy-list__aside` pinned right
-- **Disabled** — `disabled` on the `<button>` (or `aria-disabled="true"` when the row is an `<a>`/
+- **Disabled:** `disabled` on the `<button>` (or `aria-disabled="true"` when the row is an `<a>`/
   `<div>`) dims the row and withdraws the hover tint and the pointer cursor, same as every other
   control in the kit. Do not hand-roll it: an undimmed row that still lights up under the pointer
   reads as clickable while it is refusing input.
-- Not `.fdy-list-reset` — that utility only strips UA bullets/indent from a semantic list.
+- Not `.fdy-list-reset`, which only strips UA bullets/indent from a semantic list.
 
 ```html
 <ul class="fdy-list">
@@ -987,11 +987,11 @@ Every field is optional; it returns the toast element. Classes (rendered for you
 `__body` `__title` `__text` `__close`.
 
 **Above modals, and not by z-index.** The region is a `popover` and re-enters the **top layer** as
-each toast lands, because `.fdy-modal` is a native `<dialog>` — see the note under Modal below. If
+each toast lands, because `.fdy-modal` is a native `<dialog>`. See the note under Modal below. If
 a toast of yours is hidden behind something, a bigger `z-index` is not the fix; check whether that
 something is in the top layer too. Where the Popover API is unavailable (before Chrome 114 /
 Safari 17 / Firefox 125) the region falls back to a fixed block at `z-index: 200`, which cannot
-clear an open modal — the message is still announced to a screen reader.
+clear an open modal, the message is still announced to a screen reader.
 
 ## Tooltip — `.fdy-tooltip`
 Hover/focus only, never the sole carrier of information. Wrap in `.fdy-tooltip-wrap`; the trigger
@@ -1011,7 +1011,7 @@ Size-matched placeholders so nothing shifts when data lands: `--title` `--text` 
 # Navigation
 
 ## Nav (menu) — `.fdy-nav`
-Navigation links — **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with
+Navigation links, **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with
 `__icon` / `__label` / `__badge`; the current one gets `aria-current="page"`.
 `--flat` drops the surface. Nested groups are native `<details>`:
 
@@ -1035,17 +1035,17 @@ Navigation links — **vertical by default** (the app shell sidebar), horizontal
 </header>
 ```
 
-> **Which one for navigation?** A nav link is a link marked `aria-current="page"` — never
+> **Which one for navigation?** A nav link is a link marked `aria-current="page"`, never
 > `aria-selected` (invalid ARIA on an anchor) and never `role="tab"`. Use `.fdy-nav--horizontal`
 > for an application's **primary** navigation. For **routed sub-navigation** that should look like
 > tabs (`/settings/profile` · `/settings/billing`), put `.fdy-tabs__list` / `.fdy-tabs__tab` on
-> plain `<a>`s — those classes honour `aria-current="page"` too — and do **not** add the tab roles
+> plain `<a>`s, since those classes honour `aria-current="page"` too, and do **not** add the tab roles
 > or `freeday-tabs.js`, which promise a keyboard contract routes do not have.
 
 ## App bar — `.fdy-appbar`
 Standalone top bar (distinct from the shell's `.fdy-app__topbar`). Modifiers `--sticky`
 `--elevated` `--dense` `--primary` (on-colour controls). Parts `__brand` `__spacer` `__actions`.
-It ships **no link class of its own** — put `<nav class="fdy-nav fdy-nav--horizontal">` in it
+It ships **no link class of its own**. Put `<nav class="fdy-nav fdy-nav--horizontal">` in it
 for primary navigation (see Nav above).
 
 ## Breadcrumb — `.fdy-breadcrumb`
@@ -1056,7 +1056,7 @@ for primary navigation (see Nav above).
 ## Tabs — `.fdy-tabs`
 APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 `.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
-so the same look serves routed sub-navigation built from plain links — see the note under Nav.
+so the same look serves routed sub-navigation built from plain links. See the note under Nav.
 
 ```html
 <div class="fdy-tabs" data-fdy-tabs>
@@ -1080,7 +1080,7 @@ Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--
 `--wide`; `--cfl` for the choose-from-list dialog.
 
 **It is in the TOP LAYER.** `showModal()` paints the dialog above every stacking context on the
-page, so no `z-index` anywhere can put anything over it — only another top-layer element (a
+page, so no `z-index` anywhere can put anything over it. Only another top-layer element (a
 `popover`, or another modal) can. It also makes the rest of the document inert, which means
 `elementFromPoint` outside the dialog returns the dialog: do not use a hit test to check what is
 painted on top of a modal, because it will tell you the dialog is, even when it visibly is not. Parts `__header` `__title` `__body` `__footer`
@@ -1088,22 +1088,22 @@ painted on top of a modal, because it will tell you the dialog is, even when it 
 `data-close` on any button that should close it.
 
 **Stacking two overlays is supported.** Modal and drawer are both `<dialog>` opened with
-`showModal()`, so both enter the top layer and paint in the order they were opened — a confirm
+`showModal()`, so both enter the top layer and paint in the order they were opened. A confirm
 modal opened from inside an open drawer paints **above** it, and neither needs a `z-index` for
 that. Escape closes the topmost first, so cancelling returns to the still-open drawer; a second
 Escape then closes the drawer. Closing them out of order is fine too: closing the drawer while the
 modal is up leaves the modal open, painted and dismissible.
 
 One caveat, and it is the browser's rather than the kit's: **the second overlay's Escape can only
-be refused if both were opened by a real gesture.** A `showModal()` that runs from script — a timer,
-or after an `await` that outlived the click — still closes only the topmost, but its `cancel` event
+be refused if both were opened by a real gesture.** A `showModal()` that runs from script (a timer,
+or after an `await` that outlived the click) still closes only the topmost, but its `cancel` event
 arrives **non-cancelable**, so `preventDefault()` on it is ignored and an "unsaved changes, stay
 open" guard silently stops working. Routing Escape through app state instead, which is what the
 typed wrappers do, is unaffected: the dialog closes and your state follows it.
 
 *Correction to 1.51.1, which said such a dialog has its close watcher grouped with the one below so
 that a single Escape closes both.* That happens only on a page that has received **no user input at
-all** — a test harness, never an app; six seconds after one click the overlays are still
+all**: a test harness, never an app. Six seconds after one click the overlays are still
 independent. Open overlays with real clicks in a test, or a stacking assertion fails for a reason
 that is not the kit. Both rules measured on Chromium 133 and 151, and pinned as a matrix in
 `browser/overlay-stack.mjs`.
@@ -1111,11 +1111,11 @@ that is not the kit. Both rules measured on Chromium 133 and 151, and pinned as 
 ## Drawer — `.fdy-drawer`
 > **Typed wrapper: `<FdyDrawer>`**. Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
-Temporary side panel on native `<dialog>` — left by default, `--right` to flip. Parts `__header`
+Temporary side panel on native `<dialog>`, left by default, `--right` to flip. Parts `__header`
 `__title` `__body` `__footer` `__close`. Open it from any
 `<button data-fdy-drawer="<dialog id>">`. Needs `freeday-drawer.js`.
 
-Opened with `showModal()`, so it is in the **top layer** on the same terms as the modal — including
+Opened with `showModal()`, so it is in the **top layer** on the same terms as the modal, including
 opening a modal over an open drawer, which is supported and described under
 [Modal → *Stacking two overlays*](#modal--fdy-modal). It slides in on `transform` and never animates
 opacity: wait on its position, not on `opacity`, if you need to know when it has arrived.
@@ -1137,25 +1137,25 @@ is `role="group" aria-roledescription="slide"`.
 ## Card — `.fdy-card`
 Parts `__body` `__title` `__desc` `__footer`. Modifiers:
 
-- `--elevated` — raise it (use sparingly; most surfaces are flat)
-- `--interactive` — cursor + hover-lift for a card that *has* a click handler. **Presentational
-  only:** it is the one affordance in the kit whose correctness lives outside it — the CSS cannot
+- `--elevated` raises it (use sparingly; most surfaces are flat)
+- `--interactive` gives cursor + hover-lift to a card that *has* a click handler. **Presentational
+  only:** it is the one affordance in the kit whose correctness lives outside it, because the CSS cannot
   know whether a handler exists, so the modifier without a control (a card that looks clickable and
   swallows every click) and a control without the modifier both fail silently. Pair it with a real
-  control — normally the stretched target below.
-- `--button` — for a card that **is** the control: render it as `<button>` and add this to reset
+  control, normally the stretched target below.
+- `--button` is for a card that **is** the control: render it as `<button>` and add this to reset
   the UA button box **without** losing the card surface/border
-- `.fdy-card--button` never replaces keyboard semantics — a clickable card must be a real
+- `.fdy-card--button` never replaces keyboard semantics. A clickable card must be a real
   `<button>` or `<a>`.
-- **Disabled** — `disabled` (or `aria-disabled="true"`) dims the card and withdraws the pointer
+- **Disabled:** `disabled` (or `aria-disabled="true"`) dims the card and withdraws the pointer
   cursor and the `--interactive` hover-lift.
 - The card is `position:relative`, so a badge or ribbon you absolutely position inside it anchors
-  to the card. That is also what keeps hidden labels inside it from escaping — see *Containment*.
+  to the card. That is also what keeps hidden labels inside it from escaping. See *Containment*.
 
 ### One card, one primary action, one escape hatch
 
 A card with **two** actions cannot be `--button`: interactive content nested in a `<button>` is
-invalid HTML. Give the primary control `.fdy-btn--stretch` — its hit area covers the whole card,
+invalid HTML. Give the primary control `.fdy-btn--stretch`: its hit area covers the whole card,
 while it stays a real `<button>`/`<a>` with real keyboard semantics.
 
 ```html
@@ -1172,24 +1172,24 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
 ```
 
 - **The escape hatch needs nothing.** Every focusable element in a card that holds a stretched
-  target is raised above the overlay automatically — forgetting a `z-index` here fails silently, and
+  target is raised above the overlay automatically. Forgetting a `z-index` here fails silently, and
   a silent failure is what this pattern exists to remove. The `position` that raising needs is only a
   **default** (zero-specificity), so a control you pin yourself (a corner dismiss, a favourite star)
   keeps its own `position:absolute` and is raised anyway.
 - **Name the stretched button for what the whole card does** ("Open workspace Alpha", not "Open").
   Its label is the accessible name of the entire hit area.
-- **Do not add `.fdy-btn--stretch` to more than one control per card** — the last one wins the
+- **Do not add `.fdy-btn--stretch` to more than one control per card.** The last one wins the
   overlap, and which one that is depends on source order.
 - Text under the overlay is no longer selectable; that is the cost of the pattern, not a bug.
 - **Cards and list rows.** The overlay anchors to the nearest *positioned* ancestor, and both hosts
   supply one: `.fdy-card` always, `.fdy-list__row` when it contains a stretched target. Everything
-  above applies to a row unchanged — same markup, same automatic raise. In any *other* container,
+  above applies to a row unchanged: same markup, same automatic raise. In any *other* container,
   make the element `position:relative` yourself, or the overlay resolves against whatever is
   positioned further up (in a list that used to be `.fdy-list` itself, so every row's target covered
-  the whole list and the last one in the DOM won — a click on row one opened row two).
+  the whole list and the last one in the DOM won, so a click on row one opened row two).
   A row whose *whole* surface is one control is still better as `.fdy-list__row--button`.
 - `.fdy-btn` nudges itself on `:hover`/`:active`, and a transformed element becomes the containing
-  block for its own absolutely positioned descendants — so a hand-rolled `::after{inset:0}` overlay
+  block for its own absolutely positioned descendants, so a hand-rolled `::after{inset:0}` overlay
   **re-anchors to the button mid-gesture** and the click never lands. `--stretch` neutralises those
   transforms and moves the press feedback to the card. This is why the pattern is shipped rather
   than documented.
@@ -1210,19 +1210,19 @@ Put the count in the wrapper's `aria-label` and mark the overlay `aria-hidden="t
 ## Avatar — `.fdy-avatar`
 Initials or image. Sizes `--sm` / default / `--lg`; `.fdy-avatar-group` stacks them (label the
 group). `--tone-1`…`--tone-8` are decorative tints (WCAG AA in both themes) to distinguish
-same-initial avatars — hash the index off the **full** name, not the initials.
+same-initial avatars. Hash the index off the **full** name, not the initials.
 
 Sizes: `--xs` 1.5rem · *(base)* 2.5rem · `--sm` 2rem · `--lg` 3.5rem. Use **`--xs` inside a control**
-— `.fdy-btn--sm` is itself 2rem tall, so an `--sm` avatar fills a small button edge to edge and the
+because `.fdy-btn--sm` is itself 2rem tall, so an `--sm` avatar fills a small button edge to edge and the
 ghost border cuts across the circle.
 
 ## Chip — `.fdy-chip`
 Three roles inside a `.fdy-chips` row:
 
-- **static / removable** — `<span class="fdy-chip">`, `--primary` for an active filter, with
+- **static / removable:** `<span class="fdy-chip">`, `--primary` for an active filter, with
   `.fdy-chip__remove` (`aria-label` says what it removes)
-- **choice** — `<button class="fdy-chip fdy-chip--choice" aria-pressed>` toggle
-- **filter** — `--filter`, same but with a `.fdy-chip__check` mark
+- **choice:** `<button class="fdy-chip fdy-chip--choice" aria-pressed>` toggle
+- **filter:** `--filter`, same but with a `.fdy-chip__check` mark
 
 Interactive chips are managed by `freeday-chip.js`: wrap the row in `data-fdy-chips` (+
 `data-single` for pick-one, `data-label` for the group name), give each `data-value`.
@@ -1236,5 +1236,5 @@ by the accompanying text, not the marker colour alone.
 ---
 
 *Anything not listed here is not part of the public surface. If a screen needs a primitive that
-isn't in this file, it probably belongs in the kit — open an issue instead of re-inventing it
+isn't in this file, it probably belongs in the kit. Open an issue instead of re-inventing it
 locally.*
