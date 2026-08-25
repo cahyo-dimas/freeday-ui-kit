@@ -1,6 +1,6 @@
 /* Freeday — date picker enhancer (optional, zero-dependency).
  * Builds an input-styled trigger + calendar popover from an empty wrapper.
- * Locale comes from <html lang> (via Intl) — month/weekday/value formatting is not hardcoded.
+ * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
  *
  * Markup contract:
  *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal unggah"

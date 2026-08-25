@@ -2,8 +2,8 @@
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
- * A dropped file used to go straight to `uploading()` — before the `fdy-upload-add` event fired, so
- * a consumer could not pre-empt it — and there was no method to get back to rest. Every
+ * A dropped file used to go straight to `uploading()`, before the `fdy-upload-add` event fired, so
+ * a consumer could not pre-empt it, and there was no method to get back to rest. Every
  * consumer-driven integration therefore showed a transfer that had not started, with a progress bar
  * that never moved, for as long as the user took to fill in the rest of the form. That reads as a
  * hung upload and gets reported as a bug against a transfer nobody ever began.
@@ -57,7 +57,7 @@ test('a dropped file rests until the consumer starts the transfer', { skip }, as
 
 /* A request can outlive its transfer: the bytes land in a second, the server then spends a minute
  * reading the document. The row's only long-running state was named after the transfer, so it kept
- * saying "Mengunggah…" — and a determinate bar parked at 100% is the most convincing "hung" signal a
+ * saying "Mengunggah…", and a determinate bar parked at 100% is the most convincing "hung" signal a
  * UI can give. waiting() is that state; the asserts below are about what the ENGINE renders, because
  * both plausible ways to get this wrong (modifier on the bar instead of the track, or leaving an
  * inline width behind) produce a full, frozen bar that no source reading reveals. */
@@ -67,7 +67,7 @@ test('waiting() reports no percentage, and the bar comes back measured', { skip 
     const state = async () => JSON.parse(await p.evalJS('JSON.stringify(window.rowState("listA"))'));
     const settle = () => sleep(300);   // --dur-base is 180ms; measure the bar after it stops moving
     /* Under reduced motion the kit's indeterminate treatment is deliberately a dimmed FULL bar
-       (progress.css) — no animation to carry the meaning, so opacity does. The width assert below
+       (progress.css), no animation to carry the meaning, so opacity does. The width assert below
        only applies where the animation runs; the state's other signals hold either way. */
     const animates = (await p.evalJS('String(!matchMedia("(prefers-reduced-motion: reduce)").matches)')) === 'true';
 

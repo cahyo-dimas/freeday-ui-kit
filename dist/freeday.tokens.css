@@ -178,7 +178,7 @@
   --focus-ring-width: 2px;
 }
 /* The SYSTEM default stays root-scoped: it is a statement about the document, and dropping :root
- * here would match every element that is not itself [data-theme="light"] — which would re-darken
+ * here would match every element that is not itself [data-theme="light"], which would re-darken
  * the children of a light panel, since they carry no attribute of their own. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -368,7 +368,7 @@
   --control-h: 2rem;
 }
 /* ...and the way back out. Inheritance only runs downhill: once the root is compact every subtree is
- * compact, and before this rule existed a data-density="comfortable" wrapper matched nothing — so the
+ * compact, and before this rule existed a data-density="comfortable" wrapper matched nothing, so the
  * comment above was true in one direction only. An app that is dense overall and carries one region
  * of shared chrome (a header, a toolbar, a footer shared with a sibling product) had to restate the
  * defaults by hand, which is exactly the local copy that goes stale when the kit retunes them. */

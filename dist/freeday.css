@@ -128,7 +128,7 @@ a { color: var(--color-primary); }
 .fdy-nav__group{margin:0;}
 .fdy-nav__group + .fdy-nav__group,.fdy-nav__item + .fdy-nav__group{border-top:var(--bw) solid var(--color-border-muted);margin-top:var(--space-1);padding-top:var(--space-1);}
 /* Prose, and a control name: this is the <summary> of a nav group, at --text-xs uppercase. It is
-   the second class found spending the decorative ink on type (after .fdy-eyebrow) — and it was
+   the second class found spending the decorative ink on type (after .fdy-eyebrow), and it was
    already brightening to --color-text-muted on hover, which is the rule admitting its resting
    state was too faint to read. */
 .fdy-nav__grouplabel{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-1);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
@@ -150,7 +150,7 @@ a { color: var(--color-primary); }
 .fdy-nav__tree > summary .fdy-nav__caret{flex:none;margin-left:auto;width:.4rem;height:.4rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.6;}
 .fdy-nav__tree[open] > summary .fdy-nav__caret{transform:rotate(45deg);}
 .fdy-nav__sub{display:flex;flex-direction:column;gap:2px;padding-left:calc(var(--space-3) + 1.15rem);margin-top:2px;}
-/* Collapse toggle (hamburger) — sits in the topbar; collapses the sidebar. */
+/* Collapse toggle (hamburger), sits in the topbar; collapses the sidebar. */
 .fdy-app__navtoggle{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;flex:none;padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-app__navtoggle:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-app__navtoggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}
@@ -199,7 +199,7 @@ a { color: var(--color-primary); }
 .fdy-appbar--primary .fdy-btn--ghost:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);transform:none;}
 /* Nav links on a coloured bar: full on-colour ink in every state (a dimmed variant would trade away
    the contrast the bar's own token pair guarantees). The current page is carried by the background
-   wash plus the semibold weight the base rule already applies — and by `aria-current` itself. */
+   wash plus the semibold weight the base rule already applies, and by `aria-current` itself. */
 .fdy-appbar--primary .fdy-nav__item{color:var(--color-on-primary);}
 .fdy-appbar--primary .fdy-nav__item:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);}
 .fdy-appbar--primary .fdy-nav__item[aria-current="page"]{background:color-mix(in srgb,var(--color-on-primary) 24%,transparent);color:var(--color-on-primary);}
@@ -330,7 +330,7 @@ a { color: var(--color-primary); }
 .fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
 .fdy-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
 /* Pressed / toggle. `aria-pressed` is already the right attribute for a toggle button, so this adds
-   no class and no new markup contract — and it is what makes .fdy-btn-group a complete segmented
+   no class and no new markup contract, and it is what makes .fdy-btn-group a complete segmented
    control: the group joins the borders, this says which segment you are on. Each fill variant
    defines its OWN pressed look below; a single shared rule cannot work, because a gradient is a
    background-IMAGE and would blank the ghost variant's background-color. Solid: invert the gradient
@@ -369,13 +369,13 @@ a { color: var(--color-primary); }
 .fdy-btn--text{background:none;color:var(--color-primary-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text:hover{transform:none;background:var(--color-primary-soft);box-shadow:none;}
 .fdy-btn--text:active{transform:translateY(1px);box-shadow:none;}
-/* Ghost/text pressed: the kit's selected-surface pair (soft fill + strong ink) — the same pairing
+/* Ghost/text pressed: the kit's selected-surface pair (soft fill + strong ink), the same pairing
    .fdy-nav__item uses for the current page, and one the AA contrast gate already covers. This is
    the realistic segmented control: a row of --ghost buttons with exactly one aria-pressed. */
 .fdy-btn--ghost[aria-pressed="true"],.fdy-btn--text[aria-pressed="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);border-color:var(--color-primary-border);box-shadow:none;}
 .fdy-btn--ghost[aria-pressed="true"]:hover,.fdy-btn--text[aria-pressed="true"]:hover{background:var(--color-primary-soft);transform:none;box-shadow:none;}
 
-/* Stretched hit area (#007) — spread this button's click target over its nearest positioned
+/* Stretched hit area (#007), spread this button's click target over its nearest positioned
  * ancestor, so "one card, one primary action, one escape hatch" needs no click handler on the
  * <article>: the real control stays a real <button>/<a> and keeps its keyboard semantics.
  * `.fdy-card` is already position:relative, so it is the anchor.
@@ -663,7 +663,7 @@ a { color: var(--color-primary); }
 .fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
 /* The tick is CSS, not content (#004 §2). Inside role="option" it joined the option's ACCESSIBLE
    NAME, so the selected option announced "✓August" while every other announced "August": the state
-   was read twice — once as aria-selected, once as decoration — and a test asking for an option by
+   was read twice — once as aria-selected, once as decoration, and a test asking for an option by
    its own label stopped matching the one that was selected. The `/ ""` is alt text: the glyph is
    painted, the accessibility tree gets nothing. Same reasoning as .fdy-label--required (1.29.0).
    The empty box still reserves its width, so labels stay aligned whether selected or not. */
@@ -725,7 +725,7 @@ a { color: var(--color-primary); }
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
-/* A stat value is display type sized for a COUNT — "1,284" — and a back office puts money in it.
+/* A stat value is display type sized for a COUNT — "1,284", and a back office puts money in it.
    "IDR 300,000.00" needs 224px at --text-3xl and the grid's own track is 11rem, so it wrapped
    between the currency and the number: two lines of 31px where the design says one. Measured, not
    guessed (#020).
@@ -763,7 +763,7 @@ a { color: var(--color-primary); }
 /* Inside a labelled field, a picker fills the field like every other control.
    The 14rem/11rem caps above suit a picker standing on its own; in a form grid
    they leave the date box visibly short of the combo beside it — 224px against
-   319px in a two-column layout — and the row reads as ragged. The field's own
+   319px in a two-column layout, and the row reads as ragged. The field's own
    max-width is what should govern there. */
 .fdy-field>.fdy-datepicker,.fdy-field>.fdy-timepicker,.fdy-field>.fdy-daterange{max-width:none;}
 .fdy-datepicker__trigger{display:inline-flex;align-items:center;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
@@ -908,7 +908,7 @@ a { color: var(--color-primary); }
    an "Add files" button, in every upload UI there is — sat flush against the last row: measured
    0px. A block that claims space on one side only is not spacing, it is a lean. */
 .fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);margin-bottom:var(--space-3);}
-/* Nothing after it, nothing to separate from — so the room is not spent. */
+/* Nothing after it, nothing to separate from, so the room is not spent. */
 .fdy-filelist:last-child{margin-bottom:0;}
 /* Side-by-side rows on wide screens (reflow to one column when narrow). */
 .fdy-filelist--grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));}
@@ -954,7 +954,7 @@ a { color: var(--color-primary); }
 .fdy-filterbar>.fdy-field--w-grow{flex:1 1 16rem;width:auto;min-width:12rem;}
 /* Trailing actions (buttons) pushed to the end, aligned with the controls' baseline.
  * Wrap note: a wrapped bar breaks flex lines on each item's *flex-basis* (the grow field's
- * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width — so the grow basis,
+ * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width, so the grow basis,
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
 /* A control that carries NO label of its own — a checkbox, a switch, a lone
@@ -966,7 +966,7 @@ a { color: var(--color-primary); }
    line. Raised from IDU_EMATE_APPL_WEB (#014). */
 .fdy-filterbar>.fdy-check,.fdy-filterbar>.fdy-radio,.fdy-filterbar>.fdy-switch,.fdy-filterbar>.fdy-btn{min-height:var(--control-h);}
 .fdy-filterbar__actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;}
-/* Opt-in: sit the actions inline right after the last field instead of at the far edge — so when the
+/* Opt-in: sit the actions inline right after the last field instead of at the far edge, so when the
  * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
 .fdy-filterbar--actions-inline .fdy-filterbar__actions{margin-left:0;}
 /* Stack on narrow screens so nothing overflows the row. */
@@ -997,13 +997,13 @@ a { color: var(--color-primary); }
 .fdy-input-group .fdy-input:focus{box-shadow:none;}
 .fdy-input-group__addon{display:inline-flex;align-items:center;padding:0 var(--space-3);background:var(--color-surface-2);color:var(--color-text-muted);font-size:var(--text-sm);white-space:nowrap;border-right:var(--bw) solid var(--color-border);}
 .fdy-input-group__addon:last-child{border-right:0;border-left:var(--bw) solid var(--color-border);}
-/* Borderless leading icon (e.g. search magnifier) — self-contained like __btn so it
+/* Borderless leading icon (e.g. search magnifier), self-contained like __btn so it
    centers standalone (no base .fdy-input-group__addon required). */
 .fdy-input-group__addon--icon{display:inline-flex;align-items:center;background:transparent;border:0;padding:0 0 0 var(--space-3);color:var(--color-text-subtle);}
 .fdy-input-group__addon--icon svg{display:block;width:1rem;height:1rem;}
 /* The leading icon already provides the left inset — don't let the input add its full left padding on top. */
 .fdy-input-group__addon--icon + .fdy-input{padding-left:var(--space-2);}
-/* Trailing action button (e.g. choose-from-list magnifier) — a real, focusable control. */
+/* Trailing action button (e.g. choose-from-list magnifier), a real, focusable control. */
 .fdy-input-group__btn{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-h);align-self:stretch;border:0;border-left:var(--bw) solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-input-group__btn:hover{background:var(--color-surface-3);color:var(--color-text);}
 .fdy-input-group__btn:focus-visible{outline:none;color:var(--color-text);box-shadow:inset 0 0 0 2px var(--color-primary);}
@@ -1020,7 +1020,7 @@ a { color: var(--color-primary); }
 
 /* Freeday — Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
-/* A grouped field is legitimately a <fieldset> (it needs a <legend>) — e.g. a radio/checkbox group.
+/* A grouped field is legitimately a <fieldset> (it needs a <legend>), e.g. a radio/checkbox group.
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
 fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
@@ -1065,7 +1065,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Freeday — List: the FLAT row container.
  *
  * USAGE.md §3 puts list rows among the surfaces that should be flat, but until now the only
- * container the kit shipped was .fdy-card — which carries --shadow-lift (a real 34px lift). A
+ * container the kit shipped was .fdy-card, which carries --shadow-lift (a real 34px lift). A
  * responsive table that becomes a list below `md` therefore had to choose between a stack of
  * shadowed cards (against the doctrine) or a hand-built box, which needs a colour and so escapes
  * the token system. This is that missing container: one flat surface, hairline dividers, no shadow.
@@ -1075,7 +1075,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* position:relative — containing block for out-of-flow row content (see base.css). */
 .fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
 /* A row that hosts a stretched target has to be the anchor itself (#008 §1). Without this the
-   overlay resolves against .fdy-list — which IS positioned — so EVERY row's target covers the whole
+   overlay resolves against .fdy-list, which IS positioned, so EVERY row's target covers the whole
    list and the last one in the DOM wins: measured, a click on row one opens row two, under row one's
    name, which looks exactly like working software. Opt-in via :has(), so a row that doesn't use the
    pattern is untouched and nothing an app absolutely positions inside a plain row starts resolving
@@ -1093,7 +1093,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-list__row--button:hover,.fdy-list__row--interactive:hover{background:var(--color-surface-2);}
 .fdy-list__row--button:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--color-primary);}
 .fdy-list__row--interactive{cursor:pointer;}
-/* Disabled row. The reset above adopts the UA button box, but not its disabled state — so a row
+/* Disabled row. The reset above adopts the UA button box, but not its disabled state, so a row
    disabled mid-flight (a redirect in progress, say) kept lighting up and kept a pointer cursor:
    a control answering the pointer while refusing input. Same contract as every other disabled
    control in the kit (dim + not-allowed), hover withdrawn, both the native and the aria- form. */
@@ -1198,7 +1198,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Freeday — Selection controls */
 /* `flex:none` on every box, track and standalone checkbox is load-bearing, not tidiness.
    `.fdy-check` is an inline-flex row of [box, label], and a flex item with a WIDTH is still
-   shrinkable — so as soon as the label wrapped to a second line the box gave up horizontal space
+   shrinkable, so as soon as the label wrapped to a second line the box gave up horizontal space
    to it and rendered an 18px-tall rectangle 13px wide. Squashed, off-square, and different from
    every sibling whose label happened to be short: a form of five checkboxes showed three sizes.
    Nothing in the declarations looked wrong, because the width was never overridden — it was
@@ -1219,7 +1219,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-switch input:checked{background:var(--color-primary);}
 .fdy-switch input:checked::before{transform:translateX(calc(var(--control-switch-w) - var(--control-switch-h)));}
 
-/* Standalone checkbox (e.g. table row/select-all) — supports :indeterminate */
+/* Standalone checkbox (e.g. table row/select-all), supports :indeterminate */
 .fdy-checkbox{appearance:none;-webkit-appearance:none;flex:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);border-radius:var(--radius-sm);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-checkbox::before{content:"";width:.62rem;height:.62rem;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0,43% 62%);}
 .fdy-checkbox:checked,.fdy-checkbox:indeterminate{background:var(--color-primary);border-color:var(--color-primary);}
@@ -1350,7 +1350,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Freezing the HEADER ROW is its own modifier because it needs a vertical
    scrollport (`.fdy-table-scroll--frozen`). A table that only freezes columns
    scrolls with the PAGE, and `top:0` against the page sticks the header under
-   the viewport edge — over the app's own top bar — which is worse than not
+   the viewport edge — over the app's own top bar, which is worse than not
    freezing it. Ask for the axis you actually have. */
 .fdy-table--sticky-head thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
 
@@ -1395,7 +1395,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    together on the right while the range stays left — no wrapper element, which is what keeps the
    footer's DOM byte-identical for the tables that don't offer one (#008). The control is the kit's
    own `.fdy-combo`, never a native <select>: an OS menu is unthemeable, and on macOS it drops a
-   dark panel into a light page — which is the reason FdyCombo exists at all. Sized to its content:
+   dark panel into a light page, which is the reason FdyCombo exists at all. Sized to its content:
    `.fdy-combo` is display:block at max-width 22rem, which in a footer is a bar-wide box for two
    digits. Its HEIGHT is left alone on purpose — `--control-h`, the same as every other control on
    the page. It briefly carried 2.25rem to match the pager links beside it, which made the one
@@ -1444,7 +1444,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-tabs__tab:disabled:hover,.fdy-tabs__tab[aria-disabled="true"]:hover{color:var(--color-text-muted);}
 /* `aria-current="page"` is honoured alongside `aria-selected="true"` so the tab look can be used for
    ROUTE-driven sub-navigation (/settings/profile · /settings/billing), where the tabs are real links.
-   A link cannot be `aria-selected` — that is invalid ARIA on an anchor; `aria-current` is the only
+   A link cannot be `aria-selected`, that is invalid ARIA on an anchor; `aria-current` is the only
    correct marker, and it is what a router sets. Use `.fdy-tabs` + `freeday-tabs.js` (roving tabindex,
    a panel per tab) for in-page tabs; use these classes on plain links for routed ones, and
    `.fdy-nav--horizontal` for an application's PRIMARY navigation. */

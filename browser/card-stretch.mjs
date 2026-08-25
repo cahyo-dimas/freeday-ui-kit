@@ -4,7 +4,7 @@
  *
  * The pattern is a pseudo-element overlay on the primary control. It cannot be hand-rolled on a
  * `.fdy-btn`, because the button nudges itself with a transform on :hover/:active and a transformed
- * element becomes the containing block for its own absolutely positioned descendants — so the
+ * element becomes the containing block for its own absolutely positioned descendants, so the
  * overlay re-anchors from the card to the button's own box mid-gesture, mousedown and mouseup land
  * on different elements, and the browser fires `click` on their common ancestor. The button never
  * gets one, and the card looks exactly as clickable as before.
@@ -74,7 +74,7 @@ test('the kit does not outweigh a control the app positions itself', { skip }, a
   await withPage(fixture('vanilla-card-stretch.html'), async (p) => {
     await p.waitFor('typeof window.hitAt === "function"');
 
-    /* Raising the escape hatches needs `position` — but as a DEFAULT, never as an override. At normal
+    /* Raising the escape hatches needs `position`, but as a DEFAULT, never as an override. At normal
        specificity the kit beat the app's own single-class rule and dragged an absolutely positioned
        corner dismiss back into the flow: still clickable, in the wrong place. Hence :where(). */
     const box = JSON.parse(await p.evalJS('JSON.stringify(window.boxOf("dismiss"))'));
@@ -95,7 +95,7 @@ test('a list row anchors its own stretched target (#008 §1)', { skip }, async (
     await p.waitFor('typeof window.hitAt === "function"');
 
     /* Row ONE is the assert that matters. With the overlay resolving against .fdy-list instead of the
-       row, BOTH rows hit-test to the LAST row's target — so a test that only checked row two passes
+       row, BOTH rows hit-test to the LAST row's target, so a test that only checked row two passes
        against the bug. (It did, when I first measured it.) */
     assert.equal(await p.evalJS('window.hitAt("#r1")'), 'open1', 'row one must belong to row one');
     assert.equal(await p.evalJS('window.hitAt("#r2")'), 'open2', 'row two must belong to row two');

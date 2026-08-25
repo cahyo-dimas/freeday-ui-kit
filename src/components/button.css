@@ -11,7 +11,7 @@
 .fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
 .fdy-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
 /* Pressed / toggle. `aria-pressed` is already the right attribute for a toggle button, so this adds
-   no class and no new markup contract — and it is what makes .fdy-btn-group a complete segmented
+   no class and no new markup contract, and it is what makes .fdy-btn-group a complete segmented
    control: the group joins the borders, this says which segment you are on. Each fill variant
    defines its OWN pressed look below; a single shared rule cannot work, because a gradient is a
    background-IMAGE and would blank the ghost variant's background-color. Solid: invert the gradient
@@ -50,13 +50,13 @@
 .fdy-btn--text{background:none;color:var(--color-primary-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text:hover{transform:none;background:var(--color-primary-soft);box-shadow:none;}
 .fdy-btn--text:active{transform:translateY(1px);box-shadow:none;}
-/* Ghost/text pressed: the kit's selected-surface pair (soft fill + strong ink) — the same pairing
+/* Ghost/text pressed: the kit's selected-surface pair (soft fill + strong ink), the same pairing
    .fdy-nav__item uses for the current page, and one the AA contrast gate already covers. This is
    the realistic segmented control: a row of --ghost buttons with exactly one aria-pressed. */
 .fdy-btn--ghost[aria-pressed="true"],.fdy-btn--text[aria-pressed="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);border-color:var(--color-primary-border);box-shadow:none;}
 .fdy-btn--ghost[aria-pressed="true"]:hover,.fdy-btn--text[aria-pressed="true"]:hover{background:var(--color-primary-soft);transform:none;box-shadow:none;}
 
-/* Stretched hit area (#007) — spread this button's click target over its nearest positioned
+/* Stretched hit area (#007), spread this button's click target over its nearest positioned
  * ancestor, so "one card, one primary action, one escape hatch" needs no click handler on the
  * <article>: the real control stays a real <button>/<a> and keeps its keyboard semantics.
  * `.fdy-card` is already position:relative, so it is the anchor.

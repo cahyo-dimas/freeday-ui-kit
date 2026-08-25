@@ -51,7 +51,7 @@
 /* Freezing the HEADER ROW is its own modifier because it needs a vertical
    scrollport (`.fdy-table-scroll--frozen`). A table that only freezes columns
    scrolls with the PAGE, and `top:0` against the page sticks the header under
-   the viewport edge — over the app's own top bar — which is worse than not
+   the viewport edge — over the app's own top bar, which is worse than not
    freezing it. Ask for the axis you actually have. */
 .fdy-table--sticky-head thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
 
@@ -96,7 +96,7 @@
    together on the right while the range stays left — no wrapper element, which is what keeps the
    footer's DOM byte-identical for the tables that don't offer one (#008). The control is the kit's
    own `.fdy-combo`, never a native <select>: an OS menu is unthemeable, and on macOS it drops a
-   dark panel into a light page — which is the reason FdyCombo exists at all. Sized to its content:
+   dark panel into a light page, which is the reason FdyCombo exists at all. Sized to its content:
    `.fdy-combo` is display:block at max-width 22rem, which in a footer is a bar-wide box for two
    digits. Its HEIGHT is left alone on purpose — `--control-h`, the same as every other control on
    the page. It briefly carried 2.25rem to match the pager links beside it, which made the one

@@ -8,8 +8,8 @@
  * their DOM-writing rewired with nothing executing it: a `zone` out of scope or a getAttribute on
  * a non-element would throw at init and every existing test would still pass.
  *
- * Both halves are asserted. The DEFAULT is a contract too — since 2.0.0 an English one, where it
- * used to be Indonesian — so a string quietly changing under an app on the raw path fails here.
+ * Both halves are asserted. The DEFAULT is a contract too, since 2.0.0 an English one, where it
+ * used to be Indonesian, so a string quietly changing under an app on the raw path fails here.
  * The override half is what makes the default survivable: it is the migration an Indonesian app
  * takes past 2.0.0, so it has to keep working in the same breath.
  */

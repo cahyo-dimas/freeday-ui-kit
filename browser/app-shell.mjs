@@ -29,12 +29,12 @@ const state = async (p) => JSON.parse(await p.evalJS('JSON.stringify(window.stat
    leaves through a `visibility` transition, so for as long as that runs it still swallows a click
    aimed at the toggle in the topbar underneath it. A fixed pause that is long enough on a developer
    laptop is not long enough on a loaded CI runner, and the test then fails by clicking the wrong
-   thing — which is exactly how this spec first went red on CI while passing locally. */
+   thing, which is exactly how this spec first went red on CI while passing locally. */
 const OPEN = `window.state().open && document.getElementById('sidebar').getBoundingClientRect().left === 0`;
 const SHUT = `!window.state().open && getComputedStyle(document.getElementById('backdrop')).visibility === 'hidden'`;
 const isWide = (yes) => `window.matchMedia('(min-width: 721px)').matches === ${yes}`;
 
-/* In the wide mode the panel does not slide, it SHRINKS — and the topbar, with the toggle in it,
+/* In the wide mode the panel does not slide, it SHRINKS, and the topbar, with the toggle in it,
    travels the whole 15.5rem while it does. Waiting only for the class to flip means the next click
    is aimed at a button that has since moved out from under the pointer, so the wait is on the width
    reaching its end state. */

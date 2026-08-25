@@ -26,7 +26,7 @@ test('a toast raised from inside a modal is painted over it (#027)', { skip }, a
     /* Asserted in PIXELS. elementFromPoint is the instrument that looks right and answers the wrong
        question: a modal dialog makes the rest of the document inert, so a hit test outside it
        returns the dialog even where the toast is plainly painted on top. Measured here the dialog's
-       pale surface is ~(255,255,255) and the toast's inverse surface ~(23,27,38) — the two cannot
+       pale surface is ~(255,255,255) and the toast's inverse surface ~(23,27,38), the two cannot
        be confused, which is why the fixture makes the dialog big enough to cover the corner. */
     /* Both the toast and the dialog fade in. Screenshot mid-animation and the pixel is a blend of
        the two, which reads as "half covered" whichever one is actually on top — a flake that would
@@ -62,7 +62,7 @@ test('a checkbox keeps its size however long the label is (#027)', { skip }, asy
     }
 
     /* The switch track is the fourth control that was shrinkable, and the only one that is not
-       square — so it is measured against a switch of its own rather than against the boxes. */
+       square, so it is measured against a switch of its own rather than against the boxes. */
     assert.deepEqual(switches.s2, switches.s1,
       `a switch beside a wrapping label must keep the track's size, got ${switches.s2.w}x${switches.s2.h} against ${switches.s1.w}x${switches.s1.h}`);
   });

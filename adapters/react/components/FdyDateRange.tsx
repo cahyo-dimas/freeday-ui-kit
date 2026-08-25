@@ -5,7 +5,7 @@ import { FdyDatepicker } from './FdyDatepicker';
 // two linked FdyDatepickers where the end can't precede the start (start.max = end, end.min = start).
 // `value` + `onChange` in place of Vue's `v-model`; this composes the single-date picker rather than
 // re-implementing the calendar. Note: the vanilla enhancer's cross-calendar `.in-range` day shading
-// is not reproduced (each picker is independent) — the min/max linkage is what keeps the range valid.
+// is not reproduced (each picker is independent), the min/max linkage is what keeps the range valid.
 
 export interface DateRangeValue {
   start: string | null;

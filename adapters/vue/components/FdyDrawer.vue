@@ -4,13 +4,13 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 // A controlled Vue wrapper over freeday's `.fdy-drawer` native <dialog> side panel
 // (src/components/drawer.css). Same controlled contract and glue as FdyModal — showModal()/close()
 // guarded, @cancel.prevent so Esc routes through app state, backdrop-click via `event.target ===
-// dialogEl` — applied to a drawer that anchors left (default) or right. Native <dialog> supplies the
+// dialogEl`, applied to a drawer that anchors left (default) or right. Native <dialog> supplies the
 // focus trap, focus restore, top-layer stacking and inert background; `dismissible` (default true)
 // gates Esc + backdrop dismissal.
 
 // dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
 // `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
-// drawer non-dismissible (no Esc, no backdrop, no close button) — the opposite of the default.
+// drawer non-dismissible (no Esc, no backdrop, no close button), the opposite of the default.
 const props = withDefaults(defineProps<{
   open: boolean;
   title: string;

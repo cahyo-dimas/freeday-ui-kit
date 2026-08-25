@@ -2,7 +2,7 @@
  * Opt in with <div class="fdy-app" data-fdy-app>; the markup is otherwise unchanged.
  *
  * The shell has always shipped the state classes and no behaviour, which left every consumer to
- * assemble the toggle, Escape, focus trap, focus restore and `inert` themselves — and the two
+ * assemble the toggle, Escape, focus trap, focus restore and `inert` themselves, and the two
  * hand-rolled copies in this repo's own docs already disagreed about which of those exist. Below
  * 721px the sidebar is an OVERLAY (app-shell.css: position:fixed + translateX(-100%)), so it needs
  * the same treatment a modal drawer gets; at or above 721px it is a column that merely collapses.

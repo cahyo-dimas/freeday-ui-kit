@@ -3,7 +3,7 @@
  * Chrome.
  *
  * `.fdy-input` hides the user agent's spin buttons (unthemeable OS widgets), so [data-fdy-number]
- * owes the user the affordance back — and a button that stays enabled while doing nothing is worse
+ * owes the user the affordance back, and a button that stays enabled while doing nothing is worse
  * than no button at all. Everything here is driven with real input: a disabled button swallowing a
  * synthetic .click() proves nothing, and tab order only moves for a trusted key.
  */
@@ -31,7 +31,7 @@ test('stepping is native, bounded, and announced', { skip }, async () => {
     await p.clickCenter(UP);
     assert.equal((await state('grpA')).value, '2', 'a real click steps the input');
 
-    // Frameworks bind to the input, not to a kit event — so the platform's own events must fire.
+    // Frameworks bind to the input, not to a kit event, so the platform's own events must fire.
     const events = JSON.parse(await p.evalJS('JSON.stringify(window.events)'));
     assert.deepEqual(events.map((e) => e.type), ['input', 'change'],
       `stepping must dispatch native input + change, got ${JSON.stringify(events)}`);

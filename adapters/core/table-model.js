@@ -1,7 +1,7 @@
 // Freeday — framework-agnostic table model (pure functions, zero dependencies).
 //
 // The sort / filter / paginate logic shared by adapters/vue/components/FdyTable.vue and
-// adapters/react/components/FdyTable.tsx. Kept here — plain ESM with a .d.ts sidecar — so the
+// adapters/react/components/FdyTable.tsx. Kept here — plain ESM with a .d.ts sidecar, so the
 // two adapters can't drift and so the logic is unit-testable under `node --test`
 // (test/table-model.test.mjs) without a framework runtime. Every function is pure: inputs are
 // never mutated (rows are sliced before sorting), so it is safe to call on each render.
@@ -34,7 +34,7 @@ function localDay(d) {
 }
 
 /**
- * @param {unknown} v @returns {string} ISO calendar day (yyyy-mm-dd) — lexicographically comparable
+ * @param {unknown} v @returns {string} ISO calendar day (yyyy-mm-dd), lexicographically comparable
  *
  * Two bugs lived here, both of which let a column SORT by date correctly and
  * FILTER by date wrongly — the worst pairing, because a working sort is what

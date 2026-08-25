@@ -25,7 +25,7 @@
 .fdy-filterbar>.fdy-field--w-grow{flex:1 1 16rem;width:auto;min-width:12rem;}
 /* Trailing actions (buttons) pushed to the end, aligned with the controls' baseline.
  * Wrap note: a wrapped bar breaks flex lines on each item's *flex-basis* (the grow field's
- * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width — so the grow basis,
+ * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width, so the grow basis,
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
 /* A control that carries NO label of its own — a checkbox, a switch, a lone
@@ -37,7 +37,7 @@
    line. Raised from IDU_EMATE_APPL_WEB (#014). */
 .fdy-filterbar>.fdy-check,.fdy-filterbar>.fdy-radio,.fdy-filterbar>.fdy-switch,.fdy-filterbar>.fdy-btn{min-height:var(--control-h);}
 .fdy-filterbar__actions{display:flex;align-items:center;gap:var(--space-2);margin-left:auto;}
-/* Opt-in: sit the actions inline right after the last field instead of at the far edge — so when the
+/* Opt-in: sit the actions inline right after the last field instead of at the far edge, so when the
  * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
 .fdy-filterbar--actions-inline .fdy-filterbar__actions{margin-left:0;}
 /* Stack on narrow screens so nothing overflows the row. */

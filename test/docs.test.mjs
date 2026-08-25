@@ -99,7 +99,7 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  *
  * COMPONENTS.md's language caveat draws one line: the vanilla ENHANCERS write Indonesian, the
  * Vue/React/Blazor components are English throughout. That is the sentence an English app adopts the
- * wrappers on — and `FdyCfl` broke it in nine strings, `FdyCascade` in two and `FdyAutocomplete` in
+ * wrappers on, and `FdyCfl` broke it in nine strings, `FdyCascade` in two and `FdyAutocomplete` in
  * one, none of which a reader of the docs could have predicted (#009, from a consuming app that
  * rendered its forms and read them).
  *
@@ -111,7 +111,7 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  *
  * Until 2.0.0 the enhancers defaulted to Indonesian, and this guard existed because both promises —
  * an Indonesian raw path and an English Blazor one, which reaches these same enhancers through
- * `FreedayBlazor.initAll` — could only hold if every string was overridable. The default is English
+ * `FreedayBlazor.initAll`, could only hold if every string was overridable. The default is English
  * now and that tension is gone, but the invariant is not: a string written straight into the DOM is
  * unreachable from outside whatever language it is in, and the next app to need Indonesian back
  * (`data-fdy-text-*`) can only have it where this holds.
@@ -164,7 +164,7 @@ test('every path speaks English (#009, and #006 from 2.0.0)', () => {
   /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
      a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */
   /* Roots, not whole words. The first version of this guard listed `cari` with a \b on each
-     side and sailed straight past `Buka pencarian` — the CFL trigger's aria-label, and the one
+     side and sailed straight past `Buka pencarian`, the CFL trigger's aria-label, and the one
      string a screen-reader user meets FIRST on every picker in the app. Indonesian derives by
      affix (peN-, -an, meN-, di-), so a word-boundary list will always miss the derived forms. */
   const INDONESIAN = /\b(pilih|memilih|pilihan|tutup|batal|simpan|hapus|cari|pencarian|mencari|buka|membuka|memuat|muat|hasil|klik|baris|semua|dipilih|kolom|tidak|sebelumnya|berikutnya|menampilkan|tanggal|bulan|tahun|halaman|kembali|tambah|ubah)\b/i;
@@ -191,7 +191,7 @@ test('every path speaks English (#009, and #006 from 2.0.0)', () => {
     scan(dir, /\.(vue|tsx|razor|cs)$/, false);
   }
   /* The enhancers joined this promise in 2.0.0. Before that they were deliberately Indonesian, and
-     an app mixing the two paths — which a Blazor app does by construction, since
+     an app mixing the two paths, which a Blazor app does by construction, since
      FreedayBlazor.initAll runs every enhancer — read as two products. */
   scan('src', /^freeday-.*\.js$/, true);
 
@@ -204,7 +204,7 @@ test('the column contract reaches all three typed adapters (#026)', () => {
      file directly, so TypeScript keeps them honest; Blazor RE-DECLARES it in C#, which is a hand
      copy and therefore the one surface that can silently fall behind — #026 shipped `labelHidden`
      to Vue and React and left Blazor without it. One-directional on purpose: Blazor may hold MORE
-     (Cell has no TS twin, it is a slot there), so this asserts coverage, never equality — which is
+     (Cell has no TS twin, it is a slot there), so this asserts coverage, never equality, which is
      also why it needs no exemption list. */
   const contract = read('adapters/core/table-model.d.ts')
     .match(/export interface FdyTableColumn<T>\s*\{([\s\S]*?)\n\}/)[1]
@@ -227,7 +227,7 @@ test('a hidden column label is rendered, not dropped (#026)', () => {
   /* The type surface above can be satisfied by a property nothing reads. Each of the three tables
      renders its own header, so each has to spend the flag on `.fdy-visually-hidden`: the cell looks
      empty and the column is still announced. Both header branches matter — a sortable column puts
-     its label inside the sort button, a plain one does not — so this counts TWO uses per adapter. */
+     its label inside the sort button, a plain one does not, so this counts TWO uses per adapter. */
   const TABLES = [
     ['adapters/vue/components/FdyTable.vue', 'labelHidden'],
     ['adapters/react/components/FdyTable.tsx', 'labelHidden'],
@@ -253,7 +253,7 @@ test('a hidden column label is rendered, not dropped (#026)', () => {
  *
  * So the complete set is asserted instead. This is a snapshot, deliberately: every string a reader
  * of the raw path can see is here, and changing one has to be a decision somebody made on purpose
- * and can see in a diff — which is the whole cost of getting a default language wrong twice.
+ * and can see in a diff, which is the whole cost of getting a default language wrong twice.
  */
 test('the enhancers ship exactly these strings (#006)', () => {
   const tables = {};
@@ -331,7 +331,7 @@ test('the enhancers ship exactly these strings (#006)', () => {
 /* Every public version stamp, checked against package.json.
  *
  * NEXT-UP's release runbook already says the right thing — don't work from a memorised list of
- * files, `git grep` the old version — and it was still missed three times running: docs/index.html
+ * files, `git grep` the old version, and it was still missed three times running: docs/index.html
  * shipped `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
  * getting-started.md told people to install `^1.34.0` for eighteen releases. A runbook step is a
  * thing a person has to remember; this is the same grep, run by the suite.

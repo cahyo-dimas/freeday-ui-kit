@@ -7,7 +7,7 @@
 .fdy-tabs__tab:disabled:hover,.fdy-tabs__tab[aria-disabled="true"]:hover{color:var(--color-text-muted);}
 /* `aria-current="page"` is honoured alongside `aria-selected="true"` so the tab look can be used for
    ROUTE-driven sub-navigation (/settings/profile · /settings/billing), where the tabs are real links.
-   A link cannot be `aria-selected` — that is invalid ARIA on an anchor; `aria-current` is the only
+   A link cannot be `aria-selected`, that is invalid ARIA on an anchor; `aria-current` is the only
    correct marker, and it is what a router sets. Use `.fdy-tabs` + `freeday-tabs.js` (roving tabindex,
    a panel per tab) for in-page tabs; use these classes on plain links for routed ones, and
    `.fdy-nav--horizontal` for an application's PRIMARY navigation. */

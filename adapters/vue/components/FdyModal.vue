@@ -12,7 +12,7 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 
 // dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
 // `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
-// modal non-dismissible (no Esc, no backdrop, no close button) — the opposite of the default.
+// modal non-dismissible (no Esc, no backdrop, no close button), the opposite of the default.
 const props = withDefaults(defineProps<{
   open: boolean;
   title: string;

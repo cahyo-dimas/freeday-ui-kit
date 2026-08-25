@@ -20,10 +20,10 @@
  *   "fdy-upload-add"    {file, rejected, reason, row}
  *   "fdy-upload-remove" {file}
  * `row` is the state machine over the rendered .fdy-file:
- *   .ready() (rest — where a dropped file starts) / .uploading() / .setProgress(pct) /
+ *   .ready() (rest, where a dropped file starts) / .uploading() / .setProgress(pct) /
  *   .waiting(label) (sent, awaiting the server) / .done() / .fail(msg) / .el
  * Note the file list is a SIBLING of the dropzone above, so nothing dispatched on a row would ever
- * bubble through the zone — which is why removal fires on the zone and not on the row.
+ * bubble through the zone, which is why removal fires on the zone and not on the row.
  */
 (function () {
   'use strict';
@@ -52,7 +52,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -65,7 +65,7 @@
     tooBig: 'Over the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -108,7 +108,7 @@
          contract puts as a SIBLING of the dropzone, so a row event never bubbles through the zone:
          a consumer following the docs saw `add` arrive and `remove` never fire, with no error.
          Firing on both would look safer, but it makes the pair asymmetric — one `add` and, for
-         anyone delegating on a common ancestor, two `remove`s — which is its own silent bug. It
+         anyone delegating on a common ancestor, two `remove`s, which is its own silent bug. It
          also fixes the listless case: a row that was never attached bubbles to nothing at all. */
       zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
       el.remove();

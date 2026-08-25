@@ -4,7 +4,7 @@
  * Opt in with <div class="fdy-app" data-fdy-app>; the markup is otherwise unchanged.
  *
  * The shell has always shipped the state classes and no behaviour, which left every consumer to
- * assemble the toggle, Escape, focus trap, focus restore and `inert` themselves — and the two
+ * assemble the toggle, Escape, focus trap, focus restore and `inert` themselves, and the two
  * hand-rolled copies in this repo's own docs already disagreed about which of those exist. Below
  * 721px the sidebar is an OVERLAY (app-shell.css: position:fixed + translateX(-100%)), so it needs
  * the same treatment a modal drawer gets; at or above 721px it is a column that merely collapses.
@@ -420,7 +420,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -428,7 +428,7 @@
     slide: 'Slide {n}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -597,7 +597,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -605,7 +605,7 @@
     submenu: '{label}, submenu'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -863,14 +863,14 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
     selected: '{n} selected'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -1640,7 +1640,7 @@
 
 /* Freeday — date picker enhancer (optional, zero-dependency).
  * Builds an input-styled trigger + calendar popover from an empty wrapper.
- * Locale comes from <html lang> (via Intl) — month/weekday/value formatting is not hardcoded.
+ * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
  *
  * Markup contract:
  *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal unggah"
@@ -2368,7 +2368,7 @@
     customError: 'mismatch'
   };
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
+   * path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
    * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
    * a host in another language needs: it sets nine messages once instead of on every input.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
@@ -2582,7 +2582,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -2590,7 +2590,7 @@
     hide: 'Hide password'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -3273,7 +3273,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -3281,7 +3281,7 @@
     next: 'Next'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -3408,7 +3408,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -3426,7 +3426,7 @@
     info: 'Showing {from}–{to} of {total}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -4200,7 +4200,7 @@
 
   /* Put the region in the TOP LAYER, above any open <dialog>.
    *
-   * A modal dialog lives in the top layer, where z-index does not reach — so a toast raised by an
+   * A modal dialog lives in the top layer, where z-index does not reach, so a toast raised by an
    * action taken inside a modal was painted behind that modal's backdrop, which is where an error
    * message is least useful. showPopover() joins the same layer, and membership there is ordered by
    * when you joined: hide-then-show re-joins at the top, so a toast shown while a dialog is open
@@ -4239,14 +4239,14 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
     close: 'Close'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -4441,10 +4441,10 @@
  *   "fdy-upload-add"    {file, rejected, reason, row}
  *   "fdy-upload-remove" {file}
  * `row` is the state machine over the rendered .fdy-file:
- *   .ready() (rest — where a dropped file starts) / .uploading() / .setProgress(pct) /
+ *   .ready() (rest, where a dropped file starts) / .uploading() / .setProgress(pct) /
  *   .waiting(label) (sent, awaiting the server) / .done() / .fail(msg) / .el
  * Note the file list is a SIBLING of the dropzone above, so nothing dispatched on a row would ever
- * bubble through the zone — which is why removal fires on the zone and not on the row.
+ * bubble through the zone, which is why removal fires on the zone and not on the row.
  */
 (function () {
   'use strict';
@@ -4473,7 +4473,7 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
@@ -4486,7 +4486,7 @@
     tooBig: 'Over the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */
@@ -4529,7 +4529,7 @@
          contract puts as a SIBLING of the dropzone, so a row event never bubbles through the zone:
          a consumer following the docs saw `add` arrive and `remove` never fire, with no error.
          Firing on both would look safer, but it makes the pair asymmetric — one `add` and, for
-         anyone delegating on a common ancestor, two `remove`s — which is its own silent bug. It
+         anyone delegating on a common ancestor, two `remove`s, which is its own silent bug. It
          also fixes the listless case: a row that was never attached bubbles to nothing at all. */
       zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
       el.remove();

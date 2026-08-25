@@ -29,7 +29,7 @@
 .fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
 /* The tick is CSS, not content (#004 §2). Inside role="option" it joined the option's ACCESSIBLE
    NAME, so the selected option announced "✓August" while every other announced "August": the state
-   was read twice — once as aria-selected, once as decoration — and a test asking for an option by
+   was read twice — once as aria-selected, once as decoration, and a test asking for an option by
    its own label stopped matching the one that was selected. The `/ ""` is alt text: the glyph is
    painted, the accessibility tree gets nothing. Same reasoning as .fdy-label--required (1.29.0).
    The empty box still reserves its width, so labels stay aligned whether selected or not. */

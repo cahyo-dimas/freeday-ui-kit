@@ -64,7 +64,7 @@ function rules(source) {
 
 test('rules() reads a wrapped selector whole (#014)', () => {
   /* Every guard in this file trusts `rules()`. When it kept only the last line of a selector, a
-   * rule written across lines was reported under a fragment of its own name — so a guard looking
+   * rule written across lines was reported under a fragment of its own name, so a guard looking
    * for `.fdy-filterbar>.fdy-check` found nothing and passed, which is the worst way for a test to
    * fail. Asserted here rather than left to the CSS staying one-rule-per-line, because that is a
    * convention and this is the thing that would silently stop enforcing it. */
@@ -148,7 +148,7 @@ test('the native spin buttons stay hidden on .fdy-input[type="number"] (#44)', (
 test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   /* The overlay is only half the pattern. `.fdy-btn` nudges itself with a transform on :hover and
    * :active, and a transformed element becomes the containing block for its own absolutely
-   * positioned descendants — so the overlay silently re-anchors from the card to the button's own
+   * positioned descendants, so the overlay silently re-anchors from the card to the button's own
    * box mid-gesture, and the click lands on a common ancestor instead of the button. Neutralising
    * BOTH states is load-bearing: --text/--ghost break on press, the default and --danger fills
    * break one step earlier, on hover. */
@@ -162,7 +162,7 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   assert.match(neutralised.body, /transform:\s*none/, 'the nudge must be off, or the overlay re-anchors mid-gesture');
 
   /* Forgetting to raise the escape hatch fails silently, so the kit does it rather than documenting it.
-   * The host list is `:is(.fdy-card,.fdy-list__row)` — see the row anchor assert below. */
+   * The host list is `:is(.fdy-card,.fdy-list__row)`, see the row anchor assert below. */
   const raised = rules(css).find(r => /^:is\(\.fdy-card,\.fdy-list__row\):has\(\.fdy-btn--stretch\)/.test(r.selector));
   assert.ok(raised !== undefined, 'focusable controls in the card must be raised above the overlay');
   assert.match(raised.body, /z-index:\s*1/);
@@ -284,7 +284,7 @@ test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
    * between the eyebrow and the title half again what the flex `gap` declared. Reported by a
    * consuming app as two separate spacing complaints; they were one missing declaration.
    *
-   * The list comes from the DOCS — the classes the kit itself demonstrates on a paragraph — so a new
+   * The list comes from the DOCS — the classes the kit itself demonstrates on a paragraph, so a new
    * one is covered by documenting it, which is the step nobody skips. */
   const docs =
     readFileSync(join(root, 'COMPONENTS.md'), 'utf8') +

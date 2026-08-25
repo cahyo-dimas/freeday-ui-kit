@@ -39,7 +39,7 @@
 
   /* Put the region in the TOP LAYER, above any open <dialog>.
    *
-   * A modal dialog lives in the top layer, where z-index does not reach — so a toast raised by an
+   * A modal dialog lives in the top layer, where z-index does not reach, so a toast raised by an
    * action taken inside a modal was painted behind that modal's backdrop, which is where an error
    * message is least useful. showPopover() joins the same layer, and membership there is ordered by
    * when you joined: hide-then-show re-joins at the top, so a toast shown while a dialog is open
@@ -78,14 +78,14 @@
 
 
   /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
-   * path — and every one overridable per element, so a host that speaks another language (the
+   * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
     close: 'Close'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
-     as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
+     as `data-fdy-text-filtertext`, while the kebab form anybody would reach for,
      `data-fdy-text-filter-text`, becomes a DIFFERENT attribute the enhancer never reads, and the
      override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
      still resolves, for markup written against 1.39.0. */

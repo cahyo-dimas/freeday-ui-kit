@@ -18,7 +18,7 @@
 .fdy-appbar--primary .fdy-btn--ghost:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);transform:none;}
 /* Nav links on a coloured bar: full on-colour ink in every state (a dimmed variant would trade away
    the contrast the bar's own token pair guarantees). The current page is carried by the background
-   wash plus the semibold weight the base rule already applies — and by `aria-current` itself. */
+   wash plus the semibold weight the base rule already applies, and by `aria-current` itself. */
 .fdy-appbar--primary .fdy-nav__item{color:var(--color-on-primary);}
 .fdy-appbar--primary .fdy-nav__item:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);}
 .fdy-appbar--primary .fdy-nav__item[aria-current="page"]{background:color-mix(in srgb,var(--color-on-primary) 24%,transparent);color:var(--color-on-primary);}

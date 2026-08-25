@@ -40,7 +40,7 @@ public static class TableModel
             : 0;
     }
 
-    /// <summary>ISO calendar day (yyyy-MM-dd) — lexicographically comparable.</summary>
+    /// <summary>ISO calendar day (yyyy-MM-dd), lexicographically comparable.</summary>
     private static string DateOnly(object? v)
     {
         if (v is DateTime dt) return dt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);

@@ -496,7 +496,7 @@ function onDocPointerDown(e: MouseEvent): void {
 }
 
 // Close when focus leaves the control entirely (e.g. Shift+Tab off the trigger).
-/* A null relatedTarget means focus fell to <body> — which is what happens when the element the
+/* A null relatedTarget means focus fell to <body>, which is what happens when the element the
  * user just pressed is REMOVED by the click it triggered (drilling into the month grid replaces
  * the grid, and with it the cell that had focus). That is not focus leaving the control, and
  * closing on it made the panel vanish mid-navigation. A pointer that really lands outside is

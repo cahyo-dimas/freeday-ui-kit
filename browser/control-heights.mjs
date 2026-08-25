@@ -5,7 +5,7 @@
  * reads as correct arithmetic. `.fdy-input-group` declares a 1.5px border and its inner input
  * subtracts 3px, so the border box should land on --control-h. At devicePixelRatio 1 the engine
  * resolves each 1.5px border to 1px, the compensation over-subtracts, and the group renders 1px
- * short of every control beside it. At dpr 2 the halves survive and it is correct — so it is
+ * short of every control beside it. At dpr 2 the halves survive and it is correct, so it is
  * invisible on the retina display it was authored on and visible on every 1x monitor.
  *
  * Only a real layout can catch that. Measured, not read.

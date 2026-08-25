@@ -89,7 +89,7 @@ export async function withPage(fileUrl, fn) {
   const userDataDir = await mkdtemp(join(tmpdir(), 'fdy-cdp-'));
   /* chrome-headless-shell is headless by construction; a normal Chrome binary is not, and on a
      machine with no display it goes looking for one and dies. Telling the two apart is also what
-     lets CHROME_BIN point at any installed Chrome — which is how #048 was settled, by running the
+     lets CHROME_BIN point at any installed Chrome, which is how #048 was settled, by running the
      same fixtures against a second engine. --no-sandbox only under CI: a developer keeps the
      sandbox, a hosted runner usually cannot have it. */
   const headless = chrome.includes('headless-shell') ? [] : ['--headless=new'];
@@ -232,7 +232,7 @@ export async function withPage(fileUrl, fn) {
     };
 
     /* The VIEWPORT the page believes it has. Media queries and matchMedia('change') both respond
-       to it, so this is what makes a responsive contract testable at all — and the only way to
+       to it, so this is what makes a responsive contract testable at all, and the only way to
        exercise the moment a layout CROSSES a breakpoint, which is where an app shell can strand an
        `inert` attribute on content nobody can reach any more. */
     const setViewport = async (width, height) => {

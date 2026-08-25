@@ -62,7 +62,7 @@ public partial class FdyTable<TRow>
     [Parameter] public EventCallback<int> PageIndexChanged { get; set; }
 
     /// <summary>Raised whenever the processed page of rows (after filter/sort/paginate) or the total
-    /// changes, in BOTH modes — so the same processed set can drive a card list, a summary or an
+    /// changes, in BOTH modes, so the same processed set can drive a card list, a summary or an
     /// export without re-deriving the pipeline. Mirrors <c>process</c> in the Vue/React adapters.</summary>
     [Parameter] public EventCallback<FdyTableProcess<TRow>> Process { get; set; }
 
@@ -298,7 +298,7 @@ public partial class FdyTable<TRow>
 
     // Enter/Space activate a focused row. Blazor's KeyboardEventArgs can't tell whether the row
     // itself vs an inner control is the target, so activatable rows should not embed focusable
-    // controls (the common drill-in-row pattern) — matching the Vue guard's practical effect.
+    // controls (the common drill-in-row pattern), matching the Vue guard's practical effect.
     private async Task OnRowKeydown(KeyboardEventArgs e, TRow row)
     {
         if (!RowActivatable) return;

@@ -148,7 +148,7 @@ test('an option keeps its accessible name when it becomes selected', { skip }, a
     /* The tick used to be text INSIDE role="option", so the selected option's name was "✓Badge"
        while every other was "Badge": the state was announced twice, and getByRole('option',
        { name: 'Badge' }) stopped matching the one option that was selected. The invariant is the
-       name, not the glyph — so this asserts names are identical either side of selection. */
+       name, not the glyph, so this asserts names are identical either side of selection. */
     /* Asked of the ENGINE, not of textContent: the tick is CSS generated content now, which never
        shows up in textContent — a DOM-level assert would pass even with the glyph back in the name.
        The listbox has to be OPEN first: a hidden option is not in the accessibility tree at all. */

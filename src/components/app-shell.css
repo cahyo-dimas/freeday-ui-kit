@@ -49,7 +49,7 @@
 .fdy-nav__group{margin:0;}
 .fdy-nav__group + .fdy-nav__group,.fdy-nav__item + .fdy-nav__group{border-top:var(--bw) solid var(--color-border-muted);margin-top:var(--space-1);padding-top:var(--space-1);}
 /* Prose, and a control name: this is the <summary> of a nav group, at --text-xs uppercase. It is
-   the second class found spending the decorative ink on type (after .fdy-eyebrow) — and it was
+   the second class found spending the decorative ink on type (after .fdy-eyebrow), and it was
    already brightening to --color-text-muted on hover, which is the rule admitting its resting
    state was too faint to read. */
 .fdy-nav__grouplabel{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-1);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
@@ -71,7 +71,7 @@
 .fdy-nav__tree > summary .fdy-nav__caret{flex:none;margin-left:auto;width:.4rem;height:.4rem;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.6;}
 .fdy-nav__tree[open] > summary .fdy-nav__caret{transform:rotate(45deg);}
 .fdy-nav__sub{display:flex;flex-direction:column;gap:2px;padding-left:calc(var(--space-3) + 1.15rem);margin-top:2px;}
-/* Collapse toggle (hamburger) — sits in the topbar; collapses the sidebar. */
+/* Collapse toggle (hamburger), sits in the topbar; collapses the sidebar. */
 .fdy-app__navtoggle{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;flex:none;padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-app__navtoggle:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-app__navtoggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}

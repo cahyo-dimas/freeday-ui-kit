@@ -51,7 +51,7 @@
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
-/* A stat value is display type sized for a COUNT — "1,284" — and a back office puts money in it.
+/* A stat value is display type sized for a COUNT — "1,284", and a back office puts money in it.
    "IDR 300,000.00" needs 224px at --text-3xl and the grid's own track is 11rem, so it wrapped
    between the currency and the number: two lines of 31px where the design says one. Measured, not
    guessed (#020).

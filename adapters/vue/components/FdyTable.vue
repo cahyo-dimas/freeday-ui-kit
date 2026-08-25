@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<{
   /** Client-side page size when `page` is absent; 0/undefined = render all rows (no pager). */
   pageSize?: number;
   /**
-   * Controlled client-side page index (0-based). Provide it — with `pageSize`, without `page` — to
+   * Controlled client-side page index (0-based). Provide it — with `pageSize`, without `page`, to
    * own the page while the table keeps doing filter/sort/paginate. This is what lets an EXTERNAL
    * pager drive the table: a responsive screen that hides `.fdy-datatable` below `md` and renders a
    * card list from the `process` event can render one pager for both breakpoints and point it here.
@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<{
    * (unchanged default). Every back office has one, and a table that renders two thirds of its own
    * footer forces the app to rebuild all three to add the last (#008).
    *
-   * Server mode reports the pick through `update:page` — same event as a page click, with a new
+   * Server mode reports the pick through `update:page`, same event as a page click, with a new
    * `size`. Client mode keeps it internally and also emits `update:pageSize`, so the control works
    * with nothing wired and can still be persisted.
    */

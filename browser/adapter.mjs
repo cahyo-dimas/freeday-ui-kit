@@ -81,7 +81,7 @@ test('React FdyTable: controlled pageIndex round-trips with an external pager', 
 
 /* Clearable choose-from-list (note 001 §3). The failure this guards is an API asymmetry, not a
  * rendering bug: `modelValue`/`value` accept `Row | null`, but the emit was typed and implemented as
- * `Row` only — so an OPTIONAL foreign key could be set and never unset, and a user who picked the
+ * `Row` only, so an OPTIONAL foreign key could be set and never unset, and a user who picked the
  * wrong row had to reload the form. Driven with a real click because the clear control disappears
  * with the value it clears; a synthetic click would not prove focus survives that. */
 async function assertClearable(fixtureName) {
@@ -115,7 +115,7 @@ test('React FdyCfl: clearable emits null and keeps focus', { skip }, async () =>
 });
 
 /* The month drill (note 004 §1). The calendar's only pointer route to another month was one click
- * per month — August 2026 to March 2022 is fifty-three — and the Shift+PageUp year jump had no
+ * per month — August 2026 to March 2022 is fifty-three, and the Shift+PageUp year jump had no
  * affordance at all. The title is a control now. Driven with real clicks because the thing being
  * tested is the route a pointer takes. */
 async function assertMonthDrill(fixtureName) {
@@ -212,7 +212,7 @@ test('Vue FdyTable: the footer resizes the page and keeps your place', { skip },
     await p.waitFor(`document.querySelectorAll('.fdy-table-footer__size .fdy-combo').length === 2`);
 
     /* Driven by real clicks on the kit's own listbox. The control was briefly a native <select>
-     * (1.34.0, unreleased) — the one component FdyCombo exists to replace, because an OS menu is
+     * (1.34.0, unreleased), the one component FdyCombo exists to replace, because an OS menu is
      * unthemeable and drops a dark panel into a light page. Caught by a consuming app in a
      * screenshot, so this test opens the popup the way a user does. */
     const scope = (which) => `.fdy-datatable:nth-of-type(${which + 1}) .fdy-table-footer__size`;

@@ -79,7 +79,7 @@ public partial class FdyChart : ComponentBase
     private string? _lastSignature;
 
     // Repaint only when the chart's own data changed (first render, or a data-* attribute differs
-    // since the last paint) — so an unrelated parent re-render doesn't needlessly repaint the SVG.
+    // since the last paint), so an unrelated parent re-render doesn't needlessly repaint the SVG.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         string sig = DataSignature;

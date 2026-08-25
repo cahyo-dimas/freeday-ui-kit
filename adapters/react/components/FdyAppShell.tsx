@@ -13,7 +13,7 @@ import {
 // drift into two different focus traps.
 //
 // ONE model: `navOpen` means "the nav is visible to the reader". Above the nav breakpoint a hidden
-// nav is `--nav-collapsed`, below it a visible nav is `--nav-open` — the kit owns that mapping so an
+// nav is `--nav-collapsed`, below it a visible nav is `--nav-open`, the kit owns that mapping so an
 // app never reasons about the viewport to answer a question about its own UI.
 //
 // Omit `navOpen` and the component keeps its own, defaulting BY VIEWPORT: a column on a wide screen,

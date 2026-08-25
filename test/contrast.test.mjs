@@ -15,7 +15,7 @@ const scope = (re) => { const m = css.match(re); return m ? m[1] : ''; };
 const vars = (t) => { const o = {}; for (const m of t.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) o[m[1]] = m[2].trim(); return o; };
 const base = vars(scope(/:root\s*\{([\s\S]*?)\n\}/));
 /* The explicit theme selectors were un-rooted in v1.21.0 so a `data-theme` on any ancestor re-themes
- * that subtree — and this regex still said `:root[data-theme="dark"]`, so it matched NOTHING and
+ * that subtree, and this regex still said `:root[data-theme="dark"]`, so it matched NOTHING and
  * `dark` silently fell back to the light values. Every DARK assertion below was re-testing LIGHT
  * from v1.21.0 until this was found (v1.30.0). The shape is asserted immediately after, because a
  * scope that resolves to nothing is exactly as green as one that passes. */
@@ -73,7 +73,7 @@ for (const strong of ['--color-success-strong', '--color-warning-strong', '--col
 add('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
 add('--color-on-danger', '--color-danger-btn', AA_TEXT, 'danger button label');
 add('--color-on-accent', '--color-accent', AA_UI, 'accent FAB icon (icon-only, non-text 3:1)');
-/* A control's boundary is a UI component boundary (WCAG 1.4.11, 3:1) — and it must hold on the
+/* A control's boundary is a UI component boundary (WCAG 1.4.11, 3:1), and it must hold on the
  * DARKEST surface it can sit on, not just the lightest. surface-3 was the missing one; it is the
  * case that pinned the dark theme to 3.02 before --slate-450. */
 /* 3.25, not 3.0: a boundary that clears the floor by 0.02 has no headroom at all, and that is exactly
