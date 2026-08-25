@@ -15,43 +15,43 @@ A step-by-step guide to adopting Freeday in **your new project**. Pick your stac
 Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enhancers** (optional).
 
 1. **Static vs interactive.** Static components (button, card, badge, plain input, layout) need
-   only the **`fdy-*` classes** — no JS. Interactive components (select/combo, cascade, date/time
+   only the **`fdy-*` classes**, no JS. Interactive components (select/combo, cascade, date/time
    picker, table, dropzone, form validation, input mask, chip) need the **JS enhancers**.
-2. **The enhancer is the source of truth — *on the raw path*.** You don't re-implement components;
+2. **The enhancer is the source of truth, *on the raw path*.** You don't re-implement components;
    the enhancer owns the widget's DOM. You **listen for `fdy-*` events** (all bubbling
    `CustomEvent`s, data in `event.detail`) → store them in your framework state. Event/API contract
    table: [`integrations.md` §Event & API contract](integrations.md).
-   **On Vue, React or Blazor this is not the path to take for ten of the components** — `FdyCombo`,
+   **On Vue, React or Blazor this is not the path to take for eleven of the components.** `FdyCombo`,
    `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`, `FdyChart`,
    `FdyTable`, `FdyModal`, `FdyDrawer` ship typed wrappers that own the state properly (Vue and
    React re-implement the interaction natively; Blazor wraps the enhancer over interop). Use them;
    the raw path is for the components without a wrapper, and for stacks without an adapter.
 3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
    **after** that must be re-hydrated: `window.Freeday<X>.initAll(el)` (idempotent, safe to repeat).
-   Each framework's adapter wraps this — you don't call it manually.
+   Each framework's adapter wraps this, so you don't call it manually.
 4. **Theme via `data-*`.** `data-theme="light|dark"` (all semantic tokens switch) +
    `data-density="comfortable|compact"` (control height, for data-dense screens). Normally on
    `<html>`; change at runtime with `document.documentElement.dataset.theme = 'dark'`. Both also
-   work on **any ancestor** — these are inheriting custom properties, so `<section data-theme="dark">`
+   work on **any ancestor**, because these are inheriting custom properties, so `<section data-theme="dark">`
    inverts just that region and every component inside it follows. See [`USAGE.md`](../USAGE.md) §5b.
 5. **3-tier token rule.** Components only touch **Tier 2/3** (`var(--color-primary)`,
    `var(--space-4)`, `var(--radius-md)`…). **Never** write raw hex/px.
 6. **Scope: components + tokens, deliberately *not* layout.** Freeday ships components and tokens;
    the only layout helpers are `.fdy-hidden` / `.fdy-visually-hidden`. Stacks, grids, gaps and sizing
-   come from **your** layout layer — pair Freeday with a utility framework (Tailwind, UnoCSS…) run
+   come from **your** layout layer. Pair Freeday with a utility framework (Tailwind, UnoCSS…) run
    **utilities-only, preflight OFF** (Freeday's `base.css` is your reset). Two consequences worth
    knowing up front:
-   - **base.css is a *light* reset** — it does not strip `ul`/`ol`/`p` margins. With preflight off, a
+   - **base.css is a *light* reset.** It does not strip `ul`/`ol`/`p` margins. With preflight off, a
      semantic `<ul>` keeps native bullets + a 40px indent; add **`.fdy-list-reset`** (or use a Freeday
      list component) on such lists.
    - **The spacing scale is public.** `--space-0`…`--space-24`, `--radius-*`, `--dur-*` etc. are real
-     custom properties in `dist/freeday.tokens.css` — **define your utility theme in terms of them**
+     custom properties in `dist/freeday.tokens.css`, so **define your utility theme in terms of them**
      (`spacing: { 4: 'var(--space-4)' }`) so both systems stay in step. `data-density="compact"` steps
      `--control-h` **and** the mid-range spacing scale (`--space-3`…`--space-6`), so Freeday components
-     densify — and if your utility theme is built on `var(--space-N)`, density reaches your utilities too.
-7. **Load the fonts — the package does not.** The type tokens *name* **Sora** (display), **IBM Plex
+     densify, and if your utility theme is built on `var(--space-N)`, density reaches your utilities too.
+7. **Load the fonts yourself. The package does not.** The type tokens *name* **Sora** (display), **IBM Plex
    Sans** (body) and **JetBrains Mono** (data), but Freeday bundles no `@font-face` and no font files.
-   Load them yourself, or the kit renders in the system fallback — which reads as "unfinished design",
+   Load them yourself, or the kit renders in the system fallback, which reads as "unfinished design",
    not "missing dependency". One line with [Fontsource](https://fontsource.org):
    ```css
    @import '@fontsource/sora/600.css'; @import '@fontsource/sora/700.css';
@@ -59,23 +59,23 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    ```
    (Or a `<link>` to your own self-hosted copies, or override `--font-display`/`--font-body`/`--font-mono`
    to faces you already ship. If you keep a system-sans fallback, consider softening
-   `--tracking-tighter` on headings — it's tuned for Sora's proportions.)
+   `--tracking-tighter` on headings, since it's tuned for Sora's proportions.)
 8. **Start from the shell, then compose.** Every application goes inside **`.fdy-app`** (see below);
-   inside it, assemble screens from the composition primitives — `.fdy-page`, `.fdy-page__header`,
-   `.fdy-page-section`, `.fdy-toolbar`, `.fdy-stats`/`.fdy-stat` — and the type roles (`.fdy-title-page`
+   inside it, assemble screens from the composition primitives (`.fdy-page`, `.fdy-page__header`,
+   `.fdy-page-section`, `.fdy-toolbar`, `.fdy-stats`/`.fdy-stat`) and the type roles (`.fdy-title-page`
    / `-section` / `-card`), not by re-using `.fdy-card__title` for everything. **Which token/role/shadow
-   to use when lives in [`USAGE.md`](../USAGE.md)** — read it once; it's what makes screens cohere.
+   to use when lives in [`USAGE.md`](../USAGE.md)**. Read it once; it's what makes screens cohere.
 
 ---
 
 ## The app shell (start here)
 
-Every Freeday application goes inside **`.fdy-app`** — the frame that holds a top bar, a sidebar, and
+Every Freeday application goes inside **`.fdy-app`**, the frame that holds a top bar, a sidebar, and
 the scrolling content. Don't hand-roll one from flexbox; the responsive sidebar + backdrop are built in.
 The nav toggle is one line: toggle `.fdy-app--nav-open` (mobile drawer) / `.fdy-app--nav-collapsed`
 (desktop) on the `.fdy-app` element from the `__navtoggle` button's click.
 
-The nesting is not free-form — `.fdy-app` is a flex **row** of `[sidebar | content]`, and `__content`
+The nesting is not free-form: `.fdy-app` is a flex **row** of `[sidebar | content]`, and `__content`
 is the column that holds the topbar and the main area (it gives the sticky topbar a tall containing
 block to travel in). The brand belongs in the **sidebar**, sized to match the topbar's height:
 
@@ -109,11 +109,11 @@ block to travel in). The brand belongs in the **sidebar**, sized to match the to
 </div>
 ```
 
-`.fdy-app__main` already carries the page padding (`--space-8`, `--space-5` on mobile) — don't wrap
+`.fdy-app__main` already carries the page padding (`--space-8`, `--space-5` on mobile), so don't wrap
 your screen in another padded box. The toggle's two states split at **720px**: above it,
 `.fdy-app--nav-collapsed` collapses the sidebar to zero width; at or below it,
 `.fdy-app--nav-open` slides the sidebar in as an off-canvas drawer over the backdrop. A complete,
-working version of all of this — including the toggle script — is
+working version of all of this, including the toggle script, is
 [`reference-screen.html`](reference-screen.html).
 
 Then compose the screen inside `__main` with `.fdy-page` / `.fdy-page__header` / `.fdy-page-section`
@@ -125,10 +125,10 @@ token to use where.
 
 ## Static HTML (no build)
 
-Good for plain `.html` pages / templates — no bundler, no npm.
+Good for plain `.html` pages / templates, with no bundler and no npm.
 
 ### 1. Get the dist files into your project
-`dist/` is committed, so there's no build step. Easiest way — use npm once just to download, then
+`dist/` is committed, so there's no build step. Easiest way: use npm once just to download, then
 copy the files (vendor them):
 ```bash
 npm i @cahyo-dimas/freeday
@@ -229,7 +229,7 @@ const onDate    = (e: Event) => { form.dueDate  = (e as CustomEvent<FdyDatepicke
 ```
 
 **Gotcha:** if TypeScript complains about `import '@cahyo-dimas/freeday/css'`, make sure `env.d.ts`
-has `/// <reference types="vite/client" />`. For **Nuxt/SSR**, enhancers are client-only — wrap them
+has `/// <reference types="vite/client" />`. For **Nuxt/SSR**, enhancers are client-only, so wrap them
 in `onMounted`/`<ClientOnly>`.
 
 Full working example: [`examples/vue-faktur/`](../examples/vue-faktur/).
@@ -296,13 +296,13 @@ export function Panel() {
 }
 ```
 
-**Gotcha:** because the enhancer owns the widget DOM, don't double-control it from React — store the
+**Gotcha:** because the enhancer owns the widget DOM, don't double-control it from React. Store the
 value from `event.detail` in state/ref; don't set the DOM `value` back. `StrictMode` mounts twice in
 dev; `useFreeday` is idempotent, so it's safe.
 
 ### 5. Alternative: typed controlled components (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
 For fields you'd normally write as a native `<select>`/`<input type="date">`,
-`@cahyo-dimas/freeday/react` also exports typed **controlled** components — plain `value`/`onChange`,
+`@cahyo-dimas/freeday/react` also exports typed **controlled** components with plain `value`/`onChange`,
 no manual event bubbling (parity with the Vue `v-model` components above):
 ```tsx
 import { FdyCombo } from '@cahyo-dimas/freeday/react';
@@ -320,7 +320,7 @@ function StatusField({ value, onChange }: { value: Status; onChange: (v: Status)
 }
 ```
 `FdyDatepicker`, `FdyCfl` (async choose-from-list), and `FdyChart` share the same shape (typed
-`value`/`onChange`, or `series`/`values` for `FdyChart`) — see [`integrations.md`](integrations.md)
+`value`/`onChange`, or `series`/`values` for `FdyChart`). See [`integrations.md`](integrations.md)
 and `examples/react-faktur/src/App.tsx` for the full patterns. **Vite works with no extra config**
 (esbuild transpiles the `.tsx` source directly); **Next.js** consumers may need
 `transpilePackages: ['@cahyo-dimas/freeday']` in `next.config.js`.
@@ -331,9 +331,9 @@ Full working example: [`examples/react-faktur/`](../examples/react-faktur/).
 
 ## Blazor (WASM)
 
-Blazor doesn't use npm — Freeday is served as **static files** in `wwwroot/`.
+Blazor doesn't use npm. Freeday is served as **static files** in `wwwroot/`.
 
-> **Prefer the native components?** Jump to [§4 — the `Freeday.Blazor` RCL](#4-recommended-native-typed-components-freedayblazor-rcl):
+> **Prefer the native components?** Jump to [§4, the `Freeday.Blazor` RCL](#4-recommended-native-typed-components-freedayblazor-rcl):
 > typed `<FdyX>` with `@bind`, no manual JS interop. Steps 1–2 (assets + scripts) still apply; step 3
 > below (the raw enhancer + event bridge) is the underlying mechanism and the fallback for markup the
 > RCL doesn't cover.
@@ -365,7 +365,7 @@ Load `freeday.js` then `freeday-blazor.js` **before** `blazor.webassembly.js`:
   <script src="_framework/blazor.webassembly.js"></script>
 </body>
 ```
-> Use the global IIFE (`window.FreedayBlazor`), **not** an ES module — so it passes strict-MIME on static hosts.
+> Use the global IIFE (`window.FreedayBlazor`), **not** an ES module, so it passes strict-MIME on static hosts.
 
 ### 3. Hydrate + bridge events in code-behind (`.razor.cs`)
 In `OnAfterRenderAsync(firstRender)`: `initAll`, then `on(...)` per event → `[JSInvokable]` methods.
@@ -402,7 +402,7 @@ public partial class Panel : ComponentBase, IAsyncDisposable
 }
 ```
 ```razor
-@* Panel.razor — @ref on the subtree container, fdy-* classes + data-fdy-* hooks in the markup *@
+@* Panel.razor: @ref on the subtree container, fdy-* classes + data-fdy-* hooks in the markup *@
 <div @ref="_root">
   <button class="fdy-btn fdy-btn--primary" type="button">Save</button>
   <div data-fdy-cascade></div>
@@ -415,7 +415,7 @@ to flip the theme. Event DTOs are deserialized case-insensitively by Blazor.
 ### 4. Recommended: native typed components (`Freeday.Blazor` RCL)
 
 Instead of hand-writing `fdy-*` markup + the interop above, reference the **Razor Class Library** and
-use typed `<FdyX>` components with `@bind` — the Blazor equivalent of the Vue `v-model` / React
+use typed `<FdyX>` components with `@bind`, the Blazor equivalent of the Vue `v-model` / React
 `value`/`onChange` adapters. Place the Freeday repo near your solution and add a project reference:
 ```xml
 <!-- YourApp.csproj -->
@@ -428,7 +428,7 @@ use typed `<FdyX>` components with `@bind` — the Blazor equivalent of the Vue 
 Load `freeday.js` + `freeday-blazor.js` exactly as in step 2 (the components still hydrate over the
 kit's CSS/enhancers), then bind:
 ```razor
-@* Invoice.razor — no @ref, no manual JS interop, no [JSInvokable] *@
+@* Invoice.razor: no @ref, no manual JS interop, no [JSInvokable] *@
 <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />
 <FdyDatepicker @bind-Value="_dueDate" Label="Due date" />
 <FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)"
@@ -444,7 +444,7 @@ or controlled `Sort`/`Filters`/`Page` for a server-paged table; `RowActivatable`
 `select`-type control also takes `Disabled`/`Readonly`/`Invalid`. The RCL targets **net8.0** and is
 consumed as source (`<ProjectReference>`); `.NET bin/obj` never ships in the npm tarball.
 
-Full working example (all ten): [`examples/blazor-faktur/`](../examples/blazor-faktur/) —
+Full working example: [`examples/blazor-faktur/`](../examples/blazor-faktur/),
 `Pages/ComponentsDemo.razor`.
 
 ---
@@ -452,8 +452,8 @@ Full working example (all ten): [`examples/blazor-faktur/`](../examples/blazor-f
 ## Verify (every stack)
 
 Run the project → check two things:
-1. **CSS connected** — buttons/cards are styled (not plain HTML).
-2. **Enhancers connected** — interactive components come alive (e.g. datepicker/combo open on
+1. **CSS connected:** buttons/cards are styled (not plain HTML).
+2. **Enhancers connected:** interactive components come alive (e.g. datepicker/combo open on
    click), and `event.detail` reaches your state.
 
 If the visuals are plain → the CSS didn't load. If visuals are fine but widgets are dead → the
