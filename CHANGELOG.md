@@ -1559,7 +1559,7 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   the first file every agent session reads, so it was the most expensive stale text in the repo.
   Replaced with the actual status (feature-complete, demand-driven) plus a real structure map that
   distinguishes authored `src/` from generated `dist/`, and names `freeday.bundle.css` as the file to link.
-- **The release runbook listed version-reference locations from memory, and was wrong** — it named
+- **The release runbook listed version-reference locations from memory, and was wrong.** It named
   `examples/*/README.md` (no version in them) and claimed `docs/getting-started.md` has 4 (it has 1).
   Replaced the hand-maintained list with the command that derives it:
   `git grep -n '<old-version>' -- . | grep -v CHANGELOG`.
@@ -1571,9 +1571,9 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   exported it, there is no `data:…;base64` font anywhere in the file, and it renders via the Google
   Fonts CDN it preconnects to. Corrected, so no future session goes looking for fonts that aren't there.
 - **`docs/getting-started.md` §5 pointed consumers at `Foundation Design System.html` for component
-  markup** — a file that is not in the npm package, which became a dangling reference the moment this
+  markup**, a file that is not in the npm package, which became a dangling reference the moment this
   release started shipping that doc. Now points at `COMPONENTS.md` and `reference-screen.html`.
-- **`docs/getting-started.md`'s app-shell snippet was structurally wrong** — and it is the first thing
+- **`docs/getting-started.md`'s app-shell snippet was structurally wrong**, and it is the first thing
   a consumer copies. It showed `__topbar` as a direct child *before* `__sidebar`, put `__brand` inside
   the topbar, and nested `__content` *inside* `__main`. `.fdy-app` is a flex **row** of
   `[__sidebar | __content]`, `__content` is the column holding `__topbar` + `__main` (it gives the
@@ -1584,29 +1584,29 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
 - Same file: "compose the screen inside `__content`" → **`__main`** (which is the padded area).
 ### Changed
 - **`files` now ships the docs an agent needs**: `COMPONENTS.md`, `docs/getting-started.md`,
-  `docs/integrations.md`, `docs/agent-onboarding.md`, `docs/reference-screen.html` — listed
+  `docs/integrations.md`, `docs/agent-onboarding.md`, `docs/reference-screen.html`, listed
   **file-by-file, not as `"docs"`**, so the internal planning docs under `docs/superpowers/` stay out
   of the tarball. (`files` does not honour `.gitignore`; whitelisting a directory ships whatever sits
-  inside it — the v1.16.0 `bin/obj` lesson.) Tarball 263.6 kB → 297.9 kB, 177 → 182 files.
+  inside it, the v1.16.0 `bin/obj` lesson.) Tarball 263.6 kB → 297.9 kB, 177 → 182 files.
   The `examples/` apps are deliberately **not** shipped (127 MB of `node_modules` + 208 MB of .NET
   `bin/obj` live under them); the repo link in `docs/agent-onboarding.md` covers that need.
 ### Notes
 - Documenting the surface surfaced one inconsistency, recorded rather than patched (this release
-  touches no CSS): **`.fdy-pagination` has no CSS rule** — the block class on the `<nav>` is a naming
+  touches no CSS): **`.fdy-pagination` has no CSS rule.** The block class on the `<nav>` is a naming
   hook only, its `__list`/`__link`/`__ellipsis` elements carry all the styling, and the data table
   targets `data-fdy-table-pagination`. `COMPONENTS.md` says so, and the drift guard lists it as a
   known structural hook.
 
 ## [1.18.0] - 2026-08-11
 ### Fixed
-- **`FdyModal` / `FdyDrawer` (Vue) were non-dismissible when `dismissible` was omitted — an
+- **`FdyModal` / `FdyDrawer` (Vue) were non-dismissible when `dismissible` was omitted, an
   accessibility defect.** Vue's boolean-cast delivers an omitted Boolean prop as `false`, not
   `undefined`, so the defensive `props.dismissible !== false` evaluated to `false`: no Escape, no
-  backdrop close, and (modal) no close button rendered — the opposite of the documented
+  backdrop close, and (modal) no close button rendered, the opposite of the documented
   `dismissible: true` default. Both now use `withDefaults(…, { dismissible: true })`. React was
   unaffected (it leaves omitted props `undefined`); `FdyCombo`/`FdyDatepicker` use `=== true`, which
   is correct for an intended-`false` default.
-- **`.fdy-card--interactive` hover transform now respects reduced motion** — the `-3px` lift is dropped
+- **`.fdy-card--interactive` hover transform now respects reduced motion.** The `-3px` lift is dropped
   under `prefers-reduced-motion` (the shadow still signals the affordance).
 ### Added
 - **Page-composition primitives + type roles (`src/components/composition.css`).** `.fdy-page`,
@@ -1614,21 +1614,21 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   deliberately *not* a card, so a metric strip doesn't become an identical-card grid), and three title
   roles `.fdy-title-page` / `-section` / `-card` (+ `.fdy-eyebrow`, `.fdy-text-muted`/`-caption`). They
   encode *how a page is assembled* so independently-built screens cohere.
-- **`USAGE.md` — the usage doctrine.** Which token/role/shadow to use when: type roles, spacing rhythm,
+- **`USAGE.md`, the usage doctrine.** Which token/role/shadow to use when: type roles, spacing rhythm,
   elevation, one-primary-per-screen, semantic-vs-categorical colour, density, and the shell-down
   composition order. The line where a component library becomes a design system.
 - **General categorical palette `--tone-1`…`--tone-8`** (a chart-neutral alias of the validated,
-  theme-aware `--chart-1`…`8`) + **`.fdy-chip--tone-N`** to match `.fdy-avatar--tone-N` — non-semantic
+  theme-aware `--chart-1`…`8`) + **`.fdy-chip--tone-N`** to match `.fdy-avatar--tone-N`, for non-semantic
   category colours (chips, tags, legends), WCAG AA in light & dark (gated).
-- **`FdyTable` surfaces its processed rows** — a `process` event (Vue) / `onProcess` callback (React),
-  `{ rows, total }`, in **both** client and server modes — so the same filtered/sorted/paged set can
+- **`FdyTable` surfaces its processed rows** through a `process` event (Vue) / `onProcess` callback (React),
+  `{ rows, total }`, in **both** client and server modes, so the same filtered/sorted/paged set can
   drive a responsive card list, a selection summary, or CSV export without re-deriving the pipeline.
 - **`./table-model` export.** The pure `filterRows`/`sortRows`/`paginate`/`cellValue`/… functions
   (`adapters/core/table-model.js`) are now reachable as `@cahyo-dimas/freeday/table-model`, so a consumer
   can pre-compute exactly what `FdyTable` does instead of re-deriving it and risking drift.
 ### Changed
 - **`data-density="compact"` now steps the mid-range spacing scale** (`--space-3`…`--space-6`) as well as
-  `--control-h`, so Freeday components — and a utility theme built on `var(--space-N)` — actually densify;
+  `--control-h`, so Freeday components, and a utility theme built on `var(--space-N)`, actually densify;
   previously it changed only control height.
 - **Docs:** getting-started leads with the `.fdy-app` shell + a loud "load the fonts yourself" step (the
   package names Sora / IBM Plex Sans / JetBrains Mono but bundles none); README links `USAGE.md`.
@@ -1640,21 +1640,21 @@ consumption feedback (three instalments).
 ## [1.17.0] - 2026-08-11
 ### Added
 - **Avatar identity tones (`--tone-1`…`--tone-8`).** Decorative tints (from the categorical chart
-  palette) with a theme-aware, text-leaning foreground, so same-initial avatars — common where many
-  names share a prefix — stay distinguishable. Verified WCAG **AA** (≥4.5:1) in light **and** dark,
+  palette) with a theme-aware, text-leaning foreground, so same-initial avatars, common where many
+  names share a prefix, stay distinguishable. Verified WCAG **AA** (≥4.5:1) in light **and** dark,
   guarded by `test/contrast.test.mjs` (which gained a `color-mix()` evaluator). Hash a stable index
   off the full name, not the initials.
 - **Size-matched skeletons (`.fdy-skeleton--avatar` + `--avatar-sm`/`--avatar-lg`).** Reserve the exact
   `.fdy-avatar` box (2 / 2.5 / 3.5rem) so data landing causes no layout shift (a bare `--circle` has no
   dimensions of its own).
-- **`.fdy-card--button`.** When the whole card *is* the control — a real `<button>` picker row, so it is
-  keyboard-reachable and announced — this resets the UA button box **without** stripping the card's own
+- **`.fdy-card--button`.** When the whole card *is* the control, a real `<button>` picker row that is
+  keyboard-reachable and announced, this resets the UA button box **without** stripping the card's own
   surface/border.
 - **`.fdy-list-reset`.** Opt-in list reset for consumers who pair Freeday with a utility framework run
-  preflight-off (`base.css` is intentionally a *light* reset — it does not strip `ul`/`ol`/`p` margins).
+  preflight-off (`base.css` is intentionally a *light* reset that does not strip `ul`/`ol`/`p` margins).
 - **Toast `key` + `Freeday.dismiss()`.** `toast({ …, key })` replaces an existing same-key toast in
   place instead of stacking a duplicate (a burst of identical failures shows one, refreshed);
-  `Freeday.dismiss(node | key)` closes one early. `toast()` already returned the element — both are now
+  `Freeday.dismiss(node | key)` closes one early. `toast()` already returned the element, and both are now
   in the `window.Freeday` type declarations.
 ### Docs
 - State the scope boundary (components + tokens, **not** layout; pair with a utility framework run
@@ -1668,7 +1668,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
 
 ## [1.16.0] - 2026-08-11
 ### Added
-- **Native Blazor component library (`adapters/blazor/`) — first release, 10/10 parity.** A Razor
+- **Native Blazor component library (`adapters/blazor/`), first release, 10/10 parity.** A Razor
   Class Library (`Freeday.Blazor`, net8.0) so Blazor consumers get typed `<FdyX>` components with
   `@bind`, instead of hand-writing `fdy-*` markup + JS interop. Ten components at parity with the
   Vue/React adapters: `FdyModal`, `FdyDrawer`, `FdyCombo<TValue>`, `FdyDatepicker`, `FdyAutocomplete`,
@@ -1679,10 +1679,10 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   go through interop). Shared CRTP base `FreedayComponentBase<TSelf>` types the `DotNetObjectReference`
   so `[JSInvokable]` dispatch resolves. Consumed via `<ProjectReference>`; the host loads
   `dist/freeday.js` + `adapters/blazor/freeday-blazor.js` as `<script>`s.
-- **`FdyTable<TRow>`** is a full controlled data table — client mode (sort + four column-filter types
+- **`FdyTable<TRow>`** is a full controlled data table: client mode (sort + four column-filter types
   + pagination over `Rows`) and server mode (set `Page` → the headers/filters/pager only raise
   `SortChanged`/`FiltersChanged`/`PageChanged` intent), plus row activation, expandable detail rows,
-  cell templates, and loading/empty states. Its sort/filter/paginate logic is `TableModel` — a pure
+  cell templates, and loading/empty states. Its sort/filter/paginate logic is `TableModel`, a pure
   C# port of `adapters/core/table-model.js`.
 - **`freeday-blazor.js` bridge**: `chartUpdate` (repaint a chart from its data-* attributes) and a
   generic `onOutside` light-dismiss primitive (outside-pointer / Esc).
@@ -1692,26 +1692,26 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
 ## [1.15.0] - 2026-08-10
 ### Added
 - **Type declarations for every export (#40).** Only `./vue` and `./react` shipped a `types`
-  condition; the other eight exports had none. A TypeScript consumer's two side-effect imports —
-  `import '@cahyo-dimas/freeday/css'` and `import '@cahyo-dimas/freeday'` — plus `./enhancers/*` and
+  condition; the other eight exports had none. A TypeScript consumer's two side-effect imports,
+  `import '@cahyo-dimas/freeday/css'` and `import '@cahyo-dimas/freeday'`, plus `./enhancers/*` and
   `./breakpoints` therefore failed to resolve (TS 5 leaves them untyped / `implicitly any`; TS 6 makes
   it a hard `noUncheckedSideEffectImports` error), and `window.Freeday` was reconstructed by hand in
   every consumer. Now every export names a `types` condition: `dist/asset.d.ts` (a one-line stub for the
   side-effect-only CSS/enhancer imports), `tokens/breakpoints.d.ts` (the breakpoint scale), and
-  `dist/freeday.d.ts` — which declares the `window.Freeday` global from the source: `toast(opts?)` with
+  `dist/freeday.d.ts`, which declares the `window.Freeday` global from the source: `toast(opts?)` with
   all-optional `variant` / `title` / `message` / `timeout`, returning the toast `HTMLElement` (looser and
   more correct than the guesses consumers had been copying). `files` now also ships
   `tokens/breakpoints.d.ts`. Runtime unchanged; purely additive.
 
 ## [1.14.0] - 2026-08-01
 ### Added
-- **Read-only state across the form controls (#39).** `input` / `textarea` gain a `[readonly]` rule —
+- **Read-only state across the form controls (#39).** `input` / `textarea` gain a `[readonly]` rule,
   full-contrast text on a muted surface with a softened border and no focus-ring escalation, distinct
   from `:disabled` (which dims the value to placeholder-grey and drops it from tab order). A new
-  `readonly` prop lands on all six controlled select-type adapters — `FdyCombo`, `FdyCascade`,
+  `readonly` prop lands on all six controlled select-type adapters: `FdyCombo`, `FdyCascade`,
   `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCfl` (Vue + React): the control stays focusable
   and shows its value with `aria-readonly="true"` but can't be opened or changed (`FdyDatepicker`'s clear
-  button is suppressed too). Read-only ≠ disabled — it keeps tab order, full contrast, and stays
+  button is suppressed too). Read-only ≠ disabled: it keeps tab order, full contrast, and stays
   selectable / copyable / submittable, so a real value the user may not edit reads as data, not an empty
   placeholder. Verified in-browser (readonly `opacity:1` vs disabled `0.5`; text at full `--color-text`).
 - **Interaction-state coverage completed.** Added the missing `disabled` state to `timepicker`, `rating`
@@ -1719,28 +1719,28 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   (`[aria-disabled]` / `.is-disabled`), and `datepicker`; and the missing `invalid` state to `rating`
   (`.fdy-rating--error`). The vanilla datetime composer now reflects `data-fdy-disabled` /
   `data-fdy-invalid` from its wrapper onto **both** child pickers so a datetime reads as one control
-  (applied on a macrotask, so it lands after both child triggers are built — a microtask would run
+  (applied on a macrotask, so it lands after both child triggers are built; a microtask would run
   before the later-registered timepicker enhancer). All additive; no breaking changes.
 
 ## [1.13.1] - 2026-08-01
 ### Fixed
-- **`FdyCombo` can be selected with the mouse again (#38).** Clicking an option did nothing — the
+- **`FdyCombo` can be selected with the mouse again (#38).** Clicking an option did nothing. The
   listbox closed and no `update:modelValue` fired (keyboard select still worked, which is why a
   keyboard-only smoke test missed it). The option `<li>` isn't focusable, so a `mousedown` moved focus
-  off the combobox button; the root's `focusout` handler then closed the list — removing the `<li>` —
+  off the combobox button; the root's `focusout` handler then closed the list, removing the `<li>`,
   *before* `mouseup`, so the browser never generated a `click` and `choose()` was never reached. Added
   `@mousedown.prevent` (Vue) / `onMouseDown` `preventDefault` (React) on the option so focus stays on the
-  button and the click lands — the same pattern the sibling `FdyDatepicker` / `FdyAutocomplete` (and the
+  button and the click lands, the same pattern the sibling `FdyDatepicker` / `FdyAutocomplete` (and the
   vanilla `freeday-select.js`, fixed in v1.6.1) already use. Both adapters; no API change; keyboard and
   hover paths untouched. Verified with trusted CDP mouse events (a synthetic `dispatchEvent` won't
-  reproduce it — untrusted events run no default action, so focus never moves).
+  reproduce it, since untrusted events run no default action and focus never moves).
 
 ## [1.13.0] - 2026-07-30
 ### Added
-- **`FdyDatepicker` clear affordance — an optional date can now be unset (#37A).** A new `clearable`
+- **`FdyDatepicker` clear affordance: an optional date can now be unset (#37A).** A new `clearable`
   prop renders a small × button in the trigger (overlaid in the calendar-icon slot) whenever a date is
   set, emitting `''` (`update:modelValue` + `change` in Vue, `onChange('')` in React) to return to
-  empty — closing a functional regression vs the native `<input type="date">`, which offered a clear
+  empty, closing a functional regression against the native `<input type="date">`, which offered a clear
   control. Off by default; both adapters. Verified in-browser: the × is right-aligned in the icon slot,
   vertically centred, hides the calendar icon while shown, and never overlaps the value text (even a
   long, ellipsised one).
@@ -1752,35 +1752,35 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
 - **`FdyDatepicker` default UI strings are now English** (`Select date` placeholder, `Previous month` /
   `Next month` nav labels) instead of Indonesian, matching the kit's English-first public docs. Pass
   `placeholder` / `prevMonthLabel` / `nextMonthLabel` for other languages. Scope is the Vue + React
-  `FdyDatepicker` adapters only — the vanilla `freeday-datepicker.js` enhancer (used by the Indonesian
+  `FdyDatepicker` adapters only; the vanilla `freeday-datepicker.js` enhancer (used by the Indonesian
   docs demos) keeps its Indonesian defaults.
 
 ## [1.12.0] - 2026-07-29
 ### Added
 - **Chart colour overrides can now name a categorical palette slot (#36).** `data-fdy-colors` (and the
   `<FdyChart colors>` prop) previously resolved every name through the semantic tier
-  (`var(--color-<name>)`), so an override could only reach `primary`/`info`/`accent`/… — never the
+  (`var(--color-<name>)`), so an override could only reach `primary`/`info`/`accent`/…, never the
   validated categorical palette `--chart-1..8`. An app that needs stable *per-category* colours (rather
   than per-array-index) had to override, and overriding then dropped each series onto the nearest
-  semantic hue — e.g. a three-way split landing on three neighbouring blues: contrast-passing but
+  semantic hue: a three-way split landing on three neighbouring blues, say, contrast-passing but
   unreadable as a comparison. `colorVar` now maps a name of the form `chart-1`..`chart-8` to
   `var(--chart-N)`, so an override can pin a series to the validated palette
-  (`colors={['chart-1','chart-2','chart-3']}`). Backward compatible — no semantic token name starts
+  (`colors={['chart-1','chart-2','chart-3']}`). Backward compatible, since no semantic token name starts
   with `chart-`, so semantic overrides are unchanged; the single-series `data-fdy-color` / `color`
   accepts the `chart-N` form too. Verified in-browser: explicit `chart-1..3` now render the exact
   fixed-order palette (blue/orange/green) and equal the default, while `success,warning,danger` still
   resolve to their semantic tokens. (`--chart-1..8` are public tokens in `dist/freeday.tokens.css`, so
-  matching swatches/bars elsewhere can reference `var(--chart-N)` directly — no adapter export needed.)
+  matching swatches/bars elsewhere can reference `var(--chart-N)` directly, with no adapter export needed.)
 
 ## [1.11.2] - 2026-07-28
 ### Fixed
 - **A filter bar docked in a table toolbar no longer loses its alignment (#35).** `.fdy-filterbar`
   (`align-items:flex-end`, for labelled fields) and `.fdy-table-toolbar` (`align-items:center`, for
   bare buttons) are both single-class rules of equal specificity, so composing them on one element
-  (`<div class="fdy-table-toolbar fdy-filterbar">`) let whichever came later in the bundle win — the
-  toolbar — centring every control and floating the trailing actions ~13px above the inputs beside
+  (`<div class="fdy-table-toolbar fdy-filterbar">`) let whichever came later in the bundle win, and the
+  toolbar won, centring every control and floating the trailing actions ~13px above the inputs beside
   them. Added a `.fdy-table-toolbar.fdy-filterbar` rule (specificity 0,2,0) that settles it toward the
-  filterbar's `flex-end`. Additive — only affects elements carrying both classes; standalone toolbars
+  filterbar's `flex-end`. Additive, so it only affects elements carrying both classes; standalone toolbars
   and filterbars are untouched. Verified in-browser: the composed bar's controls now share one
   baseline (computed `align-items: flex-end`).
 
@@ -1789,12 +1789,12 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
 - **Tall modals now scroll their body instead of clipping the footer (#34).** `.fdy-modal` had a
   `max-height` + `overflow:hidden` but never established a flex context, so its three children laid out
   as blocks: the body's height was its own content height (nothing for `overflow:auto` to scroll), and
-  the dialog's cap clipped whatever stuck out — including `.fdy-modal__footer` and its submit button, on
+  the dialog's cap clipped whatever stuck out, including `.fdy-modal__footer` and its submit button, on
   a short viewport (a form you could fill but not save). Gave the modal the column-flex treatment the
   sibling `.fdy-drawer` already uses: `display:flex` on `.fdy-modal[open]`, `flex-direction:column` on
   the base, `flex:none` on header/footer, and `flex:1;min-height:0` on the body. Modals that already fit
   are unchanged. Verified in-browser (body scrolls, footer stays inside) including the `.fdy-modal--cfl`
-  picker — no regression.
+  picker, so no regression.
 
 ## [1.11.0] - 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). Additive / corrective.
@@ -1802,22 +1802,22 @@ Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). A
 ### Fixed
 - **Badges no longer wrap and break the pill (#31).** `.fdy-badge` had `line-height:1` but no
   `white-space`, so a two-word label (e.g. "Needs review") wrapped and collided with the pill padding,
-  turning the capsule into a cramped lozenge. Added `white-space:nowrap` — matching the sibling
+  turning the capsule into a cramped lozenge. Added `white-space:nowrap`, matching the sibling
   `.fdy-badge-ov`, which already had it. A too-narrow badge now overflows its column (which
   `.fdy-table-scroll` already handles) instead of wrapping.
 - **Donut chart honours `legend="none"` (#33).** `freeday-chart.js` read `data-fdy-legend` only in the
   cartesian renderer; the donut appended its legend unconditionally, so `<FdyChart type="donut"
   legend="none">` still printed the built-in legend even when the caller supplied its own. Gated the
-  donut legend on the same attribute (`auto` still shows it — a donut is unreadable without labels).
+  donut legend on the same attribute (`auto` still shows it, since a donut is unreadable without labels).
 
 ### Added
 - **`.fdy-filterbar--actions-inline` modifier (#32).** Opt-in: sits the trailing actions inline after
   the last field instead of at the far edge, so a wrapped bar reads as attached to its filters. Also
   **documented** the filterbar's wrap behaviour: a wrapped bar breaks flex lines on each item's
-  *flex-basis* (the grow field's `flex:1 1 16rem` reserves 16rem), not its rendered width — so the
+  *flex-basis* (the grow field's `flex:1 1 16rem` reserves 16rem), not its rendered width, so the
   grow basis decides the wrap point; to avoid stranded actions, tune the `--w-grow` basis or drop a
   field. (The note's margin-swap proposal to un-strand the actions was **tested in-browser and does not
-  work** — margins don't change flex line-breaking — so only the modifier + docs were taken.)
+  work**, because margins don't change flex line-breaking, so only the modifier + docs were taken.)
 
 ## [1.10.0] - 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #27–#30). Additive / corrective;
