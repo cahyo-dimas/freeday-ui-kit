@@ -3,6 +3,48 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [1.54.0] — 2026-08-25
+### Added
+- **`<FdyAppShell>` — the shell becomes the eleventh typed component**, in Vue, React and Blazor
+  (`NEXT-UP.md` #8, stage 2). One model: `navOpen` means *the nav is visible to the reader*, and the
+  kit owns the mapping — above the nav breakpoint a hidden nav is `--nav-collapsed`, below it a
+  visible nav is `--nav-open`. An app never reasons about the viewport to answer a question about
+  its own UI. Vue `v-model:navOpen` · React `navOpen`/`onNavOpenChange` · Blazor `@bind-NavOpen`.
+- **The prop is optional in all three, and that is the design.** Unbound, the shell starts from the
+  viewport: a column on a wide screen, hidden on a narrow one. A caller cannot express that as a
+  single initial value before it knows the viewport, so `undefined` (Vue/React) and `null` (Blazor)
+  mean "you decide". Bound, the caller wins and is pushed down on mount.
+- **`adapters/core/app-shell.js`** (+ `.d.ts`) — the Tab trap, `inert` bookkeeping and focus restore
+  shared by the Vue and React wrappers, following `adapters/core/table-model.js`. `NAV_QUERY` is
+  built from `tokens/breakpoints.mjs` rather than repeating `721`, so the JS and `app-shell.css`
+  cannot drift. Blazor does not use it: `freeday-blazor.js` says the enhancers stay the source of
+  truth, so the Blazor shell renders `data-fdy-app` and BINDS to `freeday-app-shell.js`. Two
+  implementations, not four, and a guard holds them to one contract.
+- **`fdy-app-nav`** — the enhancer now emits a bubbling CustomEvent (`detail {visible}`) on every
+  real change, and takes `FreedayAppShell.setVisible(root, visible)` / `isVisible(root)` from
+  outside. That is what the Blazor binding rides on, and what any vanilla app persisting a collapsed
+  preference needed. The event fires for viewport-driven changes too — narrowing hides a nav that
+  was a visible column, and a bound value that stayed `true` would describe a panel nobody can see.
+  Setting what is already set announces nothing, so a bound host cannot loop on its own echo.
+### Docs
+- `COMPONENTS.md` §App shell carries the typed-wrapper line and the `navOpen` contract; `USAGE.md`
+  now tells you to take the behaviour, not just the frame. The parity claim moves from 10/10 to
+  11/11 in `README.md`, `README.id.md`, `CLAUDE.md`, `docs/agent-onboarding.md` and `NEXT-UP.md`.
+- `NEXT-UP.md` #8 is struck through rather than deleted, and its number kept: the CHANGELOG, the
+  design spec and two guard headers already say "NEXT-UP #8", so renumbering the rows under it would
+  quietly break references that are already written down.
+### Added — guards
+- `browser/adapter.mjs` runs one description of the shell contract against BOTH typed stacks —
+  viewport default, focus into the panel, the Tab cycle, Escape returning focus, `inert`, and a nav
+  link closing the overlay. Verified by sabotage: with `applyShellState` and the focus calls stubbed
+  out, React fails three of three and Vue two of three, the third being the sidebar click path the
+  sabotage did not touch.
+- `browser/app-shell.mjs` gains the host-binding pair (`fdy-app-nav` ordering, `setVisible` doing the
+  whole job and staying silent on a no-op) and the path only Blazor takes: a shell that does not
+  exist at `DOMContentLoaded`, hydrated afterwards by handing `initAll` the component's own root —
+  which is the element itself, not a descendant of it.
+- `dotnet build` on the Blazor RCL is clean (0 warnings, 0 errors).
+
 ## [1.53.0] — 2026-08-24
 ### Added
 - **`freeday-app-shell.js` — the shell finally ships its own behaviour** (`NEXT-UP.md` #8, reported

@@ -46,7 +46,7 @@ upload, tree, tabs, menu, rating, slider, form validation, carousel, timepicker)
 wrapper — use the raw markup and hydrate it:
 
 - **Vue / React** — `useFreeday(rootRef)` from the same import path, plus `import '@cahyo-dimas/freeday'`
-  once at app entry to register the enhancers. (The ten typed components do **not** need this: they
+  once at app entry to register the enhancers. (The eleven typed components do **not** need this: they
   are native Vue/React implementations of the same markup, not wrappers over the enhancer.)
 - **Blazor** — `FreedayBlazor.initAll` interop. (Here the typed components *are* thin wrappers over
   the enhancers, so the enhancer script is always required.)

@@ -64,7 +64,7 @@ reference/                             material input, TAK PERNAH di-ship
 tak dikirim karena byte-identik dengan `dist/*.js` dan tak ada jalur `exports` yang menyentuhnya.
 
 ## Status — **feature-complete**, demand-driven
-Kit ini sudah lewat fase roadmap: 44 komponen + 26 enhancer, paritas 10/10 komponen typed di
+Kit ini sudah lewat fase roadmap: 44 komponen + 26 enhancer, paritas 11/11 komponen typed di
 **4 stack** (vanilla · Vue · React · Blazor), terbit publik di npm. **Sikap default sekarang =
 tunggu demand**, bukan bangun spekulatif — friksi dari app nyata yang menentukan rilis berikutnya.
 Riwayat per-versi: [`CHANGELOG.md`](CHANGELOG.md) · kandidat kerja berikutnya (dengan pemicunya):

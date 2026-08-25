@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.53.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.53.0)
+[![Release](https://img.shields.io/badge/release-v1.54.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.54.0)
 
 UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -178,7 +178,7 @@ const root = useRef<HTMLDivElement>(null);
 useFreeday(root);                     // event fdy-* bubbling → listen di root
 ```
 ```razor
-@* Blazor — RCL Freeday.Blazor (net8.0): komponen native typed <FdyX> dengan @bind, 10/10 parity *@
+@* Blazor — RCL Freeday.Blazor (net8.0): komponen native typed <FdyX> dengan @bind, 11/11 parity *@
 @using Freeday.Blazor
 <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl" />
 <FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)" PageSize="10" />

@@ -5,7 +5,7 @@
 > **More free days for devs — the UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v1.53.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.53.0)
+[![Release](https://img.shields.io/badge/release-v1.54.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v1.54.0)
 
 A token-driven, framework-agnostic UI kit — one source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -177,7 +177,7 @@ const root = useRef<HTMLDivElement>(null);
 useFreeday(root);                     // fdy-* events bubble → listen at the root
 ```
 ```razor
-@* Blazor — Freeday.Blazor RCL (net8.0): native typed <FdyX> with @bind, 10/10 parity *@
+@* Blazor — Freeday.Blazor RCL (net8.0): native typed <FdyX> with @bind, 11/11 parity *@
 @using Freeday.Blazor
 <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl" />
 <FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)" PageSize="10" />

@@ -114,6 +114,8 @@ is a no-op.
 # Shell & composition
 
 ## App shell — `.fdy-app`
+> **Typed wrapper: `<FdyAppShell>`** — Vue (`v-model:navOpen`) · React (`navOpen`/`onNavOpenChange`) · Blazor (`@bind-NavOpen`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
 The frame every application lives in. Do not hand-roll one from flexbox: the responsive sidebar,
 off-canvas drawer and backdrop are built in.
 
@@ -135,8 +137,21 @@ off-canvas drawer and backdrop are built in.
 - **Crossing the breakpoint is part of the contract**: open the overlay, then widen the window, and
   `--nav-open` is dropped and `inert` removed. Leaving them set is how a page becomes permanently
   unreachable.
+- **`navOpen` is one idea, in both modes.** The typed wrappers expose "is the nav visible?" and the
+  kit maps it: above the breakpoint a hidden nav is `--nav-collapsed`, below it a visible nav is
+  `--nav-open`. Leave the prop unbound (`undefined` in Vue/React, `null` in Blazor) and the shell
+  starts from the viewport — a column on a wide screen, hidden on a narrow one. That default is why
+  the prop is optional: a caller cannot express it as a single initial value before it knows the
+  viewport.
+- **Binding your own state to the vanilla shell:** it emits a bubbling `fdy-app-nav` CustomEvent
+  (`detail {visible}`) on every real change — including the ones a viewport change causes, since a
+  bound value that stayed `true` while the nav went off-canvas would be describing a panel nobody
+  can see. Drive it with `FreedayAppShell.setVisible(root, visible)` rather than the class names;
+  setting what is already set announces nothing, so a bound host cannot loop on its own echo.
+  `FreedayAppShell.isVisible(root)` reads it back.
 - Skip the enhancer and nothing breaks: the classes still mean what they always meant and the
-  behaviour is yours to write. `FreedayAppShell.init(root)` for markup mounted later.
+  behaviour is yours to write. `FreedayAppShell.init(root)` for markup mounted later — hand it the
+  shell root itself, which is what the Blazor bridge does after its first render.
 
 **The nesting is fixed, not free-form:** `.fdy-app` is a flex **row** of `[__sidebar | __content]`,
 and `__content` is the column holding `__topbar` + `__main` — it exists to give the sticky topbar a

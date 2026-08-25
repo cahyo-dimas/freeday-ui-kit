@@ -162,8 +162,12 @@ buttons with exactly one `aria-pressed="true"` **is** the segmented control; don
 
 1. **Shell:** every application starts inside **`.fdy-app`** — a flex row of `__sidebar` (with
    `__brand` + `.fdy-nav`) and `__content` (which holds `__topbar` + `__main`, plus `__navtoggle`
-   and `__backdrop`). The nesting is fixed; don't hand-roll a shell from flexbox — the toggle and
-   backdrop plumbing are already there. Skeleton: `COMPONENTS.md` §App shell; a working screen:
+   and `__backdrop`). The nesting is fixed; don't hand-roll a shell from flexbox. **Take the
+   behaviour too** — `<FdyAppShell>` in Vue/React/Blazor, or `data-fdy-app` plus
+   `freeday-app-shell.js` in plain markup. Until 1.53.0 the kit shipped the classes and left every
+   consumer to write the toggle, Escape, focus trap, focus restore and `inert` themselves, and the
+   two copies in this repo's own docs had already drifted apart; a nav panel you cannot escape from
+   with the keyboard is the usual result. Skeleton: `COMPONENTS.md` §App shell; a working screen:
    `docs/reference-screen.html`.
 2. **Page:** wrap the screen body in **`.fdy-page`** (vertical section rhythm), opening with a
    **`.fdy-page__header`** (eyebrow + `.fdy-title-page` + `.fdy-page__desc` on the left, the one
