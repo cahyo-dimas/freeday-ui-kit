@@ -15,30 +15,31 @@ live docs.
 1. **Prefix is `fdy-`, pattern is compact BEM**: block `fdy-card`, element `fdy-card__title`,
    modifier `fdy-card--elevated`. A modifier is **always** written alongside its block class:
    `class="fdy-btn fdy-btn--ghost"`, never `fdy-btn--ghost` alone.
-   **One documented exception:** `.fdy-input-group__addon--icon` is **standalone** — it is a
+   **One documented exception:** `.fdy-input-group__addon--icon` is **standalone**. It is a
    borderless leading glyph, and adding the base `.fdy-input-group__addon` would give it the grey
    fill and divider of a `Rp` / `%` prefix, which is not what a search icon is. Written
    `class="fdy-input-group__addon--icon"`, alone. It is the only one; everywhere else the rule holds.
 2. **Never invent a class.** If it is not in this file, it does not exist. Freeday has no
    `fdy-grid`, no `fdy-flex`, no `fdy-mt-4`, no `fdy-primary`.
-3. **Never write a raw hex or px value** in app CSS. Use the tokens — `var(--color-primary)`,
+3. **Never write a raw hex or px value** in app CSS. Use the tokens: `var(--color-primary)`,
    `var(--space-4)`, `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`. Spacing is a 4px scale
    (`--space-0`…`--space-24`); a loose value breaks density switching.
 4. **Freeday owns components + tokens, not layout.** The only layout it ships is the shell
    (`.fdy-app`), the composition primitives below, and `.fdy-hidden`/`.fdy-visually-hidden`.
    Grids, stacks and one-off gaps come from your own layout layer (a utility framework run
    **utilities-only, preflight off**, with its theme defined in terms of `var(--space-N)`).
-5. **`aria-invalid="true"` is the canonical error state** on form controls — it drives the visual
+5. **`aria-invalid="true"` is the canonical error state** on form controls. It drives the visual
    state *and* the screen-reader state. Pair it with `aria-describedby` → the `id` of a
    `.fdy-help.fdy-help--error`. The `--error` class modifiers exist only for the case where the
    invalid state does not belong to the control itself.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
-7. **On Vue, React or Blazor, ten components have a typed wrapper — use it.** `FdyCombo` ·
+7. **On Vue, React or Blazor, eleven components have a typed wrapper. Use it.** `FdyCombo` ·
    `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` ·
    `FdyTable` · `FdyModal` · `FdyDrawer`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
    `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
-   those stacks *looks* right — the enhancer initialises once and the first render is correct — then
+   those stacks *looks* right at first, because the enhancer initialises once and the first render is
+    correct. Then
    breaks quietly: later-rendered DOM is never hydrated and the widget's state sits in the DOM
    instead of your framework's. Everything else is the same markup everywhere; hydrate the other
    interactive components with `useFreeday` (Vue/React) or `FreedayBlazor.initAll` (Blazor).
@@ -47,11 +48,11 @@ live docs.
 
 `.fdy-visually-hidden` is `position:absolute`, and `clip` hides **painting**, not **layout**. An
 absolutely positioned box resolves against its nearest *positioned* ancestor, and `overflow` clips
-only what is contained that way — so in an unpositioned scroller, a hidden label parks at its static
+only what is contained that way, so in an unpositioned scroller, a hidden label parks at its static
 position (possibly thousands of px to the right) and drags the **whole document** sideways. It is
 invisible in the DOM and immune to `overflow-x: hidden` on every wrapper.
 
-Every kit container that clips or scrolls therefore declares `position: relative` —
+Every kit container that clips or scrolls therefore declares `position: relative`:
 `.fdy-table-scroll`, `.fdy-table-wrap`, `.fdy-list`, `.fdy-card`, `.fdy-tabs__list`,
 `.fdy-carousel__viewport`, `.fdy-accordion` (the rest are already inside a positioned ancestor).
 Two consequences for you:
@@ -66,7 +67,7 @@ Two consequences for you:
 
 Every enhancer is zero-dependency, auto-initialises once on `DOMContentLoaded`, and is idempotent:
 re-hydrate SPA-rendered DOM with `window.Freeday<X>.initAll(root)`. **`root` may be the widget
-itself or an ancestor of it** — both work, so a framework ref placed directly on the enhanced
+itself or an ancestor of it**. Both work, so a framework ref placed directly on the enhanced
 element is fine. Events are bubbling
 `CustomEvent`s; the payload is in `event.detail`.
 
@@ -114,7 +115,7 @@ is a no-op.
 # Shell & composition
 
 ## App shell — `.fdy-app`
-> **Typed wrapper: `<FdyAppShell>`** — Vue (`v-model:navOpen`) · React (`navOpen`/`onNavOpenChange`) · Blazor (`@bind-NavOpen`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyAppShell>`**. Vue (`v-model:navOpen`) · React (`navOpen`/`onNavOpenChange`) · Blazor (`@bind-NavOpen`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 The frame every application lives in. Do not hand-roll one from flexbox: the responsive sidebar,
 off-canvas drawer and backdrop are built in.
@@ -123,14 +124,14 @@ off-canvas drawer and backdrop are built in.
   `__content` `__topbar` `__navtoggle` `__title` `__main` `__backdrop`
 - Modifiers: `--nav-open` (mobile drawer open, ≤720px) · `--nav-collapsed` (collapse to zero width,
   ≥721px) · `--static` (embed the shell in a page instead of filling the viewport)
-- Also: `.fdy-skip` — the skip-to-content link, first child of the shell.
-- **Behaviour: `freeday-app-shell.js`.** Opt in with `data-fdy-app` on the root — the markup below
+- Also: `.fdy-skip`, the skip-to-content link, first child of the shell.
+- **Behaviour: `freeday-app-shell.js`.** Opt in with `data-fdy-app` on the root. The markup below
   is unchanged. It owns the toggle in both modes plus everything an overlay needs that hand-rolling
   reliably forgets: Escape, backdrop click, closing when a `.fdy-nav__item` is followed, focus moved
   into the panel on open and returned to `__navtoggle` on close, `inert` on `__content` while the
   overlay is up, and a Tab trap inside the panel. `aria-expanded` on `__navtoggle` answers "is the
   nav showing?" in both modes, so you never read the state classes yourself.
-- **A hidden nav is not a tabbable nav.** `__sidebar` is `inert` whenever the nav is not visible —
+- **A hidden nav is not a tabbable nav.** `__sidebar` is `inert` whenever the nav is not visible:
   collapsed at ≥721px (`width:0`) or off-canvas at ≤720px (`translateX(-100%)`). Both hide it from
   the eye; neither hides it from the keyboard, so without this a nav nobody can see still swallows
   Tab on the way to the page.
@@ -140,21 +141,21 @@ off-canvas drawer and backdrop are built in.
 - **`navOpen` is one idea, in both modes.** The typed wrappers expose "is the nav visible?" and the
   kit maps it: above the breakpoint a hidden nav is `--nav-collapsed`, below it a visible nav is
   `--nav-open`. Leave the prop unbound (`undefined` in Vue/React, `null` in Blazor) and the shell
-  starts from the viewport — a column on a wide screen, hidden on a narrow one. That default is why
+  starts from the viewport: a column on a wide screen, hidden on a narrow one. That default is why
   the prop is optional: a caller cannot express it as a single initial value before it knows the
   viewport.
 - **Binding your own state to the vanilla shell:** it emits a bubbling `fdy-app-nav` CustomEvent
-  (`detail {visible}`) on every real change — including the ones a viewport change causes, since a
+  (`detail {visible}`) on every real change, including the ones a viewport change causes, since a
   bound value that stayed `true` while the nav went off-canvas would be describing a panel nobody
   can see. Drive it with `FreedayAppShell.setVisible(root, visible)` rather than the class names;
   setting what is already set announces nothing, so a bound host cannot loop on its own echo.
   `FreedayAppShell.isVisible(root)` reads it back.
 - Skip the enhancer and nothing breaks: the classes still mean what they always meant and the
-  behaviour is yours to write. `FreedayAppShell.init(root)` for markup mounted later — hand it the
+  behaviour is yours to write. `FreedayAppShell.init(root)` for markup mounted later. Hand it the
   shell root itself, which is what the Blazor bridge does after its first render.
 
 **The nesting is fixed, not free-form:** `.fdy-app` is a flex **row** of `[__sidebar | __content]`,
-and `__content` is the column holding `__topbar` + `__main` — it exists to give the sticky topbar a
+and `__content` is the column holding `__topbar` + `__main`, which exists to give the sticky topbar a
 tall containing block. The brand goes in the **sidebar** (sized to match the topbar height), and
 `__main` already carries the page padding, so don't wrap your screen in another padded box.
 
@@ -187,15 +188,15 @@ tall containing block. The brand goes in the **sidebar** (sized to match the top
 Vertical section rhythm (`--space-8` between children). Assemble every screen from these; they
 carry the doctrine in markup.
 
-- `.fdy-page` — the screen body
-- `.fdy-page__header` — `.fdy-page__heading` (eyebrow + page title + `.fdy-page__desc`) on the
+- `.fdy-page` is the screen body
+- `.fdy-page__header` holds `.fdy-page__heading` (eyebrow + page title + `.fdy-page__desc`) on the
   left, `.fdy-page__actions` (**one** primary button) on the right
-- `.fdy-page-section` — a region: `.fdy-page-section__head` + body, `--space-4` rhythm
-- `.fdy-toolbar` — a horizontal control row; `__spacer` (flex filler), `__search` (capped width).
+- `.fdy-page-section` is a region: `.fdy-page-section__head` + body, `--space-4` rhythm
+- `.fdy-toolbar` is a horizontal control row; `__spacer` (flex filler), `__search` (capped width).
   It is `align-items:center`, so it is for **bare** controls. A `.fdy-field` with a *visible* label
-  sits half a label-height low in it — labelled fields belong in `.fdy-filterbar`
+  sits half a label-height low in it, so labelled fields belong in `.fdy-filterbar`
   (`align-items:flex-end`). In a toolbar, hide the label with `.fdy-visually-hidden`.
-- `.fdy-stats` — a KPI grid of `.fdy-stat` (`__label` `__value` `__meta`). Deliberately **not**
+- `.fdy-stats` is a KPI grid of `.fdy-stat` (`__label` `__value` `__meta`). Deliberately **not**
   cards. `.fdy-stats--boxed` for one shared surface with dividers.
 
 ```html
@@ -230,7 +231,7 @@ carry the doctrine in markup.
 ```
 
 ## Type roles & text
-One role per level of hierarchy — never re-use a card title for a page title.
+One role per level of hierarchy. Never re-use a card title for a page title.
 
 | Class | Element | Use |
 |---|---|---|
@@ -246,11 +247,11 @@ One role per level of hierarchy — never re-use a card title for a page title.
 
 ## Utilities
 `.fdy-hidden` · `.fdy-visually-hidden` (screen-reader-only) · `.fdy-list-reset` (strip native
-bullets/indent from a semantic list — needed when your utility framework's preflight is off) ·
+bullets/indent from a semantic list, needed when your utility framework's preflight is off) ·
 `.fdy-divider` (+`--vertical`) · `.fdy-kbd`.
 
 Responsive display: `.fdy-hide-below-sm|md|lg` · `.fdy-hide-above-sm|md|lg`.
-Breakpoints (min-width): `sm` 600 · `md` 960 · `lg` 1280 · `xl` 1920 — importable as
+Breakpoints (min-width): `sm` 600 · `md` 960 · `lg` 1280 · `xl` 1920, importable as
 `import { breakpoints } from '@cahyo-dimas/freeday/breakpoints'`.
 
 **`breakpoints.nav` (721) is separate and is the one the shell uses.** `.fdy-app` switches the
@@ -258,7 +259,7 @@ sidebar from off-canvas drawer to static column at 721px, *not* at `md`. Any `ma
 utility variant that has to agree with the shell must use `nav`; using `md` leaves 721–959px broken
 (sidebar already static while your script still treats it as an overlay).
 
-Density: `data-density="compact"` works on `<html>` **or any wrapper** — the selector is a bare
+Density: `data-density="compact"` works on `<html>` **or any wrapper**, because the selector is a bare
 `[data-density="compact"]` over inheriting custom properties, so one screen can be dense while the
 rest of the app is not. `data-density="comfortable"` is a real rule too, so the reverse also works:
 a compact root with one region opted back out (shared chrome that must match a sibling product).
@@ -268,13 +269,13 @@ a compact root with one region opted back out (shared chrome that must match a s
 # Actions
 
 ## Button — `.fdy-btn`
-**The base class is already the primary action** — there is no `--primary`. Use it once per screen.
+**The base class is already the primary action.** There is no `--primary`. Use it once per screen.
 
 - Modifiers: `--ghost` `--danger` `--text` `--icon` (square, icon-only) `--sm` `--lg`
 - Parts: `.fdy-btn__icon` (wraps the `<svg>`) · `.fdy-btn-group` (segmented row, `role="group"` +
   `aria-label`)
 - **Toggle / segmented:** `aria-pressed="true"` gives a real pressed state (soft primary fill on
-  `--ghost`/`--text`, an inset-sunk gradient on the solid button). No extra class — `aria-pressed`
+  `--ghost`/`--text`, an inset-sunk gradient on the solid button). No extra class: `aria-pressed`
   is already the right attribute, and it is what turns `.fdy-btn-group` from a joined row into a
   complete segmented control.
 - A11y: `--icon` **requires** `aria-label`. Use `<button type="button">` unless it submits.
@@ -288,7 +289,7 @@ a compact root with one region opted back out (shared chrome that must match a s
 ```
 
 **Quiet destructive:** combine `--danger` with `--ghost` or `--text`. The ground stays quiet and only
-the ink turns red — `.fdy-menu__item--danger` has always worked this way. Use it whenever Delete
+the ink turns red. `.fdy-menu__item--danger` has always worked this way. Use it whenever Delete
 shares a screen with the one primary action; a solid Delete beside Save is a second primary in all
 but name.
 
@@ -330,7 +331,7 @@ native control, otherwise a `<div>` + explicitly associated label.
 - `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
 
 **Grouped controls are a `<fieldset>`, not a new block.** Put `.fdy-field` on the fieldset and
-`.fdy-label` on the legend — the kit already resets the UA border/padding and supplies the spacing:
+`.fdy-label` on the legend. The kit already resets the UA border/padding and supplies the spacing:
 
 ```html
 <fieldset class="fdy-field">
@@ -342,7 +343,7 @@ native control, otherwise a `<div>` + explicitly associated label.
 
 **`.fdy-label--required` marks the label, not the accessibility tree.** The control already carries
 `required`; the asterisk is painted through `::after` with CSS alt text, so a screen reader never
-reads "star" after the label — something a `<span>` you have to remember to mark `aria-hidden`
+reads "star" after the label, which a `<span>` you have to remember to mark `aria-hidden`
 cannot guarantee.
 - `[readonly]` is styled on input/textarea: full contrast, focusable, copyable.
 
@@ -360,8 +361,8 @@ cannot guarantee.
 </label>
 ```
 
-**Which `type` does `.fdy-input` cover?** Every text-like type — `text` `email` `password` `tel`
-`url` `search` `number` — themes identically. Two carry a native widget the kit does *not* override:
+**Which `type` does `.fdy-input` cover?** Every text-like type (`text` `email` `password` `tel`
+`url` `search` `number`) themes identically. Two carry a native widget the kit does *not* override:
 
 | Type | What the UA still draws | What to do |
 |---|---|---|
@@ -386,7 +387,7 @@ Prefix/suffix addons around an input: text (`Rp`, `%`), a decorative icon
 
 ## Number field — `[data-fdy-number]`
 A number input with its increment/decrement affordance back, after `.fdy-input` removed the
-browser's own. **Not a new block** — it is an `.fdy-input-group` with two `__btn`s, so it inherits
+browser's own. **Not a new block.** It is an `.fdy-input-group` with two `__btn`s, so it inherits
 the shared border, focus ring and error promotion. Needs `freeday-number.js`.
 
 ```html
@@ -400,13 +401,13 @@ the shared border, focus ring and error promotion. Needs `freeday-number.js`.
 ```
 
 - **No custom event.** Stepping fires native bubbling `input` + `change` on the input, so `v-model`,
-  `onChange` and `@bind` work with no adapter — the input stays the source of truth.
+  `onChange` and `@bind` work with no adapter, because the input stays the source of truth.
 - `min` / `max` / `step` live on the **input**; the buttons never do the arithmetic themselves
   (`stepUp()`/`stepDown()` clamp for free) and go `disabled` at a bound, on a `disabled`/`readonly`
   field, and when `step="any"` (a stepper cannot express "no defined increment").
 - The buttons are **not tab stops** (`tabindex="-1"`): the input is already focusable and ↑/↓
   already step it, so extra stops would cost every keyboard user and buy nothing. Keep the
-  `aria-label` — pointer and browse-mode users still get a named control.
+  `aria-label`, so pointer and browse-mode users still get a named control.
 - `type="button"` is required. Inside a `<form>`, a bare `<button>` submits it.
 
 ## Checkbox · radio · switch
@@ -419,7 +420,7 @@ Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrap
 ```
 
 ## Select / combobox — `.fdy-combo`
-> **Typed wrapper: `<FdyCombo>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyCombo>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
@@ -444,12 +445,12 @@ Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
 **The selected tick is CSS.** `.fdy-combo__check` is an empty box in the markup; the glyph is painted
 by the stylesheet on `[aria-selected="true"]` with alt text, so it never enters the accessibility
-tree. That keeps an option's accessible name **identical whether or not it is selected** — the state
+tree. That keeps an option's accessible name **identical whether or not it is selected**. The state
 is carried by `aria-selected` alone, announced once, and `getByRole('option', { name: 'August' })`
 keeps matching after selection. Do not put a glyph in that span.
 
 ## Autocomplete — `.fdy-autocomplete`
-> **Typed wrapper: `<FdyAutocomplete>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyAutocomplete>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 
@@ -458,7 +459,7 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
   `aria-controls` → the listbox `id`, `autocomplete="off"`.
 
 ## Cascade select — `.fdy-cascade`
-> **Typed wrapper: `<FdyCascade>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyCascade>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Hierarchical drill-down. The data model is a **nested `<ul>`** inside the wrapper: an `<li>` with a
 child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
@@ -479,7 +480,7 @@ child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
 ```
 
 ## Choose-from-list (CFL) — `data-fdy-cfl`
-> **Typed wrapper: `<FdyCfl>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyCfl>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 A read-only field backed by master data: the button opens a searchable dialog, the picked row fills
 the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
@@ -490,7 +491,7 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 - Inside: `.fdy-cfl__search` `__results` `__row` `__check` `__empty` `__count` `__actions`
 - Hooks: `data-fdy-cfl-search` (the search input), `data-fdy-cfl-empty`, `data-fdy-cfl-count`,
   `data-fdy-cfl-confirm` (multi only), `data-fdy-cfl-trigger`, `data-fdy-cfl-open`
-- Rows are server state — in a real app drive them from a controlled fetch, not a global store.
+- Rows are server state. In a real app, drive them from a controlled fetch rather than a global store.
 - **Multi-select in the typed wrappers** (Vue · React · Blazor): `multiple` ticks rows and commits
   them together on **Confirm** instead of committing the row that was clicked. Vue and React widen
   their model to an array (`Row[] | null`); Blazor takes a second pair, `Values` /
@@ -537,32 +538,32 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 ```
 
 **`clearable` makes the value removable.** Without it a choose-from-list can be set but never unset,
-which breaks every *optional* foreign key — the value type already allows null, only the component
+which breaks every *optional* foreign key. The value type already allows null; only the component
 could not produce it. With it, a clear button appears beside the trigger whenever a row is picked
 and the field is editable; it emits `null` (Vue `update:modelValue`/`change`, React `onChange`,
 Blazor `ValueChanged`) and returns focus to the trigger. It is a second `.fdy-input-group__btn`, not
 a new class.
 
 ## Date picker — `data-fdy-datepicker`
-> **Typed wrapper: `<FdyDatepicker>`** — Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyDatepicker>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author an empty `<div>`**
-— the enhancer builds everything.
+The enhancer builds everything.
 
 - `.fdy-datepicker` (+`--error`) · `__trigger` `__value` (+`--placeholder`) `__icon` `__clear`
   `__panel`; calendar internals `.fdy-cal__head` `__nav` `__title` `__grid` (+`--months` `--years`)
   `__dow` `__day` `__month` `__year`
 - Range: wrap two pickers in `.fdy-daterange` + `data-fdy-daterange` (`role="group"`), children
   get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start.
-  **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor) — use it in those stacks.
+  **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor). Use it in those stacks.
 **Getting to a distant date.** The title is a **button**, and it drills up one level each press:
 day grid → 12-cell month grid (`.fdy-cal__grid--months` of `.fdy-cal__month`) → 12-cell year grid
-(`.fdy-cal__grid--years` of `.fdy-cal__year`). The arrows follow the level shown — months, then
+(`.fdy-cal__grid--years` of `.fdy-cal__year`). The arrows follow the level shown: months, then
 years, then pages of twelve years. Picking a year drops to that year's months, picking a month
 drops to its days: every level above the day grid is **navigation**, so nothing is committed until a
 day is selected. From the year grid the title steps back down to months.
 
-Year pages are **aligned**, not centred on the year in view — 2016–2027, then 2028–2039 — so the
+Year pages are **aligned**, not centred on the year in view (2016–2027, then 2028–2039), so the
 pages tile and a given year always sits in the same place. From August 2026 to March 2022 that is 7
 clicks; walking month by month is 53. To 1998 it is 8; walking is 336.
 
@@ -605,15 +606,15 @@ Click/Enter opens the file dialog; drop works too. Needs `freeday-upload.js`.
 - List: `.fdy-filelist` (+`--grid`) of `.fdy-file` (+`--success`, `--error`) · `__icon` `__meta`
   `__name` `__sub` `__progress` `__remove`
 - Attributes: `data-max-size` (bytes), `data-filelist="#id"`, `data-fdy-upload-simulate` (demo only
-  — the kit fakes a transfer to `done()`; never set it in an app)
+  the kit fakes a transfer to `done()`; never set it in an app)
 - A11y: the dropzone is `role="button" tabindex="0"` + `aria-label`.
 
-**Both events fire on the dropzone** — `fdy-upload-add` *and* `fdy-upload-remove`. One listener, one
+**Both events fire on the dropzone**: `fdy-upload-add` *and* `fdy-upload-remove`. One listener, one
 element. (The file list may be anywhere in the document; nothing is dispatched on the row, because a
 row in a sibling list would never bubble through the zone.)
 
 **The row is yours to drive.** `fdy-upload-add` carries `detail.row`, a small state machine over the
-rendered `.fdy-file`. A dropped file **rests** — it shows its size and nothing else — until you say a
+rendered `.fdy-file`. A dropped file **rests**, showing its size and nothing else, until you say a
 transfer started; the kit never claims one it is not performing.
 
 | `detail.row` | State it renders |
@@ -627,15 +628,15 @@ transfer started; the kit never claims one it is not performing.
 | `.ready()` | back to **rest** (e.g. after a failed attempt the user will retry) |
 | `.el` | the row element |
 
-**If your request outlives the transfer, drive `waiting()`.** Server-side work after the last byte —
-OCR, extraction, virus scanning, transcoding — is not uploading, and `setProgress(100)` left standing
+**If your request outlives the transfer, drive `waiting()`.** Server-side work after the last byte (OCR,
+extraction, virus scanning, transcoding) is not uploading, and `setProgress(100)` left standing
 is read as a hang. `waiting()` is the state for it: the label says what the server is doing, and the
 bar stops claiming a percentage it no longer has.
 
 ```js
 zone.addEventListener('fdy-upload-add', (e) => {
   if (e.detail.rejected) return;              // the kit already rendered the reason
-  const { file, row } = e.detail;             // row is at rest — nothing is in flight yet
+  const { file, row } = e.detail;             // row is at rest; nothing is in flight yet
   submitBtn.onclick = async () => {
     row.uploading();
     await send(file, (pct) => row.setProgress(pct));
@@ -648,7 +649,7 @@ zone.addEventListener('fdy-upload-remove', (e) => forget(e.detail.file));   // s
 ```
 
 **Bring your own row:** omit the file list entirely (no `data-filelist`, and no `.fdy-filelist`
-sibling) and the enhancer renders nothing while still dispatching `fdy-upload-add` — `detail.row`
+sibling) and the enhancer renders nothing while still dispatching `fdy-upload-add`, where `detail.row`
 still works, its element simply isn't attached. Note the fallback when `data-filelist` is absent is
 `parentNode.querySelector('.fdy-filelist')`, so a bare dropzone will adopt a list that happens to
 share its parent; give the dropzone its own container if you mean "no list".
@@ -675,7 +676,7 @@ A consistent filter row of `.fdy-field`s with a width rhythm (`--w-sm` · defaul
 `--w-xl` · `--w-2xl`), one `--w-grow` field (usually search) absorbing the slack, and
 `.fdy-filterbar__actions` pinned at the end. A control with **no label of its own** (a
 `.fdy-check`, `.fdy-switch`, `.fdy-radio`, or a lone `.fdy-btn`) is given `--control-h` so it
-centres on the input line instead of hanging below it — the bar aligns `flex-end` to line up
+centres on the input line instead of hanging below it. The bar aligns `flex-end` to line up
 labelled fields, which would otherwise drop a 20px checkbox below a 32px input's centre.
 `--actions-inline` keeps the actions on the control
 line. Zero JS. Composes with `.fdy-table-toolbar` on a shared baseline.
@@ -705,7 +706,7 @@ Linear multi-step flow: marker → check, one panel at a time, back/next. Needs
 
 **`__btn` is optional.** For a **read-only indicator** put `__marker` + `__label` straight in the
 `<li>`; for a **navigable** stepper wrap them in `<button class="fdy-step__btn">` (add `disabled`
-for a step that is not reachable yet). Both render identically — the marker carries its own lift
+for a step that is not reachable yet). Both render identically; the marker carries its own lift
 over the connector line, so omitting `__btn` cannot make the connector draw through the numbers.
 
 ```html
@@ -732,23 +733,23 @@ Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-tab
 </div>
 ```
 
-**Frozen axes — `.fdy-table--sticky`.** For a grid read against two axes at once (a rate
+**Frozen axes, `.fdy-table--sticky`.** For a grid read against two axes at once (a rate
 matrix, a timetable) or a wide one whose identity columns must stay visible. `.fdy-table--sticky`
 is the enabler: it separates the borders, because a collapsed border belongs to the table rather
 than the cell and scrolls out from under whatever you froze. Then ask for the axes you have:
 
-- **Header row** — add `.fdy-table--sticky-head`, and put `.fdy-table-scroll--frozen` on the
+- **Header row:** add `.fdy-table--sticky-head`, and put `.fdy-table-scroll--frozen` on the
   wrapper (it scrolls both ways and is the scrollport the freeze resolves against; size it with
   `--fdy-table-frozen-h`, default `30rem`). It is a separate modifier because a table that only
   freezes columns scrolls with the **page**, and `top:0` against the page sticks the header under
-  the viewport edge — over the app's own top bar.
-- **Columns** — put `.fdy-table__freeze` on **every cell of the column, header included**, and give
+  the viewport edge, over the app's own top bar.
+- **Columns:** put `.fdy-table__freeze` on **every cell of the column, header included**, and give
   each frozen column its own `--fdy-freeze-left`: `0` for the first, then the summed widths of the
   frozen columns to its left. Mark the last one `.fdy-table__freeze--edge` so the reader can see
   where the frozen block ends. One frozen column needs no variable at all.
 
 The offsets are the caller's job because they depend on rendered column widths, which CSS cannot
-sum — measure them once after render (and on resize) and set the variable.
+sum, so measure them once after render (and on resize) and set the variable.
 
 ```html
 <div class="fdy-table-scroll fdy-table-scroll--frozen" style="--fdy-table-frozen-h:26rem">
@@ -769,7 +770,7 @@ sum — measure them once after render (and on resize) and set the variable.
 ```
 
 ## Data table — `.fdy-datatable`
-> **Typed wrapper: `<FdyTable>`** — controlled: `columns` + `rows`, with sort/filter/page events (`update:pageIndex` · `onPageIndexChange` · `PageIndexChanged`) and `process` for driving a card list off the same processed set. The markup below is the raw enhancer path.
+> **Typed wrapper: `<FdyTable>`**. controlled: `columns` + `rows`, with sort/filter/page events (`update:pageIndex` · `onPageIndexChange` · `PageIndexChanged`) and `process` for driving a card list off the same processed set. The markup below is the raw enhancer path.
 
 The interactive table: global search, sort, per-column filters, row selection + bulk bar,
 pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` + `data-fdy-table`
@@ -788,24 +789,24 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   detail), `.fdy-table__state` (in-table empty/loading row)
 - Footer: `.fdy-table-footer` · `__info` (`data-fdy-table-info`) + optional `__size` (a label and a
   rows-per-page control) + `<nav class="fdy-pagination" data-fdy-table-pagination>`. The typed
-  wrappers render `FdyCombo` there — **never a native `<select>`**, whose open list is an OS menu no
+  wrappers render `FdyCombo` there, **never a native `<select>`**, whose open list is an OS menu no
   stylesheet reaches. In the raw path the control is app-authored markup (its options *are* the
   offer) carrying `data-fdy-table-page-size`; the enhancer only wires it, and listens for both
   `change` and the `fdy-change` a `.fdy-combo` emits, so either kind works.
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
 - **Language: English throughout, on every path.** The vanilla enhancers wrote Indonesian until
-  2.0.0 while the typed wrappers wrote English, which meant an app mixing the two paths — and a
-  Blazor app mixes them by construction, since `FreedayBlazor.initAll` runs the enhancers — read as
-  two products. The defaults are now English everywhere, and the suite enforces it rather than
+  2.0.0 while the typed wrappers wrote English, which meant an app mixing the two paths read as
+  two products. A Blazor app mixes them by construction, since `FreedayBlazor.initAll` runs the
+  enhancers. The defaults are now English everywhere, and the suite enforces it rather than
   stating it.
   **Dates are the exception, and deliberately so:** the datepicker formats through `Intl` using the
   page's `<html lang>`, falling back to `en`. An Indonesian app writes `lang="id"` and gets
-  Indonesian month and weekday names with no configuration at all — a better hatch than anything
+  Indonesian month and weekday names with no configuration at all, which is a better hatch than anything
   the kit could invent, because it is the platform's.
-- **Overriding an enhancer's strings** — this is also the migration path for an Indonesian app
+- **Overriding an enhancer's strings.** This is also the migration path for an Indonesian app
   upgrading past 2.0.0. Each enhancer keeps its strings in one `TEXT` table and
   reads them through `textOf()`, so any of them can be replaced per element with
-  **`data-fdy-text-<key>`**, the key kebab-cased — no forking, and no rendering the nodes yourself.
+  **`data-fdy-text-<key>`**, the key kebab-cased. No forking, and no rendering the nodes yourself.
   (HTML lowercases attribute names, so a camelCase key like `filterText` is written
   `data-fdy-text-filter-text`; the run-together spelling still resolves.):
 
@@ -824,25 +825,25 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   arrives overridable or not at all.
 
 **Testing note:** a column's filter button and the dialog it opens deliberately share one
-accessible name (`Filter <column>`) — a dialog named after its trigger is the normal pattern. In a
+accessible name (`Filter <column>`), since a dialog named after its trigger is the normal pattern. In a
 Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
 reach for `getByRole('button', { name: 'Filter Name' })` instead.
 
 **Rows per page.** Pass `pageSizes` (Vue/React `:page-sizes="[10, 20, 50]"`, Blazor
 `PageSizes="…"`) and the footer grows a rows-per-page control between the range and the pager.
-Omit it for none — unchanged default. Picking a size keeps the reader on the row they were looking
+Omit it for none, which is the unchanged default. Picking a size keeps the reader on the row they were looking
 at rather than dropping them on page 1.
 
-- **server mode** — reported through `update:page` / `onPageChange` / `PageChanged`, the same event
+- **server mode:** reported through `update:page` / `onPageChange` / `PageChanged`, the same event
   as a page click, carrying the new `size`. Read `size` to tell the two apart.
-- **client mode** — the table applies it itself, so the control works with nothing wired, and also
+- **client mode:** the table applies it itself, so the control works with nothing wired, and also
   emits `update:pageSize` / `onPageSizeChange` / `PageSizeChanged` for a caller that wants to
   persist the choice. Changing the `pageSize` prop wins back.
 
-A footer with a size control stays visible on a single page — otherwise picking "100" on a
+A footer with a size control stays visible on a single page. Otherwise picking "100" on a
 ninety-row list would remove the only way back to twenty.
 
-**Typed wrapper: `<FdyTableFooter>`** — the footer alone (`page` in, `update:page` /
+**Typed wrapper: `<FdyTableFooter>`.** The footer alone (`page` in, `update:page` /
 `onPageChange` / `PageChanged` out), for the one shape that cannot use the table's own: a
 **responsive** list, where a `.fdy-datatable` at `lg` and a `.fdy-list` below it are two renderings
 of one page of rows. A footer inside the table is inside the half a phone hides, so those screens
@@ -851,17 +852,17 @@ render it once, outside both, with `pager={false}` on the table.
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:
 
-- **client mode** — pass `pageIndex` (with `pageSize`, without `page`) and drive it yourself;
-- **either mode** — pass `pager={false}` (Vue `:pager="false"`, Blazor `Pager="false"`) and render
+- **client mode:** pass `pageIndex` (with `pageSize`, without `page`) and drive it yourself;
+- **either mode:** pass `pager={false}` (Vue `:pager="false"`, Blazor `Pager="false"`) and render
   your own control. In server mode this is the only way: the app already owns the page there, and
-  was still being handed a second control. The typical shape is a responsive list — a table at `lg`,
-  `.fdy-list` below it — where one pager has to serve both views so they cannot disagree.
+  was still being handed a second control. The typical shape is a responsive list (a table at `lg`,
+  `.fdy-list` below it) where one pager has to serve both views so they cannot disagree.
 
 Do not hide the footer with CSS. `display:none` works, but it reaches into a component's internals
 and breaks the moment the class changes.
 
 ## Pagination — `.fdy-pagination`
-The block class on the `<nav>` is a **structural hook only** — it carries no rule of its own; the
+The block class on the `<nav>` is a **structural hook only**. It carries no rule of its own; the
 `__list` / `__link` / `__ellipsis` elements do all the styling, and the data table targets
 `data-fdy-table-pagination`. Keep it on the wrapper anyway, for consistency with the rest of the kit.
 
@@ -876,7 +877,7 @@ Empty / error placeholder for a data area. `--danger` for failures. Parts: `__ic
 replaces.
 
 ## Charts — `data-fdy-chart`
-> **Typed wrapper: `<FdyChart>`** — data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
+> **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
 
 Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`; call
 `FreedayChart.update(el)` after changing data (or use `FdyChart` in Vue/React/Blazor).
@@ -885,27 +886,27 @@ Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`
 - Roots: `.fdy-sparkline` · `.fdy-bars` · `.fdy-donut` · `.fdy-chart-xy` (built for line/area/bar)
 - Data: `data-values="1,2,3"` (single series) or `data-series='[{"label":"A","values":[…]}]'`
   (multi), `data-labels="Jan,Feb"`, `data-fdy-stacked`, `data-fdy-center` (donut)
-- Colour: `data-fdy-color="primary"` or `data-fdy-colors="success,warning,danger"` — semantic token
+- Colour: `data-fdy-color="primary"` or `data-fdy-colors="success,warning,danger"` for semantic token
   names **or** `chart-1`…`chart-8` slots to pin a category's colour. Multi-series defaults to the
   validated categorical palette `--chart-1`…`--chart-8`.
 - Format: `data-fdy-format="number|percent|currency"`; legend `data-fdy-legend` (`none` to drop);
   axes `data-fdy-axes`
-- Sizing is already set by the kit — override **these**, never a `height` on the chart root (a
+- Sizing is already set by the kit. Override **these**, never a `height` on the chart root (a
   root height fights `aspect-ratio` instead of setting it): `.fdy-chart-xy__plot` is `width:100%`
   + `aspect-ratio:16/9` + `min-height:8rem`; `.fdy-bars` is a fixed `height:9rem`; `.fdy-sparkline`
   is an inline-block `8rem × 2.25rem`.
 - Axis type: `--fdy-chart-tick-size` (default `var(--text-xs)`) sets the y-tick and x-label size on
-  `.fdy-chart-xy`. It is a real CSS size — a cartesian chart's `viewBox` is measured to its plot, so
-  one user unit is one pixel — and the renderer reads it back to size the y-gutter and to decide how
+  `.fdy-chart-xy`. It is a real CSS size: a cartesian chart's `viewBox` is measured to its plot, so
+  one user unit is one pixel, and the renderer reads it back to size the y-gutter and to decide how
   many x-labels fit. Set the token rather than `font-size` on `__tick`/`__xlabel`, or the gutter and
   the autoskip will still be computed from the old size.
 - A11y: every chart is `role="img"` + an **author-supplied** `aria-label`, and that label is the
-  *entire* text alternative — write one that carries the numbers, not just the shape. The renderer
-  marks everything it draws `aria-hidden="true"` — legend, bar values and labels, donut centre, the
-  SVG — so nothing inside the chart competes with your label or repeats it. `role="img"` alone would
+  *entire* text alternative, so write one that carries the numbers rather than just the shape. The renderer
+  marks everything it draws `aria-hidden="true"` (legend, bar values and labels, donut centre, the
+  SVG), so nothing inside the chart competes with your label or repeats it. `role="img"` alone would
   **not** have done that: it is Children Presentational per ARIA, but browsers keep the subtree in
   the accessibility tree anyway, so the kit hides it rather than relying on the spec. That hiding
-  needs a name to work from — a chart with **no** `aria-label`/`aria-labelledby` keeps its contents
+  needs a name to work from: a chart with **no** `aria-label`/`aria-labelledby` keeps its contents
   exposed, because an image with neither a name nor any text is worse than one that leaks its
   legend. Any `<table>`/text placed inside the element is **pre-render only** and is replaced on
   render. Good: `aria-label="Monthly posting trend: Posted 62% → 88%, Draft 24% → 16%"`.
@@ -915,7 +916,7 @@ Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`
   `__center` `__hit`; `.fdy-sparkline__line` `__area` `__dot`.
 
 ## Tree view — `.fdy-tree`
-Native `<details>` hierarchy — zero JS for expand/collapse. `.fdy-tree__branch` on `<details>`,
+Native `<details>` hierarchy, with zero JS for expand/collapse. `.fdy-tree__branch` on `<details>`,
 `.fdy-tree__leaf` on a leaf `<li>`, plus `__chevron` and `__icon` svgs inside `<summary>`.
 `.fdy-tree--checkbox` + `data-fdy-tree` (needs `freeday-tree.js`) adds cascading selection:
 `.fdy-tree__check` on each `<input class="fdy-checkbox">`; checking a branch checks its children,
@@ -923,11 +924,11 @@ a partial set makes the branch indeterminate. Checking never toggles expansion.
 
 ## List (flat rows) — `.fdy-list`
 The **flat** row container: one bordered surface, hairline dividers, **no shadow**. This is what a
-responsive `.fdy-datatable` should become below `md` — not a stack of `.fdy-card`s, which carries
+responsive `.fdy-datatable` should become below `md`, rather than a stack of `.fdy-card`s, which carries
 `--shadow-lift` and turns ten rows into ten floating objects.
 
 - `.fdy-list` on a `<ul>`/`<ol>` (list-style is reset for you) or a `<div>`
-- `.fdy-list__row` — one row; `--interactive` for hover feedback, `--button` when the row **is** the
+- `.fdy-list__row` is one row; `--interactive` for hover feedback, `--button` when the row **is** the
   control (render it as a real `<button>`/`<a>`; the UA box is reset without losing the list surface)
 - Row internals: `.fdy-list__main` (truncating stack) → `.fdy-list__title` + `.fdy-list__meta`, and
   `.fdy-list__aside` pinned right
@@ -1073,7 +1074,7 @@ so the same look serves routed sub-navigation built from plain links — see the
 # Overlays
 
 ## Modal — `.fdy-modal`
-> **Typed wrapper: `<FdyModal>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyModal>`**. Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--sm` `--md` `--lg`
 `--wide`; `--cfl` for the choose-from-list dialog.
@@ -1108,7 +1109,7 @@ that is not the kit. Both rules measured on Chromium 133 and 151, and pinned as 
 `browser/overlay-stack.mjs`.
 
 ## Drawer — `.fdy-drawer`
-> **Typed wrapper: `<FdyDrawer>`** — Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+> **Typed wrapper: `<FdyDrawer>`**. Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
 Temporary side panel on native `<dialog>` — left by default, `--right` to flip. Parts `__header`
 `__title` `__body` `__footer` `__close`. Open it from any
@@ -1173,7 +1174,7 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
 - **The escape hatch needs nothing.** Every focusable element in a card that holds a stretched
   target is raised above the overlay automatically — forgetting a `z-index` here fails silently, and
   a silent failure is what this pattern exists to remove. The `position` that raising needs is only a
-  **default** (zero-specificity), so a control you pin yourself — a corner dismiss, a favourite star —
+  **default** (zero-specificity), so a control you pin yourself (a corner dismiss, a favourite star)
   keeps its own `position:absolute` and is raised anyway.
 - **Name the stretched button for what the whole card does** ("Open workspace Alpha", not "Open").
   Its label is the accessible name of the entire hit area.
@@ -1194,11 +1195,9 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
   than documented.
 
 ## Badge — `.fdy-badge`
-Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Never colour-only —
-the text carries the meaning.
+Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Never colour-only: the text carries the meaning.
 
-`--tone-1`…`--tone-8` for a status vocabulary larger than the semantic palette. Semantics first —
-a state that IS good, bad or waiting takes `--success` / `--danger` / `--warning`; these are for
+`--tone-1`…`--tone-8` for a status vocabulary larger than the semantic palette. Semantics first: a state that IS good, bad or waiting takes `--success` / `--danger` / `--warning`; these are for
 the rest, so two states a workflow distinguishes never share a look. Map each status to a FIXED
 tone, never to a hash of the string: a status is a closed set, and a hash reassigns colours the
 moment the set grows.
