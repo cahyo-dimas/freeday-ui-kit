@@ -3,7 +3,7 @@
 @* Internal to FdyTable: one column's header funnel button + its type-aware filter popover
    (text / enum / number / date), over freeday's .fdy-table__filterbtn + .fdy-filter* classes.
    The panel is position:fixed (top layer) so it escapes the table's overflow; light-dismiss
-   (outside pointer / Esc) is wired through FreedayBlazor.onOutside. Purely controlled — it renders
+   (outside pointer / Esc) is wired through FreedayBlazor.onOutside. Purely controlled: it renders
    the current Filter and raises the next one (or null to clear). *@
 <span @ref="_root" class="fdy-table__filterwrap">
     <button type="button"

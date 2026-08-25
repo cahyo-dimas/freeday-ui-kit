@@ -1,8 +1,8 @@
-<!-- Freeday — behaviour tests for the Blazor wrappers (bUnit + xunit).
+<!-- Freeday behaviour tests for the Blazor wrappers (bUnit + xunit).
      Deliberately OUTSIDE adapters/: package.json ships `adapters` as a whole directory, and a test
      project has no business in a consumer's node_modules.
 
-     Until this existed the Blazor stack's only gate was `dotnet build` — compilation. Twelve typed
+     Until this existed the Blazor stack's only gate was `dotnet build`, compilation. Twelve typed
      components, and the one added most recently (FdyAppShell) reconciles a nullable two-way binding
      against a JS enhancer, which is exactly the kind of logic a compiler cannot check. -->
 <Project Sdk="Microsoft.NET.Sdk">

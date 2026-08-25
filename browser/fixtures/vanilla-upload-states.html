@@ -50,7 +50,7 @@
 
   /* A file drop cannot be synthesised through CDP's trusted Input.* the way a click can, so this
      dispatches a real DragEvent carrying a real DataTransfer. That is sound here: the bug under test
-     is which STATE the row renders in, not pointer or focus semantics — the class of bug that needs
+     is which STATE the row renders in, not pointer or focus semantics, the class of bug that needs
      a trusted gesture (see browser/README.md). */
   window.dropOn = (zoneId, name, bytes) => {
     const dt = new DataTransfer();

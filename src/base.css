@@ -1,4 +1,4 @@
-/* Freeday base layer — reset ringan + default via token */
+/* Freeday base layer: reset ringan + default via token */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -16,21 +16,21 @@ a { color: var(--color-primary); }
 :where(button, input, select, textarea) { font: inherit; }
 /* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still
  * has a position, and because it is position:absolute its containing block is the nearest
- * POSITIONED ancestor — with none, the initial containing block (the document itself).
+ * POSITIONED ancestor, and with none, the initial containing block (the document itself).
  *
  * That matters, because `overflow` only clips a descendant whose containing block is inside the
  * overflow box. So a hidden span in a horizontally scrolling table (the kit's own recommended way
- * to name an icon button) parks at its static position — possibly thousands of px to the right —
+ * to name an icon button) parks at its static position, possibly thousands of px to the right —
  * and drags the whole DOCUMENT sideways: invisible, and immune to `overflow-x:hidden` on every
  * wrapper. Measured before the fix: 1351px of phantom page scroll from 11 spans.
  *
- * The fix is not here — it is on the containers: every clipping/scrolling container in the kit
+ * The fix is not here but on the containers: every clipping/scrolling container in the kit
  * that holds consumer markup declares `position:relative` so it becomes the containing block for
  * its own out-of-flow content (see test/css.test.mjs, which will not let a new one skip it).
- * Note the measurement trap: documentElement.scrollWidth sees it, body.scrollWidth does not —
+ * Note the measurement trap: documentElement.scrollWidth sees it, body.scrollWidth does not,
  * the honest check is `window.scrollTo(9999, 0)` then reading `window.scrollX`. */
 .fdy-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-/* Opt-in list reset. base.css is intentionally a *light* reset — it does NOT strip list/paragraph
+/* Opt-in list reset. base.css is intentionally a *light* reset: it does NOT strip list/paragraph
  * margins (see the kit's own list components, which each reset themselves). If you run a utility
  * framework with its preflight OFF (the recommended pairing), a semantic <ul>/<ol> keeps native
  * bullets + a 40px indent; add this class (or a Freeday list component) to normalise it. */

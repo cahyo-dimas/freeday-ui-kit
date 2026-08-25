@@ -4,7 +4,7 @@
 @* Controlled wrapper over freeday's .fdy-modal native <dialog>. Blazor can't call
    showModal()/close() from C#, so open/close + Esc/backdrop dismissal route through the
    freeday-blazor.js bridge. Native <dialog> gives the focus trap, focus restore, top-layer
-   stacking and inert background for free — this only reconciles it with Blazor state. *@
+   stacking and inert background for free; this only reconciles it with Blazor state. *@
 <dialog @ref="Root" class="@ModalClass" aria-labelledby="@_titleId">
     <div class="fdy-modal__header">
         <h3 id="@_titleId" class="fdy-modal__title">

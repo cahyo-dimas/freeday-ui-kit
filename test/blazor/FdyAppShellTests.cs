@@ -6,8 +6,8 @@ namespace Freeday.Blazor.Tests;
 
 /// <summary>
 /// FdyAppShell is the first Blazor wrapper that reconciles a two-way binding against a JS enhancer
-/// rather than driving a DOM element itself, and `dotnet build` — the stack's only gate until this
-/// file existed — cannot see any of that. What is asserted here is the handshake: who wins on
+/// rather than driving a DOM element itself, and `dotnet build`, the stack's only gate until this
+/// file existed, cannot see any of that. What is asserted here is the handshake: who wins on
 /// hydrate, what the enhancer's event does to the binding, and that the two do not chase each other.
 /// </summary>
 public class FdyAppShellTests : BunitContext
@@ -60,7 +60,7 @@ public class FdyAppShellTests : BunitContext
 
         var pushed = Assert.Single(JSInterop.Invocations[SetVisible]);
         Assert.Equal(false, pushed.Arguments[1]);
-        // And the shell is never asked what it thinks — the caller already said.
+        // And the shell is never asked what it thinks; the caller already said.
         Assert.Empty(JSInterop.Invocations[IsVisible]);
     }
 
@@ -84,7 +84,7 @@ public class FdyAppShellTests : BunitContext
     public async Task An_event_is_not_echoed_back_down_to_the_enhancer()
     {
         // The failure this guards: the enhancer announces a change, the binding updates, the new
-        // parameter arrives, and the component pushes it straight back — two owners of one state
+        // parameter arrives, and the component pushes it straight back: two owners of one state
         // taking turns. `_lastNavOpen` is what stops it, and nothing else can see that it does.
         JSInterop.Setup<bool>(IsVisible, _ => true).SetResult(false);
         bool? bound = null;

@@ -43,7 +43,7 @@ for (const stack of ['vue', 'react']) {
       assert.equal(
         await p.evalJS('getComputedStyle(document.querySelector(".fdy-cfl__check input")).appearance'),
         'none',
-        `${stack}: the row tick must be the kit's checkbox — .fdy-checkbox, not .fdy-check`);
+        `${stack}: the row tick must be the kit's checkbox: .fdy-checkbox, not .fdy-check`);
 
       /* A click must TICK, not commit, the dialog stays open and the caller's value is untouched. */
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[0].click()');

@@ -220,7 +220,7 @@ onBeforeUnmount((): void => {
     <ul :id="listboxId" ref="listboxEl" class="fdy-combo__listbox" role="listbox" popover="manual" :hidden="!open">
       <!-- @mousedown.prevent keeps focus on the button: the option <li> isn't focusable, so a plain
            mousedown moves focus out of the combo, fires @focusout, and closes the list before the click
-           lands — mouse-select would silently do nothing. Same pattern as FdyDatepicker/FdyAutocomplete. -->
+           lands, mouse-select would silently do nothing. Same pattern as FdyDatepicker/FdyAutocomplete. -->
       <li
         v-for="(opt, i) in options"
         :id="optionId(i)"

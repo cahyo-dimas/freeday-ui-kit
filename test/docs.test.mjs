@@ -202,7 +202,7 @@ test('every path speaks English (#009, and #006 from 2.0.0)', () => {
 test('the column contract reaches all three typed adapters (#026)', () => {
   /* `FdyTableColumn` in adapters/core/table-model.d.ts is the contract. Vue and React consume that
      file directly, so TypeScript keeps them honest; Blazor RE-DECLARES it in C#, which is a hand
-     copy and therefore the one surface that can silently fall behind — #026 shipped `labelHidden`
+     copy and therefore the one surface that can silently fall behind; #026 shipped `labelHidden`
      to Vue and React and left Blazor without it. One-directional on purpose: Blazor may hold MORE
      (Cell has no TS twin, it is a slot there), so this asserts coverage, never equality, which is
      also why it needs no exemption list. */

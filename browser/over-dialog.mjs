@@ -40,7 +40,7 @@ test('a toast raised from inside a modal is painted over it (#027)', { skip }, a
     const luminance = (px.r + px.g + px.b) / 3;
     assert.ok(
       luminance < 90,
-      `the toast must be the thing painted at its own centre, got rgb(${px.r},${px.g},${px.b}) — ` +
+      `the toast must be the thing painted at its own centre, got rgb(${px.r},${px.g},${px.b}). ` +
         'a pale pixel there is the dialog covering it',
     );
   });

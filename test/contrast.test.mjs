@@ -87,7 +87,7 @@ for (const s of SURF) add('--color-accent', s, AA_UI, `accent on ${s}`);
 
 // --- assert ---------------------------------------------------------------
 for (const [themeName, theme] of Object.entries(THEMES)) {
-  test(`WCAG contrast — ${themeName}`, () => {
+  test(`WCAG contrast: ${themeName}`, () => {
     for (const p of req) {
       const r = R(p.fg, p.bg, theme);
       assert.ok(r >= p.min, `${themeName}: ${p.label} = ${r.toFixed(2)}:1 (need ${p.min}:1)`);
@@ -96,12 +96,12 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 }
 
 // Categorical tones: the text-leaning foreground on the tinted background must keep AA text
-// contrast. ONE test for three components — .fdy-avatar--tone-*, .fdy-chip--tone-* and
+// contrast. ONE test for three components: .fdy-avatar--tone-*, .fdy-chip--tone-* and
 // .fdy-badge--tone-* all use the identical mix (bg 18%, fg 50% toward --color-text over
 // --color-surface), so they pass or fail together. Keep the ratios here in sync with all three;
 // the css guard below asserts they stay identical.
 for (const [themeName, theme] of Object.entries(THEMES)) {
-  test(`WCAG contrast, categorical tones — ${themeName}`, () => {
+  test(`WCAG contrast, categorical tones: ${themeName}`, () => {
     for (let i = 1; i <= 8; i++) {
       const c = `var(--chart-${i})`;
       const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);

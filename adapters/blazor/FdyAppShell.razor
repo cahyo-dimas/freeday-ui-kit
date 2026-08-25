@@ -4,7 +4,7 @@
 @* Blazor wrapper over freeday's .fdy-app shell. Unlike FdyModal and FdyDrawer, which drive a native
    <dialog> through the bridge, this one hands the whole behaviour to freeday-app-shell.js via
    `data-fdy-app` and binds to it: the enhancer announces changes as a bubbling `fdy-app-nav` event
-   and accepts them through FreedayAppShell.setVisible. That is the bridge's own doctrine — the
+   and accepts them through FreedayAppShell.setVisible. That is the bridge's own doctrine: the
    enhancers stay the source of truth, and it keeps the focus trap from existing a third time. *@
 <div @ref="Root" class="fdy-app" data-fdy-app>
     @SkipContent

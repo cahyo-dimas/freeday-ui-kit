@@ -2,7 +2,7 @@
 <!-- data-theme="light" is PINNED, not decoration: without it the app half has no explicit theme
      and falls to prefers-color-scheme, so on a machine in dark mode the "light app" probe reads the
      dark ink, matches the dark panel, and the test fails claiming data-theme is root-scoped again.
-     The subtree behaviour under test is unchanged — the panel still carries the only theme that
+     The subtree behaviour under test is unchanged; the panel still carries the only theme that
      differs from its ancestor's. -->
 <html lang="en" data-theme="light">
 <head>
@@ -12,7 +12,7 @@
 </head>
 <body>
   <!-- The dark panel is a plain <section>, which is the
-       whole point — a dark brand half beside a light form half needs no per-component work. -->
+       whole point: a dark brand half beside a light form half needs no per-component work. -->
   <main>
     <h1 class="fdy-title-page" id="app-title">Light app</h1>
     <div class="fdy-card" id="app-card"><div class="fdy-card__body">card in the app</div></div>

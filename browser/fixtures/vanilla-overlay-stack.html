@@ -10,7 +10,7 @@
 
   <!-- The drawer is the FIRST overlay. Its body is painted a solid dark colour so that "which of
        the two is on top here" becomes a pixel question with only one possible answer: the modal's
-       surface is near-white, this is near-black. A hit test cannot answer it — a modal dialog makes
+       surface is near-white, this is near-black. A hit test cannot answer it, because a modal dialog makes
        the rest of the document inert, so elementFromPoint outside it returns the dialog whatever is
        actually painted (the same trap #027 documented for toasts). -->
   <dialog class="fdy-drawer" id="dw" aria-labelledby="dw-title">
