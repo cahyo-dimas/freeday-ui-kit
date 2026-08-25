@@ -3,8 +3,8 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
-## [2.0.0] — 2026-08-25
-### Changed — BREAKING
+## [2.0.0] - 2026-08-25
+### Changed: BREAKING
 - **The vanilla enhancers now write English by default** (`NEXT-UP.md` #6, owner's decision). Every
   user-facing string they render — 39 of them across 9 enhancers — was Indonesian while the typed
   wrappers were English, so an app that touched both paths read as two products. A Blazor app
@@ -26,7 +26,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   different words, and a major version is the only signal npm gives a consumer that an upgrade needs
   looking at. Hiding that behind a minor is the same class of quiet mismatch the last four releases
   have been about.
-### Added — guards
+### Added: guards
 - The English guard now covers `src/freeday-*.js`, not just the typed adapters, so the promise is
   enforced on every path instead of stated on one. Verified by reverting a single string: it fails.
 - **And a word list is not enough, which this release proved twice.** The list missed `Lanjut` and
@@ -36,7 +36,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - `browser/text-override.mjs` and `browser/upload-states.mjs` assert the new defaults. The override
   half is untouched and still passes — it is the migration path, so it had to keep working in the
   same breath as the change that makes it necessary.
-### Added — guards
+### Added: guards
 - **The Blazor stack had no behavioural gate at all, and now has one.** Its only check was
   `dotnet build` — compilation — across twelve typed components, and `NEXT-UP.md` #5 described a
   manual runtime verification via `drive-*.mjs` + CDP that does not exist in the repository. That
@@ -50,7 +50,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   rather than where someone remembers. Deliberately placed OUTSIDE `adapters/`, which `package.json`
   ships as a whole directory — a test project has no business in a consumer's `node_modules`.
 
-### Fixed — the kit's own docs
+### Fixed: the kit's own docs
 - **The docs site shipped the wrong version number for three releases.** `docs/index.html` said
   `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
   `docs/getting-started.md` told readers to install `^1.34.0` — eighteen releases stale. `NEXT-UP.md`
@@ -69,7 +69,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   widget text. Left as-is deliberately: the page's job is to show what the kit actually does, and
   putting `data-fdy-text-*` on all 42 enhancer instances would hide the default it documents.
 
-## [1.54.0] — 2026-08-25
+## [1.54.0] - 2026-08-25
 ### Added
 - **`<FdyAppShell>` — the shell becomes the eleventh typed component**, in Vue, React and Blazor
   (`NEXT-UP.md` #8, stage 2). One model: `navOpen` means *the nav is visible to the reader*, and the
@@ -99,7 +99,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - `NEXT-UP.md` #8 is struck through rather than deleted, and its number kept: the CHANGELOG, the
   design spec and two guard headers already say "NEXT-UP #8", so renumbering the rows under it would
   quietly break references that are already written down.
-### Added — guards
+### Added: guards
 - `browser/adapter.mjs` runs one description of the shell contract against BOTH typed stacks —
   viewport default, focus into the panel, the Tab cycle, Escape returning focus, `inert`, and a nav
   link closing the overlay. Verified by sabotage: with `applyShellState` and the focus calls stubbed
@@ -111,7 +111,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   which is the element itself, not a descendant of it.
 - `dotnet build` on the Blazor RCL is clean (0 warnings, 0 errors).
 
-## [1.53.0] — 2026-08-24
+## [1.53.0] - 2026-08-24
 ### Added
 - **`freeday-app-shell.js` — the shell finally ships its own behaviour** (`NEXT-UP.md` #8, reported
   twice). `.fdy-app` shipped `__navtoggle`, `__backdrop` and the `--nav-open` / `--nav-collapsed`
@@ -140,7 +140,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   close-on-nav-click, `reference-screen.html` handled neither, and *neither* trapped focus, marked
   the content `inert`, or restored focus. Two versions in one repository disagreeing is the whole
   argument for the kit owning this.
-### Added — guards
+### Added: guards
 - `browser/app-shell.mjs` (5 tests), each verified to fail with the enhancer switched off: collapse
   and its `inert` at ≥721px, the overlay and its `inert` at ≤720px, focus entering the panel and
   cycling inside it under **trusted** Tab presses, Escape returning focus to the toggle, backdrop
@@ -151,7 +151,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   contract cannot be tested at a fixed window size, and the moment a layout *crosses* a breakpoint
   is exactly where its state gets stranded.
 
-## [1.52.1] — 2026-08-24
+## [1.52.1] - 2026-08-24
 ### Docs
 - **1.51.1's close-watcher caveat named the wrong condition** (#048). It said a `showModal()` with
   no transient activation — "from a timer, or after an `await` that outlived the click" — has its
@@ -170,7 +170,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   the grouping. **Measured, they are not** — in a page with no activation the `cancel` event is not
   cancelable at all, so preventing it does nothing and both dialogs close regardless. That claim is
   not in the docs, and this is why.
-### Added — guards
+### Added: guards
 - `browser/overlay-stack.mjs` gains the whole matrix as one assertion — four ways to open two
   overlays × what one Escape leaves open × whether it could be refused — so a row changing is
   reported as news about the browser rather than a regression in the kit. Verified identical on
@@ -178,7 +178,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - The fixture records each `cancel` event's `cancelable` flag; nothing prevents it, so the older
   tests measure what they always did.
 
-### Fixed — the kit's own suite
+### Fixed: the kit's own suite
 - **The browser guards did not run where the releases are made.** CI ran the 59 unit tests and
   published; the 58 browser tests across 18 specs — pixel paint order for stacked overlays, chart
   accessible subtrees, the user-activation matrix above — ran only when someone remembered to run
@@ -201,7 +201,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - Spec: `docs/superpowers/specs/2026-08-24-browser-guards-in-ci-design.md`. No shipped file changed —
   `browser/` and `.github/` are not in the published tarball, so there is no release for this.
 
-## [1.52.0] — 2026-08-24
+## [1.52.0] - 2026-08-24
 ### Fixed
 - **A chart's legend, bar values and donut centre were exposed to assistive tech after all** (#047).
   `COMPONENTS.md` explained the a11y contract with the ARIA spec — `role="img"` is *Children
@@ -224,7 +224,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ### Docs
 - The Charts a11y bullet now describes the kit instead of the spec: what is hidden, that `role="img"`
   alone would not have hidden it, and what happens when the label is missing.
-### Added — guards
+### Added: guards
 - `browser/chart-a11y.mjs` (5 tests) over donut, legacy bars and cartesian: the accessible subtree
   exposes no text of its own, the author label survives as the name, the legend is still rendered and
   visible (hidden, not deleted), and an unlabelled chart still reads. The first three were verified to
@@ -234,7 +234,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   assert passes identically before and after the fix. Same reason the 1.51.0 scaling bug needed a
   real measurement rather than a source read.
 
-## [1.51.1] — 2026-08-24
+## [1.51.1] - 2026-08-24
 ### Docs
 - **`COMPONENTS.md` never said whether two overlays may be open at once** (#046). Modal and Drawer
   were documented in isolation, so "can a confirm modal open over an open drawer?" had no answer in
@@ -249,7 +249,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   `await` that outlived the click — has its close watcher GROUPED with the dialog below it, and a
   single Escape then closes both. Measured, not assumed: two untrusted `.click()` opens, one Escape,
   both dialogs shut.
-### Added — guards
+### Added: guards
 - `browser/overlay-stack.mjs` (3 tests) proves that paragraph instead of restating it — the #041
   lesson applied to a documentation change. Paint order is asserted in **pixels** at the overlap of
   the two, because a modal dialog makes the rest of the document inert and `elementFromPoint` will
@@ -261,7 +261,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   reported a broken kit as fine. It now carries the real `windowsVirtualKeyCode` /
   `nativeVirtualKeyCode` for the keys the suite presses.
 
-## [1.51.0] — 2026-08-21
+## [1.51.0] - 2026-08-21
 ### Fixed
 - **A cartesian chart's axis text and dots grew with the container** (#042). `renderCartesian` built
   a fixed `viewBox="0 0 320 180"` and let `.fdy-chart-xy__plot` stretch it to `width:100%`, so every
@@ -297,7 +297,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   `aspect-ratio:16/9` + `min-height:8rem`, `.fdy-bars` a fixed `9rem`, `.fdy-sparkline` an
   inline-block `8rem × 2.25rem` — with the note to override those rather than the chart root, since
   a root `height` fights `aspect-ratio` instead of setting it.
-### Added — guards
+### Added: guards
 - **`browser/chart-scale.mjs`** — the axis label box and dot diameter are measured at plot widths of
   350 / 696 / 1400 / 2232px and must not vary by more than a pixel, must stay smaller than body
   text, and the `viewBox` must equal the measured plot. A second spec widens a container and asserts
@@ -306,7 +306,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   `vector-effect:non-scaling-stroke` on the line — is what made the other three look protected too.
   Only a real layout tells them apart.
 
-## [1.50.0] — 2026-08-20
+## [1.50.0] - 2026-08-20
 ### Fixed
 - **A toast raised from inside a modal was painted behind it** (#027). `.fdy-toast-region` carried
   `z-index: 200`, which can never win: `.fdy-modal` is a native `<dialog>` opened with `showModal()`
@@ -323,7 +323,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   rendered three different sizes, none of them square. `flex: none` on `.fdy-check input`,
   `.fdy-radio input`, the `.fdy-switch` track and the standalone `.fdy-checkbox` — all four are
   flex children somewhere in the kit.
-### Added — guards
+### Added: guards
 - **`pixelAt(x, y)` in `browser/harness.mjs`** — a 1×1 `Page.captureScreenshot`, decoded in-process.
   Stacking above a modal cannot be asserted with `elementFromPoint`: a modal dialog makes the rest
   of the document inert, so a hit test outside it returns the dialog whatever the paint order is,
@@ -339,7 +339,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   checkbox in a plain block, where it cannot shrink at all, so removing `flex: none` from the one
   box every adapter puts on screen left it passing.
 
-## [1.49.0] — 2026-08-20
+## [1.49.0] - 2026-08-20
 ### Added
 - **`FdyTableColumn.labelHidden`** (#026). A column of row CONTROLS — an edit button, a row menu —
   could be named or quiet, not both: `label` renders as bare text in the `<th>`, so a designer who
@@ -349,7 +349,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   popover and sort button, so it stays meaningful either way.
   Contract and ALL THREE typed adapters — Vue, React and Blazor. Each renders its own header, so
   each spends the flag itself; Blazor takes `LabelHidden` on `FdyTableColumn<TRow>`.
-### Added — guards
+### Added: guards
 - **The column contract now has to reach all three adapters** (#026). Vue and React consume
   `table-model.d.ts` and TypeScript keeps them honest, but Blazor RE-DECLARES the column in C# — a
   hand copy, and the surface that can fall behind silently. A test asserts every contract property
@@ -358,7 +358,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   (`browser/adapter.mjs`), because the claim is about computed geometry: a span carrying the class
   with no CSS behind it passes any string match and still prints the word.
 
-## [1.48.1] — 2026-08-20
+## [1.48.1] - 2026-08-20
 ### Fixed
 - **A date column sorted correctly and filtered nothing** (#025). `FdyTable`'s client-mode date
   filter read a cell with `dateOnly`, which **sliced** the string, while its date SORT reads the same
@@ -371,13 +371,13 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   a row dated the 18th.
 - Text that is not a date now yields `''` and is EXCLUDED by an active date filter, rather than
   slicing to something that compares as less than every bound and matching everything.
-### Added — guards
+### Added: guards
 - Three tests in `test/table-model.test.mjs`, each verified to fail against the old body: a
   formatted `value`, a `Date` cell at a positive UTC offset, and unparseable text. The existing date
   test only ever filtered a column with no accessor holding an already-ISO string, which is the one
   shape neither bug can affect.
 
-## [1.48.0] — 2026-08-20
+## [1.48.0] - 2026-08-20
 ### Reverted
 - **1.47.0's readonly focus ring (#024) is withdrawn.** The report was measured wrong. The control in
   question — a `CflField`'s readonly display input — sits inside `.fdy-input-group`, and
@@ -386,11 +386,11 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   audit measured the INPUT, found no shadow on it, and concluded there was no focus indicator.
   Measured on the group, focus shows `--color-primary` at full strength — 6.56:1. 1.47.0 therefore
   painted a muted ring INSIDE the blue one, which is a regression rather than a fix.
-### Added — guards
+### Added: guards
 - `test/css.test.mjs` pins the arrangement — the group rings, the inner input does not — so the next
   reader finds the answer instead of repeating the conclusion.
 
-## [1.46.0] — 2026-08-19
+## [1.46.0] - 2026-08-19
 The docs site catches up with the components, and writing it out as a consumer found a defect in
 #016's own contract.
 ### Fixed
@@ -422,7 +422,7 @@ The docs site catches up with the components, and writing it out as a consumer f
   and a `Previous` pager, and the frozen table computes `border-collapse:separate` with
   `position:sticky` cells.
 
-## [1.45.0] — 2026-08-19
+## [1.45.0] - 2026-08-19
 Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (IDU_EMATE_APPL_WEB, #022).
 ### Fixed
 - **The row tick rendered as the browser's checkbox, not the kit's** (#022), in all three adapters.
@@ -434,11 +434,11 @@ Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (ID
 - **`aria-selected` broke `vue-tsc` in consuming apps** (#022). `String(isPicked(row))` widens to
   `string`, and Vue types the attribute as `Booleanish` — so a strict app type-checking the kit's own
   `.vue` source failed on a file it does not own. Now `'true' : 'false'`.
-### Added — guards
+### Added: guards
 - `browser/cfl-multi.mjs` asserts the tick's computed `appearance` is `none`, which is the tell that
   the kit painted the box rather than the UA. Mutation-tested.
 
-## [1.44.0] — 2026-08-19
+## [1.44.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
 ### Added
 - **`--tone-1`…`--tone-8` on `.fdy-badge`** — a status vocabulary larger than the semantic palette.
@@ -450,13 +450,13 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
   Semantics still come first: a state that IS good, bad or waiting takes `--success` / `--danger` /
   `--warning`, and these are for the rest. Same `--tone-*` tokens and the same 18%/50% mix as the
   other two, so the existing contrast test already measures them.
-### Added — guards
+### Added: guards
 - `test/css.test.mjs` asserts all eight bind their own token (a gap silently reuses a colour) and
   that the mix stays identical to the avatar's and the chip's — one contrast test covers the three,
   so a badge that drifted to its own ratio would be gated by a test measuring something else.
   `test/contrast.test.mjs` renamed from "avatar tones" to "categorical tones" to say so.
 
-## [1.43.0] — 2026-08-19
+## [1.43.0] - 2026-08-19
 Three crowding reports from one settlement screen (IDU_EMATE_APPL_WEB, #020). All three measured in
 Chromium rather than read off the CSS — each is a layout outcome, invisible in the stylesheet.
 ### Fixed
@@ -478,12 +478,12 @@ Chromium rather than read off the CSS — each is a layout outcome, invisible in
 - **`.fdy-filelist` claimed space above itself and none below** (#020), so the "Add files" button
   every upload UI puts after it sat flush against the last row — a measured **0px**. Symmetric now,
   with `:last-child` dropping the bottom margin so nothing pays for room it does not need.
-### Added — guards
+### Added: guards
 - `browser/crowding.mjs` measures all three. The stat case asserts **both** directions — one line
   when narrow, still exactly `31px` when wide — because a fix that quietly shrank every dashboard
   would pass a "does it wrap?" test.
 
-## [1.42.0] — 2026-08-19
+## [1.42.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #009 guard could not see.
 ### Added
 - **`multiple` on the typed `FdyCfl`** (Vue · React · Blazor). The enhancer has offered
@@ -512,7 +512,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   read `retryText ?? 'Try again'` — so the component both had the prop and ignored it. #009's guard
   missed it because **neither `coba` nor `lagi` is in its word list**, which is #015's lesson landing
   a third time: a word list is a floor, not a ceiling. Both now read `retryText`.
-### Added — guards
+### Added: guards
 - **The multi flow is driven by real clicks, in both adapters** (#019). `browser/cfl-multi.mjs`
   asserts that a click ticks rather than commits, that the dialog stays open, that `aria-selected`
   and the footer count follow, that a second click unticks, that Confirm hands back an **array** in
@@ -521,7 +521,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   A typecheck cannot tell you whether a mode ever renders. Mutation-tested — committing
   `picked[0]` instead of the array fails it by name.
 
-## [1.41.0] — 2026-08-19
+## [1.41.0] - 2026-08-19
 One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised from that repo.
 ### Fixed
 - **`.fdy-input-group` rendered 1px shorter than every control beside it** (#018). The group
@@ -535,7 +535,7 @@ One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised fr
   the addons fill whatever the border leaves — at any border width, any rounding, and under
   `data-density="compact"` without a second `calc` to keep in step. The defect was not the number;
   it was compensating in one rule for a value declared in another.
-### Added — guards
+### Added: guards
 - **Control heights are measured in a real browser** (#018). No stylesheet assertion could have
   caught this: the CSS reads as correct arithmetic, and the value it is correct about is one the
   engine rounds. `browser/control-heights.mjs` measures `.fdy-input-group` against `.fdy-btn`,
@@ -545,7 +545,7 @@ One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised fr
   `button.css` step a control deliberately by a spacing token. This was the last compensation of its
   kind.
 
-## [1.40.0] — 2026-08-19
+## [1.40.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
 ### Fixed
 - **A picker inside a `.fdy-field` now fills it.** `.fdy-field`, `.fdy-combo` and
@@ -556,7 +556,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
   / `> .fdy-daterange` drop the cap; a picker standing on its own keeps its narrower width, which
   is right for a short value.
 
-### Added — guards
+### Added: guards
 - **The enhancer string contract is asserted in a real browser** (#016). 1.39.0 moved every
   user-facing string in **nine** enhancers into a `TEXT` table read through `textOf()`, and only
   **one of the nine** — upload — had any browser coverage at all. The node guard proves the
@@ -568,7 +568,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
   that quietly turned English would be a breaking change wearing a bugfix's clothes.
   Mutation-tested: making `textOf()` ignore the attribute fails it by name and value.
 
-## [1.39.0] — 2026-08-19
+## [1.39.0] - 2026-08-19
 The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are reachable now.
 ### Added
 - **Every enhancer string is overridable with `data-fdy-text-<key>`** (#016). The defaults stay
@@ -597,14 +597,14 @@ The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are r
 - **`Freeday.toast()` from Blazor labelled its close button `Tutup`.** `FreedayBlazor.toast` now
   defaults `closeLabel` to `Close` — in the bridge, not the enhancer, so a hand-written page still
   gets the documented Indonesian.
-### Added — guards
+### Added: guards
 - **An enhancer string is overridable, not hard-coded** (#016). `npm test` asserts that a literal
   reaching a `textContent`, `aria-label`, `title` or `placeholder` lives in that file's `TEXT`
   table. Scoped by SINK rather than by a word list, deliberately: a second word list would have the
   same hole one affix over, and this one is also blind to no language. Mutation-tested — putting
   `'Tutup'` back into the toast fails it by file and line.
 
-## [1.38.0] — 2026-08-19
+## [1.38.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
 ### Fixed
 - **`FdyCfl`'s trigger said `"Buka pencarian"`** (Vue · React) — the accessible name of the button
@@ -621,7 +621,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
   misses most of the UI vocabulary. Widening it is what surfaced the `FdyCascade` string nobody had
   reported.
 
-### Fixed — the test suite
+### Fixed: the test suite
 - **`rules()` read only the last line of a selector**, so a rule written across several lines was
   reported under a fragment of its own name and every guard in `test/css.test.mjs` was blind to it
   (#014). A guard that matches nothing PASSES, which is the worst way for a test to fail — it
@@ -631,7 +631,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
   the CSS staying one-rule-per-line: that is a convention, and this is the thing that would quietly
   stop enforcing it. Mutation-tested — restoring the last-line read fails the new test by name.
 
-## [1.37.0] — 2026-08-19
+## [1.37.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
 ### Added
 - **`.fdy-table__freeze` + `--fdy-freeze-left`** — freeze **any number** of columns, not just the
@@ -652,7 +652,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
   explicitly. `tbody th` no longer freezes implicitly; use `.fdy-table__freeze`. 1.35.0 and 1.36.0
   are unpublished, so no released version carried the old contract.
 
-## [1.36.0] — 2026-08-19
+## [1.36.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
 ### Added
 - **A year grid in the calendar** (vanilla · Vue · React · Blazor). 1.32.0's month grid killed
@@ -674,7 +674,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
   `adapters/` only, passed. The datepicker is English now. The rest of `src/` is NOT audited: see
   improvement note #013 §2, which lists the enhancers still affected.
 
-## [1.35.0] — 2026-08-19
+## [1.35.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #012).
 ### Added
 - **`.fdy-table--sticky` + `.fdy-table-scroll--frozen`** — a table frozen on one axis or both, for
@@ -689,7 +689,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #012).
   the freeze resolves against (the base `.fdy-table-scroll` scrolls one axis, so `top:0` never
   engages); size it with `--fdy-table-frozen-h`, default `30rem`.
 
-## [1.34.0] — 2026-08-19
+## [1.34.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #008), and the second half of #005 it
 finally makes answerable.
 ### Added
@@ -729,7 +729,7 @@ finally makes answerable.
   its own source header says so. Caught by a consuming app in a screenshot within the hour, before
   the release reached npm. The raw path still accepts either: the enhancer listens for `change` *and*
   for the `fdy-change` a `.fdy-combo` emits.
-### Added — guards
+### Added: guards
 - `pageIndexForSize` is unit-tested at the boundaries (first page, both directions, same-size no-op,
   a negative index, a zero size).
 - The control is measured in a real browser, on two tables sharing one page state, **driven by real
@@ -785,7 +785,7 @@ finally makes answerable.
   and the kit's type scale simply did not apply. `font-size:inherit` is the fix where the class had
   no size of its own: it is what the documented span already did, and on a heading it declines the
   UA's `em` instead of inheriting it. **No rendering changes for markup that follows the docs.**
-### Added — guards
+### Added: guards
 - **A title class must render the same whatever element carries it** (#011). `npm test` asserts
   `margin`, `font-size` and `font-weight` on every `.fdy-*title` rule that sets type and is not a
   flex/grid box. This is #010's guard with the right invariant: that one checks the classes the docs
@@ -800,13 +800,13 @@ finally makes answerable.
   directly above it describing the 3×4 layout it was failing to produce. Moved after. Neither rule is
   wrong on its own, which is why reading them found nothing.
 
-### Fixed — the kit's own suite
+### Fixed: the kit's own suite
 - `browser/fixtures/theme-subtree.html` had no explicit theme on `<html>`, so its "light app" probe
   fell to `prefers-color-scheme`. On a machine in dark mode both probes read the dark ink and the
   test failed claiming `data-theme` had gone back to being root-scoped. Pinned; the subtree
   behaviour under test is unchanged.
 
-## [1.33.0] — 2026-08-18
+## [1.33.0] - 2026-08-18
 Three notes from the back-office app, four findings, all four executed.
 ### Added
 - **`pager={false}` on `FdyTable`** (Vue · React · Blazor). Server mode rendered its own footer
@@ -845,7 +845,7 @@ Three notes from the back-office app, four findings, all four executed.
   `false`, not `undefined`, so `props.pager !== false` withheld the footer from every table that
   never mentions `pager`. The existing controlled-`pageIndex` guard failed within seconds. `pager`
   now goes through `withDefaults`, the same trap `FdyModal`'s `dismissible` hit in v1.18.0.
-### Added — guards
+### Added: guards
 - **The prose-ink invariant** note 007 asked for: any rule that sets a `font-size` *and* spends
   `--color-text-subtle` is typesetting prose in an ink gated for decoration, and fails. Matched by
   shape, not by a list of names, so the third instance cannot arrive the way the second did. Two
@@ -857,7 +857,7 @@ Three notes from the back-office app, four findings, all four executed.
   fills are: a gradient is a background-*image*, so the CSS reads fine either way and only the engine
   shows which treatment won.
 
-## [1.32.1] — 2026-08-18
+## [1.32.1] - 2026-08-18
 Docs only. Asked by a consumer: *"if I upgrade, will the agent in my project know what it gained?"*
 The answer was no, and two reasons why.
 ### Fixed
@@ -873,7 +873,7 @@ The answer was no, and two reasons why.
   cannot see this either: it verifies fully-written names and skips shorthand by design, so a class
   introduced only in shorthand is invisible to both the reader and the test.
 
-## [1.32.0] — 2026-08-18
+## [1.32.0] - 2026-08-18
 Improvement note 004, both halves: a calendar you could not steer, and a check mark that talked.
 ### Added
 - **The calendar title is a control.** It was a `<div>` — the only thing naming the month, and not
@@ -907,7 +907,7 @@ Improvement note 004, both halves: a calendar you could not steer, and a check m
   by the mousedown path.
 - The report's `aria-hidden` suggestion would also have worked; CSS alt text was chosen because it
   removes the conditional from four implementations instead of adding an attribute to each.
-### Added — guards
+### Added: guards
 - `browser/harness.mjs` gains **`axName(selector)`** — the accessible name as the *engine* computes
   it (CDP `Accessibility.getPartialAXTree`). This mattered immediately: the first version of the
   name invariant read `textContent`, which never contains CSS generated content, so it passed with
@@ -916,7 +916,7 @@ Improvement note 004, both halves: a calendar you could not steer, and a check m
   shows 12 months and moves focus into the grid, the arrows step years, and picking a month commits
   nothing.
 
-## [1.31.0] — 2026-08-18
+## [1.31.0] - 2026-08-18
 Improvement note 002: density was a one-way door.
 ### Added
 - **`[data-density="comfortable"]` is now a real rule.** The kit shipped only the `compact` block,
@@ -937,7 +937,7 @@ Improvement note 002: density was a one-way door.
   gains its way back out, and a retuned default can never leave the two blocks disagreeing. The
   report's hand-written block was correct in all five values — this only removes the chance for it
   to stop being correct.
-### Added — guards
+### Added: guards
 - `test/build.test.mjs` asserts the two density blocks cover the *same* tokens, that every
   comfortable value equals the `:root` default, and that none of them equals its compact counterpart
   (a block that resets nothing is as green as one that works).
@@ -945,7 +945,7 @@ Improvement note 002: density was a one-way door.
   returns to a 40px control and `--space-4: 1rem`, and a `compact` island nested back inside that —
   because the point of the rule is the box that comes out, not the declaration going in.
 
-## [1.30.0] — 2026-08-18
+## [1.30.0] - 2026-08-18
 Note 008 (adopting 1.29.0) plus a direct design report: *"the input border looks too dark next to the
 card and button-group borders."*
 ### Fixed
@@ -981,7 +981,7 @@ card and button-group borders."*
   hatch`, and the stretched button is a sibling, not an ancestor. The `pointer-events:none` rule the
   report carries fixes something the kit's own composition does not do.
 - The report's contrast figures (4.41 / 4.69) were re-derived from the 1.29 ramp and are exact.
-### Added — guards
+### Added: guards
 - `contrast.test.mjs`: the control border is now asserted on **all three** surfaces (`surface-3` was
   missing, and it is the worst case that pinned the dark theme to the floor) and at **3.25**, not
   3.0 — a boundary that clears the floor by 0.02 has no headroom, and the margin is what catches a
@@ -992,7 +992,7 @@ card and button-group borders."*
 - `browser/card-stretch.mjs`: the list case, asserting **row one** (the point that hides the bug is
   row two, which passes even when the overlay belongs to another row).
 
-## [1.29.0] — 2026-08-18
+## [1.29.0] - 2026-08-18
 Improvement note 001 from a second consuming app (a 40-screen back office). Eight findings; six
 executed, one already documented, one left as an owner decision.
 ### Added
@@ -1038,7 +1038,7 @@ executed, one already documented, one left as an owner decision.
   `width` entirely** (it does not apply to non-replaced inline boxes) and rendered 936px wide until
   it got a `display`; and stacking two colour roles (`.fdy-help.fdy-text-warning`) silently loses to
   whichever rule the bundle happens to emit later — documented, and the docs page no longer does it.
-### Added — guards
+### Added: guards
 - Adapter specs for `clearable` in both Vue and React (real clicks: emits `null`, empties the field,
   the control disappears with the value it cleared, focus lands on the trigger, dialog stays shut).
 - CSS gate: menu focus must render as more than the hover fill; the required marker must keep its
@@ -1048,7 +1048,7 @@ executed, one already documented, one left as an owner decision.
 - `contrast.test.mjs` now also asserts the state inks on **plain** surfaces, not just over their own
   `-soft` fills.
 
-## [1.28.0] — 2026-08-18
+## [1.28.0] - 2026-08-18
 Improvement note 007, written while fixing a workspace picker whose cards showed a pointer cursor
 and swallowed every click.
 ### Added
@@ -1084,7 +1084,7 @@ and swallowed every click.
 - **Cards only.** The overlay anchors to the nearest *positioned* ancestor. `.fdy-list__row` is not
   positioned (`.fdy-list` is), so a stretched target in a list row would cover the whole list —
   documented, with `.fdy-list__row--button` as the answer for clickable rows.
-### Added — guards
+### Added: guards
 - `browser/card-stretch.mjs` drives real presses: the target receives clicks from anywhere on the
   card, the click is dispatched **on the button** rather than on a common ancestor, the secondary
   action and an inline link keep their own clicks, and an app-pinned control keeps its own
@@ -1093,7 +1093,7 @@ and swallowed every click.
 - `test/css.test.mjs` guards all of it at the CI gate. Mutation-checked against six defects,
   including both of the ones written during this change.
 
-## [1.27.0] — 2026-08-14
+## [1.27.0] - 2026-08-14
 Improvement note #44, found while building a settings screen whose only numeric field looked like it
 belonged to a different application.
 ### Fixed
@@ -1137,7 +1137,7 @@ belonged to a different application.
   `docs/reference-screen.html` and `examples/` (against `search` ×10, `text` ×12, `date` ×4). The kit
   never used the input it shipped. The docs page now carries a real number field, in the input-group
   section where it belongs.
-### Added — guards
+### Added: guards
 - `test/css.test.mjs` asserts both engine halves survive (each is invisible in review and each brings
   the artefact back on one engine only), and states in-file why `search`/`date` are excluded.
 - `browser/number.mjs` drives real clicks and a real Tab: stepping fires native `input` + `change`,
@@ -1146,7 +1146,7 @@ belonged to a different application.
 - `browser/harness.mjs` gains `pressKey` — tab order only moves for a trusted key, so the claim is
   measured rather than read off an attribute.
 
-## [1.26.0] — 2026-08-14
+## [1.26.0] - 2026-08-14
 Improvement note #43, found while chasing a "the upload is stuck" report on a 626 KB PDF: the
 transfer took about a second, the server then spent nearly a minute reading the document.
 ### Added
@@ -1180,13 +1180,13 @@ transfer took about a second, the server then spent nearly a minute reading the 
 - Under `prefers-reduced-motion: reduce` the kit's indeterminate treatment is a dimmed **full** bar
   (no animation left to carry the meaning) — pre-existing behaviour for every indeterminate progress,
   not introduced here. For those users the honest signal is the label, not the bar.
-### Added — guards
+### Added: guards
 - `browser/upload-states.mjs` gains a third spec, measuring what the **engine renders** rather than
   what the source declares: both ways to get this wrong are invisible in a code read. Mutation-checked
   against five defects, including the report's own two — modifier-on-bar, inline `width:100%`, no
   width restored on return, `aria-valuenow` kept, and label ignored.
 
-## [1.25.0] — 2026-08-13
+## [1.25.0] - 2026-08-13
 Improvement note #42, found while adopting 1.24.0 — the other half of the same integration.
 ### Fixed
 - **`fdy-upload-remove` now fires on the dropzone**, the same element as `fdy-upload-add`. It was
@@ -1210,13 +1210,13 @@ Improvement note #42, found while adopting 1.24.0 — the other half of the same
   to the document bubbles to nothing at all, so its × was previously unobservable.
 - *Migration:* a consumer that worked around the old behaviour by listening on the file list must
   move that listener to the dropzone. That position was never documented — it was the bug.
-### Added — guards
+### Added: guards
 - `browser/upload-states.mjs` gains a second spec: removal fires on the dropzone **exactly once**, in
   both layouts (list as sibling, list nested inside the zone), and delegation on a shared ancestor
   sees no duplicates. Mutation-checked against *both* rejected designs — reverting to the row target
   fails it, and so does the report's dispatch-on-both.
 
-## [1.24.0] — 2026-08-13
+## [1.24.0] - 2026-08-13
 Improvement note #41: the upload row had no "chosen, not yet sent" state, so every consumer-driven
 integration showed a transfer that had not started.
 ### Fixed
@@ -1250,7 +1250,7 @@ integration showed a transfer that had not started.
   Two corrections to the report while transcribing it: the function is `handleFiles` (not `addFiles`)
   and the attribute is `data-fdy-upload-simulate` (not `data-simulate`) — the latter matters, since
   documenting the wrong name would have consumers set an attribute that does nothing.
-### Added — guards
+### Added: guards
 - **`browser/upload-states.mjs`** — drops a real `File` and asserts the rest state shows no progress
   bar, that `uploading()` → `setProgress()` → `done()` still chains, that the simulate path is
   untouched, and that a listless dropzone still dispatches. Mutation-checked on both halves.
@@ -1259,7 +1259,7 @@ integration showed a transfer that had not started.
   dropzone sharing a parent with another list adopts it — the first version of this guard was
   testing nothing, and the mutation run is what exposed that.
 
-## [1.23.0] — 2026-08-13
+## [1.23.0] - 2026-08-13
 Consumption round 6 (`improvement-notes/006`). The reporter filed two of the three as **their own**
 bugs rather than the kit's — and they were right about the code, but in both cases the kit had a way
 to make the mistake impossible and had not taken it. Those are the two most valuable findings here.
@@ -1290,7 +1290,7 @@ to make the mistake impossible and had not taken it. Those are the two most valu
   (measured: trigger 32px tall, avatar 32×32). 1.5rem inside 2rem leaves the ~4px the kit's other
   controls give their icons. The report suggested `--text-2xs`; that token does not exist — `--text-xs`
   is the smallest the kit has, and inventing a type step for one avatar size is not worth it.
-### Added — guards
+### Added: guards
 - **`browser/root-init.mjs`** — mounts a widget *after* load, initialises it through its own root, and
   drives a **real click** to prove it opens; repeated for a second enhancer so the fix reads as the
   shared pattern rather than a one-off. Mutation-checked on both. Being marked `-ready` is explicitly
@@ -1302,13 +1302,13 @@ to make the mistake impossible and had not taken it. Those are the two most valu
   never said which parts were optional); avatar gains its size table with the in-control guidance.
 - Both `useFreeday` docstrings now show the ref-on-the-widget shape alongside the wrapping one.
 
-## [1.22.0] — 2026-08-12
+## [1.22.0] - 2026-08-12
 Two bodies of work. **(a)** three more findings from consumption round 5 — the report grew §5-§7
 after 1.21.0 was cut; **(b)** a **routing** failure found in the same adopted project, which had been
 built on raw markup + enhancers inside a framework that has typed wrappers because nothing in the
 package ever told it otherwise. (b) was prepared as 1.21.1 and folded in here rather than shipped as
 a separate patch minutes earlier.
-### Added — from consumption round 5 (§5, §6)
+### Added: from consumption round 5 (§5, §6)
 - **`.fdy-nav--horizontal`** — the same navigation links laid out as a **row**, for a top-nav
   application that puts its primary nav in `.fdy-appbar` / `.fdy-app__topbar` and has no sidebar.
   Deliberately a modifier, not a new block: the item, its states and `aria-current="page"` are
@@ -1334,13 +1334,13 @@ a separate patch minutes earlier.
   transparent — at equal specificity the later rule won and the ghost segment lost its fill entirely.
   Each fill variant now defines its own pressed look. The CSS read correctly in the file; only a real
   engine showed it, which is why the new guard lives in `browser/`.
-### Fixed — from consumption round 5 (§7)
+### Fixed: from consumption round 5 (§7)
 - **Hard rule 1 in `COMPONENTS.md` now records its one exception.** The rule says a modifier is
   always written beside its block class, but `.fdy-input-group__addon--icon` is standalone by design
   — adding the base `__addon` gives a search glyph the grey fill and divider of a `Rp` / `%` prefix.
   An agent following the rule literally produced the wrong control; one following the CSS comment
   broke the stated rule. The exception is now written down, and it is the only one.
-### Fixed — the package now routes by stack
+### Fixed: the package now routes by stack
 - **The paste-block in `docs/agent-onboarding.md` never mentioned the adapters.** That block is the
   only text that lands in a consuming project's agent instructions, so it is the only text an agent
   re-reads on every task — and it opened with "a CSS kit + enhancers, **not a component framework**",
@@ -1365,7 +1365,7 @@ a separate patch minutes earlier.
   `adapters/` *was* shipped, so the wrappers sat in the install, unused, with nothing pointing at
   them. v1.20.0 started shipping the docs; this release makes them route.
 
-## [1.21.0] — 2026-08-12
+## [1.21.0] - 2026-08-12
 Fifth round of real-app consumption feedback, written while that app adopted 1.20.0. Two findings —
 and a **withdrawal**: the reporter retracted 1.20's rejected §A themselves after isolating the real
 mechanism, which turned out to be a genuine kit bug hiding behind it. Both halves of that rejection
@@ -1409,7 +1409,7 @@ reproduce here, so the rejection stands and the withdrawal is recorded rather th
   would make it match every element that does not itself carry `data-theme="light"`, including the
   *children* of a light island, dragging them back to dark. Measured: with the un-rooted variant that
   island renders light ink on a light surface; root-scoped, it stays correct.
-### Added — guards
+### Added: guards
 - **`test/css.test.mjs`** — the containment invariant, CI-gated: a rule that declares `overflow` must
   also be positioned, or be listed with the ancestor that already contains it. Single-line truncation
   (`text-overflow:ellipsis` on a label) is excluded by shape, not by name, so new truncating labels
@@ -1435,13 +1435,13 @@ reproduce here, so the rejection stands and the withdrawal is recorded rather th
   and is already their containing block, and the datatable's own scrolling child now carries it. They
   are in the test's allowlist with that reason instead of carrying a declaration that does nothing.
 
-## [1.20.0] — 2026-08-12
+## [1.20.0] - 2026-08-12
 Two bodies of work in one release (1.19.0 was prepared but never committed, tagged or published, so
 it is folded in here rather than left as a phantom version):
 **(a)** make the kit consumable by an **AI coding agent** in a new or migrating project, and clean the
 repo to production level; **(b)** act on the fourth round of real-app consumption feedback — five
 confirmed gaps, one rejected premise, and one documentation bug of our own that chasing it exposed.
-### Added — from consumption round 4
+### Added: from consumption round 4
 - **`.fdy-list` / `.fdy-list__row` — the flat row container** (`src/components/list.css`). One bordered
   surface, `--color-border-muted` hairline dividers, **no shadow**; `--interactive` for hover, and
   `--button` for when the row *is* the control (UA box reset without losing the list surface), plus
@@ -1471,13 +1471,13 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
 - **Browser guards for the controlled page index**, Vue and React, in `browser/adapter.mjs`: a table
   whose pager lives *outside* the component, asserting both directions (parent → rows, and internal
   pager → parent event). Mutation-checked: reverting the component to its private index fails them.
-### Changed — from consumption round 4
+### Changed: from consumption round 4
 - **`data-density="compact"` is no longer root-scoped.** The generated selector was
   `:root[data-density="compact"]`; it is now a bare `[data-density="compact"]`. These are inheriting
   custom properties, so density can be set on a route wrapper or a single section — which is how it is
   actually decided (per screen), not on `<html>` for the whole app. Setting it on the root still works
   identically. A build test now asserts the selector is not root-scoped.
-### Fixed — from consumption round 4
+### Fixed: from consumption round 4
 - **`USAGE.md` §3 misdescribed the kit's own elevation scale** — our bug, found while checking the
   report. It prescribed `--shadow-1` for "a card" and `--shadow-4` for "modal / drawer", but `.fdy-card`
   uses `--shadow-lift` (≈6× heavier than `--shadow-1`) and `.fdy-modal` uses `--shadow-lift-hover`;
@@ -1490,7 +1490,7 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   arbitrate the composed case). The difference existed but was written down nowhere, so the wrong
   choice was only visible once rendered. Documented in `USAGE.md` §7 and `COMPONENTS.md`; no CSS
   changed, so no existing screen shifts.
-### Notes — one report item rejected
+### Notes: one report item rejected
 - **"`.fdy-page-section` and `.fdy-table-scroll` do not compose" does not reproduce, and the proposed
   `min-width:0` fix is a no-op.** Measured on `docs/reference-screen.html` (the same
   section → datatable → scroller chain) with the table forced to 1400px in a 688px column: page
@@ -1597,7 +1597,7 @@ confirmed gaps, one rejected premise, and one documentation bug of our own that 
   targets `data-fdy-table-pagination`. `COMPONENTS.md` says so, and the drift guard lists it as a
   known structural hook.
 
-## [1.18.0] — 2026-08-11
+## [1.18.0] - 2026-08-11
 ### Fixed
 - **`FdyModal` / `FdyDrawer` (Vue) were non-dismissible when `dismissible` was omitted — an
   accessibility defect.** Vue's boolean-cast delivers an omitted Boolean prop as `false`, not
@@ -1637,7 +1637,7 @@ Additive except the two bug fixes (which restore documented behaviour). Gate: `n
 `typecheck:react` 0 · `test:browser` 6/6 · new CSS browser-verified in real Chrome. From real-app
 consumption feedback (three instalments).
 
-## [1.17.0] — 2026-08-11
+## [1.17.0] - 2026-08-11
 ### Added
 - **Avatar identity tones (`--tone-1`…`--tone-8`).** Decorative tints (from the categorical chart
   palette) with a theme-aware, text-leaning foreground, so same-initial avatars — common where many
@@ -1666,7 +1666,7 @@ consumption feedback (three instalments).
 Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone contrast, both themes) ·
 `typecheck:react` 0 · new CSS/JS browser-verified in real Chrome. From real-app consumption feedback.
 
-## [1.16.0] — 2026-08-11
+## [1.16.0] - 2026-08-11
 ### Added
 - **Native Blazor component library (`adapters/blazor/`) — first release, 10/10 parity.** A Razor
   Class Library (`Freeday.Blazor`, net8.0) so Blazor consumers get typed `<FdyX>` components with
@@ -1689,7 +1689,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
 - **`src/freeday-select.js`** gained an additive `setValue` (silent programmatic select) so a Blazor
   `@bind-Value` can push an external combo value without the enhancer echoing an `fdy-change` back.
 
-## [1.15.0] — 2026-08-10
+## [1.15.0] - 2026-08-10
 ### Added
 - **Type declarations for every export (#40).** Only `./vue` and `./react` shipped a `types`
   condition; the other eight exports had none. A TypeScript consumer's two side-effect imports —
@@ -1703,7 +1703,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   more correct than the guesses consumers had been copying). `files` now also ships
   `tokens/breakpoints.d.ts`. Runtime unchanged; purely additive.
 
-## [1.14.0] — 2026-08-01
+## [1.14.0] - 2026-08-01
 ### Added
 - **Read-only state across the form controls (#39).** `input` / `textarea` gain a `[readonly]` rule —
   full-contrast text on a muted surface with a softened border and no focus-ring escalation, distinct
@@ -1722,7 +1722,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   (applied on a macrotask, so it lands after both child triggers are built — a microtask would run
   before the later-registered timepicker enhancer). All additive; no breaking changes.
 
-## [1.13.1] — 2026-08-01
+## [1.13.1] - 2026-08-01
 ### Fixed
 - **`FdyCombo` can be selected with the mouse again (#38).** Clicking an option did nothing — the
   listbox closed and no `update:modelValue` fired (keyboard select still worked, which is why a
@@ -1735,7 +1735,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   hover paths untouched. Verified with trusted CDP mouse events (a synthetic `dispatchEvent` won't
   reproduce it — untrusted events run no default action, so focus never moves).
 
-## [1.13.0] — 2026-07-30
+## [1.13.0] - 2026-07-30
 ### Added
 - **`FdyDatepicker` clear affordance — an optional date can now be unset (#37A).** A new `clearable`
   prop renders a small × button in the trigger (overlaid in the calendar-icon slot) whenever a date is
@@ -1755,7 +1755,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   `FdyDatepicker` adapters only — the vanilla `freeday-datepicker.js` enhancer (used by the Indonesian
   docs demos) keeps its Indonesian defaults.
 
-## [1.12.0] — 2026-07-29
+## [1.12.0] - 2026-07-29
 ### Added
 - **Chart colour overrides can now name a categorical palette slot (#36).** `data-fdy-colors` (and the
   `<FdyChart colors>` prop) previously resolved every name through the semantic tier
@@ -1772,7 +1772,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   resolve to their semantic tokens. (`--chart-1..8` are public tokens in `dist/freeday.tokens.css`, so
   matching swatches/bars elsewhere can reference `var(--chart-N)` directly — no adapter export needed.)
 
-## [1.11.2] — 2026-07-28
+## [1.11.2] - 2026-07-28
 ### Fixed
 - **A filter bar docked in a table toolbar no longer loses its alignment (#35).** `.fdy-filterbar`
   (`align-items:flex-end`, for labelled fields) and `.fdy-table-toolbar` (`align-items:center`, for
@@ -1784,7 +1784,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   and filterbars are untouched. Verified in-browser: the composed bar's controls now share one
   baseline (computed `align-items: flex-end`).
 
-## [1.11.1] — 2026-07-28
+## [1.11.1] - 2026-07-28
 ### Fixed
 - **Tall modals now scroll their body instead of clipping the footer (#34).** `.fdy-modal` had a
   `max-height` + `overflow:hidden` but never established a flex context, so its three children laid out
@@ -1796,7 +1796,7 @@ Additive; no breaking changes. Gate: `node --test` 22/22 (incl. avatar-tone cont
   are unchanged. Verified in-browser (body scrolls, footer stays inside) including the `.fdy-modal--cfl`
   picker — no regression.
 
-## [1.11.0] — 2026-07-28
+## [1.11.0] - 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). Additive / corrective.
 
 ### Fixed
@@ -1819,7 +1819,7 @@ Follow-ups from the doc-ai-automation migration (improvement notes #31–#33). A
   field. (The note's margin-swap proposal to un-strand the actions was **tested in-browser and does not
   work** — margins don't change flex line-breaking — so only the modifier + docs were taken.)
 
-## [1.10.0] — 2026-07-28
+## [1.10.0] - 2026-07-28
 Follow-ups from the doc-ai-automation migration (improvement notes #27–#30). Additive / corrective;
 no breaking changes.
 
@@ -1845,7 +1845,7 @@ no breaking changes.
   it need not burn the single `--w-grow` slot. The date-range pickers also gained a `min-width` (7rem)
   so a squeezed range compresses and wraps instead of clipping the date (was `min-width:0`).
 
-## [1.9.0] — 2026-07-28
+## [1.9.0] - 2026-07-28
 Follow-ups to 1.8.0's `FdyTable` (improvement notes #25/#26). Additive — the #25 change **widens** a
 generic bound, so every call site that compiled before still compiles.
 
@@ -1867,7 +1867,7 @@ generic bound, so every call site that compiled before still compiles.
   Replaces the hand-rolled `<tr tabindex="0" @click @keydown>` + duplicated row CSS consumers were
   each re-writing.
 
-## [1.8.0] — 2026-07-28
+## [1.8.0] - 2026-07-28
 Release **1.8 — framework-safe data table, modal/drawer wrappers, and a monospace utility**.
 Non-breaking, purely additive. No existing selector, markup, or enhancer changed.
 
@@ -1893,7 +1893,7 @@ Non-breaking, purely additive. No existing selector, markup, or enhancer changed
   the right-aligned `.fdy-table__num`. `FdyTable` applies it for any `mono: true` column.
 - **`.fdy-drawer__footer`** — a bottom action bar for drawers (mirrors `.fdy-modal__footer`).
 
-## [1.7.1] — 2026-07-27
+## [1.7.1] - 2026-07-27
 Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `adapters/`, and
 `tokens/` are byte-identical to 1.7.0.
 
@@ -1908,7 +1908,7 @@ Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `a
 - **`README.id.md`** (Bahasa Indonesia) with a language-toggle row on both READMEs; now shipped in
   the published package.
 
-## [1.7.0] — 2026-07-24
+## [1.7.0] - 2026-07-24
 Rilis **1.7 — tree checkbox, form-grid, & tiga section docs full-width**. Non-breaking, aditif.
 
 ### Added
@@ -1933,7 +1933,7 @@ Rilis **1.7 — tree checkbox, form-grid, & tiga section docs full-width**. Non-
   Terverifikasi lewat gestur mouse asli (headless CDP `Input.dispatchMouseEvent`): cascade
   centang/indeterminate, checkbox tak melipat cabang, teks summary tetap toggle.
 
-## [1.6.2] — 2026-07-24
+## [1.6.2] - 2026-07-24
 Rilis **patch — lisensi**. Tak ada perubahan kode.
 
 ### Changed
@@ -1944,7 +1944,7 @@ Rilis **patch — lisensi**. Tak ada perubahan kode.
   file `LICENSE`, catat di README + footer docs. `"private": true` dipertahankan (pengaman
   anti-`npm publish`, tak terkait lisensi).
 
-## [1.6.1] — 2026-07-24
+## [1.6.1] - 2026-07-24
 Rilis **patch — perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
 
 ### Fixed
@@ -1957,7 +1957,7 @@ Rilis **patch — perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
   (headless CDP `Input.dispatchMouseEvent`) pada playground docs dan section Select. Memengaruhi
   konsumen vanilla `freeday/js`; adapter Vue/React punya implementasi sendiri dan tak terdampak.
 
-## [1.6.0] — 2026-07-24
+## [1.6.0] - 2026-07-24
 Rilis **1.6 — wrapper input ekstra (Vue + React) + filter-bar**. Non-breaking, aditif.
 
 ### Added
@@ -1990,7 +1990,7 @@ Dengan rilis ini adapter **Vue dan React simetris penuh** — tujuh komponen con
 sama di kedua sisi: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` ·
 `FdyCascade` · `FdyCfl` · `FdyChart`.
 
-## [1.5.0] — 2026-07-24
+## [1.5.0] - 2026-07-24
 Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
 ### Added
 - **React adapter parity** — komponen controlled typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` /
@@ -2000,7 +2000,7 @@ Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
   langsung tanpa config tambahan, konsumen Next.js mungkin butuh
   `transpilePackages: ['freeday']`.
 
-## [1.4.1] — 2026-07-23
+## [1.4.1] - 2026-07-23
 Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll container.
 ### Fixed
 - **Dropdown lepas dari clipping ancestor** (`.fdy-card{overflow:hidden}`, scroll container, atau
@@ -2016,7 +2016,7 @@ Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll con
   `freeday/vue` (internal, tak diekspor). Panel dropdown kini set `color:var(--color-text)` eksplisit
   (UA `[popover]` default-nya `CanvasText`).
 
-## [1.4.0] — 2026-07-23
+## [1.4.0] - 2026-07-23
 Rilis **1.4 — motion & native charts**. Dua fitur besar (gerak enter/exit lintas komponen +
 chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. Non-breaking.
 
@@ -2051,7 +2051,7 @@ chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. No
    (atau bentuk `data-fdy-chart`), hapus folder wrapper chart lokal, dan buang `chart.js` dari
    `package.json`. Machinery tema chart (probe warna + observer) tak lagi perlu — token yang urus.
 
-## [1.3.1] — 2026-07-23
+## [1.3.1] - 2026-07-23
 Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
 ### Removed
 - **Rail aksen 3px pada state aktif/terpilih** (`box-shadow:inset 3px 0 0 var(--color-primary)`)
@@ -2064,7 +2064,7 @@ Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
   (`:focus-visible`, wajib a11y — pembeda fokus vs terpilih), underline tab aktif, checkmark
   combo, ring highlight combo.
 
-## [1.3.0] — 2026-07-23
+## [1.3.0] - 2026-07-23
 Rilis **1.3 — accent Azure**. Warna sekunder/aksen berubah dari **teal → biru Microsoft Azure**.
 ### Changed
 - **Accent: teal → sky / Azure blue** — `--color-accent` kini `#0078d4` (light) / `#47a1e6` (dark),
@@ -2076,7 +2076,7 @@ Rilis **1.3 — accent Azure**. Warna sekunder/aksen berubah dari **teal → bir
   Kontras WCAG tetap **9/9** (accent/surface + on-accent/accent lolos light & dark). Non-breaking
   (nilai token berubah; nama token/kelas/API tetap).
 
-## [1.2.2] — 2026-07-23
+## [1.2.2] - 2026-07-23
 Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terpilih.
 ### Fixed
 - **Brand link-safe (#17)** — `.fdy-app__brand` kini set `text-decoration:none`; saat brand
@@ -2089,7 +2089,7 @@ Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terp
   (`.fdy-fab--accent`, `.fdy-badge-ov--accent`, `.fdy-slider--accent`) tak berubah. Membalik
   bagian "teal sebagai aksen fungsional" dari v1.1.0. Murni CSS, backward-compatible.
 
-## [1.2.1] — 2026-07-23
+## [1.2.1] - 2026-07-23
 Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
 ### Fixed
 - **Ikon depan input-group tak ke-center + gap** — `.fdy-input-group__addon--icon` dipakai
@@ -2099,7 +2099,7 @@ Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
   `.fdy-input-group__btn`) dan `.fdy-input` setelah ikon memangkas padding-kirinya. Murni CSS,
   backward-compatible. Kena semua field search/find (topbar search, filter tabel, dialog CFL, dst).
 
-## [1.2.0] — 2026-07-23
+## [1.2.0] - 2026-07-23
 Rilis **1.2 — Vue input wrappers (native reimpl)**. Komponen Vue idiomatik dengan `v-model`
 nyata di atas class CSS kit, supaya form Vue tak perlu fallback ke `<select>`/`<input type=date>`
 native. **Non-breaking**: murni tambahan (file `.vue` + export baru); enhancer, `useFreeday`,
@@ -2127,7 +2127,7 @@ dan semua class/token lama tak berubah. `vue` tetap peerDependency opsional.
 - Follow-up diketahui (warisan datepicker, non-blocking): grid `role="grid"` datar tanpa `row`;
   hari fokus-awal yang ter-`min`/`max`-disable bisa bikin grid tak ter-fokus keyboard di config tepi.
 
-## [1.1.0] — 2026-07-23
+## [1.1.0] - 2026-07-23
 Rilis **1.1 — "Precision" visual polish + pengerasan adopsi**. Dua bagian: **(1) penyegaran
 visual** token-driven — radius lebih tajam, elevation overlay lebih tegas, hierarki tipografi
 heading lebih jelas, teal (`--color-accent`) sebagai indikator fungsional non-teks untuk state
@@ -2178,7 +2178,7 @@ assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
   install `git+https` untuk CI (repo privat tanpa SSH key); klarifikasi `.fdy-btn` = primary,
   `.fdy-table-wrap`, dan density `--control-h` untuk komponen custom.
 
-## [1.0.0] — 2026-07-22
+## [1.0.0] - 2026-07-22
 Rilis **1.0 — project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
 kontras WCAG AA lolos audit otomatis · installable via git · integrasi Vue/React/Blazor
 terbukti di contoh faktur yang jalan · docs adopsi lengkap.
@@ -2193,7 +2193,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 ### Docs
 - Root redirect `index.html` → `docs/` untuk GitHub Pages (URL bersih `/freeday-ui-kit/`).
 
-## [0.9.6] — 2026-07-22
+## [0.9.6] - 2026-07-22
 ### Docs
 - **Whole-app language toggle (ID ⇄ EN)** — the topbar toggle now switches the entire docs,
   not just the landing: topbar, sidebar labels + group headers, every section heading, and
@@ -2206,7 +2206,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 - **Icons stay single-tone** — reverted the date/time picker glyphs to minimalist single-tone
   (duotone is reserved for the larger illustrative icons — states — and the theme toggle).
 
-## [0.9.5] — 2026-07-22
+## [0.9.5] - 2026-07-22
 ### Added
 - **Two-tone (duotone) control icons** — the date/time picker triggers (and the datetime
   composer that reuses them) now render with a low-opacity fill behind the stroke, matching the
@@ -2216,7 +2216,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   framework-integration, footer) between Indonesian and English via `[data-i18n]`; inline
   markup (bold/code) is preserved. Version references synced to v0.9.5.
 
-## [0.9.4] — 2026-07-22
+## [0.9.4] - 2026-07-22
 ### Added
 - **Sidebar-menu component** — `.fdy-nav` (App shell) now supports per-node `.fdy-nav__icon`
   and `.fdy-nav__badge` (count), collapsible sections `.fdy-nav__group`/`.fdy-nav__grouplabel`,
@@ -2235,7 +2235,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   (bell + count) explaining the overlay badge works on any element. Responsive fixes so nothing
   overflows down to 320px.
 
-## [0.9.3] — 2026-07-22
+## [0.9.3] - 2026-07-22
 ### Added
 - **Chart hover (Chart.js-style)** — bar & donut charts now show an interactive tooltip that
   follows the cursor (`label: value`, donut adds `(%)`). Bars dim while one is hovered (the
@@ -2251,7 +2251,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 - Nav categories are collapsible `<details>` groups with chevrons (PrimeVue-style); more
   section whitespace; topbar hamburger to collapse the sidebar.
 
-## [0.9.2] — 2026-07-22
+## [0.9.2] - 2026-07-22
 ### Fixed
 - **Hover kontrol form tak terlihat** — sejak border resting jadi `--color-control-border`
   (slate-500) untuk a11y, hover yang menuju `--color-text-subtle` (juga slate-500) tak berubah.
@@ -2262,7 +2262,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   mengangkat/berbayang sendiri; split terangkat & berbayang sebagai satu kesatuan, plus garis
   pemisah tipis antar paruh.
 
-## [0.9.1] — 2026-07-22
+## [0.9.1] - 2026-07-22
 ### Added
 - **Adapter React** (`freeday/react`) — hook `useFreeday(rootRef?)` yang meng-*hydrate* enhancer
   di subtree pada mount + tiap commit (idempotent). Tipe `event.detail` di
@@ -2277,7 +2277,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 - `package.json`: export `./react` + `./blazor`, `react` peerDependency opsional (`>=18`).
   `version` 0.9.0 → 0.9.1.
 
-## [0.9.0] — 2026-07-22
+## [0.9.0] - 2026-07-22
 ### Added
 - **Adapter Vue 3** (`freeday/vue`) — composable `useFreeday(rootRef?)` yang meng-*hydrate*
   semua enhancer di subtree komponen saat mount + tiap update (idempotent). Tipis: enhancer
@@ -2291,7 +2291,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 - `package.json`: export `./vue`, `adapters/` masuk `files`, `vue` sebagai peerDependency
   opsional (`^3.4.0`). `version` 0.8.1 → 0.9.0.
 
-## [0.8.1] — 2026-07-22
+## [0.8.1] - 2026-07-22
 ### Added
 - **Form validation** (`freeday-form.js`, `[data-fdy-validate]`) — Constraint Validation
   API di-wire ke error inline aksesibel: `aria-invalid` + pesan ter-`aria-describedby`,
@@ -2315,7 +2315,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   `aria-invalid="true"` (bukan cuma kelas `--error`), jadi enhancer cukup toggle satu
   atribut aksesibel.
 
-## [0.8.0] — 2026-07-22
+## [0.8.0] - 2026-07-22
 ### Added
 - **Installable sebagai paket GitHub.** `npm i github:cahyo-dimas/freeday-ui-kit#v0.8.0`.
   `package.json` kini punya `exports`, `files`, `sideEffects`. Jalur import:
@@ -2327,7 +2327,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 ### Changed
 - `version` 0.1.0 → 0.8.0 (mulai semver bersih; komponen baru berikutnya = rilis minor 0.8.x).
 
-## [0.7.0] — 2026-07-22
+## [0.7.0] - 2026-07-22
 ### Added
 - **Time picker** (`freeday-timepicker.js`, `[data-fdy-timepicker]`) — trigger + popup daftar
   waktu (listbox WAI-ARIA), 24 jam, `data-step`/`data-min`/`data-max`, keyboard penuh.
