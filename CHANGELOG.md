@@ -26,6 +26,20 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   different words, and a major version is the only signal npm gives a consumer that an upgrade needs
   looking at. Hiding that behind a minor is the same class of quiet mismatch the last four releases
   have been about.
+### Changed
+- **Seven messages were translated correctly and still read like a machine.** The flip to English
+  produced complete, formal sentences where a product writes short ones: `Value is too small.` /
+  `Value is too large.` are now `Too small.` / `Too large.` (matching `Too short.` / `Too long.`
+  beside them), `Values do not match.` is `Values don’t match.`, `Does not match the expected
+  format.` is `Doesn’t match the required format.`, `Not a valid increment.` drops the jargon for
+  `Not a valid step.`, and upload's `File type not supported.` / `Larger than the {max} limit.` are
+  `Unsupported file type.` / `Over the {max} limit.` Contractions carry most of it, written with a
+  typographic apostrophe so the string needs no escaping.
+- **The donut legend separator is `·`, not an em dash.** It rendered `posted — 76%`; the kit uses a
+  middot everywhere else it separates two short things, and it is the one place the dash was in
+  front of a reader rather than in a comment. The example app's choose-from-list display line
+  (`code — name`) follows.
+
 ### Added: guards
 - The English guard now covers `src/freeday-*.js`, not just the typed adapters, so the promise is
   enforced on every path instead of stated on one. Verified by reverting a single string: it fails.
