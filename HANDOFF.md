@@ -1,32 +1,32 @@
 # Freeday — Status
 
-Snapshot kondisi terkini repo. **Ini bukan changelog** — riwayat per-versi ada di
+Snapshot kondisi terkini repo. **Ini bukan changelog.** Riwayat per-versi ada di
 [`CHANGELOG.md`](CHANGELOG.md); sumber-kebenaran desain (nilai token, keputusan, roadmap)
 ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md).
 
 > Berkas ini sempat mengingkari kalimat di atas: 419 barisnya berisi riwayat per-versi v1.24.0–v1.34.0,
-> duplikat CHANGELOG, dan berhenti diperbarui 20 rilis sebelum 2.0.0 — snapshot basi lebih berbahaya
+> duplikat CHANGELOG, dan berhenti diperbarui 20 rilis sebelum 2.0.0. Snapshot basi lebih berbahaya
 > daripada tak ada snapshot. Riwayat itu dibuang (2026-08-25), seperti yang sudah pernah dilakukan
 > di v1.20.0 untuk alasan yang sama. Yang tersisa di sini hanya **keadaan sekarang**.
 
 ## Di mana kita sekarang
 
-**Versi kerja: `2.0.0`.** npm masih di **`1.53.0`** — `1.54.0` dan `2.0.0` sudah di-commit **lokal**
+**Versi kerja: `2.0.0`.** npm masih di **`1.53.0`**. `1.54.0` dan `2.0.0` sudah di-commit **lokal**
 dan belum di-push atas permintaan owner, jadi belum lewat CI dan belum terbit.
 
 Tiga rilis terakhir, dan apa artinya bagi konsumen:
 
-- **1.53.0 — `.fdy-app` akhirnya mengirim perilakunya.** `freeday-app-shell.js` (opt-in
+- **1.53.0: `.fdy-app` akhirnya mengirim perilakunya.** `freeday-app-shell.js` (opt-in
   `data-fdy-app`): toggle di dua mode, Escape, backdrop, tutup saat item nav diikuti, fokus masuk
   panel dan kembali ke toggle, `inert`, Tab trap. Sebelumnya kit mengirim kelas state dan **nol JS**,
-  dan COMPONENTS.md menyuruh tiap konsumen merakit sendiri — dua salinan rakitan tangan di `docs/`
+  dan COMPONENTS.md menyuruh tiap konsumen merakit sendiri. Dua salinan rakitan tangan di `docs/`
   repo ini sendiri sudah saling berbeda, dan satu konsumen mengunci pengguna keyboard.
-- **1.54.0 — `<FdyAppShell>` jadi komponen typed ke-11** di Vue/React/Blazor. Satu model:
+- **1.54.0: `<FdyAppShell>` jadi komponen typed ke-11** di Vue/React/Blazor. Satu model:
   `navOpen` = "nav terlihat"; kit yang memetakan ke `--nav-open`/`--nav-collapsed`. Prop-nya opsional
   karena default-nya **ditentukan viewport**, dan pemanggil tak bisa menyatakan itu lewat satu nilai
   awal. Vue/React memakai `adapters/core/app-shell.js`; Blazor **mengikat ke enhancer** lewat
-  `fdy-app-nav` + `FreedayAppShell.setVisible` — dua implementasi, bukan empat.
-- **2.0.0 — enhancer vanilla berbahasa Inggris.** 39 string di 9 enhancer, plus fallback locale
+  `fdy-app-nav` + `FreedayAppShell.setVisible`. Dua implementasi, bukan empat.
+- **2.0.0: enhancer vanilla berbahasa Inggris.** 39 string di 9 enhancer, plus fallback locale
   datepicker (`lang || 'en'`) yang menentukan nama bulan/hari. **Breaking** untuk app Indonesia di
   jalur mentah; migrasinya atribut, bukan fork: `data-fdy-text-<key>` (dan `<html lang="id">` untuk
   tanggal).
@@ -34,17 +34,17 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 61 test  — node --test, gerbang default, tanpa browser
-npm run test:browser     72 test  — 18 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
+npm test                 61 test  · node --test, gerbang default, tanpa browser
+npm run test:browser     72 test  · 18 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
-npm run test:blazor       7 test  — bUnit, komponen Blazor dirender sungguhan
+npm run test:blazor       7 test  · bUnit, komponen Blazor dirender sungguhan
 ```
 
-- **Blazor akhirnya punya gerbang perilaku** (2026-08-25). Sebelumnya hanya `dotnet build` —
-  kompilasi — untuk 12 komponen, termasuk `FdyAppShell` yang merekonsiliasi binding dua arah dengan
+- **Blazor akhirnya punya gerbang perilaku** (2026-08-25). Sebelumnya hanya `dotnet build`, yaitu
+  kompilasi, untuk 12 komponen, termasuk `FdyAppShell` yang merekonsiliasi binding dua arah dengan
   enhancer JS. `test/blazor/` sengaja di luar `adapters/`, yang ikut terkirim ke npm.
 - **Test browser kini jalan di CI** (`.github/workflows/ci.yml`, sejak 2026-08-24) di tiap push, dan
-  `publish.yml` memanggilnya sebagai gerbang — tag dengan guard merah tak pernah sampai ke npm.
+  `publish.yml` memanggilnya sebagai gerbang, jadi tag dengan guard merah tak pernah sampai ke npm.
   Job-nya **mengasersikan jumlahnya sendiri**: `node --test` keluar 0 untuk suite yang mem-skip
   semuanya, jadi "hijau" dan "guard-nya jalan" adalah dua fakta berbeda.
 - **Engine sengaja berbeda**: CI memakai Chrome stable bawaan runner (yang dipakai konsumen), lokal
@@ -59,46 +59,46 @@ npm version patch|minor|major   # bump + build + git add dist, bikin tag
 git push --follow-tags          # CI jalan; publish.yml menerbitkan lewat OIDC
 ```
 
-Tanpa token, tanpa OTP, dengan provenance SLSA. Token 2FA-bypass **tidak** dipakai lagi — npm sedang
+Tanpa token, tanpa OTP, dengan provenance SLSA. Token 2FA-bypass **tidak** dipakai lagi, karena npm sedang
 membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass2fa-deprecation)).
 
 ## Lihat hasilnya
 
 - **Live:** [cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)
 - **Lokal:** buka `docs/index.html` langsung di browser (font Google via internet; ada fallback)
-- **Pakai di project:** `npm i @cahyo-dimas/freeday` — panduan di
+- **Pakai di project:** `npm i @cahyo-dimas/freeday`, panduan di
   [`README.md`](README.md) & [`docs/getting-started.md`](docs/getting-started.md)
 
 ## Lokasi
 
-- `tokens/tokens.json` · `tokens/build.mjs` — pipeline token (Tier-1/2/3)
-- `src/components/*.css` (48) + `src/freeday-*.js` (26 enhancer) — authored · `dist/` — hasil build (di-commit)
-- `adapters/{vue,react,blazor}/` — integrasi framework · `adapters/core/` — logika lintas-adapter
-  (`table-model.js`, `app-shell.js`) · `examples/*-faktur/` — bukti pakai
-- `browser/` — 18 spec + fixture + harness CDP (tak ikut di-ship)
-- `COMPONENTS.md` — seluruh class publik · `USAGE.md` — doktrin · `docs/agent-onboarding.md` — untuk AI agent
-- `docs/index.html` — demo-site · `docs/reference-screen.html` — 1 layar utuh · `getting-started.md` · `integrations.md`
-- `docs/superpowers/specs/` — spec/blueprint (sumber-kebenaran desain)
-- `improvement-notes/` — friksi dari app nyata; **tak pernah di-commit** (hook pre-commit memblokir)
-- `reference/` — material input, tak pernah di-ship
+- `tokens/tokens.json` · `tokens/build.mjs` · pipeline token (Tier-1/2/3)
+- `src/components/*.css` (48) + `src/freeday-*.js` (26 enhancer) authored · `dist/` hasil build (di-commit)
+- `adapters/{vue,react,blazor}/` integrasi framework · `adapters/core/` logika lintas-adapter
+  (`table-model.js`, `app-shell.js`) · `examples/*-faktur/` bukti pakai
+- `browser/` 18 spec + fixture + harness CDP (tak ikut di-ship)
+- `COMPONENTS.md` seluruh class publik · `USAGE.md` doktrin · `docs/agent-onboarding.md` untuk AI agent
+- `docs/index.html` demo-site · `docs/reference-screen.html` 1 layar utuh · `getting-started.md` · `integrations.md`
+- `docs/superpowers/specs/` spec/blueprint (sumber-kebenaran desain)
+- `improvement-notes/` friksi dari app nyata; **tak pernah di-commit** (hook pre-commit memblokir)
+- `reference/` material input, tak pernah di-ship
 
 ## Yang diketahui dan belum diselesaikan
 
-- **Ada commit lokal yang belum di-push** — `git log --oneline origin/main..main` (angkanya sengaja
+- **Ada commit lokal yang belum di-push.** Lihat `git log --oneline origin/main..main` (angkanya sengaja
   tak ditulis di sini; angka di prosa selalu basi lebih dulu). Isinya 1.54.0 dan 2.0.0, dan dua
-  perbaikan yang lahir dari kondisi yang tak pernah muncul di laptop ini — flaky animasi listbox dan
+  perbaikan yang lahir dari kondisi yang tak pernah muncul di laptop ini, yaitu flaky animasi listbox dan
   pembatasan paralelisme: **terukur, belum terverifikasi di CI**.
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
-  tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan —
+  tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan, karena
   halaman itu bertugas menunjukkan default kit yang sebenarnya.
 - `CLAUDE.md` menyebut "44 komponen". Jumlah enhancer sudah dikoreksi (26, terhitung), tapi angka 44
-  tak cocok dengan apa pun yang bisa diverifikasi — 48 stylesheet, 39 seksi di COMPONENTS.md.
+  tak cocok dengan apa pun yang bisa diverifikasi: 48 stylesheet, 39 seksi di COMPONENTS.md.
   Dibiarkan daripada diganti tebakan.
 
 ## Selanjutnya
 
-Backlog aktif ada di **[`NEXT-UP.md`](NEXT-UP.md)**. Dua item yang pemicunya sudah datang — #8
-(perilaku app-shell) dan #6 (bahasa default) — **selesai** di 1.53.0/1.54.0/2.0.0.
+Backlog aktif ada di **[`NEXT-UP.md`](NEXT-UP.md)**. Dua item yang pemicunya sudah datang, #8
+(perilaku app-shell) dan #6 (bahasa default), **selesai** di 1.53.0/1.54.0/2.0.0.
 
 Sikap default tetap: **tunggu demand**. Tapi malam 24–25 Agustus 2026 memberi satu pelajaran yang
 layak dibawa: **NEXT-UP sendiri bisa basi**. #6 menuliskan "bikin hook override" sebagai pilihan,
