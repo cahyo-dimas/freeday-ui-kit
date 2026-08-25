@@ -458,7 +458,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
 
 ## [1.43.0] - 2026-08-19
 Three crowding reports from one settlement screen (IDU_EMATE_APPL_WEB, #020). All three measured in
-Chromium rather than read off the CSS — each is a layout outcome, invisible in the stylesheet.
+Chromium rather than read off the CSS, since each is a layout outcome invisible in the stylesheet.
 ### Fixed
 - **A control in a table column collapsed** (#020). `.fdy-input` is `width:100%`, which in an
   auto-layout table contributes **no intrinsic width**: the column shrank to its header text and took
@@ -479,8 +479,8 @@ Chromium rather than read off the CSS — each is a layout outcome, invisible in
   every upload UI puts after it sat flush against the last row, a measured **0px**. Symmetric now,
   with `:last-child` dropping the bottom margin so nothing pays for room it does not need.
 ### Added: guards
-- `browser/crowding.mjs` measures all three. The stat case asserts **both** directions — one line
-  when narrow, still exactly `31px` when wide — because a fix that quietly shrank every dashboard
+- `browser/crowding.mjs` measures all three. The stat case asserts **both** directions: one line
+  when narrow, still exactly `31px` when wide, because a fix that quietly shrank every dashboard
   would pass a "does it wrap?" test.
 
 ## [1.42.0] - 2026-08-19
@@ -495,7 +495,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   Rows tick instead of committing, the footer counts them, and **Confirm** commits the set. Vue and
   React widen their model to `Row[] | null`; Blazor takes `Values` / `ValuesChanged` instead, because
   a nullable union is not a C# shape. New strings: `selectedText` (`{n} selected`), `confirmText`,
-  `hintText` — the last one making the single-mode footer overridable too, which it never was.
+  `hintText`, the last one making the single-mode footer overridable too, which it never was.
 ### Notes on the shape of the fix
 - **The ticks are component state, not the model.** Closing without Confirm has to leave the caller's
   value exactly as it was, so the dialog seeds its ticks from the bound value on every open. Binding
@@ -518,7 +518,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   and the footer count follow, that a second click unticks, that Confirm hands back an **array** in
   order, and that closing without Confirm discards the ticks *and* does not remember them on re-open.
   Vue and React run the same script, so a divergence between the two fails here instead of in an app.
-  A typecheck cannot tell you whether a mode ever renders. Mutation-tested — committing
+  A typecheck cannot tell you whether a mode ever renders. Mutation-tested: committing
   `picked[0]` instead of the array fails it by name.
 
 ## [1.41.0] - 2026-08-19
@@ -532,7 +532,7 @@ One note from the account app (IDU_EMATE_ACCT_WEB, #018), the first raised from 
   invisible on a retina display and visible on every 1× monitor.
   The group now states `height: var(--control-h)` (it is already `border-box`) and the input
   `height: auto; align-self: stretch`. The group is `align-items: stretch` already, so the input and
-  the addons fill whatever the border leaves — at any border width, any rounding, and under
+  the addons fill whatever the border leaves, at any border width, any rounding, and under
   `data-density="compact"` without a second `calc` to keep in step. The defect was not the number;
   it was compensating in one rule for a value declared in another.
 ### Added: guards
@@ -540,7 +540,7 @@ One note from the account app (IDU_EMATE_ACCT_WEB, #018), the first raised from 
   caught this: the CSS reads as correct arithmetic, and the value it is correct about is one the
   engine rounds. `browser/control-heights.mjs` measures `.fdy-input-group` against `.fdy-btn`,
   `.fdy-input` and `.fdy-combo` with `getBoundingClientRect`, at both densities. Written **failing
-  first** against 1.40.0 — it reproduced 39 vs 40 before the fix landed.
+  first** against 1.40.0, it reproduced 39 vs 40 before the fix landed.
 - The note's own sweep is recorded: `calc(var(--control-h)` has five uses in `src/`, and the four in
   `button.css` step a control deliberately by a spacing token. This was the last compensation of its
   kind.
@@ -550,8 +550,8 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
 ### Fixed
 - **A picker inside a `.fdy-field` now fills it.** `.fdy-field`, `.fdy-combo` and
   `.fdy-input-group` all cap at 22rem; `.fdy-datepicker` capped at 14rem and `.fdy-timepicker`
-  at 11rem. In a two-column form grid that left a **224px** date box beside a **319px** combo —
-  measured, not eyeballed — and the row read as ragged with no fix available to the consuming
+  at 11rem. In a two-column form grid that left a **224px** date box beside a **319px** combo,
+  measured rather than eyeballed, and the row read as ragged with no fix available to the consuming
   app, because the cap sits on the component. `.fdy-field > .fdy-datepicker` / `> .fdy-timepicker`
   / `> .fdy-daterange` drop the cap; a picker standing on its own keeps its narrower width, which
   is right for a short value.
@@ -559,12 +559,12 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
 ### Added: guards
 - **The enhancer string contract is asserted in a real browser** (#016). 1.39.0 moved every
   user-facing string in **nine** enhancers into a `TEXT` table read through `textOf()`, and only
-  **one of the nine** — upload — had any browser coverage at all. The node guard proves the
+  **one of the nine**, upload, had any browser coverage at all. The node guard proves the
   literals *sit* in the table; it reads the source as text and cannot prove the wiring *runs*, so a
   `zone` out of scope or a `getAttribute` on a non-element would have thrown at init with all 51
   node tests still green. `browser/text-override.mjs` initialises table, stepper, mask, carousel,
   cascade, form and toast on real markup and asserts **both halves**: the documented Indonesian
-  default still renders, and `data-fdy-text-*` wins. The default is a contract too — an enhancer
+  default still renders, and `data-fdy-text-*` wins. The default is a contract too: an enhancer
   that quietly turned English would be a breaking change wearing a bugfix's clothes.
   Mutation-tested: making `textOf()` ignore the attribute fails it by name and value.
 
@@ -572,8 +572,8 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #017).
 The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are reachable now.
 ### Added
 - **Every enhancer string is overridable with `data-fdy-text-<key>`** (#016). The defaults stay
-  Indonesian — that is documented and deliberate for the raw path, and changing it would break
-  every app that adopted it — but they were also *unreachable*, and that is the half that was
+  Indonesian, which is documented and deliberate for the raw path, and changing it would break
+  every app that adopted it, but they were also *unreachable*, and that is the half that was
   wrong. A Blazor app meets these enhancers through `FreedayBlazor.initAll`, which runs every one
   of them, while COMPONENTS.md promises Blazor is English throughout; both promises can only hold
   if the default stays and the string can be changed. Each enhancer now keeps its strings in one
@@ -581,60 +581,60 @@ The sweep #013 §2 filed and #015 restated: the vanilla enhancers' strings are r
   `{label}` are substituted where the string supports them. Validation messages take the same shape
   on the `<form>`, narrower than the per-field `data-fdy-msg-<alias>` that still wins;
   `Freeday.toast()` takes `closeLabel`.
-- **34 strings across 9 files**, not the 19 across 7 a word-list scan had counted — `carousel`
+- **34 strings across 9 files**, not the 19 across 7 a word-list scan had counted: `carousel`
   (`Slide {n}`), `cascade` (`Kembali satu tingkat`), `mask` (`Tampilkan kata sandi`), `stepper`
   (`Selesai` / `Lanjut`) and four upload status strings were all invisible to it. #015 had just
   finished making this point about `\bcari\b` and `pencarian`; the recount was found by scanning
-  by SINK — what lands in a `textContent`, an `aria-label`, a `title` or a `placeholder` — which
+  by SINK: what lands in a `textContent`, an `aria-label`, a `title` or a `placeholder`, which
   cannot be fooled by an affix.
 ### Fixed
 - **Blazor's `FdyCascade` rendered Indonesian** (#016). `Label` and `Placeholder` were `string?`
   with no default, so an app that did not set them emitted `data-label=""` and the enhancer fell
-  back to `Pilih` / `Pilih…`. Vue and React have defaulted to `Select` / `Select…` since #015 —
+  back to `Pilih` / `Pilih…`. Vue and React have defaulted to `Select` / `Select…` since #015:
   same drift as #009 and #015, third time, and the parameter existing is what made it invisible.
   They are non-nullable with English defaults now, and `BackLabel` / `SubmenuLabel` reach the two
   strings the enhancer builds itself, which had no route from .NET at all.
 - **`Freeday.toast()` from Blazor labelled its close button `Tutup`.** `FreedayBlazor.toast` now
-  defaults `closeLabel` to `Close` — in the bridge, not the enhancer, so a hand-written page still
+  defaults `closeLabel` to `Close`, in the bridge rather than the enhancer, so a hand-written page still
   gets the documented Indonesian.
 ### Added: guards
 - **An enhancer string is overridable, not hard-coded** (#016). `npm test` asserts that a literal
   reaching a `textContent`, `aria-label`, `title` or `placeholder` lives in that file's `TEXT`
   table. Scoped by SINK rather than by a word list, deliberately: a second word list would have the
-  same hole one affix over, and this one is also blind to no language. Mutation-tested — putting
+  same hole one affix over, and this one is also blind to no language. Mutation-tested: putting
   `'Tutup'` back into the toast fails it by file and line.
 
 ## [1.38.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #015).
 ### Fixed
-- **`FdyCfl`'s trigger said `"Buka pencarian"`** (Vue · React) — the accessible name of the button
+- **`FdyCfl`'s trigger said `"Buka pencarian"`** (Vue · React), the accessible name of the button
   that opens the picker, and so the first thing a screen-reader user meets on every
   choose-from-list. #009 replaced twelve strings around it and missed this one. It takes an
   `openLabel` prop defaulting to `'Open search'` now. Blazor was not Indonesian but was using
-  `SearchPlaceholder` as that button's `aria-label` — a placeholder doing a label's job — and now
+  `SearchPlaceholder` as that button's `aria-label`, a placeholder doing a label's job, and now
   takes the same `OpenLabel`, so all four stacks name the control identically.
-- **`FdyCascade`'s up-one-level button said `"Kembali satu tingkat"`** (Vue · React) — new
+- **`FdyCascade`'s up-one-level button said `"Kembali satu tingkat"`** (Vue · React), new
   `backLabel`, default `'Back one level'`.
 ### Changed
 - **The language guard now lists derived forms, not just roots.** `\bcari\b` cannot match
-  *pen·cari·an*, and `kembali` was never listed — Indonesian derives by affix, so a whole-word list
+  *pen·cari·an*, and `kembali` was never listed. Indonesian derives by affix, so a whole-word list
   misses most of the UI vocabulary. Widening it is what surfaced the `FdyCascade` string nobody had
   reported.
 
 ### Fixed: the test suite
 - **`rules()` read only the last line of a selector**, so a rule written across several lines was
   reported under a fragment of its own name and every guard in `test/css.test.mjs` was blind to it
-  (#014). A guard that matches nothing PASSES, which is the worst way for a test to fail — it
+  (#014). A guard that matches nothing PASSES, which is the worst way for a test to fail: it
   surfaced only because the first draft of the filter-bar rule happened to be wrapped. The helper
   now strips comments from the whole source first (a comment quoting CSS carries braces, and those
   would split a rule in half) and reads the selector whole. Asserted directly rather than left to
   the CSS staying one-rule-per-line: that is a convention, and this is the thing that would quietly
-  stop enforcing it. Mutation-tested — restoring the last-line read fails the new test by name.
+  stop enforcing it. Mutation-tested: restoring the last-line read fails the new test by name.
 
 ## [1.37.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
 ### Added
-- **`.fdy-table__freeze` + `--fdy-freeze-left`** — freeze **any number** of columns, not just the
+- **`.fdy-table__freeze` + `--fdy-freeze-left`** freeze **any number** of columns, not just the
   first. 1.35.0 froze `tbody th` at a hard-coded `left:0`, which suits a rate matrix's single row
   header and cannot express a wide table with two identity columns: they all landed on 0 and
   stacked. Mark every cell of a frozen column and give that column its offset; the offsets belong
@@ -647,7 +647,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #014).
 ### Changed
 - **BREAKING (from 1.35.0): the header freeze moved to `.fdy-table--sticky-head`.** Freezing a row
   needs a vertical scrollport; a table that only freezes columns scrolls with the **page**, where
-  `top:0` sticks the header under the viewport edge — over the consuming app's own top bar.
+  `top:0` sticks the header under the viewport edge, over the consuming app's own top bar.
   `.fdy-table--sticky` is now the enabler (separate borders) and each axis is asked for
   explicitly. `tbody th` no longer freezes implicitly; use `.fdy-table__freeze`. 1.35.0 and 1.36.0
   are unpublished, so no released version carried the old contract.
@@ -657,7 +657,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
 ### Added
 - **A year grid in the calendar** (vanilla · Vue · React · Blazor). 1.32.0's month grid killed
   one-click-per-month and left one-click-per-year behind it: the month grid's arrows step a year
-  each, so 2026 → 1998 was **28 clicks**. The title now drills twice — days → months → years — with
+  each, so 2026 → 1998 was **28 clicks**. The title now drills twice, days → months → years, with
   the arrows following the level shown, and picking a year drops to that year's months. Every level
   above the day grid stays **navigation**: nothing is committed until a day is picked. Year pages
   are aligned (2016–2027, 2028–2039) rather than centred on the year in view, so the pages tile
@@ -670,18 +670,18 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #013).
 ### Fixed
 - **`freeday-datepicker.js` spoke Indonesian to the user.** Its placeholder and every nav
   `aria-label` were Indonesian, and because `FdyDatepicker.razor` delegates to the vanilla
-  enhancer, **every Blazor app inherited them** — while #009's language guard, which scans
+  enhancer, **every Blazor app inherited them**, while #009's language guard, which scans
   `adapters/` only, passed. The datepicker is English now. The rest of `src/` is NOT audited: see
   improvement note #013 §2, which lists the enhancers still affected.
 
 ## [1.35.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #012).
 ### Added
-- **`.fdy-table--sticky` + `.fdy-table-scroll--frozen`** — a table frozen on one axis or both, for
+- **`.fdy-table--sticky` + `.fdy-table-scroll--frozen`** freeze a table on one axis or both, for
   a grid read against two axes at once (a rate matrix, a timetable). This is a kit class rather
   than four lines in an app because `position:sticky` on its own produces a **visibly broken**
   table: `.fdy-table` collapses its borders, a collapsed border is painted by the table rather than
-  by either cell, and so a frozen cell scrolls out from under its own rule — the frozen column
+  by either cell, and so a frozen cell scrolls out from under its own rule, and the frozen column
   arrives with nothing separating it from the data. The modifier separates the borders and puts
   each one back on the cell that sticks. `<thead>` freezes at the top, `<th scope="row">` at the
   left, the first header cell is the corner, and the row header paints the **body** surface so a
@@ -694,16 +694,16 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #008), and the second hal
 finally makes answerable.
 ### Added
 - **`pageSizes` on `FdyTable`** (Vue · React · Blazor) and `data-fdy-table-page-size` for the
-  enhancer. The footer stated the range and moved the page and stopped there — no control for **how
+  enhancer. The footer stated the range and moved the page and stopped there, with no control for **how
   many rows a page holds**, which is the first thing anybody changes on a ninety-row list. The three
   numbers are one object: the component already receives `index`, `size` and `total`, rendered two
-  of them, and left the third to the caller — so the caller withheld the whole footer with
+  of them, and left the third to the caller, so the caller withheld the whole footer with
   `pager={false}` and rebuilt all three to add the one. Give it `pageSizes` and it grows the control
   between the range and the pager. Server mode reports the pick through the existing
   `update:page` / `onPageChange` / `PageChanged`, carrying a new `size`; client mode applies it
   itself (so it works with nothing wired) and also emits `update:pageSize` / `onPageSizeChange` /
   `PageSizeChanged` for a caller that wants to persist it.
-- **`FdyTableFooter`** (Vue · React · Blazor) — the footer as a component of its own. This is the
+- **`FdyTableFooter`** (Vue · React · Blazor) is the footer as a component of its own. This is the
   half of #005 that `pager={false}` could only get out of the way: a **responsive** list renders one
   page of rows twice, a `.fdy-datatable` at `lg` and a `.fdy-list` below it, and a footer that lives
   inside the table lives inside the half a phone hides. Those screens took the footer over and
@@ -712,7 +712,7 @@ finally makes answerable.
 - **`pageIndexForSize(pageIndex, oldSize, newSize)`** in the shared table model. Resizing the page
   has two obvious answers and both are wrong: back to page 1 throws away the reader's place, and
   keeping the same index can land past the end (page 5 of 5 at twenty rows is page 2 of 2 at fifty).
-  Anchoring on the first visible row always resolves, and it is what the reader expects — the row
+  Anchoring on the first visible row always resolves, and it is what the reader expects: the row
   they were looking at is still on screen.
 ### Notes on the shape of the fix
 - **A footer with a size control stays visible on a single page.** The old rule withheld the whole
