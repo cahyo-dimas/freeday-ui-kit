@@ -1,7 +1,7 @@
 // Mount the real FdyTable.vue with a control column that is NAMED but not LABELLED (#026):
 // `labelHidden` must leave the text in the DOM for assistive tech while the cell reads as empty.
-// Both header branches are present — a sortable column renders its label inside the sort button,
-// a plain one does not — because the flag has to be spent in both.
+// Both header branches are present, a sortable column renders its label inside the sort button,
+// a plain one does not, because the flag has to be spent in both.
 import { createApp, h } from 'vue';
 import FdyTable from '../../adapters/vue/components/FdyTable.vue';
 

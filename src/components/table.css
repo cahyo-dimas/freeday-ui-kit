@@ -51,12 +51,12 @@
 /* Freezing the HEADER ROW is its own modifier because it needs a vertical
    scrollport (`.fdy-table-scroll--frozen`). A table that only freezes columns
    scrolls with the PAGE, and `top:0` against the page sticks the header under
-   the viewport edge — over the app's own top bar, which is worse than not
+   the viewport edge, over the app's own top bar, which is worse than not
    freezing it. Ask for the axis you actually have. */
 .fdy-table--sticky-head thead th{position:sticky;top:0;z-index:2;border-bottom:var(--bw) solid var(--color-border);}
 
 /* Freezing a COLUMN: put `.fdy-table__freeze` on every cell of it, header
-   included, and give each frozen column its own `--fdy-freeze-left` — 0 for the
+   included, and give each frozen column its own `--fdy-freeze-left`. 0 for the
    first, the summed widths of the frozen columns left of it after that. One
    frozen column needs no variable at all. Mark the last one `--edge` so the
    reader can see where the frozen block ends.
@@ -69,8 +69,8 @@
    cells beneath show through it. A `th` already carries the header tint from the
    base rule, and that tint is usually the whole point: it is what marks a column
    as identity rather than data. So only a `td` is given a surface here. A table
-   that wants its frozen `th` to read as a body row instead — a rate matrix, where
-   a hovered row should band unbroken across the freeze line — says so itself. */
+   that wants its frozen `th` to read as a body row instead, a rate matrix, where
+   a hovered row should band unbroken across the freeze line, says so itself. */
 .fdy-table--sticky tbody .fdy-table__freeze{z-index:1;}
 .fdy-table--sticky tbody td.fdy-table__freeze{background:var(--color-surface);}
 .fdy-table--sticky tbody tr:hover td.fdy-table__freeze{background:var(--color-surface-2);}
@@ -93,12 +93,12 @@
 .fdy-table-footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);flex-wrap:wrap;padding:var(--space-3) var(--space-4);border-top:var(--bw) solid var(--color-border);}
 .fdy-table-footer__info{font-size:var(--text-sm);color:var(--color-text-muted);}
 /* Rows per page. `margin-left:auto` eats the free space, so the size control and the pager travel
-   together on the right while the range stays left — no wrapper element, which is what keeps the
+   together on the right while the range stays left, no wrapper element, which is what keeps the
    footer's DOM byte-identical for the tables that don't offer one (#008). The control is the kit's
    own `.fdy-combo`, never a native <select>: an OS menu is unthemeable, and on macOS it drops a
    dark panel into a light page, which is the reason FdyCombo exists at all. Sized to its content:
    `.fdy-combo` is display:block at max-width 22rem, which in a footer is a bar-wide box for two
-   digits. Its HEIGHT is left alone on purpose — `--control-h`, the same as every other control on
+   digits. Its HEIGHT is left alone on purpose, `--control-h`, the same as every other control on
    the page. It briefly carried 2.25rem to match the pager links beside it, which made the one
    combobox in a compact app 4px taller than all the others; a pager link is a nav button, and the
    thing this must agree with is the form controls. */
@@ -130,7 +130,7 @@
 .fdy-table-bulkbar__actions{display:flex;gap:var(--space-2);}
 
 /* Controls inside a data row. `.fdy-input` and friends are width:100%, which in an auto-layout
-   table means they contribute NO intrinsic width — the column shrinks to whatever the header text
+   table means they contribute NO intrinsic width, the column shrinks to whatever the header text
    needs and the control collapses with it. A NOTE column ends up a box too narrow to read what you
    typed into it. The floor is per-control rather than on the column, because the table does not
    know which of its columns hold controls. */

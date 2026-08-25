@@ -26,7 +26,7 @@
    shape (anything focusable) so a control the kit does not ship yet is covered too. */
 :is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch){z-index:1;}
 /* The position is a DEFAULT, not an override: z-index needs a positioned box (or a flex/grid item),
-   but an app that deliberately pins a control inside the card — a corner dismiss, a favourite star —
+   but an app that deliberately pins a control inside the card, a corner dismiss, a favourite star —
    must keep its own `position:absolute`. Wrapped in :where() so this whole selector weighs nothing
    and ANY app rule wins it; measured, because at normal specificity the kit silently dragged an
    absolutely positioned dismiss button back into the flow. Do not merge these two rules. */

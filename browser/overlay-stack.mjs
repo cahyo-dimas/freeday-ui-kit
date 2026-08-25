@@ -47,7 +47,7 @@ test('a modal opened from inside an open drawer paints above it (#046)', { skip 
     assert.ok(ov.overlaps, `the fixture must actually overlap the two: drawer ${ov.drawer} vs modal ${ov.modal}`);
 
     /* The drawer's body is #0a0c19 and the modal's surface is near-white: where they overlap, the
-       pixel names the winner outright. Neither carries a z-index — the top layer decides. */
+       pixel names the winner outright. Neither carries a z-index, the top layer decides. */
     const px = await p.pixelAt(...ov.centre);
     const luminance = (px.r + px.g + px.b) / 3;
     assert.ok(luminance > 200,

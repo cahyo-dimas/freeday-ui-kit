@@ -434,7 +434,7 @@
       var li = document.createElement('li');
       var sw = document.createElement('span'); sw.className = 'fdy-chart__swatch'; sw.style.background = colorAt(i);
       li.appendChild(sw);
-      li.appendChild(document.createTextNode((labels[i] || ('#' + (i + 1))) + ' — ' + Math.round((v / total) * 100) + '%'));
+      li.appendChild(document.createTextNode((labels[i] || ('#' + (i + 1))) + ' · ' + Math.round((v / total) * 100) + '%'));
       legend.appendChild(li);
     });
     el.appendChild(ring);

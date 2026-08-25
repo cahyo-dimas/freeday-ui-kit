@@ -22,7 +22,7 @@
   <p id="body-text" style="font-size:1rem;margin:0">Body text</p>
 <script src="../../dist/freeday.js"></script>
 <script>
-  // Rendered geometry, in real screen pixels — not what the stylesheet declares.
+  // Rendered geometry, in real screen pixels, not what the stylesheet declares.
   window.chartScale = function () {
     var read = function (id) {
       var el = document.getElementById(id);
@@ -37,7 +37,7 @@
         plotW: px(plotW),
         viewBoxW: svg.viewBox.baseVal.width,
         scale: px(plotW / svg.viewBox.baseVal.width),
-        // Glyph box of a real rendered label — the size a reader actually sees.
+        // Glyph box of a real rendered label, the size a reader actually sees.
         labelBox: px(label.getBoundingClientRect().height),
         declaredFontSize: getComputedStyle(label).fontSize,
         dotW: px(dot.getBoundingClientRect().width),

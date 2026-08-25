@@ -11,7 +11,7 @@
 .fdy-appbar__spacer{flex:1;}
 .fdy-appbar__actions{display:inline-flex;align-items:center;gap:var(--space-1);}
 /* Primary navigation inside the bar: `<nav class="fdy-nav fdy-nav--horizontal">` with
-   `.fdy-nav__item` links (see app-shell.css). The bar ships no link class of its own — a nav link
+   `.fdy-nav__item` links (see app-shell.css). The bar ships no link class of its own, a nav link
    is the same component whether the nav is a sidebar column or a top row. */
 /* Controls on a coloured app bar go on-colour (icons stay legible, hover is a light wash) */
 .fdy-appbar--primary .fdy-btn--ghost{background:transparent;border-color:transparent;color:var(--color-on-primary);box-shadow:none;}

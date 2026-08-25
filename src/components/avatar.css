@@ -4,7 +4,7 @@
 /* --xs exists for an avatar INSIDE a control: `.fdy-btn--sm` is exactly 2rem tall, which is also
    `--sm`'s size, so a small avatar in a small button fills it edge to edge and the ghost border
    crosses the circle. 1.5rem leaves the same ~4px breathing room the kit's controls give their
-   icons. Uses `--text-xs` (the smallest type token the kit has — there is no `2xs`). */
+   icons. Uses `--text-xs` (the smallest type token the kit has, there is no `2xs`). */
 .fdy-avatar--xs{width:1.5rem;height:1.5rem;font-size:var(--text-xs);}
 .fdy-avatar--sm{width:2rem;height:2rem;font-size:var(--text-xs);}
 .fdy-avatar--lg{width:3.5rem;height:3.5rem;font-size:var(--text-lg);}

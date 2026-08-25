@@ -1,5 +1,5 @@
 // Mount the real FdyTable.vue in CLIENT mode with a CONTROLLED pageIndex, driven by a pager that
-// lives OUTSIDE the table — the shape a responsive screen needs (table above md, card list below,
+// lives OUTSIDE the table, the shape a responsive screen needs (table above md, card list below,
 // one pager for both). Exposes the parent-held index + the rows the table processed, so the harness
 // can assert the round-trip really happens instead of trusting the prop plumbing.
 import { createApp, h, ref } from 'vue';

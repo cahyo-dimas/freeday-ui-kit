@@ -156,7 +156,7 @@ async function loadPage(targetPage: number, append: boolean): Promise<void> {
   try {
     const cached: CflPage | undefined = cache.get(key);
     const res: CflPage = cached ?? (await props.fetchPage(q, targetPage));
-    if (token !== reqToken) return; // stale — a newer request has started
+    if (token !== reqToken) return; // stale, a newer request has started
     if (cached === undefined) cache.set(key, res);
     const copy: Row[] = res.rows.slice(); // never mutate the caller's array
     rows.value = append ? rows.value.concat(copy) : copy;

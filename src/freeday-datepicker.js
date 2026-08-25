@@ -73,7 +73,7 @@
     /* 'days' | 'months', the calendar drills one level up rather than growing furniture beside the
        title. Before this, the only pointer route to another month was one click per month: from
        August 2026 to March 2022 is fifty-three of them. Shift+PageUp already jumped a year, but a
-       shortcut nobody can see is not an affordance — the repo's own test helper clicked "previous
+       shortcut nobody can see is not an affordance, the repo's own test helper clicked "previous
        month" twenty-four times to reach a date two years back. */
     var mode = 'days';
     var focusMonth = null;
@@ -517,7 +517,7 @@
       var f = fromApi.getValue();
       var t = toApi.getValue();
       toApi.setMin(f || null);   // end can't precede start (one-directional, per Foundation)
-      fromApi.setRange(f, t);     // start stays free — picking a later start clears the end below
+      fromApi.setRange(f, t);     // start stays free, picking a later start clears the end below
       toApi.setRange(f, t);
     }
     fromEl.addEventListener('fdy-datepicker-change', function () {

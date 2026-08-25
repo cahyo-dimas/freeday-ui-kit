@@ -24,7 +24,7 @@
     </div>
   </dialog>
 
-  <!-- The SECOND overlay, opened from inside the first — the confirm-over-drawer shape. -->
+  <!-- The SECOND overlay, opened from inside the first, the confirm-over-drawer shape. -->
   <dialog class="fdy-modal fdy-modal--md" id="md" aria-labelledby="md-title">
     <div class="fdy-modal__header">
       <h2 class="fdy-modal__title" id="md-title">Confirm upload</h2>
@@ -41,12 +41,12 @@
 <script>
   var dw = document.getElementById('dw'), md = document.getElementById('md');
 
-  // Opening a modal is the app's job — the kit ships no modal enhancer.
+  // Opening a modal is the app's job, the kit ships no modal enhancer.
   document.getElementById('ask-confirm').addEventListener('click', function () { md.showModal(); });
 
   // Escape reaches a <dialog> as `cancel`. Whether that event is CANCELABLE is the whole story of
   // #048: on a page with no user activation the browser refuses to let script keep the dialog open,
-  // which is also when it groups the two close watchers. Recorded, never prevented — preventing it
+  // which is also when it groups the two close watchers. Recorded, never prevented, preventing it
   // here would change what the other tests measure.
   window.cancels = [];
   [dw, md].forEach(function (d) {
@@ -60,7 +60,7 @@
     };
   };
 
-  // Where the two overlays overlap on screen — the only place the question can be asked.
+  // Where the two overlays overlap on screen, the only place the question can be asked.
   window.overlap = function () {
     var a = dw.getBoundingClientRect(), b = md.getBoundingClientRect();
     var x0 = Math.max(a.left, b.left), x1 = Math.min(a.right, b.right);

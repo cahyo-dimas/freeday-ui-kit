@@ -1,7 +1,7 @@
 // Mount the real FdyAppShell.vue and expose the same probe the vanilla fixture exposes, so
 // browser/adapter.mjs can hold the typed wrapper to the behaviour the enhancer already passes.
-// Left UNBOUND (`navOpen` not passed) on purpose: the component's own default — visible on a wide
-// viewport, hidden on a narrow one — is the case an app cannot express as one initial value.
+// Left UNBOUND (`navOpen` not passed) on purpose: the component's own default, visible on a wide
+// viewport, hidden on a narrow one, is the case an app cannot express as one initial value.
 import { createApp, h } from 'vue';
 import FdyAppShell from '../../adapters/vue/components/FdyAppShell.vue';
 

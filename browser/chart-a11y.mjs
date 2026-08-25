@@ -70,7 +70,7 @@ test('a chart with NO label keeps its contents exposed (#047)', { skip }, async 
   await withPage(fixture('vanilla-chart-a11y.html'), async (p) => {
     await p.waitFor(READY);
     /* The deliberate escape hatch. Hiding the subtree of a chart that was never given a name would
-       leave an image with no text at all — a worse outcome than the exposure it removes, and one the
+       leave an image with no text at all, a worse outcome than the exposure it removes, and one the
        author cannot debug. The kit only prunes what an aria-label has already replaced. */
     const text = exposedText(await p.axSubtree('#nameless'));
     assert.ok(text.some((t) => t.includes('open')),

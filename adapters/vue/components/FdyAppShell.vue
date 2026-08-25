@@ -99,7 +99,7 @@ function onKeydown(e: KeyboardEvent): void {
 
 /* Both directions matter, and they are not symmetrical.
    Narrowing with the nav visible would drop an overlay panel over a page nobody asked to leave, so
-   the nav is hidden. Widening is harmless — a visible nav simply becomes the column again, and the
+   the nav is hidden. Widening is harmless, a visible nav simply becomes the column again, and the
    watcher clears the `inert` the overlay had put on the content. */
 function onMediaChange(): void {
   const nowOverlay: boolean = media !== null && !media.matches;

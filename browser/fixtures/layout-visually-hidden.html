@@ -41,7 +41,7 @@
     tbody.appendChild(tr);
   }
 
-  /* documentElement.scrollWidth sees the escaped boxes but body.scrollWidth does not — they are not
+  /* documentElement.scrollWidth sees the escaped boxes but body.scrollWidth does not, they are not
      in body's flow at all. The honest check is to actually try to scroll the page. */
   window.pageEscape = () => {
     window.scrollTo(9999, 0);

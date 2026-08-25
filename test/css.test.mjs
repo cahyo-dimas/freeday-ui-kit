@@ -392,7 +392,7 @@ test('a frozen table cell keeps its own border (#012)', () => {
     '.fdy-table__freeze must take its offset from --fdy-freeze-left, or only the first column can ever be frozen');
 
   /* Anything frozen sideways slides OVER the data cells, so it must paint an opaque
-     background — inheriting one is not enough, the cells beneath show through. */
+     background, inheriting one is not enough, the cells beneath show through. */
   const paintedTd = all.find(r => /tbody\s+td\.fdy-table__freeze/.test(r.selector) && /background:/.test(r.body));
   assert.ok(paintedTd, 'a frozen body <td> freezes without an opaque background');
   /* A frozen <th> must NOT be repainted here: the base rule's header tint is what marks a

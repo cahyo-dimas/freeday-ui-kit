@@ -11,6 +11,6 @@
 .fdy-rating--disabled .fdy-rating__star{cursor:not-allowed;}
 .fdy-rating--disabled .fdy-rating__star svg{opacity:.5;}
 /* Invalid: tint the (outline) empty stars danger so a required-but-empty rating reads as an error,
-   paired with a help/error message — never colour alone. */
+   paired with a help/error message, never colour alone. */
 .fdy-rating--error .fdy-rating__star svg{stroke:var(--color-danger);}
 .fdy-rating--sm .fdy-rating__star svg{width:1.1rem;height:1.1rem;}

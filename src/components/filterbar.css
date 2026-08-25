@@ -29,7 +29,7 @@
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
 /* A control that carries NO label of its own, a checkbox, a switch, a lone
-   button — in a bar whose `align-items:flex-end` exists to line up LABELLED
+   button, in a bar whose `align-items:flex-end` exists to line up LABELLED
    fields. Flex-end puts such a control's bottom on the inputs' bottom, so a
    20px checkbox sits well below the 32px input's centre line and reads as
    dropped. Giving it the height of a control lands its box exactly where an

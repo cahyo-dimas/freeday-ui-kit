@@ -171,10 +171,10 @@ export async function withPage(fileUrl, fn) {
 
     /* A click is aimed at coordinates, so the target must have stopped moving before they are
        measured. The combo listbox animates in from translateY(-4px), and a click measured mid-flight
-       lands 4px off — usually still inside the option, occasionally in the padding between two of
+       lands 4px off, usually still inside the option, occasionally in the padding between two of
        them, which is a test that fails once a fortnight on a loaded runner and never on a laptop.
        The wait walks the ANCESTORS too: the animation runs on the listbox, not on the option being
-       clicked. Short timeout, then click anyway — an element under a permanently animating parent
+       clicked. Short timeout, then click anyway, an element under a permanently animating parent
        (a spinner, a shimmer) must not hang the suite. */
     const ANIMATION_SETTLE_MS = 600; // longer than --dur-slow; kit animations are all shorter
 

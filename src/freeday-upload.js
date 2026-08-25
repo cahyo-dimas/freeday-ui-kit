@@ -107,7 +107,7 @@
          on the dropzone gets both. The row lives in the file list, which the kit's own markup
          contract puts as a SIBLING of the dropzone, so a row event never bubbles through the zone:
          a consumer following the docs saw `add` arrive and `remove` never fire, with no error.
-         Firing on both would look safer, but it makes the pair asymmetric — one `add` and, for
+         Firing on both would look safer, but it makes the pair asymmetric, one `add` and, for
          anyone delegating on a common ancestor, two `remove`s, which is its own silent bug. It
          also fixes the listless case: a row that was never attached bubbles to nothing at all. */
       zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
@@ -140,7 +140,7 @@
     }
     /* Back to a measured bar. While the indeterminate modifier is on it owns the bar's width, so an
        explicit one has to be restored when it comes off: .fdy-progress__bar is a plain block div, and
-       with no width at all it fills the track — a full bar, which is the opposite of what 0% means. */
+       with no width at all it fills the track, a full bar, which is the opposite of what 0% means. */
     function determinate() {
       progressEl.classList.remove('fdy-progress--indeterminate');
       if (!bar.style.width) bar.style.width = '0%';
@@ -176,7 +176,7 @@
          100% is the most convincing "hung" signal a UI can produce, so this state reports no
          percentage: the bar goes indeterminate and the label belongs to the consumer, because only
          they know what the server is doing ("Membaca PDF…", "Memindai…"). done()/fail()/ready() need
-         no counterpart here — they drop the progress element outright, modifier and all. */
+         no counterpart here, they drop the progress element outright, modifier and all. */
       waiting: function (label) {
         el.classList.remove('fdy-file--error', 'fdy-file--success');
         icon.innerHTML = FILE_ICON;
@@ -184,7 +184,7 @@
         ensureProgress();
         progressEl.classList.add('fdy-progress--indeterminate');
         /* The modifier styles .fdy-progress__bar, so it must sit on the CONTAINER, and the inline
-           width setProgress wrote has to go — an inline style beats any rule the modifier brings.
+           width setProgress wrote has to go, an inline style beats any rule the modifier brings.
            aria-valuenow goes with it: a progressbar with no value is precisely what ARIA calls
            indeterminate, which is the contract COMPONENTS.md already states for this component. */
         bar.style.width = '';
@@ -255,7 +255,7 @@
     if (input) input.addEventListener('change', function () { handleFiles(input.files); input.value = ''; });
 
     /* The list is optional: rendering a row and announcing the file are separate jobs. A consumer
-       that wants its own markup simply provides no list — it still gets `fdy-upload-add`, and
+       that wants its own markup simply provides no list, it still gets `fdy-upload-add`, and
        `detail.row` still works (its element is just never attached). Gating the EVENT on the list
        meant "bring your own row" silently cost you the notification that a file had arrived. */
     function handleFiles(fileList) {

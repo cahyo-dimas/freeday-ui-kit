@@ -31,7 +31,7 @@
     + ' textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
   /* getClientRects(), not offsetParent: an overlay sidebar is position:fixed, and a fixed element
-     reports no offsetParent at all — filtering on it would call every nav item invisible. */
+     reports no offsetParent at all, filtering on it would call every nav item invisible. */
   function focusables(root) {
     return Array.prototype.filter.call(root.querySelectorAll(FOCUSABLE), function (el) {
       return el.getClientRects().length > 0;

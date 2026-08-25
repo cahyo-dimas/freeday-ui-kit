@@ -52,7 +52,7 @@ const ready = async (p, [w, h]) => {
   await p.setViewport(w, h);
   await until(p, isWide(w >= 721), `the ${w >= 721 ? 'wide' : 'narrow'} media query`);
   /* matchMedia().matches flips BEFORE the change listener that reacts to it has run, so waiting on
-     the query alone reads the shell mid-transition between modes — invisible on an idle machine,
+     the query alone reads the shell mid-transition between modes, invisible on an idle machine,
      visible the moment the suite runs 18 specs at once. Wait for the shell's own answer instead. */
   await until(p, `window.state().expanded === '${w >= 721 ? 'true' : 'false'}'`,
     'the shell to finish reacting to the viewport change');
@@ -225,7 +225,7 @@ test('a shell mounted after load is hydrated by initAll, the way the bridge does
 
     /* The Blazor path: the markup does not exist at DOMContentLoaded, and FreedayBlazor.initAll
        hands the enhancer the component's own root afterwards. If initShells only ever looked
-       INSIDE the element it is given, this would silently do nothing — the shell root is the
+       INSIDE the element it is given, this would silently do nothing, the shell root is the
        element, not a descendant of it. */
     const wired = await p.evalJS(`(function () {
       var host = document.createElement('div');

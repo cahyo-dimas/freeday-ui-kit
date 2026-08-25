@@ -192,7 +192,7 @@ test('every path speaks English (#009, and #006 from 2.0.0)', () => {
   }
   /* The enhancers joined this promise in 2.0.0. Before that they were deliberately Indonesian, and
      an app mixing the two paths, which a Blazor app does by construction, since
-     FreedayBlazor.initAll runs every enhancer — read as two products. */
+     FreedayBlazor.initAll runs every enhancer, read as two products. */
   scan('src', /^freeday-.*\.js$/, true);
 
   assert.deepEqual(offenders, [],
@@ -226,7 +226,7 @@ test('the column contract reaches all three typed adapters (#026)', () => {
 test('a hidden column label is rendered, not dropped (#026)', () => {
   /* The type surface above can be satisfied by a property nothing reads. Each of the three tables
      renders its own header, so each has to spend the flag on `.fdy-visually-hidden`: the cell looks
-     empty and the column is still announced. Both header branches matter — a sortable column puts
+     empty and the column is still announced. Both header branches matter, a sortable column puts
      its label inside the sort button, a plain one does not, so this counts TWO uses per adapter. */
   const TABLES = [
     ['adapters/vue/components/FdyTable.vue', 'labelHidden'],

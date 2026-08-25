@@ -1,6 +1,6 @@
 // Mount the real FdyCfl.vue with a value already picked and `clearable`, exposing the bound value on
 // window.__val. Guards the asymmetry note 001 §3 found: modelValue accepts `Row | null`, but before
-// this the component could only ever emit a Row — so an optional foreign key could be set and never
+// this the component could only ever emit a Row, so an optional foreign key could be set and never
 // unset. Bundled to an IIFE by browser/harness.mjs.
 import { createApp, h, ref } from 'vue';
 import FdyCfl from '../../adapters/vue/components/FdyCfl.vue';

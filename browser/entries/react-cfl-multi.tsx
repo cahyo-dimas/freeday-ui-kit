@@ -1,4 +1,4 @@
-// React half of note 019 — same shape as vue-cfl-multi.js, so a divergence between the two
+// React half of note 019, same shape as vue-cfl-multi.js, so a divergence between the two
 // adapters shows up as one of them failing this spec.
 import { createRoot } from 'react-dom/client';
 import { useState } from 'react';

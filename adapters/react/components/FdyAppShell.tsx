@@ -52,7 +52,7 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
 
   /* The media listener reads these through refs and subscribes ONCE. Depending on navVisible would
      resubscribe on every toggle and re-run the handler, and its "narrowing with the nav visible
-     hides it" rule would then fire on an ordinary open — closing the panel in the same tick the
+     hides it" rule would then fire on an ordinary open, closing the panel in the same tick the
      reader opened it. */
   const navVisibleRef = useRef<boolean>(navVisible);
   navVisibleRef.current = navVisible;

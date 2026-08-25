@@ -22,17 +22,17 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-input[readonly]:hover,.fdy-textarea[readonly]:hover{border-color:var(--color-border);}
 .fdy-input[readonly]:focus-visible,.fdy-textarea[readonly]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 /* Numbers (#44): the user agent draws its own spin buttons inside the field, in OS widget colours no
-   theme reaches — on a dark surface they read as a light-grey artefact glued to a themed field, and
+   theme reaches, on a dark surface they read as a light-grey artefact glued to a themed field, and
    it is the only unthemed control on the page. Removed so .fdy-input looks the same whatever its
    type. `appearance:textfield` is the Firefox half, the pseudo-element the Blink/WebKit half; both
-   are needed. This trades away the mouse-only increment — arrow keys on a focused number input still
+   are needed. This trades away the mouse-only increment, arrow keys on a focused number input still
    work, and [data-fdy-number] gives the affordance back on the kit's terms. */
 .fdy-input[type="number"]{appearance:textfield;-webkit-appearance:textfield;}
 .fdy-input[type="number"]::-webkit-outer-spin-button,.fdy-input[type="number"]::-webkit-inner-spin-button{appearance:none;-webkit-appearance:none;margin:0;}
 .fdy-input--error,.fdy-input[aria-invalid="true"],.fdy-textarea[aria-invalid="true"]{border-color:var(--color-danger);}
 .fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
 /* Required marker. The control already carries `required`, so the asterisk is decoration: the
-   `/ ""` is CSS alt text — the glyph is painted but exposes NOTHING to the accessibility tree, so a
+   `/ ""` is CSS alt text, the glyph is painted but exposes NOTHING to the accessibility tree, so a
    screen reader does not read "star" after every label. That is stricter than a <span> an app has to
    remember to mark aria-hidden, and it cannot be forgotten. */
 .fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}

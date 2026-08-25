@@ -39,7 +39,7 @@
 <script>
   var app = document.getElementById('app');
 
-  // Everything the shell announces, in order — what a host binding its own state would receive.
+  // Everything the shell announces, in order, what a host binding its own state would receive.
   window.navEvents = [];
   document.addEventListener('fdy-app-nav', function (e) { window.navEvents.push(e.detail.visible); });
 
@@ -54,7 +54,7 @@
     };
   };
 
-  // Where focus can actually go from here, in order — the question a trap is really about.
+  // Where focus can actually go from here, in order, the question a trap is really about.
   window.focusablesInSidebar = function () {
     return Array.prototype.map.call(
       document.getElementById('sidebar').querySelectorAll('a[href], button:not([disabled])'),

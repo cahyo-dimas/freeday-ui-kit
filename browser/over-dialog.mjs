@@ -29,7 +29,7 @@ test('a toast raised from inside a modal is painted over it (#027)', { skip }, a
        pale surface is ~(255,255,255) and the toast's inverse surface ~(23,27,38), the two cannot
        be confused, which is why the fixture makes the dialog big enough to cover the corner. */
     /* Both the toast and the dialog fade in. Screenshot mid-animation and the pixel is a blend of
-       the two, which reads as "half covered" whichever one is actually on top — a flake that would
+       the two, which reads as "half covered" whichever one is actually on top, a flake that would
        report the fix as broken and, worse, could report a regression as fine. */
     await p.waitFor(
       "getComputedStyle(document.querySelector('.fdy-toast')).opacity === '1'" +

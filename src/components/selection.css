@@ -4,7 +4,7 @@
    shrinkable, so as soon as the label wrapped to a second line the box gave up horizontal space
    to it and rendered an 18px-tall rectangle 13px wide. Squashed, off-square, and different from
    every sibling whose label happened to be short: a form of five checkboxes showed three sizes.
-   Nothing in the declarations looked wrong, because the width was never overridden — it was
+   Nothing in the declarations looked wrong, because the width was never overridden, it was
    negotiated away. */
 .fdy-check,.fdy-radio,.fdy-switch{display:inline-flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}
 .fdy-check input,.fdy-radio input{appearance:none;-webkit-appearance:none;flex:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}

@@ -59,7 +59,7 @@ test('the escape hatch keeps its own click', { skip }, async () => {
       `and the primary must NOT, a card that opens while you press "Details" is the same silent bug, got ${JSON.stringify(clicks)}`);
 
     /* A link in the card BODY, not in the flex footer. z-index applies to flex items without a
-       position, so the footer button would pass even with the position default missing — this is the
+       position, so the footer button would pass even with the position default missing, this is the
        case that actually needs it. */
     await p.evalJS('window.reset()');
     assert.equal(await p.evalJS('window.hitAt("#policy")'), 'policy', 'a link in the body must sit above the overlay');

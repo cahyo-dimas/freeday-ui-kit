@@ -1,4 +1,4 @@
-<!-- Freeday — Blazor component library (Razor Class Library).
+<!-- Freeday. Blazor component library (Razor Class Library).
      Typed wrappers over the vanilla `fdy-*` enhancers; the host page must load
      dist/freeday.js + adapters/blazor/freeday-blazor.js. Targets net8.0 (LTS) so it can
      be referenced from net8/9/10 apps. Consume via <ProjectReference> to this .csproj

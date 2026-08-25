@@ -44,7 +44,7 @@
   for (const id of ['open', 'details', 'dismiss', 'policy', 'open1', 'open2', 'det1']) {
     document.getElementById(id).addEventListener('click', () => window.clicks.push(id));
   }
-  /* What the browser fired the click on, whatever handler ran — the reported failure is that the
+  /* What the browser fired the click on, whatever handler ran, the reported failure is that the
      click lands on a common ancestor instead of the button. */
   document.addEventListener('click', (e) => window.clicks.push('target:' + (e.target.id || e.target.className)));
 

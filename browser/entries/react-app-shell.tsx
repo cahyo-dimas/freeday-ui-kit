@@ -1,6 +1,6 @@
 // Mount the real FdyAppShell.tsx and expose the same probe the vanilla and Vue fixtures expose, so
 // adapter.mjs can hold all three to one contract. Left UNCONTROLLED on purpose: the component's own
-// default — a column on a wide viewport, hidden on a narrow one — is the case an app cannot express
+// default, a column on a wide viewport, hidden on a narrow one, is the case an app cannot express
 // as a single initial value.
 import { createRoot } from 'react-dom/client';
 import { FdyAppShell } from '../../adapters/react/components/FdyAppShell';

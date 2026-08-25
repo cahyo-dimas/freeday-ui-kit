@@ -81,7 +81,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   const rowId = (index: number): string => `${baseId}-row-${index}`;
 
   /* Unsetting is not "picking nothing": it must not touch the dialog, and focus must land on a
-     control that still exists — the trigger beside it, since this button disappears with the value. */
+     control that still exists, the trigger beside it, since this button disappears with the value. */
   const clearLabelText: string = props.clearLabel ?? 'Clear selection';
   const clearValue = (): void => {
     setPicked([]);
@@ -156,7 +156,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     try {
       const cached: CflPage<Row> | undefined = cacheRef.current.get(key);
       const res: CflPage<Row> = cached ?? (await props.fetchPage(targetQuery, targetPage));
-      if (token !== reqIdRef.current) return; // stale — a newer request has started
+      if (token !== reqIdRef.current) return; // stale, a newer request has started
       if (cached === undefined) cacheRef.current.set(key, res);
       const copy: Row[] = res.rows.slice(); // never mutate the caller's array
       setRows((prev: Row[]): Row[] => (append ? prev.concat(copy) : copy));

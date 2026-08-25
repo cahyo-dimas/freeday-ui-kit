@@ -1,7 +1,7 @@
 /* Freeday. Accordion (native <details>/<summary>, zero-JS) */
 /* position:relative, containing block for out-of-flow panel content (see base.css). NOT redundant
    with the panel's reveal animation: that animation gives the panel a transform (which happens to
-   make it a containing block too), but it lives behind prefers-reduced-motion:no-preference — so
+   make it a containing block too), but it lives behind prefers-reduced-motion:no-preference, so
    without this line the escape bug appears ONLY for readers who asked for reduced motion. */
 .fdy-accordion{position:relative;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;background:var(--color-surface);}
 .fdy-accordion__item + .fdy-accordion__item{border-top:var(--bw) solid var(--color-border);}

@@ -64,7 +64,7 @@ test('filterRows: text contains (case-insensitive), empty text is a no-op', () =
 });
 
 // A date column normally RENDERS a formatted date, so `value` returns one. The
-// filter used to slice that string — "18 Mar 2024" -> "18 Mar 202", and compare
+// filter used to slice that string, "18 Mar 2024" -> "18 Mar 202", and compare
 // it as text against an ISO bound, so every row failed. The date SORT parsed the
 // same string correctly, which is what made the broken filter look trustworthy.
 test('filterRows: a date column whose value is FORMATTED still narrows', () => {

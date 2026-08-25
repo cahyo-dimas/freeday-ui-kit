@@ -1,4 +1,4 @@
-// React twin of vue-cfl-clear.js — the same asymmetry existed in `onChange: (value: Row) => void`.
+// React twin of vue-cfl-clear.js, the same asymmetry existed in `onChange: (value: Row) => void`.
 import { createRoot } from 'react-dom/client';
 import { useState } from 'react';
 import { FdyCfl } from '../../adapters/react/components/FdyCfl';
