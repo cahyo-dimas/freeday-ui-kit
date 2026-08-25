@@ -2,14 +2,14 @@
 
 [English](README.md) · **Bahasa Indonesia**
 
-> **Lebih banyak _free day_ buat dev — UI kit-nya sudah siap pakai.**
+> **Lebih banyak _free day_ buat dev. UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
 [![Release](https://img.shields.io/badge/release-v2.0.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v2.0.0)
 
-UI KIT yang token-driven & framework-agnostic — satu sumber kebenaran untuk warna, tipografi,
+UI KIT yang token-driven & framework-agnostic. Satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
-**Referensi hidup:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)** — atau buka `docs/index.html` langsung di browser.
+**Referensi hidup:** **[cahyo-dimas.github.io/freeday-ui-kit](https://cahyo-dimas.github.io/freeday-ui-kit/)**, atau buka `docs/index.html` langsung di browser.
 
 > 🚀 **Baru mau pakai di project?** Langkah demi langkah per stack (HTML · Vue · React · Blazor): **[`docs/getting-started.md`](docs/getting-started.md)**.
 >
@@ -17,7 +17,7 @@ spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-ki
 > **[`COMPONENTS.md`](COMPONENTS.md)**. **Kapan pakai yang mana:** **[`USAGE.md`](USAGE.md)**.
 > Satu layar utuh yang sudah dirakit: **[`docs/reference-screen.html`](docs/reference-screen.html)**.
 >
-> 🤖 **Ngoding pakai AI agent (atau vibe code)?** Tak ada model yang tahu Freeday dari training —
+> 🤖 **Ngoding pakai AI agent (atau vibe code)?** Tak ada model yang tahu Freeday dari training, jadi
 > berikan **[`docs/agent-onboarding.md`](docs/agent-onboarding.md)** (blok instruksi siap-tempel +
 > tabel mapping migrasi).
 
@@ -27,33 +27,33 @@ node tokens/build.mjs   # tokens.json -> dist/freeday.tokens.css; bundel dist/fr
                         #   dist/freeday.bundle.css (token+komponen); salin dist/*.js + dist/freeday.js
 npm test                # tes transformasi build + kontras WCAG (node:test)
 ```
-`dist/` di-commit — konsumen tak perlu build sendiri.
+`dist/` di-commit, jadi konsumen tak perlu build sendiri.
 
 ## Pakai di project
 
 ### Pertama: pintu masuk mana yang kamu pakai?
 
-Sebagian besar Freeday itu markup + kelas `fdy-*` dan sama di mana pun. **Sepuluh komponen
-interaktif juga punya wrapper typed** — di stack berikut, pakai wrapper-nya, bukan markup mentah +
+Sebagian besar Freeday itu markup + kelas `fdy-*` dan sama di mana pun. **Sebelas komponen
+interaktif juga punya wrapper typed.** Di stack berikut, pakai wrapper-nya, bukan markup mentah +
 enhancer:
 
-| Stack-mu | Impor kesepuluhnya dari | Binding |
+| Stack-mu | Impor kesebelasnya dari | Binding |
 |---|---|---|
 | **Vue 3** | `@cahyo-dimas/freeday/vue` | `v-model` |
 | **React 18/19** | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
 | **Blazor (net8.0)** | RCL `Freeday.Blazor` | `@bind-Value` |
 | HTML statis · Svelte · template server-rendered | *(tanpa wrapper)* markup mentah + enhancer, di bawah | event `fdy-*` |
 
-Kesepuluhnya: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
-`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer`. Menulis markup mentah untuk
-kesepuluh ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja — render pertama benar — lalu
-rusak diam-diam: DOM yang di-render framework belakangan tak pernah ter-hydrate, dan state widget
+Kesebelasnya: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
+`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`. Menulis markup mentah
+untuk kesebelas ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja pada mulanya, karena render
+pertamanya memang benar. Setelah itu ia rusak diam-diam: DOM yang di-render framework belakangan tak pernah ter-hydrate, dan state widget
 berakhir di DOM alih-alih di state framework-mu. Selebihnya (button, card, badge, alert, markup
-tabel, layout, dan komponen interaktif yang tak punya wrapper) sama persis di semua stack — untuk
+tabel, layout, dan komponen interaktif yang tak punya wrapper) sama persis di semua stack. Untuk
 yang terakhir, hydrate dengan `useFreeday` (Vue/React) atau `FreedayBlazor.initAll` (Blazor).
 Panduan lengkap per stack: [`docs/getting-started.md`](docs/getting-started.md).
 
-**Sebagai paket (project dengan bundler — Vue/React/Blazor/Vite):**
+**Sebagai paket (Vue/React/Blazor/Vite, atau project apa pun yang punya bundler):**
 ```bash
 npm i @cahyo-dimas/freeday
 ```
@@ -77,27 +77,27 @@ ter-publish → install tanpa build step; minify diserahkan ke bundler konsumen.
 <link rel="stylesheet" href="dist/freeday.css">          <!-- komponen fdy-* -->
 ```
 Kelas komponen berprefix `fdy-` (mis. `fdy-btn`, `fdy-card`, `fdy-badge`). Pakai langsung di
-markup framework apa pun — Vue, React, Blazor, atau HTML polos.
+markup framework apa pun: Vue, React, Blazor, atau HTML polos.
 
-> **⚠️ Muat font-nya sendiri — paket ini tidak.** Token tipe menamai **Sora** / **IBM Plex Sans** /
+> **⚠️ Muat font-nya sendiri. Paket ini tidak.** Token tipe menamai **Sora** / **IBM Plex Sans** /
 > **JetBrains Mono** tapi Freeday tak membundel file font. Muat (mis. `@import '@fontsource/sora/700.css'`
-> …) atau override `--font-display`/`--font-body`/`--font-mono` — kalau tidak, kit jatuh ke fallback
+> …) atau override `--font-display`/`--font-body`/`--font-mono`. Kalau tidak, kit jatuh ke fallback
 > sistem dan terlihat "belum jadi". Detail: [`docs/getting-started.md`](docs/getting-started.md).
 
 > **Token/role mana dipakai kapan → [`USAGE.md`](USAGE.md).** Freeday menjaga konsistensi *nilai*;
-> `USAGE.md` = doktrin yang menjaga konsistensi *keputusan* — role tipe (`.fdy-title-page/-section/-card`),
+> `USAGE.md` = doktrin yang menjaga konsistensi *keputusan*: role tipe (`.fdy-title-page/-section/-card`),
 > ritme spasi, elevasi, satu-primary-per-layar, palet kategorikal `--tone-1…8`, dan primitif komposisi
 > halaman (`.fdy-page`, `.fdy-page-section`, `.fdy-stats`). Tiap app mulai di `.fdy-app`.
 
 > **Scope: komponen + token, bukan layout.** Freeday punya komponen & design token; helper layout
-> cuma `.fdy-hidden` / `.fdy-visually-hidden` plus primitif komposisi di atas. Layout grid dari layer-mu sendiri —
-> pasangkan dengan utility framework (Tailwind, UnoCSS…) mode **utilities-only, preflight OFF**
-> (`base.css` Freeday = reset-nya). `base.css` itu reset *ringan* (tak me-reset margin `ul`/`ol`/`p` —
-> pakai `.fdy-list-reset` atau komponen list Freeday), dan skala spacing/radius/durasi adalah custom
+> cuma `.fdy-hidden` / `.fdy-visually-hidden` plus primitif komposisi di atas. Layout grid dari layer-mu sendiri.
+> Pasangkan dengan utility framework (Tailwind, UnoCSS…) mode **utilities-only, preflight OFF**
+> (`base.css` Freeday = reset-nya). `base.css` itu reset *ringan* (tak me-reset margin `ul`/`ol`/`p`,
+> jadi pakai `.fdy-list-reset` atau komponen list Freeday), dan skala spacing/radius/durasi adalah custom
 > property publik (`--space-0`…`--space-24`, …) yang bisa jadi dasar theme utility-mu. Detail:
 > [`docs/getting-started.md` §Core concepts](docs/getting-started.md).
 
-> `.fdy-btn` **sudah** tombol primary — tak ada modifier `.fdy-btn--primary` terpisah.
+> `.fdy-btn` **sudah** tombol primary. Tak ada modifier `.fdy-btn--primary` terpisah.
 > Modifier untuk varian lain: `--ghost`, `--danger`, `--text`, `--sm`, `--lg`, `--icon`
 > (lihat `docs/index.html`).
 
@@ -117,7 +117,8 @@ JS. Dua cara:
 <script src="dist/freeday-upload.js"     defer></script>  <!-- [data-fdy-dropzone] -->
 <script src="dist/freeday-toast.js"      defer></script>  <!-- Freeday.toast({...}) -->
 ```
-Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded` — idempotent, progressive enhancement.
+Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded`. Semuanya idempotent, dan tetap jadi markup
+biasa kalau script-nya tak pernah dimuat.
 
 | Enhancer | Hook markup | Event / API |
 |---|---|---|
@@ -138,47 +139,47 @@ Semua auto-init `[data-fdy-*]` saat `DOMContentLoaded` — idempotent, progressi
 
 Tabel lebar (banyak kolom) butuh wrapper untuk scroll horizontal: bungkus `.fdy-table` dengan
 `.fdy-table-wrap` (tabel biasa, sudah termasuk shell border + shadow) atau `.fdy-table-scroll`
-(scroll polos tanpa shell — jalan standalone maupun di dalam `.fdy-datatable` yang shell
+(scroll polos tanpa shell, jadi jalan standalone maupun di dalam `.fdy-datatable` yang shell
 border/shadow-nya sudah ada sendiri). Tanpa salah satu wrapper ini, tabel lebar akan overflow
 container-nya, bukan scroll sendiri.
 
-### 3. Theming — 3 sumbu lewat `data-*` di root
-- `data-theme="light|dark"` — redefinisi token semantic (bind ke state tema app-mu).
+### 3. Theming: 3 sumbu lewat `data-*` di root
+- `data-theme="light|dark"` me-redefinisi token semantic (bind ke state tema app-mu).
   Berlaku di **ancestor mana pun**, tak harus root: `<section data-theme="dark">` membalik region itu
   dan semua komponen di dalamnya ikut (lihat [`USAGE.md`](USAGE.md) §5b).
-- `data-density="comfortable|compact"` — tinggi kontrol (`--control-h`) untuk layar padat data.
+- `data-density="comfortable|compact"` mengatur tinggi kontrol (`--control-h`) untuk layar padat data.
   Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
   custom/hand-built harus baca `--control-h` sendiri (mis. `height: var(--control-h)`) supaya ikut
   menyusut/melebar saat `data-density` berubah.
-- (roadmap) `data-style` — varian visual lain.
+- (roadmap) `data-style` untuk varian visual lain.
 - Skala breakpoint (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
   `src/components/breakpoints.css`) juga tersedia di JS: `import { breakpoints } from
-  '@cahyo-dimas/freeday/breakpoints'` — dipakai untuk menyamakan `matchMedia`/`@media` app-mu ke
-  skala Freeday.
+  '@cahyo-dimas/freeday/breakpoints'`. Pakai itu untuk menyamakan `matchMedia`/`@media` app-mu
+  dengan skala Freeday.
 
 ## Integrasi framework (SPA)
-> **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md) — tiap area
+> **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md). Tiap area
 > (form/validasi, chart, tabel, tanggal, overlay, dst) dipetakan ke library ekosistem yang biasa
 > dipasang (Zod/Yup, Chart.js, TanStack Table, date-fns, Floating UI, …), plus cara
 > menjembataninya + binding Vue/React/Blazor. Buka saat mulai project baru.
 
-**Adapter siap pakai — Vue · React · Blazor.** Semua tipis: enhancer tetap sumber kebenaran,
+**Adapter siap pakai untuk Vue, React, dan Blazor.** Semua tipis: enhancer tetap sumber kebenaran,
 adapter hanya hydrate + jembatani event. Tiap punya contoh layar **faktur** yang jalan:
 
 ```ts
-// Vue 3 — @cahyo-dimas/freeday/vue
+// Vue 3: @cahyo-dimas/freeday/vue
 import { useFreeday } from '@cahyo-dimas/freeday/vue';
 const root = ref<HTMLElement | null>(null);
 useFreeday(root);                     // @fdy-cascade-change="…" (detail bertipe)
 ```
 ```tsx
-// React — @cahyo-dimas/freeday/react
+// React: @cahyo-dimas/freeday/react
 import { useFreeday } from '@cahyo-dimas/freeday/react';
 const root = useRef<HTMLDivElement>(null);
 useFreeday(root);                     // event fdy-* bubbling → listen di root
 ```
 ```razor
-@* Blazor — RCL Freeday.Blazor (net8.0): komponen native typed <FdyX> dengan @bind, 11/11 parity *@
+@* Blazor: RCL Freeday.Blazor (net8.0), komponen native typed <FdyX> dengan @bind, 11/11 parity *@
 @using Freeday.Blazor
 <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl" />
 <FdyTable TRow="Invoice" Columns="_cols" Rows="_rows" RowKey="@(i => i.Code)" PageSize="10" />
@@ -195,18 +196,18 @@ Peta library & pola lengkap: [`docs/integrations.md`](docs/integrations.md).
 
 Enhancer auto-init sekali saat load. Untuk DOM yang dirender dinamis (Vue/React/Blazor):
 - **Reuse enhancer:** setelah mount/route change, panggil `window.FreedayTable.initAll(el)` (atau
-  `initAll()` global). Aman diulang — tiap init dijaga flag idempotent. Jembatani ke state framework
+  `initAll()` global). Aman diulang, karena tiap init dijaga flag idempotent. Jembatani ke state framework
   lewat event yang dipancarkan (mis. dengarkan `fdy-cfl-select`, `fdy-datepicker-change`).
 - **Atau re-implement:** tulis komponen framework sendiri, pertahankan **markup + kontrak ARIA +
   kelas `fdy-*`** yang sama (lihat `docs/index.html`). Enhancer adalah implementasi rujukan, bukan
   keharusan. Untuk choose-from-list, jadikan komponen terkontrol (`fetchPage` callback + server
   cache), jangan mirror ke store global.
 
-## Aturan token — 3 lapis (jangan dilanggar)
+## Aturan token: 3 lapis (jangan dilanggar)
 ```
-Tier 1 PRIMITIVE  ramp mentah (--azure-600…) — TAK PERNAH dipakai di komponen
-Tier 2 SEMANTIC   peran (--color-primary, --color-surface…) — berubah saat theme & re-brand
-Tier 3 COMPONENT  --fdy-<komponen>-<prop> — opsional, override lokal
+Tier 1 PRIMITIVE  ramp mentah (--azure-600…), TAK PERNAH dipakai di komponen
+Tier 2 SEMANTIC   peran (--color-primary, --color-surface…), berubah saat theme & re-brand
+Tier 3 COMPONENT  --fdy-<komponen>-<prop>, opsional, override lokal
 ```
 Komponen hanya menyentuh Tier 2/3. Butuh nilai baru → compose → extend modifier → baru create.
 
@@ -252,10 +253,10 @@ terlihat, HTML native dulu sebelum ARIA, komponen interaktif ikut pola WAI-ARIA 
 ## Dukungan browser
 Butuh browser evergreen, kira-kira 2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (floor
 ditentukan `color-mix()`). Fitur lain: native `<dialog>`/`::backdrop`, `accent-color`, `100dvh`,
-`conic-gradient`, `scroll-snap` — semua ≥ Safari 15.4. Blur backdrop pakai
+`conic-gradient`, `scroll-snap`, semuanya ≥ Safari 15.4. Blur backdrop pakai
 `-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya tanpa blur). Belum ada
-CSS build/autoprefixer — dukungan browser lama = tanggung jawab konsumen.
+CSS build/autoprefixer, jadi dukungan browser lama jadi tanggung jawab konsumen.
 
 ## Lisensi
-[MIT](LICENSE) © 2026 Cahyo D. Kurnianto — bebas dipakai, diubah, dan didistribusikan asal
+[MIT](LICENSE) © 2026 Cahyo D. Kurnianto. Bebas dipakai, diubah, dan didistribusikan asal
 menyertakan baris copyright + teks lisensi.

@@ -2375,13 +2375,13 @@
   var TEXT = {
     required: 'Required.',
     type: 'Invalid format.',
-    pattern: 'Does not match the expected format.',
+    pattern: 'Doesn’t match the required format.',
     minlength: 'Too short.',
     maxlength: 'Too long.',
-    min: 'Value is too small.',
-    max: 'Value is too large.',
-    step: 'Not a valid increment.',
-    mismatch: 'Values do not match.',
+    min: 'Too small.',
+    max: 'Too large.',
+    step: 'Not a valid step.',
+    mismatch: 'Values don’t match.',
     invalid: 'Invalid.'
   };
   /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
@@ -4482,8 +4482,8 @@
     uploading: 'Uploading…',
     waiting: 'Waiting for the server…',
     done: 'Uploaded',
-    badType: 'File type not supported.',
-    tooBig: 'Larger than the {max} limit.'
+    badType: 'Unsupported file type.',
+    tooBig: 'Over the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,

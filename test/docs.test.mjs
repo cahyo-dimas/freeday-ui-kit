@@ -268,63 +268,63 @@ test('the enhancers ship exactly these strings (#006)', () => {
   }
 
   assert.deepEqual(tables, {
-  'freeday-carousel.js': {
-    position: '{n} of {total}',
-    slide: 'Slide {n}',
-  },
-  'freeday-cascade.js': {
-    back: 'Back one level',
-    submenu: '{label}, submenu',
-  },
-  'freeday-cfl.js': {
-    selected: '{n} selected',
-  },
-  'freeday-form.js': {
-    invalid: 'Invalid.',
-    max: 'Value is too large.',
-    maxlength: 'Too long.',
-    min: 'Value is too small.',
-    minlength: 'Too short.',
-    mismatch: 'Values do not match.',
-    pattern: 'Does not match the expected format.',
-    required: 'Required.',
-    step: 'Not a valid increment.',
-    type: 'Invalid format.',
-  },
-  'freeday-mask.js': {
-    hide: 'Hide password',
-    show: 'Show password',
-  },
-  'freeday-stepper.js': {
-    done: 'Done',
-    next: 'Next',
-  },
-  'freeday-table.js': {
-    close: 'Close',
-    filter: 'Filter column',
-    filterEnum: 'Show values',
-    filterRange: 'Value range',
-    filterText: 'Contains text',
-    filterTextPlaceholder: 'Contains…',
-    info: 'Showing {from}–{to} of {total}',
-    next: 'Next',
-    prev: 'Previous',
-    reset: 'Reset',
-    rows: '{n} rows',
-    selected: '{n} selected',
-  },
-  'freeday-toast.js': {
-    close: 'Close',
-  },
-  'freeday-upload.js': {
-    badType: 'File type not supported.',
-    done: 'Uploaded',
-    progress: 'Upload progress for {name}',
-    remove: 'Remove {name}',
-    tooBig: 'Larger than the {max} limit.',
-    uploading: 'Uploading…',
-    waiting: 'Waiting for the server…',
-  },
+    'freeday-carousel.js': {
+      position: '{n} of {total}',
+      slide: 'Slide {n}',
+    },
+    'freeday-cascade.js': {
+      back: 'Back one level',
+      submenu: '{label}, submenu',
+    },
+    'freeday-cfl.js': {
+      selected: '{n} selected',
+    },
+    'freeday-form.js': {
+      invalid: 'Invalid.',
+      max: 'Too large.',
+      maxlength: 'Too long.',
+      min: 'Too small.',
+      minlength: 'Too short.',
+      mismatch: 'Values don’t match.',
+      pattern: 'Doesn’t match the required format.',
+      required: 'Required.',
+      step: 'Not a valid step.',
+      type: 'Invalid format.',
+    },
+    'freeday-mask.js': {
+      hide: 'Hide password',
+      show: 'Show password',
+    },
+    'freeday-stepper.js': {
+      done: 'Done',
+      next: 'Next',
+    },
+    'freeday-table.js': {
+      close: 'Close',
+      filter: 'Filter column',
+      filterEnum: 'Show values',
+      filterRange: 'Value range',
+      filterText: 'Contains text',
+      filterTextPlaceholder: 'Contains…',
+      info: 'Showing {from}–{to} of {total}',
+      next: 'Next',
+      prev: 'Previous',
+      reset: 'Reset',
+      rows: '{n} rows',
+      selected: '{n} selected',
+    },
+    'freeday-toast.js': {
+      close: 'Close',
+    },
+    'freeday-upload.js': {
+      badType: 'Unsupported file type.',
+      done: 'Uploaded',
+      progress: 'Upload progress for {name}',
+      remove: 'Remove {name}',
+      tooBig: 'Over the {max} limit.',
+      uploading: 'Uploading…',
+      waiting: 'Waiting for the server…',
+    },
   }, 'a user-facing string changed — if that was deliberate, update this table in the same commit');
 });
 

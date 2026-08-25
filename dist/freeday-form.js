@@ -46,13 +46,13 @@
   var TEXT = {
     required: 'Required.',
     type: 'Invalid format.',
-    pattern: 'Does not match the expected format.',
+    pattern: 'Doesn’t match the required format.',
     minlength: 'Too short.',
     maxlength: 'Too long.',
-    min: 'Value is too small.',
-    max: 'Value is too large.',
-    step: 'Not a valid increment.',
-    mismatch: 'Values do not match.',
+    min: 'Too small.',
+    max: 'Too large.',
+    step: 'Not a valid step.',
+    mismatch: 'Values don’t match.',
     invalid: 'Invalid.'
   };
   /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute

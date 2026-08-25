@@ -61,8 +61,8 @@
     uploading: 'Uploading…',
     waiting: 'Waiting for the server…',
     done: 'Uploaded',
-    badType: 'File type not supported.',
-    tooBig: 'Larger than the {max} limit.'
+    badType: 'Unsupported file type.',
+    tooBig: 'Over the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
