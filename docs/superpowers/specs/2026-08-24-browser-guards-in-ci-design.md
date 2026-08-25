@@ -4,7 +4,7 @@
 - **Date:** 2026-08-24
 - **Owner:** Cahyo D. Kurnianto (Inti Data Utama)
 - **Kit version at writing:** 1.52.1
-- **Scope:** CI only — no component, token, or adapter change
+- **Scope:** CI only, with no component, token, or adapter change
 
 ---
 
@@ -24,7 +24,7 @@ real engine runs only when a human remembers to run it locally:
 - paint order of stacked overlays, asserted in pixels (`overlay-stack.mjs`, #046)
 - a chart's accessible subtree, asserted against the AX tree (`chart-a11y.mjs`, #047)
 - the user-activation matrix that decides who owns Escape (`overlay-stack.mjs`, #048)
-- focus, theming, control heights, crowding, adapter parity — the other 15 specs
+- focus, theming, control heights, crowding, adapter parity, and the other 15 specs
 
 Automating releases through OIDC (1.52.0) sharpened this: a tag now publishes to npm without a
 human in the loop, and the strongest guards are the ones that loop skips.
@@ -53,7 +53,7 @@ permanently empty check. Refusing to run must be louder than passing.
 ### Accepted consequence of decision 2
 
 When Google ships a Chrome whose behaviour differs, CI goes red with no offending commit. That is
-intended: `overlay-stack.mjs` says so in its own assertion message — *"a changed row is news about
+intended: `overlay-stack.mjs` says so in its own assertion message: *"a changed row is news about
 the browser, not a regression in the kit"*. A pinned-old engine would keep CI quiet and reproduce
 exactly the blind spot that produced note #048, where the kit measured 133 and the consumer measured
 151.
@@ -71,15 +71,15 @@ on:
   workflow_call:        # publish.yml calls this same job
 ```
 
-Steps, in order — build first, because the browser fixtures load `dist/`:
+Steps, in order, building first because the browser fixtures load `dist/`:
 
 1. `actions/checkout@v4`
 2. `actions/setup-node@v4` (Node 22, matching `publish.yml`)
 3. `npm ci`
 4. `node tokens/build.mjs`
-5. `node --test` — the 59 unit tests
+5. `node --test` for the 59 unit tests
 6. `npm run typecheck:react`
-7. **Chrome precheck** — `CHROME_BIN=/usr/bin/google-chrome` (the path Google Chrome stable occupies
+7. **Chrome precheck:** `CHROME_BIN=/usr/bin/google-chrome` (the path Google Chrome stable occupies
    on the `ubuntu-latest` image), then `test -x "$CHROME_BIN"`, failing the job with a message that
    names the path if it is not there
 8. `npm run test:browser`, with that same `CHROME_BIN` exported to the step
@@ -95,7 +95,7 @@ jobs:
     ...unchanged...
 ```
 
-The publish job keeps its own `npm ci` and build — a called workflow is a separate job on a separate
+The publish job keeps its own `npm ci` and build, because a called workflow is a separate job on a separate
 runner and shares no filesystem. Its duplicated `node --test` and `typecheck:react` steps are
 removed, since `needs: test` now covers them.
 
@@ -116,21 +116,21 @@ const flags = [
 ```
 
 `--no-sandbox` is scoped to `CI` so a developer's machine keeps the sandbox. Whether the GitHub
-runner needs it at all is unknown from here — see §5.
+runner needs it at all is unknown from here; see §5.
 
 ## 4. Testing
 
 The change *is* test infrastructure, so verification is behavioural, not unit:
 
-1. **Locally, before pushing** — the full browser suite must pass against both engines:
-   - `npm run test:browser` (Chromium 133, puppeteer cache) — 58/58 today
-   - `CHROME_BIN=<Chrome 151> npm run test:browser` — 58/58, already measured 2026-08-24
-2. **On CI** — the run must report **58 passed, 0 skipped**. A green run with skips is a failed
+1. **Locally, before pushing,** the full browser suite must pass against both engines:
+   - `npm run test:browser` (Chromium 133, puppeteer cache): 58/58 today
+   - `CHROME_BIN=<Chrome 151> npm run test:browser`: 58/58, already measured 2026-08-24
+2. **On CI,** the run must report **58 passed, 0 skipped**. A green run with skips is a failed
    implementation of this spec, not a pass.
-3. **The anti-skip guard must be proven, not assumed** — one deliberate run with `CHROME_BIN`
+3. **The anti-skip guard must be proven, not assumed:** one deliberate run with `CHROME_BIN`
    pointing at a non-existent path must fail the job. Without that, §1.1 is a claim, not a
    property.
-4. **The gate must be proven** — a tag whose browser suite fails must not publish.
+4. **The gate must be proven:** a tag whose browser suite fails must not publish.
 
 ## 5. Risks
 
@@ -138,15 +138,15 @@ The change *is* test infrastructure, so verification is behavioural, not unit:
 |---|---|
 | Runner Chrome needs `--no-sandbox`, or does not | Cannot be settled from a laptop. Implement on a branch, read the real run, adjust. |
 | Chrome absent from a future runner image | The §3.1 precheck turns it into a loud failure; the path can then be pinned or installed. |
-| Browser suite is slower than the unit suite (~19s locally) | Acceptable — it runs on a hosted runner, in parallel with nothing else, on a free tier. |
+| Browser suite is slower than the unit suite (~19s locally) | Acceptable, since it runs on a hosted runner, in parallel with nothing else, on a free tier. |
 | A future Chrome changes a documented behaviour | Intended, per §2. The fix is to re-measure and correct the docs, exactly as 1.52.1 did. |
 
 ## 6. Out of scope
 
-- A two-engine CI matrix — decided against; local covers 133.
+- A two-engine CI matrix, decided against; local covers 133.
 - Refreshing `HANDOFF.md` / `NEXT-UP.md`, both stale at v1.34.0 while the kit is at 1.52.1. Real,
   worth doing, and a separate piece of work rather than something smuggled into a CI change.
-- bUnit / bBlazor component tests in CI (`NEXT-UP.md` #5) — unchanged, still demand-driven.
+- bUnit / bBlazor component tests in CI (`NEXT-UP.md` #5), unchanged and still demand-driven.
 
 ## 7. Definition of done
 
