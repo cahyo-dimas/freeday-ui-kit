@@ -3,7 +3,7 @@
 Freeday is a **dependency-free foundation**: tokens + accessible markup + vanilla enhancers. This
 document maps each area to the ecosystem library you'd normally install in a real project, **when**
 Freeday's built-ins are enough, and **how to bridge**. The goal: when you start a new project, open
-this one file — no more hunting around.
+this one file, so there's no hunting around.
 
 > Golden rule: **Freeday owns the look (tokens + markup + a11y); the library owns the engine
 > (heavy logic).** Don't duplicate. Connect through the 3 mechanisms below.
@@ -14,11 +14,11 @@ this one file — no more hunting around.
 
 Every integration comes down to one of these:
 
-1. **`fdy-*` events** — listen to enhancer output, forward it to framework/library state.
+1. **`fdy-*` events:** listen to enhancer output, forward it to framework/library state.
    All events are bubbling `CustomEvent`s; the data is in `event.detail`.
-2. **Init hook `window.Freeday<X>.initAll(el)`** — call it again after DOM is rendered
+2. **Init hook `window.Freeday<X>.initAll(el)`:** call it again after DOM is rendered
    dynamically (Vue `onMounted`, React `useEffect`, Blazor `OnAfterRenderAsync`). Idempotent.
-3. **Color tokens** — match a library's colors to the active theme:
+3. **Color tokens:** match a library's colors to the active theme:
    ```js
    // Read a live semantic token so a 3rd-party lib matches the current theme
    const token = (name) =>
@@ -79,7 +79,7 @@ library only.
 | Virtual scroll | 🔌 | — | **TanStack Virtual** · Vue: **vue-virtual-scroller** | — |
 
 > **Monospace data cells:** add `.fdy-mono` to any identifier / code / IP / timestamp cell (or an
-> inline `<span>`) to render it in the data font with tabular figures. It is alignment-neutral —
+> inline `<span>`) to render it in the data font with tabular figures. It is alignment-neutral,
 > unlike `.fdy-table__num`, which is also right-aligned. `FdyTable` applies it automatically to any
 > column with `mono: true`.
 
@@ -115,7 +115,7 @@ library only.
 
 | Area | Freeday enough? | When the built-in is enough | If you need more | Bridge |
 |---|---|---|---|---|
-| Icons | ➕ (inline SVG) | A small built-in set | A full set: **Lucide** (best fit — Freeday uses this stroke style), **Heroicons**, **Tabler**, **Phosphor** | Drop the SVG into a slot: `[data-fdy-icon]`, `.fdy-input-group__addon--icon`, `.fdy-combo__icon`. |
+| Icons | ➕ (inline SVG) | A small built-in set | A full set: **Lucide** (best fit, since Freeday uses this stroke style), **Heroicons**, **Tabler**, **Phosphor** | Drop the SVG into a slot: `[data-fdy-icon]`, `.fdy-input-group__addon--icon`, `.fdy-combo__icon`. |
 | Drag & drop / sortable | 🔌 | — | **SortableJS** (vanilla) · React: **dnd-kit** · Vue: **vuedraggable** | Lay it out with Freeday markup, DnD from the library. |
 | Command palette | 🔌 | — | **cmdk** (React) · **kbar** | Style with tokens + `.fdy-kbd`. |
 | Routing | 🔌 | — | Vue Router · React Router · Blazor Router | After a route change → `window.FreedayTable.initAll()`, etc. |
@@ -124,8 +124,8 @@ library only.
 
 ## Per-framework binding
 
-> **Recommended path:** use the ready-made adapters — the `useFreeday` composable (Vue), the
-> `useFreeday` hook (React), or `window.FreedayBlazor` (Blazor) — which wrap hydration + event
+> **Recommended path:** use the ready-made adapters: the `useFreeday` composable (Vue), the
+> `useFreeday` hook (React), or `window.FreedayBlazor` (Blazor). They wrap hydration + event
 > bridging. Full steps per stack are in **[`getting-started.md`](getting-started.md)**. The raw
 > `initAll()` pattern below is the underlying mechanism (and a fallback if you don't use an adapter).
 
@@ -154,7 +154,7 @@ function Panel(): JSX.Element {
 ```
 > **Controlled alternative (parity with Vue's `v-model`):** `@cahyo-dimas/freeday/react` also exports
 > the typed components `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` /
-> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer` — plain
+> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer`, with plain
 > `value`/`onChange` (props in, events out), no `data-fdy-*` + manual event listener:
 > ```tsx
 > import { FdyCombo } from '@cahyo-dimas/freeday/react';
@@ -168,22 +168,22 @@ function Panel(): JSX.Element {
 > `row-detail`/`renderRowDetail` + controlled `expandedKeys`); `FdyModal`/`FdyDrawer` take `open` +
 > `onClose`.
 >
-> **Responsive list screens — drive the page from outside the table.** `FdyTable`'s pager renders
+> **Responsive list screens: drive the page from outside the table.** `FdyTable`'s pager renders
 > inside `.fdy-datatable`, so a screen that hides the table below `md` and shows a card list loses it.
 > Pass **`pageIndex`** (+ `update:pageIndex` / `onPageIndexChange` / `PageIndexChanged`) to own the
 > client-side index while the table still does filter/sort/paginate: render **one** pager outside for
 > both breakpoints, feed the card list from the **`process`** event (`{ rows, total }`), and build the
 > pager's page window with `pageWindow` from `@cahyo-dimas/freeday/table-model` so it is literally the
-> same computation the table uses. One page index can then span several tables — which is what a
+> same computation the table uses. One page index can then span several tables, which is what a
 > grouped list needs. The same set is available
-> in `@cahyo-dimas/freeday/vue` via `v-model` / props — both adapters are fully symmetric. See
+> in `@cahyo-dimas/freeday/vue` via `v-model` / props, and both adapters are fully symmetric. See
 > [`getting-started.md` §React](getting-started.md#react-vite) and
 > `examples/react-faktur/src/App.tsx`. **Vite** transpiles the `.tsx` source with no extra config;
 > **Next.js** may need `transpilePackages: ['@cahyo-dimas/freeday']`.
 
 **Blazor**
 ```csharp
-// Component.razor.cs — call the enhancer after Blazor renders the markup.
+// Component.razor.cs: call the enhancer after Blazor renders the markup.
 protected override async Task OnAfterRenderAsync(bool firstRender)
 {
     if (firstRender)
@@ -200,7 +200,7 @@ document.addEventListener('fdy-form-invalid', (e) =>
 > **Native components (parity with Vue's `v-model` / React's `value`/`onChange`):** the
 > **`Freeday.Blazor`** RCL (net8.0, `adapters/blazor/`) ships the typed components `FdyCombo<TValue>` /
 > `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` / `FdyCfl<TRow>` / `FdyChart` /
-> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` — `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
+> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` with `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
 > ```razor
 > @using Freeday.Blazor
 > <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />
@@ -297,7 +297,7 @@ computePosition(trigger, tip, { placement: 'top', middleware: [offset(8), flip()
 ```
 
 ### 6. Large async select → `freeday-cfl`
-For thousands of server-side rows, don't force a `<select>` — use choose-from-list:
+For thousands of server-side rows, don't force a `<select>`. Use choose-from-list:
 ```js
 window.FreedayCfl.init(el, {
   // Server owns paging/search; Freeday owns the accessible dialog UI.
@@ -311,13 +311,13 @@ el.addEventListener('fdy-cfl-select', (e) => store.setCustomer(e.detail.row));
 ## SAP B1 note
 
 Freeday is purely for the **web** (companion apps, .NET web add-ons, portals). A **UI API
-(SAPBouiCOM)** add-on is WinForms/COM — a different world where Freeday doesn't apply. For
+(SAPBouiCOM)** add-on is WinForms/COM, a different world where Freeday doesn't apply. For
 web-based add-ons (Service Layer + .NET), Freeday + enhancers over JS interop work normally.
 
 ---
 
 *Library recommendations reflect what's common and stable as of 2026; choose based on your
-project's license and bundle-size budget. Freeday locks you into none of them — everything is
+project's license and bundle-size budget. Freeday locks you into none of them. Everything is
 optional and replaceable.*
 
 ## Building a control the kit does not ship
@@ -329,7 +329,7 @@ import { usePopover } from '@cahyo-dimas/freeday/vue';   // or '/react'
 usePopover(panelRef, triggerRef, open);                  // panel needs popover="manual"
 ```
 
-This is what every kit dropdown uses to escape an ancestor's overflow clip — `.fdy-card` is
+This is what every kit dropdown uses to escape an ancestor's overflow clip, because `.fdy-card` is
 `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's edge. It is
 exported so a control you build behaves like one the kit ships, and improves when the kit's
 positioning does.

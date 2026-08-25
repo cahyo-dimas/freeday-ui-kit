@@ -92,7 +92,7 @@ Blazor). Then verify the agent can actually read those files. An agent that can'
 | `docs/reference-screen.html` | A full screen assembled from the shell down. Open it in a browser. |
 | `docs/agent-onboarding.md` | This file. |
 | `CHANGELOG.md` | **What changed between the version this project had and the one it has now.** Read it after every upgrade; each entry says what broke, what is new, and why. |
-| `dist/` | Built CSS + enhancers. **`freeday.bundle.css` = tokens + components** (what `@cahyo-dimas/freeday/css` resolves to); `freeday.css` is components **only**, `freeday.tokens.css` tokens only — linking `freeday.css` alone leaves every `var(--…)` unresolved. Plus `freeday-*.js` and the `.d.ts` files. |
+| `dist/` | Built CSS + enhancers. **`freeday.bundle.css` = tokens + components** (what `@cahyo-dimas/freeday/css` resolves to); `freeday.css` is components **only**, `freeday.tokens.css` tokens only, so linking `freeday.css` alone leaves every `var(--…)` unresolved. Plus `freeday-*.js` and the `.d.ts` files. |
 | `src/components/*.css` | The authoritative source for every class, when a doc is ambiguous. |
 | `tokens/tokens.json` | Every token in W3C DTCG format, machine-readable. |
 | `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers, 10 components each. |
