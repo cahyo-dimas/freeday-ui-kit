@@ -1029,21 +1029,21 @@ executed, one already documented, one left as an owner decision.
   kit's output is English; it is not. *Every* user-visible string the vanilla enhancers write is
   Indonesian (`Sebelumnya`, `Berikutnya`, `Berisi teks`, `Reset`, `Tutup`, `Menampilkan …`,
   `Bulan berikutnya`, `Format tidak valid.`). Translating one would **create** the mixed interface
-  the note objects to. The real choice — an override hook, or switching the defaults and breaking
-  every Indonesian consumer — is recorded in `NEXT-UP.md` #6 with its trigger; `COMPONENTS.md` now
+  the note objects to. The real choice, an override hook or switching the defaults and breaking
+  every Indonesian consumer, is recorded in `NEXT-UP.md` #6 with its trigger; `COMPONENTS.md` now
   states the caveat in full and points English apps at the typed wrappers.
 - **§8 needed no code**, only the line it asked for: the filter button and its dialog share an
   accessible name on purpose, so a test suite wants `getByRole`, not `getByLabel`.
 - Two traps found by measuring rather than reading: `.fdy-icon` as a bare inline element **ignored
   `width` entirely** (it does not apply to non-replaced inline boxes) and rendered 936px wide until
   it got a `display`; and stacking two colour roles (`.fdy-help.fdy-text-warning`) silently loses to
-  whichever rule the bundle happens to emit later — documented, and the docs page no longer does it.
+  whichever rule the bundle happens to emit later. That is documented, and the docs page no longer does it.
 ### Added: guards
 - Adapter specs for `clearable` in both Vue and React (real clicks: emits `null`, empties the field,
   the control disappears with the value it cleared, focus lands on the trigger, dialog stays shut).
 - CSS gate: menu focus must render as more than the hover fill; the required marker must keep its
   alt text; `.fdy-icon` must keep a display that accepts a width; the state roles must spend the
-  exact inks the contrast gate proves readable — that last one closes the seam between the two test
+  exact inks the contrast gate proves readable, and that last one closes the seam between the two test
   files, where a class could drift to a weaker token while every token assertion stayed green.
 - `contrast.test.mjs` now also asserts the state inks on **plain** surfaces, not just over their own
   `-soft` fills.
@@ -1052,7 +1052,7 @@ executed, one already documented, one left as an owner decision.
 Improvement note 007, written while fixing a workspace picker whose cards showed a pointer cursor
 and swallowed every click.
 ### Added
-- **`.fdy-btn--stretch`** — the pattern for **one card, one primary action, one escape hatch**, which
+- **`.fdy-btn--stretch`** is the pattern for **one card, one primary action, one escape hatch**, which
   the kit had no shape for: `--button` is a card that *is* one control, `--interactive` a card that
   merely *has* one, and a card with two actions can be neither (interactive content nested in a
   `<button>` is invalid HTML). The primary control keeps its real `<button>`/`<a>` semantics and
@@ -1061,14 +1061,14 @@ and swallowed every click.
   button nudges itself with a transform on `:hover`/`:active`, a transformed element becomes the
   containing block for its own absolutely positioned descendants, and the overlay therefore
   re-anchors from the card to the button's own box mid-gesture. `mousedown` lands on the button,
-  `mouseup` somewhere else, and the browser fires `click` on their common ancestor — the button never
+  `mouseup` somewhere else, and the browser fires `click` on their common ancestor, so the button never
   gets one. The symptom is identical to the bug being fixed.
   The report found this on `--text`/`--ghost`, which break on press. The kit's **base** rule is
   `.fdy-btn:hover{transform:translateY(-1px)}`, so the default and `--danger` fills break one step
-  earlier, on hover: neutralising only `:active` — the obvious half-fix — still leaks.
+  earlier, on hover: neutralising only `:active`, the obvious half-fix, still leaks.
 - **Escape hatches are raised automatically.** Every focusable element in a card holding a stretched
   target sits above the overlay without markup or CSS from the consumer, because forgetting a
-  `z-index` here fails silently — the control looks and hovers exactly as before and simply never
+  `z-index` here fails silently: the control looks and hovers exactly as before and simply never
   receives the click.
 ### Fixed
 - `--interactive` is now documented as **presentational**: the only affordance in the kit whose
@@ -1078,11 +1078,11 @@ and swallowed every click.
 ### Notes on the shape of the fix
 - **Raising the escape hatch must not outweigh the app.** The first version declared
   `position:relative` at normal specificity and *measurably* dragged an absolutely positioned corner
-  dismiss button back into the flow — a control the app had pinned itself, moved by the kit, with no
+  dismiss button back into the flow, a control the app had pinned itself, moved by the kit, with no
   error. `z-index` still wins, but the `position` it needs is now a zero-specificity `:where()`
   default that any app rule beats. The two rules must stay split; the gate asserts it.
 - **Cards only.** The overlay anchors to the nearest *positioned* ancestor. `.fdy-list__row` is not
-  positioned (`.fdy-list` is), so a stretched target in a list row would cover the whole list —
+  positioned (`.fdy-list` is), so a stretched target in a list row would cover the whole list,
   documented, with `.fdy-list__row--button` as the answer for clickable rows.
 ### Added: guards
 - `browser/card-stretch.mjs` drives real presses: the target receives clicks from anywhere on the
@@ -1099,37 +1099,37 @@ belonged to a different application.
 ### Fixed
 - **`.fdy-input[type="number"]` no longer shows the user agent's spin buttons.** They are OS widgets
   in OS colours that no theme reaches, so on a dark surface they read as a light-grey artefact glued
-  to an otherwise themed field — the one unthemed control on a page where everything else is themed
+  to an otherwise themed field, the one unthemed control on a page where everything else is themed
   to the last pixel. Both halves ship, because they cover different engines: `appearance: textfield`
   (Firefox) and `::-webkit-outer/inner-spin-button { appearance: none }` (Blink/WebKit).
 ### Added
-- **`[data-fdy-number]` + `freeday-number.js`** — the increment affordance back on the kit's terms,
+- **`[data-fdy-number]` + `freeday-number.js`** put the increment affordance back on the kit's terms,
   since hiding the native buttons removes it. **Not a new block:** it is an `.fdy-input-group` with
   two `__btn`s, so it inherits the shared border, `:focus-within` ring and `:has()` error promotion
   that already existed. The reported `.fdy-number` block would have duplicated all of it.
   - **No custom event.** Stepping dispatches native bubbling `input` + `change` on the input, so
-    `v-model` / `onChange` / `@bind` work with no adapter and no new API — the input stays the source
+    `v-model` / `onChange` / `@bind` work with no adapter and no new API, because the input stays the source
     of truth. That is also why this needs no typed wrapper in any of the four stacks.
   - `min`/`max`/`step` live on the input and the buttons never redo the arithmetic (`stepUp()`/
     `stepDown()` clamp for free). They go `disabled` at a bound, on a `disabled`/`readonly` field,
-    and when `step="any"` — which has no defined increment and makes `stepUp()` throw, so a stepper
+    and when `step="any"`, which has no defined increment and makes `stepUp()` throw, so a stepper
     cannot honestly express it.
   - A `MutationObserver` watches `disabled`/`readonly`/`min`/`max`/`step`: a framework changes those
     without firing an event, and a button that still looks enabled while doing nothing is the exact
-    lie this state machine exists to prevent. (First observer in the kit — the alternative was a
+    lie this state machine exists to prevent. (First observer in the kit; the alternative was a
     button whose appearance silently drifts from its behaviour.)
   - The buttons are **not tab stops** (`tabindex="-1"`): the input is already focusable and ↑/↓
     already step it, so two extra stops per field cost every keyboard user and buy nothing. They keep
     an `aria-label`, and `type="button"` so they cannot submit their form.
 - `.fdy-input-group__btn` gains a **leading-position** rule (divider on the correct side when the
-  button comes first) and a **`:disabled`** state — dim + `not-allowed`, with `:hover` withdrawn,
+  button comes first) and a **`:disabled`** state: dim + `not-allowed`, with `:hover` withdrawn,
   because a disabled button still matches `:hover`.
 - `COMPONENTS.md` now answers **which `type` `.fdy-input` covers**, which is the question that would
   have prevented this note: every text-like type themes identically, and the two that keep a native
   widget are named with what to do about each.
 ### Notes on the shape of the fix
-- **`type="search"` deliberately left alone.** Its WebKit clear (×) button is unthemed too — and it
-  is on the kit's own docs pages, 10 of them — but it is the only way to empty the field. Stripping
+- **`type="search"` deliberately left alone.** Its WebKit clear (×) button is unthemed too, and it
+  is on the kit's own docs pages, 10 of them, but it is the only way to empty the field. Stripping
   it removes function, not chrome; the number arrows only removed a mouse-only increment that ↑/↓
   still provides. `type="date"`/`time` likewise keep their picker indicator; the kit ships its own
   datepicker/timepicker and the docs now say to use those instead.
@@ -1143,21 +1143,21 @@ belonged to a different application.
 - `browser/number.mjs` drives real clicks and a real Tab: stepping fires native `input` + `change`,
   bounds disable the right button, a disabled button changes nothing, `readonly` and `step="any"`
   are inert without throwing, and Tab skips the buttons. Mutation-checked against five defects.
-- `browser/harness.mjs` gains `pressKey` — tab order only moves for a trusted key, so the claim is
+- `browser/harness.mjs` gains `pressKey`, since tab order only moves for a trusted key, so the claim is
   measured rather than read off an attribute.
 
 ## [1.26.0] - 2026-08-14
 Improvement note #43, found while chasing a "the upload is stuck" report on a 626 KB PDF: the
 transfer took about a second, the server then spent nearly a minute reading the document.
 ### Added
-- **`row.waiting(label)`** — the state between `setProgress` and `done`: the bytes are gone, the
+- **`row.waiting(label)`** is the state between `setProgress` and `done`: the bytes are gone, the
   server has not answered. The row's only long-running state was named after the *transfer*, so it
-  kept saying "Mengunggah…" for the whole minute of server-side work — and `setProgress(100)` made it
+  kept saying "Mengunggah…" for the whole minute of server-side work, and `setProgress(100)` made it
   worse, because a full bar that then sits still is the most convincing "hung" signal a UI can
   produce. There was no way out within the row's API: `done()` claims success, `fail()` claims an
   error, `ready()` walks backwards. Consumers were rendering a second status line outside the row and
   leaving the row to contradict it.
-  The bar goes **indeterminate** and drops `aria-valuenow` — a progressbar with no value is exactly
+  The bar goes **indeterminate** and drops `aria-valuenow`, and a progressbar with no value is exactly
   what ARIA calls indeterminate, which is the contract `COMPONENTS.md` already stated for
   `.fdy-progress`. The label is the consumer's, because only they know what the server is doing
   (`Membaca PDF…`, `Memindai…`); it falls back to `Menunggu server…`.
@@ -1166,54 +1166,54 @@ transfer took about a second, the server then spent nearly a minute reading the 
 ### Notes on the shape of the fix
 - The report's patch would have shipped the symptom it set out to remove. It put the modifier on the
   **bar** (`.fdy-progress--indeterminate` styles `.fdy-progress__bar`, so it belongs on the
-  container — on the bar it matches nothing) and then set an inline `width:100%`, which beats the
+  container, so on the bar it matches nothing) and then set an inline `width:100%`, which beats the
   modifier's own width anyway. Both mistakes render a full, frozen bar. The note also hedged that
   `.fdy-progress--indeterminate` might not exist; it has all along.
 - **Leaving the state needs more care than entering it.** `.fdy-progress__bar` is a plain block div:
   with no width it fills its track. So `uploading()`/`setProgress()` restore an explicit width when
   they clear the modifier, or a retried row paints a *full* bar while meaning 0%. `done()`, `fail()`
-  and `ready()` need no counterpart — they drop the progress element outright, modifier and all
+  and `ready()` need no counterpart, since they drop the progress element outright, modifier and all
   (contrary to the note, which expected a line in each).
 - **No `.fdy-file--waiting` class.** `uploading` has none either; only `--success`/`--error` do,
   because they carry colour. A documented class with no rule is markup that looks like it does
   something.
 - Under `prefers-reduced-motion: reduce` the kit's indeterminate treatment is a dimmed **full** bar
-  (no animation left to carry the meaning) — pre-existing behaviour for every indeterminate progress,
+  (no animation left to carry the meaning), pre-existing behaviour for every indeterminate progress,
   not introduced here. For those users the honest signal is the label, not the bar.
 ### Added: guards
 - `browser/upload-states.mjs` gains a third spec, measuring what the **engine renders** rather than
   what the source declares: both ways to get this wrong are invisible in a code read. Mutation-checked
-  against five defects, including the report's own two — modifier-on-bar, inline `width:100%`, no
+  against five defects, including the report's own two: modifier-on-bar, inline `width:100%`, no
   width restored on return, `aria-valuenow` kept, and label ignored.
 
 ## [1.25.0] - 2026-08-13
-Improvement note #42, found while adopting 1.24.0 — the other half of the same integration.
+Improvement note #42, found while adopting 1.24.0, the other half of the same integration.
 ### Fixed
 - **`fdy-upload-remove` now fires on the dropzone**, the same element as `fdy-upload-add`. It was
-  dispatched on the *row*, which lives in the file list — and the kit's own markup contract puts that
+  dispatched on the *row*, which lives in the file list, and the kit's own markup contract puts that
   list as a **sibling** of the dropzone, so the event never bubbled through the zone. A consumer
   following the documentation got `add` and never got `remove`: no error, right event name, right
   element, and the other event on that element working. Their state kept a file the user had already
   taken away.
-  The kit's own header comment was the source of the mistake — it said both events are emitted "on the
+  The kit's own header comment was the source of the mistake: it said both events are emitted "on the
   dropzone" while the code dispatched one of them somewhere else. It now states the target for each,
   and why (a row in a sibling list can never reach the zone). `COMPONENTS.md` says it once beside the
   row state table, with the removal listener in the worked example.
 ### Notes on the shape of the fix
 - The report proposed dispatching on **both** the row and the zone, for backward compatibility. Not
-  taken, and the guard proves why: when the file list is **nested inside** the dropzone — which
-  `data-filelist` permits — the row already bubbles through the zone, so a second dispatch makes a
+  taken, and the guard proves why: when the file list is **nested inside** the dropzone, which
+  `data-filelist` permits, the row already bubbles through the zone, so a second dispatch makes a
   plain zone listener fire **twice** per removal. Firing on both also leaves the pair asymmetric (one
   `add`, two `remove`s for anyone delegating on a common ancestor), which is the same class of silent
   bug this note is about. One canonical target is the honest fix.
 - Dispatching on the zone also fixes the **listless** case from 1.24.0: a row that was never attached
   to the document bubbles to nothing at all, so its × was previously unobservable.
 - *Migration:* a consumer that worked around the old behaviour by listening on the file list must
-  move that listener to the dropzone. That position was never documented — it was the bug.
+  move that listener to the dropzone. That position was never documented; it was the bug.
 ### Added: guards
 - `browser/upload-states.mjs` gains a second spec: removal fires on the dropzone **exactly once**, in
   both layouts (list as sibling, list nested inside the zone), and delegation on a shared ancestor
-  sees no duplicates. Mutation-checked against *both* rejected designs — reverting to the row target
+  sees no duplicates. Mutation-checked against *both* rejected designs: reverting to the row target
   fails it, and so does the report's dispatch-on-both.
 
 ## [1.24.0] - 2026-08-13
@@ -1221,52 +1221,52 @@ Improvement note #41: the upload row had no "chosen, not yet sent" state, so eve
 integration showed a transfer that had not started.
 ### Fixed
 - **A dropped file now rests until the consumer starts the transfer.** `handleFiles` called
-  `row.uploading()` unconditionally — and *before* dispatching `fdy-upload-add`, so a consumer could
+  `row.uploading()` unconditionally, and *before* dispatching `fdy-upload-add`, so a consumer could
   not pre-empt it. Between the drop and the app's own submit button (which may be a minute, while the
   user fills in the rest of the form) the row claimed to be uploading, with a progress bar that never
   moved. A user watching that reasonably concludes the upload has hung and reports a bug against a
   transfer that was never started. The state machine was missing its start state: `done()` claims
   success, `fail()` claims an error, and `uploading()` was where it already was.
-  The demo path is unchanged — with `data-fdy-upload-simulate` the kit *is* performing a transfer, so
+  The demo path is unchanged: with `data-fdy-upload-simulate` the kit *is* performing a transfer, so
   showing one stays correct. That attribute already marks the only place the old default was right,
   which is why this changes the default rather than adding an opt-in: making correct integrations opt
   in to correctness is backwards.
 - **`fdy-upload-add` no longer depends on rendering a row.** The guard was `if (!list || !fileList)
-  return;`, so a dropzone with no file list lost the event that tells the app a file arrived —
+  return;`, so a dropzone with no file list lost the event that tells the app a file arrived,
   "bring your own row" silently cost you the notification. Rendering and announcing are now separate:
   no list means no row is attached, and the event still fires with a working `detail.row`.
   Deliberately **no new attribute** for this. The reporter proposed `data-rows="off"`; `list` is used
   in exactly two places, so decoupling covers the same case without growing the API surface, and no
   page can be relying on "no event".
 ### Added
-- **`row.ready()`** — the rest state, and the way back to it (a failed attempt the user will retry).
+- **`row.ready()`** is the rest state, and the way back to it (a failed attempt the user will retry).
   It reuses the existing `dropProgress()`, so the bar is removed exactly as `done()`/`fail()` do it.
 ### Docs
 - **`COMPONENTS.md` documents the row state machine at all.** `uploading()` / `setProgress()` /
-  `done()` / `fail()` had **zero** mentions anywhere in the shipped docs — a consumer holding
+  `done()` / `fail()` had **zero** mentions anywhere in the shipped docs, so a consumer holding
   `detail.row` had no supported way to know they existed, which is a fair part of why the old default
   went unquestioned. The section now carries the state table, a worked example, the
   bring-your-own-row position, and `data-fdy-upload-simulate` marked demo-only.
   Two corrections to the report while transcribing it: the function is `handleFiles` (not `addFiles`)
-  and the attribute is `data-fdy-upload-simulate` (not `data-simulate`) — the latter matters, since
+  and the attribute is `data-fdy-upload-simulate` (not `data-simulate`), and the latter matters, since
   documenting the wrong name would have consumers set an attribute that does nothing.
 ### Added: guards
-- **`browser/upload-states.mjs`** — drops a real `File` and asserts the rest state shows no progress
+- **`browser/upload-states.mjs`** drops a real `File` and asserts the rest state shows no progress
   bar, that `uploading()` → `setProgress()` → `done()` still chains, that the simulate path is
   untouched, and that a listless dropzone still dispatches. Mutation-checked on both halves.
   The fixture wraps the listless dropzone in its own container **on purpose**: with no
   `data-filelist` the enhancer falls back to `parentNode.querySelector('.fdy-filelist')`, so a bare
-  dropzone sharing a parent with another list adopts it — the first version of this guard was
+  dropzone sharing a parent with another list adopts it; the first version of this guard was
   testing nothing, and the mutation run is what exposed that.
 
 ## [1.23.0] - 2026-08-13
 Consumption round 6 (`improvement-notes/006`). The reporter filed two of the three as **their own**
-bugs rather than the kit's — and they were right about the code, but in both cases the kit had a way
+bugs rather than the kit's, and they were right about the code, but in both cases the kit had a way
 to make the mistake impossible and had not taken it. Those are the two most valuable findings here.
 ### Fixed
 - **`initAll(ctx)` now enhances `ctx` itself, not just its descendants.** `querySelectorAll` never
-  matches its own root, so a framework ref placed **on** the widget — `<div ref="menu" data-fdy-menu>`,
-  which is the ordinary shape when a component's root element *is* the widget — meant the one element
+  matches its own root, so a framework ref placed **on** the widget, `<div ref="menu" data-fdy-menu>`,
+  which is the ordinary shape when a component's root element *is* the widget, meant the one element
   that needed enhancing was the only one that could not be found. It failed with **no error, no
   warning, and a UI that looked finished**: the markup rendered and simply never opened. Measured
   before the fix: `data-fdy-menu-ready` stayed `null` and `aria-expanded` stayed `"false"` while
@@ -1276,7 +1276,7 @@ to make the mistake impossible and had not taken it. Those are the two most valu
   matched by the descendant query costs nothing. `useFreeday` (Vue/React) and `FreedayBlazor.initAll`
   delegate to these, so they inherit the fix with no change of their own.
 - **The stepper connector no longer draws through the markers when `__btn` is omitted.** The lift now
-  lives on `.fdy-step__marker` — the part that must always exist — instead of only on
+  lives on `.fdy-step__marker`, the part that must always exist, instead of only on
   `.fdy-step__btn`. The connector is `position:absolute; z-index:0`, and a positioned box paints
   *after* in-flow inline content in the same stacking context, so a marker that was merely inline got
   painted over: not for lack of a z-index, but for lack of being positioned at all. An
@@ -1284,14 +1284,14 @@ to make the mistake impossible and had not taken it. Those are the two most valu
   a visible defect in shipped UI. Measured: hit-testing the marker's centre returned the connector's
   own `.fdy-step` before, the marker after. `__btn` keeps its z-index for the navigable case.
 ### Added
-- **`.fdy-avatar--xs`** (1.5rem, `--text-xs`) — an avatar inside a control had nothing to reach for:
+- **`.fdy-avatar--xs`** (1.5rem, `--text-xs`): an avatar inside a control had nothing to reach for.
   `.fdy-btn--sm` is `calc(var(--control-h) - var(--space-2))` = **2rem**, exactly `--avatar--sm`'s
   size, so the monogram filled a small button edge to edge and the ghost border crossed the circle
   (measured: trigger 32px tall, avatar 32×32). 1.5rem inside 2rem leaves the ~4px the kit's other
-  controls give their icons. The report suggested `--text-2xs`; that token does not exist — `--text-xs`
+  controls give their icons. The report suggested `--text-2xs`; that token does not exist, so `--text-xs`
   is the smallest the kit has, and inventing a type step for one avatar size is not worth it.
 ### Added: guards
-- **`browser/root-init.mjs`** — mounts a widget *after* load, initialises it through its own root, and
+- **`browser/root-init.mjs`** mounts a widget *after* load, initialises it through its own root, and
   drives a **real click** to prove it opens; repeated for a second enhancer so the fix reads as the
   shared pattern rather than a one-off. Mutation-checked on both. Being marked `-ready` is explicitly
   not accepted as passing: an early version of this check reported success against markup the enhancer
@@ -1303,13 +1303,13 @@ to make the mistake impossible and had not taken it. Those are the two most valu
 - Both `useFreeday` docstrings now show the ref-on-the-widget shape alongside the wrapping one.
 
 ## [1.22.0] - 2026-08-12
-Two bodies of work. **(a)** three more findings from consumption round 5 — the report grew §5-§7
+Two bodies of work. **(a)** three more findings from consumption round 5, where the report grew §5-§7
 after 1.21.0 was cut; **(b)** a **routing** failure found in the same adopted project, which had been
 built on raw markup + enhancers inside a framework that has typed wrappers because nothing in the
 package ever told it otherwise. (b) was prepared as 1.21.1 and folded in here rather than shipped as
 a separate patch minutes earlier.
 ### Added: from consumption round 5 (§5, §6)
-- **`.fdy-nav--horizontal`** — the same navigation links laid out as a **row**, for a top-nav
+- **`.fdy-nav--horizontal`** lays the same navigation links out as a **row**, for a top-nav
   application that puts its primary nav in `.fdy-appbar` / `.fdy-app__topbar` and has no sidebar.
   Deliberately a modifier, not a new block: the item, its states and `aria-current="page"` are
   unchanged. On `.fdy-appbar--primary` the links go on-colour automatically (full on-colour ink in
