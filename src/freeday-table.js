@@ -39,18 +39,18 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    prev: 'Sebelumnya',
-    next: 'Berikutnya',
-    selected: '{n} dipilih',
-    filter: 'Filter kolom',
-    filterText: 'Berisi teks',
-    filterTextPlaceholder: 'Berisi…',
-    filterEnum: 'Tampilkan nilai',
-    filterRange: 'Rentang nilai',
+    prev: 'Previous',
+    next: 'Next',
+    selected: '{n} selected',
+    filter: 'Filter column',
+    filterText: 'Contains text',
+    filterTextPlaceholder: 'Contains…',
+    filterEnum: 'Show values',
+    filterRange: 'Value range',
     reset: 'Reset',
-    close: 'Tutup',
-    rows: '{n} baris',
-    info: 'Menampilkan {from}–{to} dari {total}'
+    close: 'Close',
+    rows: '{n} rows',
+    info: 'Showing {from}–{to} of {total}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,

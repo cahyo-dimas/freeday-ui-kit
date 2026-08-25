@@ -8,9 +8,10 @@
  * their DOM-writing rewired with nothing executing it: a `zone` out of scope or a getAttribute on
  * a non-element would throw at init and every existing test would still pass.
  *
- * Both halves are asserted. The Indonesian default is a contract too — COMPONENTS.md documents it
- * and apps on the raw path adopted it, so a fix that quietly turned the enhancers English would be
- * a breaking change wearing a bugfix's clothes.
+ * Both halves are asserted. The DEFAULT is a contract too — since 2.0.0 an English one, where it
+ * used to be Indonesian — so a string quietly changing under an app on the raw path fails here.
+ * The override half is what makes the default survivable: it is the migration an Indonesian app
+ * takes past 2.0.0, so it has to keep working in the same breath.
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -30,24 +31,24 @@ test('every enhancer renders its default and honours data-fdy-text-*', { skip },
 
     /* Each pair is one enhancer: the documented default, then the same markup overridden. */
     const pairs = [
-      ['table info',    r.tableInfoA, /Menampilkan/,            r.tableInfoB, /^Showing 1–2 of 2$/],
-      ['table rows',    r.tableRowsA, /baris/,                  r.tableRowsB, /^2 rows$/],
-      ['stepper next',  r.stepNextA,  /^Lanjut$/,               r.stepNextB,  /^Next$/],
-      ['password show', r.pwA,        /^Tampilkan kata sandi$/, r.pwB,        /^Show password$/],
-      ['slide position',r.slideA,     /dari/,                   r.slideB,     /^1 of 2$/],
+      ['table info',    r.tableInfoA, /^Showing 1–2 of 2$/,     r.tableInfoB, /^Showing 1–2 of 2$/],
+      ['table rows',    r.tableRowsA, /rows$/,                  r.tableRowsB, /^2 rows$/],
+      ['stepper next',  r.stepNextA,  /^Next$/,                 r.stepNextB,  /^Next$/],
+      ['password show', r.pwA,        /^Show password$/,        r.pwB,        /^Show password$/],
+      ['slide position',r.slideA,     /^1 of 2$/,               r.slideB,     /^1 of 2$/],
       ['carousel dot',  r.dotA,       /^Slide 1$/,              r.dotB,       /^Slide 1$/],
-      ['cascade back',  r.backA,      /^Kembali satu tingkat$/, r.backB,      /^Back one level$/]
+      ['cascade back',  r.backA,      /^Back one level$/,       r.backB,      /^Back one level$/]
     ];
     for (const [name, def, defRe, over, overRe] of pairs) {
       assert.notEqual(def, null, `${name}: the enhancer did not render — its init threw or never ran`);
-      assert.match(def, defRe, `${name}: the documented Indonesian default must survive, got "${def}"`);
+      assert.match(def, defRe, `${name}: the documented default must survive, got "${def}"`);
       assert.match(over, overRe, `${name}: data-fdy-text-* must win, got "${over}"`);
     }
 
     /* Toast takes its override through the options bag, not an attribute — it has no root element
      * to carry one. This is the string FreedayBlazor.toast defaults to 'Close'. */
     const t = JSON.parse(await p.evalJS('JSON.stringify(window.toastLabels())'));
-    assert.equal(t.def, 'Tutup', 'the raw toast keeps its documented default');
+    assert.equal(t.def, 'Close', 'the raw toast keeps its documented default');
     assert.equal(t.override, 'Close', 'toast({ closeLabel }) must reach the close button');
 
     /* A camelCase key can only be written kebab in markup — HTML lowercases attribute names, so
@@ -61,7 +62,7 @@ test('every enhancer renders its default and honours data-fdy-text-*', { skip },
     /* The form's messages moved to a TEXT table read through the FORM element, which is the level
      * a host needs: nine messages set once instead of on every input. */
     const f = JSON.parse(await p.evalJS('JSON.stringify(window.formMessages())'));
-    assert.match(f.frmA, /Wajib diisi\./, `the default validation message must survive, got "${f.frmA}"`);
+    assert.match(f.frmA, /^Required\.$/, `the default validation message must survive, got "${f.frmA}"`);
     assert.equal(f.frmB, 'This field is required.', 'data-fdy-text-required on the <form> must win');
   });
 });

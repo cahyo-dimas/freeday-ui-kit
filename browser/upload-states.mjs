@@ -81,7 +81,7 @@ test('waiting() reports no percentage, and the bar comes back measured', { skip 
     await p.evalJS('window.lastRow.waiting()');
     await settle();
     const wait = await state();
-    assert.match(wait.sub, /Menunggu server…/, `waiting() falls back to the kit's label, got "${wait.sub}"`);
+    assert.match(wait.sub, /Waiting for the server…/, `waiting() falls back to the kit's label, got "${wait.sub}"`);
     assert.equal(wait.indeterminate, true, 'the modifier belongs on .fdy-progress, the element role="progressbar" is on');
     assert.equal(wait.valuenow, null, 'an indeterminate progressbar must not carry aria-valuenow');
     if (animates) assert.ok(wait.barPct > 20 && wait.barPct < 60,

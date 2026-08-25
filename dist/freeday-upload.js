@@ -56,13 +56,13 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    remove: 'Hapus {name}',
-    progress: 'Progres unggah {name}',
-    uploading: 'Mengunggah…',
-    waiting: 'Menunggu server…',
-    done: 'Terunggah',
-    badType: 'Tipe berkas tidak didukung.',
-    tooBig: 'Ukuran melebihi batas ({max}).'
+    remove: 'Remove {name}',
+    progress: 'Upload progress for {name}',
+    uploading: 'Uploading…',
+    waiting: 'Waiting for the server…',
+    done: 'Uploaded',
+    badType: 'File type not supported.',
+    tooBig: 'Larger than the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,

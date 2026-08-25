@@ -3,6 +3,45 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+## [2.0.0] — 2026-08-25
+### Changed — BREAKING
+- **The vanilla enhancers now write English by default** (`NEXT-UP.md` #6, owner's decision). Every
+  user-facing string they render — 39 of them across 9 enhancers — was Indonesian while the typed
+  wrappers were English, so an app that touched both paths read as two products. A Blazor app
+  touches both **by construction**: `FreedayBlazor.initAll` runs every enhancer. The report that
+  opened this was an English back-office finding `aria-label="Filter kolom"` on its own table.
+  Examples: `Menampilkan 1–5 dari 7` → `Showing 1–5 of 7`, `{n} dipilih` → `{n} selected`,
+  `Sebelumnya`/`Berikutnya` → `Previous`/`Next`, `Wajib diisi.` → `Required.`,
+  `Tampilkan kata sandi` → `Show password`, `Menunggu server…` → `Waiting for the server…`.
+- **The datepicker's locale fallback follows** — `document.documentElement.lang || 'id'` is now
+  `|| 'en'`. This is the string nobody would have found by grepping for prose: it decides month and
+  weekday names through `Intl`, so leaving it would have produced English labels around Indonesian
+  months, which is the mixed interface this release exists to remove. The page's own `lang` still
+  wins, which makes `<html lang="id">` the whole migration for dates.
+- **Migrating an Indonesian app** costs no fork: every string was already overridable per element
+  with `data-fdy-text-<key>` (kebab-cased), and `data-fdy-msg-*` for validation messages. That hatch
+  shipped in 1.39.0 — the half of `NEXT-UP.md` #6 written as "build an override hook" was already
+  done, and only the default was ever in question. `COMPONENTS.md` §Language documents it.
+- **Called 2.0.0 rather than 1.55.0 on purpose.** No API changed, but every raw-path screen renders
+  different words, and a major version is the only signal npm gives a consumer that an upgrade needs
+  looking at. Hiding that behind a minor is the same class of quiet mismatch the last four releases
+  have been about.
+### Added — guards
+- The English guard now covers `src/freeday-*.js`, not just the typed adapters, so the promise is
+  enforced on every path instead of stated on one. Verified by reverting a single string: it fails.
+- **And a word list is not enough, which this release proved twice.** The list missed `Lanjut` and
+  `Selesai` in the stepper and `Mengunggah…` in upload — its own comment already warned that
+  `pencarian` hides behind `\bcari\b`. So the complete vocabulary is now pinned: all 39 strings,
+  asserted whole, so changing one has to be deliberate and visible in a diff.
+- `browser/text-override.mjs` and `browser/upload-states.mjs` assert the new defaults. The override
+  half is untouched and still passes — it is the migration path, so it had to keep working in the
+  same breath as the change that makes it necessary.
+### Known
+- `docs/index.html` is Indonesian prose with its own ID→EN toggle for authored demo chrome, and that
+  toggle does not reach enhancer-rendered strings. In Indonesian mode the demos now show English
+  widget text. Left as-is deliberately: the page's job is to show what the kit actually does, and
+  putting `data-fdy-text-*` on all 42 enhancer instances would hide the default it documents.
+
 ## [1.54.0] — 2026-08-25
 ### Added
 - **`<FdyAppShell>` — the shell becomes the eleventh typed component**, in Vue, React and Blazor

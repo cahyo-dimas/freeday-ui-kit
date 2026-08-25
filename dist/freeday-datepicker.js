@@ -19,7 +19,11 @@
 (function () {
   'use strict';
 
-  var LOCALE = document.documentElement.getAttribute('lang') || 'id';
+  /* The page's own `lang` wins, which is the better escape hatch than any attribute the kit
+     could invent: an Indonesian app writes <html lang="id"> and gets Indonesian month and
+     weekday names back automatically. The FALLBACK follows the kit's default language, or a
+     page without `lang` would read English labels around Indonesian month names. */
+  var LOCALE = document.documentElement.getAttribute('lang') || 'en';
   var uidSeq = 0;
   function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }

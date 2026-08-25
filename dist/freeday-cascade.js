@@ -59,7 +59,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    back: 'Kembali satu tingkat',
+    back: 'Back one level',
     submenu: '{label}, submenu'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
@@ -88,8 +88,8 @@
     var root = sourceUl ? parse(sourceUl) : [];
     if (sourceUl) sourceUl.remove();
 
-    var label = wrap.getAttribute('data-label') || 'Pilih';
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Pilih…';
+    var label = wrap.getAttribute('data-label') || 'Select';
+    var placeholder = wrap.getAttribute('data-placeholder') || 'Select…';
     var sep = wrap.getAttribute('data-separator') || ' / ';
 
     var trigger = document.createElement('button');

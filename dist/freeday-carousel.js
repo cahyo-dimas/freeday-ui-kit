@@ -23,7 +23,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    position: '{n} dari {total}',
+    position: '{n} of {total}',
     slide: 'Slide {n}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written

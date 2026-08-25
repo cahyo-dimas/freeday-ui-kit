@@ -24,8 +24,8 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    done: 'Selesai',
-    next: 'Lanjut'
+    done: 'Done',
+    next: 'Next'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,

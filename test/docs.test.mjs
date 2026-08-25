@@ -107,14 +107,14 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  * Blazor is included even though it was the stack that had it right — the guard is about the
  * promise, not about who broke it.
  */
-/* The ENHANCERS are a different promise from the adapters, and need a different guard.
+/* The ENHANCERS need this guard for a reason that OUTLIVED the language question.
  *
- * COMPONENTS.md says the vanilla enhancers write Indonesian, and that is deliberate: an app on the
- * raw path opted into it. So "no Indonesian here" would be the wrong assertion — it would break the
- * documented default. What was actually wrong is that the strings could not be CHANGED: a Blazor
- * app reaches these enhancers through `FreedayBlazor.initAll`, which runs every one of them, and
- * COMPONENTS.md promises Blazor is English throughout. Both promises hold only if the default stays
- * Indonesian AND every string is overridable.
+ * Until 2.0.0 the enhancers defaulted to Indonesian, and this guard existed because both promises —
+ * an Indonesian raw path and an English Blazor one, which reaches these same enhancers through
+ * `FreedayBlazor.initAll` — could only hold if every string was overridable. The default is English
+ * now and that tension is gone, but the invariant is not: a string written straight into the DOM is
+ * unreachable from outside whatever language it is in, and the next app to need Indonesian back
+ * (`data-fdy-text-*`) can only have it where this holds.
  *
  * So the invariant is placement: a user-facing string lives in that file's `TEXT` table, which
  * `textOf()` reads through, and nowhere else. A literal written straight into a `textContent` or an
@@ -160,7 +160,7 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
     'these go straight into the DOM and no consumer can change them — move them into TEXT and read with textOf():\n' + offenders.join('\n'));
 });
 
-test('the typed adapters speak English (#009)', () => {
+test('every path speaks English (#009, and #006 from 2.0.0)', () => {
   /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
      a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */
   /* Roots, not whole words. The first version of this guard listed `cari` with a \b on each
@@ -169,11 +169,15 @@ test('the typed adapters speak English (#009)', () => {
      affix (peN-, -an, meN-, di-), so a word-boundary list will always miss the derived forms. */
   const INDONESIAN = /\b(pilih|memilih|pilihan|tutup|batal|simpan|hapus|cari|pencarian|mencari|buka|membuka|memuat|muat|hasil|klik|baris|semua|dipilih|kolom|tidak|sebelumnya|berikutnya|menampilkan|tanggal|bulan|tahun|halaman|kembali|tambah|ubah)\b/i;
   const offenders = [];
-  for (const dir of ['adapters/vue/components', 'adapters/react/components', 'adapters/blazor']) {
+  const scan = (dir, filePattern, skipComments) => {
     for (const file of readdirSync(join(root, dir))) {
-      if (!/\.(vue|tsx|razor|cs)$/.test(file)) continue;
+      if (!filePattern.test(file)) continue;
       const src = read(`${dir}/${file}`);
       src.split('\n').forEach((line, i) => {
+        /* The enhancers carry long prose comments, including ones that QUOTE the Indonesian a
+           migrating app puts back through data-fdy-text-*. Explaining the hatch must not read as
+           using it. */
+        if (skipComments && /^\s*(\*|\/\/|\/\*)/.test(line)) return;
         // String literals and template text only — a URL or an identifier is not a user-visible string.
         for (const m of line.matchAll(/'([^']{2,60})'|"([^"]{2,60})"|>([^<>{}]{2,60})</g)) {
           const text = m[1] ?? m[2] ?? m[3];
@@ -181,9 +185,18 @@ test('the typed adapters speak English (#009)', () => {
         }
       });
     }
+  };
+
+  for (const dir of ['adapters/vue/components', 'adapters/react/components', 'adapters/blazor']) {
+    scan(dir, /\.(vue|tsx|razor|cs)$/, false);
   }
+  /* The enhancers joined this promise in 2.0.0. Before that they were deliberately Indonesian, and
+     an app mixing the two paths — which a Blazor app does by construction, since
+     FreedayBlazor.initAll runs every enhancer — read as two products. */
+  scan('src', /^freeday-.*\.js$/, true);
+
   assert.deepEqual(offenders, [],
-    'COMPONENTS.md promises the typed wrappers are English throughout:\n' + offenders.join('\n'));
+    'COMPONENTS.md promises English on every path, enhancers included:\n' + offenders.join('\n'));
 });
 
 test('the column contract reaches all three typed adapters (#026)', () => {
@@ -229,4 +242,88 @@ test('a hidden column label is rendered, not dropped (#026)', () => {
   }
   assert.deepEqual(offenders, [],
     'a column label that is hidden must still be in the DOM for assistive tech:\n' + offenders.join('\n'));
+});
+
+/* The shipped vocabulary, pinned whole.
+ *
+ * The word-list guard above is the right instrument for "did a translation slip back in", and it is
+ * also the wrong one on its own: it missed `Lanjut` and `Selesai` in the stepper and `Mengunggah…`
+ * in upload during the 2.0.0 flip, because a list only knows the words someone thought to add. Its
+ * own comment already says as much about `pencarian` hiding behind `\bcari\b`.
+ *
+ * So the complete set is asserted instead. This is a snapshot, deliberately: every string a reader
+ * of the raw path can see is here, and changing one has to be a decision somebody made on purpose
+ * and can see in a diff — which is the whole cost of getting a default language wrong twice.
+ */
+test('the enhancers ship exactly these strings (#006)', () => {
+  const tables = {};
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
+    const src = read(`src/${file}`);
+    const open = src.indexOf('var TEXT = {');
+    if (open === -1) continue;
+    const body = src.slice(open, src.indexOf('};', open));
+    const entries = {};
+    for (const m of body.matchAll(/(\w+):\s*'([^']*)'/g)) entries[m[1]] = m[2];
+    if (Object.keys(entries).length > 0) tables[file] = entries;
+  }
+
+  assert.deepEqual(tables, {
+  'freeday-carousel.js': {
+    position: '{n} of {total}',
+    slide: 'Slide {n}',
+  },
+  'freeday-cascade.js': {
+    back: 'Back one level',
+    submenu: '{label}, submenu',
+  },
+  'freeday-cfl.js': {
+    selected: '{n} selected',
+  },
+  'freeday-form.js': {
+    invalid: 'Invalid.',
+    max: 'Value is too large.',
+    maxlength: 'Too long.',
+    min: 'Value is too small.',
+    minlength: 'Too short.',
+    mismatch: 'Values do not match.',
+    pattern: 'Does not match the expected format.',
+    required: 'Required.',
+    step: 'Not a valid increment.',
+    type: 'Invalid format.',
+  },
+  'freeday-mask.js': {
+    hide: 'Hide password',
+    show: 'Show password',
+  },
+  'freeday-stepper.js': {
+    done: 'Done',
+    next: 'Next',
+  },
+  'freeday-table.js': {
+    close: 'Close',
+    filter: 'Filter column',
+    filterEnum: 'Show values',
+    filterRange: 'Value range',
+    filterText: 'Contains text',
+    filterTextPlaceholder: 'Contains…',
+    info: 'Showing {from}–{to} of {total}',
+    next: 'Next',
+    prev: 'Previous',
+    reset: 'Reset',
+    rows: '{n} rows',
+    selected: '{n} selected',
+  },
+  'freeday-toast.js': {
+    close: 'Close',
+  },
+  'freeday-upload.js': {
+    badType: 'File type not supported.',
+    done: 'Uploaded',
+    progress: 'Upload progress for {name}',
+    remove: 'Remove {name}',
+    tooBig: 'Larger than the {max} limit.',
+    uploading: 'Uploading…',
+    waiting: 'Waiting for the server…',
+  },
+  }, 'a user-facing string changed — if that was deliberate, update this table in the same commit');
 });

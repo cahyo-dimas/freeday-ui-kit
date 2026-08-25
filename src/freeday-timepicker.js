@@ -28,7 +28,7 @@
     wrap.dataset.fdyTpReady = '1';
     wrap.classList.add('fdy-timepicker');
 
-    var label = wrap.getAttribute('data-label') || 'Pilih waktu';
+    var label = wrap.getAttribute('data-label') || 'Choose a time';
     var placeholder = wrap.getAttribute('data-placeholder') || '--:--';
     var step = Math.max(1, parseInt(wrap.getAttribute('data-step') || '30', 10));
     var minM = valid(wrap.getAttribute('data-min')) ? toMin(wrap.getAttribute('data-min')) : 0;

@@ -39,7 +39,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    selected: '{n} dipilih'
+    selected: '{n} selected'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -103,7 +103,7 @@
       var input = activeGroup.querySelector('.fdy-input');
       if (input) {
         if (detail.rows) {
-          var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} dipilih';
+          var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} selected';
           input.value = detail.rows.length ? tpl.replace('{n}', String(detail.rows.length)) : '';
         } else {
           var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';

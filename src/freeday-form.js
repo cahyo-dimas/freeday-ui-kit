@@ -44,16 +44,16 @@
    * a host in another language needs: it sets nine messages once instead of on every input.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    required: 'Wajib diisi.',
-    type: 'Format tidak valid.',
-    pattern: 'Format tidak sesuai.',
-    minlength: 'Terlalu pendek.',
-    maxlength: 'Terlalu panjang.',
-    min: 'Nilai terlalu kecil.',
-    max: 'Nilai terlalu besar.',
-    step: 'Nilai tidak sesuai kelipatan.',
-    mismatch: 'Nilai tidak cocok.',
-    invalid: 'Tidak valid.'
+    required: 'Required.',
+    type: 'Invalid format.',
+    pattern: 'Does not match the expected format.',
+    minlength: 'Too short.',
+    maxlength: 'Too long.',
+    min: 'Value is too small.',
+    max: 'Value is too large.',
+    step: 'Not a valid increment.',
+    mismatch: 'Values do not match.',
+    invalid: 'Invalid.'
   };
   /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
      names, so `data-fdy-text-filter-text` and `data-fdy-text-filtertext` are different attributes

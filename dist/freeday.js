@@ -424,7 +424,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    position: '{n} dari {total}',
+    position: '{n} of {total}',
     slide: 'Slide {n}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
@@ -601,7 +601,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    back: 'Kembali satu tingkat',
+    back: 'Back one level',
     submenu: '{label}, submenu'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
@@ -630,8 +630,8 @@
     var root = sourceUl ? parse(sourceUl) : [];
     if (sourceUl) sourceUl.remove();
 
-    var label = wrap.getAttribute('data-label') || 'Pilih';
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Pilih…';
+    var label = wrap.getAttribute('data-label') || 'Select';
+    var placeholder = wrap.getAttribute('data-placeholder') || 'Select…';
     var sep = wrap.getAttribute('data-separator') || ' / ';
 
     var trigger = document.createElement('button');
@@ -867,7 +867,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    selected: '{n} dipilih'
+    selected: '{n} selected'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -931,7 +931,7 @@
       var input = activeGroup.querySelector('.fdy-input');
       if (input) {
         if (detail.rows) {
-          var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} dipilih';
+          var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} selected';
           input.value = detail.rows.length ? tpl.replace('{n}', String(detail.rows.length)) : '';
         } else {
           var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';
@@ -1659,7 +1659,11 @@
 (function () {
   'use strict';
 
-  var LOCALE = document.documentElement.getAttribute('lang') || 'id';
+  /* The page's own `lang` wins, which is the better escape hatch than any attribute the kit
+     could invent: an Indonesian app writes <html lang="id"> and gets Indonesian month and
+     weekday names back automatically. The FALLBACK follows the kit's default language, or a
+     page without `lang` would read English labels around Indonesian month names. */
+  var LOCALE = document.documentElement.getAttribute('lang') || 'en';
   var uidSeq = 0;
   function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -2369,16 +2373,16 @@
    * a host in another language needs: it sets nine messages once instead of on every input.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    required: 'Wajib diisi.',
-    type: 'Format tidak valid.',
-    pattern: 'Format tidak sesuai.',
-    minlength: 'Terlalu pendek.',
-    maxlength: 'Terlalu panjang.',
-    min: 'Nilai terlalu kecil.',
-    max: 'Nilai terlalu besar.',
-    step: 'Nilai tidak sesuai kelipatan.',
-    mismatch: 'Nilai tidak cocok.',
-    invalid: 'Tidak valid.'
+    required: 'Required.',
+    type: 'Invalid format.',
+    pattern: 'Does not match the expected format.',
+    minlength: 'Too short.',
+    maxlength: 'Too long.',
+    min: 'Value is too small.',
+    max: 'Value is too large.',
+    step: 'Not a valid increment.',
+    mismatch: 'Values do not match.',
+    invalid: 'Invalid.'
   };
   /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
      names, so `data-fdy-text-filter-text` and `data-fdy-text-filtertext` are different attributes
@@ -2582,8 +2586,8 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    show: 'Tampilkan kata sandi',
-    hide: 'Sembunyikan kata sandi'
+    show: 'Show password',
+    hide: 'Hide password'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -3273,8 +3277,8 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    done: 'Selesai',
-    next: 'Lanjut'
+    done: 'Done',
+    next: 'Next'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -3408,18 +3412,18 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    prev: 'Sebelumnya',
-    next: 'Berikutnya',
-    selected: '{n} dipilih',
-    filter: 'Filter kolom',
-    filterText: 'Berisi teks',
-    filterTextPlaceholder: 'Berisi…',
-    filterEnum: 'Tampilkan nilai',
-    filterRange: 'Rentang nilai',
+    prev: 'Previous',
+    next: 'Next',
+    selected: '{n} selected',
+    filter: 'Filter column',
+    filterText: 'Contains text',
+    filterTextPlaceholder: 'Contains…',
+    filterEnum: 'Show values',
+    filterRange: 'Value range',
     reset: 'Reset',
-    close: 'Tutup',
-    rows: '{n} baris',
-    info: 'Menampilkan {from}–{to} dari {total}'
+    close: 'Close',
+    rows: '{n} rows',
+    info: 'Showing {from}–{to} of {total}'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -4001,7 +4005,7 @@
     wrap.dataset.fdyTpReady = '1';
     wrap.classList.add('fdy-timepicker');
 
-    var label = wrap.getAttribute('data-label') || 'Pilih waktu';
+    var label = wrap.getAttribute('data-label') || 'Choose a time';
     var placeholder = wrap.getAttribute('data-placeholder') || '--:--';
     var step = Math.max(1, parseInt(wrap.getAttribute('data-step') || '30', 10));
     var minM = valid(wrap.getAttribute('data-min')) ? toMin(wrap.getAttribute('data-min')) : 0;
@@ -4239,7 +4243,7 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    close: 'Tutup'
+    close: 'Close'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,
@@ -4473,13 +4477,13 @@
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
-    remove: 'Hapus {name}',
-    progress: 'Progres unggah {name}',
-    uploading: 'Mengunggah…',
-    waiting: 'Menunggu server…',
-    done: 'Terunggah',
-    badType: 'Tipe berkas tidak didukung.',
-    tooBig: 'Ukuran melebihi batas ({max}).'
+    remove: 'Remove {name}',
+    progress: 'Upload progress for {name}',
+    uploading: 'Uploading…',
+    waiting: 'Waiting for the server…',
+    done: 'Uploaded',
+    badType: 'File type not supported.',
+    tooBig: 'Larger than the {max} limit.'
   };
   /* HTML lowercases attribute names, so a camelCase key like `filterText` can only ever be written
      as `data-fdy-text-filtertext` — while the kebab form anybody would reach for,

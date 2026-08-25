@@ -793,13 +793,17 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   offer) carrying `data-fdy-table-page-size`; the enhancer only wires it, and listens for both
   `change` and the `fdy-change` a `.fdy-combo` emits, so either kind works.
 - Sort values: put the raw value in `data-sort-value` when the cell text is formatted.
-- **Language caveat:** every user-visible string the **vanilla enhancers** write is Indonesian by
-  default — the table's footer and bulk count (`Menampilkan 1–5 dari 7`, `N dipilih`), its pager and
-  filter UI (`Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`), and the
-  same elsewhere (`Format tidak valid.`, `Tampilkan kata sandi`, `Menunggu server…`). The
-  Vue/React/Blazor components are English throughout, so **an English app should use the typed
-  wrapper**.
-- **Overriding an enhancer's strings.** Each enhancer keeps its strings in one `TEXT` table and
+- **Language: English throughout, on every path.** The vanilla enhancers wrote Indonesian until
+  2.0.0 while the typed wrappers wrote English, which meant an app mixing the two paths — and a
+  Blazor app mixes them by construction, since `FreedayBlazor.initAll` runs the enhancers — read as
+  two products. The defaults are now English everywhere, and the suite enforces it rather than
+  stating it.
+  **Dates are the exception, and deliberately so:** the datepicker formats through `Intl` using the
+  page's `<html lang>`, falling back to `en`. An Indonesian app writes `lang="id"` and gets
+  Indonesian month and weekday names with no configuration at all — a better hatch than anything
+  the kit could invent, because it is the platform's.
+- **Overriding an enhancer's strings** — this is also the migration path for an Indonesian app
+  upgrading past 2.0.0. Each enhancer keeps its strings in one `TEXT` table and
   reads them through `textOf()`, so any of them can be replaced per element with
   **`data-fdy-text-<key>`**, the key kebab-cased — no forking, and no rendering the nodes yourself.
   (HTML lowercases attribute names, so a camelCase key like `filterText` is written

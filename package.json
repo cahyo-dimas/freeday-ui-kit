@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "1.54.0",
+  "version": "2.0.0",
   "description": "Freeday — token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
