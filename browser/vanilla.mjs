@@ -75,7 +75,7 @@ test('vanilla combo: programmatic setValue updates selection silently (no fdy-ch
     assert.equal(state.label, 'Alert', 'value label reflects the set option');
     assert.equal(state.dataValue, 'alert', 'root data-value updated');
     assert.equal(state.selected, 'true', 'option marked aria-selected');
-    assert.equal(state.changed, 'button', 'setValue is silent — fdy-change NOT fired, window.__val unchanged');
+    assert.equal(state.changed, 'button', 'setValue is silent, fdy-change NOT fired, window.__val unchanged');
   });
 });
 
@@ -85,7 +85,7 @@ test('the calendar title drills to a month grid, and picking a month commits not
     await p.waitFor('window.FreedayDatepicker');
     await p.clickCenter('.fdy-datepicker__trigger');
     assert.equal(await p.evalJS('document.querySelector(".fdy-cal__title").tagName'), 'BUTTON',
-      'the title must be a control — it was the only thing naming the month, and it was a <div>');
+      'the title must be a control, it was the only thing naming the month, and it was a <div>');
 
     await p.clickCenter('.fdy-cal__title');
     assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__month").length'), 12, 'drills to a month grid');
@@ -100,7 +100,7 @@ test('the calendar title drills to a month grid, and picking a month commits not
     await p.clickCenter('.fdy-cal__month:nth-child(3)');
     assert.equal(await p.evalJS('document.querySelectorAll(".fdy-cal__day").length'), 42, 'back to the day grid');
     assert.equal(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()'), before,
-      'picking a month is navigation, not selection — nothing may be committed until a DAY is chosen');
+      'picking a month is navigation, not selection, nothing may be committed until a DAY is chosen');
 
     await p.clickCenter('.fdy-cal__day:not(.is-outside)');
     assert.match(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent'), /2022/,
@@ -138,7 +138,7 @@ test('the month title drills to a year grid, and picking a year commits nothing'
     assert.equal(await p.evalJS('document.querySelector(".fdy-cal__title").textContent'), String(from + 1),
       'and the month grid is showing the year that was picked');
     assert.equal(await p.evalJS('document.querySelector(".fdy-datepicker__value").textContent.trim()'), before,
-      'picking a year is navigation, not selection — nothing may be committed until a DAY is chosen');
+      'picking a year is navigation, not selection, nothing may be committed until a DAY is chosen');
   });
 });
 

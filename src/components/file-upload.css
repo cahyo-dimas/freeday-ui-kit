@@ -16,7 +16,7 @@
 .fdy-dropzone__text{display:flex;flex-direction:column;gap:var(--space-1);}
 
 /* File rows (list of added/uploaded/rejected files) */
-/* Symmetric on purpose. The list carried margin-top and nothing below, so whatever follows it —
+/* Symmetric on purpose. The list carried margin-top and nothing below, so whatever follows it,
    an "Add files" button, in every upload UI there is — sat flush against the last row: measured
    0px. A block that claims space on one side only is not spacing, it is a lean. */
 .fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);margin-bottom:var(--space-3);}

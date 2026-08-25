@@ -104,7 +104,7 @@ test('density opts back out, and its values are derived rather than restated (#0
   assert.deepEqual(Object.keys(comfortable), Object.keys(compact),
     'the two density blocks must cover the same tokens, or one of them is a partial reset');
   for (const [k, v] of Object.entries(comfortable)) {
-    assert.equal(v, root[k], `${k} must restate the default (${root[k]}), got ${v} — derive it, do not copy it`);
+    assert.equal(v, root[k], `${k} must restate the default (${root[k]}), got ${v}, derive it, do not copy it`);
     assert.notEqual(v, compact[k], `${k} is identical in both densities, so one of them does nothing`);
   }
 });

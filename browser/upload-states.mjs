@@ -85,7 +85,7 @@ test('waiting() reports no percentage, and the bar comes back measured', { skip 
     assert.equal(wait.indeterminate, true, 'the modifier belongs on .fdy-progress, the element role="progressbar" is on');
     assert.equal(wait.valuenow, null, 'an indeterminate progressbar must not carry aria-valuenow');
     if (animates) assert.ok(wait.barPct > 20 && wait.barPct < 60,
-      `the bar must stop claiming a percentage — expected the modifier's own width, got ${wait.barPct}%`);
+      `the bar must stop claiming a percentage, expected the modifier's own width, got ${wait.barPct}%`);
 
     await p.evalJS('window.lastRow.waiting("Membaca PDF…")');
     assert.match((await state()).sub, /Membaca PDF…/, 'the label is the consumer\'s');

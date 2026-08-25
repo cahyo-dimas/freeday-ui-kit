@@ -52,7 +52,7 @@ export interface FdyTableProps<Row extends object> {
    * Omit for the internal index (unchanged default).
    */
   /** Withhold the table's own footer (pager + range) so the screen can render one. Server mode had
-   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control —
+   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control,
    *  a responsive list that shows a table at one breakpoint and cards at another ended up with the
    *  kit's pager stacked under its own. Client mode's counterpart is `pageIndex`. Default true. */
   pager?: boolean;
@@ -86,7 +86,7 @@ export interface FdyTableProps<Row extends object> {
   rowClass?: (row: Row) => string | undefined;
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   onRowActivate?: (row: Row) => void;
-  /** Called with the processed page of rows (after filter/sort/paginate) plus the total row count —
+  /** Called with the processed page of rows (after filter/sort/paginate) plus the total row count,
    *  in BOTH modes, whenever they change. Lets a consumer render the SAME processed set elsewhere
    *  (a `< md` card list, a "selected" summary, export-to-CSV) without re-deriving the pipeline. */
   onProcess?: (result: { rows: Row[]; total: number }) => void;

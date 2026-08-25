@@ -30,10 +30,10 @@ const CONTAINED_BY_ANCESTOR = new Map([
   ['.fdy-cfl__results', 'inside the CFL modal (position:fixed)'],
   ['.fdy-filter__list', 'inside .fdy-filter, which is position:fixed'],
   ['.fdy-cascade__list', 'inside .fdy-cascade__panel, which is position:absolute'],
-  ['.fdy-app__sidebar', 'position:sticky already — a containing block'],
+  ['.fdy-app__sidebar', 'position:sticky already, a containing block'],
   ['.fdy-nav', 'lives in .fdy-app__sidebar (sticky) or a drawer (fixed); both contain it'],
   ['.fdy-datatable', 'its scrolling child .fdy-table-scroll is positioned; toolbar/footer wrap'],
-  ['.fdy-input-group', 'holds bounded form controls only — nothing wide enough to park off-screen'],
+  ['.fdy-input-group', 'holds bounded form controls only, nothing wide enough to park off-screen'],
   ['.fdy-avatar', 'fixed 2.5rem box, image or initials only'],
   ['.fdy-progress', 'holds its own __bar only'],
   ['.fdy-accordion__item > summary::after', 'generated content, not a container'],
@@ -42,7 +42,7 @@ const CONTAINED_BY_ANCESTOR = new Map([
 
 /** Flatten a stylesheet into `{ selector, body }` for every top-level rule (at-rules included).
  *
- * Comments are stripped from the WHOLE source before matching, because a comment quoting CSS —
+ * Comments are stripped from the WHOLE source before matching, because a comment quoting CSS,
  * this file's neighbours do it constantly, carries braces that would otherwise split a rule in
  * half. Stripping first is also what lets the selector be read WHOLE: the previous version kept
  * only the last line of it, so a selector wrapped across lines arrived truncated and every guard
@@ -168,7 +168,7 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   assert.match(raised.body, /z-index:\s*1/);
 
   /* ...but `position` must stay a DEFAULT. Merged into the rule above it outweighs the app's own
-   * single-class rule and drags an absolutely positioned corner control back into the flow —
+   * single-class rule and drags an absolutely positioned corner control back into the flow,
    * measured. :where() weighs nothing, so any app rule wins. Splitting these is the fix. */
   assert.doesNotMatch(raised.body, /position:/, 'position must NOT ride along at this specificity');
   const positioned = rules(css).find(r => r.selector.startsWith(':where(') && r.selector.includes('.fdy-btn--stretch'));
@@ -176,14 +176,14 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
   assert.match(positioned.body, /position:\s*relative/);
 
   /* A list row must anchor the overlay itself (#008 §1). Without this rule the overlay resolves
-   * against .fdy-list, every row's target covers the whole list, and the last one in the DOM wins —
+   * against .fdy-list, every row's target covers the whole list, and the last one in the DOM wins,
    * a click on row one opens row two. Opt-in via :has() so plain rows are untouched. */
   const rowAnchor = rules(css).find(r => r.selector === '.fdy-list__row:has(.fdy-btn--stretch)');
   assert.ok(rowAnchor !== undefined, 'a row hosting a stretched target has no anchor of its own');
   assert.match(rowAnchor.body, /position:\s*relative/);
   assert.ok(!/^\.fdy-list__row\s*\{/m.test(css.slice(css.indexOf('.fdy-list__row:has'))) ||
     !/position:\s*relative/.test(rules(css).find(r => r.selector === '.fdy-list__row').body),
-    'plain rows must NOT be positioned — that would newly contain anything an app pinned inside one');
+    'plain rows must NOT be positioned, that would newly contain anything an app pinned inside one');
 });
 
 test('menu focus is distinguishable from hover (#001 §6)', () => {
@@ -221,18 +221,18 @@ test('inline state text uses the inks the contrast gate covers (#001 §5)', () =
     const rule = rules(css).find(r => r.selector === selector);
     assert.ok(rule !== undefined, `${selector} is gone`);
     assert.match(rule.body, new RegExp(`color:\\s*var\\(${token}\\)`),
-      `${selector} must use ${token} — the ink contrast.test.mjs proves readable on plain surfaces`);
+      `${selector} must use ${token}, the ink contrast.test.mjs proves readable on plain surfaces`);
   }
 });
 
 /* Any rule that TYPESETS (sets a font-size) is rendering prose, and prose needs a text ink.
- * --color-text-subtle is gated at 3.0 on purpose, placeholders, separators, decorative glyphs —
+ * --color-text-subtle is gated at 3.0 on purpose, placeholders, separators, decorative glyphs,
  * and measures 4.41:1 on surface-2, under AA for text. Two components shipped with it on type
  * before this generalised: .fdy-stat__label (fixed 1.30.0) and .fdy-eyebrow + .fdy-nav__grouplabel
  * (found by axe in a consuming app, one release later). Shape, not a name list, so the third one
  * cannot arrive the same way. */
 const SUBTLE_ON_TYPE_OK = new Map([
-  ['.fdy-text-subtle', 'the utility IS the decorative role — naming it is opting in'],
+  ['.fdy-text-subtle', 'the utility IS the decorative role, naming it is opting in'],
   ['.fdy-cal__day.is-outside', 'a date from the adjacent month, repeated in that month\'s own view; paired with opacity as de-emphasis, not as the only copy of the information'],
 ]);
 
@@ -262,7 +262,7 @@ test('a stat label spends a TEXT ink, not the decorative one (#006 §6)', () => 
 });
 
 test('.fdy-icon has a display that accepts a width (#001 §4)', () => {
-  /* Measured: as a bare inline element the box ignored width:1em entirely and rendered 936px wide —
+  /* Measured: as a bare inline element the box ignored width:1em entirely and rendered 936px wide,
    * `width` does not apply to non-replaced inline boxes. */
   const rule = rules(css).find(r => r.selector === '.fdy-icon');
   assert.ok(rule !== undefined, '.fdy-icon is gone');
@@ -334,12 +334,12 @@ test('a title class renders the same whatever element carries it (#011)', () => 
     return gaps.length ? [`${r.selector} (${gaps.join(', ')})`] : [];
   });
   assert.deepEqual(missing, [],
-    `a title class must state its own type — an <h1>-<h6> would otherwise decide it: ${missing.join('; ')}`);
+    `a title class must state its own type, an <h1>-<h6> would otherwise decide it: ${missing.join('; ')}`);
 });
 
 test('the month and year grids outrank the day grid they modify (#010)', () => {
   /* Both classes sit on the same element and weigh the same, so SOURCE ORDER decides. Declared
-   * before `.fdy-cal__grid`, the modifier lost to the base and twelve months rendered seven across —
+   * before `.fdy-cal__grid`, the modifier lost to the base and twelve months rendered seven across,
    * with a comment directly above it describing the 3×4 layout it was failing to produce. A
    * specificity bug no reading of either rule can reveal; only their order shows it.
    *
@@ -352,7 +352,7 @@ test('the month and year grids outrank the day grid they modify (#010)', () => {
     const at = source.indexOf(modifier);
     assert.ok(at !== -1, `${modifier} is gone`);
     assert.ok(at > base,
-      `${modifier} must come AFTER .fdy-cal__grid — same weight, so the later one wins`);
+      `${modifier} must come AFTER .fdy-cal__grid, same weight, so the later one wins`);
   }
 });
 
@@ -360,7 +360,7 @@ test('the month and year grids outrank the day grid they modify (#010)', () => {
  *
  * `position:sticky` is the obvious half and the wrong half on its own. Under
  * `border-collapse:collapse` the shared border is painted by the TABLE, so it stays
- * with the scrolling content and the frozen row/column arrives with no rule at all —
+ * with the scrolling content and the frozen row/column arrives with no rule at all,
  * the freeze looks like a rendering fault rather than a feature. Raised building the
  * exchange-rate matrix in IDU_EMATE_APPL_WEB. */
 test('a frozen table cell keeps its own border (#012)', () => {
@@ -369,7 +369,7 @@ test('a frozen table cell keeps its own border (#012)', () => {
   const root = all.find(r => r.selector === '.fdy-table--sticky');
   assert.ok(root, '.fdy-table--sticky is missing');
   assert.ok(/border-collapse:\s*separate/.test(root.body),
-    '.fdy-table--sticky must set border-collapse:separate — a collapsed border belongs to the table, so it scrolls out from under the cell that sticks');
+    '.fdy-table--sticky must set border-collapse:separate, a collapsed border belongs to the table, so it scrolls out from under the cell that sticks');
 
   const frozen = all.filter(r => /position:\s*sticky/.test(r.body) && /\.fdy-table--sticky/.test(r.selector));
   assert.ok(frozen.some(r => /(^|;)\s*top:/.test(r.body) || /--sticky-head/.test(r.selector)),
@@ -383,7 +383,7 @@ test('a frozen table cell keeps its own border (#012)', () => {
   assert.ok(head && /(^|;)\s*top:/.test(head.body),
     'the header freeze must live on its own modifier, not on .fdy-table--sticky');
   assert.ok(!/(^|;)\s*top:/.test(root.body),
-    '.fdy-table--sticky must not freeze the header by itself — a column-only table scrolls with the page');
+    '.fdy-table--sticky must not freeze the header by itself, a column-only table scrolls with the page');
 
   /* Offsets come from the caller: CSS cannot sum rendered column widths, so freezing more
      than one column requires a per-column variable rather than a hard-coded `left`. */
@@ -401,7 +401,7 @@ test('a frozen table cell keeps its own border (#012)', () => {
   const repaintsTh = all.some(r =>
     /tbody\s+\.fdy-table__freeze/.test(r.selector) && !/td\./.test(r.selector) && /background:/.test(r.body));
   assert.ok(!repaintsTh,
-    'the freeze must not repaint a frozen <th> — the header tint is what marks an identity column');
+    'the freeze must not repaint a frozen <th>, the header tint is what marks an identity column');
 
   /* Sticky resolves against the nearest scrollport: without one that scrolls
      VERTICALLY, `top` never engages and the header only looks frozen until you scroll. */
@@ -446,7 +446,7 @@ test('a picker inside a field is not capped narrower than the field (#017)', () 
 
 /* A status vocabulary bigger than five needs more than five looks (#021).
  *
- * `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` both carry the categorical scale; the badge —
+ * `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` both carry the categorical scale; the badge,
  * the component that actually renders status, did not. A back-office document list carrying
  * ten distinct statuses in ONE column collapsed to three colours, so Approved, Closed and
  * Completed were the same green and Draft, InDeclaration and Transferred the same grey.

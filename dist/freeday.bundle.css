@@ -357,7 +357,7 @@
   --chart-tick: var(--slate-400);
   --focus-ring: var(--azure-600);
 }
-/* Density is deliberately NOT scoped to :root. These are custom properties, so they inherit —
+/* Density is deliberately NOT scoped to :root. These are custom properties, so they inherit,
  * putting the attribute on any ancestor (a route wrapper, one section) densifies just that
  * subtree, which is how density is actually decided: per screen, not per app. The root still
  * matches, so setting data-density on the html element keeps working exactly as before. */
@@ -546,7 +546,7 @@ a { color: var(--color-primary); }
 .fdy-app__main{flex:1;padding:var(--space-8);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-skip:focus{transform:translateY(0);}
-/* --static: for a bounded/embedded shell (a demo box, not the whole page) —
+/* --static: for a bounded/embedded shell (a demo box, not the whole page),
  * drop sticky so nothing escapes the box; sidebar stretches to fill it. */
 .fdy-app--static .fdy-app__sidebar{position:static;height:auto;align-self:stretch;}
 .fdy-app--static .fdy-app__topbar{position:static;}
@@ -725,7 +725,7 @@ a { color: var(--color-primary); }
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:active{transform:translateY(1px);}
 
-/* --danger used to be the SOLID treatment and nothing else, so `fdy-btn--ghost fdy-btn--danger` —
+/* --danger used to be the SOLID treatment and nothing else, so `fdy-btn--ghost fdy-btn--danger`,
    which every reader parses as "quiet destructive" — rendered a second SOLID button beside Save.
    That is a hierarchy defect, not a cosmetic one: the base class is already the one primary per
    screen. `.fdy-menu__item--danger` has always modelled the quiet form (red text, not a red block);
@@ -1287,7 +1287,7 @@ a { color: var(--color-primary); }
 .fdy-dropzone__text{display:flex;flex-direction:column;gap:var(--space-1);}
 
 /* File rows (list of added/uploaded/rejected files) */
-/* Symmetric on purpose. The list carried margin-top and nothing below, so whatever follows it —
+/* Symmetric on purpose. The list carried margin-top and nothing below, so whatever follows it,
    an "Add files" button, in every upload UI there is — sat flush against the last row: measured
    0px. A block that claims space on one side only is not spacing, it is a lean. */
 .fdy-filelist{display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);margin-bottom:var(--space-3);}
@@ -1407,7 +1407,7 @@ a { color: var(--color-primary); }
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
 fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
-/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it —
+/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it,
    measured 0px between legend and first control. This is the spacing contract a grouped field
    needs; it matches .fdy-field's own gap so the group reads as one rhythm. */
 fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}

@@ -23,7 +23,7 @@
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:active{transform:translateY(1px);}
 
-/* --danger used to be the SOLID treatment and nothing else, so `fdy-btn--ghost fdy-btn--danger` —
+/* --danger used to be the SOLID treatment and nothing else, so `fdy-btn--ghost fdy-btn--danger`,
    which every reader parses as "quiet destructive" — rendered a second SOLID button beside Save.
    That is a hierarchy defect, not a cosmetic one: the base class is already the one primary per
    screen. `.fdy-menu__item--danger` has always modelled the quiet form (red text, not a red block);

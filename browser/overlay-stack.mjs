@@ -6,7 +6,7 @@
  * paragraph a contract rather than a second claim nobody checked (see #041 for what that costs).
  *
  * Two instruments matter. Paint order is asserted in PIXELS: a modal dialog makes the rest of the
- * document inert, so elementFromPoint outside it returns the dialog whatever is really on top —
+ * document inert, so elementFromPoint outside it returns the dialog whatever is really on top,
  * the trap the Modal entry itself warns about. And the overlays are opened with TRUSTED clicks,
  * because Chrome groups the close watchers of dialogs opened without user activation: open both
  * with `el.click()` and a single Escape closes both, which would make an "Escape closes the
@@ -64,7 +64,7 @@ test('Escape closes the topmost overlay first, leaving the drawer open (#046)', 
     await pause(400);
     const first = JSON.parse(await p.evalJS('JSON.stringify(window.state())'));
     assert.equal(first.modalOpen, false, 'Escape must close the modal');
-    assert.equal(first.drawerOpen, true, 'Escape must NOT take the drawer with it — cancel returns to the drawer');
+    assert.equal(first.drawerOpen, true, 'Escape must NOT take the drawer with it, cancel returns to the drawer');
 
     await p.pressKey('Escape');
     await pause(400);
@@ -127,7 +127,7 @@ test('who owns Escape when two overlays are stacked (#048)', { skip }, async () 
     ['both from a real click', true, true],
     ['drawer clicked, modal from script', true, false],
     ['drawer from script, modal clicked', false, true],
-    ['both from script — page never touched', false, false],
+    ['both from script, page never touched', false, false],
   ]) {
     await withPage(fixture('vanilla-overlay-stack.html'), async (p) => {
       await p.waitFor('document.readyState === "complete" && !!window.state');
@@ -148,6 +148,6 @@ test('who owns Escape when two overlays are stacked (#048)', { skip }, async () 
     { how: 'both from a real click', stillOpen: ['dw'], vetoable: [true] },
     { how: 'drawer clicked, modal from script', stillOpen: ['dw'], vetoable: [false] },
     { how: 'drawer from script, modal clicked', stillOpen: ['dw'], vetoable: [false] },
-    { how: 'both from script — page never touched', stillOpen: [], vetoable: [false, false] },
-  ], 'a changed row is news about the browser, not a regression in the kit — re-measure before editing COMPONENTS.md');
+    { how: 'both from script, page never touched', stillOpen: [], vetoable: [false, false] },
+  ], 'a changed row is news about the browser, not a regression in the kit, re-measure before editing COMPONENTS.md');
 });

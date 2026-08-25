@@ -11,7 +11,7 @@ public partial class FdyAppShell
     /// mapping so an app never reasons about the viewport to answer a question about its own UI.
     /// <para>
     /// Leave it <c>null</c> (the default) and the shell keeps its own, starting from the viewport:
-    /// a column on a wide screen, hidden on a narrow one. That default is why this is nullable —
+    /// a column on a wide screen, hidden on a narrow one. That default is why this is nullable,
     /// a caller cannot express it as a single initial value before it knows the viewport. Bind it
     /// (<c>@bind-NavOpen</c>) when the app wants to drive it from a menu or a saved preference.
     /// </para>
@@ -70,7 +70,7 @@ public partial class FdyAppShell
 
     protected override async Task OnParametersSetAsync()
     {
-        // Only reconcile once the shell is wired, and only when the caller actually changed it —
+        // Only reconcile once the shell is wired, and only when the caller actually changed it,
         // echoing our own event back down would fight the enhancer for the same state.
         if (_navToken != 0 && NavOpen is bool wanted && wanted != _lastNavOpen)
         {
@@ -79,7 +79,7 @@ public partial class FdyAppShell
         }
     }
 
-    /// <summary>Invoked by the bridge when the shell's nav visibility changes for any reason —
+    /// <summary>Invoked by the bridge when the shell's nav visibility changes for any reason,
     /// the toggle, Esc, the backdrop, following a nav link, or the viewport crossing the
     /// breakpoint.</summary>
     [JSInvokable]

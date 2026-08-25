@@ -171,7 +171,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     }
   }
 
-  // Mirrors Vue's `retry()`: only `lastPage`/`lastAppend` are frozen from the failed request —
+  // Mirrors Vue's `retry()`: only `lastPage`/`lastAppend` are frozen from the failed request,
   // the query is re-read live so a retry after editing the search box (within the debounce
   // window) uses what's currently typed, not a stale snapshot.
   function retry(): void {

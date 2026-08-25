@@ -173,7 +173,7 @@ export function distinctValues(rows, column) {
  * The page to land on when the page SIZE changes: whichever page still holds the first row you were
  * already looking at.
  *
- * The two obvious answers are both wrong. Jumping to page 1 throws away your place on a long list —
+ * The two obvious answers are both wrong. Jumping to page 1 throws away your place on a long list,
  * you asked to see more rows, not to start over. Keeping the same INDEX can land past the end: page
  * 5 of 5 at twenty rows is page 2 of 2 at fifty, and index 4 is nowhere. Anchoring on the first
  * visible row is the only one that always resolves, and it is what the reader expects: the row they

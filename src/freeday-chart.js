@@ -50,7 +50,7 @@
     return v ? v.split(',').map(function (s) { return s.trim(); }) : [];
   }
   // role="img" is Children Presentational per ARIA, so the docs used to say a chart's rendered
-  // legend, bar values and donut centre are not exposed. No browser actually prunes that subtree —
+  // legend, bar values and donut centre are not exposed. No browser actually prunes that subtree,
   // measured in Chrome's AX tree, every one of those nodes is live and unignored; what saves the
   // advice is only that AT treats a NAMED role="img" as a leaf and does not descend. So the kit
   // hides them itself, and the author's aria-label really is the whole text alternative.

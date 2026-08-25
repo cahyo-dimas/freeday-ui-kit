@@ -49,7 +49,7 @@ for (const stack of ['vue', 'react']) {
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[0].click()');
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[2].click()');
       assert.equal(await p.evalJS('JSON.stringify(window.__val)'), 'null',
-        `${stack}: ticking a row must not commit anything — that is the single-select behaviour`);
+        `${stack}: ticking a row must not commit anything, that is the single-select behaviour`);
       assert.equal(await p.evalJS('document.querySelector("dialog.fdy-modal--cfl").open'), true,
         `${stack}: the dialog must stay open while picking`);
 

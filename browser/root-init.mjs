@@ -2,7 +2,7 @@
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
- * `querySelectorAll` never matches its own root. Putting a framework ref directly on the widget —
+ * `querySelectorAll` never matches its own root. Putting a framework ref directly on the widget,
  * `<div ref="menu" data-fdy-menu>`, which is completely ordinary in Vue and React, therefore meant
  * the one element that needed enhancing was the only one that could not be found. It failed with no
  * error, no warning, and a UI that looked finished: the markup rendered and simply never opened.
@@ -30,7 +30,7 @@ test('a widget mounted after load and initialised via its own root actually work
     assert.equal(
       await p.evalJS(`document.getElementById('trig').getAttribute('aria-expanded')`),
       'true',
-      'the enhanced-by-root widget must respond to a real click — being marked ready is not enough',
+      'the enhanced-by-root widget must respond to a real click, being marked ready is not enough',
     );
     assert.equal(await p.evalJS(`!document.querySelector('.fdy-menu').hidden`), true, 'the menu is visible');
 

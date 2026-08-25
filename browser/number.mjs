@@ -26,7 +26,7 @@ test('stepping is native, bounded, and announced', { skip }, async () => {
     const state = async (id) => JSON.parse(await p.evalJS(`JSON.stringify(window.state("${id}"))`));
 
     assert.equal((await state('grpA')).ready, true, 'the enhancer claims the group');
-    assert.equal((await state('grpA')).down, false, 'value 1 with min 0 — down is available');
+    assert.equal((await state('grpA')).down, false, 'value 1 with min 0, down is available');
 
     await p.clickCenter(UP);
     assert.equal((await state('grpA')).value, '2', 'a real click steps the input');

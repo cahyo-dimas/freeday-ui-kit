@@ -84,7 +84,7 @@
 .fdy-app__main{flex:1;padding:var(--space-8);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-skip:focus{transform:translateY(0);}
-/* --static: for a bounded/embedded shell (a demo box, not the whole page) —
+/* --static: for a bounded/embedded shell (a demo box, not the whole page),
  * drop sticky so nothing escapes the box; sidebar stretches to fill it. */
 .fdy-app--static .fdy-app__sidebar{position:static;height:auto;align-self:stretch;}
 .fdy-app--static .fdy-app__topbar{position:static;}

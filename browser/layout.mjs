@@ -27,7 +27,7 @@ test('hidden labels in a wide table do not scroll the page', { skip }, async () 
     assert.equal(
       escape,
       0,
-      `the page must not scroll horizontally, escaped by ${escape}px — a .fdy-visually-hidden span `
+      `the page must not scroll horizontally, escaped by ${escape}px, a .fdy-visually-hidden span `
         + 'reached the initial containing block, so some clipping container lost its `position`',
     );
 

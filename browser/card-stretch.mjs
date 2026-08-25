@@ -35,7 +35,7 @@ test('the stretched target receives clicks from anywhere on the card', { skip },
     assert.ok(clicks.includes('open'),
       `a real press on the card body must reach the button, got ${JSON.stringify(clicks)}`);
     assert.ok(clicks.includes('target:open'),
-      `the click must be dispatched ON the button, not on a common ancestor — got ${JSON.stringify(clicks)}`);
+      `the click must be dispatched ON the button, not on a common ancestor, got ${JSON.stringify(clicks)}`);
 
     // Same again on the description: the whole surface, not just one element.
     await p.evalJS('window.reset()');
@@ -56,7 +56,7 @@ test('the escape hatch keeps its own click', { skip }, async () => {
     let clicks = JSON.parse(await p.evalJS('JSON.stringify(window.clicks)'));
     assert.ok(clicks.includes('details'), `the secondary action must fire, got ${JSON.stringify(clicks)}`);
     assert.ok(!clicks.includes('open'),
-      `and the primary must NOT — a card that opens while you press "Details" is the same silent bug, got ${JSON.stringify(clicks)}`);
+      `and the primary must NOT, a card that opens while you press "Details" is the same silent bug, got ${JSON.stringify(clicks)}`);
 
     /* A link in the card BODY, not in the flex footer. z-index applies to flex items without a
        position, so the footer button would pass even with the position default missing — this is the
@@ -78,7 +78,7 @@ test('the kit does not outweigh a control the app positions itself', { skip }, a
        specificity the kit beat the app's own single-class rule and dragged an absolutely positioned
        corner dismiss back into the flow: still clickable, in the wrong place. Hence :where(). */
     const box = JSON.parse(await p.evalJS('JSON.stringify(window.boxOf("dismiss"))'));
-    assert.equal(box.position, 'absolute', "the app's own positioning must win — the kit only supplies a default");
+    assert.equal(box.position, 'absolute', "the app's own positioning must win, the kit only supplies a default");
     assert.equal(box.zIndex, '1', 'and it still has to be raised above the overlay');
     assert.ok(box.fromRight < 16, `it must stay pinned to the corner, sits ${box.fromRight}px from the right edge`);
 

@@ -52,7 +52,7 @@ const props = withDefaults(defineProps<{
    * Omit for the internal index (unchanged default).
    */
   /** Withhold the table's own footer (pager + range) so the screen can render one. Server mode had
-   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control —
+   *  no way to do this: the app owns the page there ANYWAY, and was still handed a second control,
    *  a responsive list that shows a table at one breakpoint and cards at another ended up with the
    *  kit's pager stacked under its own. Client mode's counterpart is `pageIndex`. Default true. */
   pager?: boolean;

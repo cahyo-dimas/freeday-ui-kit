@@ -72,7 +72,7 @@
     return token;
   }
 
-  // Fire a .NET callback when a pointerdown lands outside `element`, or Escape is pressed —
+  // Fire a .NET callback when a pointerdown lands outside `element`, or Escape is pressed,
   // the light-dismiss primitive for Blazor-owned popovers (e.g. FdyTable's column filter, which
   // is position:fixed in the top layer and so escapes the table's overflow). Returns an off() token.
   function onOutside(element, dotNetRef, methodName) {

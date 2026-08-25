@@ -65,7 +65,7 @@ ${dark}
 [data-theme="light"] {
 ${lightReassert}
 }
-/* Density is deliberately NOT scoped to :root. These are custom properties, so they inherit —
+/* Density is deliberately NOT scoped to :root. These are custom properties, so they inherit,
  * putting the attribute on any ancestor (a route wrapper, one section) densifies just that
  * subtree, which is how density is actually decided: per screen, not per app. The root still
  * matches, so setting data-density on the html element keeps working exactly as before. */

@@ -61,7 +61,7 @@ for (const [file, extract] of DOCS) {
     const used = [...new Set(extract(read(file)))];
     const missing = used.filter(c => !known.has(c));
     assert.deepEqual(missing, [], `not defined by the kit: ${missing.join(', ')}`);
-    assert.ok(used.length > 0, 'extraction found no classes at all — the regex or the file changed');
+    assert.ok(used.length > 0, 'extraction found no classes at all, the regex or the file changed');
   });
 }
 
@@ -109,7 +109,7 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  */
 /* The ENHANCERS need this guard for a reason that OUTLIVED the language question.
  *
- * Until 2.0.0 the enhancers defaulted to Indonesian, and this guard existed because both promises —
+ * Until 2.0.0 the enhancers defaulted to Indonesian, and this guard existed because both promises,
  * an Indonesian raw path and an English Blazor one, which reaches these same enhancers through
  * `FreedayBlazor.initAll`, could only hold if every string was overridable. The default is English
  * now and that tension is gone, but the invariant is not: a string written straight into the DOM is
@@ -120,7 +120,7 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  * `textOf()` reads through, and nowhere else. A literal written straight into a `textContent` or an
  * `aria-label` further down is unreachable from outside and fails here.
  *
- * This is #013 §2 and #015's "still open", and it is scoped by SINK rather than by a word list —
+ * This is #013 §2 and #015's "still open", and it is scoped by SINK rather than by a word list,
  * #015's lesson was that a word list cannot see `pencarian` behind `\bcari\b`, and a second list
  * would have the same hole one affix over. */
 test('an enhancer string is overridable, not hard-coded (#016)', () => {
@@ -157,11 +157,11 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
   }
 
   assert.deepEqual(offenders, [],
-    'these go straight into the DOM and no consumer can change them — move them into TEXT and read with textOf():\n' + offenders.join('\n'));
+    'these go straight into the DOM and no consumer can change them, move them into TEXT and read with textOf():\n' + offenders.join('\n'));
 });
 
 test('every path speaks English (#009, and #006 from 2.0.0)', () => {
-  /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything) —
+  /* Unambiguous Indonesian only. No `data` (English too), no `di`/`ke` (substrings of everything),
      a guard that cries wolf gets an exemption list, and an exemption list is how this came back. */
   /* Roots, not whole words. The first version of this guard listed `cari` with a \b on each
      side and sailed straight past `Buka pencarian`, the CFL trigger's aria-label, and the one
@@ -210,7 +210,7 @@ test('the column contract reaches all three typed adapters (#026)', () => {
     .match(/export interface FdyTableColumn<T>\s*\{([\s\S]*?)\n\}/)[1]
     .matchAll(/^\s{2}([a-zA-Z]+)\??:/gm);
   const props = [...contract].map(m => m[1]);
-  assert.ok(props.length >= 10, `parsed only ${props.length} contract props — the interface moved`);
+  assert.ok(props.length >= 10, `parsed only ${props.length} contract props, the interface moved`);
 
   const blazor = read('adapters/blazor/TableTypes.cs');
   const surface = blazor.match(/class FdyTableColumn<TRow>\s*\{([\s\S]*?)\n\}/)[1];
@@ -219,7 +219,7 @@ test('the column contract reaches all three typed adapters (#026)', () => {
     .filter(P => !new RegExp(`\\b${P}\\b\\s*\\{\\s*get;`).test(surface));
 
   assert.deepEqual(missing, [],
-    'declared in the TS contract, absent from Blazor\'s FdyTableColumn — a Blazor app cannot ask for it:\n' +
+    'declared in the TS contract, absent from Blazor\'s FdyTableColumn, a Blazor app cannot ask for it:\n' +
     missing.join('\n'));
 });
 
@@ -236,7 +236,7 @@ test('a hidden column label is rendered, not dropped (#026)', () => {
   const offenders = [];
   for (const [file, flag] of TABLES) {
     const header = read(file).match(/<thead>[\s\S]*?<\/thead>/);
-    if (!header) { offenders.push(`${file}: no <thead> found — the header markup moved`); continue; }
+    if (!header) { offenders.push(`${file}: no <thead> found, the header markup moved`); continue; }
     const uses = [...header[0].matchAll(new RegExp(`${flag}[^\\n]*fdy-visually-hidden`, 'g'))].length;
     if (uses < 2) offenders.push(`${file}: ${flag} reaches .fdy-visually-hidden ${uses}x in <thead>, expected both branches`);
   }
@@ -325,7 +325,7 @@ test('the enhancers ship exactly these strings (#006)', () => {
       uploading: 'Uploading…',
       waiting: 'Waiting for the server…',
     },
-  }, 'a user-facing string changed — if that was deliberate, update this table in the same commit');
+  }, 'a user-facing string changed, if that was deliberate, update this table in the same commit');
 });
 
 /* Every public version stamp, checked against package.json.

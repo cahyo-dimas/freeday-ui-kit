@@ -44,7 +44,7 @@ const EXPANDED = `!window.state().collapsed && document.getElementById('sidebar'
 /* waitFor RETURNS false on timeout rather than throwing, so an unmet condition would otherwise sail
    on and fail some later assertion with a message about the wrong thing. Say which wait expired. */
 const until = async (p, condition, what) => {
-  assert.ok(await p.waitFor(condition), `timed out waiting for ${what} — condition never became true: ${condition}`);
+  assert.ok(await p.waitFor(condition), `timed out waiting for ${what}, condition never became true: ${condition}`);
 };
 
 const ready = async (p, [w, h]) => {
@@ -83,7 +83,7 @@ test('wide: the toggle collapses the column, and a collapsed nav leaves the tab 
     /* width:0 + overflow:hidden hides a panel from the eye, not from the keyboard. Without this a
        collapsed nav still swallows two Tab presses on the way to the page. */
     assert.equal(collapsed.sidebarInert, true, 'a nav nobody can see must not be tabbable');
-    assert.equal(collapsed.contentInert, false, 'the page stays usable — this is a column, not an overlay');
+    assert.equal(collapsed.contentInert, false, 'the page stays usable, this is a column, not an overlay');
 
     await p.clickCenter('#toggle');
     await until(p, EXPANDED, 'the sidebar to finish expanding');
@@ -97,7 +97,7 @@ test('narrow: opening the overlay makes the page behind it inert (#8)', { skip }
 
     const closed = await state(p);
     assert.equal(closed.open, false);
-    assert.equal(closed.sidebarInert, true, 'an off-canvas panel is still on screen — translateX only moves it');
+    assert.equal(closed.sidebarInert, true, 'an off-canvas panel is still on screen, translateX only moves it');
 
     await openNav(p);
     const open = await state(p);
@@ -211,7 +211,7 @@ test('a host can drive it without touching the kit\'s class names (#8)', { skip 
 
     await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('app'), true)`);
     assert.equal(JSON.parse(await p.evalJS('JSON.stringify(window.navEvents)')).length, 1,
-      'setting what is already set announces nothing — a bound host would loop on the echo');
+      'setting what is already set announces nothing, a bound host would loop on the echo');
 
     await p.evalJS(`window.FreedayAppShell.setVisible(document.getElementById('app'), false)`);
     await until(p, SHUT, 'setVisible(false) to close it');

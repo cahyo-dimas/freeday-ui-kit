@@ -7,7 +7,7 @@
 <script src="../../dist/freeday.js" defer></script>
 </head>
 <body>
-  <!-- Nothing enhanced at load. The spec mounts the widget AFTER DOMContentLoaded — the SPA case —
+  <!-- Nothing enhanced at load. The spec mounts the widget AFTER DOMContentLoaded — the SPA case,
        with the "ref" on the widget itself, then calls initAll(thatElement). querySelectorAll never
        matches its own root, so before the fix this was a silent no-op: markup rendered, nothing
        opened, no error. -->

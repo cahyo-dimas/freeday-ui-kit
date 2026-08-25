@@ -1,7 +1,7 @@
 /* Freeday, browser interaction harness (dev-only, zero runtime dependency).
  *
  * Drives a real headless Chrome over the DevTools Protocol to guard the class of
- * focus / blur / pointer bugs that `node --test` (jsdom-less, no layout) cannot see —
+ * focus / blur / pointer bugs that `node --test` (jsdom-less, no layout) cannot see,
  * the ones that actually shipped: combo mouse-select (v1.6.1 vanilla, v1.13.1 adapters)
  * and datetime disabled/invalid propagation timing (v1.14.0). Trusted `Input.*` gestures
  * are mandatory: a synthetic `el.click()` skips the real focusout that hides those bugs

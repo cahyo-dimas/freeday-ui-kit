@@ -1122,7 +1122,7 @@
     return v ? v.split(',').map(function (s) { return s.trim(); }) : [];
   }
   // role="img" is Children Presentational per ARIA, so the docs used to say a chart's rendered
-  // legend, bar values and donut centre are not exposed. No browser actually prunes that subtree —
+  // legend, bar values and donut centre are not exposed. No browser actually prunes that subtree,
   // measured in Chrome's AX tree, every one of those nodes is live and unignored; what saves the
   // advice is only that AT treats a NAMED role="img" as a leaf and does not descend. So the kit
   // hides them itself, and the author's aria-label really is the whole text alternative.
@@ -3126,7 +3126,7 @@
       isOpen() ? close() : open();
     });
     // Pressing an option must not blur the button: a blur fires the focusout
-    // handler below, which closes the listbox before the option's click lands —
+    // handler below, which closes the listbox before the option's click lands,
     // so the pick is lost (real mouse only; synthetic .click() never blurs).
     // preventDefault on mousedown keeps focus on the button without blocking click.
     listbox.addEventListener('mousedown', function (e) { e.preventDefault(); });

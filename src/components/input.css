@@ -4,7 +4,7 @@
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */
 fieldset.fdy-field{border:0;margin:0;padding:0;min-inline-size:0;}
-/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it —
+/* The rendered legend is laid out outside the fieldset's flex flow, so `gap` never reaches it,
    measured 0px between legend and first control. This is the spacing contract a grouped field
    needs; it matches .fdy-field's own gap so the group reads as one rhythm. */
 fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}

@@ -35,7 +35,7 @@ test('data-theme re-themes a subtree, and a nested island wins back', { skip }, 
       panelInk,
       appInk,
       `a .fdy-title-page inside <section data-theme="dark"> must take the dark ink, got ${panelInk} `
-        + 'in both — data-theme is scoped to :root again',
+        + 'in both, data-theme is scoped to :root again',
     );
     assert.equal(islandInk, appInk, 'a [data-theme="light"] island inside the dark panel goes back to light ink');
 

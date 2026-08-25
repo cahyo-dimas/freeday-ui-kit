@@ -30,7 +30,7 @@ test('pressed toggles and nav orientation resolve as intended', { skip }, async 
     // --- Segmented control: the ghost pressed segment must carry a real fill, not a blank box.
     const segOn = await css('seg-on', 'background-color');
     const segOff = await css('seg-off', 'background-color');
-    assert.notEqual(segOn, TRANSPARENT, 'a pressed ghost segment must keep a background-color — a '
+    assert.notEqual(segOn, TRANSPARENT, 'a pressed ghost segment must keep a background-color, a '
       + 'gradient rule from another variant has blanked it (background shorthand resets the colour)');
     assert.notEqual(segOn, segOff, 'pressed and unpressed segments must be distinguishable');
     assert.equal(await css('seg-on', 'background-image'), 'none', 'the ghost pressed fill is a flat colour, not a gradient');
@@ -58,7 +58,7 @@ test('pressed toggles and nav orientation resolve as intended', { skip }, async 
     assert.notEqual(await css('danger-solid', 'background-image'), 'none',
       'the un-modified --danger button is the solid one');
     assert.equal(await css('danger-ghost', 'background-image'), 'none',
-      '--ghost --danger must keep the ghost ground — a solid Delete beside Save is a second primary');
+      '--ghost --danger must keep the ghost ground, a solid Delete beside Save is a second primary');
     assert.equal(await css('danger-text', 'background-image'), 'none', '--text --danger likewise');
     assert.notEqual(await css('danger-ghost', 'color'), await css('ghost-plain', 'color'),
       'and it must still read as destructive: the ink turns even though the ground does not');

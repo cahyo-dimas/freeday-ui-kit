@@ -26,7 +26,7 @@ const THEMES = { LIGHT: base, DARK: dark };
 test('the dark scope actually resolves', () => {
   /* Guard for the guard. If the emitted selector changes shape again, this fails loudly instead of
    * quietly re-running the light theme under a dark label. */
-  assert.ok(Object.keys(darkVars).length > 20, `dark scope parsed ${Object.keys(darkVars).length} vars — the selector shape changed`);
+  assert.ok(Object.keys(darkVars).length > 20, `dark scope parsed ${Object.keys(darkVars).length} vars, the selector shape changed`);
   assert.notEqual(dark['--color-surface'], base['--color-surface'], 'dark must not resolve to the light surface');
 });
 
@@ -60,7 +60,7 @@ const add = (fg, bg, min, label) => req.push({ fg, bg, min, label });
 for (const s of SURF) {
   add('--color-text', s, AA_TEXT, `body text on ${s}`);
   add('--color-text-muted', s, AA_TEXT, `muted text (labels/help/day-headers/timestamps) on ${s}`);
-  add('--color-text-subtle', s, AA_UI, `subtle (decorative/placeholder — non-text 3:1) on ${s}`);
+  add('--color-text-subtle', s, AA_UI, `subtle (decorative/placeholder, non-text 3:1) on ${s}`);
 }
 for (const [strong, soft] of [['--color-primary-strong', '--color-primary-soft'], ['--color-success-strong', '--color-success-soft'], ['--color-warning-strong', '--color-warning-soft'], ['--color-danger-strong', '--color-danger-soft'], ['--color-info-strong', '--color-info-soft']])
   for (const s of SURF) add(strong, { soft, on: s }, AA_TEXT, `${strong.replace('--color-', '')} on ${soft.replace('--color-', '')}/${s.replace('--color-surface', 'surf')}`);
@@ -101,7 +101,7 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 // --color-surface), so they pass or fail together. Keep the ratios here in sync with all three;
 // the css guard below asserts they stay identical.
 for (const [themeName, theme] of Object.entries(THEMES)) {
-  test(`WCAG contrast — categorical tones — ${themeName}`, () => {
+  test(`WCAG contrast, categorical tones — ${themeName}`, () => {
     for (let i = 1; i <= 8; i++) {
       const c = `var(--chart-${i})`;
       const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);

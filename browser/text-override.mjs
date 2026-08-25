@@ -40,7 +40,7 @@ test('every enhancer renders its default and honours data-fdy-text-*', { skip },
       ['cascade back',  r.backA,      /^Back one level$/,       r.backB,      /^Back one level$/]
     ];
     for (const [name, def, defRe, over, overRe] of pairs) {
-      assert.notEqual(def, null, `${name}: the enhancer did not render — its init threw or never ran`);
+      assert.notEqual(def, null, `${name}: the enhancer did not render, its init threw or never ran`);
       assert.match(def, defRe, `${name}: the documented default must survive, got "${def}"`);
       assert.match(over, overRe, `${name}: data-fdy-text-* must win, got "${over}"`);
     }

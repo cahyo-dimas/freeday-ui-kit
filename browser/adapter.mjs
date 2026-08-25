@@ -42,7 +42,7 @@ test('React FdyCombo: real mouse-select updates value', { skip }, async () => {
 });
 
 /* Controlled client-side pageIndex (note 004 §1). The failure this guards: a table that accepts the
- * prop but keeps paginating off its own private index, so an EXTERNAL pager appears to do nothing —
+ * prop but keeps paginating off its own private index, so an EXTERNAL pager appears to do nothing,
  * exactly the shape a responsive screen needs (table above md, card list below, one shared pager).
  * Both directions are asserted: parent → table (rows change) and table → parent (event round-trip). */
 async function assertControlledPageIndex(fixtureName) {
@@ -97,12 +97,12 @@ async function assertClearable(fixtureName) {
     assert.equal(await p.evalJS('document.querySelector(".fdy-input").value'), '', 'and empty the field');
 
     assert.equal(await p.evalJS('document.querySelectorAll(".fdy-input-group__btn").length'), 1,
-      'the clear button goes away with the value — there is nothing left to clear');
+      'the clear button goes away with the value, there is nothing left to clear');
     assert.equal(await p.evalJS('document.activeElement.getAttribute("aria-haspopup")'), 'dialog',
       'focus must land on the trigger, not on the button that just vanished (or on <body>)');
 
     assert.equal(await p.evalJS('document.querySelector("dialog")?.open === true'), false,
-      'clearing is not picking — the dialog must stay shut');
+      'clearing is not picking, the dialog must stay shut');
   });
 }
 
@@ -229,7 +229,7 @@ test('Vue FdyTable: the footer resizes the page and keeps your place', { skip },
     const landed = await p.waitFor(`JSON.parse(window.__page()).size === 10`);
     assert.ok(landed, `the size never reached the caller: ${await p.evalJS('window.__page()')}`);
     assert.equal(JSON.parse(await p.evalJS('window.__page()')).index, 1,
-      'row 10 is on page 2 of ten-row pages — resizing must not send the reader back to page 1');
+      'row 10 is on page 2 of ten-row pages, resizing must not send the reader back to page 1');
 
     // Client mode: nothing is wired, so the table has to apply the pick itself or the control lies.
     const before = await p.evalJS(`document.querySelectorAll('.fdy-datatable')[1].querySelectorAll('tbody tr').length`);
@@ -253,10 +253,10 @@ test('Vue FdyTable: pager={false} withholds the footer in server mode', { skip }
       const tables = [...document.querySelectorAll('.fdy-datatable')];
       return tables.map((t) => t.querySelector('.fdy-table-footer') !== null).join(',');
     })()`);
-    assert.equal(owner, 'false,true', 'and it must be the second one — the first opted out');
+    assert.equal(owner, 'false,true', 'and it must be the second one, the first opted out');
 
     assert.equal(await p.evalJS('document.querySelectorAll(".fdy-pagination__link").length > 0'), true,
-      'the surviving pager still works — this is not "hide every pager"');
+      'the surviving pager still works, this is not "hide every pager"');
   });
 });
 
@@ -281,9 +281,9 @@ for (const which of ['vue', 'react']) {
       const cells = JSON.parse(visibleText);
 
       assert.deepEqual(cells.map((c) => c.text), ['Code', 'Name', 'Row actions', 'Sortable actions'],
-        'every column keeps its name in the DOM — that is what assistive tech reads');
+        'every column keeps its name in the DOM, that is what assistive tech reads');
       assert.deepEqual(cells.map((c) => c.clipped), [false, false, true, true],
-        'and only the two labelHidden columns are clipped to a 1px box — the sortable one included');
+        'and only the two labelHidden columns are clipped to a 1px box, the sortable one included');
     });
   });
 }

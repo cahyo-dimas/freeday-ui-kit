@@ -46,7 +46,7 @@ for (const [id, label] of [
   });
 }
 
-test('the legend is hidden, not removed — the chart still LOOKS the same (#047)', { skip }, async () => {
+test('the legend is hidden, not removed, the chart still LOOKS the same (#047)', { skip }, async () => {
   await withPage(fixture('vanilla-chart-a11y.html'), async (p) => {
     await p.waitFor(READY);
     /* aria-hidden is the whole mechanism, so the proof it is not a deletion is that the nodes are
