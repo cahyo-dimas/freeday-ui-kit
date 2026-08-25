@@ -405,15 +405,15 @@ The docs site catches up with the components, and writing it out as a consumer f
   keys, which have no case to lose, so the guard was not wrong but unrepresentative. The spec now
   overrides `filterText`, reached by clicking a column filter open. Mutation-tested.
 ### Docs
-- **`docs/index.html` was nine releases behind** — it stated v1.34.0 and demoed none of what landed
+- **`docs/index.html` was nine releases behind.** It stated v1.34.0 and demoed none of what landed
   after it. Brought level with the components, as live demos rather than a feature list, because
   that is what the rest of the page is:
-  - **New section — Tabel beku.** `.fdy-table--sticky` / `--sticky-head`, `.fdy-table__freeze` +
+  - **New section, Tabel beku.** `.fdy-table--sticky` / `--sticky-head`, `.fdy-table__freeze` +
     `--fdy-freeze-left`, `.fdy-table-scroll--frozen` + `--fdy-table-frozen-h` (1.35.0, 1.37.0), with
     a rate matrix you can actually scroll on both axes, and the reason the two axes are separate
     modifiers.
-  - **New section — Teks enhancer (i18n).** The `data-fdy-text-*` contract (1.39.0), demoed as the
-    same data table rendered entirely in English — the demo that found #023.
+  - **New section, Teks enhancer (i18n).** The `data-fdy-text-*` contract (1.39.0), demoed as the
+    same data table rendered entirely in English, the demo that found #023.
   - **Badge tone scale** `--tone-1`…`--tone-8` (1.44.0), with the distinction the note drew: semantic
     variants state a judgement, tones distinguish without implying one.
   - **Date picker** now states the days → months → years drill (1.36.0); **Choose-from-list** states
@@ -428,11 +428,11 @@ Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (ID
 - **The row tick rendered as the browser's checkbox, not the kit's** (#022), in all three adapters.
   They shipped `class="fdy-check"` on a bare `<input>`; that class styles a wrapping `<label>` and
   its `input` DESCENDANT, so on the input itself it applied `inline-flex` and a cursor and nothing
-  else — a raw UA control in the middle of a styled dialog. `COMPONENTS.md` already said which class
+  else, leaving a raw UA control in the middle of a styled dialog. `COMPONENTS.md` already said which class
   a bare input in a table takes: `.fdy-checkbox`. Every behavioural assertion in `browser/cfl-multi`
   passed while it was wrong, because none of them looked at the rendering.
 - **`aria-selected` broke `vue-tsc` in consuming apps** (#022). `String(isPicked(row))` widens to
-  `string`, and Vue types the attribute as `Booleanish` — so a strict app type-checking the kit's own
+  `string`, and Vue types the attribute as `Booleanish`, so a strict app type-checking the kit's own
   `.vue` source failed on a file it does not own. Now `'true' : 'false'`.
 ### Added: guards
 - `browser/cfl-multi.mjs` asserts the tick's computed `appearance` is `none`, which is the tell that
@@ -441,18 +441,18 @@ Two defects in 1.42.0's multi-select CFL, found by the app that asked for it (ID
 ## [1.44.0] - 2026-08-19
 One note from the back-office app (IDU_EMATE_APPL_WEB, #021).
 ### Added
-- **`--tone-1`…`--tone-8` on `.fdy-badge`** — a status vocabulary larger than the semantic palette.
+- **`--tone-1`…`--tone-8` on `.fdy-badge`** give a status vocabulary larger than the semantic palette.
   `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` already carried the categorical scale; the badge,
   which is the component that actually renders status, did not. The reporting app's document lists
-  carry **ten distinct statuses in one column** — Draft, Submitted, Approved, Completed, Settled,
-  Closed, Transferred, InDeclaration, Open, Rejected — against five modifiers, so Approved, Closed
+  carry **ten distinct statuses in one column**: Draft, Submitted, Approved, Completed, Settled,
+  Closed, Transferred, InDeclaration, Open, Rejected, against five modifiers, so Approved, Closed
   and Completed came out the same green and Draft, InDeclaration and Transferred the same grey.
   Semantics still come first: a state that IS good, bad or waiting takes `--success` / `--danger` /
   `--warning`, and these are for the rest. Same `--tone-*` tokens and the same 18%/50% mix as the
   other two, so the existing contrast test already measures them.
 ### Added: guards
 - `test/css.test.mjs` asserts all eight bind their own token (a gap silently reuses a colour) and
-  that the mix stays identical to the avatar's and the chip's — one contrast test covers the three,
+  that the mix stays identical to the avatar's and the chip's, so one contrast test covers the three,
   so a badge that drifted to its own ratio would be gated by a test measuring something else.
   `test/contrast.test.mjs` renamed from "avatar tones" to "categorical tones" to say so.
 
@@ -462,21 +462,21 @@ Chromium rather than read off the CSS — each is a layout outcome, invisible in
 ### Fixed
 - **A control in a table column collapsed** (#020). `.fdy-input` is `width:100%`, which in an
   auto-layout table contributes **no intrinsic width**: the column shrank to its header text and took
-  the control with it. A NOTE box measured **36px** — too narrow to read what you typed into it.
+  the control with it. A NOTE box measured **36px**, too narrow to read what you typed into it.
   Controls that are direct children of a `td` now keep a `7rem` floor (112px measured). Per-control
   rather than per-column, because the table cannot know which columns hold controls. `width:100%` was
   never wrong; it is only in a table that 100% of nothing is nothing.
 - **A stat value wrapped between the currency and the number** (#020). `.fdy-stat__value` is
   `--text-3xl`; `IDR 300,000.00` needs **224px** at that size and `.fdy-stats` tracks are
   `minmax(11rem,1fr)`, so a three-across row at 660px gave it ~205px and it broke onto two lines.
-  It now shrinks **only when its own column cannot hold it** — a 205px track renders 22.7px on one
+  It now shrinks **only when its own column cannot hold it**: a 205px track renders 22.7px on one
   line, a 420px track still renders exactly 31px. Shrinking the token instead would have taken 31px
   from every consumer to fix a column that was 19px short. Scoped to a stat inside `.fdy-stats`,
   where the width comes from the grid track: `container-type:inline-size` on a standalone
   `.fdy-stat` would stop it sizing to its own content, and the unconditional rule stays as the
   fallback where `@container` is missing.
 - **`.fdy-filelist` claimed space above itself and none below** (#020), so the "Add files" button
-  every upload UI puts after it sat flush against the last row — a measured **0px**. Symmetric now,
+  every upload UI puts after it sat flush against the last row, a measured **0px**. Symmetric now,
   with `:last-child` dropping the bottom margin so nothing pays for room it does not need.
 ### Added: guards
 - `browser/crowding.mjs` measures all three. The stat case asserts **both** directions — one line
@@ -489,7 +489,7 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
 - **`multiple` on the typed `FdyCfl`** (Vue · React · Blazor). The enhancer has offered
   `data-fdy-cfl-multiple` since it shipped and `COMPONENTS.md` documented it; all three wrappers were
   single-valued **at the type level**, so there was nothing to widen from the outside. An app that
-  started on the enhancer and later adopted the wrapper silently lost a capability — which is the
+  started on the enhancer and later adopted the wrapper silently lost a capability, which is the
   actual defect, more than the missing feature. The settlement screen that reported it gathers six or
   eight approved claims onto one document and was doing six open→search→click cycles.
   Rows tick instead of committing, the footer counts them, and **Confirm** commits the set. Vue and
@@ -502,14 +502,14 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   them straight to the model would make Cancel a lie.
 - **The field states `{n} selected`.** `display()` takes ONE row: naming one of six would be wrong and
   naming all six does not fit a 22rem control.
-- **Blazor gained a modal footer**, which it never had — Vue and React both commit from one.
+- **Blazor gained a modal footer**, which it never had, while Vue and React both commit from one.
 - The tick checkbox is `aria-hidden` and inert. `.fdy-cfl__check input` is already
   `pointer-events:none` in the kit's CSS, so the row owns the click and a handler on the box would
   have been unreachable code; `aria-selected` on the row is what carries the state.
 ### Fixed
 - **`FdyCfl`'s second retry button said `Coba lagi`** (Vue · React). The error state inside the
   results branch had a hard-coded Indonesian literal while the button two states above it correctly
-  read `retryText ?? 'Try again'` — so the component both had the prop and ignored it. #009's guard
+  read `retryText ?? 'Try again'`, so the component both had the prop and ignored it. #009's guard
   missed it because **neither `coba` nor `lagi` is in its word list**, which is #015's lesson landing
   a third time: a word list is a floor, not a ceiling. Both now read `retryText`.
 ### Added: guards
@@ -522,13 +522,13 @@ One note from the back-office app (IDU_EMATE_APPL_WEB, #019), and a string the #
   `picked[0]` instead of the array fails it by name.
 
 ## [1.41.0] - 2026-08-19
-One note from the account app (IDU_EMATE_ACCT_WEB, #018) — the first raised from that repo.
+One note from the account app (IDU_EMATE_ACCT_WEB, #018), the first raised from that repo.
 ### Fixed
 - **`.fdy-input-group` rendered 1px shorter than every control beside it** (#018). The group
   declares a `1.5px` border and its inner input subtracted `3px` to compensate, so the border box
   should land on `--control-h`. **At `devicePixelRatio: 1` the engine resolves each 1.5px border to
   1px**, the compensation over-subtracts, and a search field beside a button measured 39px against
-  40px. At dpr 2 the halves survive and the arithmetic is right — which is why it shipped: it is
+  40px. At dpr 2 the halves survive and the arithmetic is right, which is why it shipped: it is
   invisible on a retina display and visible on every 1× monitor.
   The group now states `height: var(--control-h)` (it is already `border-box`) and the input
   `height: auto; align-self: stretch`. The group is `align-items: stretch` already, so the input and
