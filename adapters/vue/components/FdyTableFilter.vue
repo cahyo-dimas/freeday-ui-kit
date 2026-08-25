@@ -7,7 +7,7 @@ import type { FdyColumnFilter, FdyColumnFilterType } from '../../core/table-mode
 // Internal to FdyTable: one column's header funnel button + its type-aware filter popover
 // (text / enum / number / date) over freeday's `.fdy-table__filterbtn` + `.fdy-filter*` classes.
 // Reuses usePopover so the panel escapes the table's `overflow:hidden` via the top layer. Purely
-// controlled — it renders the current `filter` and emits the next one (or null to clear); the
+// controlled, it renders the current `filter` and emits the next one (or null to clear); the
 // parent owns where that goes (client state or an `update:filters` emit). Not exported.
 
 const props = defineProps<{

@@ -1,4 +1,4 @@
-/* Browser regression spec — a modal opened over an open drawer stacks correctly (#046).
+/* Browser regression spec, a modal opened over an open drawer stacks correctly (#046).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * The kit already behaved correctly here; what was missing was anyone having proved it, so
@@ -78,7 +78,7 @@ test('closing the drawer under an open modal leaves the modal up (#046)', { skip
     await p.waitFor('document.readyState === "complete" && !!window.state');
     await openBoth(p);
 
-    /* Out-of-order teardown is the case a consumer hits by accident — an app that closes the
+    /* Out-of-order teardown is the case a consumer hits by accident, an app that closes the
        drawer as part of confirming, while the confirm is still up. */
     const after = JSON.parse(await p.evalJS('JSON.stringify(window.closeDrawerOutOfOrder())'));
     assert.deepEqual(after.open, ['md'], 'the modal must survive its opener closing underneath it');
@@ -97,23 +97,23 @@ test('closing the drawer under an open modal leaves the modal up (#046)', { skip
   });
 });
 
-/* #048 — WHEN each stacked overlay owns its own Escape, measured rather than assumed.
+/* #048. WHEN each stacked overlay owns its own Escape, measured rather than assumed.
  *
  * 1.51.1 documented this as a transient-activation window: a showModal() "after an await that
  * outlived the click" was said to group its close watcher with the dialog below, so one Escape
  * closed both. A consumer audited three call sites of exactly that shape against Chromium 151 and
- * could not reproduce it — correctly, because that is not the line.
+ * could not reproduce it, correctly, because that is not the line.
  *
  * Measured identically on Chromium 133 and Chrome 151, the real behaviour splits in two:
  *   - GROUPING needs a page that has never received user input at all. Sticky activation, not
  *     transient: six seconds after a single click the overlays are still independent. So grouping is
- *     reachable in a test harness and nowhere else — an app has been clicked long before a second
+ *     reachable in a test harness and nowhere else, an app has been clicked long before a second
  *     overlay is up.
  *   - VETOING Escape (preventDefault on `cancel`) needs BOTH overlays to have been opened by a real
  *     gesture. Open either from script and the second overlay's cancel arrives non-cancelable: it
  *     still closes only the topmost, but nothing can refuse it.
  *
- * The matrix is asserted whole, because the interesting failure is a row changing — that is the
+ * The matrix is asserted whole, because the interesting failure is a row changing. That is the
  * browser moving under the docs, which is the thing this file exists to notice.
  */
 const openBy = async (p, selector, trusted) => {

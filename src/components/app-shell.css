@@ -1,14 +1,14 @@
-/* Freeday — App Shell.
+/* Freeday. App Shell.
  * Natural document scroll: the shell grows with content and the PAGE scrolls,
  * while the sidebar and topbar are position:sticky so they stay in view. No
  * fixed-height / internal-scroll trickery (that leaves a white gap if the host
  * page can still scroll). Structure: .fdy-app > (.fdy-app__sidebar, .fdy-app__content
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
- * topbar a tall containing block so it can travel — a bare grid cell can't. */
+ * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
 .fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
-/* Brand is a fixed header — same height as the topbar so they align, and only
+/* Brand is a fixed header, same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
  * display line via the rules on .fdy-app__brand itself. For a mark + two-line
  * title/subtitle, add structured children mirroring .fdy-appbar__brand:
@@ -24,10 +24,10 @@
 .fdy-app__brand-title{display:block;font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__brand-subtitle{display:block;font-size:var(--text-xs);font-weight:var(--weight-regular);color:var(--color-text-muted);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:2px;padding:var(--space-3) var(--space-3) var(--space-6);}
-/* Horizontal variant — the SAME nav links laid out as a row, for a top-nav application (one that
+/* Horizontal variant, the SAME nav links laid out as a row, for a top-nav application (one that
  * puts its primary navigation in `.fdy-appbar` / `.fdy-app__topbar` and has no sidebar). Deliberately
  * a modifier and not a new block: the item, its states and `aria-current="page"` are unchanged. That
- * is the point — a navigation link is a link marked `aria-current`, never `aria-selected` (invalid
+ * is the point, a navigation link is a link marked `aria-current`, never `aria-selected` (invalid
  * ARIA on an anchor) and never a tab role, so borrowing `.fdy-tabs` for routes half-adopts a contract
  * (roving tabindex, a panel per tab) that route links do not honour. position:relative because the
  * row scrolls; see base.css on why a scroller must be a containing block. */
@@ -39,7 +39,7 @@
 .fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 .fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 /* Sidebar-menu extras: per-node icon (leading), count badge (trailing), and a
- * text label that truncates. Any of these are optional — a bare text item works. */
+ * text label that truncates. Any of these are optional, a bare text item works. */
 .fdy-nav__icon{flex:none;display:inline-flex;width:1.15rem;height:1.15rem;}
 .fdy-nav__icon svg{display:block;width:100%;height:100%;}
 .fdy-nav__label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -58,7 +58,7 @@
 .fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-nav__grouplabel::after{content:"";flex:none;width:.45rem;height:.45rem;margin-right:var(--space-1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.7;}
 .fdy-nav__group[open] > .fdy-nav__grouplabel::after{transform:rotate(45deg);}
-/* --flat: calmer, non-collapsible grouped nav — hide the caret, drop the
+/* --flat: calmer, non-collapsible grouped nav, hide the caret, drop the
  * inter-group divider and the collapse cursor. Works on native <details> groups
  * (caret just hidden) and on static <div>/<p> groups (never collapsible). */
 .fdy-nav--flat .fdy-nav__grouplabel::after{display:none;}

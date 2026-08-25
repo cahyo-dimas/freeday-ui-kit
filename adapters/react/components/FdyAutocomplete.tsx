@@ -3,7 +3,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { usePopover } from '../usePopover';
 
 // A controlled React port of freeday's autocomplete (src/freeday-autocomplete.js +
-// autocomplete.css): a WAI-ARIA APG *editable* combobox — a text input filters a listbox of
+// autocomplete.css): a WAI-ARIA APG *editable* combobox, a text input filters a listbox of
 // options as you type; picking one fills the input. `value` + `onChange` in place of the
 // enhancer's DOM mutation, so React owns the input. Filtering mirrors the enhancer exactly
 // (case-insensitive substring on the trimmed query); pass server-filtered `options` and it

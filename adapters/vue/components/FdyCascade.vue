@@ -25,7 +25,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch, type
 import { usePopover } from '../usePopover';
 
 // A controlled Vue port of freeday's cascade select (src/freeday-cascade.js + cascade.css):
-// a hierarchical drill-down picker showing one level at a time — branches drill in, a back
+// a hierarchical drill-down picker showing one level at a time, branches drill in, a back
 // control ascends, a leaf selects and the value is the leaf's value (the display is the full
 // path). The enhancer's data model is a hidden nested <ul>; here it is a typed tree, which is
 // what a framework app actually has. A real `v-model` in place of the DOM mutation.

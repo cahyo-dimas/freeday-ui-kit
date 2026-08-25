@@ -11,7 +11,7 @@ export interface FdyShellParts {
 
 /**
  * What the DOM should reflect right now.
- * `navVisible` is the single idea the app owns — is the nav showing? `overlay` is whether the
+ * `navVisible` is the single idea the app owns: is the nav showing? `overlay` is whether the
  * viewport is currently below the nav breakpoint, where a visible nav covers the page.
  */
 export interface FdyShellState {

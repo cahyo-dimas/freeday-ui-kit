@@ -8,19 +8,19 @@ import FdyCombo from './FdyCombo.vue';
  * The band under a table: what you are looking at, how much of it you see, where you are.
  *
  * `FdyTable` renders this itself, so most screens never import it. It is exported for the one shape
- * that cannot use the table's own — a RESPONSIVE list, where a `.fdy-datatable` at `lg` and a
+ * that cannot use the table's own, a RESPONSIVE list, where a `.fdy-datatable` at `lg` and a
  * `.fdy-list` below it are two renderings of ONE page of rows. A footer inside the table is inside
  * the half that is hidden on a phone, so those screens need to render it once, outside both
  * (improvement notes #005 and #008, from IDU_EMATE_APPL_WEB).
  *
- * It owns nothing. `page` in, `update:page` out — the same contract as the table's server mode, so a
+ * It owns nothing. `page` in, `update:page` out, the same contract as the table's server mode, so a
  * screen already wired for that switches by moving the prop.
  */
 const props = defineProps<{
   /** The page being shown. `size` drives the range AND the rows-per-page control's value. */
   page: FdyPageState;
   /**
-   * Offer a rows-per-page control. Omit for none — the footer is then range + pager, exactly as
+   * Offer a rows-per-page control. Omit for none; the footer is then range + pager, exactly as
    * before. Picking a size emits `update:page` carrying the new `size` and the index that still
    * holds the row you were looking at.
    */
@@ -29,7 +29,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ 'update:page': [page: FdyPageState] }>();
 
-/* The combo is labelled by the visible word beside it — a `<label for>` cannot reach inside a
+/* The combo is labelled by the visible word beside it, a `<label for>` cannot reach inside a
  * component, and an aria-label would leave that word unattached to anything. */
 const sizeLabelId: string = `fdy-rows-${useId()}`;
 
@@ -54,7 +54,7 @@ const sizes: ComputedRef<readonly number[]> = computed((): readonly number[] => 
 const sizeOptions: ComputedRef<Array<{ value: string; label: string }>> = computed(() =>
   sizes.value.map((size: number) => ({ value: String(size), label: String(size) })),
 );
-/* One page and no size control means there is nothing here to say — the table has always withheld
+/* One page and no size control means there is nothing here to say, the table has always withheld
  * the whole band in that case, and this is where that decision now lives. */
 const visible: ComputedRef<boolean> = computed((): boolean => hasPager.value || sizes.value.length > 0);
 

@@ -1,4 +1,4 @@
-/* Freeday — Vue 3 adapter (thin). The enhancers stay the source of truth; this
+/* Freeday. Vue 3 adapter (thin). The enhancers stay the source of truth; this
  * composable just re-runs every registered window.Freeday*.initAll() over a
  * subtree after Vue renders it, so [data-fdy-*] markup rendered by Vue gets
  * enhanced (and re-enhanced after updates). Enhancers are idempotent, so the
@@ -15,7 +15,7 @@
  * well as descendants, so both shapes work. (Before 1.23.0 only the wrapping shape did, and
  * the other failed silently: querySelectorAll never matches its root.)
  *
- * Events come straight through as native bubbling CustomEvents — bind them with
+ * Events come straight through as native bubbling CustomEvents, bind them with
  * plain v-on (e.g. @fdy-cascade-change) and read event.detail. See index.d.ts
  * for the detail types.
  */

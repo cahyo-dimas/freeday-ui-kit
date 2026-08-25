@@ -1,7 +1,7 @@
-/* Freeday — tree checkbox cascade (optional, zero-dependency).
+/* Freeday, tree checkbox cascade (optional, zero-dependency).
  * Turns a [data-fdy-tree] checkbox tree into a selectable one: checking a branch checks
  * every descendant; a partially-selected branch shows the native :indeterminate state.
- * Rows are native <input class="fdy-checkbox">, labelled via aria-label — Space toggles.
+ * Rows are native <input class="fdy-checkbox">, labelled via aria-label. Space toggles.
  * Selection never toggles the <details> (the checkbox stops click propagation).
  *
  * Markup contract:
@@ -25,7 +25,7 @@
     return Array.prototype.filter.call(ul.children, function (n) { return n.tagName === 'LI'; });
   }
 
-  // The checkbox belonging to a row's own <li> — branch summary or leaf, never a child's.
+  // The checkbox belonging to a row's own <li>, branch summary or leaf, never a child's.
   function ownBox(li) {
     return li.querySelector(':scope > details > summary input[type="checkbox"]')
       || li.querySelector(':scope > input[type="checkbox"]');

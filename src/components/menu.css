@@ -1,4 +1,4 @@
-/* Freeday — Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
+/* Freeday. Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
 .fdy-menu-wrap{position:relative;display:inline-flex;}
 .fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
 .fdy-menu[hidden]{display:none;}
@@ -15,7 +15,7 @@
 .fdy-menu__sep{height:0;margin:var(--space-1) 0;border:0;border-top:var(--bw) solid var(--color-border-muted);}
 @media (prefers-reduced-motion:no-preference){.fdy-menu:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Split button — main action + attached menu toggle (caret) */
+/* Split button, main action + attached menu toggle (caret) */
 .fdy-btn-split{position:relative;display:inline-flex;border-radius:var(--radius-md);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 /* One control: the two halves must stay coplanar. Neutralize each segment's own
    lift + drop-shadow (they would misalign the seam / glow a single half); the

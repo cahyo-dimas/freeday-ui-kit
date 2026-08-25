@@ -1,8 +1,8 @@
-/* Freeday — Page composition & type roles.
+/* Freeday. Page composition & type roles.
  *
  * The kit stops at the component; these primitives encode *how a page is assembled* so screens
  * built by different people cohere. They carry the usage doctrine (see USAGE.md) in markup: a
- * named type role gets used, a doc gets skimmed. Everything here is token-driven layout — no new
+ * named type role gets used, a doc gets skimmed. Everything here is token-driven layout, no new
  * colours, no new shadows. Pair with .fdy-app (the shell) and the components inside.
  */
 

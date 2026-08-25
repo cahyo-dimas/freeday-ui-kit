@@ -1,4 +1,4 @@
-/* Freeday — Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).
+/* Freeday. Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).
  * Colour comes from --fdy-chart (a token, set inline by the renderer from data-fdy-color). */
 
 /* Sparkline / trend line (SVG) */
@@ -18,7 +18,7 @@
 /* Hover emphasis: dim all bars while the chart is hovered, keep the hovered one lit. */
 @media (hover:hover){.fdy-bars:hover .fdy-bars__bar{opacity:.4;}.fdy-bars__col:hover .fdy-bars__bar{opacity:1;}}
 
-/* Interactive tooltip (shared by bar + donut) — Chart.js-style hover readout. */
+/* Interactive tooltip (shared by bar + donut). Chart.js-style hover readout. */
 .fdy-chart__tip{position:absolute;z-index:5;left:0;top:0;pointer-events:none;transform:translate(-50%,calc(-100% - 8px));background:var(--color-inverse-surface);color:var(--color-inverse-text);font-size:var(--text-xs);font-weight:var(--weight-medium);font-variant-numeric:tabular-nums;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);white-space:nowrap;box-shadow:var(--shadow-2);opacity:0;transition:opacity var(--dur-fast) var(--ease-standard);}
 .fdy-chart__tip.is-visible{opacity:1;}
 
@@ -39,7 +39,7 @@
 /* Horizontal legend for cartesian charts (legend sits above the plot). */
 .fdy-chart__legend--row{flex-direction:row;flex-wrap:wrap;gap:var(--space-2) var(--space-4);}
 
-/* Cartesian charts (line / area / multi-series & stacked bar) — SVG with themed axes.
+/* Cartesian charts (line / area / multi-series & stacked bar). SVG with themed axes.
  * Axis colour comes from --chart-grid / --chart-tick (both theme-aware); series colours are
  * set inline by the renderer from --chart-1..8, so the whole chart recolours on data-theme. */
 .fdy-chart-xy{position:relative;display:flex;flex-direction:column;gap:var(--space-3);width:100%;--fdy-chart-tick-size:var(--text-xs);}

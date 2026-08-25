@@ -1,4 +1,4 @@
-/* Browser regression spec — two faults reported off one modal screenshot (#027).
+/* Browser regression spec, two faults reported off one modal screenshot (#027).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * Both are layout OUTCOMES that read as correct in the stylesheet. A toast with z-index 200 looks

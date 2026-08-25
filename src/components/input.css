@@ -1,4 +1,4 @@
-/* Freeday — Field & Input */
+/* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
 /* A grouped field is legitimately a <fieldset> (it needs a <legend>), e.g. a radio/checkbox group.
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the

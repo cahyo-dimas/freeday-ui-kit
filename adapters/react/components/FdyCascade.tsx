@@ -3,7 +3,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { usePopover } from '../usePopover';
 
 // A controlled React port of freeday's cascade select (src/freeday-cascade.js + cascade.css):
-// a hierarchical drill-down picker showing one level at a time — branches drill in, a back
+// a hierarchical drill-down picker showing one level at a time, branches drill in, a back
 // control ascends, a leaf selects and the value is the leaf's value (the display is the full
 // path). The enhancer's data model is a hidden nested <ul>; here it is a typed tree, which is
 // what a framework app actually has. `value` + `onChange` in place of the DOM mutation.

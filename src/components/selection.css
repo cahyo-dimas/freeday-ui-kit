@@ -1,4 +1,4 @@
-/* Freeday — Selection controls */
+/* Freeday. Selection controls */
 /* `flex:none` on every box, track and standalone checkbox is load-bearing, not tidiness.
    `.fdy-check` is an inline-flex row of [box, label], and a flex item with a WIDTH is still
    shrinkable, so as soon as the label wrapped to a second line the box gave up horizontal space

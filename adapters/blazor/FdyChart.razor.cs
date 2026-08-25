@@ -32,7 +32,7 @@ public partial class FdyChart : ComponentBase
     /// <summary>Legend visibility: <c>auto</c> | <c>always</c> | <c>none</c>.</summary>
     [Parameter] public string? Legend { get; set; }
 
-    /// <summary>Per-series colour override — semantic token names (primary/accent/success/…) or
+    /// <summary>Per-series colour override, semantic token names (primary/accent/success/…) or
     /// categorical slots <c>chart-1</c>..<c>chart-8</c>. Omit for the default chart palette.</summary>
     [Parameter] public IReadOnlyList<string>? Colors { get; set; }
 
@@ -72,7 +72,7 @@ public partial class FdyChart : ComponentBase
     private string? ColorsAttr => Colors is null ? null : string.Join(",", Colors);
     private string? StackedAttr => Stacked ? string.Empty : null; // presence attribute
 
-    // Signature of every data-affecting attribute — the C# analogue of the Vue/React watch list.
+    // Signature of every data-affecting attribute, the C# analogue of the Vue/React watch list.
     private string DataSignature => string.Join("", Type, SeriesAttr, ValuesAttr, LabelsAttr,
         Format, StackedAttr, Legend, ColorsAttr, Color, Center);
 

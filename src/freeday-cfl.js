@@ -1,21 +1,21 @@
-/* Freeday — choose-from-list enhancer (optional, zero-dependency).
+/* Freeday, choose-from-list enhancer (optional, zero-dependency).
  * Wires a searchable master-data picker dialog to read-only fields.
  * Progressive enhancement over a native <dialog>; in a framework app, drive the
  * dialog as a controlled component (fetchPage callback + server cache), not a store.
  *
  * Markup contract (see docs):
- *  - Field group:  [data-fdy-cfl="<dialogId>"] — usually a `.fdy-input-group` holding a
+ *  - Field group:  [data-fdy-cfl="<dialogId>"], usually a `.fdy-input-group` holding a
  *      read-only `.fdy-input` and a trigger `<button class="fdy-input-group__btn">`.
  *      Optional `data-fdy-cfl-display="<key>"` picks which row dataset key fills the input
  *      (default "value"); optional `data-fdy-cfl-summary="{n} dipilih"` formats the multi label.
- *  - Standalone opener:  [data-fdy-cfl-open="<dialogId>"] — opens the dialog with no bound field.
+ *  - Standalone opener:  [data-fdy-cfl-open="<dialogId>"], opens the dialog with no bound field.
  *  - Dialog:  <dialog id="<dialogId>" class="fdy-modal fdy-modal--cfl"> containing
  *      a `[data-fdy-cfl-search]` input, `.fdy-cfl__row` <tr> rows carrying `data-*` fields,
  *      a `[data-fdy-cfl-empty]` element, and (multi only) `[data-fdy-cfl-multiple]` on the
  *      dialog plus `[data-fdy-cfl-count]` and `[data-fdy-cfl-confirm]` in the footer.
  *
  * Emits a bubbling "fdy-cfl-select" CustomEvent on the field group (or the dialog when
- * opened standalone): detail {row} for single-select, {rows} for multi-select — each a plain
+ * opened standalone): detail {row} for single-select, {rows} for multi-select, each a plain
  * object copy of the row's dataset. Consumers fill sibling fields (code → name) from it.
  */
 (function () {
@@ -34,7 +34,7 @@
   }
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

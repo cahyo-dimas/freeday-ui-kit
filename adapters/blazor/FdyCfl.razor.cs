@@ -195,7 +195,7 @@ public partial class FdyCfl<TRow>
         else _picked.RemoveAt(at);
     }
 
-    /* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+    /* A click means "tick this" in multi and "this is my answer" in single, the whole difference. */
     private async Task RowClickAsync(TRow row)
     {
         if (Multiple) TogglePick(row);

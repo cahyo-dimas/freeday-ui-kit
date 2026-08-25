@@ -55,7 +55,7 @@ ${dark}
 }
 /* The two EXPLICIT opt-ins are deliberately NOT scoped to :root, for the same reason as density
  * below: these are inheriting custom properties, so data-theme on any ancestor re-themes just that
- * subtree — a dark brand panel beside a light form is an ordinary layout, and it should not require
+ * subtree, a dark brand panel beside a light form is an ordinary layout, and it should not require
  * re-colouring each component by hand. The root still matches, so data-theme on <html> is unchanged.
  * Both keep the same specificity (0,1,0) as :root and come after it, so they still win there; and
  * --light after --dark means a light island inside a dark region wins in turn. */

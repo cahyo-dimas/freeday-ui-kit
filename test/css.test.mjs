@@ -8,12 +8,12 @@ import { dirname, join } from 'node:path';
  *
  * `overflow` clips a descendant only when that descendant's containing block is inside the overflow
  * box. An absolutely positioned child of an unpositioned scroller therefore resolves against the
- * INITIAL containing block and is clipped by nothing — it parks at its static position and drags
+ * INITIAL containing block and is clipped by nothing, it parks at its static position and drags
  * the whole document sideways. The kit hits this with its own `.fdy-visually-hidden` (see base.css):
  * measured 1351px of phantom page scroll from 11 hidden labels in one horizontally scrolling table,
  * unaffected by `overflow-x:hidden` on every wrapper, and invisible in the DOM.
  *
- * So: a rule that declares `overflow` must also make the element positioned — unless it is listed
+ * So: a rule that declares `overflow` must also make the element positioned, unless it is listed
  * below with the reason its content is already contained by an ancestor the kit itself positions. */
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -43,7 +43,7 @@ const CONTAINED_BY_ANCESTOR = new Map([
 /** Flatten a stylesheet into `{ selector, body }` for every top-level rule (at-rules included).
  *
  * Comments are stripped from the WHOLE source before matching, because a comment quoting CSS —
- * this file's neighbours do it constantly — carries braces that would otherwise split a rule in
+ * this file's neighbours do it constantly, carries braces that would otherwise split a rule in
  * half. Stripping first is also what lets the selector be read WHOLE: the previous version kept
  * only the last line of it, so a selector wrapped across lines arrived truncated and every guard
  * in this file was blind to that rule. It surfaced when the first draft of the filter-bar rule was
@@ -129,13 +129,13 @@ test('the containers the escape was measured on keep their position', () => {
 
 test('the native spin buttons stay hidden on .fdy-input[type="number"] (#44)', () => {
   /* A themed field with the user agent's own spin buttons inside it is the one unthemed control on
-   * the page — OS widget colours no stylesheet reaches. Both halves are load-bearing and neither is
+   * the page. OS widget colours no stylesheet reaches. Both halves are load-bearing and neither is
    * visible in a code review: `appearance` is the Firefox path, the pseudo-elements the Blink/WebKit
    * one, and dropping either brings the artefact back on that engine only.
    *
    * Deliberately NOT extended to `type="search"` or `type="date"`: their native widgets are the only
    * way to clear the field / open the picker, so hiding them removes function rather than chrome.
-   * COMPONENTS.md states that split — if this test ever grows a search clause, that decision changed. */
+   * COMPONENTS.md states that split, if this test ever grows a search clause, that decision changed. */
   const number = rules(css).filter(r => r.selector.includes('.fdy-input[type="number"]'));
   assert.ok(number.length >= 2, `expected the appearance rule and the spin-button rule, got ${number.length}`);
   assert.ok(number.some(r => /appearance:\s*textfield/.test(r.body)), 'the Firefox half (appearance:textfield) is gone');
@@ -188,7 +188,7 @@ test('.fdy-btn--stretch keeps its overlay anchored to the card (#007)', () => {
 
 test('menu focus is distinguishable from hover (#001 §6)', () => {
   /* freeday-menu.js moves REAL DOM focus with .focus(), so :focus-visible is the only thing a
-   * keyboard user has. It used to be the hover fill and nothing else — arrowing through a menu was
+   * keyboard user has. It used to be the hover fill and nothing else, arrowing through a menu was
    * invisible, and hover and focus were identical to everyone. Reported by two different apps before
    * it was fixed, so it is worth a gate: whatever focus renders, it must not be only what hover does. */
   const all = rules(css);
@@ -202,7 +202,7 @@ test('menu focus is distinguishable from hover (#001 §6)', () => {
 
 test('the required marker never reaches the accessibility tree (#001 §2)', () => {
   /* The control already carries `required`; the asterisk is decoration. CSS alt text (`content:"*" / ""`)
-   * paints the glyph while exposing nothing — drop the `/ ""` and every screen reader starts reading
+   * paints the glyph while exposing nothing, drop the `/ ""` and every screen reader starts reading
    * "star" after the label. */
   const rule = rules(css).find(r => r.selector === '.fdy-label--required::after');
   assert.ok(rule !== undefined, '.fdy-label--required::after is gone');
@@ -226,7 +226,7 @@ test('inline state text uses the inks the contrast gate covers (#001 §5)', () =
 });
 
 /* Any rule that TYPESETS (sets a font-size) is rendering prose, and prose needs a text ink.
- * --color-text-subtle is gated at 3.0 on purpose — placeholders, separators, decorative glyphs —
+ * --color-text-subtle is gated at 3.0 on purpose, placeholders, separators, decorative glyphs —
  * and measures 4.41:1 on surface-2, under AA for text. Two components shipped with it on type
  * before this generalised: .fdy-stat__label (fixed 1.30.0) and .fdy-eyebrow + .fdy-nav__grouplabel
  * (found by axe in a consuming app, one release later). Shape, not a name list, so the third one
@@ -251,7 +251,7 @@ test('nothing typesets prose in the decorative ink (#007)', () => {
 });
 
 test('a stat label spends a TEXT ink, not the decorative one (#006 §6)', () => {
-  /* --color-text-subtle is gated at 3.0 by design — placeholders, dividers, decorative glyphs. A stat
+  /* --color-text-subtle is gated at 3.0 by design, placeholders, dividers, decorative glyphs. A stat
    * label is text, and often the only thing naming the number above it; on surface-2 -subtle measures
    * 4.41, under AA. The token gate cannot see this: both inks pass their OWN thresholds, so the defect
    * only exists in the pairing of class and token. */
@@ -284,7 +284,7 @@ test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
    * between the eyebrow and the title half again what the flex `gap` declared. Reported by a
    * consuming app as two separate spacing complaints; they were one missing declaration.
    *
-   * The list comes from the DOCS — the classes the kit itself demonstrates on a paragraph, so a new
+   * The list comes from the DOCS, the classes the kit itself demonstrates on a paragraph, so a new
    * one is covered by documenting it, which is the step nobody skips. */
   const docs =
     readFileSync(join(root, 'COMPONENTS.md'), 'utf8') +
@@ -304,13 +304,13 @@ test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
 test('a title class renders the same whatever element carries it (#011)', () => {
   /* #010 was the same defect one element over: a class that does not clear the UA's `margin`
    * inherits spacing nobody wrote. That guard scans the classes the docs show on a `<p>`, which is
-   * why it could not see this one — `.fdy-list__title` is documented on a `<span>`, and the app put
+   * why it could not see this one, `.fdy-list__title` is documented on a `<span>`, and the app put
    * it on an `<h3>`, because a row title IS a heading and the document outline is the APP's call to
    * make, not the kit's. An `<h3>` brings three UA declarations, not one: `font-size:1.17em`,
    * `font-weight:bold` and a block margin. The title rendered a size and a weight the kit never
    * chose, in ten places.
    *
-   * So the invariant is not "clear the margin" — it is that a class whose job is to NAME something
+   * So the invariant is not "clear the margin" but that a class whose job is to NAME something
    * must be element-independent, because the kit does not own the element. It has to state its own
    * size, weight and margin rather than inherit whichever the app's semantics dropped on it.
    *
@@ -414,7 +414,7 @@ test('a frozen table cell keeps its own border (#012)', () => {
  *
  * `.fdy-filterbar` aligns flex-end so LABELLED fields line up on their inputs. A bare
  * checkbox has no label row, so flex-end put its bottom on the inputs' bottom and its body
- * a good 6px below their centre line — visible the moment one sits beside a date field. */
+ * a good 6px below their centre line, visible the moment one sits beside a date field. */
 test('a bare control in a filter bar keeps the height of a control (#014)', () => {
   const all = rules(css);
   for (const control of ['.fdy-check', '.fdy-switch', '.fdy-btn']) {
@@ -430,7 +430,7 @@ test('a bare control in a filter bar keeps the height of a control (#014)', () =
  *
  * `.fdy-field` and the controls that fill it cap at 22rem; the date and time pickers cap at
  * 14rem and 11rem. In a two-column form grid that put a 224px date box beside a 319px combo,
- * and the row read as ragged — reported from IDU_EMATE_APPL_WEB's transaction forms. The
+ * and the row read as ragged, reported from IDU_EMATE_APPL_WEB's transaction forms. The
  * narrow caps still apply to a picker standing on its own. */
 test('a picker inside a field is not capped narrower than the field (#017)', () => {
   const all = rules(css);
@@ -447,7 +447,7 @@ test('a picker inside a field is not capped narrower than the field (#017)', () 
 /* A status vocabulary bigger than five needs more than five looks (#021).
  *
  * `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` both carry the categorical scale; the badge —
- * the component that actually renders status — did not. A back-office document list carrying
+ * the component that actually renders status, did not. A back-office document list carrying
  * ten distinct statuses in ONE column collapsed to three colours, so Approved, Closed and
  * Completed were the same green and Draft, InDeclaration and Transferred the same grey.
  *

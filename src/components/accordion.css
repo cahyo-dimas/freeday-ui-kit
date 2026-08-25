@@ -1,5 +1,5 @@
-/* Freeday — Accordion (native <details>/<summary>, zero-JS) */
-/* position:relative — containing block for out-of-flow panel content (see base.css). NOT redundant
+/* Freeday. Accordion (native <details>/<summary>, zero-JS) */
+/* position:relative, containing block for out-of-flow panel content (see base.css). NOT redundant
    with the panel's reveal animation: that animation gives the panel a transform (which happens to
    make it a containing block too), but it lives behind prefers-reduced-motion:no-preference — so
    without this line the escape bug appears ONLY for readers who asked for reduced motion. */
@@ -13,5 +13,5 @@
 .fdy-accordion__item > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-accordion__panel{padding:0 var(--space-4) var(--space-4);color:var(--color-text-muted);font-size:var(--text-sm);line-height:var(--leading-normal);}
 /* Content reveal on open (fade + rise). Native <details> can't animate its own height cross-
- * browser without JS, so we animate the revealed panel instead — cheap, safe, reduced-motion gated. */
+ * browser without JS, so we animate the revealed panel instead, cheap, safe, reduced-motion gated. */
 @media (prefers-reduced-motion:no-preference){.fdy-accordion__item[open] > .fdy-accordion__panel{animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}

@@ -1,8 +1,8 @@
-/* Browser regression spec — the app shell owns its nav behaviour (NEXT-UP #8).
+/* Browser regression spec, the app shell owns its nav behaviour (NEXT-UP #8).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
- * `.fdy-app` shipped state classes and no JS, and COMPONENTS.md's instruction — toggle a class on
- * click, clear it on backdrop click — never mentioned Escape, focus, `inert` or focus restore. A
+ * `.fdy-app` shipped state classes and no JS, and COMPONENTS.md's instruction, toggle a class on
+ * click, clear it on backdrop click, never mentioned Escape, focus, `inert` or focus restore. A
  * consumer following it exactly built an overlay that cannot be closed from the keyboard, and the
  * two hand-rolled copies in this repo's own docs disagreed about which of those they implemented.
  *
@@ -151,7 +151,7 @@ test('narrow: the backdrop and a nav item both close it (#8)', { skip }, async (
        the toggle and takes the click itself. */
     await openNav(p);
     assert.equal((await state(p)).open, true, 'precondition: open again');
-    /* Following a link inside an overlay nav means "take me there" — the panel must not stay open
+    /* Following a link inside an overlay nav means "take me there", the panel must not stay open
        over the page just asked for. This is the behaviour the repo's own two copies disagreed on. */
     await p.evalJS(`document.getElementById('nav-two').click()`);
     await expectShut(p);

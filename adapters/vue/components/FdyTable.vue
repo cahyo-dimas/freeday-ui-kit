@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<{
   /** Client-side page size when `page` is absent; 0/undefined = render all rows (no pager). */
   pageSize?: number;
   /**
-   * Controlled client-side page index (0-based). Provide it — with `pageSize`, without `page`, to
+   * Controlled client-side page index (0-based). Provide it, with `pageSize`, without `page`, to
    * own the page while the table keeps doing filter/sort/paginate. This is what lets an EXTERNAL
    * pager drive the table: a responsive screen that hides `.fdy-datatable` below `md` and renders a
    * card list from the `process` event can render one pager for both breakpoints and point it here.
@@ -86,11 +86,11 @@ const emit = defineEmits<{
    *  a reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
   'update:pageIndex': [index: number];
   /** Client mode with `pageSizes`: the reader picked a new rows-per-page. The table has already
-   *  applied it — this is for a caller that wants to persist the choice. */
+   *  applied it, this is for a caller that wants to persist the choice. */
   'update:pageSize': [size: number];
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   'row-activate': [row: Row];
-  /** The processed page of rows (after filter/sort/paginate) plus the total row count — fires in
+  /** The processed page of rows (after filter/sort/paginate) plus the total row count, fires in
    *  BOTH modes whenever they change. Lets a consumer render the SAME processed set elsewhere
    *  (a `< md` card list, a "selected" summary, export-to-CSV) without re-deriving the pipeline. */
   'process': [result: { rows: Row[]; total: number }];
@@ -100,7 +100,7 @@ const internalSort: Ref<FdySortState | null> = ref(null);
 const internalFilters: Ref<FdyFilterMap> = ref({});
 const internalPageIndex: Ref<number> = ref(0);
 /* Client-mode rows-per-page. `pageSize` is a plain prop with no event, so a footer control that only
- * emitted would do nothing in the app that wired nothing — the table applies the pick itself and
+ * emitted would do nothing in the app that wired nothing, the table applies the pick itself and
  * reports it. An explicit change to the prop wins back: the parent said something newer. */
 const internalPageSize: Ref<number | null> = ref(null);
 watch((): number | undefined => props.pageSize, (): void => { internalPageSize.value = null; });
@@ -250,7 +250,7 @@ function rowClasses(row: Row): Array<string | undefined> {
 function onRowClick(row: Row): void {
   if (props.rowActivatable === true) emit('row-activate', row);
 }
-// Enter/Space activate only when the row itself is focused — a control inside a cell keeps its own
+// Enter/Space activate only when the row itself is focused, a control inside a cell keeps its own
 // event (the `event.target !== event.currentTarget` guard). Click relies on inner controls calling
 // stopPropagation, matching the pattern consumers hand-roll today.
 function onRowKeydown(e: KeyboardEvent, row: Row): void {

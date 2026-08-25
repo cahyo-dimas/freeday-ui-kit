@@ -48,12 +48,12 @@ test('buildTokensCss: emits root, primitive, semantic-as-var, dark, density', ()
   /* Density must NOT be root-scoped: custom properties inherit, so the attribute has to work on
    * any ancestor (a route wrapper densifying one screen). :root still matches the bare selector. */
   assert.doesNotMatch(css, /:root\[data-density="compact"\]/);
-  /* Same for the two EXPLICIT theme opt-ins — a dark panel beside a light form is an ordinary
+  /* Same for the two EXPLICIT theme opt-ins, a dark panel beside a light form is an ordinary
    * layout, and every component inside it should re-theme by inheritance, not by hand. */
   assert.doesNotMatch(css, /:root\[data-theme="dark"\]/);
   assert.doesNotMatch(css, /:root\[data-theme="light"\]/);
   /* But the SYSTEM default must stay root-scoped. Un-rooted, `:not([data-theme="light"])` matches
-   * every element that does not itself carry the attribute — including the children of a light
+   * every element that does not itself carry the attribute, including the children of a light
    * panel, which would be dragged back to dark. Verified in Chrome: the light island inside a dark
    * region renders light-on-light with the un-rooted variant. */
   assert.match(css, /@media[^{]*prefers-color-scheme:\s*dark[^{]*\{\s*:root:not\(\[data-theme="light"\]\)/);
@@ -84,7 +84,7 @@ test('bundleJs: concatenates enhancers in order with header', () => {
 
 test('density opts back out, and its values are derived rather than restated (#002)', () => {
   /* Custom properties only inherit downhill: once <html> is compact, every subtree is compact and
-   * `data-density="comfortable"` on a wrapper used to match nothing at all — the shipped comment
+   * `data-density="comfortable"` on a wrapper used to match nothing at all, the shipped comment
    * promised per-subtree density in both directions and delivered one.
    *
    * The values must come from the DEFAULTS, not be written out again: same key set by construction,

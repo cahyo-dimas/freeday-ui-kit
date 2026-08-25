@@ -1,4 +1,4 @@
-/* Freeday — date picker enhancer (optional, zero-dependency).
+/* Freeday, date picker enhancer (optional, zero-dependency).
  * Builds an input-styled trigger + calendar popover from an empty wrapper.
  * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
  *
@@ -70,7 +70,7 @@
     var view = startOfDay(selected || new Date());
     view = new Date(view.getFullYear(), view.getMonth(), 1);
     var focusDate = null;
-    /* 'days' | 'months' — the calendar drills one level up rather than growing furniture beside the
+    /* 'days' | 'months', the calendar drills one level up rather than growing furniture beside the
        title. Before this, the only pointer route to another month was one click per month: from
        August 2026 to March 2022 is fifty-three of them. Shift+PageUp already jumped a year, but a
        shortcut nobody can see is not an affordance — the repo's own test helper clicked "previous
@@ -272,7 +272,7 @@
     var YEARS_PER_PAGE = 12;
     function yearPageStart(y) { return Math.floor(y / YEARS_PER_PAGE) * YEARS_PER_PAGE; }
 
-    /* A year is only unreachable when EVERY month in it falls outside min/max — the same rule
+    /* A year is only unreachable when EVERY month in it falls outside min/max, the same rule
        monthDisabled applies one level down, for the same reason: a bound that sits inside the year
        disables neither end. */
     function yearDisabled(y) {

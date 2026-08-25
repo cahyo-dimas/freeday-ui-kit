@@ -45,7 +45,7 @@ export interface FdyTableProps<Row extends object> {
   /** Client-side page size when `page` is absent; 0/undefined = render all rows (no pager). */
   pageSize?: number;
   /**
-   * Controlled client-side page index (0-based). Provide it — with `pageSize`, without `page`, to
+   * Controlled client-side page index (0-based). Provide it, with `pageSize`, without `page`, to
    * own the page while the table keeps doing filter/sort/paginate. This is what lets an EXTERNAL
    * pager drive the table: a responsive screen that hides `.fdy-datatable` below `md` and renders a
    * card list from `onProcess` can render one pager for both breakpoints and point it here.
@@ -67,7 +67,7 @@ export interface FdyTableProps<Row extends object> {
    */
   pageSizes?: readonly number[];
   /** Client mode with `pageSizes`: the reader picked a new rows-per-page. The table has already
-   *  applied it — this is for a caller that wants to persist the choice. */
+   *  applied it, this is for a caller that wants to persist the choice. */
   onPageSizeChange?: (size: number) => void;
   pageIndex?: number;
   /** Client mode with `pageIndex` provided: the table asks for a new 0-based index (pager click, a
@@ -105,7 +105,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
   const [internalFilters, setInternalFilters] = useState<FdyFilterMap>({});
   const [internalPageIndex, setInternalPageIndex] = useState<number>(0);
   /* Client-mode rows-per-page. `pageSize` is a plain prop with no callback, so a footer control that
-   * only reported would do nothing in the app that wired nothing — the table applies the pick itself
+   * only reported would do nothing in the app that wired nothing, the table applies the pick itself
    * and reports it. `prevPageSize` is React's adjust-state-during-render idiom: an explicit change to
    * the prop wins back, because the parent said something newer. */
   const [internalPageSize, setInternalPageSize] = useState<number | null>(null);
@@ -238,7 +238,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
       .join(' ');
     return cls === '' ? undefined : cls;
   }
-  // Enter/Space activate only when the row itself is focused — a control inside a cell keeps its own
+  // Enter/Space activate only when the row itself is focused, a control inside a cell keeps its own
   // event (the `event.target !== event.currentTarget` guard). Click relies on inner controls calling
   // stopPropagation, matching the pattern consumers hand-roll today.
   function onRowKeydown(e: React.KeyboardEvent<HTMLTableRowElement>, row: Row): void {

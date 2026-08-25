@@ -3,7 +3,7 @@ import { useEffect, useId, useRef } from 'react';
 
 // A controlled React wrapper over freeday's `.fdy-modal` native <dialog> (src/components/modal.css).
 // React port of adapters/vue/components/FdyModal.vue: reconciles the reactive `open` boolean with a
-// DOM element whose open/close is a method call — showModal()/close() guarded against the
+// DOM element whose open/close is a method call, showModal()/close() guarded against the
 // already-open/closed cases (showModal() on an open dialog throws), onCancel + preventDefault so Esc
 // routes through app state instead of closing the DOM behind its back, and backdrop-click detection
 // via `event.target === dialogEl`. Native <dialog> already gives the focus trap, focus restore,
@@ -44,7 +44,7 @@ export function FdyModal(props: FdyModalProps): JSX.Element {
         if (dismissible) props.onClose();
       }}
       onClick={(e): void => {
-        // The ::backdrop is not a separate element — target === the dialog box means a backdrop click.
+        // The ::backdrop is not a separate element, target === the dialog box means a backdrop click.
         if (dismissible && e.target === dialogRef.current) props.onClose();
       }}
     >

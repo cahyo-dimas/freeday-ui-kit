@@ -241,7 +241,7 @@
 }
 /* The two EXPLICIT opt-ins are deliberately NOT scoped to :root, for the same reason as density
  * below: these are inheriting custom properties, so data-theme on any ancestor re-themes just that
- * subtree — a dark brand panel beside a light form is an ordinary layout, and it should not require
+ * subtree, a dark brand panel beside a light form is an ordinary layout, and it should not require
  * re-colouring each component by hand. The root still matches, so data-theme on <html> is unchanged.
  * Both keep the same specificity (0,1,0) as :root and come after it, so they still win there; and
  * --light after --dark means a light island inside a dark region wins in turn. */
@@ -423,8 +423,8 @@ a { color: var(--color-primary); }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
-/* Freeday — Accordion (native <details>/<summary>, zero-JS) */
-/* position:relative — containing block for out-of-flow panel content (see base.css). NOT redundant
+/* Freeday. Accordion (native <details>/<summary>, zero-JS) */
+/* position:relative, containing block for out-of-flow panel content (see base.css). NOT redundant
    with the panel's reveal animation: that animation gives the panel a transform (which happens to
    make it a containing block too), but it lives behind prefers-reduced-motion:no-preference — so
    without this line the escape bug appears ONLY for readers who asked for reduced motion. */
@@ -438,10 +438,10 @@ a { color: var(--color-primary); }
 .fdy-accordion__item > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-accordion__panel{padding:0 var(--space-4) var(--space-4);color:var(--color-text-muted);font-size:var(--text-sm);line-height:var(--leading-normal);}
 /* Content reveal on open (fade + rise). Native <details> can't animate its own height cross-
- * browser without JS, so we animate the revealed panel instead — cheap, safe, reduced-motion gated. */
+ * browser without JS, so we animate the revealed panel instead, cheap, safe, reduced-motion gated. */
 @media (prefers-reduced-motion:no-preference){.fdy-accordion__item[open] > .fdy-accordion__panel{animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
-/* Freeday — Alert (inline) */
+/* Freeday. Alert (inline) */
 .fdy-alert{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:var(--bw) solid var(--color-border);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface-2);}
 .fdy-alert__icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-top:.05rem;}
 .fdy-alert__icon svg{width:100%;height:100%;}
@@ -460,17 +460,17 @@ a { color: var(--color-primary); }
 .fdy-alert--danger{background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
 .fdy-alert--danger .fdy-alert__title,.fdy-alert--danger .fdy-alert__icon{color:var(--color-danger-strong);}
 
-/* Freeday — App Shell.
+/* Freeday. App Shell.
  * Natural document scroll: the shell grows with content and the PAGE scrolls,
  * while the sidebar and topbar are position:sticky so they stay in view. No
  * fixed-height / internal-scroll trickery (that leaves a white gap if the host
  * page can still scroll). Structure: .fdy-app > (.fdy-app__sidebar, .fdy-app__content
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
- * topbar a tall containing block so it can travel — a bare grid cell can't. */
+ * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
 .fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
-/* Brand is a fixed header — same height as the topbar so they align, and only
+/* Brand is a fixed header, same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
  * display line via the rules on .fdy-app__brand itself. For a mark + two-line
  * title/subtitle, add structured children mirroring .fdy-appbar__brand:
@@ -486,10 +486,10 @@ a { color: var(--color-primary); }
 .fdy-app__brand-title{display:block;font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:var(--color-text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__brand-subtitle{display:block;font-size:var(--text-xs);font-weight:var(--weight-regular);color:var(--color-text-muted);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-nav{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:2px;padding:var(--space-3) var(--space-3) var(--space-6);}
-/* Horizontal variant — the SAME nav links laid out as a row, for a top-nav application (one that
+/* Horizontal variant, the SAME nav links laid out as a row, for a top-nav application (one that
  * puts its primary navigation in `.fdy-appbar` / `.fdy-app__topbar` and has no sidebar). Deliberately
  * a modifier and not a new block: the item, its states and `aria-current="page"` are unchanged. That
- * is the point — a navigation link is a link marked `aria-current`, never `aria-selected` (invalid
+ * is the point, a navigation link is a link marked `aria-current`, never `aria-selected` (invalid
  * ARIA on an anchor) and never a tab role, so borrowing `.fdy-tabs` for routes half-adopts a contract
  * (roving tabindex, a panel per tab) that route links do not honour. position:relative because the
  * row scrolls; see base.css on why a scroller must be a containing block. */
@@ -501,7 +501,7 @@ a { color: var(--color-primary); }
 .fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 .fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 /* Sidebar-menu extras: per-node icon (leading), count badge (trailing), and a
- * text label that truncates. Any of these are optional — a bare text item works. */
+ * text label that truncates. Any of these are optional, a bare text item works. */
 .fdy-nav__icon{flex:none;display:inline-flex;width:1.15rem;height:1.15rem;}
 .fdy-nav__icon svg{display:block;width:100%;height:100%;}
 .fdy-nav__label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -520,7 +520,7 @@ a { color: var(--color-primary); }
 .fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
 .fdy-nav__grouplabel::after{content:"";flex:none;width:.45rem;height:.45rem;margin-right:var(--space-1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.7;}
 .fdy-nav__group[open] > .fdy-nav__grouplabel::after{transform:rotate(45deg);}
-/* --flat: calmer, non-collapsible grouped nav — hide the caret, drop the
+/* --flat: calmer, non-collapsible grouped nav, hide the caret, drop the
  * inter-group divider and the collapse cursor. Works on native <details> groups
  * (caret just hidden) and on static <div>/<p> groups (never collapsible). */
 .fdy-nav--flat .fdy-nav__grouplabel::after{display:none;}
@@ -562,7 +562,7 @@ a { color: var(--color-primary); }
 }
 @media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}}
 
-/* Freeday — App bar (standalone top bar: brand · actions · spacer).
+/* Freeday. App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;
  * sticky / elevated / dense / coloured via modifiers. Pure CSS. */
 .fdy-appbar{display:flex;align-items:center;gap:var(--space-3);height:var(--space-16);padding:0 var(--space-4);background:var(--color-surface);color:var(--color-text);border-bottom:var(--bw) solid var(--color-border);}
@@ -587,7 +587,7 @@ a { color: var(--color-primary); }
 .fdy-appbar--primary .fdy-nav__item:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);}
 .fdy-appbar--primary .fdy-nav__item[aria-current="page"]{background:color-mix(in srgb,var(--color-on-primary) 24%,transparent);color:var(--color-on-primary);}
 
-/* Freeday — Autocomplete (text input + filtered suggestion listbox, APG editable combobox).
+/* Freeday. Autocomplete (text input + filtered suggestion listbox, APG editable combobox).
  * Enhanced by freeday-autocomplete.js. */
 .fdy-autocomplete{position:relative;display:block;max-width:22rem;}
 .fdy-autocomplete__listbox{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:120;min-width:100%;max-height:16rem;overflow-y:auto;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
@@ -600,7 +600,7 @@ a { color: var(--color-primary); }
 .fdy-autocomplete__empty[hidden]{display:none;}
 @media (prefers-reduced-motion:no-preference){.fdy-autocomplete__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Freeday — Avatar */
+/* Freeday. Avatar */
 .fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;user-select:none;}
 .fdy-avatar img{width:100%;height:100%;object-fit:cover;}
 /* --xs exists for an avatar INSIDE a control: `.fdy-btn--sm` is exactly 2rem tall, which is also
@@ -613,7 +613,7 @@ a { color: var(--color-primary); }
 .fdy-avatar-group{display:inline-flex;}
 .fdy-avatar-group .fdy-avatar{border:2px solid var(--color-surface);margin-left:calc(var(--space-2)*-1);}
 .fdy-avatar-group .fdy-avatar:first-child{margin-left:0;}
-/* Decorative identity tones — a soft tint of a categorical chart colour with a theme-aware,
+/* Decorative identity tones, a soft tint of a categorical chart colour with a theme-aware,
  * text-leaning foreground so initials keep WCAG AA (verified >=4.5:1 in light & dark by
  * test/contrast.test.mjs). Use to disambiguate same-initial avatars (e.g. many "PT …" names):
  * hash a stable 1..8 index off the FULL name in your app, then apply .fdy-avatar--tone-<n>. */
@@ -627,7 +627,7 @@ a { color: var(--color-primary); }
 .fdy-avatar--tone-7{--_fdy-avatar-tone:var(--tone-7);}
 .fdy-avatar--tone-8{--_fdy-avatar-tone:var(--tone-8);}
 
-/* Freeday — Badge */
+/* Freeday. Badge */
 .fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
 .fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
 .fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
@@ -635,12 +635,12 @@ a { color: var(--color-primary); }
 .fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
-/* Categorical tone badges — a status vocabulary larger than the semantic palette, from the
+/* Categorical tone badges, a status vocabulary larger than the semantic palette, from the
  * general --tone-1..8 tokens. Same validated AA formula as .fdy-avatar--tone-* and
  * .fdy-chip--tone-* (text >=4.5:1 both themes, gated by test/contrast.test.mjs).
  *
  * Semantics come first: a state that IS good, bad or waiting takes --success / --danger /
- * --warning. These are for the rest — the states a workflow distinguishes but a palette of five
+ * --warning. These are for the rest, the states a workflow distinguishes but a palette of five
  * cannot. A back-office document list carrying Draft, Submitted, Approved, Completed, Settled,
  * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
  * which is the report this shipped for. */
@@ -654,7 +654,7 @@ a { color: var(--color-primary); }
 .fdy-badge--tone-7{--_fdy-badge-tone:var(--tone-7);}
 .fdy-badge--tone-8{--_fdy-badge-tone:var(--tone-8);}
 
-/* Overlay badge — anchors a small count/dot/icon badge to a corner of any element
+/* Overlay badge, anchors a small count/dot/icon badge to a corner of any element
  * (icon, button, text). Wrap the content in .fdy-badge-wrap; add .fdy-badge-ov as a
  * sibling. Default is a solid neutral pill; colour + dot + position via modifiers. */
 .fdy-badge-wrap{position:relative;display:inline-flex;vertical-align:middle;}
@@ -664,7 +664,7 @@ a { color: var(--color-primary); }
 /* Solid colours safe for count/text (on-* tokens, AA in light & dark) */
 .fdy-badge-ov--primary{background:var(--color-primary);color:var(--color-on-primary);}
 .fdy-badge-ov--danger{background:var(--color-danger-btn);color:var(--color-on-danger);}
-/* Dot-oriented accents (for dots — plain text on these is not guaranteed AA) */
+/* Dot-oriented accents (for dots, plain text on these is not guaranteed AA) */
 .fdy-badge-ov--accent{background:var(--color-accent);}
 .fdy-badge-ov--info{background:var(--color-info);}
 .fdy-badge-ov--success{background:var(--color-success);}
@@ -674,7 +674,7 @@ a { color: var(--color-primary); }
 .fdy-badge-ov--bottom-right{top:auto;bottom:0;transform:translate(50%,50%);}
 .fdy-badge-ov--bottom-left{top:auto;bottom:0;right:auto;left:0;transform:translate(-50%,50%);}
 
-/* Freeday — Breadcrumb */
+/* Freeday. Breadcrumb */
 .fdy-breadcrumb{font-size:var(--text-sm);}
 .fdy-breadcrumb__list{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);list-style:none;margin:0;padding:0;}
 .fdy-breadcrumb__item{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--color-text-muted);}
@@ -684,23 +684,23 @@ a { color: var(--color-primary); }
 .fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
 .fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}
 
-/* Freeday — Responsive display utilities (pairs with freeday-breakpoint.js).
+/* Freeday. Responsive display utilities (pairs with freeday-breakpoint.js).
  * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
- * NOTE: media-query breakpoints must be literal — CSS can't read custom properties
+ * NOTE: media-query breakpoints must be literal. CSS can't read custom properties
  * inside @media, so these px are structural, not stray magic numbers. */
 .fdy-hidden{display:none !important;}
 
-/* hide-below-X — hidden when the viewport is narrower than X (content shows at X and up) */
+/* hide-below-X, hidden when the viewport is narrower than X (content shows at X and up) */
 @media (max-width:599.98px){.fdy-hide-below-sm{display:none !important;}}
 @media (max-width:959.98px){.fdy-hide-below-md{display:none !important;}}
 @media (max-width:1279.98px){.fdy-hide-below-lg{display:none !important;}}
 
-/* hide-above-X — hidden when the viewport is X and wider (content shows below X) */
+/* hide-above-X, hidden when the viewport is X and wider (content shows below X) */
 @media (min-width:600px){.fdy-hide-above-sm{display:none !important;}}
 @media (min-width:960px){.fdy-hide-above-md{display:none !important;}}
 @media (min-width:1280px){.fdy-hide-above-lg{display:none !important;}}
 
-/* Freeday — Button */
+/* Freeday. Button */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);
   font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);
@@ -744,11 +744,11 @@ a { color: var(--color-primary); }
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}
 .fdy-btn--lg{height:calc(var(--control-h) + var(--space-2));padding:0 var(--space-6);font-size:var(--text-base);border-radius:var(--radius-lg);}
 
-/* Icon inside a button — scales with the button's font size (works for text+icon & icon-only) */
+/* Icon inside a button, scales with the button's font size (works for text+icon & icon-only) */
 .fdy-btn__icon{display:inline-flex;flex:none;}
 .fdy-btn__icon svg{display:block;width:1.15em;height:1.15em;}
 
-/* Text button — lowest emphasis (no fill/border), colored label, subtle hover tint */
+/* Text button, lowest emphasis (no fill/border), colored label, subtle hover tint */
 .fdy-btn--text{background:none;color:var(--color-primary-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text:hover{transform:none;background:var(--color-primary-soft);box-shadow:none;}
 .fdy-btn--text:active{transform:translateY(1px);box-shadow:none;}
@@ -767,19 +767,19 @@ a { color: var(--color-primary); }
  * a transformed element becomes the containing block for its own absolutely-positioned descendants,
  * so `inset:0` re-anchors from the card to the button's own box the moment the button is hovered or
  * pressed. Measured: mousedown lands on the button, the overlay collapses under the pointer, mouseup
- * lands on some other element, and the browser fires `click` on their common ancestor — the button
+ * lands on some other element, and the browser fires `click` on their common ancestor, the button
  * never gets one. It demos fine on hover for --text/--ghost (their hover is already transform:none)
  * and only a real press reveals it; the default and --danger fills break one step earlier, on hover.
  * Press feedback moves to the card, which is the object actually being pressed (see card.css). */
 .fdy-btn--stretch::after{content:'';position:absolute;inset:0;}
 .fdy-btn--stretch:hover,.fdy-btn--stretch:active{transform:none;}
 
-/* Icon-only — square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
+/* Icon-only, square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
 .fdy-btn--icon{width:var(--control-h);padding:0;}
 .fdy-btn--icon.fdy-btn--sm{width:calc(var(--control-h) - var(--space-2));}
 .fdy-btn--icon.fdy-btn--lg{width:calc(var(--control-h) + var(--space-2));}
 
-/* Button group — segmented, joined borders, rounded only at the ends */
+/* Button group, segmented, joined borders, rounded only at the ends */
 .fdy-btn-group{display:inline-flex;}
 .fdy-btn-group .fdy-btn{border-radius:0;}
 .fdy-btn-group .fdy-btn:not(:first-child){margin-left:calc(var(--bw) * -1);}
@@ -787,7 +787,7 @@ a { color: var(--color-primary); }
 .fdy-btn-group .fdy-btn:first-child{border-top-left-radius:var(--radius-md);border-bottom-left-radius:var(--radius-md);}
 .fdy-btn-group .fdy-btn:last-child{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md);}
 
-/* FAB — circular elevated action button (icon), optional extended pill with label */
+/* FAB, circular elevated action button (icon), optional extended pill with label */
 .fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-fab:hover{transform:translateY(-1px);box-shadow:var(--shadow-4);}
 .fdy-fab:active{transform:translateY(1px);}
@@ -800,29 +800,29 @@ a { color: var(--color-primary); }
 .fdy-fab--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);}
 .fdy-fab--accent{background:linear-gradient(180deg,var(--color-accent),color-mix(in srgb,#000 10%,var(--color-accent)));color:var(--color-on-accent);}
 
-/* Freeday — Card */
-/* position:relative — containing block for out-of-flow card content (see base.css); it also gives
+/* Freeday. Card */
+/* position:relative, containing block for out-of-flow card content (see base.css); it also gives
    consumers the anchor a corner ribbon/badge needs. */
 .fdy-card{position:relative;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
-/* Pressing a stretched target (see .fdy-btn--stretch) is pressing the CARD — the button's own
+/* Pressing a stretched target (see .fdy-btn--stretch) is pressing the CARD, the button's own
    nudge had to go, and the object under the pointer is the card. Ordered before the reduced-motion
    block and the disabled rules so both still win at equal specificity. */
 .fdy-card--interactive:has(.fdy-btn--stretch:active){transform:translateY(-1px);}
 /* The global reduced-motion reset kills the ANIMATION; drop the -3px shift too so the card
  * doesn't jump. The shadow still communicates the affordance. */
 @media (prefers-reduced-motion:reduce){.fdy-card--interactive:hover,.fdy-card--interactive:has(.fdy-btn--stretch:active){transform:none;}}
-/* When the whole card IS the control — a real <button> so the row is keyboard-reachable and
- * announced — reset the UA button box. Note: it does NOT reset background/border, because
+/* When the whole card IS the control, a real <button> so the row is keyboard-reachable and
+ * announced, reset the UA button box. Note: it does NOT reset background/border, because
  * .fdy-card already sets its own surface + border (resetting them here would strip the card). */
 .fdy-card--button{display:block;width:100%;text-align:inherit;color:inherit;appearance:none;-webkit-appearance:none;}
-/* Disabled card-as-control — same contract as .fdy-list__row--button: dim + not-allowed, and the
+/* Disabled card-as-control, same contract as .fdy-list__row--button: dim + not-allowed, and the
    --interactive lift is withdrawn so a refusing control stops answering the pointer. */
 .fdy-card--button:disabled,.fdy-card--button[aria-disabled="true"],.fdy-card--interactive[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-card--interactive:disabled:hover,.fdy-card--interactive[aria-disabled="true"]:hover{box-shadow:var(--shadow-lift);transform:none;}
-/* Escape hatches stay clickable above a stretched target — automatic, not a documented convention,
+/* Escape hatches stay clickable above a stretched target, automatic, not a documented convention,
    because forgetting it fails SILENTLY: the secondary control looks and hovers exactly as before and
    simply never receives the click, which is the very symptom the pattern exists to cure. Matched by
    shape (anything focusable) so a control the kit does not ship yet is covered too. */
@@ -838,9 +838,9 @@ a { color: var(--color-primary); }
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}
 .fdy-card__footer{padding:var(--space-3) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));display:flex;gap:var(--space-2);justify-content:flex-end;}
 
-/* Freeday — Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
+/* Freeday. Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
 .fdy-carousel{position:relative;}
-/* position:relative — the arrows are positioned against .fdy-carousel (the parent), so this only
+/* position:relative means the arrows are positioned against .fdy-carousel (the parent), so this only
    catches out-of-flow content inside the SLIDES, which would otherwise escape the viewport
    entirely and scroll the page by one slide-offset per slide (see base.css). */
 .fdy-carousel__viewport{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
@@ -859,10 +859,10 @@ a { color: var(--color-primary); }
 .fdy-carousel__dot:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 40%,transparent);}
 @media (prefers-reduced-motion:reduce){.fdy-carousel__viewport{scroll-behavior:auto;}}
 
-/* Freeday — Cascade select (hierarchical drill-down picker).
+/* Freeday. Cascade select (hierarchical drill-down picker).
  * Built by freeday-cascade.js from a [data-fdy-cascade] wrapper whose hidden
  * nested <ul> is the data model: a <li> with a child <ul> is a branch, one
- * without is a selectable leaf. The popover shows one level at a time — branches
+ * without is a selectable leaf. The popover shows one level at a time, branches
  * drill in, a back control ascends, a leaf selects (value = full path).
  * Trigger visual matches the combo / date / time control family. */
 .fdy-cascade{position:relative;display:inline-block;width:100%;max-width:22rem;}
@@ -899,16 +899,16 @@ a { color: var(--color-primary); }
 .fdy-cascade__opt-arrow{flex:none;width:.45rem;height:.45rem;border-right:2px solid var(--color-text-subtle);border-bottom:2px solid var(--color-text-subtle);transform:rotate(-45deg);}
 @media (prefers-reduced-motion:no-preference){.fdy-cascade__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Freeday — Choose-from-list dialog (searchable master-data picker).
+/* Freeday. Choose-from-list dialog (searchable master-data picker).
  * Built on .fdy-modal: header + search + scrollable results table + footer.
  * Backs a choose-from-list field (readonly input + .fdy-input-group__btn magnifier). */
 .fdy-modal--cfl{width:min(46rem,calc(100vw - var(--space-8)));}
 .fdy-modal--cfl .fdy-modal__body{padding:0;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
 
-/* Search bar — single leading-icon field; Enter/typing filters the results. */
+/* Search bar, single leading-icon field; Enter/typing filters the results. */
 .fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 
-/* Results — dense rows, sticky header, its own scroll region. */
+/* Results, dense rows, sticky header, its own scroll region. */
 .fdy-cfl__results{overflow:auto;max-height:min(24rem,50vh);}
 .fdy-cfl__results .fdy-table th{position:sticky;top:0;z-index:1;}
 .fdy-cfl__row{cursor:pointer;}
@@ -923,12 +923,12 @@ a { color: var(--color-primary); }
 .fdy-cfl__empty{padding:var(--space-8) var(--space-5);text-align:center;color:var(--color-text-muted);font-size:var(--text-sm);margin:0;}
 .fdy-cfl__empty[hidden]{display:none;}
 
-/* Footer — selection count (multi) sits left, actions right. */
+/* Footer, selection count (multi) sits left, actions right. */
 .fdy-modal--cfl .fdy-modal__footer{justify-content:space-between;}
 .fdy-cfl__count{font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-cfl__actions{display:flex;gap:var(--space-2);}
 
-/* Freeday — Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).
+/* Freeday. Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).
  * Colour comes from --fdy-chart (a token, set inline by the renderer from data-fdy-color). */
 
 /* Sparkline / trend line (SVG) */
@@ -948,7 +948,7 @@ a { color: var(--color-primary); }
 /* Hover emphasis: dim all bars while the chart is hovered, keep the hovered one lit. */
 @media (hover:hover){.fdy-bars:hover .fdy-bars__bar{opacity:.4;}.fdy-bars__col:hover .fdy-bars__bar{opacity:1;}}
 
-/* Interactive tooltip (shared by bar + donut) — Chart.js-style hover readout. */
+/* Interactive tooltip (shared by bar + donut). Chart.js-style hover readout. */
 .fdy-chart__tip{position:absolute;z-index:5;left:0;top:0;pointer-events:none;transform:translate(-50%,calc(-100% - 8px));background:var(--color-inverse-surface);color:var(--color-inverse-text);font-size:var(--text-xs);font-weight:var(--weight-medium);font-variant-numeric:tabular-nums;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);white-space:nowrap;box-shadow:var(--shadow-2);opacity:0;transition:opacity var(--dur-fast) var(--ease-standard);}
 .fdy-chart__tip.is-visible{opacity:1;}
 
@@ -969,7 +969,7 @@ a { color: var(--color-primary); }
 /* Horizontal legend for cartesian charts (legend sits above the plot). */
 .fdy-chart__legend--row{flex-direction:row;flex-wrap:wrap;gap:var(--space-2) var(--space-4);}
 
-/* Cartesian charts (line / area / multi-series & stacked bar) — SVG with themed axes.
+/* Cartesian charts (line / area / multi-series & stacked bar). SVG with themed axes.
  * Axis colour comes from --chart-grid / --chart-tick (both theme-aware); series colours are
  * set inline by the renderer from --chart-1..8, so the whole chart recolours on data-theme. */
 .fdy-chart-xy{position:relative;display:flex;flex-direction:column;gap:var(--space-3);width:100%;--fdy-chart-tick-size:var(--text-xs);}
@@ -984,10 +984,10 @@ a { color: var(--color-primary); }
 .fdy-chart-xy__bar{transition:opacity var(--dur-fast) var(--ease-standard);}
 .fdy-chart-xy__band{fill:transparent;cursor:pointer;}
 
-/* Freeday — Chip (tag / removable filter) */
+/* Freeday. Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}
 .fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 22%,transparent);}
-/* Categorical tone chips — non-semantic category tags / legend swatches, from the general
+/* Categorical tone chips, non-semantic category tags / legend swatches, from the general
  * --tone-1..8 palette. Same validated AA formula as .fdy-avatar--tone-* (text >=4.5:1 both themes,
  * gated by test/contrast.test.mjs). */
 .fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:color-mix(in srgb,var(--_fdy-chip-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-chip-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-chip-tone) 30%,var(--color-border));}
@@ -1015,14 +1015,14 @@ a { color: var(--color-primary); }
 .fdy-chip__check svg{display:block;width:100%;height:100%;}
 .fdy-chip--filter[aria-pressed="true"] .fdy-chip__check{display:inline-flex;}
 
-/* Freeday — Combobox (custom styled select, WAI-ARIA APG select-only) */
+/* Freeday. Combobox (custom styled select, WAI-ARIA APG select-only) */
 .fdy-combo{position:relative;display:block;max-width:22rem;}
 .fdy-combo__button{display:inline-flex;align-items:center;justify-content:space-between;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-combo__button:hover{border-color:var(--color-text-muted);}
 .fdy-combo__button:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-combo__button.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-combo__button:disabled,.fdy-combo__button[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
-/* Read-only: stays focusable & shows its value at full contrast but can't open — muted surface,
+/* Read-only: stays focusable & shows its value at full contrast but can't open, muted surface,
    softened border, default cursor, no focus-ring escalation (matches input[readonly], #39). */
 .fdy-combo__button[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
 .fdy-combo__button[aria-readonly="true"]:hover{border-color:var(--color-border);}
@@ -1055,11 +1055,11 @@ a { color: var(--color-primary); }
 @media (prefers-reduced-motion:no-preference){.fdy-combo__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 @keyframes fdy-combo-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
 
-/* Freeday — Page composition & type roles.
+/* Freeday. Page composition & type roles.
  *
  * The kit stops at the component; these primitives encode *how a page is assembled* so screens
  * built by different people cohere. They carry the usage doctrine (see USAGE.md) in markup: a
- * named type role gets used, a doc gets skimmed. Everything here is token-driven layout — no new
+ * named type role gets used, a doc gets skimmed. Everything here is token-driven layout, no new
  * colours, no new shadows. Pair with .fdy-app (the shell) and the components inside.
  */
 
@@ -1140,7 +1140,7 @@ a { color: var(--color-primary); }
 .fdy-text-warning{color:var(--color-warning-strong);}
 .fdy-text-danger{color:var(--color-danger-strong);}
 
-/* Freeday — Date picker (input-styled trigger + calendar popover).
+/* Freeday. Date picker (input-styled trigger + calendar popover).
  * Built by freeday-datepicker.js from an empty [data-fdy-datepicker] wrapper. */
 .fdy-datepicker{position:relative;display:inline-block;width:100%;max-width:14rem;}
 /* Inside a labelled field, a picker fills the field like every other control.
@@ -1215,14 +1215,14 @@ a { color: var(--color-primary); }
 /* Responsive: each picker may shrink (min-width:0) & wrap so the range never overflows a
    narrow row/phone; inline-flex still hugs to ~23rem at wider widths (look unchanged). */
 .fdy-daterange{display:inline-flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);}
-/* Each picker shrinks from an 11rem basis but not below ~7rem — enough for "dd/mm/yyyy" + the icon,
+/* Each picker shrinks from an 11rem basis but not below ~7rem, enough for "dd/mm/yyyy" + the icon,
    so a squeezed range compresses gracefully (and wraps) instead of clipping the date. */
 .fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:7rem;}
 .fdy-daterange__sep{flex:none;color:var(--color-text-subtle);}
 
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Freeday — Datetime picker (composed: date picker + time picker → one value).
+/* Freeday. Datetime picker (composed: date picker + time picker → one value).
  * A thin composer (freeday-datetime.js) links a child [data-fdy-datepicker] and
  * [data-fdy-timepicker] and emits a single combined event. Icon variants come from
  * the child pickers (data-fdy-no-icon / <template data-fdy-icon>). */
@@ -1231,18 +1231,18 @@ a { color: var(--color-primary); }
 .fdy-datetimepicker .fdy-datepicker{width:12rem;max-width:none;}
 .fdy-datetimepicker .fdy-timepicker{width:8.5rem;max-width:none;}
 
-/* Freeday — Description list (key-value detail view) */
+/* Freeday. Description list (key-value detail view) */
 .fdy-dl{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-5);margin:0;}
 .fdy-dl dt{color:var(--color-text-muted);font-size:var(--text-sm);}
 .fdy-dl dd{margin:0;color:var(--color-text);font-size:var(--text-sm);font-weight:var(--weight-medium);}
 .fdy-dl--rows{grid-template-columns:1fr;gap:var(--space-1);}
 .fdy-dl--rows dt{margin-top:var(--space-2);}
 
-/* Freeday — Divider */
+/* Freeday. Divider */
 .fdy-divider{border:0;border-top:var(--bw) solid var(--color-border);margin:var(--space-4) 0;}
 .fdy-divider--vertical{border-top:0;border-left:var(--bw) solid var(--color-border);margin:0 var(--space-4);align-self:stretch;}
 
-/* Freeday — Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
+/* Freeday. Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
  * backdrop / return-focus are free). Anchors left (default) or right.
  * Enhanced by freeday-drawer.js (open trigger + backdrop-click close). */
 /* display is gated behind [open] so the native <dialog> stays hidden until opened.
@@ -1269,7 +1269,7 @@ a { color: var(--color-primary); }
   .fdy-drawer[open]::backdrop{opacity:0;}
 }
 
-/* Freeday — File upload (drop target + explicit per-file states).
+/* Freeday. File upload (drop target + explicit per-file states).
  * Enhanced by freeday-upload.js; states: idle · drag-over · uploading · done · error. */
 .fdy-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6);text-align:center;border:2px dashed var(--color-control-border);border-radius:var(--radius-lg);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
@@ -1281,7 +1281,7 @@ a { color: var(--color-primary); }
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
 .fdy-dropzone__hint{font-size:var(--text-xs);}
-/* Wide (horizontal) layout — icon beside the copy instead of stacked, for full-width
+/* Wide (horizontal) layout, icon beside the copy instead of stacked, for full-width
  * sections. Wrap the title + hint in .fdy-dropzone__text. */
 .fdy-dropzone--row{flex-direction:row;align-items:center;justify-content:center;text-align:left;gap:var(--space-4);}
 .fdy-dropzone__text{display:flex;flex-direction:column;gap:var(--space-1);}
@@ -1310,7 +1310,7 @@ a { color: var(--color-primary); }
 .fdy-file--error .fdy-file__icon{color:var(--color-danger);}
 .fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}
 
-/* Freeday — Filter bar (a consistent row of filters: search + selects + actions).
+/* Freeday. Filter bar (a consistent row of filters: search + selects + actions).
  * Solves the "ragged filter row": apps improvised flex rows with ad-hoc
  * flex/min-width, so grow fields ballooned while selects stayed tiny and no two
  * screens matched. Here every field snaps to a shared width rhythm; one field may
@@ -1319,7 +1319,7 @@ a { color: var(--color-primary); }
 .fdy-filterbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--space-3) var(--space-4);}
 /* Composed with a table toolbar (one element, both classes): the fields decide the alignment.
  * `.fdy-table-toolbar` sets align-items:center (right for bare buttons) at equal specificity, and
- * being later in the bundle it would otherwise win — floating labelled fields' neighbours out of line.
+ * being later in the bundle it would otherwise win, floating labelled fields' neighbours out of line.
  * This 2-class selector (0,2,0) settles it toward the filterbar's flex-end regardless of source order. */
 .fdy-table-toolbar.fdy-filterbar{align-items:flex-end;}
 /* Fields are direct children. Drop the standalone field's 22rem cap; default to the
@@ -1327,7 +1327,7 @@ a { color: var(--color-primary); }
 .fdy-filterbar>.fdy-field{max-width:none;flex:0 0 auto;width:12rem;}
 /* Controls fill their field's column (drop the standalone input-group/combo caps). */
 .fdy-filterbar>.fdy-field .fdy-input-group,.fdy-filterbar>.fdy-field .fdy-combo{max-width:none;width:100%;}
-/* Column-width rhythm — pick one per field so bars across the app line up. */
+/* Column-width rhythm, pick one per field so bars across the app line up. */
 .fdy-filterbar>.fdy-field--w-sm{width:9rem;}
 .fdy-filterbar>.fdy-field--w-lg{width:15rem;}
 .fdy-filterbar>.fdy-field--w-xl{width:18rem;}
@@ -1340,7 +1340,7 @@ a { color: var(--color-primary); }
  * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width, so the grow basis,
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
-/* A control that carries NO label of its own — a checkbox, a switch, a lone
+/* A control that carries NO label of its own, a checkbox, a switch, a lone
    button — in a bar whose `align-items:flex-end` exists to line up LABELLED
    fields. Flex-end puts such a control's bottom on the inputs' bottom, so a
    20px checkbox sits well below the 32px input's centre line and reads as
@@ -1358,16 +1358,16 @@ a { color: var(--color-primary); }
   .fdy-filterbar__actions{width:100%;margin-left:0;}
 }
 
-/* Freeday — Form grid (document/header fields laid out in aligned columns).
+/* Freeday. Form grid (document/header fields laid out in aligned columns).
  * The two-dimensional counterpart to the single-column .fdy-field stack and the
  * one-row .fdy-filterbar: related fields sit in columns that reflow to one on narrow
  * screens. Fields are the standard .fdy-field; a field with --full spans the whole row
- * (e.g. an address or note). Zero JS — pure layout over .fdy-field. */
+ * (e.g. an address or note). Zero JS, pure layout over .fdy-field. */
 .fdy-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:var(--space-4) var(--space-5);}
 .fdy-form-grid>.fdy-field{max-width:none;}
 .fdy-form-grid>.fdy-field--full{grid-column:1/-1;}
 
-/* Freeday — Input group (prefix/suffix addons, e.g. Rp / % / icon) */
+/* Freeday. Input group (prefix/suffix addons, e.g. Rp / % / icon) */
 .fdy-input-group{display:flex;align-items:stretch;height:var(--control-h);max-width:22rem;background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);overflow:hidden;transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input-group:hover{border-color:var(--color-text-muted);}
 .fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
@@ -1384,7 +1384,7 @@ a { color: var(--color-primary); }
    centers standalone (no base .fdy-input-group__addon required). */
 .fdy-input-group__addon--icon{display:inline-flex;align-items:center;background:transparent;border:0;padding:0 0 0 var(--space-3);color:var(--color-text-subtle);}
 .fdy-input-group__addon--icon svg{display:block;width:1rem;height:1rem;}
-/* The leading icon already provides the left inset — don't let the input add its full left padding on top. */
+/* The leading icon already provides the left inset, don't let the input add its full left padding on top. */
 .fdy-input-group__addon--icon + .fdy-input{padding-left:var(--space-2);}
 /* Trailing action button (e.g. choose-from-list magnifier), a real, focusable control. */
 .fdy-input-group__btn{display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--control-h);align-self:stretch;border:0;border-left:var(--bw) solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
@@ -1393,15 +1393,15 @@ a { color: var(--color-primary); }
 .fdy-input-group__btn svg{display:block;width:1.1rem;height:1.1rem;}
 /* Leading action button (the "−" of a number stepper): the divider belongs on the other side. */
 .fdy-input-group__btn:first-child{border-left:0;border-right:var(--bw) solid var(--color-border);}
-/* At a bound, or on a disabled/read-only field, the button must look as inert as it acts — same dim
+/* At a bound, or on a disabled/read-only field, the button must look as inert as it acts, same dim
    + not-allowed as .fdy-input:disabled. :hover still matches a disabled button, so it is withdrawn. */
 .fdy-input-group__btn:disabled{opacity:.5;cursor:not-allowed;}
 .fdy-input-group__btn:disabled:hover{background:var(--color-surface-2);color:var(--color-text-muted);}
-/* Error state must win over the neutralizing rules above — promote to the wrapper. */
+/* Error state must win over the neutralizing rules above, promote to the wrapper. */
 .fdy-input-group:has(.fdy-input--error),.fdy-input-group:has(.fdy-combo--error),.fdy-input-group:has([aria-invalid="true"]){border-color:var(--color-danger);}
 .fdy-input-group:has(.fdy-input--error):focus-within,.fdy-input-group:has(.fdy-combo--error):focus-within,.fdy-input-group:has([aria-invalid="true"]):focus-within{border-color:var(--color-danger);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
 
-/* Freeday — Field & Input */
+/* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
 /* A grouped field is legitimately a <fieldset> (it needs a <legend>), e.g. a radio/checkbox group.
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
@@ -1442,10 +1442,10 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
 .fdy-help--error{color:var(--color-danger);}
 
-/* Freeday — Keyboard key */
+/* Freeday. Keyboard key */
 .fdy-kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;padding:0 var(--space-2);font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text);background:var(--color-surface-2);border:var(--bw) solid var(--color-border-strong);border-bottom-width:2px;border-radius:var(--radius-sm);}
 
-/* Freeday — List: the FLAT row container.
+/* Freeday. List: the FLAT row container.
  *
  * USAGE.md §3 puts list rows among the surfaces that should be flat, but until now the only
  * container the kit shipped was .fdy-card, which carries --shadow-lift (a real 34px lift). A
@@ -1455,7 +1455,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
  *
  * Not to be confused with .fdy-list-reset (base.css), which only strips UA bullets/indent.
  * Works on <ul>/<ol> (list-style is reset here) or on plain <div>s. */
-/* position:relative — containing block for out-of-flow row content (see base.css). */
+/* position:relative, containing block for out-of-flow row content (see base.css). */
 .fdy-list{position:relative;list-style:none;margin:0;padding:0;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;}
 /* A row that hosts a stretched target has to be the anchor itself (#008 §1). Without this the
    overlay resolves against .fdy-list, which IS positioned, so EVERY row's target covers the whole
@@ -1467,7 +1467,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-list__row{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);min-width:0;}
 /* Divider between rows. Two shapes are supported and both are load-bearing: rows as direct children
  * of the list, and rows wrapped in <li> (the semantic shape, where the ADJACENT siblings are the
- * <li>s — a bare `.fdy-list__row + .fdy-list__row` silently matches nothing there). */
+ * <li>s, a bare `.fdy-list__row + .fdy-list__row` silently matches nothing there). */
 .fdy-list__row + .fdy-list__row,
 .fdy-list > * + * > .fdy-list__row{border-top:var(--bw) solid var(--color-border-muted);}
 /* A row that is itself the control: render it as <button>/<a> and the UA box is reset without
@@ -1489,7 +1489,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-list__aside{flex:none;display:flex;align-items:center;gap:var(--space-2);}
 /* Density: rows tighten with the rest of the kit (--space-* mid-range steps under compact). */
 
-/* Freeday — Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
+/* Freeday. Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
 .fdy-menu-wrap{position:relative;display:inline-flex;}
 .fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
 .fdy-menu[hidden]{display:none;}
@@ -1506,7 +1506,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-menu__sep{height:0;margin:var(--space-1) 0;border:0;border-top:var(--bw) solid var(--color-border-muted);}
 @media (prefers-reduced-motion:no-preference){.fdy-menu:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Split button — main action + attached menu toggle (caret) */
+/* Split button, main action + attached menu toggle (caret) */
 .fdy-btn-split{position:relative;display:inline-flex;border-radius:var(--radius-md);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 /* One control: the two halves must stay coplanar. Neutralize each segment's own
    lift + drop-shadow (they would misalign the seam / glow a single half); the
@@ -1521,7 +1521,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-btn-split__toggle:hover,.fdy-btn-split__toggle:focus-visible{z-index:1;}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
 
-/* Freeday — Modal (native <dialog>) */
+/* Freeday. Modal (native <dialog>) */
 .fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;flex-direction:column;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal--sm{width:min(24rem,calc(100vw - var(--space-8)));}
 .fdy-modal--md{width:min(32rem,calc(100vw - var(--space-8)));}
@@ -1544,7 +1544,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
   .fdy-modal[open]::backdrop{opacity:0;}
 }
 
-/* Freeday — Pagination */
+/* Freeday. Pagination */
 .fdy-pagination__list{display:flex;align-items:center;gap:var(--space-1);list-style:none;margin:0;padding:0;}
 .fdy-pagination__link{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 var(--space-2);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);background:transparent;border:var(--bw) solid transparent;text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-pagination__link:hover{background:var(--color-surface-2);border-color:var(--color-border);}
@@ -1553,7 +1553,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-pagination__link[aria-disabled="true"],.fdy-pagination__link:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
 .fdy-pagination__ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;color:var(--color-text-subtle);}
 
-/* Freeday — Progress */
+/* Freeday. Progress */
 .fdy-progress{height:.5rem;border-radius:var(--radius-full);background:var(--color-surface-3);overflow:hidden;}
 .fdy-progress__bar{height:100%;border-radius:inherit;background:var(--color-primary);transition:width var(--dur-base) var(--ease-standard);}
 .fdy-progress--indeterminate{position:relative;}
@@ -1561,7 +1561,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 @keyframes fdy-progress-indet{0%{margin-left:-40%;}100%{margin-left:100%;}}
 @media (prefers-reduced-motion:reduce){.fdy-progress--indeterminate .fdy-progress__bar{animation:none;width:100%;opacity:.5;}}
 
-/* Freeday — Rating (star rating). Interactive = native radio group (arrow keys, form-assoc);
+/* Freeday. Rating (star rating). Interactive = native radio group (arrow keys, form-assoc);
  * filled vs empty differ by fill-vs-outline (not colour alone). Enhanced by freeday-rating.js. */
 .fdy-rating{display:inline-flex;gap:var(--space-1);}
 .fdy-rating__star{display:inline-flex;line-height:0;cursor:pointer;}
@@ -1578,7 +1578,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-rating--error .fdy-rating__star svg{stroke:var(--color-danger);}
 .fdy-rating--sm .fdy-rating__star svg{width:1.1rem;height:1.1rem;}
 
-/* Freeday — Selection controls */
+/* Freeday. Selection controls */
 /* `flex:none` on every box, track and standalone checkbox is load-bearing, not tidiness.
    `.fdy-check` is an inline-flex row of [box, label], and a flex item with a WIDTH is still
    shrinkable, so as soon as the label wrapped to a second line the box gave up horizontal space
@@ -1611,7 +1611,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
 .fdy-checkbox:disabled{opacity:.5;cursor:not-allowed;}
 
-/* Freeday — Skeleton */
+/* Freeday. Skeleton */
 .fdy-skeleton{display:block;border-radius:var(--radius-sm);background:var(--color-surface-3);background-image:linear-gradient(90deg,transparent,color-mix(in srgb,var(--color-surface) 60%,transparent),transparent);background-size:200% 100%;background-repeat:no-repeat;animation:fdy-skeleton 1.4s ease-in-out infinite;}
 .fdy-skeleton--text{height:.8rem;margin:.3rem 0;}
 .fdy-skeleton--title{height:1.2rem;width:40%;}
@@ -1624,7 +1624,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 @keyframes fdy-skeleton{to{background-position:-200% 0;}}
 @media (prefers-reduced-motion:reduce){.fdy-skeleton{animation:none;}}
 
-/* Freeday — Slider (native <input type="range"> themed via accent-color: keeps native
+/* Freeday. Slider (native <input type="range"> themed via accent-color: keeps native
  * keyboard + ARIA, filled track and thumb come free). Optional value output + scale.
  * freeday-slider.js just mirrors the value into an <output for="…">. */
 .fdy-slider{width:100%;max-width:22rem;height:1.5rem;accent-color:var(--color-primary);cursor:pointer;}
@@ -1637,14 +1637,14 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-slider__value{font-family:var(--font-mono);font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-primary-strong);font-variant-numeric:tabular-nums;}
 .fdy-slider__scale{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--color-text-muted);font-variant-numeric:tabular-nums;}
 
-/* Freeday — Spinner */
+/* Freeday. Spinner */
 .fdy-spinner{display:inline-block;width:1.5rem;height:1.5rem;border:2.5px solid var(--color-border-strong);border-top-color:var(--color-primary);border-radius:var(--radius-full);animation:fdy-spin .7s linear infinite;}
 .fdy-spinner--sm{width:1rem;height:1rem;border-width:2px;}
 .fdy-spinner--lg{width:2.5rem;height:2.5rem;border-width:3px;}
 @keyframes fdy-spin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){.fdy-spinner{animation-duration:2s;}}
 
-/* Freeday — States (empty / loading / error placeholders) */
+/* Freeday. States (empty / loading / error placeholders) */
 .fdy-state{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-2);padding:var(--space-10) var(--space-6);}
 .fdy-state__icon{display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;color:var(--color-text-subtle);}
 .fdy-state__icon svg{width:100%;height:100%;}
@@ -1653,7 +1653,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-state__actions{margin-top:var(--space-2);display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center;}
 .fdy-state--danger .fdy-state__icon{color:var(--color-danger-strong);}
 
-/* Freeday — Stepper / Wizard (progress header + optional panels).
+/* Freeday. Stepper / Wizard (progress header + optional panels).
  * Enhanced by freeday-stepper.js for prev/next navigation. */
 .fdy-stepper{display:flex;list-style:none;margin:0;padding:0;}
 .fdy-step{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0;}
@@ -1680,8 +1680,8 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-step-panels{margin-top:var(--space-5);}
 .fdy-step-nav{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-5);}
 
-/* Freeday — Table */
-/* position:relative on every scroller/clipper — it makes the box the containing block for its own
+/* Freeday. Table */
+/* position:relative on every scroller/clipper, it makes the box the containing block for its own
    absolutely positioned content (.fdy-visually-hidden above all), which `overflow` alone does NOT
    clip. Without it a hidden label in a wide table scrolls the whole page. See base.css. */
 .fdy-table-wrap{position:relative;overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
@@ -1692,7 +1692,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table tbody tr:last-child td{border-bottom:0;}
 .fdy-table tbody tr{transition:background-color var(--dur-fast) var(--ease-standard);}
 .fdy-table tbody tr:hover{background:var(--color-surface-2);}
-/* Monospace data — ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
+/* Monospace data, ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
    or inline (`<span class="fdy-mono">`), not just numeric columns. */
 .fdy-mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
 /* Numeric cells are mono + right-aligned. Kept self-contained (not composed from .fdy-mono)
@@ -1719,7 +1719,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table__selcol{width:1px;white-space:nowrap;}
 .fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
 
-/* Frozen header row and/or first column — a rate matrix, a timetable, any grid read
+/* Frozen header row and/or first column, a rate matrix, a timetable, any grid read
    against two axes at once.
 
    This modifier exists because `position:sticky` alone is NOT enough. With
@@ -1747,7 +1747,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    widths, which CSS cannot sum, and hard-coding them here would only work for
    tables whose columns are all the same width. */
 .fdy-table--sticky .fdy-table__freeze{position:sticky;left:var(--fdy-freeze-left,0);}
-/* A frozen body cell slides OVER the data, so it must be OPAQUE — otherwise the
+/* A frozen body cell slides OVER the data, so it must be OPAQUE, otherwise the
    cells beneath show through it. A `th` already carries the header tint from the
    base rule, and that tint is usually the whole point: it is what marks a column
    as identity rather than data. So only a `td` is given a surface here. A table
@@ -1787,7 +1787,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table-footer__size{display:inline-flex;align-items:center;gap:var(--space-2);margin-left:auto;font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-table-footer__size .fdy-combo{width:5.5rem;}
 
-/* Column filter — funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
+/* Column filter, funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
 .fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
@@ -1804,7 +1804,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-filter__range .fdy-input{width:6rem;}
 .fdy-filter__foot{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-3);}
 
-/* Bulk-action bar — appears above the table body once rows are selected */
+/* Bulk-action bar, appears above the table body once rows are selected */
 .fdy-table-bulkbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4);background:var(--color-primary-soft);border-bottom:var(--bw) solid var(--color-border);color:var(--color-primary-strong);font-size:var(--text-sm);}
 .fdy-table-bulkbar[hidden]{display:none;}
 .fdy-table-bulkbar__count{font-weight:var(--weight-semibold);white-space:nowrap;}
@@ -1818,8 +1818,8 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    know which of its columns hold controls. */
 .fdy-table td>.fdy-input,.fdy-table td>.fdy-textarea,.fdy-table td>.fdy-combo,.fdy-table td>.fdy-input-group,.fdy-table td>.fdy-datepicker,.fdy-table td>.fdy-timepicker{min-width:7rem;}
 
-/* Freeday — Tabs (WAI-ARIA APG) */
-/* position:relative — containing block for out-of-flow content in the tabs (see base.css). */
+/* Freeday. Tabs (WAI-ARIA APG) */
+/* position:relative, containing block for out-of-flow content in the tabs (see base.css). */
 .fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
@@ -1838,7 +1838,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */
 @media (prefers-reduced-motion:no-preference){.fdy-tabs__panel:not([hidden]){animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
-/* Freeday — Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
+/* Freeday. Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
 .fdy-timeline{list-style:none;margin:0;padding:0;}
 .fdy-timeline__item{position:relative;padding:0 0 var(--space-5) var(--space-6);border-left:2px solid var(--color-border);}
 .fdy-timeline__item:last-child{border-left-color:transparent;padding-bottom:0;}
@@ -1851,7 +1851,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-timeline__title{margin:0;font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-text);}
 .fdy-timeline__text{margin:var(--space-1) 0 0;font-size:var(--text-sm);color:var(--color-text-muted);line-height:var(--leading-normal);}
 
-/* Freeday — Time picker (input-styled trigger + scrollable time-list popover).
+/* Freeday. Time picker (input-styled trigger + scrollable time-list popover).
  * Built by freeday-timepicker.js from an empty [data-fdy-timepicker] wrapper.
  * Trigger visual mirrors the date picker for a consistent control family. */
 .fdy-timepicker{position:relative;display:inline-block;width:100%;max-width:11rem;}
@@ -1875,7 +1875,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-timepicker__opt[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 @media (prefers-reduced-motion:no-preference){.fdy-timepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
-/* Freeday — Toast (transient notification) */
+/* Freeday. Toast (transient notification) */
 /* The region is a POPOVER, not merely a high z-index.
    `.fdy-modal` is a native <dialog> opened with showModal(), which puts it in the TOP LAYER — a
    layer above the whole z-index universe, so no number here could ever beat it. A toast raised by
@@ -1905,14 +1905,14 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 @media (prefers-reduced-motion:no-preference){.fdy-toast{animation:fdy-toast-in var(--dur-base) var(--ease-spring);}}
 @keyframes fdy-toast-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
 
-/* Freeday — Tooltip (CSS-only, hover/focus) */
+/* Freeday. Tooltip (CSS-only, hover/focus) */
 .fdy-tooltip-wrap{position:relative;display:inline-flex;}
 .fdy-tooltip{position:absolute;bottom:calc(100% + var(--space-2));left:50%;z-index:150;max-width:16rem;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:var(--weight-medium);line-height:var(--leading-snug);color:var(--color-inverse-text);background:var(--color-inverse-surface);box-shadow:var(--shadow-2);opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(4px);transition:opacity var(--dur-fast) var(--ease-standard),transform var(--dur-fast) var(--ease-standard);}
 .fdy-tooltip::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:.3rem solid transparent;border-top-color:var(--color-inverse-surface);}
 .fdy-tooltip-wrap:hover .fdy-tooltip,.fdy-tooltip-wrap:focus-within .fdy-tooltip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);}
 @media (prefers-reduced-motion:reduce){.fdy-tooltip{transition:none;transform:translateX(-50%);}}
 
-/* Freeday — Tree view (hierarchy via nested native <details>: keyboard-toggle, zero-JS).
+/* Freeday. Tree view (hierarchy via nested native <details>: keyboard-toggle, zero-JS).
  * Branches expand/collapse; leaves are plain rows. Chevron + optional folder/file icons. */
 .fdy-tree{list-style:none;margin:0;padding:0;font-size:var(--text-sm);}
 .fdy-tree ul{list-style:none;margin:0;padding-left:var(--space-4);}
@@ -1929,7 +1929,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Disabled row (branch summary or leaf): dimmed, no hover, not interactive. */
 .fdy-tree__leaf[aria-disabled="true"],.fdy-tree__branch[aria-disabled="true"] > summary{opacity:.5;cursor:not-allowed;pointer-events:none;}
 
-/* Checkbox variant — a selectable tree (cascading parent/child via freeday-tree.js).
+/* Checkbox variant, a selectable tree (cascading parent/child via freeday-tree.js).
  * A native <input class="fdy-checkbox"> sits at the start of every row; a partially
  * selected branch shows the native :indeterminate dash. The checkbox stops click
  * propagation, so toggling selection never expands/collapses the branch. */

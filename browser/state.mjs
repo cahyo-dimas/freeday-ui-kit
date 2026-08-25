@@ -1,11 +1,11 @@
-/* Browser regression specs — selected/pressed state and nav orientation (pure CSS).
+/* Browser regression specs, selected/pressed state and nav orientation (pure CSS).
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
  * These guard CASCADE outcomes, which a string test cannot see. The bug that prompted the file:
  * a single shared `.fdy-btn[aria-pressed="true"]` rule blanked the ghost variant's background,
  * because `background:` with a gradient is a background-IMAGE and the shorthand resets
- * background-color to transparent — at equal specificity, whichever rule came last won. The CSS
+ * background-color to transparent, at equal specificity, whichever rule came last won. The CSS
  * read correctly in every file; only a real engine showed the ghost segment losing its fill.
  */
 import test from 'node:test';

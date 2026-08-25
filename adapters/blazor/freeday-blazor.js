@@ -1,4 +1,4 @@
-/* Freeday — Blazor JS interop (classic IIFE; registers window.FreedayBlazor).
+/* Freeday. Blazor JS interop (classic IIFE; registers window.FreedayBlazor).
  * Consistent with the other Freeday enhancers (plain <script>, no ES module),
  * so it serves from any static host without module-MIME strictness.
  *
@@ -56,7 +56,7 @@
   }
 
   // Subscribe to a daterange's child datepicker changes, forwarding {value, role} so a Blazor
-  // wrapper can bind From/To separately — both children emit the same fdy-datepicker-change, so
+  // wrapper can bind From/To separately, both children emit the same fdy-datepicker-change, so
   // the originating child's data-role is what tells them apart.
   function dateRangeOn(element, dotNetRef, methodName) {
     var handler = function (e) {
@@ -99,7 +99,7 @@
 
   // Passthrough to the Freeday toast API.
   function toast(options) {
-    /* The enhancer's own default is Indonesian — deliberate for the raw path, wrong for a Blazor
+    /* The enhancer's own default is Indonesian, deliberate for the raw path, wrong for a Blazor
      * app, which COMPONENTS.md promises is English throughout. Defaulted here so the promise is
      * kept without changing what a hand-written page gets. */
     options = options || {};
@@ -140,7 +140,7 @@
       if (dismissible) dotNetRef.invokeMethodAsync(dismissMethod);
     };
     var onClick = function (e) {
-      // The ::backdrop is not a separate element — a click whose target is the dialog box
+      // The ::backdrop is not a separate element, a click whose target is the dialog box
       // itself (not its content) is a backdrop click.
       if (dismissible && e.target === dialog) dotNetRef.invokeMethodAsync(dismissMethod);
     };

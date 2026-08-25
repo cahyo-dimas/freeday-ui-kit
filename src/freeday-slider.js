@@ -1,7 +1,7 @@
-/* Freeday — slider value binding (optional, zero-dependency).
+/* Freeday, slider value binding (optional, zero-dependency).
  * Mirrors a [data-fdy-slider] range input's value into <output for="inputId">, with an
  * optional prefix/suffix on the output (data-fdy-prefix / data-fdy-suffix). The range itself
- * is a native input — keyboard and ARIA are built in; this only updates the visible readout.
+ * is a native input, keyboard and ARIA are built in; this only updates the visible readout.
  */
 (function () {
   'use strict';

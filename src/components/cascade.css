@@ -1,7 +1,7 @@
-/* Freeday — Cascade select (hierarchical drill-down picker).
+/* Freeday. Cascade select (hierarchical drill-down picker).
  * Built by freeday-cascade.js from a [data-fdy-cascade] wrapper whose hidden
  * nested <ul> is the data model: a <li> with a child <ul> is a branch, one
- * without is a selectable leaf. The popover shows one level at a time — branches
+ * without is a selectable leaf. The popover shows one level at a time, branches
  * drill in, a back control ascends, a leaf selects (value = full path).
  * Trigger visual matches the combo / date / time control family. */
 .fdy-cascade{position:relative;display:inline-block;width:100%;max-width:22rem;}

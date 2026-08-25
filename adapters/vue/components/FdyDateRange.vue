@@ -21,7 +21,7 @@ const props = defineProps<{
   max?: string;
   locale?: string;
   disabled?: boolean;
-  /** Locked/view mode for both pickers — focusable, values shown, but can't be opened or changed. */
+  /** Locked/view mode for both pickers, focusable, values shown, but can't be opened or changed. */
   readonly?: boolean;
   invalid?: boolean;
   describedby?: string;

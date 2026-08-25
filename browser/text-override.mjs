@@ -1,9 +1,9 @@
-/* Browser regression spec — the enhancer string contract (#016).
+/* Browser regression spec, the enhancer string contract (#016).
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
  * 1.39.0 moved every user-facing string in nine enhancers into a TEXT table read through
- * textOf(). The node guard proves the literals SIT there; it cannot prove the wiring runs — it
+ * textOf(). The node guard proves the literals SIT there; it cannot prove the wiring runs, it
  * reads the source as text. Of the nine files, only upload had any browser coverage, so eight had
  * their DOM-writing rewired with nothing executing it: a `zone` out of scope or a getAttribute on
  * a non-element would throw at init and every existing test would still pass.
@@ -45,13 +45,13 @@ test('every enhancer renders its default and honours data-fdy-text-*', { skip },
       assert.match(over, overRe, `${name}: data-fdy-text-* must win, got "${over}"`);
     }
 
-    /* Toast takes its override through the options bag, not an attribute — it has no root element
+    /* Toast takes its override through the options bag, not an attribute, it has no root element
      * to carry one. This is the string FreedayBlazor.toast defaults to 'Close'. */
     const t = JSON.parse(await p.evalJS('JSON.stringify(window.toastLabels())'));
     assert.equal(t.def, 'Close', 'the raw toast keeps its documented default');
     assert.equal(t.override, 'Close', 'toast({ closeLabel }) must reach the close button');
 
-    /* A camelCase key can only be written kebab in markup — HTML lowercases attribute names, so
+    /* A camelCase key can only be written kebab in markup. HTML lowercases attribute names, so
      * `data-fdy-text-filterText` and `data-fdy-text-filter-text` are DIFFERENT attributes and the
      * one an author reaches for was the one the enhancer did not read. It failed silently, which is
      * the only way an override can fail. */

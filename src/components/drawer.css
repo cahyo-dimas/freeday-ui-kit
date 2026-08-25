@@ -1,4 +1,4 @@
-/* Freeday — Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
+/* Freeday. Drawer (temporary side panel on native <dialog>: focus-trap / Esc /
  * backdrop / return-focus are free). Anchors left (default) or right.
  * Enhanced by freeday-drawer.js (open trigger + backdrop-click close). */
 /* display is gated behind [open] so the native <dialog> stays hidden until opened.

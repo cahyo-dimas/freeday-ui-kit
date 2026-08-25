@@ -1,8 +1,8 @@
-/* Browser regression spec — a chart's author label is the WHOLE text alternative (#047).
+/* Browser regression spec, a chart's author label is the WHOLE text alternative (#047).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * COMPONENTS.md used to explain this with the ARIA spec: role="img" is Children Presentational, so
- * the rendered legend/values "are not exposed". Measured, that was false — Chrome keeps the whole
+ * the rendered legend/values "are not exposed". Measured, that was false. Chrome keeps the whole
  * subtree live, and only the AT's habit of not descending into a named image saved the advice. The
  * renderer now hides those children itself, and this is what keeps the sentence true.
  *

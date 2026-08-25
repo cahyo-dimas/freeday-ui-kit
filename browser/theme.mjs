@@ -1,10 +1,10 @@
-/* Browser regression specs — theme scoping (pure CSS, no enhancer).
+/* Browser regression specs, theme scoping (pure CSS, no enhancer).
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
  * `data-theme` is not root-scoped: put it on any ancestor and that subtree re-themes, because the
  * semantic tokens are inheriting custom properties. test/build.test.mjs asserts the SELECTOR shape;
- * this asserts the BEHAVIOUR that shape is for — a component inside an inverted panel picks the
+ * this asserts the BEHAVIOUR that shape is for, a component inside an inverted panel picks the
  * inverted tokens up on its own, with no per-element re-colouring. `.fdy-title-page` is the probe
  * on purpose: it sets `color: var(--color-text)` explicitly, so it is exactly the element that
  * stayed near-black on near-black when a consumer inverted a panel by hand.
@@ -52,7 +52,7 @@ test('data-theme re-themes a subtree, and a nested island wins back', { skip }, 
 });
 
 /* Density is a two-way switch now (#002). Custom properties only inherit downhill, so an app that is
- * compact at the root could not opt a shared region back out — a header carried between two products
+ * compact at the root could not opt a shared region back out, a header carried between two products
  * came out 4px narrower on one of them, from --space-4 and --control-h alone. Measured rather than
  * asserted from the CSS: the whole point is what the box ends up being. */
 test('a comfortable island inside a compact root really relaxes', { skip }, async () => {

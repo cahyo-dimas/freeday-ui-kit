@@ -1,4 +1,4 @@
-/* Freeday — Filter bar (a consistent row of filters: search + selects + actions).
+/* Freeday. Filter bar (a consistent row of filters: search + selects + actions).
  * Solves the "ragged filter row": apps improvised flex rows with ad-hoc
  * flex/min-width, so grow fields ballooned while selects stayed tiny and no two
  * screens matched. Here every field snaps to a shared width rhythm; one field may
@@ -7,7 +7,7 @@
 .fdy-filterbar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--space-3) var(--space-4);}
 /* Composed with a table toolbar (one element, both classes): the fields decide the alignment.
  * `.fdy-table-toolbar` sets align-items:center (right for bare buttons) at equal specificity, and
- * being later in the bundle it would otherwise win — floating labelled fields' neighbours out of line.
+ * being later in the bundle it would otherwise win, floating labelled fields' neighbours out of line.
  * This 2-class selector (0,2,0) settles it toward the filterbar's flex-end regardless of source order. */
 .fdy-table-toolbar.fdy-filterbar{align-items:flex-end;}
 /* Fields are direct children. Drop the standalone field's 22rem cap; default to the
@@ -15,7 +15,7 @@
 .fdy-filterbar>.fdy-field{max-width:none;flex:0 0 auto;width:12rem;}
 /* Controls fill their field's column (drop the standalone input-group/combo caps). */
 .fdy-filterbar>.fdy-field .fdy-input-group,.fdy-filterbar>.fdy-field .fdy-combo{max-width:none;width:100%;}
-/* Column-width rhythm — pick one per field so bars across the app line up. */
+/* Column-width rhythm, pick one per field so bars across the app line up. */
 .fdy-filterbar>.fdy-field--w-sm{width:9rem;}
 .fdy-filterbar>.fdy-field--w-lg{width:15rem;}
 .fdy-filterbar>.fdy-field--w-xl{width:18rem;}
@@ -28,7 +28,7 @@
  * `flex:1 1 16rem` reserves 16rem for line-breaking), NOT its rendered width, so the grow basis,
  * not the visible width, decides the wrap point. Margins can't keep the actions off a lonely wrapped
  * row; to avoid stranded actions, tune the --w-grow basis or drop a field so the bar fits one row. */
-/* A control that carries NO label of its own — a checkbox, a switch, a lone
+/* A control that carries NO label of its own, a checkbox, a switch, a lone
    button — in a bar whose `align-items:flex-end` exists to line up LABELLED
    fields. Flex-end puts such a control's bottom on the inputs' bottom, so a
    20px checkbox sits well below the 32px input's centre line and reads as

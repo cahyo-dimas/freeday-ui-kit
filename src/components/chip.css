@@ -1,7 +1,7 @@
-/* Freeday — Chip (tag / removable filter) */
+/* Freeday. Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}
 .fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 22%,transparent);}
-/* Categorical tone chips — non-semantic category tags / legend swatches, from the general
+/* Categorical tone chips, non-semantic category tags / legend swatches, from the general
  * --tone-1..8 palette. Same validated AA formula as .fdy-avatar--tone-* (text >=4.5:1 both themes,
  * gated by test/contrast.test.mjs). */
 .fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:color-mix(in srgb,var(--_fdy-chip-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-chip-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-chip-tone) 30%,var(--color-border));}

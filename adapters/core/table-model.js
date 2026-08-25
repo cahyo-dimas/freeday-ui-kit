@@ -1,7 +1,7 @@
-// Freeday — framework-agnostic table model (pure functions, zero dependencies).
+// Freeday, framework-agnostic table model (pure functions, zero dependencies).
 //
 // The sort / filter / paginate logic shared by adapters/vue/components/FdyTable.vue and
-// adapters/react/components/FdyTable.tsx. Kept here — plain ESM with a .d.ts sidecar, so the
+// adapters/react/components/FdyTable.tsx. Kept here, plain ESM with a .d.ts sidecar, so the
 // two adapters can't drift and so the logic is unit-testable under `node --test`
 // (test/table-model.test.mjs) without a framework runtime. Every function is pure: inputs are
 // never mutated (rows are sliced before sorting), so it is safe to call on each render.
@@ -37,12 +37,12 @@ function localDay(d) {
  * @param {unknown} v @returns {string} ISO calendar day (yyyy-mm-dd), lexicographically comparable
  *
  * Two bugs lived here, both of which let a column SORT by date correctly and
- * FILTER by date wrongly — the worst pairing, because a working sort is what
+ * FILTER by date wrongly, the worst pairing, because a working sort is what
  * persuades you the header understands dates.
  *
  * 1. It sliced instead of parsing, while `toTime` (which the date SORT uses)
- *    parses. A column whose `value` returns a formatted date — the normal way
- *    to render one — gave `"18 Mar 2024"`, sliced to `"18 Mar 202"`, and
+ *    parses. A column whose `value` returns a formatted date, the normal way
+ *    to render one, gave `"18 Mar 2024"`, sliced to `"18 Mar 202"`, and
  *    compared as text against `"2024-03-18"`: every row failed, silently.
  * 2. A `Date` went through `toISOString`, which is UTC. At UTC+7 a date picked
  *    as the 18th is `2024-03-17T17:00Z`, so filtering from the 18th dropped it.
@@ -155,7 +155,7 @@ export function paginate(rows, pageIndex, pageSize) {
   return rows.slice(start, start + pageSize);
 }
 
-/** Distinct non-empty cell texts for a column, naturally sorted — the source for an enum filter. */
+/** Distinct non-empty cell texts for a column, naturally sorted, the source for an enum filter. */
 export function distinctValues(rows, column) {
   const seen = new Set();
   const out = [];

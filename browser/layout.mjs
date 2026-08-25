@@ -1,10 +1,10 @@
-/* Browser regression specs — layout containment (pure CSS, no enhancer).
+/* Browser regression specs, layout containment (pure CSS, no enhancer).
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
  * Guards the escape described in base.css: `.fdy-visually-hidden` is position:absolute, so with no
  * positioned ancestor its containing block is the document, and `overflow` on the scroller clips
- * nothing. Ten hidden labels in one wide table then drag the page sideways — invisible in the DOM,
+ * nothing. Ten hidden labels in one wide table then drag the page sideways, invisible in the DOM,
  * unaffected by `overflow-x:hidden` anywhere, and only measurable in a real layout engine. That is
  * why this lives here and not in test/ (test/css.test.mjs guards the CSS shape; this guards the
  * actual behaviour).

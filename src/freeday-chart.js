@@ -1,4 +1,4 @@
-/* Freeday — chart renderer (optional, zero-dependency, no external chart lib).
+/* Freeday, chart renderer (optional, zero-dependency, no external chart lib).
  * Renders sparkline / bar / line / area / donut into an element from data attributes.
  * Auto-inits [data-fdy-chart] once; call FreedayChart.update(el) to re-render after the
  * data attributes change (used by the freeday/vue <FdyChart> wrapper for reactive data).
@@ -6,14 +6,14 @@
  * Single-series colour (sparkline / simple bar / single line) via data-fdy-color references a
  * semantic token by name (primary, accent, success, warning, danger, info). Multi-series
  * defaults draw from the validated categorical --chart-1..8 palette in fixed order (never
- * cycled, 8-series cap); pass data-fdy-colors to override — a name is a semantic token
+ * cycled, 8-series cap); pass data-fdy-colors to override, a name is a semantic token
  * (var(--color-<name>)) OR a slot "chart-1".."chart-8" (var(--chart-N)) to pin a series to the
  * validated palette. Both data-fdy-color and data-fdy-colors accept the chart-N form.
  * Cartesian charts (line/area, multi-series/stacked bar) draw themed axes from --chart-grid /
  * --chart-tick and format ticks + tooltips via data-fdy-format (number|percent|currency). Their
  * viewBox is sized to the measured plot (1 user unit = 1 CSS pixel) and repainted from a
  * ResizeObserver, so axis type stays in real pixels and is set in CSS via --fdy-chart-tick-size.
- * Charts are an enhancement — put a table/text fallback inside the element and it will be
+ * Charts are an enhancement, put a table/text fallback inside the element and it will be
  * replaced on render; give the element role="img" + aria-label.
  *
  *  Sparkline: <span data-fdy-chart="sparkline" data-values="4,6,5,8,7,10" data-fdy-color="primary">
@@ -225,7 +225,7 @@
     // Lay the chrome out first so the plot can be measured, then size the viewBox to it in CSS
     // pixels: one user unit is one pixel, so font-size / r / stroke-width mean what they say at
     // every container width. (A fixed 320x180 viewBox stretched by CSS multiplied every declared
-    // size by plotWidth/320 instead — a 9px axis label rendered ~39px on a 1728px viewport.)
+    // size by plotWidth/320 instead, a 9px axis label rendered ~39px on a 1728px viewport.)
     var legendMode = el.getAttribute('data-fdy-legend') || 'auto';
     var showLegend = legendMode !== 'none' && (series.length >= 2 || legendMode === 'always');
     el.classList.add('fdy-chart-xy');
@@ -246,7 +246,7 @@
     el.appendChild(plot);
 
     // Measured while empty: .fdy-chart-xy__plot carries its own width / aspect-ratio / min-height,
-    // so the box is already final. A detached or display:none chart measures 0 — fall back to the
+    // so the box is already final. A detached or display:none chart measures 0, fall back to the
     // legacy box and let the ResizeObserver repaint it once it is actually laid out.
     var box = plot.getBoundingClientRect();
     var W = Math.round(box.width) || 320, H = Math.round(box.height) || 180;
@@ -290,7 +290,7 @@
 
     // x category labels with autoskip. Labels are author-supplied, so estimate the widest one instead
     // of assuming a fixed 40px slot; keep every step-th plus the last, then drop any kept label that
-    // would collide with the one before it — including the forced last one (a fraction-of-a-slot
+    // would collide with the one before it, including the forced last one (a fraction-of-a-slot
     // overlap happens when n-1 lands next to the last kept multiple of step, e.g. n=24 at most widths).
     var widest = 0;
     for (var wi = 0; wi < n; wi++) widest = Math.max(widest, String(labels[wi] || ('#' + (wi + 1))).length * charW);
@@ -301,7 +301,7 @@
     for (var xi = 0; xi < n; xi++) {
       if (xi % step === 0 || xi === n - 1) kept.push(xi);
     }
-    // The last label is worth forcing, but not on top of its neighbour — drop the penultimate one.
+    // The last label is worth forcing, but not on top of its neighbour, drop the penultimate one.
     if (kept.length >= 2 && xPos(kept[kept.length - 1]) - xPos(kept[kept.length - 2]) < minGap) {
       kept.splice(kept.length - 2, 1);
     }
@@ -438,13 +438,13 @@
       legend.appendChild(li);
     });
     el.appendChild(ring);
-    // Honour data-fdy-legend for the donut too — a caller may supply its own richer legend. 'auto'
+    // Honour data-fdy-legend for the donut too, a caller may supply its own richer legend. 'auto'
     // keeps today's behaviour (a donut is unreadable without labels, so it shows); 'none' suppresses it.
     if ((el.getAttribute('data-fdy-legend') || 'auto') !== 'none') el.appendChild(legend);
     ensureImg(el);
   }
 
-  // Full (re-)render from current data attributes. Idempotent — safe to call repeatedly.
+  // Full (re-)render from current data attributes. Idempotent, safe to call repeatedly.
   function renderChart(el) {
     var type = el.getAttribute('data-fdy-chart');
     if (type === 'sparkline') renderSparkline(el);

@@ -1,4 +1,4 @@
-/* Freeday — browser interaction harness (dev-only, zero runtime dependency).
+/* Freeday, browser interaction harness (dev-only, zero runtime dependency).
  *
  * Drives a real headless Chrome over the DevTools Protocol to guard the class of
  * focus / blur / pointer bugs that `node --test` (jsdom-less, no layout) cannot see —
@@ -7,7 +7,7 @@
  * are mandatory: a synthetic `el.click()` skips the real focusout that hides those bugs
  * (see [[verify-interactive-ui-with-real-mouse]]).
  *
- * NOT part of the default `node --test` gate or CI — it needs a Chrome binary and lives
+ * NOT part of the default `node --test` gate or CI, it needs a Chrome binary and lives
  * outside test/ on purpose. Run with `npm run test:browser`; it auto-skips when no Chrome
  * is found (set CHROME_BIN to point at one). Uses the isolated `chrome-headless-shell`
  * from the puppeteer cache because the machine's regular Chrome, when running, refuses to
@@ -197,7 +197,7 @@ export async function withPage(fileUrl, fn) {
       await clickAt(c.x, c.y);
     };
 
-    /* A real key, not a synthetic KeyboardEvent — only a trusted one moves focus, which is the whole
+    /* A real key, not a synthetic KeyboardEvent, only a trusted one moves focus, which is the whole
        point when the claim under test is about tab order. */
     /* A key without its virtual-key code is delivered to the page but not acted on by the browser:
        Escape with vkCode 0 reaches a keydown listener yet never closes a native <dialog>, so a
@@ -212,7 +212,7 @@ export async function withPage(fileUrl, fn) {
       await sleep(40);
     };
 
-    /* The ACCESSIBLE NAME as the browser computes it — not textContent. CSS generated content never
+    /* The ACCESSIBLE NAME as the browser computes it, not textContent. CSS generated content never
        appears in textContent, so a tick painted through ::after is invisible to a DOM-level assert
        while a screen reader still reads it. Two kit features now hinge on that difference
        (.fdy-label--required and the combo's selected tick), so the guard has to ask the engine. */
@@ -242,7 +242,7 @@ export async function withPage(fileUrl, fn) {
       await sleep(120); // let the media query settle before anything is measured
     };
 
-    /* Every AX node UNDER an element, ignored ones included — the only instrument that can tell
+    /* Every AX node UNDER an element, ignored ones included, the only instrument that can tell
        "the spec says this subtree is presentational" apart from "the browser actually prunes it".
        role="img" is Children Presentational per ARIA, but a UA is free to keep the nodes and leave
        the skipping to the AT, and a source read cannot see which one you got. */
@@ -268,7 +268,7 @@ export async function withPage(fileUrl, fn) {
      * The only honest way to ask "is this on top?" once a modal <dialog> is involved. The obvious
      * instrument, elementFromPoint, answers a different question: a modal dialog makes the rest of
      * the document inert, so a hit test anywhere outside it returns the dialog whatever the paint
-     * order is — it reports the dialog as "on top" of an element that is plainly visible above it.
+     * order is, it reports the dialog as "on top" of an element that is plainly visible above it.
      * Compositing cannot be argued with.
      *
      * Clipped to 1x1 so the PNG is one pixel: with no left or upper neighbour every PNG filter
@@ -331,7 +331,7 @@ const vueSfcPlugin = {
 
 /**
  * Bundle the Vue/React mount entries (framework runtime inlined) into self-contained
- * IIFEs the fixtures load over file:// — no import maps, no dev server. Written to
+ * IIFEs the fixtures load over file://, no import maps, no dev server. Written to
  * browser/.build/ (gitignored). Call once before the adapter specs run.
  */
 export async function buildEntries() {

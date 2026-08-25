@@ -1,4 +1,4 @@
-/* Browser regression spec — an input group is the same height as the controls beside it (#018).
+/* Browser regression spec, an input group is the same height as the controls beside it (#018).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * This CANNOT be asserted from the stylesheet, which is why it reached three releases: the CSS

@@ -1,4 +1,4 @@
-/* Browser regression spec — the upload row's rest state.
+/* Browser regression spec, the upload row's rest state.
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
@@ -29,7 +29,7 @@ test('a dropped file rests until the consumer starts the transfer', { skip }, as
     assert.equal(rest.progressbar, false, 'a file that has only been chosen must not show a progress bar');
     assert.doesNotMatch(rest.sub, /·/, `the rest state states the size and claims nothing else, got "${rest.sub}"`);
 
-    // The consumer drives it from there — the states must actually chain.
+    // The consumer drives it from there, the states must actually chain.
     await p.evalJS('window.lastRow.uploading()');
     assert.equal(JSON.parse(await p.evalJS('JSON.stringify(window.rowState("listA"))')).progressbar, true,
       'row.uploading() must bring the progress bar back');
@@ -38,7 +38,7 @@ test('a dropped file rests until the consumer starts the transfer', { skip }, as
     assert.match(done.cls, /fdy-file--success/, 'row.done() marks success');
     assert.equal(done.progressbar, false, 'row.done() drops the bar');
 
-    // --- B: the demo path is unchanged — the kit IS transferring, so it may say so.
+    // --- B: the demo path is unchanged, the kit IS transferring, so it may say so.
     await p.evalJS('window.dropOn("dzB", "demo.txt", 2048)');
     assert.equal(JSON.parse(await p.evalJS('JSON.stringify(window.rowState("listB"))')).progressbar, true,
       'data-fdy-upload-simulate still shows a transfer immediately');
@@ -109,7 +109,7 @@ test('removal fires on the dropzone, once, in both list layouts', { skip }, asyn
     await p.waitFor('document.readyState === "complete" && window.FreedayUpload');
     await p.evalJS('window.watchZone("dzA"); window.watchZone("dzD");');
 
-    /* A: the documented layout — the list is a SIBLING of the dropzone, so a row event could never
+    /* A: the documented layout, where the list is a SIBLING of the dropzone, so a row event could never
        bubble through the zone. This is the case that silently dropped every removal. */
     await p.evalJS('window.dropOn("dzA", "report.txt", 1234)');
     assert.equal(await p.evalJS('window.clickRemove("listA")'), 'clicked');
@@ -124,7 +124,7 @@ test('removal fires on the dropzone, once, in both list layouts', { skip }, asyn
     zoneHits = JSON.parse(await p.evalJS('JSON.stringify(window.removals.zone)'));
     assert.deepEqual(zoneHits, ['dzA', 'dzD'], 'still exactly one removal per click when the list is nested');
 
-    // And a consumer delegating further up sees one per removal too — the pair stays symmetric.
+    // And a consumer delegating further up sees one per removal too, the pair stays symmetric.
     const docHits = JSON.parse(await p.evalJS('JSON.stringify(window.removals.doc)'));
     assert.deepEqual(docHits, ['dzA', 'dzD'],
       `delegation on an ancestor must not see duplicates, got ${JSON.stringify(docHits)}`);

@@ -1,7 +1,7 @@
-/* Freeday — number field enhancer (optional, zero-dependency).
+/* Freeday, number field enhancer (optional, zero-dependency).
  * Gives a native <input type="number"> its increment/decrement affordance back, on the kit's terms:
  * .fdy-input hides the user agent's own spin buttons (unthemeable OS widgets), so this puts two real
- * buttons in an .fdy-input-group instead. No new block — the group already owns the shared border,
+ * buttons in an .fdy-input-group instead. No new block, the group already owns the shared border,
  * :focus-within ring and error promotion.
  *
  * Markup contract:
@@ -67,7 +67,7 @@
         if (frozen()) return;
         if (Number(btn.getAttribute('data-fdy-number-step')) < 0) input.stepDown();
         else input.stepUp();
-        /* The value changed without the user typing, so say so the way the platform does — frameworks
+        /* The value changed without the user typing, so say so the way the platform does, frameworks
            listen to these, not to a kit-specific event. */
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));

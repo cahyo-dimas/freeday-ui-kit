@@ -9,7 +9,7 @@ import { computed, nextTick, onBeforeUnmount, ref, useId, type ComputedRef, type
 // that: a real `v-model:Row|null` over a native <dialog> whose rows come from an async
 // `fetchPage(query, page)`. It re-implements the enhancer's open/close + search + dense
 // sticky-header results + single-commit-on-click + keyboard, and adds the pieces a server
-// picker needs — loading/empty/error states, retry, pagination, an out-of-order guard, and
+// picker needs, loading/empty/error states, retry, pagination, an out-of-order guard, and
 // an optional in-memory cache. The enhancer is NOT mounted here (it would fight Vue's DOM).
 
 interface CflColumn {
@@ -23,7 +23,7 @@ interface CflPage {
 }
 
 const props = defineProps<{
-  /** Single: `Row | null`. With `multiple`, an array — `Row[] | null`, where null and [] both mean
+  /** Single: `Row | null`. With `multiple`, an array, `Row[] | null`, where null and [] both mean
    *  nothing picked. The enhancer has had `data-fdy-cfl-multiple` all along; this is the typed
    *  wrappers catching up (#019). */
   modelValue: Row | Row[] | null;
@@ -31,7 +31,7 @@ const props = defineProps<{
   columns: ReadonlyArray<CflColumn>;
   display: (row: Row) => string;
   rowKey: (row: Row) => string;
-  /** Advisory only — the caller's `fetchPage` owns paging; kept for API documentation. */
+  /** Advisory only, the caller's `fetchPage` owns paging; kept for API documentation. */
   pageSize?: number;
   /** The dialog's heading. Default 'Choose data', matching the Blazor adapter's `Title`. */
   title?: string;
@@ -108,7 +108,7 @@ const showClear: ComputedRef<boolean> = computed(
 );
 const clearLabelText: ComputedRef<string> = computed((): string => props.clearLabel ?? 'Clear selection');
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
-/* `display()` takes one row, so in multi the field states HOW MANY — naming one of six would be a
+/* `display()` takes one row, so in multi the field states HOW MANY, naming one of six would be a
    lie, and naming all six does not fit a control that is 22rem wide. */
 const currentRows: ComputedRef<Row[]> = computed((): Row[] =>
   Array.isArray(props.modelValue) ? props.modelValue : props.modelValue !== null ? [props.modelValue as Row] : [],
@@ -119,7 +119,7 @@ const displayValue: ComputedRef<string> = computed((): string => {
   return props.modelValue !== null ? props.display(props.modelValue as Row) : '';
 });
 // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
-// search input's aria refs on rows existing — otherwise they'd dangle during loading/empty/error.
+// search input's aria refs on rows existing, otherwise they'd dangle during loading/empty/error.
 const hasRows: ComputedRef<boolean> = computed((): boolean => rows.value.length > 0);
 const controlsId: ComputedRef<string | undefined> = computed((): string | undefined =>
   hasRows.value ? resultsId : undefined,
@@ -220,7 +220,7 @@ function togglePick(row: Row): void {
   else picked.value = picked.value.filter((_: Row, i: number): boolean => i !== at);
 }
 
-/* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+/* A click means "tick this" in multi and "this is my answer" in single, the whole difference. */
 function onRowClick(row: Row): void {
   if (props.multiple === true) togglePick(row);
   else commit(row);
@@ -238,7 +238,7 @@ function commit(row: Row | null): void {
   closeDialog();
 }
 
-/* Unsetting is not "picking nothing" — it must not open or close the dialog, and it must leave focus
+/* Unsetting is not "picking nothing", it must not open or close the dialog, and it must leave focus
    on a control that still exists, so focus returns to the trigger beside it. */
 function clearValue(): void {
   picked.value = [];

@@ -1,6 +1,6 @@
-/* Freeday — stepper/wizard enhancer (optional, zero-dependency).
+/* Freeday, stepper/wizard enhancer (optional, zero-dependency).
  * Drives a step header + panels: prev/next navigation, completed/active state, and
- * clicking a reached step to revisit it (linear — can't skip ahead). Auto-inits
+ * clicking a reached step to revisit it (linear, can't skip ahead). Auto-inits
  * [data-fdy-stepper].
  *
  * Markup: <div data-fdy-stepper>
@@ -19,7 +19,7 @@
   var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

@@ -1,4 +1,4 @@
-/* Freeday — Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
+/* Freeday. Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
 .fdy-timeline{list-style:none;margin:0;padding:0;}
 .fdy-timeline__item{position:relative;padding:0 0 var(--space-5) var(--space-6);border-left:2px solid var(--color-border);}
 .fdy-timeline__item:last-child{border-left-color:transparent;padding-bottom:0;}

@@ -1,6 +1,6 @@
-/* Freeday — Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
+/* Freeday. Carousel (scroll-snap track + arrows + dots). Enhanced by freeday-carousel.js. */
 .fdy-carousel{position:relative;}
-/* position:relative — the arrows are positioned against .fdy-carousel (the parent), so this only
+/* position:relative means the arrows are positioned against .fdy-carousel (the parent), so this only
    catches out-of-flow content inside the SLIDES, which would otherwise escape the viewport
    entirely and scroll the page by one slide-offset per slide (see base.css). */
 .fdy-carousel__viewport{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}

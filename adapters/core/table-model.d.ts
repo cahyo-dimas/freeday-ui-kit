@@ -9,7 +9,7 @@ export interface FdySortState {
   dir: FdySortDir;
 }
 
-/** A column's comparator type — how its values are ordered when sorting. */
+/** A column's comparator type, how its values are ordered when sorting. */
 export type FdyColumnType = 'text' | 'number' | 'date';
 
 /** Cell alignment. Maps to `text-align` on the header and body cells. */
@@ -25,7 +25,7 @@ export interface FdyTableColumn<T> {
   /** Header label. */
   label: string;
   /**
-   * Render the label for assistive tech only — the header cell looks empty.
+   * Render the label for assistive tech only, the header cell looks empty.
    *
    * For a column of row CONTROLS (an edit button, a row menu), where a visible
    * heading is noise above a column of icons but the column still has to be

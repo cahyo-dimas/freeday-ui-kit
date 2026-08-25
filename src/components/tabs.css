@@ -1,5 +1,5 @@
-/* Freeday — Tabs (WAI-ARIA APG) */
-/* position:relative — containing block for out-of-flow content in the tabs (see base.css). */
+/* Freeday. Tabs (WAI-ARIA APG) */
+/* position:relative, containing block for out-of-flow content in the tabs (see base.css). */
 .fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
 .fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}

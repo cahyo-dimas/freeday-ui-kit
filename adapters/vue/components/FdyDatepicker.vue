@@ -39,7 +39,7 @@ const props = defineProps<{
   ariaLabelledby?: string;
   /** Show a clear (×) button in the trigger when a date is set, so an optional date can be unset. Emits `''` via update:modelValue + change. Off by default. */
   clearable?: boolean;
-  /** aria-label for the previous-month nav button. Default 'Previous month' — override for non-English UIs (month/weekday names already follow `locale`). */
+  /** aria-label for the previous-month nav button. Default 'Previous month', override for non-English UIs (month/weekday names already follow `locale`). */
   prevMonthLabel?: string;
   /** aria-label for the next-month nav button. Default 'Next month'. */
   nextMonthLabel?: string;
@@ -145,7 +145,7 @@ const effectiveFocusDate: ComputedRef<Date> = computed((): Date => {
   return new Date(view.value.getFullYear(), view.value.getMonth(), Math.min(f.getDate(), daysInMonth));
 });
 
-/* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the title.
+/* 'days' | 'months', the calendar drills one level up instead of growing furniture beside the title.
    Before this the only pointer route to another month was one click per month: August 2026 to March
    2022 is fifty-three of them, and the Shift+PageUp jump had no affordance at all. */
 const mode: Ref<'days' | 'months' | 'years'> = ref('days');
@@ -212,7 +212,7 @@ interface YearCell {
   focusable: boolean;
 }
 
-/** A year is unreachable only when EVERY month in it falls outside min/max — the same rule
+/** A year is unreachable only when EVERY month in it falls outside min/max, the same rule
  *  isMonthDisabled applies one level down, and for the same reason. */
 function isYearDisabled(year: number): boolean {
   if (minDate.value !== null && startOfDay(new Date(year, 11, 31)).getTime() < startOfDay(minDate.value).getTime()) return true;
@@ -411,7 +411,7 @@ function pick(d: Date): void {
   closePanel(true);
 }
 
-// Clear (reset to empty). Emits '' — parseISO('') is null, so the placeholder shows again.
+// Clear (reset to empty). Emits '', parseISO('') is null, so the placeholder shows again.
 function clearValue(): void {
   emit('update:modelValue', '');
   emit('change', '');

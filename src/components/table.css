@@ -1,5 +1,5 @@
-/* Freeday — Table */
-/* position:relative on every scroller/clipper — it makes the box the containing block for its own
+/* Freeday. Table */
+/* position:relative on every scroller/clipper, it makes the box the containing block for its own
    absolutely positioned content (.fdy-visually-hidden above all), which `overflow` alone does NOT
    clip. Without it a hidden label in a wide table scrolls the whole page. See base.css. */
 .fdy-table-wrap{position:relative;overflow-x:auto;border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);background:var(--color-surface);}
@@ -10,7 +10,7 @@
 .fdy-table tbody tr:last-child td{border-bottom:0;}
 .fdy-table tbody tr{transition:background-color var(--dur-fast) var(--ease-standard);}
 .fdy-table tbody tr:hover{background:var(--color-surface-2);}
-/* Monospace data — ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
+/* Monospace data, ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
    or inline (`<span class="fdy-mono">`), not just numeric columns. */
 .fdy-mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums;}
 /* Numeric cells are mono + right-aligned. Kept self-contained (not composed from .fdy-mono)
@@ -37,7 +37,7 @@
 .fdy-table__selcol{width:1px;white-space:nowrap;}
 .fdy-table tbody tr[aria-selected="true"],.fdy-table tbody tr[aria-selected="true"]:hover{background:var(--color-primary-soft);}
 
-/* Frozen header row and/or first column — a rate matrix, a timetable, any grid read
+/* Frozen header row and/or first column, a rate matrix, a timetable, any grid read
    against two axes at once.
 
    This modifier exists because `position:sticky` alone is NOT enough. With
@@ -65,7 +65,7 @@
    widths, which CSS cannot sum, and hard-coding them here would only work for
    tables whose columns are all the same width. */
 .fdy-table--sticky .fdy-table__freeze{position:sticky;left:var(--fdy-freeze-left,0);}
-/* A frozen body cell slides OVER the data, so it must be OPAQUE — otherwise the
+/* A frozen body cell slides OVER the data, so it must be OPAQUE, otherwise the
    cells beneath show through it. A `th` already carries the header tint from the
    base rule, and that tint is usually the whole point: it is what marks a column
    as identity rather than data. So only a `td` is given a surface here. A table
@@ -105,7 +105,7 @@
 .fdy-table-footer__size{display:inline-flex;align-items:center;gap:var(--space-2);margin-left:auto;font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-table-footer__size .fdy-combo{width:5.5rem;}
 
-/* Column filter — funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
+/* Column filter, funnel button injected (enhancer) or rendered (FdyTable) into a filterable <th> */
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
 .fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
@@ -122,7 +122,7 @@
 .fdy-filter__range .fdy-input{width:6rem;}
 .fdy-filter__foot{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-3);}
 
-/* Bulk-action bar — appears above the table body once rows are selected */
+/* Bulk-action bar, appears above the table body once rows are selected */
 .fdy-table-bulkbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-2) var(--space-4);background:var(--color-primary-soft);border-bottom:var(--bw) solid var(--color-border);color:var(--color-primary-strong);font-size:var(--text-sm);}
 .fdy-table-bulkbar[hidden]{display:none;}
 .fdy-table-bulkbar__count{font-weight:var(--weight-semibold);white-space:nowrap;}

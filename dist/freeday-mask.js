@@ -1,4 +1,4 @@
-/* Freeday — input mask + password reveal enhancer (optional, zero-dependency).
+/* Freeday, input mask + password reveal enhancer (optional, zero-dependency).
  *
  * [data-fdy-mask]="pattern" formats a text input as you type. Placeholders:
  *   #  a digit (0-9)      A  a letter (a-z/A-Z)      *  a letter or digit
@@ -51,7 +51,7 @@
   }
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

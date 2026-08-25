@@ -8,7 +8,7 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 // (showModal() on an open dialog throws), @cancel.prevent so Esc routes through app state instead of
 // closing the DOM behind its back, and backdrop-click detection via `event.target === dialogEl`.
 // Native <dialog> already provides the focus trap, focus restore, top-layer stacking and inert
-// background — the wrapper only avoids breaking them. `dismissible` (default true) gates Esc + backdrop.
+// background, the wrapper only avoids breaking them. `dismissible` (default true) gates Esc + backdrop.
 
 // dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
 // `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
@@ -46,7 +46,7 @@ onMounted((): void => sync(props.open));
 function onCancel(): void {
   if (dismissible.value) emit('close');
 }
-// The ::backdrop is not a separate element — a click whose target is the dialog box itself (not its
+// The ::backdrop is not a separate element, a click whose target is the dialog box itself (not its
 // content) is a backdrop click.
 function onClick(e: MouseEvent): void {
   if (dismissible.value && e.target === dialogEl.value) emit('close');

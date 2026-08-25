@@ -1,4 +1,4 @@
-/* Browser regression specs — vanilla enhancers (dist/freeday.js).
+/* Browser regression specs, vanilla enhancers (dist/freeday.js).
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate (lives outside
  * test/, not named *.test.mjs). Auto-skips when no Chrome binary is found. */
 import test from 'node:test';

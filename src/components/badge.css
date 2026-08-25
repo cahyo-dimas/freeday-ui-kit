@@ -1,4 +1,4 @@
-/* Freeday — Badge */
+/* Freeday. Badge */
 .fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
 .fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
 .fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
@@ -6,12 +6,12 @@
 .fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
-/* Categorical tone badges — a status vocabulary larger than the semantic palette, from the
+/* Categorical tone badges, a status vocabulary larger than the semantic palette, from the
  * general --tone-1..8 tokens. Same validated AA formula as .fdy-avatar--tone-* and
  * .fdy-chip--tone-* (text >=4.5:1 both themes, gated by test/contrast.test.mjs).
  *
  * Semantics come first: a state that IS good, bad or waiting takes --success / --danger /
- * --warning. These are for the rest — the states a workflow distinguishes but a palette of five
+ * --warning. These are for the rest, the states a workflow distinguishes but a palette of five
  * cannot. A back-office document list carrying Draft, Submitted, Approved, Completed, Settled,
  * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
  * which is the report this shipped for. */
@@ -25,7 +25,7 @@
 .fdy-badge--tone-7{--_fdy-badge-tone:var(--tone-7);}
 .fdy-badge--tone-8{--_fdy-badge-tone:var(--tone-8);}
 
-/* Overlay badge — anchors a small count/dot/icon badge to a corner of any element
+/* Overlay badge, anchors a small count/dot/icon badge to a corner of any element
  * (icon, button, text). Wrap the content in .fdy-badge-wrap; add .fdy-badge-ov as a
  * sibling. Default is a solid neutral pill; colour + dot + position via modifiers. */
 .fdy-badge-wrap{position:relative;display:inline-flex;vertical-align:middle;}
@@ -35,7 +35,7 @@
 /* Solid colours safe for count/text (on-* tokens, AA in light & dark) */
 .fdy-badge-ov--primary{background:var(--color-primary);color:var(--color-on-primary);}
 .fdy-badge-ov--danger{background:var(--color-danger-btn);color:var(--color-on-danger);}
-/* Dot-oriented accents (for dots — plain text on these is not guaranteed AA) */
+/* Dot-oriented accents (for dots, plain text on these is not guaranteed AA) */
 .fdy-badge-ov--accent{background:var(--color-accent);}
 .fdy-badge-ov--info{background:var(--color-info);}
 .fdy-badge-ov--success{background:var(--color-success);}

@@ -1,4 +1,4 @@
-/* Browser regression spec — three ways the kit crowded a real screen (#020).
+/* Browser regression spec, three ways the kit crowded a real screen (#020).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * All three were reported from screenshots of one settlement form, and none is visible in the

@@ -1,4 +1,4 @@
-/* Freeday — menu enhancer (optional, zero-dependency).
+/* Freeday, menu enhancer (optional, zero-dependency).
  * Menu-button pattern (WAI-ARIA APG): a trigger with aria-haspopup="menu" toggles a
  * role="menu" popup of role="menuitem" buttons. Also powers the split button
  * (main action + attached caret toggle). Auto-inits [data-fdy-menu].

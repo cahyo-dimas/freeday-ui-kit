@@ -1,7 +1,7 @@
-/* Freeday — popover positioning helper (optional, zero-dependency).
+/* Freeday, popover positioning helper (optional, zero-dependency).
  * Lifts a dropdown panel into the top layer via the native Popover API so it escapes ANY
  * ancestor overflow clip (a .fdy-card with overflow:hidden, an app-shell main with
- * overflow:auto, …), then positions it `fixed` against its trigger — flipping above when
+ * overflow:auto, …), then positions it `fixed` against its trigger, flipping above when
  * there is no room below, and matching the trigger width. The panel stays a DOM child of its
  * component, so focus, outside-click (.closest), and ARIA relationships keep working unchanged.
  *
@@ -21,7 +21,7 @@
     && typeof HTMLElement.prototype.showPopover === 'function';
 
   // Position `panel` (already shown, so it has a measurable box) against `trigger`'s rect.
-  // matchWidth (default true) floors the panel to the trigger width — right for input-shaped
+  // matchWidth (default true) floors the panel to the trigger width, right for input-shaped
   // dropdowns (combo/cascade/date/time), skipped for menus that keep their own min-width.
   function place(panel, trigger, matchWidth) {
     var r = trigger.getBoundingClientRect();

@@ -1,4 +1,4 @@
-/* Freeday — File upload (drop target + explicit per-file states).
+/* Freeday. File upload (drop target + explicit per-file states).
  * Enhanced by freeday-upload.js; states: idle · drag-over · uploading · done · error. */
 .fdy-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6);text-align:center;border:2px dashed var(--color-control-border);border-radius:var(--radius-lg);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
@@ -10,7 +10,7 @@
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
 .fdy-dropzone__hint{font-size:var(--text-xs);}
-/* Wide (horizontal) layout — icon beside the copy instead of stacked, for full-width
+/* Wide (horizontal) layout, icon beside the copy instead of stacked, for full-width
  * sections. Wrap the title + hint in .fdy-dropzone__text. */
 .fdy-dropzone--row{flex-direction:row;align-items:center;justify-content:center;text-align:left;gap:var(--space-4);}
 .fdy-dropzone__text{display:flex;flex-direction:column;gap:var(--space-1);}

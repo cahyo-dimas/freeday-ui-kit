@@ -5,7 +5,7 @@ namespace Freeday.Blazor;
 /// <summary>Sort direction for a column.</summary>
 public enum FdySortDir { Asc, Desc }
 
-/// <summary>A column's comparator type — how its values are ordered when sorting.</summary>
+/// <summary>A column's comparator type, how its values are ordered when sorting.</summary>
 public enum FdyColumnType { Text, Number, Date }
 
 /// <summary>Cell alignment. Maps to <c>text-align</c> on the header and body cells.</summary>
@@ -23,7 +23,7 @@ public sealed record FdyPageState(int Index, int Size, int Total);
 
 /// <summary>The processed page of rows (after filter/sort/paginate) plus the total row count, as
 /// raised by <see cref="FdyTable{TRow}.Process"/>. Lets a consumer render the same processed set
-/// somewhere else — a card list below the <c>md</c> breakpoint, a summary, an export — without
+/// somewhere else, a card list below the <c>md</c> breakpoint, a summary, an export, without
 /// re-deriving the pipeline. Mirrors the <c>process</c> event in the Vue/React adapters.</summary>
 public sealed record FdyTableProcess<TRow>(IReadOnlyList<TRow> Rows, int Total);
 
@@ -47,7 +47,7 @@ public sealed class FdyTableColumn<TRow>
     /// <summary>Header label.</summary>
     public required string Label { get; init; }
 
-    /// <summary>Render the label for assistive tech only — the header cell looks empty.
+    /// <summary>Render the label for assistive tech only, the header cell looks empty.
     /// For a column of row CONTROLS (an edit button, a row menu), where a visible heading is noise
     /// above a column of icons but the column still has to be named: a <c>th</c> with no text is
     /// announced as nothing, and a reader tabbing the header row cannot tell what it is. The label

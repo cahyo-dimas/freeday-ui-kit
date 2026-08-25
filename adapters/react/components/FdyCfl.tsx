@@ -21,7 +21,7 @@ export interface CflPage<Row> {
 }
 
 export interface FdyCflProps<Row extends Record<string, unknown>> {
-  /** Single: `Row | null`. With `multiple`, an array — `Row[] | null`, where null and [] both mean
+  /** Single: `Row | null`. With `multiple`, an array, `Row[] | null`, where null and [] both mean
    *  nothing picked. The enhancer has had `data-fdy-cfl-multiple` all along; this is the typed
    *  wrappers catching up (#019). */
   value: Row | Row[] | null;
@@ -30,7 +30,7 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   columns: ReadonlyArray<CflColumn<Row>>;
   display: (row: Row) => string;
   rowKey: (row: Row) => string;
-  /** Advisory only — the caller's `fetchPage` owns paging; kept for API documentation. */
+  /** Advisory only, the caller's `fetchPage` owns paging; kept for API documentation. */
   pageSize?: number;
   /** The dialog's heading. Default 'Choose data', matching the Blazor adapter's `Title`. */
   title?: string;
@@ -106,7 +106,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
   // Out-of-order guard: every fetch takes a monotonically increasing token; a resolved or
   // rejected page is applied only if it still owns the latest token. A newer search, a
-  // load-more, a dialog close, or an unmount all bump it — this keeps a slow stale response
+  // load-more, a dialog close, or an unmount all bump it, this keeps a slow stale response
   // from overwriting fresh results (or a closed/unmounted component's state).
   const reqIdRef = useRef<number>(0);
   // In-memory cache keyed by `${query}::${page}`, cleared on open and on close.
@@ -117,7 +117,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
   const isDisabled: boolean = props.disabled === true;
   const isReadonly: boolean = props.readonly === true;
-  /* `display()` takes one row, so in multi the field states HOW MANY — naming one of six would be a
+  /* `display()` takes one row, so in multi the field states HOW MANY, naming one of six would be a
      lie, and naming all six does not fit a control that is 22rem wide. */
   const currentRows: Row[] = Array.isArray(props.value)
     ? props.value
@@ -137,7 +137,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
       ? props.display(props.value as Row)
       : '';
   // The results <table> (owner of `resultsId`) only renders in the rows branch, so gate the
-  // search input's aria refs on rows existing — otherwise they'd dangle during loading/empty/error.
+  // search input's aria refs on rows existing, otherwise they'd dangle during loading/empty/error.
   const hasRows: boolean = rows.length > 0;
   const controlsId: string | undefined = hasRows ? resultsId : undefined;
   const activeDescendant: string | undefined = hasRows && activeIndex >= 0 ? rowId(activeIndex) : undefined;
@@ -203,7 +203,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     setActiveIndex(clamped);
   }
 
-  // Scroll the active row into view once it (re)renders — React's analogue of Vue's
+  // Scroll the active row into view once it (re)renders. React's analogue of Vue's
   // `nextTick(() => scrollIntoView(...))`; fires for both keyboard nav and row hover, same as
   // the Vue source's `setActive`.
   useEffect((): void => {
@@ -225,7 +225,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     );
   }
 
-  /* A click means "tick this" in multi and "this is my answer" in single — the whole difference. */
+  /* A click means "tick this" in multi and "this is my answer" in single, the whole difference. */
   function onRowClick(row: Row): void {
     if (isMultiple) togglePick(row);
     else commit(row);
@@ -321,7 +321,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   }
 
   // Unmount safety: bump the token so any in-flight fetch's setState is dropped, and cancel a
-  // pending debounce — mirrors Vue's onBeforeUnmount plus the same token trick onClose uses.
+  // pending debounce, mirrors Vue's onBeforeUnmount plus the same token trick onClose uses.
   useEffect((): (() => void) => {
     return (): void => {
       reqIdRef.current++;

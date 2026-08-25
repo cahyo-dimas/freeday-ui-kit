@@ -2,7 +2,7 @@
 import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } from 'vue';
 
 // A controlled Vue wrapper over freeday's `.fdy-drawer` native <dialog> side panel
-// (src/components/drawer.css). Same controlled contract and glue as FdyModal — showModal()/close()
+// (src/components/drawer.css). Same controlled contract and glue as FdyModal, showModal()/close()
 // guarded, @cancel.prevent so Esc routes through app state, backdrop-click via `event.target ===
 // dialogEl`, applied to a drawer that anchors left (default) or right. Native <dialog> supplies the
 // focus trap, focus restore, top-layer stacking and inert background; `dismissible` (default true)

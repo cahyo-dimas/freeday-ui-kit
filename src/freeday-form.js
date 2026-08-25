@@ -1,4 +1,4 @@
-/* Freeday — form validation enhancer (optional, zero-dependency).
+/* Freeday, form validation enhancer (optional, zero-dependency).
  * Wires the native Constraint Validation API to accessible inline errors on any
  * [data-fdy-validate] <form>. Native-first: constraints come from the standard
  * markup attributes (required, type, pattern, min/max, minlength/maxlength, step);
@@ -38,7 +38,7 @@
     badInput: 'type',
     customError: 'mismatch'
   };
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
    * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
    * a host in another language needs: it sets nine messages once instead of on every input.
@@ -55,7 +55,7 @@
     mismatch: 'Values don’t match.',
     invalid: 'Invalid.'
   };
-  /* Kebab-cased for the lookup — see the note in the other enhancers: HTML lowercases attribute
+  /* Kebab-cased for the lookup, see the note in the other enhancers: HTML lowercases attribute
      names, so `data-fdy-text-filter-text` and `data-fdy-text-filtertext` are different attributes
      and only one of them is what an author would write. */
   function textOf(root, key) {

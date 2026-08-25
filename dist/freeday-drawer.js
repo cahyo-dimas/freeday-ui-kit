@@ -1,4 +1,4 @@
-/* Freeday — drawer enhancer (optional, zero-dependency).
+/* Freeday, drawer enhancer (optional, zero-dependency).
  * A trigger [data-fdy-drawer="drawerId"] opens the <dialog class="fdy-drawer" id="drawerId">
  * as a modal side panel (native showModal gives focus-trap, Esc, and return-focus). Clicking
  * the backdrop or any [data-close] inside closes it.

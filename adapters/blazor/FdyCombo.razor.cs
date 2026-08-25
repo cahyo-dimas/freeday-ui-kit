@@ -34,7 +34,7 @@ public partial class FdyCombo<TValue>
     private bool _ready;
 
     // The enhancer owns this combo's DOM after hydration (open/close, aria-selected, the button
-    // label). Re-rendering here would fight it — e.g. reconciling the listbox mid-close leaves it
+    // label). Re-rendering here would fight it, e.g. reconciling the listbox mid-close leaves it
     // stuck open. Render once for the initial markup, then never again; push external Value changes
     // through the enhancer via comboSetValue instead.
     protected override bool ShouldRender() => !Hydrated;
@@ -60,7 +60,7 @@ public partial class FdyCombo<TValue>
 
     protected override async Task OnParametersSetAsync()
     {
-        // Push an externally-changed Value onto the enhancer-owned DOM (silent — no fdy-change echo).
+        // Push an externally-changed Value onto the enhancer-owned DOM (silent, no fdy-change echo).
         if (_ready && !EqualityComparer<TValue>.Default.Equals(Value, _lastValue))
         {
             _lastValue = Value;

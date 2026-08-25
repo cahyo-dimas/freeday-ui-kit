@@ -1,8 +1,8 @@
-/* Freeday — combobox enhancer (optional, zero-dependency).
+/* Freeday, combobox enhancer (optional, zero-dependency).
  * Implements the WAI-ARIA APG "select-only combobox" pattern for every
  * [data-fdy-combo] on the page. Progressive enhancement: the markup is the
  * component, this script wires behavior. In a Vue/React/Blazor app you would
- * bind your own state instead — this is the framework-agnostic reference.
+ * bind your own state instead, this is the framework-agnostic reference.
  *
  * Expected markup:
  *   <div class="fdy-combo" data-fdy-combo data-value="x">
@@ -25,7 +25,7 @@
   var seq = 0;
   var openClose = null; // close() of the currently-open combo, or null
 
-  /* The tick lives in CSS now, so the option's text IS its label — no sibling walk to skip a glyph. */
+  /* The tick lives in CSS now, so the option's text IS its label, no sibling walk to skip a glyph. */
   function optionLabel(opt) {
     return (opt.textContent || '').trim();
   }
@@ -91,7 +91,7 @@
       if (openClose === close) openClose = null;
     }
     // Mark an option selected + reflect it in the button. `silent` skips the change
-    // event, close, and focus — used by the programmatic setValue() below so a host
+    // event, close, and focus, used by the programmatic setValue() below so a host
     // (e.g. a Blazor/framework wrapper) can push a value in without echoing an event
     // back to itself or stealing focus. User-driven picks go through choose() (loud).
     function select(opt, silent) {

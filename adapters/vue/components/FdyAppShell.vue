@@ -14,13 +14,13 @@ import {
 // Blazor bridge cannot drift into three different focus traps.
 //
 // ONE model: `navOpen` means "the nav is visible to the reader". The two state classes are the
-// kit's business — above the nav breakpoint a hidden nav is `--nav-collapsed`, below it a visible
+// kit's business, above the nav breakpoint a hidden nav is `--nav-collapsed`, below it a visible
 // nav is `--nav-open`, so an app never reasons about the viewport to answer a question about its
 // own UI.
 //
 // Leave `navOpen` unbound and the component keeps its own: visible on a wide viewport, hidden on a
 // narrow one, which is the right default and one an app cannot express in a single initial value.
-// Bind it (`v-model:navOpen`) when the app wants to drive it — a menu item, a persisted preference.
+// Bind it (`v-model:navOpen`) when the app wants to drive it, a menu item, a persisted preference.
 
 const props = withDefaults(defineProps<{
   navOpen?: boolean;
@@ -78,7 +78,7 @@ function onBackdrop(): void {
   if (overlay.value && navVisible.value) setVisible(false);
 }
 
-/* Following a link in an overlay nav means "take me there" — the panel must not stay over the page
+/* Following a link in an overlay nav means "take me there", the panel must not stay over the page
    it was just asked for. On a wide viewport the nav is a column and clicking it changes nothing. */
 function onSidebarClick(e: MouseEvent): void {
   if (!overlay.value || !navVisible.value) return;

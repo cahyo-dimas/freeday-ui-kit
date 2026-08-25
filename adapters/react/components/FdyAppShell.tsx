@@ -17,7 +17,7 @@ import {
 // app never reasons about the viewport to answer a question about its own UI.
 //
 // Omit `navOpen` and the component keeps its own, defaulting BY VIEWPORT: a column on a wide screen,
-// hidden on a narrow one. That default is why the prop is optional — a parent cannot express it as a
+// hidden on a narrow one. That default is why the prop is optional, a parent cannot express it as a
 // single initial value before it knows the viewport.
 
 export interface FdyAppShellProps {
@@ -72,7 +72,7 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
       });
       if (nowOverlay && navVisibleRef.current) setVisibleRef.current(false);
     };
-    // Mount: adopt the viewport without the hide-on-narrow side effect — nothing is open yet.
+    // Mount: adopt the viewport without the hide-on-narrow side effect, nothing is open yet.
     setOverlay(!media.matches);
     if (!controlled) setUncontrolled(media.matches);
     media.addEventListener('change', onChange);
@@ -120,7 +120,7 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
       <aside
         className="fdy-app__sidebar"
         onClick={(e): void => {
-          // Following a link in an overlay nav means "take me there" — the panel must not stay over
+          // Following a link in an overlay nav means "take me there", the panel must not stay over
           // the page it was just asked for. On a wide viewport the nav is a column: nothing to close.
           if (!overlay || !navVisible) return;
           const target: HTMLElement | null = e.target as HTMLElement | null;

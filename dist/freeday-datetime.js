@@ -1,6 +1,6 @@
-/* Freeday — datetime picker composer (optional, zero-dependency).
+/* Freeday, datetime picker composer (optional, zero-dependency).
  * Combines a child date picker and time picker into one value. It does not build
- * anything itself — freeday-datepicker.js and freeday-timepicker.js enhance the
+ * anything itself, freeday-datepicker.js and freeday-timepicker.js enhance the
  * children; this only listens for their change events and emits a single combined
  * "fdy-datetime-change" (detail {date, time, value}). value is "YYYY-MM-DDTHH:MM"
  * when both parts are set, else "". Icon variants are controlled per child picker
@@ -10,7 +10,7 @@
  *   <div data-fdy-datepicker data-value="2026-07-21"></div>
  *   <div data-fdy-timepicker data-value="14:30"></div></div>
  * State: add data-fdy-disabled or data-fdy-invalid on the wrapper to reflect it onto both
- * child triggers as one control (read-only is adapter-only — a vanilla datetime is interactive).
+ * child triggers as one control (read-only is adapter-only, a vanilla datetime is interactive).
  */
 (function () {
   'use strict';
@@ -25,7 +25,7 @@
     if (!dp || !tp) return;
 
     // Reflect one wrapper-level state onto BOTH child triggers so a datetime reads as a single
-    // disabled/invalid control. Deferred with setTimeout(0) — NOT a microtask: the timepicker
+    // disabled/invalid control. Deferred with setTimeout(0). NOT a microtask: the timepicker
     // enhancer registers its DOMContentLoaded init AFTER this composer, and microtasks drain
     // *between* listeners (so a microtask would run before the timepicker trigger exists). A
     // macrotask waits until the whole init pass is done and both triggers are built. (readonly is
@@ -56,7 +56,7 @@
       }));
     }
 
-    // Listen for the children's bubbling change events (order-independent — no need
+    // Listen for the children's bubbling change events (order-independent, no need
     // for the child enhancers to have run before this composer).
     wrap.addEventListener('fdy-datepicker-change', function (e) { date = e.detail.value; emit(); });
     wrap.addEventListener('fdy-time-select', function (e) { time = e.detail.value; emit(); });

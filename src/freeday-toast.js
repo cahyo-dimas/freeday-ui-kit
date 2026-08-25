@@ -1,9 +1,9 @@
-/* Freeday — toast API (optional, zero-dependency).
+/* Freeday, toast API (optional, zero-dependency).
  * Freeday.toast({ variant, title, message, timeout, key }) shows a transient
  * notification in a live region (created on first use). Returns the element.
  *   variant: 'success' | 'warning' | 'danger' | 'info' (default: neutral)
  *   timeout: ms before auto-dismiss (default 4000; 0 = sticky)
- *   key:     optional stable id — a new toast with the same key REPLACES the
+ *   key:     optional stable id, a new toast with the same key REPLACES the
  *            existing one in place instead of stacking a duplicate (e.g. a burst
  *            of identical failures shows one toast, refreshed).
  * Freeday.dismiss(nodeOrKey) closes a toast early (pass the returned element or its key).
@@ -46,7 +46,7 @@
    * lands above it rather than under the dialog that was opened after the last toast.
    *
    * Guarded twice on purpose. `showPopover` is absent before Chrome 114 / Safari 17 / Firefox 125,
-   * and the call throws if the element is disconnected or already open — in every one of those
+   * and the call throws if the element is disconnected or already open, in every one of those
    * cases the region stays an ordinary fixed block at z-index 200, which is what it has always
    * been. A notification must never be the thing that throws.
    */
@@ -77,7 +77,7 @@
   }
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

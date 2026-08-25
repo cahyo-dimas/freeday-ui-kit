@@ -14,7 +14,7 @@ export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreeda
 
 /**
  * Anchor a dropdown panel to its trigger in the top layer, so it escapes any ancestor overflow clip
- * — `.fdy-card` is `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's
+ *, `.fdy-card` is `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's
  * edge. The panel element must carry `popover="manual"`. This is the plumbing every kit dropdown
  * uses; it is exported so a control the kit does not ship can behave like one that it does, instead
  * of each app re-implementing it from the description.
@@ -35,7 +35,7 @@ export type { CascadeNode } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
 export { default as FdyChart } from './components/FdyChart.vue';
 export { default as FdyTable } from './components/FdyTable.vue';
-/** The table's own footer, standalone — for a responsive list whose table is hidden at some
+/** The table's own footer, standalone, for a responsive list whose table is hidden at some
  *  breakpoints and so cannot host it. */
 export { default as FdyTableFooter } from './components/FdyTableFooter.vue';
 export { default as FdyModal } from './components/FdyModal.vue';

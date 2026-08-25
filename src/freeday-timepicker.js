@@ -1,4 +1,4 @@
-/* Freeday — time picker enhancer (optional, zero-dependency).
+/* Freeday, time picker enhancer (optional, zero-dependency).
  * Builds an input-styled trigger + scrollable time-list popover (WAI-ARIA listbox)
  * from an empty [data-fdy-timepicker] wrapper. 24h HH:MM. Options run from
  * data-min (default 00:00) to data-max (default 23:59) every data-step minutes

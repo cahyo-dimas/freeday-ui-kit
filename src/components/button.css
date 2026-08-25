@@ -1,4 +1,4 @@
-/* Freeday — Button */
+/* Freeday. Button */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);
   font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);
@@ -42,11 +42,11 @@
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}
 .fdy-btn--lg{height:calc(var(--control-h) + var(--space-2));padding:0 var(--space-6);font-size:var(--text-base);border-radius:var(--radius-lg);}
 
-/* Icon inside a button — scales with the button's font size (works for text+icon & icon-only) */
+/* Icon inside a button, scales with the button's font size (works for text+icon & icon-only) */
 .fdy-btn__icon{display:inline-flex;flex:none;}
 .fdy-btn__icon svg{display:block;width:1.15em;height:1.15em;}
 
-/* Text button — lowest emphasis (no fill/border), colored label, subtle hover tint */
+/* Text button, lowest emphasis (no fill/border), colored label, subtle hover tint */
 .fdy-btn--text{background:none;color:var(--color-primary-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text:hover{transform:none;background:var(--color-primary-soft);box-shadow:none;}
 .fdy-btn--text:active{transform:translateY(1px);box-shadow:none;}
@@ -65,19 +65,19 @@
  * a transformed element becomes the containing block for its own absolutely-positioned descendants,
  * so `inset:0` re-anchors from the card to the button's own box the moment the button is hovered or
  * pressed. Measured: mousedown lands on the button, the overlay collapses under the pointer, mouseup
- * lands on some other element, and the browser fires `click` on their common ancestor — the button
+ * lands on some other element, and the browser fires `click` on their common ancestor, the button
  * never gets one. It demos fine on hover for --text/--ghost (their hover is already transform:none)
  * and only a real press reveals it; the default and --danger fills break one step earlier, on hover.
  * Press feedback moves to the card, which is the object actually being pressed (see card.css). */
 .fdy-btn--stretch::after{content:'';position:absolute;inset:0;}
 .fdy-btn--stretch:hover,.fdy-btn--stretch:active{transform:none;}
 
-/* Icon-only — square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
+/* Icon-only, square; combine with --ghost/--text/--sm/--lg. Requires aria-label. */
 .fdy-btn--icon{width:var(--control-h);padding:0;}
 .fdy-btn--icon.fdy-btn--sm{width:calc(var(--control-h) - var(--space-2));}
 .fdy-btn--icon.fdy-btn--lg{width:calc(var(--control-h) + var(--space-2));}
 
-/* Button group — segmented, joined borders, rounded only at the ends */
+/* Button group, segmented, joined borders, rounded only at the ends */
 .fdy-btn-group{display:inline-flex;}
 .fdy-btn-group .fdy-btn{border-radius:0;}
 .fdy-btn-group .fdy-btn:not(:first-child){margin-left:calc(var(--bw) * -1);}
@@ -85,7 +85,7 @@
 .fdy-btn-group .fdy-btn:first-child{border-top-left-radius:var(--radius-md);border-bottom-left-radius:var(--radius-md);}
 .fdy-btn-group .fdy-btn:last-child{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md);}
 
-/* FAB — circular elevated action button (icon), optional extended pill with label */
+/* FAB, circular elevated action button (icon), optional extended pill with label */
 .fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-fab:hover{transform:translateY(-1px);box-shadow:var(--shadow-4);}
 .fdy-fab:active{transform:translateY(1px);}

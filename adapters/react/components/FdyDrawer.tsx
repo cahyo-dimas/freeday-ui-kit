@@ -2,7 +2,7 @@ import type { JSX, ReactNode } from 'react';
 import { useEffect, useId, useRef } from 'react';
 
 // A controlled React wrapper over freeday's `.fdy-drawer` native <dialog> side panel
-// (src/components/drawer.css). React port of adapters/vue/components/FdyDrawer.vue — the same
+// (src/components/drawer.css). React port of adapters/vue/components/FdyDrawer.vue, the same
 // controlled glue as FdyModal (guarded showModal()/close(), onCancel + preventDefault so Esc routes
 // through app state, backdrop-click via `event.target === dialogEl`) applied to a drawer that anchors
 // left (default) or right. Native <dialog> supplies the focus trap, focus restore, top-layer stacking

@@ -1,4 +1,4 @@
-/* Freeday — Pagination */
+/* Freeday. Pagination */
 .fdy-pagination__list{display:flex;align-items:center;gap:var(--space-1);list-style:none;margin:0;padding:0;}
 .fdy-pagination__link{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 var(--space-2);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);background:transparent;border:var(--bw) solid transparent;text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-pagination__link:hover{background:var(--color-surface-2);border-color:var(--color-border);}

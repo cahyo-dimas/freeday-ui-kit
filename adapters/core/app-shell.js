@@ -1,7 +1,7 @@
-// Freeday — framework-agnostic app-shell behaviour (DOM helpers, zero dependencies).
+// Freeday app-shell behaviour, framework-agnostic (DOM helpers, zero dependencies).
 //
 // The focus trap, `inert` bookkeeping and focus restore shared by FdyAppShell in the Vue, React and
-// Blazor adapters. Kept here — plain ESM with a .d.ts sidecar — for the same reason as
+// Blazor adapters. Kept here, plain ESM with a .d.ts sidecar, for the same reason as
 // table-model.js: three copies of a focus trap is three chances to write it differently, and the
 // one that gets it wrong strands a keyboard user with no way out of a nav panel.
 //
@@ -14,7 +14,7 @@
 
 import { breakpoints } from '../../tokens/breakpoints.mjs';
 
-/** The media query the shell switches at — the same 721px app-shell.css uses. */
+/** The media query the shell switches at, the same 721px app-shell.css uses. */
 export const NAV_QUERY = `(min-width: ${breakpoints.nav}px)`;
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]),'
@@ -36,7 +36,7 @@ export function shellParts(root) {
 /**
  * Focusable descendants, in tab order, that are actually rendered.
  * getClientRects() rather than offsetParent: an overlay sidebar is position:fixed, and a fixed
- * element reports no offsetParent at all — filtering on that calls every nav item invisible.
+ * element reports no offsetParent at all, filtering on that calls every nav item invisible.
  * @param {HTMLElement} el
  * @returns {HTMLElement[]}
  */
@@ -47,7 +47,7 @@ export function focusablesIn(el) {
 /**
  * Reconcile the parts of the shell that are not classes: `inert` and `aria-expanded`.
  *
- * One rule, both modes — the sidebar is inert whenever the nav is not visible. `width:0` (collapsed)
+ * One rule for both modes: the sidebar is inert whenever the nav is not visible. `width:0` (collapsed)
  * and `translateX(-100%)` (off-canvas) hide a panel from the eye and neither hides it from the
  * keyboard, so without this a nav nobody can see still swallows Tab on the way into the page.
  * The content is inert only while the nav is an open overlay.
@@ -63,7 +63,7 @@ export function applyShellState(root, state) {
 }
 
 /**
- * Move focus into the panel, and hand back whatever had it — the caller keeps that until close.
+ * Move focus into the panel, and hand back whatever had it. The caller keeps that until close.
  * @param {HTMLElement} root
  * @returns {Element|null} the element that was focused before
  */

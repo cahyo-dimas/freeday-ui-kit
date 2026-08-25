@@ -1,4 +1,4 @@
-/* Freeday — carousel enhancer (optional, zero-dependency).
+/* Freeday, carousel enhancer (optional, zero-dependency).
  * Scroll-snap slider with prev/next arrows, generated dot indicators, keyboard (←/→),
  * and optional autoplay (data-fdy-autoplay="4000", pauses on hover/focus). Auto-inits
  * [data-fdy-carousel].
@@ -18,7 +18,7 @@
   'use strict';
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

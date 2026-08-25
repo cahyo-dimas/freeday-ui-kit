@@ -1,4 +1,4 @@
-/* Freeday — States (empty / loading / error placeholders) */
+/* Freeday. States (empty / loading / error placeholders) */
 .fdy-state{display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--space-2);padding:var(--space-10) var(--space-6);}
 .fdy-state__icon{display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;color:var(--color-text-subtle);}
 .fdy-state__icon svg{width:100%;height:100%;}

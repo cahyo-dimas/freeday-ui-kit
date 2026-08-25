@@ -1,4 +1,4 @@
-/* Freeday — Alert (inline) */
+/* Freeday. Alert (inline) */
 .fdy-alert{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:var(--bw) solid var(--color-border);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface-2);}
 .fdy-alert__icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-top:.05rem;}
 .fdy-alert__icon svg{width:100%;height:100%;}

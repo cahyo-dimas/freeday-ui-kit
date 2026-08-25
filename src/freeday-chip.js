@@ -1,9 +1,9 @@
-/* Freeday — chip enhancer (optional, zero-dependency).
+/* Freeday, chip enhancer (optional, zero-dependency).
  * Two behaviours, both progressive enhancement:
  *
- * 1. Removable chips — any .fdy-chip__remove button removes its chip and emits a
+ * 1. Removable chips, any .fdy-chip__remove button removes its chip and emits a
  *    bubbling "fdy-chip-remove" (detail {value}).
- * 2. Choice / filter groups — a [data-fdy-chips] container of interactive chips
+ * 2. Choice / filter groups, a [data-fdy-chips] container of interactive chips
  *    (.fdy-chip--choice / .fdy-chip--filter, each a <button>) toggles aria-pressed
  *    on click. Add data-single for one-at-a-time (radio-like) selection; filter
  *    chips get a leading check when pressed. Emits "fdy-chip-change" on the group

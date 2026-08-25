@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace Freeday.Blazor;
 
 /// <summary>
-/// The sort / filter / paginate logic for <see cref="FdyTable{TRow}"/> — the C# counterpart of the
+/// The sort / filter / paginate logic for <see cref="FdyTable{TRow}"/>, the C# counterpart of the
 /// framework-agnostic adapters/core/table-model.js shared by the Vue and React adapters. Kept as a
 /// separate pure-function class (no rendering, no state) so it mirrors that reference faithfully and
 /// stays unit-testable. Every method is pure: inputs are never mutated (rows are copied before sort).
@@ -167,7 +167,7 @@ public static class TableModel
         return rows.Skip(pageIndex * pageSize).Take(pageSize).ToList();
     }
 
-    /// <summary>Distinct non-empty cell texts for a column, naturally sorted — the enum-filter source.</summary>
+    /// <summary>Distinct non-empty cell texts for a column, naturally sorted, the enum-filter source.</summary>
     public static List<string> DistinctValues<TRow>(IReadOnlyList<TRow> rows, FdyTableColumn<TRow> column)
     {
         HashSet<string> seen = new();

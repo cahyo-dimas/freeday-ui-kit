@@ -1,9 +1,9 @@
-/* Browser regression spec — chart-xy axis text and dots hold their size at any width (#042).
+/* Browser regression spec, chart-xy axis text and dots hold their size at any width (#042).
  * Run via `npm run test:browser`. Auto-skips without Chrome.
  *
  * This CANNOT be asserted from the source, which is why it shipped: `font-size:9px` and `r="2.2"`
  * read as correct sizes. They were user units in a fixed 320x180 viewBox stretched by CSS, so the
- * rendered size was 9 * plotWidth/320 — right at a 320px plot and nowhere else. On a 1400px plot
+ * rendered size was 9 * plotWidth/320, right at a 320px plot and nowhere else. On a 1400px plot
  * the smallest text in the chart rendered ~39px, larger than every heading on the page.
  *
  * The stroke was already immune (`vector-effect:non-scaling-stroke`), which is exactly why a
@@ -65,7 +65,7 @@ test('chart-xy repaints at the new size when its container resizes (#042)', { sk
     await p.waitFor('!!document.querySelector("#w350 .fdy-chart-xy__xlabel")');
     const before = JSON.parse(await p.evalJS('JSON.stringify(window.chartScale().w350)'));
 
-    /* A measured viewBox is only correct until the box changes — hence the ResizeObserver. A
+    /* A measured viewBox is only correct until the box changes, hence the ResizeObserver. A
        sidebar collapsing moves a plot by ~300px at a fixed viewport, so this is the common case,
        not an edge case. */
     await p.evalJS('window.widen()');

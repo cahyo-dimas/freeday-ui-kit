@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 
 /* Drift guard for the agent-facing docs.
  *
- * COMPONENTS.md is read as an API contract — by people and by coding agents that have no other
+ * COMPONENTS.md is read as an API contract, by people and by coding agents that have no other
  * source of truth for what exists. A class named there that the CSS never defines is worse than a
  * missing entry: it invites markup that silently does nothing. Same for the reference screen, which
  * gets copied wholesale.
@@ -21,7 +21,7 @@ const read = p => readFileSync(join(root, p), 'utf8');
 /* Block classes that are structural hooks only: the kit's own reference markup puts them on the
  * wrapper element, but no CSS rule and no enhancer targets them (their __elements carry the styling).
  * Documenting them keeps our markup identical to the live docs. If one ever gains a rule, drop it
- * from here — the guard should then verify it for real. */
+ * from here, the guard should then verify it for real. */
 const STRUCTURAL_HOOKS = new Set(['fdy-pagination']);
 
 /** Every class the kit actually defines: CSS selectors + classes the enhancers query or set. */
@@ -104,7 +104,7 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  * rendered its forms and read them).
  *
  * Matched by WORD, not by a list of components, so a new adapter is covered the day it lands.
- * Blazor is included even though it was the stack that had it right — the guard is about the
+ * Blazor is included even though it was the stack that had it right; the guard is about the
  * promise, not about who broke it.
  */
 /* The ENHANCERS need this guard for a reason that OUTLIVED the language question.
@@ -147,7 +147,7 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
         /* A literal is PROSE when it carries two or more consecutive letters and no code
          * punctuation. That drops `aria-label` and `fdy-x` (markup), ` · ` (a separator glyph),
          * and the code fragment a line with three quotes hands the matcher between strings two
-         * and three — none of which a translator would ever be given. */
+         * and three, none of which a translator would ever be given. */
         if (!/[A-Za-z]{2,}/.test(text)) continue;
         if (/[;=()]/.test(text)) continue;
         if (/^[a-z-]+$/.test(text) || text.startsWith('&') || text.startsWith('fdy-')) continue;
@@ -178,7 +178,7 @@ test('every path speaks English (#009, and #006 from 2.0.0)', () => {
            migrating app puts back through data-fdy-text-*. Explaining the hatch must not read as
            using it. */
         if (skipComments && /^\s*(\*|\/\/|\/\*)/.test(line)) return;
-        // String literals and template text only — a URL or an identifier is not a user-visible string.
+        // String literals and template text only, a URL or an identifier is not a user-visible string.
         for (const m of line.matchAll(/'([^']{2,60})'|"([^"]{2,60})"|>([^<>{}]{2,60})</g)) {
           const text = m[1] ?? m[2] ?? m[3];
           if (INDONESIAN.test(text)) offenders.push(`${dir}/${file}:${i + 1}  ${text.trim()}`);
@@ -330,13 +330,13 @@ test('the enhancers ship exactly these strings (#006)', () => {
 
 /* Every public version stamp, checked against package.json.
  *
- * NEXT-UP's release runbook already says the right thing — don't work from a memorised list of
+ * NEXT-UP's release runbook already says the right thing, don't work from a memorised list of
  * files, `git grep` the old version, and it was still missed three times running: docs/index.html
  * shipped `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
  * getting-started.md told people to install `^1.34.0` for eighteen releases. A runbook step is a
  * thing a person has to remember; this is the same grep, run by the suite.
  *
- * Only PREFIXED forms count — `v1.2.3` and `^1.2.3`. A bare `1.4.11` is WCAG's success criterion,
+ * Only PREFIXED forms count, `v1.2.3` and `^1.2.3`. A bare `1.4.11` is WCAG's success criterion,
  * which the runbook warns about by name and which no release should ever touch.
  */
 test('the public version stamps match package.json', () => {

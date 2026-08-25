@@ -36,7 +36,7 @@ public abstract class FreedayComponentBase<TSelf> : ComponentBase, IAsyncDisposa
     /// registered enhancer over <see cref="Root"/>; override to call a specific enhancer.</summary>
     protected virtual ValueTask HydrateAsync() => JS.InvokeVoidAsync("FreedayBlazor.initAll", Root);
 
-    /// <summary>Runs once after the first render, right after <see cref="HydrateAsync"/> — wire event
+    /// <summary>Runs once after the first render, right after <see cref="HydrateAsync"/>, wire event
     /// subscriptions here.</summary>
     protected virtual ValueTask OnHydratedAsync() => ValueTask.CompletedTask;
 

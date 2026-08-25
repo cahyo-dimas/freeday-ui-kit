@@ -1,4 +1,4 @@
-/* Freeday — tabs enhancer (optional, zero-dependency, WAI-ARIA APG tabs).
+/* Freeday, tabs enhancer (optional, zero-dependency, WAI-ARIA APG tabs).
  * Auto-inits every [data-fdy-tabs]. Roving tabindex + arrow/Home/End nav.
  *
  * Markup: a [data-fdy-tabs] with a [role="tablist"] of

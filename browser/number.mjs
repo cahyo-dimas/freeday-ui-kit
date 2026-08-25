@@ -1,4 +1,4 @@
-/* Browser regression spec — the number field's step buttons.
+/* Browser regression spec, the number field's step buttons.
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips without
  * Chrome.
  *
@@ -65,14 +65,14 @@ test('read-only and stepless fields are inert, not broken', { skip }, async () =
     await p.waitFor('document.readyState === "complete" && window.FreedayNumber');
     const state = async (id) => JSON.parse(await p.evalJS(`JSON.stringify(window.state("${id}"))`));
 
-    /* readonly is not disabled (#39): the value stays full-contrast, focusable and copyable — but
+    /* readonly is not disabled (#39): the value stays full-contrast, focusable and copyable, but
        stepping it is editing it, so the buttons must say so. */
     let b = await state('grpB');
     assert.equal(b.up && b.down, true, 'a read-only field cannot be stepped');
     await p.clickCenter('#grpB [data-fdy-number-step="1"]');
     assert.equal((await state('grpB')).value, '5', 'and clicking really does nothing');
 
-    /* step="any" has no defined increment — stepUp() throws InvalidStateError on such a field, so
+    /* step="any" has no defined increment, stepUp() throws InvalidStateError on such a field, so
        the buttons must be disabled rather than fail on click. */
     const c = await state('grpC');
     assert.equal(c.up && c.down, true, 'step="any" cannot be stepped');

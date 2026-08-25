@@ -1,4 +1,4 @@
-/* Freeday — cascade select enhancer (optional, zero-dependency).
+/* Freeday, cascade select enhancer (optional, zero-dependency).
  * Turns a [data-fdy-cascade] wrapper into a hierarchical drill-down picker. The
  * data model is a hidden nested <ul> inside the wrapper: a <li> with a child <ul>
  * is a branch (drills in), a <li> without is a leaf (selects). Each <li> carries
@@ -54,7 +54,7 @@
   }
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */

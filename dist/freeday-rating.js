@@ -1,7 +1,7 @@
-/* Freeday — rating enhancer (optional, zero-dependency).
+/* Freeday, rating enhancer (optional, zero-dependency).
  * Fills stars up to the checked radio (and previews on hover) for an interactive
  * [data-fdy-rating] radio group; for [data-fdy-readonly] it fills from data-value.
- * The radios are native — arrow-key selection and form association come for free.
+ * The radios are native, arrow-key selection and form association come for free.
  */
 (function () {
   'use strict';

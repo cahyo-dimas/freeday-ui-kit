@@ -1,13 +1,13 @@
-/* Freeday — file-upload enhancer (optional, zero-dependency).
+/* Freeday, file-upload enhancer (optional, zero-dependency).
  * A drop target that also opens the file dialog on click / Enter / Space, validates each file
  * (accept + max size), and renders a per-file row with explicit state. Actual upload is the
- * consumer's job — this is a controlled reference: wire the emitted event's row API to your
+ * consumer's job, this is a controlled reference: wire the emitted event's row API to your
  * upload call, or set data-fdy-upload-simulate for a demo progress animation.
  *
  * Markup contract:
  *  <div class="fdy-dropzone" data-fdy-dropzone role="button" tabindex="0"
  *       data-max-size="10485760" data-filelist="#dz-list" [data-fdy-upload-simulate]
- *       aria-label="Unggah berkas — seret ke sini atau tekan Enter">
+ *       aria-label="Unggah berkas, seret ke sini atau tekan Enter">
  *    <span class="fdy-dropzone__icon">…svg…</span>
  *    <span class="fdy-dropzone__title">…</span>
  *    <span class="fdy-dropzone__hint">…</span>
@@ -15,7 +15,7 @@
  *  </div>
  *  <div class="fdy-filelist" id="dz-list"></div>
  *
- * Emits bubbling CustomEvents — BOTH on the dropzone element, which is the one target a consumer
+ * Emits bubbling CustomEvents. BOTH on the dropzone element, which is the one target a consumer
  * needs to listen on:
  *   "fdy-upload-add"    {file, rejected, reason, row}
  *   "fdy-upload-remove" {file}
@@ -51,7 +51,7 @@
   }
 
 
-  /* User-facing strings. Indonesian by default — documented and deliberate for the raw enhancer
+  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
    * path, and every one overridable per element, so a host that speaks another language (the
    * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
@@ -103,7 +103,7 @@
     remove.setAttribute('aria-label', textOf(zone, 'remove', { name: file.name }));
     remove.innerHTML = '&times;';
     remove.addEventListener('click', function () {
-      /* Dispatched on the ZONE, not on the row — the same target as fdy-upload-add, so one listener
+      /* Dispatched on the ZONE, not on the row, the same target as fdy-upload-add, so one listener
          on the dropzone gets both. The row lives in the file list, which the kit's own markup
          contract puts as a SIBLING of the dropzone, so a row event never bubbles through the zone:
          a consumer following the docs saw `add` arrive and `remove` never fire, with no error.
@@ -147,7 +147,7 @@
     }
     return {
       el: el,
-      /* The state a row starts in: chosen, not yet sent. The size alone — it makes no claim about
+      /* The state a row starts in: chosen, not yet sent. The size alone, it makes no claim about
          a transfer, and no progress bar is shown, because nothing is in flight. Without this the
          state machine had no start state: done() claims success, fail() claims an error, and
          uploading() is a lie until the consumer actually sends the file. */
@@ -171,7 +171,7 @@
         bar.style.width = v + '%';
         progressEl.setAttribute('aria-valuenow', String(Math.round(v)));
       },
-      /* The bytes are gone and the server has not answered yet — extraction, scanning, transcoding.
+      /* The bytes are gone and the server has not answered yet, extraction, scanning, transcoding.
          "Mengunggah…" turns false the moment the last byte leaves, and a determinate bar parked at
          100% is the most convincing "hung" signal a UI can produce, so this state reports no
          percentage: the bar goes indeterminate and the label belongs to the consumer, because only

@@ -1,4 +1,4 @@
-/* Freeday — Time picker (input-styled trigger + scrollable time-list popover).
+/* Freeday. Time picker (input-styled trigger + scrollable time-list popover).
  * Built by freeday-timepicker.js from an empty [data-fdy-timepicker] wrapper.
  * Trigger visual mirrors the date picker for a consistent control family. */
 .fdy-timepicker{position:relative;display:inline-block;width:100%;max-width:11rem;}

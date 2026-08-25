@@ -1,4 +1,4 @@
-/* Freeday — breakpoint provider (optional, zero-dependency).
+/* Freeday, breakpoint provider (optional, zero-dependency).
  * The MudBreakpointProvider equivalent for JS consumers: stamps the current breakpoint on
  * <html data-breakpoint="xs|sm|md|lg|xl"> and emits a bubbling "fdy-breakpoint-change"
  * CustomEvent (detail {breakpoint}) whenever it changes. Also fills any element with

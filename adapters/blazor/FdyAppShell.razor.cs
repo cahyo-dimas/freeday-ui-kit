@@ -6,7 +6,7 @@ namespace Freeday.Blazor;
 public partial class FdyAppShell
 {
     /// <summary>
-    /// Whether the nav is visible to the reader — one idea, in both modes: above the nav breakpoint
+    /// Whether the nav is visible to the reader, one idea, in both modes: above the nav breakpoint
     /// a hidden nav is a collapsed column, below it a visible nav is an overlay. The kit owns that
     /// mapping so an app never reasons about the viewport to answer a question about its own UI.
     /// <para>
@@ -26,7 +26,7 @@ public partial class FdyAppShell
     /// <summary>The brand block at the top of the sidebar.</summary>
     [Parameter] public RenderFragment? BrandContent { get; set; }
 
-    /// <summary>The navigation itself — normally a <c>.fdy-nav</c> list.</summary>
+    /// <summary>The navigation itself, normally a <c>.fdy-nav</c> list.</summary>
     [Parameter] public RenderFragment? NavContent { get; set; }
 
     /// <summary>Topbar actions, rendered after the title.</summary>
@@ -54,7 +54,7 @@ public partial class FdyAppShell
 
         if (NavOpen is bool wanted)
         {
-            // A caller that bound a value is authoritative — push it down.
+            // A caller that bound a value is authoritative, push it down.
             await JS.InvokeVoidAsync("FreedayAppShell.setVisible", Root, wanted);
             _lastNavOpen = wanted;
         }

@@ -1,4 +1,4 @@
-/* Freeday — React adapter (thin). The enhancers stay the source of truth; this
+/* Freeday. React adapter (thin). The enhancers stay the source of truth; this
  * hook re-runs every registered window.Freeday*.initAll() over a subtree after
  * React commits, so [data-fdy-*] markup rendered by React gets enhanced (and
  * re-enhanced after updates). Enhancers are idempotent, so the repeated calls
@@ -14,7 +14,7 @@
  * well as descendants, so both shapes work. (Before 1.23.0 only the wrapping shape did, and
  * the other failed silently: querySelectorAll never matches its root.)
  *
- * Events are native bubbling CustomEvents — add listeners on the root (they
+ * Events are native bubbling CustomEvents, add listeners on the root (they
  * bubble) and read event.detail. See index.d.ts for the detail types.
  */
 import { useEffect, useCallback } from 'react';

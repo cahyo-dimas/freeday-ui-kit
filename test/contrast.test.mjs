@@ -65,7 +65,7 @@ for (const s of SURF) {
 for (const [strong, soft] of [['--color-primary-strong', '--color-primary-soft'], ['--color-success-strong', '--color-success-soft'], ['--color-warning-strong', '--color-warning-soft'], ['--color-danger-strong', '--color-danger-soft'], ['--color-info-strong', '--color-info-soft']])
   for (const s of SURF) add(strong, { soft, on: s }, AA_TEXT, `${strong.replace('--color-', '')} on ${soft.replace('--color-', '')}/${s.replace('--color-surface', 'surf')}`);
 /* Inline state text (.fdy-text-success/-warning/-danger, note 001 §5) puts these inks on a PLAIN
- * surface — the pairing above only covers them over their own -soft fill, which is a different
+ * surface, the pairing above only covers them over their own -soft fill, which is a different
  * background. A role that de-emphasises nothing must still be readable. */
 for (const strong of ['--color-success-strong', '--color-warning-strong', '--color-danger-strong'])
   for (const s of SURF)
@@ -77,7 +77,7 @@ add('--color-on-accent', '--color-accent', AA_UI, 'accent FAB icon (icon-only, n
  * DARKEST surface it can sit on, not just the lightest. surface-3 was the missing one; it is the
  * case that pinned the dark theme to 3.02 before --slate-450. */
 /* 3.25, not 3.0: a boundary that clears the floor by 0.02 has no headroom at all, and that is exactly
- * where the dark theme sat (3.02 on surface-3) until --slate-450. The margin is the guard — reverting
+ * where the dark theme sat (3.02 on surface-3) until --slate-450. The margin is the guard, reverting
  * the token to the old slate-500 passes WCAG and silently returns the dark theme to the cliff. */
 const UI_MARGIN = 3.25;
 for (const s of SURF) add('--color-control-border', s, UI_MARGIN, `control border (input/select/checkbox…) on ${s}`);

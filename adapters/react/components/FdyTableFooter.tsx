@@ -8,19 +8,19 @@ import { FdyCombo } from './FdyCombo';
  * The band under a table: what you are looking at, how much of it you see, where you are.
  *
  * `FdyTable` renders this itself, so most screens never import it. It is exported for the one shape
- * that cannot use the table's own — a RESPONSIVE list, where a `.fdy-datatable` at `lg` and a
+ * that cannot use the table's own, a RESPONSIVE list, where a `.fdy-datatable` at `lg` and a
  * `.fdy-list` below it are two renderings of ONE page of rows. A footer inside the table is inside
  * the half that is hidden on a phone, so those screens need to render it once, outside both
  * (improvement notes #005 and #008, from IDU_EMATE_APPL_WEB).
  *
- * It owns nothing. `page` in, `onPageChange` out — the same contract as the table's server mode.
+ * It owns nothing. `page` in, `onPageChange` out, the same contract as the table's server mode.
  */
 export interface FdyTableFooterProps {
   /** The page being shown. `size` drives the range AND the rows-per-page control's value. */
   page: FdyPageState;
   onPageChange?: (page: FdyPageState) => void;
   /**
-   * Offer a rows-per-page control. Omit for none — the footer is then range + pager, exactly as
+   * Offer a rows-per-page control. Omit for none; the footer is then range + pager, exactly as
    * before. Picking a size calls `onPageChange` with the new `size` and the index that still holds
    * the row you were looking at.
    */
@@ -29,7 +29,7 @@ export interface FdyTableFooterProps {
 
 export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
   const { index, size, total } = props.page;
-  /* The combo is labelled by the visible word beside it — a <label htmlFor> cannot reach inside a
+  /* The combo is labelled by the visible word beside it, a <label htmlFor> cannot reach inside a
    * component, and an aria-label would leave that word attached to nothing. */
   const sizeLabelId: string = useId();
 
@@ -41,7 +41,7 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
 
   const hasPager: boolean = size > 0 && totalPages > 1;
   const sizes: readonly number[] = props.pageSizes ?? [];
-  /* One page and no size control means there is nothing here to say — the table has always withheld
+  /* One page and no size control means there is nothing here to say, the table has always withheld
    * the whole band in that case, and this is where that decision now lives. */
   if (!hasPager && sizes.length === 0) return null;
 

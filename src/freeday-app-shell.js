@@ -1,4 +1,4 @@
-/* Freeday — app shell enhancer (optional, zero-dependency).
+/* Freeday, app shell enhancer (optional, zero-dependency).
  * Opt in with <div class="fdy-app" data-fdy-app>; the markup is otherwise unchanged.
  *
  * The shell has always shipped the state classes and no behaviour, which left every consumer to
@@ -9,15 +9,15 @@
  *
  * One rule covers both a hidden nav and a hidden page:
  *   - `__sidebar` is inert whenever the nav is NOT visible. Off-canvas and collapsed panels stay in
- *     the tab order otherwise — translateX(-100%) and width:0 hide a thing from the eye, not from
+ *     the tab order otherwise, translateX(-100%) and width:0 hide a thing from the eye, not from
  *     the keyboard, which is how a nav nobody can see still swallows Tab.
  *   - `__content` is inert only while the nav is an OPEN OVERLAY, so Tab cannot wander behind the
  *     backdrop.
  *
  * Emits a bubbling `fdy-app-nav` CustomEvent (detail {visible}) whenever the nav's visibility
  * changes, and takes `FreedayAppShell.setVisible(root, visible)` from outside. Those two exist for
- * the same reason the other enhancers have them: a host that keeps its own state — the Blazor
- * wrapper binding @bind-NavOpen, an app persisting the collapsed preference — has to be able to
+ * the same reason the other enhancers have them: a host that keeps its own state, the Blazor
+ * wrapper binding @bind-NavOpen, an app persisting the collapsed preference, has to be able to
  * hear the change and to drive it, without owning the behaviour twice.
  * FreedayAppShell.init(root) for late-mounted markup.
  */
@@ -62,7 +62,7 @@
     function isCollapsed() { return app.classList.contains('fdy-app--nav-collapsed'); }
     function navVisible() { return mqWide.matches ? !isCollapsed() : isOverlayOpen(); }
 
-    /* aria-expanded answers "is the nav showing?" in BOTH modes — the two state classes are the
+    /* aria-expanded answers "is the nav showing?" in BOTH modes, the two state classes are the
        kit's business, not the reader's. */
     function sync() {
       var visible = navVisible();
@@ -91,7 +91,7 @@
       }
     }
 
-    /* restoreFocus is false when the viewport closed it rather than the user — a resize must not
+    /* restoreFocus is false when the viewport closed it rather than the user, a resize must not
        yank focus out from under whatever the reader was doing. */
     function close(restoreFocus) {
       if (!isOverlayOpen()) return;
@@ -118,7 +118,7 @@
 
     if (backdrop) backdrop.addEventListener('click', function () { close(); });
 
-    /* Following a link inside an overlay nav means "take me there" — leaving the panel open over
+    /* Following a link inside an overlay nav means "take me there", leaving the panel open over
        the page you just asked for is the one thing every hand-rolled copy in this repo disagreed on. */
     sidebar.addEventListener('click', function (e) {
       if (!isOverlayOpen()) return;

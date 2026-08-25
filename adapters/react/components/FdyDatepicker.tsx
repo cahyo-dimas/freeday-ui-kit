@@ -55,7 +55,7 @@ export interface FdyDatepickerProps {
   ariaLabelledby?: string;
   /** Show a clear (×) button in the trigger when a date is set, so an optional date can be unset. Calls onChange('') to reset. Off by default. */
   clearable?: boolean;
-  /** aria-label for the previous-month nav button. Default 'Previous month' — override for non-English UIs (month/weekday names already follow `locale`). */
+  /** aria-label for the previous-month nav button. Default 'Previous month', override for non-English UIs (month/weekday names already follow `locale`). */
   /** aria-label for the title button that drills to the month grid. Default 'Choose month'. */
   chooseMonthLabel?: string;
   /** aria-labels for the year arrows shown in the month grid. Defaults 'Previous year' / 'Next year'. */
@@ -132,7 +132,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const pendingFocusRef = useRef<string | null>(null);
 
   const [open, setOpen] = useState<boolean>(false);
-  /* 'days' | 'months' — the calendar drills one level up instead of growing furniture beside the
+  /* 'days' | 'months', the calendar drills one level up instead of growing furniture beside the
      title. Before this the only pointer route to another month was one click per month. */
   const [mode, setMode] = useState<'days' | 'months' | 'years'>('days');
   const [focusMonth, setFocusMonth] = useState<number>(0);
@@ -224,7 +224,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     return false;
   }
 
-  /** A month is only unreachable when the WHOLE month falls outside min/max — a range that sits
+  /** A month is only unreachable when the WHOLE month falls outside min/max, a range that sits
    *  inside one month disables both ends while the middle is perfectly selectable. */
   function isMonthDisabled(year: number, month: number): boolean {
     const first: Date = new Date(year, month, 1);

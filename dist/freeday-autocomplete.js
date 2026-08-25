@@ -1,7 +1,7 @@
-/* Freeday — autocomplete enhancer (optional, zero-dependency).
+/* Freeday, autocomplete enhancer (optional, zero-dependency).
  * Editable combobox (WAI-ARIA APG): a text input filters a role="listbox" of role="option"
  * items as you type; select fills the input. Auto-inits [data-fdy-autocomplete]. Options are
- * static markup filtered client-side — in an app, fetch/filter server-side and re-render options.
+ * static markup filtered client-side, in an app, fetch/filter server-side and re-render options.
  *
  * Markup: <div data-fdy-autocomplete class="fdy-autocomplete">
  *   <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"

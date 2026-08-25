@@ -4,7 +4,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch, nextTick, type Comput
 // A Vue-native wrapper over freeday's zero-dependency chart renderer (freeday-chart.js).
 // Unlike the input components, charts are not form controls, so re-implementing them in Vue
 // would only duplicate the SVG maths. Instead this thin wrapper binds the renderer's data-*
-// API reactively and re-invokes window.FreedayChart.update() whenever the data changes — giving
+// API reactively and re-invokes window.FreedayChart.update() whenever the data changes, giving
 // reactive, typed charts (a drop-in replacement for hand-rolled Chart.js wrappers) with no
 // external dependency. Because the renderer paints with CSS var()/--chart-* tokens, charts also
 // recolour on data-theme change for free. Requires the freeday enhancers (dist/freeday.js) to be
@@ -16,7 +16,7 @@ interface FdyChartSeries {
   role?: string;
 }
 
-// Note: no `ariaLabel` prop — pass `aria-label` (and any other native attribute) directly; it
+// Note: no `ariaLabel` prop, pass `aria-label` (and any other native attribute) directly; it
 // falls through onto the root element. `role="img"` is set below. Give every chart an aria-label.
 const props = defineProps<{
   type: 'line' | 'area' | 'bar' | 'sparkline' | 'donut';

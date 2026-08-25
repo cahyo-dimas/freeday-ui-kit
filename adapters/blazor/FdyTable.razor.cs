@@ -30,8 +30,8 @@ public partial class FdyTable<TRow>
     [Parameter] public int PageSize { get; set; }
 
     /// <summary>
-    /// Controlled client-side page index (0-based). Set it — with <see cref="PageSize"/>, without
-    /// <see cref="Page"/> — to own the page while the table keeps doing filter/sort/paginate. That is
+    /// Controlled client-side page index (0-based). Set it, with <see cref="PageSize"/>, without
+    /// <see cref="Page"/>, to own the page while the table keeps doing filter/sort/paginate. That is
     /// what lets an EXTERNAL pager drive the table: a responsive screen that hides the datatable below
     /// the <c>md</c> breakpoint and renders a card list from <see cref="Process"/> can render one pager
     /// for both breakpoints and bind it here. Leave null for the internal index (unchanged default).
@@ -45,14 +45,14 @@ public partial class FdyTable<TRow>
     /// Offer a rows-per-page control in the footer, beside the range and the pager. Leave null for
     /// none (unchanged default). Every back office has one, and a table that renders two thirds of
     /// its own footer forces the app to rebuild all three to add the last (#008).
-    /// Server mode reports the pick through <see cref="PageChanged"/> — same callback as a page
+    /// Server mode reports the pick through <see cref="PageChanged"/>, same callback as a page
     /// click, with a new size. Client mode applies it internally and also raises
     /// <see cref="PageSizeChanged"/>, so the control works with nothing wired.
     /// </summary>
     [Parameter] public IReadOnlyList<int>? PageSizes { get; set; }
 
     /// <summary>Raised in client mode when the reader picks a new rows-per-page. The table has
-    /// already applied it — this is for a caller that wants to persist the choice.</summary>
+    /// already applied it, this is for a caller that wants to persist the choice.</summary>
     [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
 
     [Parameter] public int? PageIndex { get; set; }
@@ -113,7 +113,7 @@ public partial class FdyTable<TRow>
         FiltersControlled ? (Filters ?? EmptyFilters) : _internalFilters;
 
     /* Client-mode rows-per-page. PageSize is a plain parameter with no callback, so a footer control
-     * that only reported would do nothing in the app that wired nothing — the table applies the pick
+     * that only reported would do nothing in the app that wired nothing, the table applies the pick
      * itself and reports it. An explicit change to the parameter wins back (see OnParametersSet). */
     private int? _internalPageSize;
     private int _prevPageSize;

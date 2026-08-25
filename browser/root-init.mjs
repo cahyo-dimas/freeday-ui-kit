@@ -1,9 +1,9 @@
-/* Browser regression spec — `initAll(ctx)` must also enhance `ctx` itself.
+/* Browser regression spec, `initAll(ctx)` must also enhance `ctx` itself.
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips
  * without Chrome.
  *
  * `querySelectorAll` never matches its own root. Putting a framework ref directly on the widget —
- * `<div ref="menu" data-fdy-menu>`, which is completely ordinary in Vue and React — therefore meant
+ * `<div ref="menu" data-fdy-menu>`, which is completely ordinary in Vue and React, therefore meant
  * the one element that needed enhancing was the only one that could not be found. It failed with no
  * error, no warning, and a UI that looked finished: the markup rendered and simply never opened.
  * Only a real browser shows this, because the symptom is behavioural, not structural.

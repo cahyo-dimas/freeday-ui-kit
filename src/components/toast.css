@@ -1,4 +1,4 @@
-/* Freeday — Toast (transient notification) */
+/* Freeday. Toast (transient notification) */
 /* The region is a POPOVER, not merely a high z-index.
    `.fdy-modal` is a native <dialog> opened with showModal(), which puts it in the TOP LAYER — a
    layer above the whole z-index universe, so no number here could ever beat it. A toast raised by

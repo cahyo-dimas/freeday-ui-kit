@@ -1,4 +1,4 @@
-/* Browser regression spec — a card whose whole surface is one button's hit area.
+/* Browser regression spec, a card whose whole surface is one button's hit area.
  * Run via `npm run test:browser`; NOT part of the default `node --test` gate. Auto-skips without
  * Chrome.
  *
@@ -106,7 +106,7 @@ test('a list row anchors its own stretched target (#008 §1)', { skip }, async (
     assert.ok(clicks.includes('open1') && !clicks.includes('open2'),
       `pressing row one must open row one, got ${JSON.stringify(clicks)}`);
 
-    // The escape hatch is raised inside a row too — the raise rule now lists both hosts.
+    // The escape hatch is raised inside a row too, the raise rule now lists both hosts.
     await p.evalJS('window.reset()');
     await p.clickCenter('#det1');
     clicks = JSON.parse(await p.evalJS('JSON.stringify(window.clicks)'));

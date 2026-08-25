@@ -1,4 +1,4 @@
-/* Freeday — Modal (native <dialog>) */
+/* Freeday. Modal (native <dialog>) */
 .fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;flex-direction:column;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal--sm{width:min(24rem,calc(100vw - var(--space-8)));}
 .fdy-modal--md{width:min(32rem,calc(100vw - var(--space-8)));}

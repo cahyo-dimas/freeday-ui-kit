@@ -1,7 +1,7 @@
-/* Browser regression specs — Vue + React adapters, actually mounted and clicked.
+/* Browser regression specs. Vue + React adapters, actually mounted and clicked.
  * Guards note #38 (v1.13.1): the option <li> isn't focusable, so without
  * mousedown/onMouseDown preventDefault a real click blurs the button, fires focusout,
- * and the list closes before the pick lands — mouse-select silently does nothing.
+ * and the list closes before the pick lands, mouse-select silently does nothing.
  * The vanilla equivalent is covered in vanilla.mjs; the adapters are a separate codebase
  * that carried the same bug independently, so they need their own guard.
  *
@@ -26,7 +26,7 @@ async function assertMouseSelect(fixtureName) {
     await p.clickCenter('.fdy-combo__button');
     const opened = await p.waitFor(`document.querySelector('.fdy-combo__button').getAttribute('aria-expanded') === 'true'`);
     assert.ok(opened, 'listbox opens on trigger click');
-    // Second option is "Badge" — click it with a trusted gesture.
+    // Second option is "Badge", click it with a trusted gesture.
     await p.clickCenter('.fdy-combo__option[aria-selected="false"]');
     const changed = await p.waitFor(`window.__val === 'badge'`);
     assert.ok(changed, `mouse-select should update value to "badge", got "${await p.evalJS('window.__val')}"`);
@@ -115,7 +115,7 @@ test('React FdyCfl: clearable emits null and keeps focus', { skip }, async () =>
 });
 
 /* The month drill (note 004 §1). The calendar's only pointer route to another month was one click
- * per month — August 2026 to March 2022 is fifty-three, and the Shift+PageUp year jump had no
+ * per month. August 2026 to March 2022 is fifty-three, and the Shift+PageUp year jump had no
  * affordance at all. The title is a control now. Driven with real clicks because the thing being
  * tested is the route a pointer takes. */
 async function assertMonthDrill(fixtureName) {
@@ -160,7 +160,7 @@ test('React FdyDatepicker: the title drills to a month grid', { skip }, async ()
 
 /* The third level. The month grid solved one-click-per-month and left one-click-per-year in its
  * place: 2026 to 1998 was twenty-eight clicks on ‹. Driven with real clicks, and asserted on the
- * ADAPTERS specifically — a typecheck cannot tell you whether a mode ever renders. */
+ * ADAPTERS specifically, a typecheck cannot tell you whether a mode ever renders. */
 async function assertYearDrill(fixtureName) {
   await withPage(fixture(fixtureName), async (p) => {
     await p.waitFor(`document.querySelector('.fdy-datepicker__trigger')`);
@@ -189,7 +189,7 @@ async function assertYearDrill(fixtureName) {
     assert.equal(await p.evalJS(`document.querySelector('.fdy-cal__title').textContent.trim()`), String(from + 1),
       'showing the year that was picked');
 
-    /* Navigation, not selection — same contract as the month grid one level down. */
+    /* Navigation, not selection, same contract as the month grid one level down. */
     assert.equal(await p.evalJS('window.__val'), '2026-08-14',
       'choosing a year must not change the value');
   });
@@ -242,7 +242,7 @@ test('Vue FdyTable: the footer resizes the page and keeps your place', { skip },
 
 /* Server mode owned the pager and would not let go (note 005). Two tables, same server page state:
  * one with pager={false}, one without. The escape hatch has to remove the footer from the DOM, not
- * just hide it — a visually hidden pager is still in the tab order and still announced. */
+ * just hide it, a visually hidden pager is still in the tab order and still announced. */
 test('Vue FdyTable: pager={false} withholds the footer in server mode', { skip }, async () => {
   await withPage(fixture('vue-table-pager-off.html'), async (p) => {
     await p.waitFor(`document.querySelectorAll('.fdy-datatable').length === 2`);
@@ -260,7 +260,7 @@ test('Vue FdyTable: pager={false} withholds the footer in server mode', { skip }
   });
 });
 
-/* #026 — a column of row controls could be named or quiet, not both. `labelHidden` clips the label
+/* #026, a column of row controls could be named or quiet, not both. `labelHidden` clips the label
  * instead of dropping it, so the cell reads as empty and the column is still announced. Asserted in
  * a real browser because the claim is about COMPUTED geometry (clip + 1px box), which a string match
  * on the markup cannot see: a span carrying the class but no CSS would pass a static guard and still
