@@ -2065,23 +2065,23 @@ Rilis **patch 1.3.1**. Buang rail aksen "eyebrow" di state aktif/terpilih.
   combo, ring highlight combo.
 
 ## [1.3.0] - 2026-07-23
-Rilis **1.3 — accent Azure**. Warna sekunder/aksen berubah dari **teal → biru Microsoft Azure**.
+Rilis **1.3: accent Azure**. Warna sekunder/aksen berubah dari **teal → biru Microsoft Azure**.
 ### Changed
-- **Accent: teal → sky / Azure blue** — `--color-accent` kini `#0078d4` (light) / `#47a1e6` (dark),
+- **Accent: teal → sky / Azure blue.** `--color-accent` kini `#0078d4` (light) / `#47a1e6` (dark),
   menggantikan teal `#0d9488`. Ramp primitif `teal` diganti `sky` (biru Azure muda);
   `--color-accent-hover` & `--color-on-accent` ikut disesuaikan (on-accent dark `#06233f` agar
   kontras di atas accent biru-muda dark). Semua konsumen `--color-accent` ikut otomatis: varian
   opt-in `.fdy-fab--accent`/`.fdy-slider--accent`/`.fdy-badge-ov--accent`, chrome docs, swatch
-  identitas. Identitas kit kini **Azure** (primary biru-deep + accent biru-muda) — teal dibuang.
+  identitas. Identitas kit kini **Azure** (primary biru-deep + accent biru-muda); teal dibuang.
   Kontras WCAG tetap **9/9** (accent/surface + on-accent/accent lolos light & dark). Non-breaking
   (nilai token berubah; nama token/kelas/API tetap).
 
 ## [1.2.2] - 2026-07-23
-Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terpilih.
+Rilis **patch 1.2.2**. Polish app-shell + koreksi warna indikator aktif/terpilih.
 ### Fixed
-- **Brand link-safe (#17)** — `.fdy-app__brand` kini set `text-decoration:none`; saat brand
+- **Brand link-safe (#17):** `.fdy-app__brand` kini set `text-decoration:none`; saat brand
   dijadikan link "logo → home", judul/subjudul tak lagi ber-underline default browser.
-- **Indikator aktif/terpilih: teal → primary (#18 + extend)** — bar/underline/check pada state
+- **Indikator aktif/terpilih: teal → primary (#18 + extend).** Bar/underline/check pada state
   aktif/terpilih sebelumnya pakai `--color-accent` (teal), yang **clash** dengan bg
   `--color-primary-soft` + teks `--color-primary-strong` pada palet re-theme (accent ≠ primary).
   Kini semua cue "you-are-here / terpilih" seragam di keluarga **primary**: item nav, underline
@@ -2090,9 +2090,9 @@ Rilis **1.2.2 — patch**. Polish app-shell + koreksi warna indikator aktif/terp
   bagian "teal sebagai aksen fungsional" dari v1.1.0. Murni CSS, backward-compatible.
 
 ## [1.2.1] - 2026-07-23
-Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
+Rilis **patch 1.2.1**. Perbaikan CSS ikon depan `.fdy-input-group`.
 ### Fixed
-- **Ikon depan input-group tak ke-center + gap** — `.fdy-input-group__addon--icon` dipakai
+- **Ikon depan input-group tak ke-center + gap.** `.fdy-input-group__addon--icon` dipakai
   standalone tapi tak set `display`/`align-items`, jadi `<svg>`-nya nempel ke atas kotak flex
   yang ter-stretch (ikon melayang tinggi); dan padding-kiri ikon menumpuk dengan padding-kiri
   `.fdy-input` → gap lebar. Kini `--icon` self-contained (`inline-flex` + center, meniru
@@ -2100,22 +2100,22 @@ Rilis **1.2.1 — patch**. Perbaikan CSS ikon depan `.fdy-input-group`.
   backward-compatible. Kena semua field search/find (topbar search, filter tabel, dialog CFL, dst).
 
 ## [1.2.0] - 2026-07-23
-Rilis **1.2 — Vue input wrappers (native reimpl)**. Komponen Vue idiomatik dengan `v-model`
+Rilis **1.2: Vue input wrappers (native reimpl)**. Komponen Vue idiomatik dengan `v-model`
 nyata di atas class CSS kit, supaya form Vue tak perlu fallback ke `<select>`/`<input type=date>`
 native. **Non-breaking**: murni tambahan (file `.vue` + export baru); enhancer, `useFreeday`,
 dan semua class/token lama tak berubah. `vue` tetap peerDependency opsional.
 ### Added
-- **`FdyCombo`** (`import { FdyCombo } from 'freeday/vue'`) — combobox select-only WAI-ARIA APG
+- **`FdyCombo`** (`import { FdyCombo } from 'freeday/vue'`) adalah combobox select-only WAI-ARIA APG
   dengan `v-model` (generic `T extends string`), keyboard penuh (↑↓/Home/End/Enter/Esc/typeahead)
   + outside-click; props `options`/`placeholder`/`disabled`/`invalid`/`describedby`/`ariaLabelledby`.
-- **`FdyDatepicker`** — kalender native di atas `datepicker.css`; `v-model` string ISO
+- **`FdyDatepicker`** adalah kalender native di atas `datepicker.css`; `v-model` string ISO
   `YYYY-MM-DD`, `min`/`max`, `locale` (Intl), keyboard grid penuh, `invalid`/`ariaLabelledby`.
-- **`FdyCfl`** — choose-from-list **controlled + async**: `v-model:Row|null` +
+- **`FdyCfl`** adalah choose-from-list **controlled + async**: `v-model:Row|null` +
   `fetchPage(query,page) => Promise<{rows,hasMore}>`, `columns`/`display`/`rowKey`. `<dialog>`
   native, search debounced, state loading/empty/error(+retry), pagination append, cache opsional,
   guard respons out-of-order. Ini kontrak integrasi field lookup (map nilai → master data server).
-- **Error-state kit** — varian `--error`/`[aria-invalid]` ditambah ke `combo`/`cascade`/
-  `datepicker`/`timepicker`, dan `input-group :has()` diperluas menangkap error kontrol — jadi
+- **Error-state kit:** varian `--error`/`[aria-invalid]` ditambah ke `combo`/`cascade`/
+  `datepicker`/`timepicker`, dan `input-group :has()` diperluas menangkap error kontrol, jadi
   validasi vanilla (`freeday-form`) **dan** prop `invalid` wrapper Vue sama-sama ber-styling.
   (Field CFL = `.fdy-input`+input-group, jadi error-nya via `aria-invalid` pada input, bukan
   kelas `.fdy-cfl--error`.)
@@ -2128,58 +2128,58 @@ dan semua class/token lama tak berubah. `vue` tetap peerDependency opsional.
   hari fokus-awal yang ter-`min`/`max`-disable bisa bikin grid tak ter-fokus keyboard di config tepi.
 
 ## [1.1.0] - 2026-07-23
-Rilis **1.1 — "Precision" visual polish + pengerasan adopsi**. Dua bagian: **(1) penyegaran
-visual** token-driven — radius lebih tajam, elevation overlay lebih tegas, hierarki tipografi
+Rilis **1.1: "Precision" visual polish + pengerasan adopsi**. Dua bagian: **(1) penyegaran
+visual** token-driven: radius lebih tajam, elevation overlay lebih tegas, hierarki tipografi
 heading lebih jelas, teal (`--color-accent`) sebagai indikator fungsional non-teks untuk state
-aktif/terpilih; **(2) pengerasan adopsi** dari pemakaian project nyata — palet chart tervalidasi,
+aktif/terpilih; **(2) pengerasan adopsi** dari pemakaian project nyata: palet chart tervalidasi,
 ukuran modal, nav statis, brand shell, export breakpoint, drawer `initAll`, dan tokenisasi kontrol.
 **Non-breaking**: tak ada rename kelas/token/API (`fdy-` prefix, `--color-*`,
 `window.Freeday*` tetap stabil). **AA-gated**: `npm test` tetap hijau (9/9), termasuk 6
 assertion kontras baru yang menjaga teal-on-surface ≥3:1 di light & dark.
 ### Changed
-- **Radius ramp lebih tajam** — skala dirapatkan ke `3/4/6/10/14/999px` (dari nilai lama yang
+- **Radius ramp lebih tajam.** Skala dirapatkan ke `3/4/6/10/14/999px` (dari nilai lama yang
   lebih membulat), kesan lebih presisi di semua kontrol & container.
-- **Motion lebih responsif** — durasi dasar `--dur-base` 200ms→180ms, `--dur-slow` 320ms→280ms.
-- **Elevation overlay dijatah ulang** — bayangan `--shadow-3` (menu/dropdown/popover) dan
+- **Motion lebih responsif.** Durasi dasar `--dur-base` 200ms→180ms, `--dur-slow` 320ms→280ms.
+- **Elevation overlay dijatah ulang.** Bayangan `--shadow-3` (menu/dropdown/popover) dan
   `--shadow-4` (modal) kini lebih tajam & lebih hadir secara visual; bayangan resting
   (kartu, tombol) tidak berubah.
-- **Hierarki heading "Precision"** — `h1`–`h4` kini memakai `--font-display` (Sora) / 700 /
+- **Hierarki heading "Precision".** `h1`–`h4` kini memakai `--font-display` (Sora) / 700 /
   `--tracking-tighter` (token baru, -0.03em) / `--leading-snug`; ukuran font tidak berubah.
-- **State interaksi disatukan** — hover/active/disabled/focus-visible dirapikan lintas
+- **State interaksi disatukan.** Hover/active/disabled/focus-visible dirapikan lintas
   input/combo/cascade/chip/pagination/selection; memperbaiki bug nyata di mana
   `.fdy-chip--filter` tidak punya focus ring sama sekali.
-- **`.fdy-table-scroll` scroll tanpa syarat** — tak lagi hanya berlaku di dalam `.fdy-datatable`
+- **`.fdy-table-scroll` scroll tanpa syarat**, tak lagi hanya berlaku di dalam `.fdy-datatable`
   (`.fdy-table-wrap` untuk shell berbingkai, `.fdy-table-scroll` untuk scroll polos standalone).
-- **`selection.css` di-tokenkan** — nilai mentah (`#fff` thumb switch, inset `rgba`, dimensi
+- **`selection.css` di-tokenkan.** Nilai mentah (`#fff` thumb switch, inset `rgba`, dimensi
   `1.15`/`2.4`/`1.35rem`) → token (`--color-switch-thumb`, `--color-shadow-inset`, `--control-box`,
   `--control-switch-w/-h`). Nol perubahan visual.
-- **Default warna seri donut** — saat `data-fdy-colors` lebih pendek dari jumlah seri, celah kini
+- **Default warna seri donut:** saat `data-fdy-colors` lebih pendek dari jumlah seri, celah kini
   diisi `--chart-N` fixed-order (bukan cycle palet semantik lama). Non-breaking.
 ### Added
-- **Teal sebagai aksen fungsional** — `--color-accent` dipakai sebagai indikator non-teks
+- **Teal sebagai aksen fungsional.** `--color-accent` dipakai sebagai indikator non-teks
   untuk state aktif/terpilih: item nav aktif, underline tab aktif, baris tabel terpilih,
-  opsi combo/cascade/autocomplete terpilih. Bukan dekorasi — murni penanda status.
+  opsi combo/cascade/autocomplete terpilih. Bukan dekorasi, murni penanda status.
 - **Token baru** `--tracking-tighter` (-0.03em) untuk heading Sora.
 - **6 assertion kontras WCAG (`AA_UI`, 3:1)** baru di `test/contrast.test.mjs` yang menjaga
   teal-on-surface di light & dark tetap lolos ambang kontrol non-teks.
-- **Palet chart kategorikal** — token `--chart-1..8` (+ `--chart-grid`/`--chart-tick`), 8 warna
+- **Palet chart kategorikal:** token `--chart-1..8` (+ `--chart-grid`/`--chart-tick`), 8 warna
   colorblind-safe **tervalidasi** (validator dataviz, light & dark di surface Freeday: dark
   all-pass, light lolos + relief rule). Donut menggambar seri **fixed-order** (tanpa cycle).
   Token chart sengaja di luar `contrast.test.mjs` (a11y via validator palet + legend/label).
-- **Modal size** — `.fdy-modal--sm/--md/--lg/--wide` (24/32/48/60rem, responsif, anti-overflow).
-- **`.fdy-nav--flat`** — varian nav grup statis (tanpa caret / garis antar-grup / affordance
+- **Modal size:** `.fdy-modal--sm/--md/--lg/--wide` (24/32/48/60rem, responsif, anti-overflow).
+- **`.fdy-nav--flat`** adalah varian nav grup statis (tanpa caret / garis antar-grup / affordance
   collapse) + dukung markup non-`<details>` yang benar-benar tak bisa dilipat.
-- **Brand shell berstruktur** — `.fdy-app__brand-mark`/`-title`/`-subtitle` (ikon + 2 baris di
+- **Brand shell berstruktur:** `.fdy-app__brand-mark`/`-title`/`-subtitle` (ikon + 2 baris di
   header shell); pemakaian teks satu-baris tetap jalan.
-- **`FreedayDrawer.initAll`** — drawer kini ter-hydrate `useFreeday` di subtree Vue/React.
-- **Export skala breakpoint** — `freeday/breakpoints` (`{ sm:600, md:960, lg:1280, xl:1920 }`)
+- **`FreedayDrawer.initAll`** membuat drawer ter-hydrate `useFreeday` di subtree Vue/React.
+- **Export skala breakpoint:** `freeday/breakpoints` (`{ sm:600, md:960, lg:1280, xl:1920 }`)
   untuk `matchMedia` / menyelaraskan `@media` app ke skala kit.
-- **Docs** — contoh **product-appbar** siap-copas (breadcrumb + input-group search + menu);
+- **Docs:** contoh **product-appbar** siap-copas (breadcrumb + input-group search + menu);
   install `git+https` untuk CI (repo privat tanpa SSH key); klarifikasi `.fdy-btn` = primary,
   `.fdy-table-wrap`, dan density `--control-h` untuk komponen custom.
 
 ## [1.0.0] - 2026-07-22
-Rilis **1.0 — project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
+Rilis **1.0, project-ready**, sekaligus **rebrand ke Freeday**. Definisi v1.0 terpenuhi:
 kontras WCAG AA lolos audit otomatis · installable via git · integrasi Vue/React/Blazor
 terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 ### Changed
@@ -2195,41 +2195,41 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.9.6] - 2026-07-22
 ### Docs
-- **Whole-app language toggle (ID ⇄ EN)** — the topbar toggle now switches the entire docs,
+- **Whole-app language toggle (ID ⇄ EN):** the topbar toggle now switches the entire docs,
   not just the landing: topbar, sidebar labels + group headers, every section heading, and
   every description. Keyed by section id / nav href, round-trips cleanly. (In-demo sample
   labels stay as illustrative content.)
-- **Proper state icons** — the empty / error state cards use duotone SVG icons instead of
+- **Proper state icons:** the empty / error state cards use duotone SVG icons instead of
   emoji (🗂️/⚠️).
 - Hero CTA spacing loosened (removed a stale `.doc-hero p` rule that zeroed the gap).
 ### Changed
-- **Icons stay single-tone** — reverted the date/time picker glyphs to minimalist single-tone
-  (duotone is reserved for the larger illustrative icons — states — and the theme toggle).
+- **Icons stay single-tone.** Reverted the date/time picker glyphs to minimalist single-tone
+  (duotone is reserved for the larger illustrative icons, meaning states, and the theme toggle).
 
 ## [0.9.5] - 2026-07-22
 ### Added
-- **Two-tone (duotone) control icons** — the date/time picker triggers (and the datetime
+- **Two-tone (duotone) control icons:** the date/time picker triggers (and the datetime
   composer that reuses them) now render with a low-opacity fill behind the stroke, matching the
   sun/moon theme toggle. A coherent duotone treatment for the control-glyph family.
 ### Docs
-- **Landing language toggle (ID ⇄ EN)** — a topbar button swaps the landing copy (hero, stats,
+- **Landing language toggle (ID ⇄ EN):** a topbar button swaps the landing copy (hero, stats,
   framework-integration, footer) between Indonesian and English via `[data-i18n]`; inline
   markup (bold/code) is preserved. Version references synced to v0.9.5.
 
 ## [0.9.4] - 2026-07-22
 ### Added
-- **Sidebar-menu component** — `.fdy-nav` (App shell) now supports per-node `.fdy-nav__icon`
+- **Sidebar-menu component:** `.fdy-nav` (App shell) now supports per-node `.fdy-nav__icon`
   and `.fdy-nav__badge` (count), collapsible sections `.fdy-nav__group`/`.fdy-nav__grouplabel`,
   and nested items `.fdy-nav__tree` + `.fdy-nav__sub` (native `<details>`, zero-JS). Any node
   can be icon+text, text-only, or badged. New "Sidebar menu" docs section.
-- **Responsive App shell** — on mobile (≤720px) the sidebar becomes an **off-canvas drawer**
+- **Responsive App shell:** on mobile (≤720px) the sidebar becomes an **off-canvas drawer**
   opened by the topbar toggle, with a `.fdy-app__backdrop`; on desktop the toggle collapses it.
 ### Changed
-- **Brand ↔ topbar aligned** — `.fdy-app__brand` is now the same height as the topbar
+- **Brand ↔ topbar aligned:** `.fdy-app__brand` is now the same height as the topbar
   (`--space-16`) so the logo and page title sit on the same line. `.fdy-app__title` truncates
   instead of forcing overflow.
 ### Fixed
-- **Awkward Indonesian copy** — dropzone “Jatuhkan …” → “Seret berkas ke sini …”.
+- **Awkward Indonesian copy:** dropzone “Jatuhkan …” → “Seret berkas ke sini …”.
 ### Docs
 - Theme toggle is now a two-tone **sun/moon icon** button. Clearer **notification badge** demo
   (bell + count) explaining the overlay badge works on any element. Responsive fixes so nothing
@@ -2237,7 +2237,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.9.3] - 2026-07-22
 ### Added
-- **Chart hover (Chart.js-style)** — bar & donut charts now show an interactive tooltip that
+- **Chart hover (Chart.js-style):** bar & donut charts now show an interactive tooltip that
   follows the cursor (`label: value`, donut adds `(%)`). Bars dim while one is hovered (the
   hovered bar stays lit); donut gains a transparent SVG sector per slice that pops on hover.
 ### Changed
@@ -2245,7 +2245,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   scrolls away). New `.fdy-app__navtoggle` (hamburger) + `.fdy-app--nav-collapsed` to
   collapse/hide the sidebar. Roomier `--space-8` main padding.
 ### Fixed
-- **Anchor buttons underlined** — `.fdy-btn` now sets `text-decoration:none`, so links styled
+- **Anchor buttons underlined:** `.fdy-btn` now sets `text-decoration:none`, so links styled
   as buttons (e.g. hero CTAs) no longer show an underline.
 ### Docs
 - Nav categories are collapsible `<details>` groups with chevrons (PrimeVue-style); more
@@ -2253,21 +2253,21 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.9.2] - 2026-07-22
 ### Fixed
-- **Hover kontrol form tak terlihat** — sejak border resting jadi `--color-control-border`
+- **Hover kontrol form tak terlihat.** Sejak border resting jadi `--color-control-border`
   (slate-500) untuk a11y, hover yang menuju `--color-text-subtle` (juga slate-500) tak berubah.
   Semua kontrol (input, textarea, combo, cascade, time/date picker, input-group, dropzone) kini
   hover ke `--color-text-muted` (slate-600) → menggelap terlihat.
-- **Split button rusak saat hover** — `translateY(-1px)` per-tombol mengangkat satu paruh saja
+- **Split button rusak saat hover.** `translateY(-1px)` per-tombol mengangkat satu paruh saja
   sehingga jahitan tak sejajar. Kini `.fdy-btn-split` menjadi satu unit: tiap paruh tak
   mengangkat/berbayang sendiri; split terangkat & berbayang sebagai satu kesatuan, plus garis
   pemisah tipis antar paruh.
 
 ## [0.9.1] - 2026-07-22
 ### Added
-- **Adapter React** (`freeday/react`) — hook `useFreeday(rootRef?)` yang meng-*hydrate* enhancer
+- **Adapter React** (`freeday/react`) memberi hook `useFreeday(rootRef?)` yang meng-*hydrate* enhancer
   di subtree pada mount + tiap commit (idempotent). Tipe `event.detail` di
   `adapters/react/index.d.ts`. Contoh jalan `examples/react-faktur/` (Vite + React 19 + TS).
-- **Interop Blazor** (`freeday/blazor`, `adapters/blazor/freeday-blazor.js`) — script klasik yang
+- **Interop Blazor** (`freeday/blazor`, `adapters/blazor/freeday-blazor.js`) adalah script klasik yang
   mendaftarkan `window.FreedayBlazor` dengan `initAll` / `on` / `off` / `toast` / `toggleTheme`.
   `on(el, event, dotNetRef, method)` meneruskan detail (JSON-safe) ke method `[JSInvokable]` C#.
   Contoh jalan `examples/blazor-faktur/` (Blazor WASM, .NET 10, code-behind `.razor` + `.razor.cs`).
@@ -2279,11 +2279,11 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.9.0] - 2026-07-22
 ### Added
-- **Adapter Vue 3** (`freeday/vue`) — composable `useFreeday(rootRef?)` yang meng-*hydrate*
+- **Adapter Vue 3** (`freeday/vue`) memberi composable `useFreeday(rootRef?)` yang meng-*hydrate*
   semua enhancer di subtree komponen saat mount + tiap update (idempotent). Tipis: enhancer
   tetap sumber kebenaran, event `fdy-*` mengalir lewat `v-on` native. Tipe `event.detail`
   disertakan (`FdyCascadeChangeDetail`, dst) di `adapters/vue/index.d.ts`.
-- **Contoh jalan** `examples/vue-faktur/` — layar faktur nyata (Vite + Vue 3 + TS) yang memakai
+- **Contoh jalan** `examples/vue-faktur/` adalah layar faktur nyata (Vite + Vue 3 + TS) yang memakai
   form validation + mask + cascade + datepicker + combo + table via adapter. `npm install &&
   npm run dev`. Membuktikan kontrak integrasi end-to-end (diverifikasi headless: hydrate,
   validasi men-gate submit, event → state Vue, tema light/dark).
@@ -2293,20 +2293,20 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.8.1] - 2026-07-22
 ### Added
-- **Form validation** (`freeday-form.js`, `[data-fdy-validate]`) — Constraint Validation
+- **Form validation** (`freeday-form.js`, `[data-fdy-validate]`) memakai Constraint Validation
   API di-wire ke error inline aksesibel: `aria-invalid` + pesan ter-`aria-describedby`,
   fokus ke field invalid pertama saat submit, re-validasi live tiap blur/input. Pesan
   custom `data-fdy-msg-*`, cocok antar-field `data-fdy-match`. Event `fdy-form-invalid`/
   `fdy-form-valid`, `window.FreedayForm`.
-- **Password reveal + input mask** (`freeday-mask.js`) — `[data-fdy-password]` tambah
+- **Password reveal + input mask** (`freeday-mask.js`): `[data-fdy-password]` tambah
   toggle tampil/sembunyi (memakai ulang chrome tombol input-group); `[data-fdy-mask]`
   format saat mengetik (`#` digit, `A` huruf, `*` alnum, sisanya literal), raw value di
   `dataset.fdyRaw` + event `fdy-mask`. `window.FreedayMask`.
-- **Cascade select** (`cascade.css` + `freeday-cascade.js`, `[data-fdy-cascade]`) —
+- **Cascade select** (`cascade.css` + `freeday-cascade.js`, `[data-fdy-cascade]`):
   pemilih hierarki drill-down dari `<ul>` bersarang; cabang membuka level berikut, daun
   memilih (nilai = jalur lengkap), back/crumb + keyboard penuh. Event `fdy-cascade-change`,
   `window.FreedayCascade`.
-- **Chip choice/filter** (`chip.css` + `freeday-chip.js`) — chip interaktif
+- **Chip choice/filter** (`chip.css` + `freeday-chip.js`): chip interaktif
   (`fdy-chip--choice` / `fdy-chip--filter`, `<button aria-pressed>`) dalam grup
   `[data-fdy-chips]` (`data-single` = pilih-satu), plus wiring hapus untuk
   `.fdy-chip__remove`. Event `fdy-chip-change` / `fdy-chip-remove`, `window.FreedayChip`.
@@ -2321,7 +2321,7 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
   `package.json` kini punya `exports`, `files`, `sideEffects`. Jalur import:
   `freeday/css` (token+komponen), `freeday` (semua enhancer), `freeday/tokens`,
   `freeday/css/components`, `freeday/enhancers/<nama>`.
-- `dist/freeday.bundle.css` — token + komponen dalam satu file (satu import, anti-footgun
+- `dist/freeday.bundle.css` berisi token + komponen dalam satu file (satu import, anti-footgun
   "lupa token").
 - Skrip rilis: lifecycle `version` build-ulang + `git add dist`; `prepack` build-ulang.
 ### Changed
@@ -2329,13 +2329,13 @@ terbukti di contoh faktur yang jalan · docs adopsi lengkap.
 
 ## [0.7.0] - 2026-07-22
 ### Added
-- **Time picker** (`freeday-timepicker.js`, `[data-fdy-timepicker]`) — trigger + popup daftar
+- **Time picker** (`freeday-timepicker.js`, `[data-fdy-timepicker]`): trigger + popup daftar
   waktu (listbox WAI-ARIA), 24 jam, `data-step`/`data-min`/`data-max`, keyboard penuh.
-- **Datetime picker** (`freeday-datetime.js`, `[data-fdy-datetimepicker]`) — komposisi date +
+- **Datetime picker** (`freeday-datetime.js`, `[data-fdy-datetimepicker]`): komposisi date +
   time, satu event `fdy-datetime-change` (`YYYY-MM-DDTHH:MM`).
 - **Konvensi varian ikon**: `data-fdy-no-icon` / `<template data-fdy-icon>` di date/time/datetime
   picker; `fdy-combo--no-icon` + `.fdy-combo__icon` di select; contoh ikon depan di input-group.
-- Test regresi kontras WCAG (`test/contrast.test.mjs`) — audit graf token (light + dark),
+- Test regresi kontras WCAG (`test/contrast.test.mjs`): audit graf token (light + dark),
   composite fill `-soft`, tegakkan 4.5:1 teks / 3:1 batas kontrol.
 ### Fixed
 - **A11y (WCAG 1.4.11 & AA):** border kontrol form 1.55:1 → token `--color-control-border`
