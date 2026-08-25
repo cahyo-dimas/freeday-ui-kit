@@ -1826,7 +1826,7 @@ no breaking changes.
 ### Fixed
 - **`<fieldset class="fdy-field">` no longer leaks native browser chrome (#27).** The kit shipped no
   `fieldset` reset, so a grouped field (a radio/checkbox group with a `<legend>`) showed the UA groove
-  border, extra padding, and `min-inline-size:min-content` — the last of which also blocked the
+  border, extra padding, and `min-inline-size:min-content`, the last of which also blocked the
   filterbar column widths from shrinking it. Added a scoped `fieldset.fdy-field` reset so it lays out
   identically to the `<div>` form.
 - **Chart x-axis: the last label no longer collides with its neighbour (#29).** `freeday-chart.js`
@@ -1846,62 +1846,62 @@ no breaking changes.
   so a squeezed range compresses and wraps instead of clipping the date (was `min-width:0`).
 
 ## [1.9.0] - 2026-07-28
-Follow-ups to 1.8.0's `FdyTable` (improvement notes #25/#26). Additive — the #25 change **widens** a
+Follow-ups to 1.8.0's `FdyTable` (improvement notes #25/#26). Additive, since the #25 change **widens** a
 generic bound, so every call site that compiled before still compiles.
 
 ### Fixed
 - **`FdyTable` now accepts `interface`-typed rows.** The row generic was constrained to
   `Record<string, unknown>`, to which a TypeScript `interface` is never assignable (interfaces get no
-  implicit index signature) — so a normally-typed DTO array failed to compile and `FdyTable` was
+  implicit index signature), so a normally-typed DTO array failed to compile and `FdyTable` was
   effectively unusable in a strict-TS app. Widened the bound to `object` in both adapters; the row type
   now **infers** correctly (`cell-*` slots / `renderCell` are properly typed) and no cast is pushed
-  onto consumers. The component never indexes rows directly — all access goes through the
+  onto consumers. The component never indexes rows directly; all access goes through the
   already-unconstrained core, which is unchanged.
 
 ### Added
 - **`FdyTable` row activation (opt-in).** `rowActivatable` makes rows focusable and emits
   `row-activate` (Vue) / calls `onRowActivate` (React) on click, or Enter/Space while the row itself is
-  focused — a control inside a cell keeps its own event (the `target !== currentTarget` guard). Adds a
+  focused, and a control inside a cell keeps its own event (the `target !== currentTarget` guard). Adds a
   `rowClass(row)` hook for per-row state (e.g. a selected row) and a `.fdy-table__row--activatable`
   class (pointer + `:focus-visible` ring; hover tint is already inherited from the base row rule).
   Replaces the hand-rolled `<tr tabindex="0" @click @keydown>` + duplicated row CSS consumers were
   each re-writing.
 
 ## [1.8.0] - 2026-07-28
-Release **1.8 — framework-safe data table, modal/drawer wrappers, and a monospace utility**.
+Release **1.8: framework-safe data table, modal/drawer wrappers, and a monospace utility**.
 Non-breaking, purely additive. No existing selector, markup, or enhancer changed.
 
 ### Added
-- **`FdyTable` (Vue + React) — a controlled data table.** Reads `rows` as the source of truth on
-  every render, so it is safe over a `v-for` / `.map()` bound to reactive data — unlike the
+- **`FdyTable` (Vue + React), a controlled data table.** Reads `rows` as the source of truth on
+  every render, so it is safe over a `v-for` / `.map()` bound to reactive data, unlike the
   `freeday-table.js` enhancer, which snapshots the DOM and corrupts a framework list on the first
   refetch. Two modes: **client** (component sorts/filters, and paginates when `pageSize` is set,
   over the full `rows`) and **server** (`page` prop present → `rows` render as given and the
   headers/filters/pager only emit `update:sort` / `update:filters` / `update:page`). Type-aware
   column filters (**text / enum / number / date**) in a top-layer popover, sort toggles, and a
-  page-window pager — all over the existing `.fdy-table*` / `.fdy-filter*` / `.fdy-pagination__*`
+  page-window pager, all over the existing `.fdy-table*` / `.fdy-filter*` / `.fdy-pagination__*`
   classes. Column options: `sortable`, `filter`, `align`, `mono`, `sortType`, `value`, `options`.
   Sort/filter/paginate logic lives in a shared, framework-agnostic core (`adapters/core/table-model.js`)
   covered by `node --test` (`test/table-model.test.mjs`).
-- **`FdyModal` + `FdyDrawer` (Vue + React) — controlled `<dialog>` wrappers.** Reconcile a reactive
+- **`FdyModal` + `FdyDrawer` (Vue + React), controlled `<dialog>` wrappers.** Reconcile a reactive
   `open` boolean with the native `<dialog>`'s method-driven open/close: guarded
   `showModal()`/`close()`, `@cancel`/`onCancel` + `preventDefault` so Esc routes through app state,
   and backdrop-click via `event.target === dialogEl`. `open` + `close` event/`onClose`, `title`,
   `size`/`side`, `dismissible` (default true), and `footer`. No new modal CSS.
 - **`.fdy-mono` utility.** Alignment-neutral monospace (data font + tabular figures) for identifier /
-  code / IP / timestamp cells or inline spans — the piece that previously only existed welded into
+  code / IP / timestamp cells or inline spans, the piece that previously only existed welded into
   the right-aligned `.fdy-table__num`. `FdyTable` applies it for any `mono: true` column.
-- **`.fdy-drawer__footer`** — a bottom action bar for drawers (mirrors `.fdy-modal__footer`).
+- **`.fdy-drawer__footer`** is a bottom action bar for drawers (mirrors `.fdy-modal__footer`).
 
 ## [1.7.1] - 2026-07-27
-Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `adapters/`, and
+Docs & distribution patch. **No component/code changes**: `dist/`, `src/`, `adapters/`, and
 `tokens/` are byte-identical to 1.7.0.
 
 ### Changed
 - **Distributed on public npm as `@cahyo-dimas/freeday`.** Install with `npm i @cahyo-dimas/freeday`
-  — `npm ci` now works in CI without auth or an SSH key (the old `git+https` workaround is gone).
+  `npm ci` now works in CI without auth or an SSH key (the old `git+https` workaround is gone).
   Releases publish via GitHub Actions **OIDC Trusted Publishing** (no tokens).
-- **Docs are now English-first** — `README.md`, `docs/getting-started.md`, `docs/integrations.md`,
+- **Docs are now English-first**: `README.md`, `docs/getting-started.md`, `docs/integrations.md`,
   and the example READMEs. `docs/index.html` stays Indonesian for now.
 
 ### Added
@@ -1909,91 +1909,91 @@ Docs & distribution patch. **No component/code changes** — `dist/`, `src/`, `a
   the published package.
 
 ## [1.7.0] - 2026-07-24
-Rilis **1.7 — tree checkbox, form-grid, & tiga section docs full-width**. Non-breaking, aditif.
+Rilis **1.7: tree checkbox, form-grid, & tiga section docs full-width**. Non-breaking, aditif.
 
 ### Added
-- **Tree checkbox (cascading) — `freeday-tree.js` + `.fdy-tree--checkbox`.** Varian tree yang
+- **Tree checkbox (cascading): `freeday-tree.js` + `.fdy-tree--checkbox`.** Varian tree yang
   bisa dipilih: centang cabang → semua anak ikut; sebagian anak → cabang jadi native
   `:indeterminate`. Checkbox = `<input class="fdy-checkbox">` native (Space toggle, nama lewat
   `aria-label`); klik checkbox `stopPropagation` sehingga memilih **tak pernah** membuka/menutup
   cabang, sedangkan teks summary tetap toggle `<details>`. Opt-in via `data-fdy-tree`; init
   post-order menghitung state cabang dari leaf yang sudah tercentang saat load. Zero-dependency,
   `window.FreedayTree`. Tree dasar tetap tanpa JS.
-- **`.fdy-form-grid` — layout header/dokumen.** Pelengkap dua-dimensi dari stack `.fdy-field`
+- **`.fdy-form-grid`, layout header/dokumen.** Pelengkap dua-dimensi dari stack `.fdy-field`
   satu kolom dan baris `.fdy-filterbar`: field tersusun di kolom yang rapi (`auto-fit`, reflow ke
-  satu kolom di layar sempit); `.fdy-field--full` membentang penuh (mis. alamat). Zero JS — murni
+  satu kolom di layar sempit); `.fdy-field--full` membentang penuh (mis. alamat). Zero JS, murni
   layout di atas `.fdy-field`.
-- **File upload — layout melebar.** Modifier `.fdy-dropzone--row` (ikon di samping teks, bukan
+- **File upload, layout melebar.** Modifier `.fdy-dropzone--row` (ikon di samping teks, bukan
   bertumpuk) dan `.fdy-filelist--grid` (baris file berdampingan di layar lebar).
 
 ### Changed
-- **Docs — tiga section jadi full-width & selaras.** Tree (kini menampilkan varian dasar +
+- **Docs: tiga section jadi full-width & selaras.** Tree (kini menampilkan varian dasar +
   checkbox berdampingan), Form (validasi inline + contoh **header + detail**: `.fdy-form-grid` +
   tabel item), dan File upload semuanya melebar mengisi kolom konten agar lebar semua section rata.
   Terverifikasi lewat gestur mouse asli (headless CDP `Input.dispatchMouseEvent`): cascade
   centang/indeterminate, checkbox tak melipat cabang, teks summary tetap toggle.
 
 ## [1.6.2] - 2026-07-24
-Rilis **patch — lisensi**. Tak ada perubahan kode.
+Rilis **patch untuk lisensi**. Tak ada perubahan kode.
 
 ### Changed
 - **Lisensi jadi [MIT](LICENSE)** (`Copyright (c) 2026 Cahyo D. Kurnianto`). Sebelumnya
-  `"license": "UNLICENSED"` tanpa file `LICENSE` — di repo publik itu berarti *all rights
+  `"license": "UNLICENSED"` tanpa file `LICENSE`, dan di repo publik itu berarti *all rights
   reserved*, jadi tak ada yang boleh memakainya secara legal. Sekarang bebas dipakai/ubah/
   distribusi asal menyertakan copyright. `package.json`/`package-lock.json` → `"MIT"`, tambah
   file `LICENSE`, catat di README + footer docs. `"private": true` dipertahankan (pengaman
   anti-`npm publish`, tak terkait lisensi).
 
 ## [1.6.1] - 2026-07-24
-Rilis **patch — perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
+Rilis **patch: perbaikan bug pemilihan combo dengan mouse**. Non-breaking.
 
 ### Fixed
-- **`freeday-select.js` (combo/select vanilla) — memilih opsi dengan mouse tidak berfungsi.**
+- **`freeday-select.js` (combo/select vanilla): memilih opsi dengan mouse tidak berfungsi.**
   Menekan (mousedown) sebuah opsi mem-blur tombol combo; handler `focusout` lalu memanggil
   `close()` yang menyembunyikan listbox **sebelum** event `click` opsi sempat menjalankan
-  `choose()` — sehingga pilihan hilang dan nilai tak berubah (hanya terlihat dengan mouse asli;
+  `choose()`, sehingga pilihan hilang dan nilai tak berubah (hanya terlihat dengan mouse asli;
   navigasi keyboard tak terpengaruh). Perbaikan: `preventDefault` pada `mousedown` listbox agar
   tombol tetap fokus, jadi `click` mendarat normal. Terverifikasi lewat gestur mouse asli
   (headless CDP `Input.dispatchMouseEvent`) pada playground docs dan section Select. Memengaruhi
   konsumen vanilla `freeday/js`; adapter Vue/React punya implementasi sendiri dan tak terdampak.
 
 ## [1.6.0] - 2026-07-24
-Rilis **1.6 — wrapper input ekstra (Vue + React) + filter-bar**. Non-breaking, aditif.
+Rilis **1.6: wrapper input ekstra (Vue + React) + filter-bar**. Non-breaking, aditif.
 
 ### Added
-- **`FdyDateRange` (Vue + React)** — rentang tanggal terkontrol `{start, end}` yang menyusun dua
+- **`FdyDateRange` (Vue + React)** adalah rentang tanggal terkontrol `{start, end}` yang menyusun dua
   `FdyDatepicker` di atas layout `.fdy-daterange` yang sudah ada (akhir tak bisa mendahului awal,
   lewat min/max saling terkait). `v-model` di Vue, `value`/`onChange` di React. Tanpa CSS baru.
-- **`FdyAutocomplete` (Vue + React)** — editable combobox WAI-ARIA APG terkontrol, port dari
+- **`FdyAutocomplete` (Vue + React)** adalah editable combobox WAI-ARIA APG terkontrol, port dari
   enhancer `freeday-autocomplete.js` di atas CSS `.fdy-autocomplete` yang sama: filter saat
   mengetik (substring case-insensitive pada query ter-trim), ↑/↓ dengan wrap, Enter commit,
   Esc/Tab/klik-luar menutup, `aria-activedescendant` + empty state, dropdown top-layer via
-  Popover API. `onSelect`/`select` hanya saat commit — terpisah dari perubahan ketikan, jadi
+  Popover API. `onSelect`/`select` hanya saat commit, terpisah dari perubahan ketikan, jadi
   options yang sudah difilter server bisa dilempar masuk apa adanya.
-- **`FdyCascade` (Vue + React)** — picker hierarkis drill-down terkontrol, port dari enhancer
+- **`FdyCascade` (Vue + React)** adalah picker hierarkis drill-down terkontrol, port dari enhancer
   `freeday-cascade.js` di atas CSS `.fdy-cascade` yang sama: satu level sekaligus, branch masuk,
   kontrol back naik, leaf memilih (value = value leaf, tampilan = path penuh), buka ulang di level
   terpilih. Keyboard: Up/Down/Home/End, ArrowRight/Enter/Space aktifkan, ArrowLeft/Backspace naik,
   Esc tutup; `aria-activedescendant` + crumb live. Model data = **pohon `CascadeNode` bertipe**,
   menggantikan `<ul>` bersarang tersembunyi milik enhancer.
-- **`.fdy-filterbar`** — layout primitive untuk baris filter yang konsisten, di atas `.fdy-field`:
+- **`.fdy-filterbar`** adalah layout primitive untuk baris filter yang konsisten, di atas `.fdy-field`:
   ritme lebar kolom (`--w-sm` / default / `--w-lg` / `--w-xl`), satu field `--w-grow` menyerap sisa
   ruang, `__actions` menempel di ujung sejajar kontrol, wrap rapi di layar sempit. Nol JS.
   Menutup gap "filter row ragged" dari adoption backlog #11.
 
 ### Changed
-- Contoh `react-faktur` kini menggerakkan **Kategori** lewat `FdyCascade` — menghapus jembatan
+- Contoh `react-faktur` kini menggerakkan **Kategori** lewat `FdyCascade`, menghapus jembatan
   event `fdy-cascade-change` manual; ditambah field Periode (`FdyDateRange`) & Kota (`FdyAutocomplete`).
 - Contoh `vue-faktur` mendapat demo Vue-native untuk ketiga komponen baru.
 
-Dengan rilis ini adapter **Vue dan React simetris penuh** — tujuh komponen controlled typed yang
+Dengan rilis ini adapter **Vue dan React simetris penuh**: tujuh komponen controlled typed yang
 sama di kedua sisi: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` ·
 `FdyCascade` · `FdyCfl` · `FdyChart`.
 
 ## [1.5.0] - 2026-07-24
-Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
+Rilis **1.5: React adapter parity**. Non-breaking, aditif.
 ### Added
-- **React adapter parity** — komponen controlled typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` /
+- **React adapter parity**: komponen controlled typed `FdyCombo` / `FdyDatepicker` / `FdyCfl` /
   `FdyChart` + `usePopover`, di atas CSS kit yang sama (aksesibilitas WAI-ARIA APG, dropdown
   top-layer lewat Popover API). Aplikasi React tak lagi butuh fallback `<select>`/`<input
   type="date">` native. Dikonsumsi lewat `freeday/react`; Vite men-transpile source component
@@ -2001,11 +2001,11 @@ Rilis **1.5 — React adapter parity**. Non-breaking, aditif.
   `transpilePackages: ['freeday']`.
 
 ## [1.4.1] - 2026-07-23
-Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll container.
+Rilis **patch 1.4.1**. Dropdown tak lagi ter-clip di dalam card / scroll container.
 ### Fixed
 - **Dropdown lepas dari clipping ancestor** (`.fdy-card{overflow:hidden}`, scroll container, atau
-  ancestor ber-`transform`). Semua dropdown `position:absolute` — **combo/select, datepicker,
-  cascade, autocomplete, timepicker, menu** — kini di-render di **top layer** lewat native
+  ancestor ber-`transform`). Semua dropdown `position:absolute` (**combo/select, datepicker,
+  cascade, autocomplete, timepicker, menu**) kini di-render di **top layer** lewat native
   **Popover API** (`popover="manual"`) dan diposisikan `fixed` ke trigger (flip ke atas bila
   sempit di bawah, lebar mengikuti trigger, reposisi saat scroll/resize). Panel tetap DOM child
   komponennya, jadi focus, outside-click, dan ARIA tak berubah. Berlaku untuk enhancer vanilla
@@ -2017,31 +2017,31 @@ Rilis **1.4.1 — patch**. Dropdown tak lagi ter-clip di dalam card / scroll con
   (UA `[popover]` default-nya `CanvasText`).
 
 ## [1.4.0] - 2026-07-23
-Rilis **1.4 — motion & native charts**. Dua fitur besar (gerak enter/exit lintas komponen +
+Rilis **1.4: motion & native charts**. Dua fitur besar (gerak enter/exit lintas komponen +
 chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. Non-breaking.
 
 ### Added
-- **Chart native — parity untuk drop Chart.js.** Tipe baru **`line`** & **`area`** dan **`bar`
+- **Chart native, parity untuk drop Chart.js.** Tipe baru **`line`** & **`area`** dan **`bar`
   multi-seri + `data-fdy-stacked`**, semuanya dengan **sumbu ber-tema** (y-gridline + tick,
   x-label autoskip, baseline nol) dari `--chart-grid`/`--chart-tick`. Data multi-seri lewat
   **`data-series`** (JSON `[{label,values}]`); `data-values` tetap jadi shortcut seri-tunggal.
   **`data-fdy-format="number|percent|currency"`** memformat tick + tooltip; **legenda otomatis**
   untuk ≥2 seri (`data-fdy-legend="auto|always|none"`); hover band per-kategori. Warna dari token
   → **chart re-warna otomatis saat `data-theme` berubah** (tak perlu observer/re-paint kanvas).
-- **`FreedayChart.update(el)`** — render ulang idempoten saat data berubah (auto-init tetap sekali).
-- **`freeday/vue` → `<FdyChart>`** — wrapper reaktif & typed di atas renderer (re-render on prop
+- **`FreedayChart.update(el)`** me-render ulang secara idempoten saat data berubah (auto-init tetap sekali).
+- **`freeday/vue` → `<FdyChart>`** adalah wrapper reaktif & typed di atas renderer (re-render on prop
   change): `type` · `series`/`values` · `labels` · `format` · `stacked` · `legend` · `colors`/`color`
   · `center`; `aria-label` fallthrough. Tipe `FdyChartSeries` diekspor. Diverifikasi `vue-tsc` + `vite build`.
 
 ### Changed
-- **Motion pass — gerak yang bermakna, semua hormati `prefers-reduced-motion`.**
+- **Motion pass: gerak yang bermakna, semua hormati `prefers-reduced-motion`.**
   - **Drawer & Modal** kini beranimasi **masuk _dan_ keluar** (slide / fade-scale + backdrop blur)
-    via `@starting-style` + `allow-discrete` pada `<dialog>` native — sebelumnya hanya masuk.
-  - **Sidebar app-shell** collapse/expand desktop kini **meluncur** (animasi `width`) — sebelumnya
+    via `@starting-style` + `allow-discrete` pada `<dialog>` native; sebelumnya hanya masuk.
+  - **Sidebar app-shell** collapse/expand desktop kini **meluncur** (animasi `width`); sebelumnya
     `display:none` (snap). Mobile (off-canvas) tak berubah.
   - **Accordion** & **Tabs** me-reveal konten (fade + rise) saat dibuka/diganti.
   - **Baris tabel** transisi `background` halus saat hover.
-- **`.fdy-daterange` responsif** — dua picker kini boleh menyusut (`min-width:0`) & wrap, jadi tak
+- **`.fdy-daterange` responsif**: dua picker kini boleh menyusut (`min-width:0`) & wrap, jadi tak
   lagi overflow di row/HP < ~23rem; di lebar cukup tetap hug ~23rem seperti sebelumnya.
 
 ### Migrasi konsumen (opsional, aman)
@@ -2049,10 +2049,10 @@ chart native yang cukup untuk mem-pensiun-kan Chart.js) plus satu fix layout. No
 2. **Motion & daterange:** otomatis, tanpa perubahan kode.
 3. **Drop Chart.js (opsional):** ganti wrapper chart lokal dengan `<FdyChart type="line" :series>`
    (atau bentuk `data-fdy-chart`), hapus folder wrapper chart lokal, dan buang `chart.js` dari
-   `package.json`. Machinery tema chart (probe warna + observer) tak lagi perlu — token yang urus.
+   `package.json`. Machinery tema chart (probe warna + observer) tak lagi perlu, karena token yang urus.
 
 ## [1.3.1] - 2026-07-23
-Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
+Rilis **patch 1.3.1**. Buang rail aksen "eyebrow" di state aktif/terpilih.
 ### Removed
 - **Rail aksen 3px pada state aktif/terpilih** (`box-shadow:inset 3px 0 0 var(--color-primary)`)
   dihapus dari nav app-shell (`[aria-current="page"]`), opsi cascade & autocomplete
@@ -2061,7 +2061,7 @@ Rilis **1.3.1 — patch**. Buang rail aksen "eyebrow" di state aktif/terpilih.
   soft-bg satu baris penuh). Murni visual, non-breaking; kontras tetap **9/9**.
 ### Kept
 - Indikator fungsional yang **beda motif** sengaja dipertahankan: rail fokus keyboard CFL
-  (`:focus-visible`, wajib a11y — pembeda fokus vs terpilih), underline tab aktif, checkmark
+  (`:focus-visible`, wajib a11y sebagai pembeda fokus vs terpilih), underline tab aktif, checkmark
   combo, ring highlight combo.
 
 ## [1.3.0] - 2026-07-23
