@@ -34,6 +34,13 @@ jobs:
       - run: node --test
       - run: npm run typecheck:react
 
+      # The Blazor stack's only gate used to be compilation, which cannot see a two-way binding
+      # reconciling against a JS enhancer. bUnit renders the components for real.
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - run: npm run test:blazor
+
       # Every browser spec SKIPS itself when no Chrome is found, and a skipped suite still exits 0 —
       # so without this step a green check could mean "ran nothing at all" and look identical to a
       # green check that ran 58 tests. Refusing to run has to be louder than passing.

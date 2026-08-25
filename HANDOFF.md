@@ -34,12 +34,15 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 60 test  — node --test, gerbang default, tanpa browser
+npm test                 61 test  — node --test, gerbang default, tanpa browser
 npm run test:browser     72 test  — 18 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
-dotnet build adapters/blazor/Freeday.Blazor.csproj
+npm run test:blazor       7 test  — bUnit, komponen Blazor dirender sungguhan
 ```
 
+- **Blazor akhirnya punya gerbang perilaku** (2026-08-25). Sebelumnya hanya `dotnet build` —
+  kompilasi — untuk 12 komponen, termasuk `FdyAppShell` yang merekonsiliasi binding dua arah dengan
+  enhancer JS. `test/blazor/` sengaja di luar `adapters/`, yang ikut terkirim ke npm.
 - **Test browser kini jalan di CI** (`.github/workflows/ci.yml`, sejak 2026-08-24) di tiap push, dan
   `publish.yml` memanggilnya sebagai gerbang — tag dengan guard merah tak pernah sampai ke npm.
   Job-nya **mengasersikan jumlahnya sendiri**: `node --test` keluar 0 untuk suite yang mem-skip
@@ -81,9 +84,10 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 
 ## Yang diketahui dan belum diselesaikan
 
-- **11 commit lokal belum di-push**, memuat 1.54.0 dan 2.0.0. Dua perbaikan di dalamnya — flaky
-  animasi listbox dan pembatasan paralelisme — lahir dari kondisi yang tak pernah muncul di laptop:
-  **terukur, tapi belum terverifikasi di CI**.
+- **Ada commit lokal yang belum di-push** — `git log --oneline origin/main..main` (angkanya sengaja
+  tak ditulis di sini; angka di prosa selalu basi lebih dulu). Isinya 1.54.0 dan 2.0.0, dan dua
+  perbaikan yang lahir dari kondisi yang tak pernah muncul di laptop ini — flaky animasi listbox dan
+  pembatasan paralelisme: **terukur, belum terverifikasi di CI**.
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
   tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan —
   halaman itu bertugas menunjukkan default kit yang sebenarnya.

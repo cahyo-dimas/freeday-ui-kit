@@ -36,6 +36,20 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - `browser/text-override.mjs` and `browser/upload-states.mjs` assert the new defaults. The override
   half is untouched and still passes — it is the migration path, so it had to keep working in the
   same breath as the change that makes it necessary.
+### Added — guards
+- **The Blazor stack had no behavioural gate at all, and now has one.** Its only check was
+  `dotnet build` — compilation — across twelve typed components, and `NEXT-UP.md` #5 described a
+  manual runtime verification via `drive-*.mjs` + CDP that does not exist in the repository. That
+  gap mattered most for the component added the same night: `FdyAppShell` reconciles a nullable
+  two-way binding against a JS enhancer, which is precisely the kind of logic a compiler cannot see.
+  `test/blazor/` (bUnit + xunit, 7 tests) renders the components for real: who wins on hydrate when
+  the caller binds a value versus leaves it null, what the enhancer's `fdy-app-nav` event does to
+  the binding, and that the two do not chase each other. Verified by sabotage — removing the echo
+  guard fails one test, breaking the hydrate push fails another, one each.
+- It is wired into `npm run test:blazor` and into `ci.yml`, so it runs where releases are made
+  rather than where someone remembers. Deliberately placed OUTSIDE `adapters/`, which `package.json`
+  ships as a whole directory — a test project has no business in a consumer's `node_modules`.
+
 ### Fixed — the kit's own docs
 - **The docs site shipped the wrong version number for three releases.** `docs/index.html` said
   `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
