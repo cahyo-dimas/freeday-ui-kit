@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Freeday v0.9 proof — a real invoice (faktur) screen in React wired via the useFreeday hook.",
+  "description": "Freeday v0.9 proof, a real invoice (faktur) screen in React wired via the useFreeday hook.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

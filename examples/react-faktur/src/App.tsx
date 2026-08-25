@@ -24,7 +24,7 @@ interface Faktur {
 type InvoiceStatus = 'draft' | 'tertunda' | 'lunas';
 
 // `extends Record<string, unknown>` satisfies FdyCfl's `Row extends Record<string, unknown>`
-// constraint — same pattern the Vue example's `Pelanggan` interface uses.
+// constraint, same pattern the Vue example's `Pelanggan` interface uses.
 interface Customer extends Record<string, unknown> {
   id: string;
   nama: string;
@@ -50,12 +50,12 @@ const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertund
 // 7 days of recent invoice totals (in millions), for the sparkline demo below.
 const trendValues = [12, 9, 14, 11, 18, 15, 21];
 
-// Suggestions for the FdyAutocomplete demo — the component filters them client-side.
+// Suggestions for the FdyAutocomplete demo, the component filters them client-side.
 const kotaOptions: ReadonlyArray<string> = [
   'Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta', 'Denpasar',
 ];
 
-// The cascade tree as typed data — replaces the enhancer's hidden nested <ul>.
+// The cascade tree as typed data, replaces the enhancer's hidden nested <ul>.
 const kategoriOptions: ReadonlyArray<CascadeNode> = [
   { label: 'Jasa', value: 'jasa', children: [
     { label: 'Implementasi', value: 'implementasi' },
@@ -74,7 +74,7 @@ const statusOptions: ReadonlyArray<FdyComboOption<InvoiceStatus>> = [
   { value: 'lunas', label: 'Lunas' },
 ];
 
-// Mock customer master (stands in for a Business Partner lookup) — filtered/paged locally by
+// Mock customer master (stands in for a Business Partner lookup), filtered/paged locally by
 // FdyCfl's fetchPage contract instead of a real API call.
 const customers: Customer[] = [
   { id: 'C-001', nama: 'PT Sumber Makmur', kota: 'Jakarta', email: 'ap@sumbermakmur.co.id' },
@@ -105,7 +105,7 @@ const customerColumns: ReadonlyArray<CflColumn<Customer>> = [
 
 const CUSTOMER_PAGE_SIZE = 8;
 
-// Local mock in place of a real Business Partner search endpoint — filters + pages the
+// Local mock in place of a real Business Partner search endpoint, filters + pages the
 // in-file array and resolves like a network call would (FdyCfl's fetchPage contract).
 const fetchCustomers = (query: string, page: number): Promise<CflPage<Customer>> => {
   const q = query.trim().toLowerCase();
@@ -129,7 +129,7 @@ export function App(): ReactElement {
   const live = useRef({ kategori: '', kategoriPath: '', jatuhTempo: dueDefault(), status: 'draft' as InvoiceStatus, poRaw: '' });
   const [submitted, setSubmitted] = useState<Faktur | null>(null);
 
-  // Fully-controlled React components — plain useState, no DOM events to bridge.
+  // Fully-controlled React components, plain useState, no DOM events to bridge.
   const [status, setStatus] = useState<InvoiceStatus>('draft');
   const [jatuhTempo, setJatuhTempo] = useState<string>(dueDefault());
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -208,7 +208,7 @@ export function App(): ReactElement {
                     value={customer}
                     onChange={(row) => {
                       setCustomer(row);
-                      // Autofill the plain-text fields below — the search picker complements
+                      // Autofill the plain-text fields below, the search picker complements
                       // manual entry rather than replacing the required native inputs.
                       const form = formRef.current;
                       if (form === null) return;

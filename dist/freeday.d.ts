@@ -1,6 +1,6 @@
 // Type surface for the root side-effect import `@cahyo-dimas/freeday`, which loads every
 // enhancer and registers the `window.Freeday` global. Authored from src/freeday-toast.js
-// — keep in sync with it. (The per-component window.Freeday<Name> enhancer namespaces are
+// Keep it in sync with that file. (The per-component window.Freeday<Name> enhancer namespaces are
 // intentionally not typed here; no consumer reconstructs those.)
 
 export interface FreedayToastOptions {
@@ -18,7 +18,7 @@ export interface FreedayToastOptions {
 export interface FreedayGlobal {
   /** Show a transient toast in a live region (created on first use). Returns the toast element. */
   toast(opts?: FreedayToastOptions): HTMLElement;
-  /** Dismiss a toast early — pass the element returned by toast(), or a key string. */
+  /** Dismiss a toast early: pass the element returned by toast(), or a key string. */
   dismiss(target: HTMLElement | string): void;
 }
 

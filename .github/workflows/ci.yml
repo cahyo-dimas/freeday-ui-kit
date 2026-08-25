@@ -3,7 +3,7 @@
 # The browser suite (18 specs, 58 tests) is the half that was never running here: pixel-level paint
 # order for stacked overlays, chart accessible subtrees read off the AX tree, the user-activation
 # matrix that decides who owns Escape. Those need a real engine, so they only ever ran when someone
-# remembered to run them locally — and since 1.52.0 a tag publishes to npm with no human in the loop.
+# remembered to run them locally, and since 1.52.0 a tag publishes to npm with no human in the loop.
 #
 # `workflow_call` is why this is a separate file: publish.yml calls this same job rather than
 # keeping its own copy of the steps, so the list that runs at release time cannot drift from the
@@ -13,7 +13,7 @@ name: CI
 on:
   push:
     # Both filters are required, and leaving either out is silent. A `push:` that names only tag
-    # filters stops matching BRANCH pushes altogether — which is what happened here: the first
+    # filters stops matching BRANCH pushes altogether, which is what happened here: the first
     # version of this excluded tags and no branch ran CI at all, with no error anywhere to say so.
     branches: ['**'] # every branch: this repo does most of its work on branches and merges them
     tags-ignore: ['**'] # publish.yml calls this workflow as its gate, so a tag would run it twice
@@ -49,7 +49,7 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome
         run: |
           test -x "$CHROME_BIN" || {
-            echo "::error::No executable Chrome at $CHROME_BIN — the browser suite would have skipped silently."
+            echo "::error::No executable Chrome at $CHROME_BIN. The browser suite would have skipped silently."
             exit 1
           }
           "$CHROME_BIN" --version
@@ -57,7 +57,7 @@ jobs:
       # The engine is the runner's Chrome STABLE, deliberately: it is what consumers run, while
       # local development runs Chromium 133 from the puppeteer cache. Both engines COMPONENTS.md
       # names therefore get exercised. When Chrome ships a behaviour change this job goes red with
-      # no offending commit — that is the intent, see the spec, §2.
+      # no offending commit, and that is the intent; see the spec, §2.
       # The count is asserted here, not read off a log by a human: `node --test` exits 0 for a
       # suite that skipped every test, so "the job was green" and "the guards ran" are different
       # facts and only one of them is enforceable. A run that skips anything fails on the spot.
@@ -68,7 +68,7 @@ jobs:
           set -o pipefail
           # `|| failed=1` rather than letting it exit here: a failing suite must be given the chance
           # to say WHICH test failed. Run logs need a token to read, and the default annotation for a
-          # failed step is "Process completed with exit code 1" — which is how the first red run on
+          # failed step is "Process completed with exit code 1", which is how the first red run on
           # this workflow could not be diagnosed without re-running it locally and guessing.
           npm run test:browser 2>&1 | tee /tmp/browser.tap || failed=1
           if [ -n "${failed:-}" ]; then
@@ -80,7 +80,7 @@ jobs:
           skipped=$(awk '/^# skipped /{print $3}' /tmp/browser.tap)
           echo "browser suite: ${passed:-?} passed, ${skipped:-?} skipped"
           if [ "${skipped:-missing}" != "0" ]; then
-            echo "::error::Browser suite skipped ${skipped:-an unknown number of} tests — a skipped guard is not a passing guard."
+            echo "::error::Browser suite skipped ${skipped:-an unknown number of} tests. a skipped guard is not a passing guard."
             exit 1
           fi
           if [ "${passed:-0}" -lt 1 ]; then

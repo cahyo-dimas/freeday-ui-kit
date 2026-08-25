@@ -44,7 +44,7 @@ const form = reactive<Faktur>({
 
 const submitted = ref<Faktur | null>(null);
 
-// Freeday events arrive as native bubbling CustomEvents — read event.detail.
+// Freeday events arrive as native bubbling CustomEvents, read event.detail.
 const onCascade = (e: Event): void => {
   const d = (e as CustomEvent<FdyCascadeChangeDetail>).detail;
   form.kategori = d.value;
@@ -74,7 +74,7 @@ const total = computed(() => items.reduce((s, it) => s + it.qty * it.harga, 0));
 
 const statusLabel: Record<string, string> = { draft: 'Draft', tertunda: 'Tertunda', lunas: 'Lunas' };
 
-// FdyCombo demo — Vue-native v-model over `.fdy-combo`, alternative to the
+// FdyCombo demo. Vue-native v-model over `.fdy-combo`, alternative to the
 // `data-fdy-combo` enhancer used for "Status" above.
 type MetodePembayaran = 'transfer' | 'tunai' | 'kartu' | 'giro';
 const metodeOptions: ReadonlyArray<{ value: MetodePembayaran; label: string }> = [
@@ -86,7 +86,7 @@ const metodeOptions: ReadonlyArray<{ value: MetodePembayaran; label: string }> =
 const metode = ref<MetodePembayaran>('transfer');
 const metodeInvalidDemo = ref<MetodePembayaran | ''>('');
 
-// FdyDatepicker demo — Vue-native v-model over `.fdy-datepicker`, alternative to the
+// FdyDatepicker demo. Vue-native v-model over `.fdy-datepicker`, alternative to the
 // `data-fdy-datepicker` enhancer used for "Jatuh tempo" above.
 const tanggalKirim = ref<string | null>(dueDefault());
 const tanggalTerbit: string = new Date().toISOString().slice(0, 10);
@@ -99,13 +99,13 @@ const tanggalTerbitDemo = ref<string | null>(null);
 const tanggalInvalidDemo = ref<string | null>(null);
 const periode = ref<DateRangeValue>({ start: null, end: null });
 
-// FdyAutocomplete demo — editable combobox; the component filters these client-side.
+// FdyAutocomplete demo, editable combobox; the component filters these client-side.
 const kotaOptions: ReadonlyArray<string> = [
   'Jakarta', 'Bandung', 'Surabaya', 'Medan', 'Semarang', 'Makassar', 'Yogyakarta', 'Denpasar',
 ];
 const kota = ref<string>('');
 
-// FdyCascade demo — the tree as typed data (replaces the enhancer's hidden nested <ul>).
+// FdyCascade demo, the tree as typed data (replaces the enhancer's hidden nested <ul>).
 const kategoriTree: ReadonlyArray<CascadeNode> = [
   { label: 'Jasa', value: 'jasa', children: [
     { label: 'Implementasi', value: 'implementasi' },
@@ -119,7 +119,7 @@ const kategoriTree: ReadonlyArray<CascadeNode> = [
 ];
 const kategoriVue = ref<string>('');
 
-// FdyCfl demo — Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
+// FdyCfl demo. Vue-native, controlled *async* choose-from-list over `.fdy-cfl*`.
 // Unblocks the "map an extracted value → SAP master data" gap: the caller supplies a
 // `fetchPage(query, page)` that hits the server; here it's a mock over a static array
 // (filter by query, slice by page, report `hasMore`) so the demo runs without a backend.
@@ -161,7 +161,7 @@ const pelangganColumns: ReadonlyArray<{ key: keyof Pelanggan & string; label: st
   { key: 'name', label: 'Nama' },
   { key: 'city', label: 'Kota' },
 ];
-const pelangganDisplay = (row: Pelanggan): string => `${row.code} — ${row.name}`;
+const pelangganDisplay = (row: Pelanggan): string => `${row.code} · ${row.name}`;
 const pelangganKey = (row: Pelanggan): string => row.code;
 
 const pelanggan = ref<Pelanggan | null>(null);
@@ -304,7 +304,7 @@ const toggleTheme = (): void => {
           <div class="fdy-card__body">
             <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native combo (FdyCombo)</h2>
             <p class="fdy-help" style="margin:0 0 var(--space-4)">
-              <code>&lt;FdyCombo v-model&gt;</code> — binding Vue asli di atas kelas <code>.fdy-combo</code>,
+              <code>&lt;FdyCombo v-model&gt;</code>, binding Vue asli di atas kelas <code>.fdy-combo</code>,
               alternatif dari enhancer <code>data-fdy-combo</code> yang dipakai untuk "Status" di atas.
             </p>
             <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-5)">
@@ -338,7 +338,7 @@ const toggleTheme = (): void => {
           <div class="fdy-card__body">
             <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native kalender (FdyDatepicker)</h2>
             <p class="fdy-help" style="margin:0 0 var(--space-4)">
-              <code>&lt;FdyDatepicker v-model&gt;</code> — kalender native Vue di atas kelas <code>.fdy-datepicker</code>,
+              <code>&lt;FdyDatepicker v-model&gt;</code>, kalender native Vue di atas kelas <code>.fdy-datepicker</code>,
               alternatif dari enhancer <code>data-fdy-datepicker</code> yang dipakai untuk "Jatuh tempo" di atas.
             </p>
             <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-5)">
@@ -371,7 +371,7 @@ const toggleTheme = (): void => {
           <div class="fdy-card__body">
             <h2 class="fdy-card__title" style="margin-bottom:var(--space-2)">Vue-native choose-from-list (FdyCfl)</h2>
             <p class="fdy-help" style="margin:0 0 var(--space-4)">
-              <code>&lt;FdyCfl v-model&gt;</code> — pemilih master data <em>async</em> terkontrol di atas kelas <code>.fdy-cfl*</code>.
+              <code>&lt;FdyCfl v-model&gt;</code>, pemilih master data <em>async</em> terkontrol di atas kelas <code>.fdy-cfl*</code>.
               Klik kaca pembesar → dialog memanggil <code>fetchPage(query, page)</code> (di sini mock berlatensi), dengan
               pencarian ter-debounce, paginasi "muat lebih banyak", dan status memuat/kosong/error.
             </p>

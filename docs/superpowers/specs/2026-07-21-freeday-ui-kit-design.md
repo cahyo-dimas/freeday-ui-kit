@@ -13,16 +13,16 @@
 **Freeday** adalah **design source-of-truth** milik sendiri: satu file token kanonik + halaman referensi hidup, bersifat *framework-agnostic*. Ia mewarisi filosofi token-driven dari Foundation, tetapi dengan identitas, struktur, dan cakupan komponen yang disesuaikan untuk **aplikasi bisnis/ERP** (dunia kerja pemilik: SAP B1, DevExtreme, PrimeVue).
 
 ### Tujuan (Goals)
-1. **Satu sumber kebenaran visual** — semua warna, tipografi, spasi berasal dari `tokens.json`; kode per-project mengacu ke sana.
-2. **Re-brand & dark mode murah** — ganti brand cukup ubah mapping token *primitive → semantic*; dark mode cukup re-definisi token *semantic*.
-3. **Siap data-dense** — komponen data (grid, form, filter) adalah warga kelas satu, plus mode `compact`.
-4. **Aksesibel by default** — kontras WCAG AA, focus ring, keyboard-friendly.
-5. **Lintas-stack tanpa lock-in** — CSS variables untuk semua stack web; `tokens.json` bisa disuplai ke generator (Tailwind/MudBlazor/Flutter) saat dibutuhkan.
+1. **Satu sumber kebenaran visual**, semua warna, tipografi, spasi berasal dari `tokens.json`; kode per-project mengacu ke sana.
+2. **Re-brand & dark mode murah**, ganti brand cukup ubah mapping token *primitive → semantic*; dark mode cukup re-definisi token *semantic*.
+3. **Siap data-dense**, komponen data (grid, form, filter) adalah warga kelas satu, plus mode `compact`.
+4. **Aksesibel by default**, kontras WCAG AA, focus ring, keyboard-friendly.
+5. **Lintas-stack tanpa lock-in**. CSS variables untuk semua stack web; `tokens.json` bisa disuplai ke generator (Tailwind/MudBlazor/Flutter) saat dibutuhkan.
 
 ### Bukan tujuan (Non-goals) untuk v1
-- Bukan component library ter-*compile* per framework (Vue/React/Blazor package) — itu layer di atas source-of-truth, bukan v1.
-- Bukan mempertahankan ke-7 visual style Foundation — hanya **1 gaya utama** + dark/light di v1 (sisanya roadmap).
-- Bukan pola khusus SAP B1 di core — itu *extension pack* terpisah nanti.
+- Bukan component library ter-*compile* per framework (Vue/React/Blazor package), itu layer di atas source-of-truth, bukan v1.
+- Bukan mempertahankan ke-7 visual style Foundation, hanya **1 gaya utama** + dark/light di v1 (sisanya roadmap).
+- Bukan pola khusus SAP B1 di core, itu *extension pack* terpisah nanti.
 
 ---
 
@@ -31,7 +31,7 @@
 | # | Keputusan | Pilihan |
 |---|---|---|
 | 1 | Bentuk KIT | **Design source-of-truth** (framework-agnostic, token file + referensi hidup) |
-| 2 | Strategi build | **Hybrid** — token layer ditulis bersih dari nol, komponen di-port dari Foundation |
+| 2 | Strategi build | **Hybrid**, token layer ditulis bersih dari nol, komponen di-port dari Foundation |
 | 3 | Identitas visual | **"Azure"** (azure `#2050d8` primary + accent sky/Microsoft-Azure `#0078d4`, netral slate dingin) |
 | 4 | Cakupan komponen | Foundation **+ komponen business-app** (app shell, data grid, master-detail, wizard, filter bar, pagination, states) |
 | 5 | Target konsumsi | **CSS variables + `tokens.json` kanonik (W3C DTCG)**; adapter stack lain on-demand |
@@ -43,16 +43,16 @@
 ## 3. Prinsip (warisan Foundation, dipertahankan)
 
 **Usage:**
-1. **Semantic only** — komponen memakai token *semantic/component*, tak pernah nilai mentah.
-2. **4px grid** — semua spasi kelipatan 4px.
-3. **One accent per view** — satu warna aksen dominan per layar.
-4. **Accessible by default** — AA, focus visible, target sentuh memadai.
+1. **Semantic only**, komponen memakai token *semantic/component*, tak pernah nilai mentah.
+2. **4px grid**, semua spasi kelipatan 4px.
+3. **One accent per view**, satu warna aksen dominan per layar.
+4. **Accessible by default**. AA, focus visible, target sentuh memadai.
 
 **Token discipline:**
-1. **Compose first** — rakit dari token yang ada.
-2. **Extend with a modifier** — kalau kurang, tambah modifier (mis. `--btn` varian).
-3. **Only then create** — baru bikin token baru bila benar-benar perlu.
-4. **Never add a raw value** — jangan pernah menaruh hex/px mentah di komponen.
+1. **Compose first**, rakit dari token yang ada.
+2. **Extend with a modifier**, kalau kurang, tambah modifier (mis. `--btn` varian).
+3. **Only then create**, baru bikin token baru bila benar-benar perlu.
+4. **Never add a raw value**, jangan pernah menaruh hex/px mentah di komponen.
 
 ---
 
@@ -61,8 +61,8 @@
 Komponen **hanya** menyentuh Tier 2 & 3. Tier 1 tak pernah dipakai langsung.
 
 ```
-Tier 1 · PRIMITIVE   nilai mentah (ramp warna, skala) — tidak dipakai di komponen
-Tier 2 · SEMANTIC    peran/makna — berubah saat theme (light/dark) & saat re-brand
+Tier 1 · PRIMITIVE   nilai mentah (ramp warna, skala), tidak dipakai di komponen
+Tier 2 · SEMANTIC    peran/makna, berubah saat theme (light/dark) & saat re-brand
 Tier 3 · COMPONENT   opsional, hanya untuk override lokal per komponen
 ```
 
@@ -96,7 +96,7 @@ Contoh alur:
 50 #eff6fd · 100 #d6e9fb · 200 #b0d4f6 · 300 #7bbdef · 400 #47a1e6 · 500 #1a86dc
 600 #0078d4 · 700 #0061ac · 800 #004d88 · 900 #003a67
 ```
-**Support (semantic)** — ramp ringkas 50/100/500/600/700
+**Support (semantic)**, ramp ringkas 50/100/500/600/700
 ```
 Red     50 #fef2f2 · 100 #fee2e2 · 500 #ef4444 · 600 #dc2626 · 700 #b91c1c
 Amber   50 #fffbeb · 100 #fef3c7 · 500 #f59e0b · 600 #d97706 · 700 #b45309
@@ -229,10 +229,10 @@ Legenda: **⬆** port dari Foundation · **✦** baru (business-app)
 | **Navigation** | tabs ⬆ · breadcrumb ⬆ · wizard/stepper ✦ |
 
 ### Prioritas rilis (token-first)
-- **v0.1 (MVP — token-first)** — `tokens.json` + `build.mjs` + theming (light/dark + density) + `docs/index.html` skeleton + komponen: **button, input, card, badge**. *Tujuan: buktikan pipeline `json → css → komponen → docs` end-to-end, utuh tapi sempit.*
-- **v0.2 (polish + layar bisnis pertama)** — **refinement visual "rich"** (default look Freeday mulai v0.2: elevation berlapis/`--shadow-lift`, tombol gradient halus + colored-shadow *glow*, `:active` press, focus ring lebih tegas, teks badge `-strong` **lolos AA**) **+** app shell (sidebar+topbar), table, modal (native `<dialog>`), form controls (select/checkbox/radio/switch); **embed font asli di docs** + **demo "satu layar bisnis"**. Native-first, CSS-first, 0 dependency, JS vanilla minimal (native dialog). *(divalidasi via mockup before/after)*
-- **v0.3** — alert/toast, advanced data grid, combobox, datepicker, choose-from-list, file upload, tabs, breadcrumb, filter bar, pagination, data states, skeleton.
-- **v0.4** — wizard/stepper, master-detail/document form, avatar/tooltip/kbd, progress, + preset gaya tambahan.
+- **v0.1 (MVP, token-first)**, `tokens.json` + `build.mjs` + theming (light/dark + density) + `docs/index.html` skeleton + komponen: **button, input, card, badge**. *Tujuan: buktikan pipeline `json → css → komponen → docs` end-to-end, utuh tapi sempit.*
+- **v0.2 (polish + layar bisnis pertama)**: **refinement visual "rich"** (default look Freeday mulai v0.2: elevation berlapis/`--shadow-lift`, tombol gradient halus + colored-shadow *glow*, `:active` press, focus ring lebih tegas, teks badge `-strong` **lolos AA**) **+** app shell (sidebar+topbar), table, modal (native `<dialog>`), form controls (select/checkbox/radio/switch); **embed font asli di docs** + **demo "satu layar bisnis"**. Native-first, CSS-first, 0 dependency, JS vanilla minimal (native dialog). *(divalidasi via mockup before/after)*
+- **v0.3**, alert/toast, advanced data grid, combobox, datepicker, choose-from-list, file upload, tabs, breadcrumb, filter bar, pagination, data states, skeleton.
+- **v0.4**, wizard/stepper, master-detail/document form, avatar/tooltip/kbd, progress, + preset gaya tambahan.
 
 ---
 
@@ -262,7 +262,7 @@ freeday/
 ## 9. Konvensi Penamaan
 
 - **Prefix kelas:** `fdy-` (mis. `fdy-btn`, `fdy-input`, `fdy-card`).
-- **Pola:** BEM ringkas — `fdy-card`, `fdy-card__title`, `fdy-card--elevated`.
+- **Pola:** BEM ringkas, `fdy-card`, `fdy-card__title`, `fdy-card--elevated`.
 - **Token semantic:** `--color-*`, `--space-*`, `--radius-*`, `--shadow-*`, `--dur-*`, `--ease-*`.
 - **Token component (Tier 3):** `--fdy-<komponen>-<properti>` (mis. `--fdy-btn-bg`).
 - **Nilai mentah (kebijakan pragmatis):** Warna **selalu** token. Spasi yang cocok skala `--space-*` **wajib** pakai token (mis. `.5rem` → `var(--space-2)`). Literal lokal-komponen tanpa padanan token (padding relatif `em`, hairline `1.5px`, spread focus `3px`, `min-height` ad-hoc) boleh sebagai literal. Prinsip §3 "never a raw value" mengikat **warna & spasi berskala**, bukan setiap literal.
@@ -287,17 +287,17 @@ freeday/
 ### 11.1 WCAG (visual)
 - Kontras teks **WCAG AA** (≥ 4.5:1 teks normal, ≥ 3:1 teks besar/UI) di light & dark.
 - `:focus-visible` selalu terlihat (outline 2px `--focus-ring`, offset 2px).
-- Target interaktif ≥ 32px (compact, `--control-h` 2rem) / 40px (comfortable, 2.5rem) — memenuhi & melampaui WCAG 2.2 target minimum (24px).
-- Status tidak hanya lewat warna — sertakan ikon/teks.
+- Target interaktif ≥ 32px (compact, `--control-h` 2rem) / 40px (comfortable, 2.5rem), memenuhi & melampaui WCAG 2.2 target minimum (24px).
+- Status tidak hanya lewat warna, sertakan ikon/teks.
 - `prefers-reduced-motion` dihormati.
 - Button primary dipilih agar teks putih lolos AA.
 
 ### 11.2 Kebijakan ARIA
-**ARIA** (Accessible Rich Internet Applications) = atribut `role` + `aria-*` yang memberi tahu teknologi bantu (screen reader) **apa** sebuah elemen, **keadaannya**, dan **hubungannya** — saat HTML biasa belum cukup. Tiga jenis: **role** (mis. `role="dialog"`), **property** (relatif tetap, mis. `aria-label`, `aria-describedby`), **state** (dinamis, mis. `aria-expanded`, `aria-invalid`, `aria-busy`).
+**ARIA** (Accessible Rich Internet Applications) = atribut `role` + `aria-*` yang memberi tahu teknologi bantu (screen reader) **apa** sebuah elemen, **keadaannya**, dan **hubungannya**, saat HTML biasa belum cukup. Tiga jenis: **role** (mis. `role="dialog"`), **property** (relatif tetap, mis. `aria-label`, `aria-describedby`), **state** (dinamis, mis. `aria-expanded`, `aria-invalid`, `aria-busy`).
 
 Aturan Freeday:
 1. **HTML semantik dulu — _"no ARIA is better than bad ARIA."_** Pakai `<button>`, `<input>`, `<nav>`, `<table>` native; ARIA hanya mengisi celah, bukan mengganti elemen native.
-2. **Setiap komponen interaktif mengikuti pola baku WAI-ARIA APG** (role, state, keyboard, fokus) — lihat kontrak §11.3. Sumber: W3C ARIA Authoring Practices Guide → https://www.w3.org/WAI/ARIA/apg/patterns/
+2. **Setiap komponen interaktif mengikuti pola baku WAI-ARIA APG** (role, state, keyboard, fokus), lihat kontrak §11.3. Sumber: W3C ARIA Authoring Practices Guide → https://www.w3.org/WAI/ARIA/apg/patterns/
 3. **Docs menampilkan markup yang benar-benar aksesibel** (bukan hanya tampilan) agar siapa pun yang menyalin ikut mendapat ARIA + keyboard yang benar. Ini requirement docs, bukan opsional.
 4. **Focus management** wajib untuk overlay (modal/dialog): perangkap fokus saat terbuka, kembalikan fokus ke pemicu saat tutup.
 5. **Live region** untuk pesan dinamis: alert = `role="alert"`, toast = `role="status"` / `aria-live="polite"`.
@@ -333,7 +333,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 
 ### 11.4 Testing aksesibilitas
 - **Keyboard-only:** setiap alur dapat dioperasikan tanpa mouse; urutan Tab logis; fokus tidak terjebak (kecuali modal yang memang memerangkap lalu melepas saat ditutup).
-- **Screen reader smoke test:** VoiceOver (macOS: `Cmd+F5`) untuk komponen interaktif — nama, role, dan state terbaca benar.
+- **Screen reader smoke test:** VoiceOver (macOS: `Cmd+F5`) untuk komponen interaktif, nama, role, dan state terbaca benar.
 - **Otomatis (opsional, roadmap):** axe-core / Lighthouse a11y bila CI ditambahkan.
 
 ---
@@ -344,7 +344,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 2. Re-brand cukup mengubah mapping token **primitive → semantic**, tanpa menyentuh CSS komponen.
 3. Dark mode cukup re-definisi token **semantic**.
 4. `tokens.json` memakai format **DTCG-lite** (subset: `$value` + alias `{...}`; ekstensi non-standar `$dark`/`$compact`). `$type` + pemodelan mode standar DTCG = target v0.2.
-5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info + palet Azure (primary button dark kini **4.89:1**). Foreground *soft badge* juga **lolos AA 4.5:1** (light & dark) sejak v0.2 — dipertegas ke `--color-*-strong`, soft-bg tetap (§13); terendah `danger` light **5.30:1**. Dijaga regresi oleh `test/contrast.test.mjs` (pasangan `*-strong` di atas `*-soft` di tiap surface).
+5. Audit kontras AA: **teks & kontrol interaktif lolos AA** (light & dark) setelah fix dark danger/info + palet Azure (primary button dark kini **4.89:1**). Foreground *soft badge* juga **lolos AA 4.5:1** (light & dark) sejak v0.2, dipertegas ke `--color-*-strong`, soft-bg tetap (§13); terendah `danger` light **5.30:1**. Dijaga regresi oleh `test/contrast.test.mjs` (pasangan `*-strong` di atas `*-soft` di tiap surface).
 6. `docs/index.html` menampilkan seluruh komponen v0.1 dalam kedua tema & kedua density.
 7. Setiap komponen interaktif memenuhi **kontrak aksesibilitas §11.3** (role/aria/keyboard) dan lolos uji keyboard-only + smoke test VoiceOver. Markup di docs adalah versi yang aksesibel (bukan hanya visual).
 
@@ -356,7 +356,7 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 - Generator adapter multi-stack (Tailwind/MudBlazor/Flutter).
 - Component library ter-*compile* per framework (Vue/React/Blazor package).
 - SAP B1 *extension pack* (matrix/grid ala UI API, form dokumen header+baris, badge approval).
-- Ikon set (dipilih/di-embed) — di v1 pakai ikon inline seperlunya.
+- Ikon set (dipilih/di-embed), di v1 pakai ikon inline seperlunya.
 - **Kontras soft-badge → dituntaskan di v0.2:** teks soft badge dipertegas ke token baru `--color-*-strong` (light shade -700/-800, dark shade -400) agar lolos **AA 4.5:1**, soft-bg tetap. *(Label primary button dark sudah lolos 4.89:1 sejak palet Azure.)* Sekalian selaraskan `warning` dark (`amber.500` vs `#eab308` §5.3).
 ```
 
@@ -364,6 +364,6 @@ Setiap komponen WAJIB mengimplementasikan barisnya. Komponen native (button/inpu
 
 ## Lampiran A — Aset yang sudah tersedia
 
-- **Source Foundation** ter-ekstrak: `_template.txt` (±226 KB HTML bersih) — sumber port komponen.
+- **Source Foundation** ter-ekstrak: `_template.txt` (±226 KB HTML bersih), sumber port komponen.
 - **Font latin ter-embed** (base64, dari manifest Foundation): IBM Plex Sans (400/500/600/700), Sora (600/700), Manrope (600/700), JetBrains Mono (400/500).
-- **Papan identitas** (artifact) — perbandingan 3 arah, arah A "Azure & Teal" terpilih.
+- **Papan identitas** (artifact), perbandingan 3 arah, arah A "Azure & Teal" terpilih.
