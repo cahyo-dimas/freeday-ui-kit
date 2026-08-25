@@ -6,21 +6,21 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ## [2.0.0] - 2026-08-25
 ### Changed: BREAKING
 - **The vanilla enhancers now write English by default** (`NEXT-UP.md` #6, owner's decision). Every
-  user-facing string they render — 39 of them across 9 enhancers — was Indonesian while the typed
+  user-facing string they render, 39 of them across 9 enhancers, was Indonesian while the typed
   wrappers were English, so an app that touched both paths read as two products. A Blazor app
   touches both **by construction**: `FreedayBlazor.initAll` runs every enhancer. The report that
   opened this was an English back-office finding `aria-label="Filter kolom"` on its own table.
   Examples: `Menampilkan 1–5 dari 7` → `Showing 1–5 of 7`, `{n} dipilih` → `{n} selected`,
   `Sebelumnya`/`Berikutnya` → `Previous`/`Next`, `Wajib diisi.` → `Required.`,
   `Tampilkan kata sandi` → `Show password`, `Menunggu server…` → `Waiting for the server…`.
-- **The datepicker's locale fallback follows** — `document.documentElement.lang || 'id'` is now
+- **The datepicker's locale fallback follows.** `document.documentElement.lang || 'id'` is now
   `|| 'en'`. This is the string nobody would have found by grepping for prose: it decides month and
   weekday names through `Intl`, so leaving it would have produced English labels around Indonesian
   months, which is the mixed interface this release exists to remove. The page's own `lang` still
   wins, which makes `<html lang="id">` the whole migration for dates.
 - **Migrating an Indonesian app** costs no fork: every string was already overridable per element
   with `data-fdy-text-<key>` (kebab-cased), and `data-fdy-msg-*` for validation messages. That hatch
-  shipped in 1.39.0 — the half of `NEXT-UP.md` #6 written as "build an override hook" was already
+  shipped in 1.39.0, so the half of `NEXT-UP.md` #6 written as "build an override hook" was already
   done, and only the default was ever in question. `COMPONENTS.md` §Language documents it.
 - **Called 2.0.0 rather than 1.55.0 on purpose.** No API changed, but every raw-path screen renders
   different words, and a major version is the only signal npm gives a consumer that an upgrade needs
@@ -30,36 +30,36 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - The English guard now covers `src/freeday-*.js`, not just the typed adapters, so the promise is
   enforced on every path instead of stated on one. Verified by reverting a single string: it fails.
 - **And a word list is not enough, which this release proved twice.** The list missed `Lanjut` and
-  `Selesai` in the stepper and `Mengunggah…` in upload — its own comment already warned that
+  `Selesai` in the stepper and `Mengunggah…` in upload, and its own comment already warned that
   `pencarian` hides behind `\bcari\b`. So the complete vocabulary is now pinned: all 39 strings,
   asserted whole, so changing one has to be deliberate and visible in a diff.
 - `browser/text-override.mjs` and `browser/upload-states.mjs` assert the new defaults. The override
-  half is untouched and still passes — it is the migration path, so it had to keep working in the
+  half is untouched and still passes, because it is the migration path and had to keep working in the
   same breath as the change that makes it necessary.
 ### Added: guards
 - **The Blazor stack had no behavioural gate at all, and now has one.** Its only check was
-  `dotnet build` — compilation — across twelve typed components, and `NEXT-UP.md` #5 described a
+  `dotnet build`, which is compilation, across twelve typed components, and `NEXT-UP.md` #5 described a
   manual runtime verification via `drive-*.mjs` + CDP that does not exist in the repository. That
   gap mattered most for the component added the same night: `FdyAppShell` reconciles a nullable
   two-way binding against a JS enhancer, which is precisely the kind of logic a compiler cannot see.
   `test/blazor/` (bUnit + xunit, 7 tests) renders the components for real: who wins on hydrate when
   the caller binds a value versus leaves it null, what the enhancer's `fdy-app-nav` event does to
-  the binding, and that the two do not chase each other. Verified by sabotage — removing the echo
+  the binding, and that the two do not chase each other. Verified by sabotage: removing the echo
   guard fails one test, breaking the hydrate push fails another, one each.
 - It is wired into `npm run test:blazor` and into `ci.yml`, so it runs where releases are made
   rather than where someone remembers. Deliberately placed OUTSIDE `adapters/`, which `package.json`
-  ships as a whole directory — a test project has no business in a consumer's `node_modules`.
+  ships as a whole directory, and a test project has no business in a consumer's `node_modules`.
 
 ### Fixed: the kit's own docs
 - **The docs site shipped the wrong version number for three releases.** `docs/index.html` said
   `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
-  `docs/getting-started.md` told readers to install `^1.34.0` — eighteen releases stale. `NEXT-UP.md`
+  `docs/getting-started.md` told readers to install `^1.34.0`, eighteen releases stale. `NEXT-UP.md`
   already carried the right instruction (don't work from a memorised list, `git grep` the old
   version) and it was still missed every time, because a runbook step is something a person has to
   remember. The stamps are correct now and a test asserts them against `package.json`, so the next
   miss fails the suite instead of reaching the live site.
 - **`HANDOFF.md` was 419 lines of per-version history under a header saying "this is not a
-  changelog"** — a duplicate of `CHANGELOG.md` that stopped being updated twenty releases before
+  changelog"**, a duplicate of `CHANGELOG.md` that stopped being updated twenty releases before
   2.0.0. It is a snapshot again: what the kit is now, what the guards cover, how a release goes out,
   and what is known-unfinished. The same cleanup was done once before, in v1.20.0, for the same
   reason: a stale snapshot is worse than none.
@@ -71,25 +71,25 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ## [1.54.0] - 2026-08-25
 ### Added
-- **`<FdyAppShell>` — the shell becomes the eleventh typed component**, in Vue, React and Blazor
+- **`<FdyAppShell>` makes the shell the eleventh typed component**, in Vue, React and Blazor
   (`NEXT-UP.md` #8, stage 2). One model: `navOpen` means *the nav is visible to the reader*, and the
-  kit owns the mapping — above the nav breakpoint a hidden nav is `--nav-collapsed`, below it a
+  kit owns the mapping: above the nav breakpoint a hidden nav is `--nav-collapsed`, below it a
   visible nav is `--nav-open`. An app never reasons about the viewport to answer a question about
   its own UI. Vue `v-model:navOpen` · React `navOpen`/`onNavOpenChange` · Blazor `@bind-NavOpen`.
 - **The prop is optional in all three, and that is the design.** Unbound, the shell starts from the
   viewport: a column on a wide screen, hidden on a narrow one. A caller cannot express that as a
   single initial value before it knows the viewport, so `undefined` (Vue/React) and `null` (Blazor)
   mean "you decide". Bound, the caller wins and is pushed down on mount.
-- **`adapters/core/app-shell.js`** (+ `.d.ts`) — the Tab trap, `inert` bookkeeping and focus restore
+- **`adapters/core/app-shell.js`** (+ `.d.ts`) holds the Tab trap, `inert` bookkeeping and focus restore
   shared by the Vue and React wrappers, following `adapters/core/table-model.js`. `NAV_QUERY` is
   built from `tokens/breakpoints.mjs` rather than repeating `721`, so the JS and `app-shell.css`
   cannot drift. Blazor does not use it: `freeday-blazor.js` says the enhancers stay the source of
   truth, so the Blazor shell renders `data-fdy-app` and BINDS to `freeday-app-shell.js`. Two
   implementations, not four, and a guard holds them to one contract.
-- **`fdy-app-nav`** — the enhancer now emits a bubbling CustomEvent (`detail {visible}`) on every
+- **`fdy-app-nav`:** the enhancer now emits a bubbling CustomEvent (`detail {visible}`) on every
   real change, and takes `FreedayAppShell.setVisible(root, visible)` / `isVisible(root)` from
   outside. That is what the Blazor binding rides on, and what any vanilla app persisting a collapsed
-  preference needed. The event fires for viewport-driven changes too — narrowing hides a nav that
+  preference needed. The event fires for viewport-driven changes too, since narrowing hides a nav that
   was a visible column, and a bound value that stayed `true` would describe a panel nobody can see.
   Setting what is already set announces nothing, so a bound host cannot loop on its own echo.
 ### Docs
@@ -100,20 +100,20 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   design spec and two guard headers already say "NEXT-UP #8", so renumbering the rows under it would
   quietly break references that are already written down.
 ### Added: guards
-- `browser/adapter.mjs` runs one description of the shell contract against BOTH typed stacks —
+- `browser/adapter.mjs` runs one description of the shell contract against BOTH typed stacks:
   viewport default, focus into the panel, the Tab cycle, Escape returning focus, `inert`, and a nav
   link closing the overlay. Verified by sabotage: with `applyShellState` and the focus calls stubbed
   out, React fails three of three and Vue two of three, the third being the sidebar click path the
   sabotage did not touch.
 - `browser/app-shell.mjs` gains the host-binding pair (`fdy-app-nav` ordering, `setVisible` doing the
   whole job and staying silent on a no-op) and the path only Blazor takes: a shell that does not
-  exist at `DOMContentLoaded`, hydrated afterwards by handing `initAll` the component's own root —
-  which is the element itself, not a descendant of it.
+  exist at `DOMContentLoaded`, hydrated afterwards by handing `initAll` the component's own root,
+  which is the element itself and not a descendant of it.
 - `dotnet build` on the Blazor RCL is clean (0 warnings, 0 errors).
 
 ## [1.53.0] - 2026-08-24
 ### Added
-- **`freeday-app-shell.js` — the shell finally ships its own behaviour** (`NEXT-UP.md` #8, reported
+- **`freeday-app-shell.js`: the shell finally ships its own behaviour** (`NEXT-UP.md` #8, reported
   twice). `.fdy-app` shipped `__navtoggle`, `__backdrop` and the `--nav-open` / `--nav-collapsed`
   classes with **zero JS**, and `COMPONENTS.md` told every consumer to wire it in two sentences that
   never mentioned Escape, focus, `inert` or focus restore. Follow that exactly and you get an
@@ -128,10 +128,10 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   ≥721px is `width:0;overflow:hidden`; off-canvas at ≤720px is `translateX(-100%)`. Both hide the
   panel from the eye and neither hides it from the keyboard, so a nav nobody could see still
   swallowed every Tab on the way into the page. `__sidebar` is now `inert` whenever the nav is not
-  visible — one rule for both modes rather than two patches.
+  visible, one rule for both modes rather than two patches.
 - **Crossing the breakpoint with the overlay open stranded the page.** Widening the window left
   `--nav-open` set and `__content` `inert`, so the page underneath could never be clicked or read
-  again — the same failure that produced `breakpoints.nav` in v1.20.0. The enhancer clears the
+  again, the same failure that produced `breakpoints.nav` in v1.20.0. The enhancer clears the
   overlay state on the media-query change, and deliberately does *not* move focus while doing it: a
   resize is not a user asking to go somewhere.
 ### Changed
@@ -145,8 +145,8 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   and its `inert` at ≥721px, the overlay and its `inert` at ≤720px, focus entering the panel and
   cycling inside it under **trusted** Tab presses, Escape returning focus to the toggle, backdrop
   and nav-item dismissal, and the breakpoint crossing. One of the five originally passed against a
-  shell with no behaviour at all — the nav never opened, so "it is closed" was true and meaningless
-  — and now asserts it opened first.
+  shell with no behaviour at all, because the nav never opened, so "it is closed" was true and
+  meaningless. It now asserts it opened first.
 - `setViewport()` in the browser harness (`Emulation.setDeviceMetricsOverride`). A responsive
   contract cannot be tested at a fixed window size, and the moment a layout *crosses* a breakpoint
   is exactly where its state gets stranded.
@@ -154,12 +154,12 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ## [1.52.1] - 2026-08-24
 ### Docs
 - **1.51.1's close-watcher caveat named the wrong condition** (#048). It said a `showModal()` with
-  no transient activation — "from a timer, or after an `await` that outlived the click" — has its
+  no transient activation ("from a timer, or after an `await` that outlived the click") has its
   close watcher grouped with the dialog below, so one Escape closes both. A consumer audited three
   call sites of exactly that shape and could not reproduce it. They were right, and the reason is
   that the line is **sticky** activation, not transient: grouping needs a page that has received no
-  user input *at all*. Six seconds after a single click — transient activation long expired,
-  `navigator.userActivation.isActive === false` — two stacked overlays are still independent. So the
+  user input *at all*. Six seconds after a single click, with transient activation long expired and
+  `navigator.userActivation.isActive === false`, two stacked overlays are still independent. So the
   grouping is reachable in a test harness and nowhere else, which is exactly where the kit met it.
 - **What the advice was protecting was real, but it is a different failure.** Open either overlay
   from script and the second one's `cancel` event arrives **non-cancelable**: Escape still closes
@@ -167,12 +167,12 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   on that dialog silently stops working. Only when both overlays are opened by a real gesture is that
   veto available. The Modal entry now says this instead.
 - The note also proposed documenting that the typed wrappers' `@cancel.prevent` makes them immune to
-  the grouping. **Measured, they are not** — in a page with no activation the `cancel` event is not
+  the grouping. **Measured, they are not.** In a page with no activation the `cancel` event is not
   cancelable at all, so preventing it does nothing and both dialogs close regardless. That claim is
   not in the docs, and this is why.
 ### Added: guards
-- `browser/overlay-stack.mjs` gains the whole matrix as one assertion — four ways to open two
-  overlays × what one Escape leaves open × whether it could be refused — so a row changing is
+- `browser/overlay-stack.mjs` gains the whole matrix as one assertion: four ways to open two
+  overlays × what one Escape leaves open × whether it could be refused, so a row changing is
   reported as news about the browser rather than a regression in the kit. Verified identical on
   Chromium 133 (the suite's engine) and Chrome 151.
 - The fixture records each `cancel` event's `cancelable` flag; nothing prevents it, so the older
@@ -180,42 +180,42 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 
 ### Fixed: the kit's own suite
 - **The browser guards did not run where the releases are made.** CI ran the 59 unit tests and
-  published; the 58 browser tests across 18 specs — pixel paint order for stacked overlays, chart
-  accessible subtrees, the user-activation matrix above — ran only when someone remembered to run
+  published; the 58 browser tests across 18 specs (pixel paint order for stacked overlays, chart
+  accessible subtrees, the user-activation matrix above) ran only when someone remembered to run
   them locally. Automating the release through OIDC in 1.52.0 removed the someone. `ci.yml` now runs
   both suites on every push and is *called* by `publish.yml` (`needs: test`), so the step list that
   guards a release cannot drift from the one that runs during development, and a tag with red guards
   never reaches npm.
 - **A job that merely ran the command would have been green while running nothing.** Every browser
   spec skips itself when no Chrome is found, and a skipped suite still exits 0. So the job checks
-  the binary before it starts and then parses its own summary, failing on any skip — "the job was
+  the binary before it starts and then parses its own summary, failing on any skip. "The job was
   green" and "the guards ran" were separate facts, and only one of them was enforceable. Both
   demonstrated on real runs: the assertion green at 58/0, and a deliberately broken `CHROME_BIN`
   red.
 - **The harness can now drive any installed Chrome.** `chrome-headless-shell` is headless by
   construction; an ordinary Chrome binary is not and, on a machine with no display, looks for one
   and dies. It now gets `--headless=new` (and `--no-sandbox` only under `CI`), which is what lets
-  `CHROME_BIN=<some other Chrome>` compare engines — the manoeuvre that settled #048. CI runs the
+  `CHROME_BIN=<some other Chrome>` compare engines, the manoeuvre that settled #048. CI runs the
   runner's Chrome stable, local runs Chromium 133, so both engines `COMPONENTS.md` names are
   genuinely exercised.
-- Spec: `docs/superpowers/specs/2026-08-24-browser-guards-in-ci-design.md`. No shipped file changed —
+- Spec: `docs/superpowers/specs/2026-08-24-browser-guards-in-ci-design.md`. No shipped file changed:
   `browser/` and `.github/` are not in the published tarball, so there is no release for this.
 
 ## [1.52.0] - 2026-08-24
 ### Fixed
 - **A chart's legend, bar values and donut centre were exposed to assistive tech after all** (#047).
-  `COMPONENTS.md` explained the a11y contract with the ARIA spec — `role="img"` is *Children
+  `COMPONENTS.md` explained the a11y contract with the ARIA spec, where `role="img"` is *Children
   Presentational*, therefore "rendered bar values, axis ticks and legends are not exposed". Measured
   against Chrome's accessibility tree, that is not what happens: a donut kept `list` → three
   `listitem` → `StaticText "posted — 76%"` and its centre total `1687`, the legacy `.fdy-bars` kept
-  every value and label (`12`, `Jan`, `30`, `Feb`…), and a two-series cartesian kept its legend — all
-  live, none ignored. What actually protected the advice was only that AT treats a *named*
+  every value and label (`12`, `Jan`, `30`, `Feb`…), and a two-series cartesian kept its legend, all
+  live and none ignored. What actually protected the advice was only that AT treats a *named*
   `role="img"` as a leaf and does not descend; the docs presented a habit as a guarantee. Axis ticks
   were the one true claim, and for an unstated reason: the renderer already sets `aria-hidden` on the
   `<svg>` itself.
   `ensureImg()` now marks the rendered children `aria-hidden="true"`, so the author's `aria-label`
   really is the entire text alternative and cannot be double-announced by an AT that does descend.
-  Nothing is removed and nothing moves — the legend and the centre are still in the DOM and still
+  Nothing is removed and nothing moves: the legend and the centre are still in the DOM and still
   painted.
 - **The hiding requires a name.** A chart with no `aria-label`/`aria-labelledby` keeps its contents
   exposed: pruning the subtree of an unlabelled chart would leave an image with no name *and* no
@@ -229,7 +229,7 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   exposes no text of its own, the author label survives as the name, the legend is still rendered and
   visible (hidden, not deleted), and an unlabelled chart still reads. The first three were verified to
   fail against 1.51.1.
-- `axSubtree()` in the browser harness — every AX node under an element, ignored ones included. The
+- `axSubtree()` in the browser harness reports every AX node under an element, ignored ones included. The
   DOM cannot answer this class of question: `aria-hidden` changes no markup, so a `querySelector`
   assert passes identically before and after the fix. Same reason the 1.51.0 scaling bug needed a
   real measurement rather than a source read.
@@ -238,25 +238,25 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ### Docs
 - **`COMPONENTS.md` never said whether two overlays may be open at once** (#046). Modal and Drawer
   were documented in isolation, so "can a confirm modal open over an open drawer?" had no answer in
-  the file — and the built CSS does not answer it either: the only overlay `z-index` in the bundle
+  the file, and the built CSS does not answer it either: the only overlay `z-index` in the bundle
   belongs to the toast region. Both entries now state the rule, because both components are
   `<dialog>` opened with `showModal()` and therefore enter the **top layer**, where paint order is
   the order they were opened: the later modal is above the drawer with no `z-index` from either,
   Escape closes the topmost first (so cancelling returns to the still-open drawer), and closing them
   out of order leaves the survivor painted and dismissible.
 - **The one caveat is the browser's, and it is now written down**: open each overlay from the
-  gesture that asked for it. A `showModal()` with no user activation — from a timer, or after an
-  `await` that outlived the click — has its close watcher GROUPED with the dialog below it, and a
+  gesture that asked for it. A `showModal()` with no user activation, from a timer or after an
+  `await` that outlived the click, has its close watcher GROUPED with the dialog below it, and a
   single Escape then closes both. Measured, not assumed: two untrusted `.click()` opens, one Escape,
   both dialogs shut.
 ### Added: guards
-- `browser/overlay-stack.mjs` (3 tests) proves that paragraph instead of restating it — the #041
+- `browser/overlay-stack.mjs` (3 tests) proves that paragraph instead of restating it, the #041
   lesson applied to a documentation change. Paint order is asserted in **pixels** at the overlap of
   the two, because a modal dialog makes the rest of the document inert and `elementFromPoint` will
   name the dialog whatever is really on top; the overlays are opened with **trusted** clicks, or the
   close-watcher grouping above would fail the Escape assertion for a reason that is not the kit's.
-- **`pressKey` in the browser harness sent every key but Tab with virtual-key code 0** — delivered
-  to the page, but not acted on by the browser: Escape reached a `keydown` listener yet never closed
+- **`pressKey` in the browser harness sent every key but Tab with virtual-key code 0**, delivered
+  to the page but not acted on by the browser: Escape reached a `keydown` listener yet never closed
   a native `<dialog>`. A dismissal guard written with it would have passed for the wrong reason and
   reported a broken kit as fine. It now carries the real `windowsVirtualKeyCode` /
   `nativeVirtualKeyCode` for the keys the suite presses.
@@ -268,19 +268,19 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   size the renderer expressed in user units was multiplied by `plotWidth / 320`. `font-size:9px` on
   a tick is not nine screen pixels at any width but 320px: measured on a real console it rendered
   13px at a 350px plot and **81px at a 2232px** one, making the chart's smallest, most secondary
-  text the largest type on the page. `r="2.2"` did the same to the dots — 4.8px across at 350px,
+  text the largest type on the page. `r="2.2"` did the same to the dots: 4.8px across at 350px,
   30.7px at 2232px. The chart now measures `__plot` and sizes the `viewBox` to it in CSS pixels, so
   one user unit is one pixel and every declared size means what it says at every width; a
   `ResizeObserver` repaints it when the box changes (a collapsing sidebar moves a plot ~300px at a
-  fixed viewport, so this is the common case, not an edge case). A chart that measures 0 — detached,
-  or inside `display:none` — falls back to the old box and repaints when it is laid out.
+  fixed viewport, so this is the common case, not an edge case). A chart that measures 0, whether detached
+  or inside `display:none`, falls back to the old box and repaints when it is laid out.
 - **A currency y-axis was clipped by a gutter sized for a percent one** (#042). `PL` was a constant
   38 user units, which was ~4 characters at one scale and something else at every other. It is now
   derived from the widest formatted tick the axis will actually draw, capped at 35% of the plot.
 ### Changed
 - **Axis type is a real CSS size**, set by `--fdy-chart-tick-size` on `.fdy-chart-xy` (default
   `var(--text-xs)`). `font-size` moved off `.fdy-chart-xy__tick` / `__xlabel` onto
-  `.fdy-chart-xy__plot`, which the SVG text inherits — one computed read gives the renderer the real
+  `.fdy-chart-xy__plot`, which the SVG text inherits, so one computed read gives the renderer the real
   pixel size it needs for the y-gutter and for the x-label autoskip, so an override flows to the
   text *and* to the geometry around it. Before this, chart text could not be restyled at all: any
   value set was multiplied by a scale the consumer could not see or compute.
@@ -290,12 +290,12 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   chart is `role="img"` + `aria-label` "with a `<table>` fallback inside the element"; the renderer
   builds no table and wipes the element on every render path. Worse, `role="img"` makes descendants
   presentational, so the bar values, ticks and legend the renderer *does* draw are not exposed
-  either — the author's `aria-label` is the entire text alternative, and the docs now say so and ask
+  either, so the author's `aria-label` is the entire text alternative, and the docs now say so and ask
   for one that carries the numbers. The four dead fallback tables in `docs/index.html` and
   `docs/reference-screen.html`, which no reader has ever reached, are gone with it.
 - **The kit's own chart sizing is written down** (#041): `.fdy-chart-xy__plot` is
   `aspect-ratio:16/9` + `min-height:8rem`, `.fdy-bars` a fixed `9rem`, `.fdy-sparkline` an
-  inline-block `8rem × 2.25rem` — with the note to override those rather than the chart root, since
+  inline-block `8rem × 2.25rem`, with the note to override those rather than the chart root, since
   a root `height` fights `aspect-ratio` instead of setting it.
 ### Added: guards
 - **`browser/chart-scale.mjs`** — the axis label box and dot diameter are measured at plot widths of
