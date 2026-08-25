@@ -36,6 +36,19 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 - `browser/text-override.mjs` and `browser/upload-states.mjs` assert the new defaults. The override
   half is untouched and still passes — it is the migration path, so it had to keep working in the
   same breath as the change that makes it necessary.
+### Fixed — the kit's own docs
+- **The docs site shipped the wrong version number for three releases.** `docs/index.html` said
+  `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
+  `docs/getting-started.md` told readers to install `^1.34.0` — eighteen releases stale. `NEXT-UP.md`
+  already carried the right instruction (don't work from a memorised list, `git grep` the old
+  version) and it was still missed every time, because a runbook step is something a person has to
+  remember. The stamps are correct now and a test asserts them against `package.json`, so the next
+  miss fails the suite instead of reaching the live site.
+- **`HANDOFF.md` was 419 lines of per-version history under a header saying "this is not a
+  changelog"** — a duplicate of `CHANGELOG.md` that stopped being updated twenty releases before
+  2.0.0. It is a snapshot again: what the kit is now, what the guards cover, how a release goes out,
+  and what is known-unfinished. The same cleanup was done once before, in v1.20.0, for the same
+  reason: a stale snapshot is worse than none.
 ### Known
 - `docs/index.html` is Indonesian prose with its own ID→EN toggle for authored demo chrome, and that
   toggle does not reach enhancer-rendered strings. In Indonesian mode the demos now show English

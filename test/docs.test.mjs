@@ -327,3 +327,28 @@ test('the enhancers ship exactly these strings (#006)', () => {
   },
   }, 'a user-facing string changed — if that was deliberate, update this table in the same commit');
 });
+
+/* Every public version stamp, checked against package.json.
+ *
+ * NEXT-UP's release runbook already says the right thing — don't work from a memorised list of
+ * files, `git grep` the old version — and it was still missed three times running: docs/index.html
+ * shipped `v1.51.0` in its eyebrow and footer through 1.52.0, 1.52.1 and 1.53.0, and
+ * getting-started.md told people to install `^1.34.0` for eighteen releases. A runbook step is a
+ * thing a person has to remember; this is the same grep, run by the suite.
+ *
+ * Only PREFIXED forms count — `v1.2.3` and `^1.2.3`. A bare `1.4.11` is WCAG's success criterion,
+ * which the runbook warns about by name and which no release should ever touch.
+ */
+test('the public version stamps match package.json', () => {
+  const version = JSON.parse(read('package.json')).version;
+  const stale = [];
+  for (const file of ['README.md', 'README.id.md', 'docs/index.html', 'docs/getting-started.md']) {
+    read(file).split('\n').forEach((line, i) => {
+      for (const m of line.matchAll(/[v^](\d+\.\d+\.\d+)/g)) {
+        if (m[1] !== version) stale.push(`${file}:${i + 1}  ${m[0]} (package.json says ${version})`);
+      }
+    });
+  }
+  assert.deepEqual(stale, [],
+    'these are what a reader sees on the live docs and in an install command:\n' + stale.join('\n'));
+});

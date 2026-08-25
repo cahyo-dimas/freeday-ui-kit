@@ -9,7 +9,7 @@ ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat h
 
 ---
 
-## Roadmap ke depan (per v1.34.0) — default: **tunggu demand**
+## Roadmap ke depan (per v2.0.0) — default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 11/11 komponen paritas penuh di **4 stack**
 (vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
@@ -109,8 +109,14 @@ klik saat transisi/scroll) → assert nilai berubah.
 
 ## Kalau nanti mau rilis lagi
 
-Semua perubahan sejauh ini bersifat aditif → **MINOR bump**. Saat cut versi, jangan lupa **sync semua
-referensi versi publik**, bukan cuma `package.json`:
+2.0.0 mematahkan pola "semua aditif → MINOR": default bahasa enhancer berubah, jadi setiap layar
+jalur mentah merender kata lain. Bump-nya ikut apa yang benar-benar berubah, bukan kebiasaan.
+
+Saat cut versi, **sync semua referensi versi publik**, bukan cuma `package.json` — dan itu sekarang
+**dijaga test** (`test/docs.test.mjs`, "the public version stamps match package.json"), karena
+runbook di bawah ini benar dan tetap terlewat tiga rilis berturut-turut: `docs/index.html` mengirim
+`v1.51.0` sepanjang 1.52.0–1.53.0, dan `getting-started.md` menyuruh orang memasang `^1.34.0` selama
+delapan belas rilis. Langkah runbook bergantung pada ingatan; test tidak.
 
 Jangan pakai daftar hafalan (yang lama sudah salah: menyebut `examples/*/README.md` yang tak punya
 versi, dan "getting-started 4×" padahal 1×). **Cari saja** — inilah daftar otoritatifnya:
