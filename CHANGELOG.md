@@ -298,12 +298,12 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   inline-block `8rem × 2.25rem`, with the note to override those rather than the chart root, since
   a root `height` fights `aspect-ratio` instead of setting it.
 ### Added: guards
-- **`browser/chart-scale.mjs`** — the axis label box and dot diameter are measured at plot widths of
+- **`browser/chart-scale.mjs`** measures the axis label box and dot diameter at plot widths of
   350 / 696 / 1400 / 2232px and must not vary by more than a pixel, must stay smaller than body
   text, and the `viewBox` must equal the measured plot. A second spec widens a container and asserts
   the repaint. This class of bug is invisible to a source read: `font-size:9px` and `r="2.2"` look
-  like correct sizes, and the one thing in the plot that *was* protected —
-  `vector-effect:non-scaling-stroke` on the line — is what made the other three look protected too.
+  like correct sizes, and the one thing in the plot that *was* protected,
+  `vector-effect:non-scaling-stroke` on the line, is what made the other three look protected too.
   Only a real layout tells them apart.
 
 ## [1.50.0] - 2026-08-20
@@ -312,49 +312,49 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
   `z-index: 200`, which can never win: `.fdy-modal` is a native `<dialog>` opened with `showModal()`
   and therefore lives in the **top layer**, above the whole z-index universe. An error raised by an
   action taken inside a dialog was dimmed by that dialog's backdrop and mostly hidden under the
-  dialog — so the reader saw a confirmation still asking a question they had already answered, and
+  dialog, so the reader saw a confirmation still asking a question they had already answered, and
   no reason why. The region is now `popover="manual"` and `freeday-toast.js` calls `showPopover()`
-  as each toast lands (per toast, not once — the top layer is ordered by when you joined, so a
+  as each toast lands (per toast, not once, because the top layer is ordered by when you joined, so a
   dialog opened after the last toast would otherwise sit above it). Guarded: where `showPopover` is
   unavailable or throws, the region stays exactly what it was.
 - **A checkbox shrank when its label was long** (#027). `.fdy-check` is an inline-flex row and its
-  box declared a width — but a flex item with a width is still shrinkable, so a label that wrapped
+  box declared a width, but a flex item with a width is still shrinkable, so a label that wrapped
   to three lines squeezed the box from 18px to 13px while leaving it 18px tall. A group of five
   rendered three different sizes, none of them square. `flex: none` on `.fdy-check input`,
-  `.fdy-radio input`, the `.fdy-switch` track and the standalone `.fdy-checkbox` — all four are
+  `.fdy-radio input`, the `.fdy-switch` track and the standalone `.fdy-checkbox`. All four are
   flex children somewhere in the kit.
 ### Added: guards
-- **`pixelAt(x, y)` in `browser/harness.mjs`** — a 1×1 `Page.captureScreenshot`, decoded in-process.
+- **`pixelAt(x, y)` in `browser/harness.mjs`** takes a 1×1 `Page.captureScreenshot`, decoded in-process.
   Stacking above a modal cannot be asserted with `elementFromPoint`: a modal dialog makes the rest
   of the document inert, so a hit test outside it returns the dialog whatever the paint order is,
   reporting a working fix as broken. The new guard measures the colour actually composited at the
-  toast's centre. It waits for both fade-ins to finish first — a screenshot taken mid-animation
+  toast's centre. It waits for both fade-ins to finish first, since a screenshot taken mid-animation
   returns a blend of the two elements and flakes in both directions.
 - **Selection controls are asserted square and equal** across a group whose labels run one to three
   lines, so a box that shrank in both axes cannot pass a width-only comparison. All four controls
   the fix touched are measured, each in the container it actually ships in: the standalone
-  `.fdy-checkbox` inside `.fdy-filter__check` — the flex row all three typed adapters render in a
-  filter popover and a CFL option list — and the switch track against a switch of its own, since it
+  `.fdy-checkbox` inside `.fdy-filter__check`, the flex row all three typed adapters render in a
+  filter popover and a CFL option list, and the switch track against a switch of its own, since it
   is the one control that is not square. The first version of this guard held the standalone
   checkbox in a plain block, where it cannot shrink at all, so removing `flex: none` from the one
   box every adapter puts on screen left it passing.
 
 ## [1.49.0] - 2026-08-20
 ### Added
-- **`FdyTableColumn.labelHidden`** (#026). A column of row CONTROLS — an edit button, a row menu —
+- **`FdyTableColumn.labelHidden`** (#026). A column of row CONTROLS, an edit button or a row menu,
   could be named or quiet, not both: `label` renders as bare text in the `<th>`, so a designer who
   does not want a word above a column of icons was left with an empty header, which assistive tech
   announces as nothing. With `labelHidden: true` the label renders inside `.fdy-visually-hidden`:
   the cell looks empty and the column is still named. The label keeps naming the column's filter
   popover and sort button, so it stays meaningful either way.
-  Contract and ALL THREE typed adapters — Vue, React and Blazor. Each renders its own header, so
+  Contract and ALL THREE typed adapters: Vue, React and Blazor. Each renders its own header, so
   each spends the flag itself; Blazor takes `LabelHidden` on `FdyTableColumn<TRow>`.
 ### Added: guards
 - **The column contract now has to reach all three adapters** (#026). Vue and React consume
-  `table-model.d.ts` and TypeScript keeps them honest, but Blazor RE-DECLARES the column in C# — a
-  hand copy, and the surface that can fall behind silently. A test asserts every contract property
+  `table-model.d.ts` and TypeScript keeps them honest, but Blazor RE-DECLARES the column in C#, a
+  hand copy and the surface that can fall behind silently. A test asserts every contract property
   exists on Blazor's `FdyTableColumn<TRow>`; coverage, not equality, so it needs no exemption list.
-- **A hidden label is clipped, not dropped** — asserted in a real browser for both JS adapters
+- **A hidden label is clipped, not dropped**, asserted in a real browser for both JS adapters
   (`browser/adapter.mjs`), because the claim is about computed geometry: a span carrying the class
   with no CSS behind it passes any string match and still prints the word.
 
@@ -362,8 +362,8 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ### Fixed
 - **A date column sorted correctly and filtered nothing** (#025). `FdyTable`'s client-mode date
   filter read a cell with `dateOnly`, which **sliced** the string, while its date SORT reads the same
-  cell with `toTime`, which **parses**. A date column normally renders a formatted date — that is
-  what `value` is for — so `"18 Mar 2024"` sliced to `"18 Mar 202"` and compared as text against an
+  cell with `toTime`, which **parses**. A date column normally renders a formatted date, which is
+  what `value` is for, so `"18 Mar 2024"` sliced to `"18 Mar 202"` and compared as text against an
   ISO bound: every row failed, silently. The working sort is what made the broken filter look
   trustworthy.
 - **A `Date` cell was read as its UTC day, not the reader's** (#025). `toISOString()` east of
@@ -380,14 +380,14 @@ Semua perubahan penting dicatat di sini. Format longgar mengikuti
 ## [1.48.0] - 2026-08-20
 ### Reverted
 - **1.47.0's readonly focus ring (#024) is withdrawn.** The report was measured wrong. The control in
-  question — a `CflField`'s readonly display input — sits inside `.fdy-input-group`, and
+  question, a `CflField`'s readonly display input, sits inside `.fdy-input-group`, and
   `.fdy-input-group:focus-within` already carries the border and the 3px ring for the WHOLE control;
   `.fdy-input-group .fdy-input:focus` clears the inner input deliberately so the two do not nest. The
   audit measured the INPUT, found no shadow on it, and concluded there was no focus indicator.
-  Measured on the group, focus shows `--color-primary` at full strength — 6.56:1. 1.47.0 therefore
+  Measured on the group, focus shows `--color-primary` at full strength: 6.56:1. 1.47.0 therefore
   painted a muted ring INSIDE the blue one, which is a regression rather than a fix.
 ### Added: guards
-- `test/css.test.mjs` pins the arrangement — the group rings, the inner input does not — so the next
+- `test/css.test.mjs` pins the arrangement, the group rings and the inner input does not, so the next
   reader finds the answer instead of repeating the conclusion.
 
 ## [1.46.0] - 2026-08-19
@@ -395,14 +395,14 @@ The docs site catches up with the components, and writing it out as a consumer f
 #016's own contract.
 ### Fixed
 - **`data-fdy-text-*` could not be written the way HTML allows** (#023). The keys in each enhancer's
-  `TEXT` table are camelCase, and `textOf` looked up `'data-fdy-text-' + key` — but **HTML lowercases
+  `TEXT` table are camelCase, and `textOf` looked up `'data-fdy-text-' + key`, but **HTML lowercases
   attribute names**, so `data-fdy-text-filterText` becomes `...filtertext` while
   `data-fdy-text-filter-text`, the spelling anybody would actually reach for, is a DIFFERENT
   attribute the enhancer never read. It failed silently, which is the only way an override can fail.
   The key is kebab-cased for the lookup now; the run-together spelling still resolves, so markup
   written against 1.39.0 keeps working. Nine enhancers.
   It survived #016's own guard because all seven overrides that guard asserts use **single-word**
-  keys, which have no case to lose — the guard was not wrong, it was unrepresentative. The spec now
+  keys, which have no case to lose, so the guard was not wrong but unrepresentative. The spec now
   overrides `filterText`, reached by clicking a column filter open. Mutation-tested.
 ### Docs
 - **`docs/index.html` was nine releases behind** — it stated v1.34.0 and demoed none of what landed
