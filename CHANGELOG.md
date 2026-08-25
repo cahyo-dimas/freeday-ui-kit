@@ -718,14 +718,14 @@ finally makes answerable.
 - **A footer with a size control stays visible on a single page.** The old rule withheld the whole
   band whenever `totalPages === 1`, which would have made "100 rows" on a ninety-row list a one-way
   door: the control that got you there disappears with the pager. Visibility is now "there is a
-  pager **or** there is a size control", and it lives in `FdyTableFooter` — one decision, four
+  pager **or** there is a size control", and it lives in `FdyTableFooter`: one decision, four
   stacks.
 - **No wrapper element.** `.fdy-table-footer__size` takes `margin-left:auto`, so the size control and
   the pager travel together on the right while the range stays left. The footer's DOM is byte-
   identical for every table that does not offer one.
 - **`.fdy-combo`, not a native `<select>`.** The first cut of this shipped a native one, reasoning
   that three one-word options do not need a custom listbox. They do: an OS menu is unthemeable, and
-  on macOS it drops a dark grey panel into a light page — which is the reason `FdyCombo` exists, and
+  on macOS it drops a dark grey panel into a light page, which is the reason `FdyCombo` exists, and
   its own source header says so. Caught by a consuming app in a screenshot within the hour, before
   the release reached npm. The raw path still accepts either: the enhancer listens for `change` *and*
   for the `fdy-change` a `.fdy-combo` emits.
@@ -734,34 +734,34 @@ finally makes answerable.
   a negative index, a zero size).
 - The control is measured in a real browser, on two tables sharing one page state, **driven by real
   clicks on the popup** rather than a synthetic `change`: the server-mode pick must reach the caller
-  **with the right index** (page 3 of five-row pages → page 2 of ten), and the client-mode table —
-  deliberately wired to nothing — must still grow to 25 rows, because a control that only reports is
+  **with the right index** (page 3 of five-row pages → page 2 of ten), and the client-mode table,
+  deliberately wired to nothing, must still grow to 25 rows, because a control that only reports is
   a control that lies. Opening the popup is the half that would have caught the native `<select>`.
 ### Fixed
 - **The typed `FdyCfl` dialog was Indonesian end to end, in every stack but Blazor** (#009).
-  COMPONENTS.md promises the Vue/React/Blazor components are English throughout — that is the line an
-  English app adopts the wrappers on — and the CFL broke it in **twelve strings** (`Pilih data`,
+  COMPONENTS.md promises the Vue/React/Blazor components are English throughout, which is the line an
+  English app adopts the wrappers on, and the CFL broke it in **twelve strings** (`Pilih data`,
   `Tutup`, `Cari…`, `Memuat…`, `Coba lagi`, `Tidak ada hasil.`, `Hasil pencarian`, `Muat lebih
   banyak`, `Klik baris untuk memilih`) with **not one prop reaching any of them**. Blazor already had
   the whole set as English-defaulted parameters, so Vue and React now take the same props with the
   same defaults: a parity gap closing, not a translation being chosen. `FdyCascade` (`Pilih` /
   `Pilih…`) and `FdyAutocomplete` (`Tak ada hasil.`) get English defaults too; both were already
-  overridable. The enhancers keep their Indonesian — documented, deliberate, a separate decision
+  overridable. The enhancers keep their Indonesian: documented, deliberate, a separate decision
   (NEXT-UP #6).
 
 - **A guard for each.** The paragraph margins are checked against the classes the DOCS show on a
-  `<p>`, so a new one is covered by documenting it — the step nobody skips. The grid ordering is
+  `<p>`, so a new one is covered by documenting it, the step nobody skips. The grid ordering is
   asserted as an ORDER, because a specificity bug is invisible in either rule and only their sequence
   shows it. Both mutation-tested.
 - **A guard for it.** `npm test` scans every string literal in `adapters/{vue,react,blazor}` for
   twenty unambiguous Indonesian words. One of the twelve was found by looking at a screen; the other
-  eleven by the sweep that one prompted — reading finds the instance, only a mechanical check finds
+  eleven by the sweep that one prompted; reading finds the instance, only a mechanical check finds
   the class. Matched by word rather than by a list of components, so a new adapter is covered the day
   it lands.
 
 - **`.fdy-eyebrow` and `.fdy-cfl__empty` never cleared the UA's `<p>` margin** (#010). Every other
   class the kit documents on a paragraph sets `margin:0`; these two did not, so a browser's 1em
-  landed as spacing nobody wrote — 12px above the eyebrow and 12px below it. A consuming app reported
+  landed as spacing nobody wrote: 12px above the eyebrow and 12px below it. A consuming app reported
   it as two complaints ("the gap from the category to the top bar is too big" and "the gap between
   the title and the record value is too loose"); they were one missing declaration, and it made the
   top of every page 44px against 32px at the sides.
@@ -771,7 +771,7 @@ finally makes answerable.
   combobox has to agree with is the form controls, so the height goes back to `--control-h`.
 - **`.fdy-list__title` did not set its own type** (#010). The class carries weight, colour and
   truncation but inherited font-size and family, so on the `<span>` the docs show it is 16px body
-  text and on an `<h3>` — a legitimate element for a row that names a record — the UA's 1.17em and
+  text and on an `<h3>`, a legitimate element for a row that names a record, where the UA's 1.17em and
   base.css's display-font rule made it 18.7px Sora. A phone row's name then shouted over its meta,
   and a long one wrapped to two lines instead of ellipsising. A class that names a role owns the type
   for that role.
@@ -779,7 +779,7 @@ finally makes answerable.
   for one class; asserting it as an invariant found the rest. `.fdy-alert__title`,
   `.fdy-dropzone__title` and `.fdy-toast__title` stated no `font-size` and no `margin`;
   `.fdy-state__title`, `.fdy-cal__title`, `.fdy-app__brand-title` and `.fdy-app__brand-subtitle`
-  stated no `margin`. On the elements the docs show, all eight rendered correctly and always had —
+  stated no `margin`. On the elements the docs show, all eight rendered correctly and always had,
   a `<span>` brings no margin and no size of its own. On a heading, which is the honest markup for
   an empty state's title or a row that names a record, the UA supplied `1.17em`, `bold` and `1em 0`
   and the kit's type scale simply did not apply. `font-size:inherit` is the fix where the class had
@@ -790,13 +790,13 @@ finally makes answerable.
   `margin`, `font-size` and `font-weight` on every `.fdy-*title` rule that sets type and is not a
   flex/grid box. This is #010's guard with the right invariant: that one checks the classes the docs
   show on a `<p>`, so it could only ever see the documented element, and the kit does not own that
-  choice — heading level is the consuming app's semantics. Scoped to title roles deliberately:
+  choice, because heading level is the consuming app's semantics. Scoped to title roles deliberately:
   asserted over every class that sets type it fails 53 times on `.fdy-btn--sm`, `.fdy-avatar--xs`
   and friends, and a guard that loud is one somebody silences. It found the eighth class after the
   fix list had been written by eye. Mutation-tested.
 - **The month grid rendered seven months across** (#010). `.fdy-cal__grid--months` sets three
   columns and `.fdy-cal__grid` sets seven; both sit on the same element and weigh the same, so
-  source order decides — and the modifier was declared *before* the base it modifies, with a comment
+  source order decides, and the modifier was declared *before* the base it modifies, with a comment
   directly above it describing the 3×4 layout it was failing to produce. Moved after. Neither rule is
   wrong on its own, which is why reading them found nothing.
 
@@ -811,34 +811,34 @@ Three notes from the back-office app, four findings, all four executed.
 ### Added
 - **`pager={false}` on `FdyTable`** (Vue · React · Blazor). Server mode rendered its own footer
   unconditionally: `hasPager` was `pageSize > 0 && totalPages > 1` with no way in, so a responsive
-  list — a table at `lg`, `.fdy-list` below it, one pager serving both so the views cannot disagree —
+  list: a table at `lg`, `.fdy-list` below it, one pager serving both so the views cannot disagree,
   showed the kit's footer *and* the app's, stacked, on every list with more than one page. The only
   workaround was `display:none` on `.fdy-table-footer`, an app reaching into a component's internals.
   Client mode already had its hatch (`pageIndex`); this gives server mode one, and in server mode it
-  is the honest shape — the app owns the page there anyway, it was simply being handed a second
+  is the honest shape, since the app owns the page there anyway, it was simply being handed a second
   control.
 - **`usePopover` is exported from the Vue adapter.** Every kit dropdown uses it to escape an
   ancestor's overflow clip (`.fdy-card` is `overflow:hidden`, so a panel inside one is cut at the
   card's edge), and a consuming app that had to build a control the kit does not ship had to
-  re-implement it — ~70 lines, from the kit's own description, that will not improve when the kit's
+  re-implement it: ~70 lines, from the kit's own description, that will not improve when the kit's
   positioning does. *Correction to the report: React has exported it all along; only Vue was missing
-  it. Blazor has no composable layer — its panels go through the JS bridge.*
+  it. Blazor has no composable layer; its panels go through the JS bridge.*
 - **Quiet destructive buttons.** `--danger` was the solid treatment and nothing else, so
-  `fdy-btn--ghost fdy-btn--danger` — which every reader parses as "quiet destructive" — rendered a
+  `fdy-btn--ghost fdy-btn--danger`, which every reader parses as "quiet destructive", rendered a
   second SOLID button. That is a hierarchy defect: the base class is already the one primary per
   screen, and a solid Delete beside Save is a second primary in all but name.
   `.fdy-menu__item--danger` has always modelled the quiet form; it now reaches `.fdy-btn`.
 ### Fixed
 - **`.fdy-eyebrow` and `.fdy-nav__grouplabel` spend a text ink.** Both set type in
   `--color-text-subtle`, which is gated at 3.0 *by design* (placeholders, separators, decorative
-  glyphs) and measures 4.41:1 — axe reports it as a serious `color-contrast` failure. Identical to
+  glyphs) and measures 4.41:1, so axe reports it as a serious `color-contrast` failure. Identical to
   `.fdy-stat__label` in 1.30.0, one release earlier: same ink, same 4.41, same argument.
-  The nav group label is the one the report did not know about — the sweep it asked for found it,
+  The nav group label is the one the report did not know about; the sweep it asked for found it,
   and that rule was *already* brightening to `--color-text-muted` on hover, which is the CSS
   admitting its resting state was too faint.
 ### Notes on the shape of the fix
 - The report proposed scoping the solid danger with `:not(.fdy-btn--ghost):not(.fdy-btn--text)`.
-  Shipped without it: the pairing rules are more specific and come later, so they already win —
+  Shipped without it: the pairing rules are more specific and come later, so they already win,
   the `:not()` would be a second mechanism expressing the same intent, and the mutation run proved
   it changed nothing.
 - **A regression written and caught inside this change:** Vue casts an omitted Boolean prop to
@@ -865,9 +865,9 @@ The answer was no, and two reasons why.
   reads first, and it listed everything in the package except the one file that says what changed
   between the version the project had and the one it now has. It now points at
   `node_modules/@cahyo-dimas/freeday/CHANGELOG.md` explicitly, plus a short *reach for this instead
-  of hand-rolling that* table covering the last nine releases — the additions most likely to replace
+  of hand-rolling that* table covering the last nine releases, the additions most likely to replace
   something an app already worked around.
-- **Three classes existed only in shorthand** in `COMPONENTS.md` — `.fdy-label--required`,
+- **Three classes existed only in shorthand** in `COMPONENTS.md`: `.fdy-label--required`,
   `.fdy-cal__month` and `.fdy-cal__grid--months` were written as `(+--required)` and `__month`, so
   the full name appeared **zero** times and a grep for the class found nothing. The drift guard
   cannot see this either: it verifies fully-written names and skips shorthand by design, so a class
@@ -876,14 +876,14 @@ The answer was no, and two reasons why.
 ## [1.32.0] - 2026-08-18
 Improvement note 004, both halves: a calendar you could not steer, and a check mark that talked.
 ### Added
-- **The calendar title is a control.** It was a `<div>` — the only thing naming the month, and not
-  clickable — so the only pointer route to another month was one click per month: August 2026 to
+- **The calendar title is a control.** It was a `<div>`, the only thing naming the month, and not
+  clickable, so the only pointer route to another month was one click per month: August 2026 to
   March 2022 is **53 clicks**. `Shift`+`PageUp` already jumped a year (APG, correct) but had no
   affordance whatsoever; the reporting repo's own Playwright helper clicked "previous month"
   **twenty-four times** and shipped, which is the strongest possible evidence that nobody finds a
   shortcut nothing mentions.
   Pressing the title now drills to a 12-cell month grid where the arrows step **years**. Same
-  journey: **7 clicks**. Picking a month is navigation, not selection — the day grid comes back with
+  journey: **7 clicks**. Picking a month is navigation, not selection, so the day grid comes back with
   the roving cell clamped into the new month and nothing is committed until a day is chosen.
   Shipped in the vanilla enhancer, Vue and React; `FdyDateRange` composes the picker in both
   adapters and the Blazor `FdyDatepicker` wraps the enhancer, so all of them inherit it.
@@ -893,7 +893,7 @@ Improvement note 004, both halves: a calendar you could not steer, and a check m
 ### Fixed
 - **A combo option's accessible name no longer changes when it is selected.** The tick lived inside
   `role="option"` as text, so the selected option announced `✓August` while every other announced
-  `August`: the state was read twice — once as `aria-selected`, once as decoration — and
+  `August`: the state was read twice, once as `aria-selected` and once as decoration, and
   `getByRole('option', { name: 'August' })` stopped matching the one option that was selected. The
   glyph is now painted by CSS with alt text (`content:"✓" / ""`), the same technique
   `.fdy-label--required` uses. The conditional disappears from all four stacks, and the vanilla
@@ -902,13 +902,13 @@ Improvement note 004, both halves: a calendar you could not steer, and a check m
 - **A bug written and caught inside this change:** swapping the calendar head with `v-if`/`v-else`
   destroys the very button the user just pressed, focus falls to `<body>`, and the panel's own
   `focusout` handler closes it mid-navigation. The head is now one element set whose labels and
-  handlers switch, and `focusout` ignores a **null** `relatedTarget` — focus lost because an element
+  handlers switch, and `focusout` ignores a **null** `relatedTarget`, so focus lost because an element
   was removed is not focus leaving the control, and a pointer that really lands outside is handled
   by the mousedown path.
 - The report's `aria-hidden` suggestion would also have worked; CSS alt text was chosen because it
   removes the conditional from four implementations instead of adding an attribute to each.
 ### Added: guards
-- `browser/harness.mjs` gains **`axName(selector)`** — the accessible name as the *engine* computes
+- `browser/harness.mjs` gains **`axName(selector)`**, the accessible name as the *engine* computes
   it (CDP `Accessibility.getPartialAXTree`). This mattered immediately: the first version of the
   name invariant read `textContent`, which never contains CSS generated content, so it passed with
   the tick back in the accessibility tree. With `axName`, that mutation reports `"✓ Badge"`.
@@ -920,29 +920,29 @@ Improvement note 004, both halves: a calendar you could not steer, and a check m
 Improvement note 002: density was a one-way door.
 ### Added
 - **`[data-density="comfortable"]` is now a real rule.** The kit shipped only the `compact` block,
-  and its own comment promised per-subtree density — true in one direction only. These are
+  and its own comment promised per-subtree density, true in one direction only. These are
   inheriting custom properties, so once `<html>` is compact *every* subtree is compact and a
   `comfortable` wrapper matched nothing at all. An app that is dense overall (a back office where
   most screens are data grids) could not opt its shared chrome back out: measured against a sibling
-  product, the logo sat 12px from the edge instead of 16 and the avatar 12 instead of 20 — four
+  product, the logo sat 12px from the edge instead of 16 and the avatar 12 instead of 20: four
   pixels in two places, from `--space-4` and `--control-h`, which reads as sloppiness rather than as
   a token. The workaround, restating the five defaults on a local class, is exactly the copy that
   goes stale when the kit retunes a step.
   Note the kit's own README has been telling people to write `data-density="comfortable"` on `<html>`
-  since long before a rule existed for it — harmless there, because it matched the defaults by
+  since long before a rule existed for it, harmless there because it matched the defaults by
   accident, and broken the moment anyone needed it on a wrapper.
 ### Notes on the shape of the fix
 - The five values are **derived from the tokens' own defaults** at build time, not written out a
   second time. Same key set by construction, so a token that gains a `$compact` value automatically
   gains its way back out, and a retuned default can never leave the two blocks disagreeing. The
-  report's hand-written block was correct in all five values — this only removes the chance for it
+  report's hand-written block was correct in all five values; this only removes the chance for it
   to stop being correct.
 ### Added: guards
 - `test/build.test.mjs` asserts the two density blocks cover the *same* tokens, that every
   comfortable value equals the `:root` default, and that none of them equals its compact counterpart
   (a block that resets nothing is as green as one that works).
 - `browser/theme.mjs` measures it in a real engine: a compact root, a `comfortable` island that
-  returns to a 40px control and `--space-4: 1rem`, and a `compact` island nested back inside that —
+  returns to a 40px control and `--space-4: 1rem`, and a `compact` island nested back inside that,
   because the point of the rule is the box that comes out, not the declaration going in.
 
 ## [1.30.0] - 2026-08-18
@@ -952,28 +952,28 @@ card and button-group borders."*
 - **The dark theme's contrast has not actually been tested since v1.21.0.** `contrast.test.mjs` looked
   for `:root[data-theme="dark"]`; un-rooting the theme selectors in 1.21.0 changed the emitted
   selector to `[data-theme="dark"]`, so the regex matched nothing, `dark` fell back to the **light**
-  values, and every `WCAG contrast — DARK` assertion re-tested the light theme under a dark label —
+  values, and every `WCAG contrast, DARK` assertion re-tested the light theme under a dark label,
   54 declarations ignored, all green. Fixed, and the scope now has a guard of its own: a dark scope
   that parses to nothing, or that resolves to the light surface, fails loudly. *No latent dark-theme
-  failures were hiding behind it — the theme passes on its own merits.*
+  failures were hiding behind it; the theme passes on its own merits.*
 - **`--color-control-border` retuned** to a new ramp step `--slate-450` (`#798295`). It was
   `--slate-500`, the same ink as `--color-text-subtle`: a control **boundary** carrying text-level
   contrast (4.69:1 on surface where WCAG 1.4.11 asks 3:1), which is what makes a form look heavier
   than the cards around it. Now ≈3.9/3.6/3.4 across the three light surfaces. The same step
-  *strengthens* the dark theme, which was sitting at **3.02:1** on `surface-3` — 0.02 above the
+  *strengthens* the dark theme, which was sitting at **3.02:1** on `surface-3`, 0.02 above the
   floor, and unguarded because of the bug above; it is now 3.66:1.
 - **`.fdy-stat__label` uses `--color-text-muted`.** It spent `--color-text-subtle`, which is gated at
-  3.0 *on purpose* (placeholders, dividers, decorative glyphs) and measures 4.41:1 on `surface-2` —
+  3.0 *on purpose* (placeholders, dividers, decorative glyphs) and measures 4.41:1 on `surface-2`,
   under AA for text, on the only thing naming the number above it. Reported in 006 §6 and still
   carried by the app at 1.29.0.
 ### Added
 - **`.fdy-btn--stretch` now works in a `.fdy-list__row`** (note 008 §1). The pattern existed for
   "one card, one primary action, one escape hatch" and had no equivalent for the same sentence with
-  *row* in it — an app rendering both grid and list from one component had to hand-roll the row half.
+  *row* in it, so an app rendering both grid and list from one component had to hand-roll the row half.
   The row anchors the overlay itself, opt-in through `:has(.fdy-btn--stretch)` so a plain row is
   untouched and nothing an app pinned inside one starts resolving against a new containing block.
   Measured before the fix: **every** row's overlay covered the whole list and the last one in the DOM
-  won, so a click on row one opened row two — under row one's name.
+  won, so a click on row one opened row two, under row one's name.
 ### Notes on the shape of the fix
 - **Note 008 §2 is not reproducible** and no code shipped for it. With a positive control to prove
   the measurement works (pointing at the card body *does* put the stretched target in `:hover`),
@@ -984,10 +984,10 @@ card and button-group borders."*
 ### Added: guards
 - `contrast.test.mjs`: the control border is now asserted on **all three** surfaces (`surface-3` was
   missing, and it is the worst case that pinned the dark theme to the floor) and at **3.25**, not
-  3.0 — a boundary that clears the floor by 0.02 has no headroom, and the margin is what catches a
+  3.0, and a boundary that clears the floor by 0.02 has no headroom, and the margin is what catches a
   revert to the old ink.
 - `css.test.mjs`: a stat label must spend a *text* ink, and a list row hosting a stretched target
-  must anchor it — both are class↔token pairings that every token-level assertion passes straight
+  must anchor it; both are class↔token pairings that every token-level assertion passes straight
   through.
 - `browser/card-stretch.mjs`: the list case, asserting **row one** (the point that hides the bug is
   row two, which passes even when the overlay belongs to another row).
@@ -997,36 +997,36 @@ Improvement note 001 from a second consuming app (a 40-screen back office). Eigh
 executed, one already documented, one left as an owner decision.
 ### Added
 - **`clearable` on `FdyCfl`** (Vue · React · Blazor). The value type already said `Row | null`, but
-  the emit was `Row` only — a choose-from-list could be **set and never unset**, which breaks every
+  the emit was `Row` only, so a choose-from-list could be **set and never unset**, which breaks every
   *optional* foreign key (a device with no project, an expense with no workflow, a top-level record
   with no parent). A user who picked the wrong row had to reload the form. The clear control is a
   second `.fdy-input-group__btn`, emits `null`, returns focus to the trigger, and never touches the
   dialog.
-- **`.fdy-label--required`** — the marker is painted through `::after` with **CSS alt text**
+- **`.fdy-label--required`** paints the marker through `::after` with **CSS alt text**
   (`content:"*" / ""`), so the glyph appears and the accessibility tree gets nothing. The control
   already carries `required`; a `<span>` an app has to remember to mark `aria-hidden` can be
   forgotten, this cannot.
-- **`.fdy-icon`** — a `1em` square, `flex:none` box for the icons the kit deliberately does not
+- **`.fdy-icon`** is a `1em` square, `flex:none` box for the icons the kit deliberately does not
   ship. Every icon slot it *does* ship (`.fdy-btn__icon`, `.fdy-nav__icon`, `.fdy-state__icon`)
   already assumed something sensible inside; a standalone icon had no contract.
-- **`.fdy-text-success` · `.fdy-text-warning` · `.fdy-text-danger`** — the kit had three
+- **`.fdy-text-success` · `.fdy-text-warning` · `.fdy-text-danger`**: the kit had three
   *de-emphasis* text roles and no *state* role, so a consequential sentence ("Amount changed from X
   to Y", "No approver assigned") had to fall back to `.fdy-text-caption`, which de-emphasises
   exactly the line that should stand out. A badge is wrong (prose, not a status) and an alert is
   wrong (a block, not one line in a row).
 ### Fixed
 - **`.fdy-menu__item:focus-visible` gets a real ring.** It marked focus with the same fill as
-  `:hover`, and `freeday-menu.js` moves real DOM focus — so arrowing through a menu was invisible,
+  `:hover`, and `freeday-menu.js` moves real DOM focus, so arrowing through a menu was invisible,
   and hover and focus were identical to everyone else. `.fdy-nav__item`, in the same kit, has always
   done it correctly. Reported by two different apps before it was fixed.
 - **A grouped `<fieldset>` now has its spacing.** `fieldset.fdy-field` already reset the UA border,
-  but the **rendered legend is laid out outside the flex flow**, so `gap` never reached it —
+  but the **rendered legend is laid out outside the flex flow**, so `gap` never reached it,
   measured 0px between legend and first control. One declaration on the reset the kit already
   ships, not a new block; `COMPONENTS.md` documents the compose (`.fdy-field` on the fieldset,
   `.fdy-label` on the legend), which is what was actually missing.
 ### Notes on the shape of the fix
 - **§7 (an Indonesian `aria-label`) is not what it looked like.** The report assumed the rest of the
-  kit's output is English; it is not — *every* user-visible string the vanilla enhancers write is
+  kit's output is English; it is not. *Every* user-visible string the vanilla enhancers write is
   Indonesian (`Sebelumnya`, `Berikutnya`, `Berisi teks`, `Reset`, `Tutup`, `Menampilkan …`,
   `Bulan berikutnya`, `Format tidak valid.`). Translating one would **create** the mixed interface
   the note objects to. The real choice — an override hook, or switching the defaults and breaking
