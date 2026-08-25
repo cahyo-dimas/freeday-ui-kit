@@ -1,4 +1,4 @@
-# reference/ — input material, not shipped output
+# reference/: input material, not shipped output
 
 Source material the kit was built **from**, and wireframe references used **while** building screens
 with it. Nothing in this folder is part of the published package: `files` in `package.json` lists
@@ -7,14 +7,14 @@ docs site either. They are kept in the repo as provenance and as a working refer
 
 | File | What it is |
 |---|---|
-| `foundation-design-system.html` | The origin artifact Freeday was ported from (2026-07-21). Historical: all 44 components have been ported, so this is a provenance record, not a to-do list. Its `@font-face` rules point at **dead UUID resources** (leftovers from the tool that exported it) — there are **no embedded font files here to extract**; it renders via the Google Fonts CDN it preconnects to. |
+| `foundation-design-system.html` | The origin artifact Freeday was ported from (2026-07-21). Historical, since all 44 components have been ported, so this is a provenance record, not a to-do list. Its `@font-face` rules point at **dead UUID resources** (leftovers from the tool that exported it) — there are **no embedded font files here to extract**; it renders via the Google Fonts CDN it preconnects to. |
 | `layout-patterns.png` | 15 web-app layout archetypes, as low-fidelity wireframes. Generated with Claude at the author's request, so it carries no third-party rights. Use it to pick a screen shape *before* reaching for components; the mapping below says what each shape is built from. |
 
 ---
 
 ## The 15 archetypes → Freeday
 
-Freeday deliberately owns **components + tokens, not layout** — so for most archetypes the *frame* is
+Freeday deliberately owns **components + tokens, not layout**, so for most archetypes the *frame* is
 yours (your grid/flex layer) and the kit fills it. The honest split per archetype:
 
 | # | Archetype | Freeday gives you | You build |
@@ -36,5 +36,5 @@ yours (your grid/flex layer) and the kit fills it. The honest split per archetyp
 | 15 | **Community / forum** | threads = `.fdy-card` · `.fdy-avatar--tone-N` · tags = `.fdy-chip` · `.fdy-pagination` · replies = `.fdy-timeline` | the thread list layout |
 
 Rule of thumb from that table: **if an archetype needs a shape the kit has no component for, build the
-shape and fill it with kit components — never invent a `fdy-` class for it.** The complete list of
+shape and fill it with kit components, never inventing a `fdy-` class for it.** The complete list of
 classes that do exist is [`COMPONENTS.md`](../COMPONENTS.md).

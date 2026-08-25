@@ -1,12 +1,12 @@
-# Freeday × React — invoice example
+# Freeday × React: invoice example
 
 A real invoice screen that uses Freeday components in React through the
-`@cahyo-dimas/freeday/react` hook. Same pattern as the Vue example — React-rendered markup is
+`@cahyo-dimas/freeday/react` hook. Same pattern as the Vue example: React-rendered markup is
 enhanced by Freeday's enhancers, and the (bubbling) `fdy-*` events are caught at the root to update
 React state.
 
 > **Want to use Freeday in your own React project?** Follow
-> [`../../docs/getting-started.md`](../../docs/getting-started.md) §React — install from npm
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §React, install from npm
 > (`npm i @cahyo-dimas/freeday`), not `file:../..` like this example.
 
 ## Run
@@ -35,8 +35,8 @@ useEffect(() => {
 }, []);
 ```
 
-Inputs are left **uncontrolled** — the enhancer owns the DOM value (the mask writes straight to
+Inputs are left **uncontrolled**; the enhancer owns the DOM value (the mask writes straight to
 `.value`; form validation reads through the Constraint Validation API). React state holds the values
 that arrive via events; text values are read from `FormData` on `fdy-form-valid`. No component is
-re-implemented — the enhancer stays the source of truth. See
+re-implemented; the enhancer stays the source of truth. See
 [`../../docs/integrations.md`](../../docs/integrations.md) for the library map and other patterns.

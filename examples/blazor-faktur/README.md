@@ -1,11 +1,11 @@
-# Freeday × Blazor (WASM) — invoice example
+# Freeday × Blazor (WASM): invoice example
 
 A real invoice screen in Blazor WebAssembly that uses Freeday components through the
 `freeday-blazor.js` interop. Blazor-rendered markup is enhanced by Freeday's enhancers, and `fdy-*`
 events are forwarded to C# `[JSInvokable]` methods that update component state.
 
 > **Want to use Freeday in your own Blazor project?** Follow
-> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Blazor (WASM) — copy the assets
+> [`../../docs/getting-started.md`](../../docs/getting-started.md) §Blazor (WASM), copy the assets
 > into `wwwroot/freeday/` (manually or via the MSBuild target).
 
 ## Run
@@ -42,11 +42,11 @@ details are sent JSON-safe (Blazor deserializes them into a record, case-insensi
 
 ## Integration notes
 
-- **Text inputs** bound with `@bind` (customer, email) are safe — no enhancer touches them.
+- **Text inputs** bound with `@bind` (customer, email) are safe, since no enhancer touches them.
 - **Masked fields / widgets** (`data-fdy-*`) are left without `@bind`: the enhancer owns their DOM
   value. The widget markup is static, so Blazor's diff won't overwrite the nodes the enhancer added.
 - Validation is driven by `freeday-form`; submit is gated through the `fdy-form-valid` event
   (`@onsubmit:preventDefault` holds navigation).
 
-The enhancer stays the source of truth — nothing is re-implemented. See
+The enhancer stays the source of truth; nothing is re-implemented. See
 [`../../docs/integrations.md`](../../docs/integrations.md) for the library map and other patterns.
