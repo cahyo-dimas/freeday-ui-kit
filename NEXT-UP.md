@@ -9,30 +9,30 @@ ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat h
 
 ---
 
-## Roadmap ke depan (per v2.0.0) — default: **tunggu demand**
+## Roadmap ke depan (per v2.0.0), default: **tunggu demand**
 
 Per **v1.16.0** kit ini **feature-complete**: 11/11 komponen paritas penuh di **4 stack**
-(vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa — membangun spekulatif dari sini
+(vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa, dan membangun spekulatif dari sini
 melanggar prinsip demand-driven yang menjaga kit tetap ramping ([[freeday-consumption-model]]).
 **Sikap default = tunggu demand.** Sinyal paling berharga = project Blazor berikutnya: bangun
 memakainya, biar friksi nyata (prop kurang, timing Server-mode, kebutuhan NuGet) yang menentukan
-rilis berikut — lebih murah & akurat daripada menebak. Kandidat #1 & #2 paling mungkin muncul
+rilis berikut, yang lebih murah dan akurat daripada menebak. Kandidat #1 & #2 paling mungkin muncul
 duluan dari project itu.
 
-Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang — pemicunya di kolom kanan):
+Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang; pemicunya di kolom kanan):
 
 | # | Kandidat | Kerjakan saat |
 |---|---|---|
-| 1 | **NuGet package `Freeday.Blazor`** — kini source-only via `<ProjectReference>`; NuGet (bundle static asset lewat RCL `wwwroot`) = distribusi bersih di luar repo | ada consumer di luar repo ini |
-| 2 | **Verifikasi Blazor Server + prerender** — baru WASM yang diverifikasi; SSR/prerender beda timing JS-interop (tak ada JS saat prerender; `<dialog>` show/close) | project pakai Server / Auto render mode |
-| 3 | **Row selection + bulk-action bar** di `FdyTable` (ketiga adapter) — enhancer vanilla punya `.fdy-table-bulkbar` + kolom pilih, adapter controlled belum (gap lintas-stack, bukan Blazor saja) | ada layar butuh aksi massal multi-baris |
+| 1 | **NuGet package `Freeday.Blazor`**: kini source-only via `<ProjectReference>`; NuGet (bundle static asset lewat RCL `wwwroot`) = distribusi bersih di luar repo | ada consumer di luar repo ini |
+| 2 | **Verifikasi Blazor Server + prerender**: baru WASM yang diverifikasi; SSR/prerender beda timing JS-interop (tak ada JS saat prerender; `<dialog>` show/close) | project pakai Server / Auto render mode |
+| 3 | **Row selection + bulk-action bar** di `FdyTable` (ketiga adapter). Enhancer vanilla punya `.fdy-table-bulkbar` + kolom pilih, adapter controlled belum (gap lintas-stack, bukan Blazor saja) | ada layar butuh aksi massal multi-baris |
 | 4 | **Deferred YAGNI** (tak berubah): data grid virtualized · form master-detail 2-kolom · `data-style` lain (glass/neumorph) | on-demand murni |
-| 5 | ~~_Opsional infra:_ bUnit guard komponen Blazor di CI~~ — **selesai** (2026-08-25): `test/blazor/`, 7 test, jalan di `npm run test:blazor` dan di CI. Catatan lama menyebut "manual runtime-verify via `drive-*.mjs` + CDP" — skrip itu **tak ada**; sebelum ini satu-satunya gerbang Blazor adalah `dotnet build`, yaitu kompilasi | — |
-| 6 | **String UI vanilla bisa di-override** — SELURUH string enhancer vanilla berbahasa Indonesia (`freeday-table.js`: `Menampilkan …`, `N dipilih`, `Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`; juga `Bulan berikutnya`, `Format tidak valid.` di enhancer lain), sementara adapter Vue/React/Blazor English. **Pemicunya sudah datang** (note 001 §7: app back-office berbahasa Inggris ketemu `aria-label="Filter kolom"`). TOLAK menerjemahkan satu-dua string — itu justru menciptakan antarmuka campur yang dikeluhkan; pilihannya cuma dua dan keduanya keputusan owner: (a) hook override (`FreedayTable.setStrings({…})` global atau `data-fdy-i18n-*` per root), default tetap ID — aditif, tak memecah siapa pun; (b) ganti default ke English (samakan dengan adapter + README + npm) — **breaking secara visual** untuk app ID yang sudah pakai enhancer. Sementara ini COMPONENTS.md menyebutnya sebagai caveat + arahan: app English pakai typed wrapper, bukan enhancer | owner memilih (a) atau (b) — jangan setengah-setengah |
-| 7 | **`groupBy` di `FdyTable`** — layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
-| 8 | ~~**Perilaku drawer `.fdy-app` tak ikut dikirim**~~ — **selesai**: `freeday-app-shell.js` di **1.53.0**, `FdyAppShell` typed (Vue/React/Blazor) di **1.54.0**. Nomornya sengaja dipertahankan meski isinya kosong: CHANGELOG, spec, dan header guard menyebut "NEXT-UP #8", jadi menomori ulang baris di bawahnya akan memutus rujukan yang sudah tertulis | — |
-| 9 | **`.fdy-pagination` tanpa rule CSS** — class blok di `<nav>` cuma hook penamaan; `__list`/`__link`/`__ellipsis` yang menata. Konsisten secara dokumentasi (COMPONENTS.md + guard `STRUCTURAL_HOOKS`), tapi kalau nanti wrapper butuh style (mis. `justify-content`), di situlah tempatnya | wrapper paginasi butuh style sendiri |
-| 10 | **Tombol clear ber-teme untuk `type="search"`** — tombol × bawaan WebKit tak berteme sama seperti spin button di #44 (v1.27.0), tapi **sengaja tak distrip**: ia satu-satunya cara mengosongkan field, jadi menghapusnya membuang fungsi. Kalau mau konsisten visual, bentuknya bukan CSS melainkan `.fdy-input-group__btn` yang mengosongkan input (pola yang sudah dipakai FdyDatepicker clearable v1.13.0), dengan `type="text"` supaya × bawaan tak muncul. Ditulis di COMPONENTS.md sebagai keputusan, bukan kelalaian | ada layar yang mempermasalahkan × bawaan itu — jangan spekulatif |
+| 5 | ~~_Opsional infra:_ bUnit guard komponen Blazor di CI~~ **selesai** (2026-08-25): `test/blazor/`, 7 test, jalan di `npm run test:blazor` dan di CI. Catatan lama menyebut "manual runtime-verify via `drive-*.mjs` + CDP" — skrip itu **tak ada**; sebelum ini satu-satunya gerbang Blazor adalah `dotnet build`, yaitu kompilasi | — |
+| 6 | **String UI vanilla bisa di-override.** SELURUH string enhancer vanilla berbahasa Indonesia (`freeday-table.js`: `Menampilkan …`, `N dipilih`, `Sebelumnya`, `Berikutnya`, `Filter kolom`, `Berisi teks`, `Reset`, `Tutup`; juga `Bulan berikutnya`, `Format tidak valid.` di enhancer lain), sementara adapter Vue/React/Blazor English. **Pemicunya sudah datang** (note 001 §7: app back-office berbahasa Inggris ketemu `aria-label="Filter kolom"`). TOLAK menerjemahkan satu-dua string — itu justru menciptakan antarmuka campur yang dikeluhkan; pilihannya cuma dua dan keduanya keputusan owner: (a) hook override (`FreedayTable.setStrings({…})` global atau `data-fdy-i18n-*` per root), default tetap ID — aditif, tak memecah siapa pun; (b) ganti default ke English (samakan dengan adapter + README + npm) — **breaking secara visual** untuk app ID yang sudah pakai enhancer. Sementara ini COMPONENTS.md menyebutnya sebagai caveat + arahan: app English pakai typed wrapper, bukan enhancer | owner memilih (a) atau (b) — jangan setengah-setengah |
+| 7 | **`groupBy` di `FdyTable`.** Layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
+| 8 | ~~**Perilaku drawer `.fdy-app` tak ikut dikirim**~~ **selesai**: `freeday-app-shell.js` di **1.53.0**, `FdyAppShell` typed (Vue/React/Blazor) di **1.54.0**. Nomornya sengaja dipertahankan meski isinya kosong: CHANGELOG, spec, dan header guard menyebut "NEXT-UP #8", jadi menomori ulang baris di bawahnya akan memutus rujukan yang sudah tertulis | — |
+| 9 | **`.fdy-pagination` tanpa rule CSS.** Class blok di `<nav>` cuma hook penamaan; `__list`/`__link`/`__ellipsis` yang menata. Konsisten secara dokumentasi (COMPONENTS.md + guard `STRUCTURAL_HOOKS`), tapi kalau nanti wrapper butuh style (mis. `justify-content`), di situlah tempatnya | wrapper paginasi butuh style sendiri |
+| 10 | **Tombol clear ber-teme untuk `type="search"`.** Tombol × bawaan WebKit tak berteme sama seperti spin button di #44 (v1.27.0), tapi **sengaja tak distrip**: ia satu-satunya cara mengosongkan field, jadi menghapusnya membuang fungsi. Kalau mau konsisten visual, bentuknya bukan CSS melainkan `.fdy-input-group__btn` yang mengosongkan input (pola yang sudah dipakai FdyDatepicker clearable v1.13.0), dengan `type="text"` supaya × bawaan tak muncul. Ditulis di COMPONENTS.md sebagai keputusan, bukan kelalaian | ada layar yang mempermasalahkan × bawaan itu — jangan spekulatif |
 
 Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras AA gate wajib hijau;
 tiap rilis sinkron SEMUA ref versi publik incl. live Pages ([[sync-docs-on-version-bump]]); repo
@@ -40,25 +40,25 @@ PUBLIC ([[public-repo-keep-internal-out]]).
 
 ---
 
-Riwayat rilis **tidak** diulang di sini — 15 blok log `Update …` (v1.8.0–v1.18.0) plus tiga
+Riwayat rilis **tidak** diulang di sini: 15 blok log `Update …` (v1.8.0–v1.18.0) plus tiga
 post-mortem item lama (2026-07-27) dan snapshot kondisi v1.7.0 dibuang di v1.20.0: semuanya sudah
 tercatat di **[`CHANGELOG.md`](CHANGELOG.md)**, dan snapshot yang basi lebih berbahaya daripada
 tidak ada. Kondisi terkini: **[`HANDOFF.md`](HANDOFF.md)**.
 
-## Sengaja ditunda (YAGNI — hanya kalau ada project nyata yang butuh)
+## Sengaja ditunda (YAGNI, hanya kalau ada project nyata yang butuh)
 
-- **Data grid virtualisasi** — spec §7
-- **Form master-detail / 2 kolom** — spec §7
-- **`data-style` lain** (glass / neumorph / dst.) — v1 sengaja hanya `soft`; spec §6
+- **Data grid virtualisasi**, spec §7
+- **Form master-detail / 2 kolom**, spec §7
+- **`data-style` lain** (glass / neumorph / dst.): v1 sengaja hanya `soft`; spec §6
 
 Ini bukan utang. Ini keputusan sadar: design system tak pernah "selesai", dia ber-versi.
 
 ---
 
-## Pelajaran / invariant — docs jangan pernah menyalin nilai token ke prosa
+## Pelajaran / invariant: docs jangan pernah menyalin nilai token ke prosa
 
 **Kejadian (2026-07-24).** Section "Radius" di `docs/index.html` menampilkan ramp *lama sebelum
-v1.1* — `xs 4 / sm 6 / md 8 / lg 12 / xl 16 px` — padahal token asli sudah `3/4/6/10/14px`. Pass
+v1.1* (`xs 4 / sm 6 / md 8 / lg 12 / xl 16 px`) padahal token asli sudah `3/4/6/10/14px`. Pass
 "Precision" di v1.1 me-retune radius (`tokens.json`), tapi label docs ditulis tangan dan **tidak ikut
 berubah**. Kotaknya dirender pakai token asli (`var(--radius-md)`), teksnya menyebut angka lain →
 developer melihat sudut 6px berlabel "8px". Untuk kit yang seluruh nilai jualnya adalah *jadi sumber
@@ -76,23 +76,23 @@ diterapkan ke **radius · spasi · motion**.
 - **Jangan pernah** menulis angka nilai token (px/rem/ms) langsung di prosa atau label docs. Pakai
   `<span data-token="--x">` (di HTML docs) atau `<code>var(--x)</code>` (kalau yang dimaksud memang
   *nama* token, bukan nilainya).
-- Nilai skala (breakpoint) yang tak bisa dibaca CSS custom-prop hidup di `tokens/breakpoints.mjs` —
+- Nilai skala (breakpoint) yang tak bisa dibaca CSS custom-prop hidup di `tokens/breakpoints.mjs`,
   itu satu-satunya sumber; jangan restate angkanya di tempat lain.
-- Kalau me-retune ramp token, tak perlu sentuh label docs lagi — tapi **cek**: `grep -nE "[0-9]+px"
+- Kalau me-retune ramp token, tak perlu sentuh label docs lagi, tapi **cek**: `grep -nE "[0-9]+px"
   docs/index.html` mestinya nyaris tak menyentuh area token (sisanya cuma nilai layout lepas yang
   memang bukan token).
 - Audit cepat kapan pun ragu: render headless lalu bandingkan DOM ber-`[data-token]` dengan
   `dist/freeday.tokens.css`. (Contoh perintah ada di commit `adc80dc`.)
 
-Status: tertutup untuk radius/spasi/motion. Belum dijadikan tes otomatis — kalau mau paling aman,
+Status: tertutup untuk radius/spasi/motion. Belum dijadikan tes otomatis. Kalau mau paling aman,
 tambah satu tes yang me-render docs headless dan meng-assert tiap `[data-token]` == nilai token
 (kandidat kerja kecil, opsional).
 
-## Pelajaran / invariant — uji komponen interaktif dengan **gestur mouse asli**, bukan `.click()` sintetik
+## Pelajaran / invariant: uji komponen interaktif dengan **gestur mouse asli**, bukan `.click()` sintetik
 
 **Kejadian (2026-07-24, v1.6.1).** Di live, memilih opsi combo/select dengan mouse **tidak
 mengubah nilai** (tetap "Button"). Awalnya tak terlihat karena tes memakai `element.click()`
-sintetik — yang **melewati** urutan fokus/blur asli. Akar masalah: menekan (mousedown) opsi
+sintetik, yang **melewati** urutan fokus/blur asli. Akar masalah: menekan (mousedown) opsi
 mem-blur tombol combo → handler `focusout` di `freeday-select.js` memanggil `close()` yang
 menyembunyikan listbox **sebelum** event `click` opsi menjalankan `choose()`. Jadi pilihan hilang.
 Hanya kena mouse asli; keyboard tak terpengaruh. Fix: `preventDefault` pada `mousedown` listbox
@@ -100,10 +100,10 @@ Hanya kena mouse asli; keyboard tak terpengaruh. Fix: `preventDefault` pada `mou
 
 **Aturan.** Untuk komponen yang bergantung pada **fokus/blur/pointer** (combo, dropdown, menu,
 picker), verifikasi dengan **event mouse asli** (headless Chrome via CDP `Input.dispatchMouseEvent`
-di koordinat sungguhan), bukan hanya `.click()` sintetik — `.click()` tak memicu `focusout`, jadi
+di koordinat sungguhan), bukan hanya `.click()` sintetik, karena `.click()` tak memicu `focusout`, jadi
 menyembunyikan seluruh kelas bug "listbox tertutup sebelum pilih". Harness-nya kini permanen di
 **`browser/`** (`npm run test:browser`; driver CDP nol-dependency di `browser/harness.mjs`,
-auto-skip kalau tak ada Chrome) — bukan lagi skrip sekali-pakai di scratchpad. Pola tes:
+auto-skip kalau tak ada Chrome), bukan lagi skrip sekali-pakai di scratchpad. Pola tes:
 buka trigger → **pastikan** `aria-expanded="true"` → klik opsi di koordinatnya (settle dulu, hindari
 klik saat transisi/scroll) → assert nilai berubah.
 
@@ -112,14 +112,14 @@ klik saat transisi/scroll) → assert nilai berubah.
 2.0.0 mematahkan pola "semua aditif → MINOR": default bahasa enhancer berubah, jadi setiap layar
 jalur mentah merender kata lain. Bump-nya ikut apa yang benar-benar berubah, bukan kebiasaan.
 
-Saat cut versi, **sync semua referensi versi publik**, bukan cuma `package.json` — dan itu sekarang
+Saat cut versi, **sync semua referensi versi publik**, bukan cuma `package.json`, dan itu sekarang
 **dijaga test** (`test/docs.test.mjs`, "the public version stamps match package.json"), karena
 runbook di bawah ini benar dan tetap terlewat tiga rilis berturut-turut: `docs/index.html` mengirim
 `v1.51.0` sepanjang 1.52.0–1.53.0, dan `getting-started.md` menyuruh orang memasang `^1.34.0` selama
 delapan belas rilis. Langkah runbook bergantung pada ingatan; test tidak.
 
 Jangan pakai daftar hafalan (yang lama sudah salah: menyebut `examples/*/README.md` yang tak punya
-versi, dan "getting-started 4×" padahal 1×). **Cari saja** — inilah daftar otoritatifnya:
+versi, dan "getting-started 4×" padahal 1×). **Cari saja**, inilah daftar otoritatifnya:
 
 ```bash
 git grep -n '<versi-lama>' -- . | grep -v CHANGELOG    # semua yang harus di-bump
@@ -132,5 +132,5 @@ per v1.34.0 yang kena: `package.json` · `package-lock.json` (2 field) · `READM
 **Jangan disentuh:** `README.md` baris "WCAG **1.4.11**" (itu nomor sukses WCAG, bukan versi) dan
 entri historis di `CHANGELOG.md`.
 
-Setelah push, Pages rebuild otomatis (~belasan detik) — verifikasi dengan meng-`curl` docs live dan
+Setelah push, Pages rebuild otomatis (~belasan detik). Verifikasi dengan meng-`curl` docs live dan
 memastikan install command sudah menunjukkan versi baru.
