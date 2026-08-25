@@ -419,10 +419,11 @@
   'use strict';
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     position: '{n} of {total}',
     slide: 'Slide {n}'
@@ -596,10 +597,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     back: 'Back one level',
     submenu: '{label}, submenu'
@@ -862,10 +864,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     selected: '{n} selected'
   };
@@ -2367,10 +2370,11 @@
     badInput: 'type',
     customError: 'mismatch'
   };
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
-   * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
-   * a host in another language needs: it sets nine messages once instead of on every input.
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on
+   * the field, `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form
+   * level is what a host in another language needs: it sets nine messages once instead of on
+   * every input.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
     required: 'Required.',
@@ -2581,10 +2585,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     show: 'Show password',
     hide: 'Hide password'
@@ -3272,10 +3277,11 @@
   var CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>';
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     done: 'Done',
     next: 'Next'
@@ -3407,10 +3413,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     prev: 'Previous',
     next: 'Next',
@@ -4238,10 +4245,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     close: 'Close'
   };
@@ -4472,10 +4480,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     remove: 'Remove {name}',
     progress: 'Upload progress for {name}',

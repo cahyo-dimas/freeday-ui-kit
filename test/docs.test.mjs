@@ -34,6 +34,15 @@ const knownClasses = () => {
   return found;
 };
 
+/** The fields of `FdyTableColumn<T>`, the contract two guards below read from opposite ends. */
+const columnContractProps = () => {
+  const body = read('adapters/core/table-model.d.ts')
+    .match(/export interface FdyTableColumn<T>\s*\{([\s\S]*?)\n\}/)[1];
+  const props = [...body.matchAll(/^\s{2}([a-zA-Z]+)\??:/gm)].map(m => m[1]);
+  assert.ok(props.length >= 10, `parsed only ${props.length} contract props, the interface moved`);
+  return props;
+};
+
 /** `-N` is the docs' placeholder for a numbered scale (`--tone-N`); check the first real member. */
 const resolvePlaceholder = c => c.replace(/-N$/, '-1');
 
@@ -206,11 +215,7 @@ test('the column contract reaches all three typed adapters (#026)', () => {
      to Vue and React and left Blazor without it. One-directional on purpose: Blazor may hold MORE
      (Cell has no TS twin, it is a slot there), so this asserts coverage, never equality, which is
      also why it needs no exemption list. */
-  const contract = read('adapters/core/table-model.d.ts')
-    .match(/export interface FdyTableColumn<T>\s*\{([\s\S]*?)\n\}/)[1]
-    .matchAll(/^\s{2}([a-zA-Z]+)\??:/gm);
-  const props = [...contract].map(m => m[1]);
-  assert.ok(props.length >= 10, `parsed only ${props.length} contract props, the interface moved`);
+  const props = columnContractProps();
 
   const blazor = read('adapters/blazor/TableTypes.cs');
   const surface = blazor.match(/class FdyTableColumn<TRow>\s*\{([\s\S]*?)\n\}/)[1];
@@ -221,6 +226,130 @@ test('the column contract reaches all three typed adapters (#026)', () => {
   assert.deepEqual(missing, [],
     'declared in the TS contract, absent from Blazor\'s FdyTableColumn, a Blazor app cannot ask for it:\n' +
     missing.join('\n'));
+});
+
+/* The prop surface of one typed wrapper, read from the adapter that declares it. Both parsers
+ * assert they found something: a declaration that moves would otherwise turn the guard below into
+ * a test that passes by comparing two empty sets. */
+const vueProps = name => {
+  const body = read(`adapters/vue/components/${name}.vue`).match(/defineProps<\{([\s\S]*?)\n\}>\(\)/);
+  assert.ok(body, `${name}.vue: no defineProps<{...}>() found, the declaration moved`);
+  const props = [...body[1].matchAll(/^  '?([\w-]+)'?\??:/gm)].map(m => m[1]);
+  assert.ok(props.length > 0, `${name}.vue: parsed zero props`);
+  return props;
+};
+
+const reactProps = name => {
+  const body = read(`adapters/react/components/${name}.tsx`)
+    .match(new RegExp(`export interface ${name}Props[^{]*\\{([\\s\\S]*?)\\n\\}`));
+  assert.ok(body, `${name}.tsx: no exported ${name}Props interface found`);
+  /* A quoted key, `'aria-label'`, is a real prop and was invisible to the plain \w+ form. */
+  const props = [...body[1].matchAll(/^  '?([\w-]+)'?\??:/gm)].map(m => m[1]);
+  assert.ok(props.length > 0, `${name}.tsx: parsed zero props`);
+  return props;
+};
+
+/** Every `### Props — <FdyX>` table in COMPONENTS.md → the prop names in its first column. */
+const documentedProps = md => {
+  const found = new Map();
+  const section = /### Props — `<(Fdy\w+)>`[\s\S]*?\| Prop \| Type \| What it does \|\n\|[^\n]*\|\n((?:\|[^\n]*\|\n)+)/g;
+  for (const m of md.matchAll(section)) {
+    const names = m[2].trim().split('\n')
+      .flatMap(row => [...row.split('|')[1].matchAll(/`([a-zA-Z][\w-]*)\??`/g)].map(x => x[1]));
+    found.set(m[1], names);
+  }
+  return found;
+};
+
+test('COMPONENTS.md documents the typed wrappers\' props (NEXT-UP #11)', () => {
+  /* #040 was `FdyTableColumn`; this is the same failure one level up. `agent-onboarding.md` sends
+     Vue, React and Blazor to the typed wrappers and calls this file closed, so a prop that appears
+     only in a `.vue`/`.tsx` declaration is a prop those consumers are told does not exist. Both
+     directions again: an invented row is worse than a missing one, since it invites a prop that
+     does nothing. Completeness is asserted too, so a twelfth wrapper cannot ship undocumented the
+     way the first eleven did. */
+  const documented = documentedProps(read('COMPONENTS.md'));
+  const exported = [...read('adapters/vue/index.js').matchAll(/export \{ default as (Fdy\w+) \}/g)]
+    .map(m => m[1]);
+  assert.ok(exported.length > 0, 'parsed no component exports from adapters/vue/index.js');
+  assert.deepEqual(exported.filter(c => !documented.has(c)), [],
+    'exported as a typed wrapper, with no "### Props" table in COMPONENTS.md');
+
+  const offenders = [];
+  for (const [name, names] of documented) {
+    for (const p of vueProps(name)) {
+      if (!names.includes(p)) offenders.push(`${name}: \`${p}\` is a Vue prop, absent from the table`);
+    }
+    for (const p of reactProps(name)) {
+      if (!names.includes(p)) offenders.push(`${name}: \`${p}\` is a React prop, absent from the table`);
+    }
+    const real = new Set([...vueProps(name), ...reactProps(name)]);
+    for (const d of names) {
+      if (!real.has(d)) offenders.push(`${name}: \`${d}\` is documented but neither adapter declares it`);
+    }
+  }
+  assert.deepEqual(offenders, [],
+    'the typed prop surface and its documentation disagree:\n' + offenders.join('\n'));
+});
+
+test('every list of the typed wrappers names all of them', () => {
+  /* `FdyAppShell` shipped in 1.54.0 as the eleventh wrapper, and three shipped documents went on
+     listing ten for a whole major version — `agent-onboarding.md` managing to say both "ten" and
+     "eleven" about the same set, in the same file. The count word in prose cannot be guarded; the
+     list beside it can. Any run of six or more wrapper names is read as an enumeration and has to
+     be complete. `FdyTableFooter` is excluded: it is a part of the table, documented with it, and
+     never appears in these lists. */
+  const typed = [...read('adapters/vue/index.js').matchAll(/export \{ default as (Fdy\w+) \}/g)]
+    .map(m => m[1])
+    .filter(c => c !== 'FdyTableFooter');
+  assert.ok(typed.length >= 10, `parsed only ${typed.length} typed wrappers`);
+
+  const offenders = [];
+  for (const file of ['README.md', 'README.id.md', 'COMPONENTS.md', 'USAGE.md',
+                      'docs/getting-started.md', 'docs/agent-onboarding.md', 'docs/integrations.md']) {
+    const hits = [...read(file).matchAll(/Fdy[A-Z]\w+/g)];
+    let run = [];
+    const check = () => {
+      const names = [...new Set(run.map(h => h[0]))].filter(n => typed.includes(n));
+      if (names.length >= 6) {
+        const missing = typed.filter(n => !names.includes(n));
+        if (missing.length > 0) {
+          offenders.push(`${file}: an enumeration of ${names.length} wrappers omits ${missing.join(', ')}`);
+        }
+      }
+      run = [];
+    };
+    for (const h of hits) {
+      const prev = run[run.length - 1];
+      /* 250, not 120: a single entry can carry a long parenthetical of its own props, and a
+         tighter gap split one list in two, hiding the very name that was missing from it. */
+      if (prev !== undefined && h.index - (prev.index + prev[0].length) > 250) check();
+      run.push(h);
+    }
+    check();
+  }
+  assert.deepEqual(offenders, [],
+    'a wrapper that ships but is missing from a list is a wrapper consumers never reach for:\n' +
+    offenders.join('\n'));
+});
+
+test('COMPONENTS.md documents the whole column contract (#040)', () => {
+  /* `agent-onboarding.md` tells every consuming agent that this file is closed: "if a class is not
+     in that file, it does not exist". Three of the four stacks build a table only through
+     `columns`, and until #040 COMPONENTS.md named none of its ten fields, so a screen written from
+     the documented route could not reach `labelHidden` and shipped `label: ''` instead: a header
+     announced as nothing. Checked in BOTH directions, since a field documented here but absent
+     from the type invites markup that silently does nothing, which is the worse half. */
+  const props = columnContractProps();
+  const table = read('COMPONENTS.md')
+    .match(/\| Field \| Type \| What it does \|\n\|[^\n]*\|\n((?:\|[^\n]*\|\n)+)/);
+  assert.ok(table, 'the FdyTableColumn field table is gone from COMPONENTS.md');
+  const documented = [...table[1].matchAll(/^\| `([a-zA-Z]+)` \|/gm)].map(m => m[1]);
+
+  assert.deepEqual(props.filter(p => !documented.includes(p)), [],
+    'in FdyTableColumn, undocumented in COMPONENTS.md: a consumer told the file is closed cannot use it');
+  assert.deepEqual(documented.filter(d => !props.includes(d)), [],
+    'documented in COMPONENTS.md, absent from FdyTableColumn: it does not exist');
 });
 
 test('a hidden column label is rendered, not dropped (#026)', () => {

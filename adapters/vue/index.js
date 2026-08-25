@@ -6,6 +6,7 @@ export { default as FdyDateRange } from './components/FdyDateRange.vue';
 export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';
 export { default as FdyCascade } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
+export { singleRow } from '../core/cfl-value.js';
 export { default as FdyChart } from './components/FdyChart.vue';
 export { default as FdyTable } from './components/FdyTable.vue';
 export { default as FdyTableFooter } from './components/FdyTableFooter.vue';

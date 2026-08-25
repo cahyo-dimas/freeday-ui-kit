@@ -6,6 +6,7 @@ export { FdyDateRange } from './components/FdyDateRange.tsx';
 export { FdyAutocomplete } from './components/FdyAutocomplete.tsx';
 export { FdyCascade } from './components/FdyCascade.tsx';
 export { FdyCfl } from './components/FdyCfl.tsx';
+export { singleRow } from '../core/cfl-value.js';
 export { FdyChart } from './components/FdyChart.tsx';
 export { FdyTable } from './components/FdyTable.tsx';
 export { FdyTableFooter } from './components/FdyTableFooter.tsx';

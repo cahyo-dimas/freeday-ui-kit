@@ -36,7 +36,7 @@ live docs.
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
 7. **On Vue, React or Blazor, eleven components have a typed wrapper. Use it.** `FdyCombo` ·
    `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` ·
-   `FdyTable` · `FdyModal` · `FdyDrawer`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
+   `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
    `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
    those stacks *looks* right at first, because the enhancer initialises once and the first render is
     correct. Then
@@ -116,6 +116,25 @@ is a no-op.
 
 ## App shell — `.fdy-app`
 > **Typed wrapper: `<FdyAppShell>`**. Vue (`v-model:navOpen`) · React (`navOpen`/`onNavOpenChange`) · Blazor (`@bind-NavOpen`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
+### Props — `<FdyAppShell>`
+
+Vue and React names, `?` marking optional. Vue takes the regions as **slots** of the same names,
+which is why React's list is longer while offering the same thing.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `navOpen?` | `boolean` | Whether the nav is visible. Optional because the default is the **viewport's**, and a caller cannot state that in one initial value. Vue binds `v-model:navOpen`. |
+| `onNavOpenChange?` | `(open: boolean) => void` | React. Visibility changed: the toggle, Escape, the backdrop, or a followed nav item. Vue emits `update:navOpen`. |
+| `title?` | `string` (Vue) · `ReactNode` | Topbar title. |
+| `toggleLabel?` | `string` | Accessible name for the nav toggle button. |
+| `toggleIcon?` | `ReactNode` | React. Replaces the default hamburger; Vue uses the slot of that name. |
+| `skip?` | `ReactNode` | React. Skip link, rendered first in the tab order. |
+| `brand?` · `nav?` · `topbar?` | `ReactNode` | React. Sidebar brand, sidebar nav, topbar contents. |
+| `children?` | `ReactNode` | React. The page itself; Vue's default slot. |
+
+Blazor takes the regions as `RenderFragment`s — `BrandContent`, `NavContent`, `TopbarContent`,
+`SkipContent`, `TitleContent`, `ChildContent` — and binds with `@bind-NavOpen`.
 
 The frame every application lives in. Do not hand-roll one from flexbox: the responsive sidebar,
 off-canvas drawer and backdrop are built in.
@@ -422,6 +441,24 @@ Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrap
 ## Select / combobox — `.fdy-combo`
 > **Typed wrapper: `<FdyCombo>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
+### Props — `<FdyCombo>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `T extends string` | The selected value: `v-model` in Vue, `value` in React. |
+| `onChange` | `(value: T) => void` | React. A selection was committed. Vue emits `update:modelValue` and `change`. |
+| `options` | `ReadonlyArray<{ value: T; label: string }>` | The list. React exports the row type as `FdyComboOption<T>`. |
+| `id?` | `string` | Explicit id for the combobox button; otherwise one is generated. |
+| `ariaLabelledby?` | `string` | Id of the element that labels the combobox. |
+| `placeholder?` | `string` | Shown when no option matches the current value. |
+| `disabled?` | `boolean` | Greyed and out of the tab order, the native `disabled` semantics. |
+| `readonly?` | `boolean` | Locked/view mode: keeps focus and tab order and shows its value, but cannot be opened or changed. Unlike `disabled` it is not greyed. |
+| `invalid?` | `boolean` | Sets `aria-invalid`; pair it with `describedby` pointing at the error text. |
+| `describedby?` | `string` | Id of the help or error text (`aria-describedby`). |
+
+Blazor: the same names in `PascalCase`, bound with `@bind-Value` (`Value` / `ValueChanged`),
+with one absence — there is no `Describedby`, so a Blazor combo cannot point at its own error text.
+
 Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
 - `.fdy-combo` (+`--error`, `--no-icon`) · `__button` `__value` (+`--placeholder`) `__listbox`
@@ -452,6 +489,22 @@ keeps matching after selection. Do not put a glyph in that span.
 ## Autocomplete — `.fdy-autocomplete`
 > **Typed wrapper: `<FdyAutocomplete>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
+### Props — `<FdyAutocomplete>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string` | The typed text. Free text: the list suggests, it does not constrain. |
+| `onChange` · `onSelect` | `(value: string) => void` | React. `onChange` on every keystroke, `onSelect` only when a suggestion is taken. Vue emits `update:modelValue` and `select`. |
+| `options` | `ReadonlyArray<string>` | The suggestions to filter. |
+| `emptyText?` | `string` | Shown when nothing matches. |
+| `placeholder?` | `string` | |
+| `id?` · `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Input id; its accessible name as text or as a reference; the help/error text it points at. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its value, but the input is not editable and the list will not open. Unlike `disabled` it is not greyed. |
+
+Blazor takes six of these — `Value` / `ValueChanged`, `Options`, `Placeholder`, `AriaLabel`,
+`EmptyText` — and no state flags or ids. Its wrapper renders a fixed seed element and does not
+splat unmatched attributes, so those are not reachable from a Blazor page at all.
+
 Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 
 - `.fdy-autocomplete` · `__listbox` `__option` `__empty`
@@ -460,6 +513,22 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 
 ## Cascade select — `.fdy-cascade`
 > **Typed wrapper: `<FdyCascade>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
+### Props — `<FdyCascade>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string` | The selected **leaf** value; `''` means nothing selected. |
+| `onChange` | `(value: string, labels: string[]) => void` | React. Vue emits `update:modelValue` and `change`. `labels` is the whole path, root → leaf. |
+| `options` | `ReadonlyArray<CascadeNode>` | The tree. `CascadeNode` = `{ label, value, children? }`; a node **with** children is a branch, one without is selectable. |
+| `separator?` | `string` | What joins the path in the display. Default `" / "`, matching the enhancer. |
+| `backLabel?` | `string` | Accessible name for the up-one-level button. Default `Back one level`. |
+| `label?` | `string` | Accessible name for the trigger and its listbox. |
+| `placeholder?` | `string` | |
+| `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | As on `<FdyCombo>`. |
+
+Blazor calls the tree `Nodes`, adds `SubmenuLabel`, and takes neither the state flags nor the ids.
 
 Hierarchical drill-down. The data model is a **nested `<ul>`** inside the wrapper: an `<li>` with a
 child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
@@ -482,6 +551,37 @@ child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
 ## Choose-from-list (CFL) — `data-fdy-cfl`
 > **Typed wrapper: `<FdyCfl>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
+### Props — `<FdyCfl>`
+
+Four of these are required and carry the whole component: `fetchPage`, `columns`, `display`,
+`rowKey`. The rest are copy and state.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `Row \| Row[] \| null` | The picked row. An array is reachable only under `multiple`, `null` only under `clearable`; narrow it with `singleRow()` (see the bullet below the raw-path hooks). |
+| `onChange` | `(value: Row \| Row[] \| null) => void` | React. Vue emits `update:modelValue` and `change`. |
+| `fetchPage` | `(query: string, page: number) => Promise<CflPage<Row>>` | The only data source — `{ rows, hasMore }`. Called on open, on search, and on Load more. Server state, never a global store. |
+| `columns` | `ReadonlyArray<CflColumn<Row>>` | `{ key, label }` per dialog column. |
+| `display` | `(row: Row) => string` | What the closed field shows once a row is picked. |
+| `rowKey` | `(row: Row) => string` | Row identity: ticks in multi mode, and seeding them when the dialog re-opens. |
+| `pageSize?` | `number` | Advisory only. Your `fetchPage` owns paging; this documents the intent. |
+| `title?` | `string` | The dialog's heading. Default `Choose data`. |
+| `searchPlaceholder?` | `string` | Placeholder **and** accessible name of the search box. Default `Search…`. |
+| `loadingText?` · `emptyText?` · `retryText?` · `moreText?` | `string` | Dialog states. Defaults `Loading…`, `No results.`, `Try again`, `Load more`. |
+| `closeLabel?` · `openLabel?` | `string` | Accessible names for the dialog's × and the field's open button. Defaults `Close`, `Open search`. |
+| `multiple?` | `boolean` | Tick rows and commit them together on Confirm instead of committing the clicked row, and widen the value to an array. |
+| `selectedText?` · `confirmText?` · `hintText?` | `string` | Footer copy. Defaults `{n} selected` (with `{n}` substituted), `Confirm`, `Click a row to choose it`. |
+| `placeholder?` | `string` | Field placeholder while nothing is picked. |
+| `clearable?` | `boolean` | A clear button, so an **optional** foreign key can be unset. Without it the value type admits a `null` the component can never produce. |
+| `clearLabel?` | `string` | Accessible name for that button. Default `Clear selection`. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps the picked value visible, focusable and copyable, but the dialog cannot be opened. |
+| `id?` · `ariaLabelledby?` · `describedby?` | `string` | Field id; the element that labels it; the help/error text it points at. |
+
+Blazor carries the same surface in `PascalCase` with three differences: multi-select is a second
+pair (`Values` / `ValuesChanged`) rather than a widened single binding, the fetch delegate is
+called `LoadPage`, and it has two parameters the JS adapters do not — `ErrorText` and
+`SearchDebounceMs`.
+
 A read-only field backed by master data: the button opens a searchable dialog, the picked row fills
 the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 
@@ -498,6 +598,13 @@ the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
   `ValuesChanged`, because a nullable union is not a C# shape. Closing without Confirm leaves the
   bound value untouched, and re-opening seeds the ticks from it. The field states `{n} selected`
   rather than one row's `display()`. Strings: `selectedText`, `confirmText`, `hintText`.
+- **A single-select in Vue or React needs one narrowing, and the kit ships it.** The emitted value
+  is typed `Row | Row[] | null` whatever the props are, so a single-select handler cannot take it
+  as `Row`: the array is reachable only under `multiple`, the null only under `clearable`, and the
+  type cannot say which. Import the guard instead of writing one per app:
+  `import { singleRow } from '@cahyo-dimas/freeday/vue'` (or `/react`). It returns `Row | null`,
+  and throws if a `multiple` field's array ever reaches it, rather than silently keeping the first
+  row. Blazor is unaffected: multi-select there is a separate `Values` / `ValuesChanged` pair.
 
 ```html
 <div class="fdy-field">
@@ -546,6 +653,46 @@ a new class.
 
 ## Date picker — `data-fdy-datepicker`
 > **Typed wrapper: `<FdyDatepicker>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
+### Props — `<FdyDatepicker>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `''`/`null` for empty. |
+| `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
+| `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. |
+| `locale?` | `string` | BCP-47 tag deciding month and weekday names. Defaults to the page's `<html lang>`, then `en`. |
+| `placeholder?` | `string` | |
+| `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its date, but it cannot be opened, cleared or changed. |
+| `clearable?` | `boolean` | Show a × in the trigger once a date is set, so an optional date can be unset. Sends `''`. Off by default. |
+| `clearLabel?` | `string` | Accessible name for that ×. Default `Clear date`. |
+| `prevMonthLabel?` · `nextMonthLabel?` | `string` | The month arrows. Defaults `Previous month` / `Next month`. |
+| `chooseMonthLabel?` · `chooseYearLabel?` | `string` | The title buttons that drill into the month and year grids. Defaults `Choose month` / `Choose year`. |
+| `prevYearLabel?` · `nextYearLabel?` | `string` | Year arrows, shown in the month grid. Defaults `Previous year` / `Next year`. |
+| `prevYearsLabel?` · `nextYearsLabel?` | `string` | Page arrows, shown in the year grid. Defaults `Previous years` / `Next years`. |
+
+The ten label props exist because month and weekday names follow `locale` while the buttons around
+them do not: without these, a Spanish calendar would be navigated by English arrows.
+
+Blazor's picker is much thinner — `Value` / `ValueChanged`, `Label`, `Placeholder`, `Min`, `Max`
+— and its seed element takes no unmatched attributes, so state flags, ids, `clearable` and every
+label above are unreachable there.
+
+### Props — `<FdyDateRange>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `DateRangeValue` = `{ start, end }`, each `string \| null` | Both ends at once, so the pair can never be half-applied. |
+| `onChange` | `(value: DateRangeValue) => void` | React. Vue emits `update:modelValue` and `change`. |
+| `min?` · `max?` | `string` | ISO bounds for both ends. The end can never precede the start. |
+| `locale?` | `string` | As on the single picker. |
+| `startPlaceholder?` · `endPlaceholder?` | `string` | One per field. |
+| `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the group (`role="group"`), or points at the text that does. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | Applied to both pickers together. |
+
+Blazor splits the value into two scalars, `From` / `FromChanged` and `To` / `ToChanged`, because a
+C# binding cannot express one object bound in two places, and it adds `Separator`.
 
 Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author an empty `<div>`**
 The enhancer builds everything.
@@ -772,6 +919,75 @@ sum, so measure them once after render (and on resize) and set the variable.
 ## Data table — `.fdy-datatable`
 > **Typed wrapper: `<FdyTable>`**. controlled: `columns` + `rows`, with sort/filter/page events (`update:pageIndex` · `onPageIndexChange` · `PageIndexChanged`) and `process` for driving a card list off the same processed set. The markup below is the raw enhancer path.
 
+### Columns — the typed `FdyTableColumn<T>`
+
+On Vue, React and Blazor, `columns` **is** the table: it is what those stacks write instead of the
+markup hooks further down. Ten fields, `key` and `label` required. The authored doc comments live on
+the type itself (`adapters/core/table-model.d.ts`, re-declared for Blazor in
+`adapters/blazor/TableTypes.cs`); the list below is the discoverable copy, and `npm test` fails if
+the two ever disagree.
+
+| Field | Type | What it does |
+|---|---|---|
+| `key` | `string` | Row property key; the sort/filter identity and, unless `value` is set, the cell accessor. |
+| `label` | `string` | Header label. |
+| `labelHidden` | `boolean` | Render the label for assistive tech only; the header cell looks empty. |
+| `sortable` | `boolean` | Show a sort toggle in the header. |
+| `filter` | `'text' \| 'enum' \| 'number' \| 'date'` | Offer a column filter of this type (the funnel popover). |
+| `align` | `'left' \| 'right' \| 'center'` | Cell alignment. Default `left`. |
+| `mono` | `boolean` | Render cells in the monospace data font (`.fdy-mono`). |
+| `sortType` | `'text' \| 'number' \| 'date'` | Override the comparator; defaults to one derived from `filter`, else `text`. |
+| `value` | `(row: T) => unknown` | Custom accessor; defaults to `row[key]`. Feeds sort, filter and the default cell text. |
+| `options` | `readonly string[]` | Explicit enum-filter options; they default to the distinct values in the rows on screen, so pass them in server-paged mode, where those are one page. |
+
+Blazor spells the same fields `PascalCase` (`LabelHidden`, `SortType`), makes `Key`/`Label`
+`required`, and adds one field with no TS twin: `Cell`, a `RenderFragment<TRow>` where Vue and React
+use a slot.
+
+A column of row controls is worth stating outright, because the obvious move is the wrong one:
+
+```ts
+const columns: FdyTableColumn<User>[] = [
+  { key: 'email', label: 'Email', sortable: true, filter: 'text' },
+  { key: 'total', label: 'Total', align: 'right', mono: true, sortType: 'number' },
+  // Not `label: ''`. A <th> with no text announces as nothing, and the label also names this
+  // column's sort button and filter popover, so it has to stay meaningful.
+  { key: 'actions', label: 'Actions', labelHidden: true },
+];
+```
+
+### Props — `<FdyTable>`
+
+Controlled by default: hand it `columns` + `rows` and it filters, sorts and paginates internally;
+provide the state prop for a concern and you own that concern instead. React names the callbacks
+`onXChange`, Vue emits `update:x`, Blazor exposes `XChanged`.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `columns` | `ReadonlyArray<FdyTableColumn<Row>>` | The column contract documented above. |
+| `rows` | `ReadonlyArray<Row>` | The current page's rows in server mode, the whole set in client mode. |
+| `rowKey` | `(row: Row) => string \| number` | Row identity: keys, expansion, activation. |
+| `sort?` · `onSortChange?` | `FdySortState \| null` · `(sort) => void` | Pass `sort`, **even as `null`**, to own sorting; omit it for the internal sort. |
+| `filters?` · `onFiltersChange?` | `FdyFilterMap` · `(filters) => void` | The same, for filtering. |
+| `page?` · `onPageChange?` | `FdyPageState` · `(page) => void` | Its **presence switches the table into server mode**: you own paging and get `{ index, size, total }` back. |
+| `pageSize?` | `number` | Client mode: rows per page. Absent or 0 renders every row with no pager. |
+| `pageIndex?` · `onPageIndexChange?` | `number` · `(index) => void` | Client mode: own the 0-based index while the table keeps filtering, sorting and paginating — this is what lets one external pager drive both a table and a card list. |
+| `pageSizes?` · `onPageSizeChange?` | `readonly number[]` · `(size) => void` | Offer a rows-per-page control. Server mode reports the pick through the page event (read its `size`); client mode applies it itself and reports it too, so it works with nothing wired. |
+| `pager?` | `boolean` | Default true. Turn it off to withhold the table's own footer when the screen renders one. |
+| `loading?` | `boolean` | Show the in-table loading state. |
+| `emptyText?` · `empty?` | `string` · `ReactNode` | The empty state as text, or as markup (React `empty`, Vue's `empty` slot). |
+| `ariaLabel?` | `string` | Names the table for assistive tech. |
+| `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
+| `rowClass?` | `(row: Row) => string \| undefined` | Per-row class hook, e.g. marking the selected row. |
+| `expandedKeys?` · `renderRowDetail?` | `ReadonlyArray<string \| number>` · `(row) => ReactNode` | Controlled expansion: these keys get a full-width detail row. Vue uses the `row-detail` slot. |
+| `renderCell?` | `(column, row, value) => ReactNode` | React. Custom cell rendering; Vue uses the `cell` slot. |
+| `toolbar?` | `ReactNode` | React. Content above the table; Vue uses the `toolbar` slot. |
+| `onProcess?` | `(result: { rows, total }) => void` | React. The processed page after filter/sort/paginate, in **both** modes. Vue emits `process`, Blazor calls it `Process`. Render the same set elsewhere — a card list, a summary, a CSV export — without re-deriving the pipeline. |
+
+Blazor matches this surface (`LoadingText` and `EmptyContent` in place of `emptyText`/`empty`,
+`Toolbar` and `RowDetail` as `RenderFragment`s) and is the one adapter that also exposes
+`FiltersChanged`.
+
 The interactive table: global search, sort, per-column filters, row selection + bulk bar,
 pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` + `data-fdy-table`
 (`data-page-size="N"`).
@@ -849,6 +1065,14 @@ ninety-row list would remove the only way back to twenty.
 of one page of rows. A footer inside the table is inside the half a phone hides, so those screens
 render it once, outside both, with `pager={false}` on the table.
 
+### Props — `<FdyTableFooter>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `page` | `FdyPageState` = `{ index, size, total }` | The page being shown. `size` drives both the range text and the rows-per-page control's value. |
+| `onPageChange?` | `(page: FdyPageState) => void` | React. A page click or a size change. Vue emits `update:page`; Blazor `PageChanged`. |
+| `pageSizes?` | `readonly number[]` | Offer a rows-per-page control. Omit it and the footer is range + pager only. Picking a size reports the new `size` together with the index that still holds the row the reader was looking at. |
+
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:
 
@@ -878,6 +1102,25 @@ replaces.
 
 ## Charts — `data-fdy-chart`
 > **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
+
+### Props — `<FdyChart>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `type` | `'line' \| 'area' \| 'bar' \| 'sparkline' \| 'donut'` | Which chart to draw. |
+| `values?` | `ReadonlyArray<number>` | One series. |
+| `series?` | `ReadonlyArray<FdyChartSeries>` | Several: each `{ label, values }`. Use one or the other, not both. |
+| `labels?` | `ReadonlyArray<string>` | Category labels: the x axis, or the donut's slices. |
+| `format?` | `'number' \| 'percent' \| 'currency'` | How values are written in labels and the donut centre. |
+| `stacked?` | `boolean` | Bar charts: stack the series instead of grouping them side by side. |
+| `legend?` | `'auto' \| 'always' \| 'none'` | `auto` shows one when there is more than one series. |
+| `colors?` | `ReadonlyArray<string>` | Per-series override. Each entry is a semantic token name (`primary`, `accent`, `success`, `warning`, `danger`, `info`) or a categorical slot `chart-1`…`chart-8`. Omit for the default fixed-order palette. |
+| `color?` | `string` | The same, for a single-series chart (sparkline, simple bar or line). |
+| `center?` | `string \| number` | Donut only: what to print in the middle. |
+| `aria-label?` | `string` | React. The chart's accessible name, and in practice the **whole** text alternative: a named chart's painted subtree is `aria-hidden`, see the a11y note in this section. Vue and Blazor set it as a plain attribute (Blazor's parameter is `AriaLabel`). |
+| `children?` | `ReactNode` | React. Content inside the element before the chart paints. The renderer replaces it, so it is a pre-paint placeholder, not a text alternative. |
+
+Blazor adds `ChildContent` for the same placeholder role.
 
 Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`; call
 `FreedayChart.update(el)` after changing data (or use `FdyChart` in Vue/React/Blazor).
@@ -1076,6 +1319,22 @@ so the same look serves routed sub-navigation built from plain links. See the no
 ## Modal — `.fdy-modal`
 > **Typed wrapper: `<FdyModal>`**. Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
+### Props — `<FdyModal>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `open` | `boolean` | Controlled: your state decides. The wrapper cancels the native `cancel` event so the DOM can never disagree with it. |
+| `title` | `string` (Vue) · `ReactNode` | Names the dialog through `aria-labelledby`. Vue also offers a `title` slot when the heading needs markup. |
+| `onClose` | `() => void` | React. Vue emits `close`. Fires from Escape, a backdrop click and the ×, all three of which exist only under `dismissible`. |
+| `size?` | `'sm' \| 'md' \| 'lg' \| 'wide'` | Dialog width. |
+| `dismissible?` | `boolean` | Whether Escape, the backdrop and the × can close it. Off means the reader has to take a footer action, which is the point of a blocking confirm. |
+| `footer?` | `ReactNode` | React. Vue: the `footer` slot. |
+| `children?` | `ReactNode` | React. The body. Vue: the default slot. |
+
+Blazor binds `@bind-Open` and takes `TitleContent` / `ChildContent` / `FooterContent`, plus two
+things Vue and React do not have: `OnClose` and **`CloseLabel`**. The × in Vue and React is labelled
+`Close` and cannot be renamed.
+
 Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--sm` `--md` `--lg`
 `--wide`; `--cfl` for the choose-from-list dialog.
 
@@ -1110,6 +1369,22 @@ that is not the kit. Both rules measured on Chromium 133 and 151, and pinned as 
 
 ## Drawer — `.fdy-drawer`
 > **Typed wrapper: `<FdyDrawer>`**. Vue (`:open` + `@close`) · React (`open` + `onClose`) · Blazor (`@bind-Open`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
+### Props — `<FdyDrawer>`
+
+The modal's props with `side` in place of `size`; the behaviour notes there apply here too.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `open` | `boolean` | Controlled, as with the modal. |
+| `title` | `string` (Vue) · `ReactNode` | Names the drawer (`aria-labelledby`). |
+| `onClose` | `() => void` | React. Vue emits `close`. |
+| `side?` | `'left' \| 'right'` | Which edge it slides from. |
+| `dismissible?` | `boolean` | Escape, backdrop and × on or off. |
+| `footer?` | `ReactNode` | React. Vue: the `footer` slot. |
+| `children?` | `ReactNode` | React. The body. Vue: the default slot. |
+
+Blazor: `@bind-Open`, `TitleContent` / `ChildContent` / `FooterContent`, `OnClose`, `CloseLabel`.
 
 Temporary side panel on native `<dialog>`, left by default, `--right` to flip. Parts `__header`
 `__title` `__body` `__footer` `__close`. Open it from any

@@ -33,6 +33,9 @@ export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';
 export { default as FdyCascade } from './components/FdyCascade.vue';
 export type { CascadeNode } from './components/FdyCascade.vue';
 export { default as FdyCfl } from './components/FdyCfl.vue';
+/** Narrow `FdyCfl`'s `Row | Row[] | null` to the `Row | null` a single-select can produce; throws
+ *  on the array only a `multiple` field emits. */
+export { singleRow } from '../core/cfl-value';
 export { default as FdyChart } from './components/FdyChart.vue';
 export { default as FdyTable } from './components/FdyTable.vue';
 /** The table's own footer, standalone, for a responsive list whose table is hidden at some

@@ -23,7 +23,7 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    table: [`integrations.md` §Event & API contract](integrations.md).
    **On Vue, React or Blazor this is not the path to take for eleven of the components.** `FdyCombo`,
    `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`, `FdyChart`,
-   `FdyTable`, `FdyModal`, `FdyDrawer` ship typed wrappers that own the state properly (Vue and
+   `FdyTable`, `FdyModal`, `FdyDrawer`, `FdyAppShell` ship typed wrappers that own the state properly (Vue and
    React re-implement the interaction natively; Blazor wraps the enhancer over interop). Use them;
    the raw path is for the components without a wrapper, and for stacks without an adapter.
 3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
@@ -65,6 +65,13 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    `.fdy-page-section`, `.fdy-toolbar`, `.fdy-stats`/`.fdy-stat`) and the type roles (`.fdy-title-page`
    / `-section` / `-card`), not by re-using `.fdy-card__title` for everything. **Which token/role/shadow
    to use when lives in [`USAGE.md`](../USAGE.md)**. Read it once; it's what makes screens cohere.
+9. **The enhancers' UI strings are English, and replaceable per element.** Pager labels, column
+   filter dialogs, upload and validation messages come from the enhancer, not from your markup.
+   Override any of them with **`data-fdy-text-<key>`** on the component's root — key list and the
+   `{n}`/`{from}`/`{total}` placeholders are in [`COMPONENTS.md`](../COMPONENTS.md) §Data table.
+   Dates need no attribute: the pickers format through `Intl` from the page's `<html lang>`, so
+   `lang="id"` gives Indonesian month and weekday names. **Coming from 1.x**, where those defaults
+   were Indonesian: 2.0.0 flipped them to English, and this attribute is the whole migration.
 
 ---
 
@@ -184,7 +191,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^2.0.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^2.1.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)
@@ -300,10 +307,11 @@ export function Panel() {
 value from `event.detail` in state/ref; don't set the DOM `value` back. `StrictMode` mounts twice in
 dev; `useFreeday` is idempotent, so it's safe.
 
-### 5. Alternative: typed controlled components (`FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart`)
+### 5. Alternative: typed controlled components
 For fields you'd normally write as a native `<select>`/`<input type="date">`,
 `@cahyo-dimas/freeday/react` also exports typed **controlled** components with plain `value`/`onChange`,
-no manual event bubbling (parity with the Vue `v-model` components above):
+no manual event bubbling — the same eleven listed in §Core concepts #2, at parity with the Vue
+`v-model` components above:
 ```tsx
 import { FdyCombo } from '@cahyo-dimas/freeday/react';
 import type { FdyComboOption } from '@cahyo-dimas/freeday/react';
@@ -436,11 +444,12 @@ kit's CSS/enhancers), then bind:
 <FdyChart Type="donut" Values="_byCity" Labels="_cityLabels" AriaLabel="Revenue by city" />
 <FdyDrawer @bind-Open="_drawerOpen" Title="Detail" Side="right">…</FdyDrawer>
 ```
-Ten components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
+Eleven components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
 `Title`, `Size`/`Side`, `Dismissible`) · **`FdyCombo<TValue>`** · **`FdyDatepicker`** ·
 **`FdyAutocomplete`** · **`FdyCascade`** · **`FdyDateRange`** (`@bind-From`/`@bind-To`) ·
 **`FdyCfl<TRow>`** (async `LoadPage`) · **`FdyChart`** · **`FdyTable<TRow>`** (client sort/filter/page,
-or controlled `Sort`/`Filters`/`Page` for a server-paged table; `RowActivatable`, `RowDetail`). Each
+or controlled `Sort`/`Filters`/`Page` for a server-paged table; `RowActivatable`, `RowDetail`) ·
+**`FdyAppShell`** (`@bind-NavOpen`). Each
 `select`-type control also takes `Disabled`/`Readonly`/`Invalid`. The RCL targets **net8.0** and is
 consumed as source (`<ProjectReference>`); `.NET bin/obj` never ships in the npm tarball.
 

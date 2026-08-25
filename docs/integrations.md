@@ -154,7 +154,7 @@ function Panel(): JSX.Element {
 ```
 > **Controlled alternative (parity with Vue's `v-model`):** `@cahyo-dimas/freeday/react` also exports
 > the typed components `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` /
-> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer`, with plain
+> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer` / `FdyAppShell`, with plain
 > `value`/`onChange` (props in, events out), no `data-fdy-*` + manual event listener:
 > ```tsx
 > import { FdyCombo } from '@cahyo-dimas/freeday/react';
@@ -200,7 +200,7 @@ document.addEventListener('fdy-form-invalid', (e) =>
 > **Native components (parity with Vue's `v-model` / React's `value`/`onChange`):** the
 > **`Freeday.Blazor`** RCL (net8.0, `adapters/blazor/`) ships the typed components `FdyCombo<TValue>` /
 > `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` / `FdyCfl<TRow>` / `FdyChart` /
-> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` with `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
+> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` / `FdyAppShell` with `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
 > ```razor
 > @using Freeday.Blazor
 > <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />

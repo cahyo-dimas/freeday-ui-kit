@@ -54,10 +54,11 @@
   }
 
 
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and every one overridable per element, so a host that speaks another language (the
-   * Blazor adapters, an English app on the raw path) supplies its own without forking this file.
-   * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and every one overridable per element with `data-fdy-text-<key>`, so a host
+   * that speaks another language (an Indonesian app on the raw path) supplies its own without
+   * forking this file. Keeping them in ONE table is also what lets a guard prove none is
+   * hard-coded further down. */
   var TEXT = {
     back: 'Back one level',
     submenu: '{label}, submenu'

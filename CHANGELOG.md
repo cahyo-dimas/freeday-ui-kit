@@ -3,6 +3,94 @@
 Semua perubahan penting dicatat di sini. Format longgar mengikuti
 [Keep a Changelog](https://keepachangelog.com/); tiap versi = git tag.
 
+**Kebijakan tipe (sejak 2.1.0).** Tipe publik yang **melebar** dihitung breaking meski runtime tak
+berubah, karena yang gagal adalah build konsumen: `vue-tsc`/`tsc` menolak handler yang kemarin
+benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` — nama prop, tipe
+lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
+sisi kit.
+
+## [2.1.0] - 2026-08-25
+### Added
+- **`singleRow()`, exported from `@cahyo-dimas/freeday/vue` and `/react`** (#045). `FdyCfl` emits
+  `Row | Row[] | null` whatever its props are: the array is reachable only under `multiple`, the
+  null only under `clearable`, and the type cannot say which. So every single-select screen wrote
+  its own narrowing, and each one differently — a cast (which hides the day somebody adds
+  `clearable`), a silent ignore, or a throw. One implementation now lives in
+  `adapters/core/cfl-value.js` and both adapters re-export it: it returns `Row | null`, and
+  **throws** a `TypeError` on an array instead of keeping its first row, because quietly dropping
+  the rest is how a `multiple` added later goes unnoticed. Blazor never needed it — multi-select
+  there is a separate `Values` / `ValuesChanged` pair.
+  ```ts
+  import { singleRow } from '@cahyo-dimas/freeday/vue'; // or '@cahyo-dimas/freeday/react'
+  // (value: CflRow | CflRow[] | null) => CflRow | null
+  const onUpdate = (value: CflRow | CflRow[] | null): void => { picked.value = singleRow(value); };
+  ```
+### Changed: BREAKING (types)
+- **A retroactive entry for 1.29.0 and 1.42.0** (#045) — nothing changed in this release; this is
+  the record those two are missing. Both widened `FdyCfl`'s emitted type — `Row` → `Row | null`
+  (1.29.0, with `clearable`) → `Row | Row[] | null` (1.42.0, with `multiple`) — and both shipped
+  under **Added**, which is honest from the kit's side and useless from the consumer's: the
+  combined effect is `vue-tsc` failing in a handler nobody touched. An app upgrading from before
+  1.29.0 meets both at once, which is exactly how it was reported. Migration is `singleRow()`
+  above. The policy that should stop a third instance is at the top of this file.
+### Added: guards
+- **The typed column contract is now pinned in both directions** (#040): `test/docs.test.mjs`
+  asserts the field list documented in `COMPONENTS.md` matches `FdyTableColumn` in
+  `adapters/core/table-model.d.ts` — a field in the type but not the docs fails, and so does a
+  field in the docs that the type does not have. Verified by mutation (drop `labelHidden` from the
+  table → red; invent a `sticky` row → red), since a guard nobody has watched fail is only a
+  green tick.
+- `test/cfl-value.test.mjs`: three tests for `singleRow` (row passes through, `null`/`undefined`
+  become null, an array throws).
+- **Every typed wrapper's props are pinned to their documentation** (`NEXT-UP.md` #11). One guard
+  reads all twelve `### Props — <FdyX>` tables and compares them with the Vue and React
+  declarations: a prop missing from a table fails, a documented prop neither adapter declares
+  fails, and a wrapper exported with no table at all fails. Mutation-verified in all three
+  directions, including the case that found a bug in the guard itself — a hyphenated prop name
+  (`aria-label`) was invisible to the first version of its parser.
+### Docs
+- **`COMPONENTS.md` finally states the typed column contract** (#040). §Data table gained
+  "Columns — the typed `FdyTableColumn<T>`": all ten fields with their types, the Blazor spelling
+  (`PascalCase`, `required` Key/Label, the extra `Cell` slot), and the row-controls example.
+  `agent-onboarding.md` tells every consuming agent this file is closed — "if a class is not in
+  that file, it does not exist" — while three of the four stacks build a table only through
+  `columns`, whose shape appeared nowhere in it. One reporting app shipped `label: ''` on its
+  actions column as a result: a `<th>` announced as nothing.
+- **Nine enhancers still claimed to be Indonesian.** The comment above every `TEXT` table read
+  "User-facing strings. Indonesian by default" — written before 2.0.0 flipped them all to English,
+  and shipped in `dist/`, where it is the first thing a consumer reading the source sees. It now
+  says English, names `data-fdy-text-<key>` as the override, and gives an Indonesian app on the
+  raw path as the example of who overrides.
+- **The two docs a consumer actually reads on upgrade now mention the language.** 2.0.0's breaking
+  change was documented in `COMPONENTS.md` and this file, but neither `docs/getting-started.md` nor
+  the block projects paste into their agent instructions
+  (`docs/agent-onboarding.md`) said a word about it. Both now do, with `data-fdy-text-<key>` as the
+  whole migration and `<html lang>` for date names.
+- **`HANDOFF.md` described a release that had already happened.** It stated npm was on 1.53.0 with
+  1.54.0 and 2.0.0 sitting unpushed; npm had been on 2.0.0 since the morning, with the tag, the
+  branch and `origin/main` all on the same commit. The file that warns about stale snapshots was
+  the stale snapshot. Corrected, with the three commands that check it.
+- **`CLAUDE.md` claimed 44 components**, a number matching nothing countable. Now 48 stylesheets in
+  `src/components/` and 26 enhancers in `src/freeday-*.js`, both of which anyone can re-count.
+- **The typed props of all twelve wrappers are now in `COMPONENTS.md`** (`NEXT-UP.md` #11, the
+  general form of #040). A `### Props` table per wrapper: Vue and React names together, what each
+  does, and the Blazor differences stated rather than implied. Writing them measured something
+  nobody had: **four Blazor pickers are far thinner than their JS twins** — `FdyDatepicker` takes 6
+  parameters against 21 Vue props, `FdyAutocomplete` 6 against 11, `FdyCascade` 8 against 12, and
+  `FdyCombo` has no `Describedby`. Those wrappers render a seed element and do not splat unmatched
+  attributes, so `disabled`, `readonly`, `invalid`, the a11y ids, `clearable` and the datepicker's
+  ten navigation labels cannot be reached from a Blazor page at all. It runs the other way too:
+  `CloseLabel` exists only in Blazor, so the modal and drawer × is fixed at `Close` in Vue and
+  React. Filed as `NEXT-UP.md` #12 with its trigger; documented here as fact in the meantime,
+  because a consumer meeting it should find it written down rather than discover it.
+- **`FdyAppShell` was missing from every list of the typed wrappers but the two READMEs.** It
+  shipped as the eleventh in 1.54.0 and `COMPONENTS.md`, `getting-started.md`, `agent-onboarding.md`
+  and `integrations.md` went on naming ten for a whole major version — `agent-onboarding.md`
+  saying both "ten" and "eleven" about the same set, in the same file, and `getting-started.md`
+  carrying a section heading that still listed the seven of some earlier release. All corrected,
+  and a guard now reads any run of six or more wrapper names as an enumeration and fails if it is
+  incomplete. It found two of these itself, one of them a list this release had already touched.
+
 ## [2.0.0] - 2026-08-25
 ### Changed: BREAKING
 - **The vanilla enhancers now write English by default** (`NEXT-UP.md` #6, owner's decision). Every

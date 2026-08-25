@@ -34,6 +34,9 @@ export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './com
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';
 export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
+/** Narrow `FdyCfl`'s `Row | Row[] | null` to the `Row | null` a single-select can produce; throws
+ *  on the array only a `multiple` field emits. */
+export { singleRow } from '../core/cfl-value';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';
 export { FdyTable, type FdyTableProps } from './components/FdyTable';
 /** The table's own footer, standalone, for a responsive list whose table is hidden at some

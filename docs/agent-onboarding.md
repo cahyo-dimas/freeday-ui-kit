@@ -20,21 +20,21 @@ the **root of the consuming project**:
 
 All UI in this project is built from Freeday: a **token-driven CSS kit** (`fdy-*` classes on plain
 markup) with **typed components for Vue, React and Blazor** layered on top. Most of the kit is
-markup + classes; ten interactive components also ship a typed wrapper, and in those three stacks
+markup + classes; eleven interactive components also ship a typed wrapper, and in those three stacks
 the wrapper is the correct way to use them.
 
 **0. First decide which entry point this project uses. This is not an optimisation. Get it wrong
 and the code looks correct and fails later.**
 
-| This project's stack | Import the ten components from | Binding |
+| This project's stack | Import the eleven components from | Binding |
 |---|---|---|
 | Vue 3 | `@cahyo-dimas/freeday/vue` | `v-model` |
 | React 18/19 | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
 | Blazor (net8.0) | `@using Freeday.Blazor` (RCL) | `@bind-Value` |
 | Static HTML, Svelte, server-rendered templates… | no wrapper: raw markup + the enhancer script | `fdy-*` DOM events |
 
-The ten: **FdyCombo · FdyDatepicker · FdyDateRange · FdyAutocomplete · FdyCascade · FdyCfl ·
-FdyChart · FdyTable · FdyModal · FdyDrawer**. In Vue/React/Blazor, **never hand-write the raw
+The eleven: **FdyCombo · FdyDatepicker · FdyDateRange · FdyAutocomplete · FdyCascade · FdyCfl ·
+FdyChart · FdyTable · FdyModal · FdyDrawer · FdyAppShell**. In Vue/React/Blazor, **never hand-write the raw
 markup + enhancer for these eleven.** The raw path *appears* to work: the enhancer auto-initialises
 once on `DOMContentLoaded` and the first render is correct. Then it fails quietly: DOM your framework
 renders later is never hydrated, and the widget's state lives in the DOM instead of in your
@@ -75,6 +75,9 @@ wrapper, use the raw markup and hydrate it:
    components **without** a typed wrapper. For the eleven in step 0, use the wrapper instead.
 8. Freeday owns components + tokens, **not layout**. Grids/stacks/one-off gaps come from our own
    layout layer. Build its theme on `var(--space-N)` so both systems stay in step.
+9. The enhancers render their own English UI strings (pager, filter dialog, validation). Never
+   hand-translate one by rewriting the enhancer's nodes — set `data-fdy-text-<key>` on the
+   component root, and `<html lang>` for date names. Keys are in COMPONENTS.md.
 ```
 
 Adjust the paths if the package lives somewhere else (a workspace, a vendored copy, `wwwroot/` for
@@ -85,7 +88,7 @@ Blazor). Then verify the agent can actually read those files. An agent that can'
 
 | File | What it answers |
 |---|---|
-| `COMPONENTS.md` | The complete class surface: what exists, its modifiers, minimal markup, a11y. |
+| `COMPONENTS.md` | The complete class surface: what exists, its modifiers, minimal markup, a11y. Also the typed wrappers' props — one `### Props — <FdyX>` table each, and the `FdyTableColumn` fields. |
 | `USAGE.md` | The doctrine: which token/role/shadow/emphasis to use when. |
 | `docs/getting-started.md` | Install + import + theme, per stack (Static HTML · Vue · React · Blazor). |
 | `docs/integrations.md` | How to bridge third-party libraries (validation, charts, dates, i18n…). |
@@ -95,7 +98,7 @@ Blazor). Then verify the agent can actually read those files. An agent that can'
 | `dist/` | Built CSS + enhancers. **`freeday.bundle.css` = tokens + components** (what `@cahyo-dimas/freeday/css` resolves to); `freeday.css` is components **only**, `freeday.tokens.css` tokens only, so linking `freeday.css` alone leaves every `var(--…)` unresolved. Plus `freeday-*.js` and the `.d.ts` files. |
 | `src/components/*.css` | The authoritative source for every class, when a doc is ambiguous. |
 | `tokens/tokens.json` | Every token in W3C DTCG format, machine-readable. |
-| `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers, 10 components each. |
+| `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers, 11 components each (plus `FdyTableFooter`). |
 
 The live docs (with an interactive playground) are at
 <https://cahyo-dimas.github.io/freeday-ui-kit/>, and the repo (including three complete example

@@ -38,10 +38,11 @@
     badInput: 'type',
     customError: 'mismatch'
   };
-  /* User-facing strings. Indonesian by default, documented and deliberate for the raw enhancer
-   * path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on the field,
-   * `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form level is what
-   * a host in another language needs: it sets nine messages once instead of on every input.
+  /* User-facing strings. English by default since 2.0.0, documented and deliberate for the raw
+   * enhancer path, and overridable at three levels, narrowest first: `data-fdy-msg-<alias>` on
+   * the field, `data-fdy-msg` on the field, then `data-fdy-text-<alias>` on the FORM. The form
+   * level is what a host in another language needs: it sets nine messages once instead of on
+   * every input.
    * Keeping them in ONE table is also what lets a guard prove none is hard-coded further down. */
   var TEXT = {
     required: 'Required.',

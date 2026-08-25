@@ -11,16 +11,19 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**Versi kerja: `2.0.0`.** npm masih di **`1.53.0`**. `1.54.0` dan `2.0.0` sudah di-commit **lokal**
-dan belum di-push atas permintaan owner, jadi belum lewat CI dan belum terbit.
+**`2.0.0`, dan itu yang terbit.** npm `latest` = `2.0.0`; tag `v2.0.0`, `origin/main` dan HEAD
+menunjuk commit yang sama, nol commit menggantung; live Pages menstempel `v2.0.0`. Karena
+`publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan paket itu di npm sekaligus bukti kedua
+suite hijau di tag tersebut, termasuk perbaikan flaky animasi listbox dan pembatasan paralelisme
+yang dulu hanya terukur di laptop ini.
+
+Sampai 2026-08-25 dua baris ini berbunyi sebaliknya, "npm masih di 1.53.0 … belum di-push", ditulis
+dari ingatan sesi yang merilisnya. Sebelum menyentuhnya lagi, tiga perintah: `npm view
+@cahyo-dimas/freeday version` · `git rev-list --left-right --count origin/main...main` · `curl` docs
+live.
 
 Tiga rilis terakhir, dan apa artinya bagi konsumen:
 
-- **1.53.0: `.fdy-app` akhirnya mengirim perilakunya.** `freeday-app-shell.js` (opt-in
-  `data-fdy-app`): toggle di dua mode, Escape, backdrop, tutup saat item nav diikuti, fokus masuk
-  panel dan kembali ke toggle, `inert`, Tab trap. Sebelumnya kit mengirim kelas state dan **nol JS**,
-  dan COMPONENTS.md menyuruh tiap konsumen merakit sendiri. Dua salinan rakitan tangan di `docs/`
-  repo ini sendiri sudah saling berbeda, dan satu konsumen mengunci pengguna keyboard.
 - **1.54.0: `<FdyAppShell>` jadi komponen typed ke-11** di Vue/React/Blazor. Satu model:
   `navOpen` = "nav terlihat"; kit yang memetakan ke `--nav-open`/`--nav-collapsed`. Prop-nya opsional
   karena default-nya **ditentukan viewport**, dan pemanggil tak bisa menyatakan itu lewat satu nilai
@@ -30,11 +33,16 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
   datepicker (`lang || 'en'`) yang menentukan nama bulan/hari. **Breaking** untuk app Indonesia di
   jalur mentah; migrasinya atribut, bukan fork: `data-fdy-text-<key>` (dan `<html lang="id">` untuk
   tanggal).
+- **2.1.0: permukaan typed akhirnya terdokumentasi, dan dijaga.** `singleRow()` (narrowing
+  `FdyCfl` untuk Vue/React), 12 tabel `### Props — <FdyX>` di COMPONENTS.md, kontrak
+  `FdyTableColumn`, plus kebijakan "tipe publik yang melebar = breaking" di kepala CHANGELOG.
+  Empat guard baru menahan semuanya, dan dua di antaranya menemukan kebasian yang sudah berumur
+  satu rilis mayor: `FdyAppShell` absen dari empat daftar wrapper.
 
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 61 test  · node --test, gerbang default, tanpa browser
+npm test                 67 test  · node --test, gerbang default, tanpa browser
 npm run test:browser     72 test  · 18 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor       7 test  · bUnit, komponen Blazor dirender sungguhan
@@ -84,21 +92,16 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 
 ## Yang diketahui dan belum diselesaikan
 
-- **Ada commit lokal yang belum di-push.** Lihat `git log --oneline origin/main..main` (angkanya sengaja
-  tak ditulis di sini; angka di prosa selalu basi lebih dulu). Isinya 1.54.0 dan 2.0.0, dan dua
-  perbaikan yang lahir dari kondisi yang tak pernah muncul di laptop ini, yaitu flaky animasi listbox dan
-  pembatasan paralelisme: **terukur, belum terverifikasi di CI**.
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
   tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan, karena
   halaman itu bertugas menunjukkan default kit yang sebenarnya.
-- `CLAUDE.md` menyebut "44 komponen". Jumlah enhancer sudah dikoreksi (26, terhitung), tapi angka 44
-  tak cocok dengan apa pun yang bisa diverifikasi: 48 stylesheet, 39 seksi di COMPONENTS.md.
-  Dibiarkan daripada diganti tebakan.
 
 ## Selanjutnya
 
 Backlog aktif ada di **[`NEXT-UP.md`](NEXT-UP.md)**. Dua item yang pemicunya sudah datang, #8
-(perilaku app-shell) dan #6 (bahasa default), **selesai** di 1.53.0/1.54.0/2.0.0.
+(perilaku app-shell) dan #6 (bahasa default), **selesai** di 1.53.0/1.54.0/2.0.0. Dua catatan
+friksi yang masih terbuka, `improvement-notes` #040 (kontrak kolom typed tak ada di COMPONENTS.md)
+dan #045 (tipe emit `FdyCfl` melebar tanpa diumumkan), ditutup 2026-08-25 dan menunggu 2.1.0.
 
 Sikap default tetap: **tunggu demand**. Tapi malam 24–25 Agustus 2026 memberi satu pelajaran yang
 layak dibawa: **NEXT-UP sendiri bisa basi**. #6 menuliskan "bikin hook override" sebagai pilihan,
