@@ -1293,9 +1293,13 @@ Transient notification in a live region. Imperative only:
 ```js
 const node = Freeday.toast({ variant: 'success', title: 'Saved', message: 'INV-1042 saved.' })
 Freeday.toast({ variant: 'danger', title: 'Failed', message: '…', key: 'net-fail' }) // same key replaces
+Freeday.toast({ message: 'Still uploading…', timeout: 0 })   // 0 = stays until dismissed
 Freeday.dismiss('net-fail')  // or Freeday.dismiss(node)
 ```
-Every field is optional; it returns the toast element. Classes (rendered for you):
+Every field is optional; it returns the toast element. **`timeout`** is ms before it auto-dismisses,
+default `4000`, and `0` makes it stick — the enhancer has honoured it since it was written, but this
+line did not exist until 3.0.0, so every app that needed a sticky error toast hand-rolled one.
+Classes (rendered for you):
 `.fdy-toast-region`, `.fdy-toast` (+`--info` `--success` `--warning` `--danger`) · `__accent`
 `__body` `__title` `__text` `__close`.
 
