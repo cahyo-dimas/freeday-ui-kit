@@ -42,7 +42,7 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 68 test  · node --test, gerbang default, tanpa browser
+npm test                 70 test  · node --test, gerbang default, tanpa browser
 npm run test:browser     87 test  · 20 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      21 test  · bUnit, komponen Blazor dirender sungguhan
@@ -85,7 +85,7 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 ## Lokasi
 
 - `tokens/tokens.json` · `tokens/build.mjs` · pipeline token (Tier-1/2/3)
-- `src/components/*.css` (48) + `src/freeday-*.js` (26 enhancer) authored · `dist/` hasil build (di-commit)
+- `src/components/*.css` (49) + `src/freeday-*.js` (27 enhancer) authored · `dist/` hasil build (di-commit)
 - `adapters/{vue,react,blazor}/` integrasi framework · `adapters/core/` logika lintas-adapter
   (`table-model.js`, `app-shell.js`) · `examples/*-faktur/` bukti pakai
 - `browser/` spec + fixture + harness CDP (tak ikut di-ship; jumlahnya ada di blok gerbang di atas, satu tempat saja)
