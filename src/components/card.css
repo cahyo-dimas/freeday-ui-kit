@@ -1,7 +1,7 @@
 /* Freeday. Card */
 /* position:relative, containing block for out-of-flow card content (see base.css); it also gives
    consumers the anchor a corner ribbon/badge needs. */
-.fdy-card{position:relative;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
+.fdy-card{position:relative;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift),var(--surface-inset);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}

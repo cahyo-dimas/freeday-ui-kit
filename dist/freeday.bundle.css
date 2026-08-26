@@ -246,6 +246,7 @@
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
+  --color-surface-raised: var(--color-surface);
   --color-scrim: rgba(10,12,25,.5);
   --color-text: var(--slate-900);
   --color-text-muted: var(--slate-600);
@@ -290,6 +291,8 @@
   --tone-6: var(--chart-6);
   --tone-7: var(--chart-7);
   --tone-8: var(--chart-8);
+  --surface-filter: none;
+  --surface-inset: inset 0 0 0 0 transparent;
   --focus-ring: var(--primary-600);
   --focus-ring-width: 2px;
 }
@@ -318,6 +321,7 @@
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-100);
   --color-text-muted: var(--slate-400);
   --color-text-subtle: var(--slate-500);
@@ -381,6 +385,7 @@
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-100);
   --color-text-muted: var(--slate-400);
   --color-text-subtle: var(--slate-500);
@@ -437,6 +442,7 @@
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-900);
   --color-text-muted: var(--slate-600);
   --color-text-subtle: var(--slate-500);
@@ -494,6 +500,30 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --control-h: 2.5rem;
+}
+[data-style="glass"] {
+  --color-surface-raised: rgba(255,255,255,.82);
+  --surface-filter: blur(14px) saturate(150%);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.55);
+}
+[data-style="soft"] {
+  --color-surface-raised: var(--color-surface);
+  --surface-filter: none;
+  --surface-inset: inset 0 0 0 0 transparent;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-style="glass"] {
+  --color-surface-raised: rgba(23,27,38,.90);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.09);
+  }
+}
+[data-theme="dark"][data-style="glass"] {
+  --color-surface-raised: rgba(23,27,38,.90);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.09);
+}
+[data-theme="light"][data-style="glass"] {
+  --color-surface-raised: rgba(255,255,255,.82);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.55);
 }
 /* Primary palette axis. 18 options, see $primaries in tokens.json. */
 [data-primary="azure"] {
@@ -934,7 +964,7 @@ a { color: var(--color-primary); }
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
  * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
 /* Brand is a fixed header, same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
@@ -1023,7 +1053,7 @@ a { color: var(--color-primary); }
      also apply — it would fight the transform for the same panel. */
   .fdy-app--nav-overlay.fdy-app--nav-collapsed .fdy-app__sidebar{width:16rem;border-right-width:var(--bw);}
 }
-.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__main{flex:1;padding:var(--space-8);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}
@@ -1055,9 +1085,9 @@ a { color: var(--color-primary); }
 /* Freeday. App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;
  * sticky / elevated / dense / coloured via modifiers. Pure CSS. */
-.fdy-appbar{display:flex;align-items:center;gap:var(--space-3);height:var(--space-16);padding:0 var(--space-4);background:var(--color-surface);color:var(--color-text);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-appbar{display:flex;align-items:center;gap:var(--space-3);height:var(--space-16);padding:0 var(--space-4);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);color:var(--color-text);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-appbar--sticky{position:sticky;top:0;z-index:90;}
-.fdy-appbar--elevated{border-bottom:0;box-shadow:var(--shadow-2);}
+.fdy-appbar--elevated{border-bottom:0;box-shadow:var(--shadow-2),var(--surface-inset);}
 .fdy-appbar--dense{height:var(--space-12);}
 .fdy-appbar--primary{background:var(--color-primary);color:var(--color-on-primary);border-bottom-color:transparent;}
 .fdy-appbar__brand{display:inline-flex;align-items:center;gap:var(--space-2);font-family:var(--font-display);font-weight:var(--weight-bold);font-size:var(--text-lg);color:inherit;white-space:nowrap;}
@@ -1327,7 +1357,7 @@ a { color: var(--color-primary); }
 /* Freeday. Card */
 /* position:relative, containing block for out-of-flow card content (see base.css); it also gives
    consumers the anchor a corner ribbon/badge needs. */
-.fdy-card{position:relative;background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
+.fdy-card{position:relative;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-lift),var(--surface-inset);transition:box-shadow var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 .fdy-card--elevated{box-shadow:var(--shadow-lift-hover);}
 .fdy-card--interactive{cursor:pointer;}
 .fdy-card--interactive:hover{box-shadow:var(--shadow-lift-hover);transform:translateY(-3px);}
@@ -1772,7 +1802,7 @@ a { color: var(--color-primary); }
 /* display is gated behind [open] so the native <dialog> stays hidden until opened.
  * An unconditional display here would beat the UA `dialog:not([open]){display:none}`
  * rule (author origin wins over user-agent) and leave the drawer visible on load. */
-.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);flex-direction:column;border:0;background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-4);overflow:hidden;transform:translateX(-100%);transition:transform var(--dur-slow) var(--ease-standard),overlay var(--dur-slow) allow-discrete,display var(--dur-slow) allow-discrete;}
+.fdy-drawer{position:fixed;inset:0 auto 0 0;margin:0;padding:0;height:100vh;max-height:none;width:min(20rem,82vw);flex-direction:column;border:0;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);color:var(--color-text);box-shadow:var(--shadow-4),var(--surface-inset);overflow:hidden;transform:translateX(-100%);transition:transform var(--dur-slow) var(--ease-standard),overlay var(--dur-slow) allow-discrete,display var(--dur-slow) allow-discrete;}
 .fdy-drawer[open]{display:flex;transform:none;}
 .fdy-drawer--right{inset:0 0 0 auto;transform:translateX(100%);}
 .fdy-drawer::backdrop{background:rgba(10,12,25,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);opacity:0;transition:opacity var(--dur-slow) var(--ease-standard),overlay var(--dur-slow) allow-discrete,display var(--dur-slow) allow-discrete;}
@@ -2015,7 +2045,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 
 /* Freeday. Menu (action popup) + Split button. Enhanced by freeday-menu.js. */
 .fdy-menu-wrap{position:relative;display:inline-flex;}
-.fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
+.fdy-menu{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;min-width:11rem;margin:0;padding:var(--space-1);list-style:none;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3),var(--surface-inset);}
 .fdy-menu[hidden]{display:none;}
 .fdy-menu--end{left:auto;right:0;}
 .fdy-menu__item{display:flex;align-items:center;gap:var(--space-2);width:100%;padding:var(--space-2) var(--space-3);border:0;background:transparent;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);text-align:left;cursor:pointer;white-space:nowrap;}
@@ -2046,7 +2076,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
 
 /* Freeday. Modal (native <dialog>) */
-.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-lift-hover);overflow:hidden;flex-direction:column;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
+.fdy-modal{width:min(32rem,calc(100vw - var(--space-8)));max-height:calc(100vh - var(--space-16));padding:0;border:var(--bw) solid var(--color-border);border-radius:var(--radius-xl);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);color:var(--color-text);box-shadow:var(--shadow-lift-hover),var(--surface-inset);overflow:hidden;flex-direction:column;opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--dur-base) var(--ease-spring),transform var(--dur-base) var(--ease-spring),overlay var(--dur-base) allow-discrete,display var(--dur-base) allow-discrete;}
 .fdy-modal--sm{width:min(24rem,calc(100vw - var(--space-8)));}
 .fdy-modal--md{width:min(32rem,calc(100vw - var(--space-8)));}
 .fdy-modal--lg{width:min(48rem,calc(100vw - var(--space-8)));}

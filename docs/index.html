@@ -499,6 +499,14 @@
         </div>
         <p class="doc-desc" style="margin-top:var(--space-3)">Tekan salah satu, lalu telusuri halaman ini: tombol, tab, fokus, chart, dan setiap <code>-soft</code> wash ikut berubah tanpa satu baris pun disetel per komponen.</p>
       </div>
+
+      <p class="doc-desc"><strong>Gaya visual: <code>data-style</code>.</strong> <code>soft</code> default; <code>glass</code> memfrost <strong>permukaan terangkat saja</strong> — card, modal, drawer, menu, appbar, sidebar &amp; topbar app shell. Sengaja bukan <code>--color-surface</code>, karena token itu juga jadi isian input, chip, sel tabel dan kolom beku; kolom beku yang tembus pandang akan memperlihatkan baris yang menggulung di bawahnya. <strong>Seberapa tembus kaca boleh jadi ditentukan gerbang kontras, bukan selera</strong>: di bawah .82 (terang) / .90 (gelap), tinta muted berhenti lolos 4.5:1 begitu panel dikomposit di atas latar sembarang. Jadi frost-nya halus — yang benar-benar terlihat adalah blur-nya, bukan alpha-nya.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-swatches" role="group" aria-label="Pilih gaya visual">
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.style='soft'">soft (default)</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.style='glass'">glass</button>
+        </div>
+      </div>
     </section>
 
     <section class="doc-section" id="sec-tipografi">

@@ -245,6 +245,7 @@
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
+  --color-surface-raised: var(--color-surface);
   --color-scrim: rgba(10,12,25,.5);
   --color-text: var(--slate-900);
   --color-text-muted: var(--slate-600);
@@ -289,6 +290,8 @@
   --tone-6: var(--chart-6);
   --tone-7: var(--chart-7);
   --tone-8: var(--chart-8);
+  --surface-filter: none;
+  --surface-inset: inset 0 0 0 0 transparent;
   --focus-ring: var(--primary-600);
   --focus-ring-width: 2px;
 }
@@ -317,6 +320,7 @@
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-100);
   --color-text-muted: var(--slate-400);
   --color-text-subtle: var(--slate-500);
@@ -380,6 +384,7 @@
   --color-surface: var(--slate-950);
   --color-surface-2: var(--slate-900);
   --color-surface-3: var(--slate-800);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-100);
   --color-text-muted: var(--slate-400);
   --color-text-subtle: var(--slate-500);
@@ -436,6 +441,7 @@
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
+  --color-surface-raised: var(--color-surface);
   --color-text: var(--slate-900);
   --color-text-muted: var(--slate-600);
   --color-text-subtle: var(--slate-500);
@@ -493,6 +499,30 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --control-h: 2.5rem;
+}
+[data-style="glass"] {
+  --color-surface-raised: rgba(255,255,255,.82);
+  --surface-filter: blur(14px) saturate(150%);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.55);
+}
+[data-style="soft"] {
+  --color-surface-raised: var(--color-surface);
+  --surface-filter: none;
+  --surface-inset: inset 0 0 0 0 transparent;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-style="glass"] {
+  --color-surface-raised: rgba(23,27,38,.90);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.09);
+  }
+}
+[data-theme="dark"][data-style="glass"] {
+  --color-surface-raised: rgba(23,27,38,.90);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.09);
+}
+[data-theme="light"][data-style="glass"] {
+  --color-surface-raised: rgba(255,255,255,.82);
+  --surface-inset: inset 0 1px 0 rgba(255,255,255,.55);
 }
 /* Primary palette axis. 18 options, see $primaries in tokens.json. */
 [data-primary="azure"] {

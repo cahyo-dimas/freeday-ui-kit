@@ -173,3 +173,65 @@ for (const name of PALETTES) {
     });
   }
 }
+
+/* --- the glass style axis -----------------------------------------------------------------------
+ *
+ * A frosted panel is TRANSLUCENT, so the ink on it is not read against the panel — it is read
+ * against the panel composited over whatever is behind. That makes glass the one axis where a
+ * contrast number cannot be taken from the token alone, and the reason a "just make it see-through"
+ * change is so easy to ship broken.
+ *
+ * The worst case the kit can actually name is the page ground, `--color-surface-2`, which is what
+ * `.fdy-app` paints and therefore what sits behind every raised panel in a Freeday screen. Anything
+ * the app puts back there (a photo, a gradient) is beyond what a token can promise, and
+ * COMPONENTS.md says so rather than this suite pretending otherwise. */
+const styleVars = (sel) => vars(scope(new RegExp(`\\n${sel.replace(/[[\]"^$.*+?()|{}\\]/g, '\\$&')}\\s*\\{([\\s\\S]*?)\\n\\}`)));
+
+const GLASS_LIGHT = { ...base, ...styleVars('[data-style="glass"]'), ...styleVars('[data-theme="light"][data-style="glass"]') };
+const GLASS_DARK = { ...base, ...darkVars, ...styleVars('[data-style="glass"]'), ...styleVars('[data-theme="dark"][data-style="glass"]') };
+
+test('the glass scope actually resolves', () => {
+  const g = styleVars('[data-style="glass"]');
+  assert.ok(Object.keys(g).length >= 3, `[data-style="glass"] parsed ${Object.keys(g).length} vars`);
+  assert.notEqual(GLASS_LIGHT['--color-surface-raised'], base['--color-surface-raised'],
+    'glass must actually change the raised surface, or this suite is re-testing soft under a glass label');
+  assert.notEqual(GLASS_DARK['--color-surface-raised'], GLASS_LIGHT['--color-surface-raised'],
+    'a frosted panel is a tint of the surface it sits on, and that surface flips with the theme');
+});
+
+/* Composited over the PAGE GROUND is the obvious check and it is nearly vacuous: `--color-surface-2`
+ * is within a few percent of the panel's own lightness, so a panel four times more transparent still
+ * passes. Measured — that exact mutation went green.
+ *
+ * The invariant that actually holds is stronger: a glass panel must carry its own contrast, whatever
+ * is behind it. So the ink is checked against the panel composited over BLACK and over WHITE, the
+ * two extremes any ground lies between. Pass both and the promise holds over a photo, a gradient or
+ * another panel; fail either and the kit is quietly relying on a background it does not control. */
+const GROUNDS = { black: '#000000', white: '#ffffff' };
+
+for (const [name, theme] of [['LIGHT', GLASS_LIGHT], ['DARK', GLASS_DARK]]) {
+  test(`WCAG contrast: glass (${name}) holds over any ground`, () => {
+    const fails = [];
+    for (const [groundName, ground] of Object.entries(GROUNDS)) {
+      const bg = over(parse(theme['--color-surface-raised'], theme), parse(ground, theme));
+      const check = (fg, min, label) => {
+        const r = ratio(parse(theme[fg], theme), bg);
+        if (r < min) fails.push(`${label} over ${groundName}: ${r.toFixed(2)} < ${min}`);
+      };
+      check('--color-text', AA_TEXT, 'body text');
+      check('--color-text-muted', AA_TEXT, 'muted text');
+      check('--color-primary-strong', AA_TEXT, 'primary-strong');
+    }
+    assert.deepEqual(fails, [], `glass (${name}) fails its contract:\n  ` + fails.join('\n  '));
+  });
+}
+
+test('soft is a real rule, not the absence of glass', () => {
+  /* Density shipped without its way back out, and a compact root could not contain a comfortable
+     region. This axis does not get to relearn that: `[data-style="soft"]` must restate every key
+     glass overrides, or a soft island inside a glass app inherits the frost. */
+  const soft = styleVars('[data-style="soft"]');
+  const glass = styleVars('[data-style="glass"]');
+  assert.deepEqual(Object.keys(soft).sort(), Object.keys(glass).sort(),
+    'every key glass sets must be reset by soft, or a region cannot opt back out');
+});

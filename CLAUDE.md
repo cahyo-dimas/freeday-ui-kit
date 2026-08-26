@@ -45,12 +45,14 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
   berbeda pendapat soal arti "primary". Sumbernya `$primaries` di `tokens.json`; **setiap palet
   dijaga gerbang kontras di kedua tema** (`test/contrast.test.mjs`), dan nilai `on`/`onDark`-nya
   hasil ukur, bukan tebakan.
-- `data-style` → **belum ada di kode sama sekali.** Baris ini dulu berbunyi seolah `soft` adalah
-  nilai default yang dibaca sesuatu; grep ke `src/`, `dist/` dan `tokens/` mengembalikan nol. `soft`
-  adalah *deskripsi* tampilan kit hari ini, bukan sebuah nilai. Sumbu gayanya sendiri (`soft`/`glass`)
-  disetujui dan dispesifikasikan di
-  [spec adopsi back-office](docs/superpowers/specs/2026-08-26-back-office-adoption-design.md) §D1–D2;
-  hapus catatan ini begitu sumbunya benar-benar terkirim.
+- `data-style="soft|glass"` → sumbu gaya visual. `soft` default (tampilan kit selama ini); `glass`
+  memfrost **permukaan terangkat saja** lewat `--color-surface-raised`, `--surface-filter`,
+  `--surface-inset` — bukan `--color-surface`, yang juga jadi isian input, chip, sel tabel dan kolom
+  beku (kolom beku tembus pandang akan memperlihatkan baris yang menggulung di bawahnya). Komponen
+  **tak pernah** membawa selector `[data-style]`; mereka membaca knob-nya, yang no-op di `soft`.
+  Seberapa tembus kaca boleh jadi **ditentukan gerbang kontras, bukan selera**: di bawah .82 (terang)
+  / .90 (gelap) tinta muted dan `primary-strong` berhenti lolos 4.5:1 begitu panel dikomposit di atas
+  latar sembarang. Frost yang benar-benar terlihat datang dari blur-nya, bukan dari alpha-nya.
 
 ## Aksesibilitas (wajib)
 - Kontras **WCAG AA** di light & dark. `:focus-visible` selalu terlihat (outline 2px `--focus-ring`).

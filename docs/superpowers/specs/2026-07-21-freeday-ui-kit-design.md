@@ -210,9 +210,17 @@ Ditambahkan saat build v0.1 agar tak ada nilai mentah pada warna/outline:
 |---|---|---|---|
 | `data-theme` | `light` \| `dark` | Re-definisi token **semantic** | ✅ wajib |
 | `data-density` | `comfortable` \| `compact` | `--control-h` (layar data-dense) | ✅ |
-| `data-style` | `soft` (default) | Hook untuk gaya lain (glass/neumorph/…) | ⏳ roadmap |
+| `data-style` | `soft` (default) · `glass` | Sumbu gaya visual | ✅ terkirim di 3.0.0 |
 
-Gaya default **`soft`** = flat bersih, shadow halus, radius sedang. Knob `--blur/--sat/--inset` **dicadangkan** (default no-op) agar preset gaya masa depan bisa masuk tanpa mengubah komponen.
+Gaya default **`soft`** = flat bersih, shadow halus, radius sedang.
+
+> **Koreksi (2026-08-26).** Baris ini dulu berbunyi bahwa knob `--blur/--sat/--inset` sudah
+> "dicadangkan (default no-op)". Ketiganya **tidak pernah dibuat** — grep ke `src/`, `dist/` dan
+> `tokens/` mengembalikan nol, dan fondasi untuk gaya kedua adalah nol, bukan setengah jalan. Klaim
+> itu menaikkan estimasi setiap pekerjaan yang bergantung padanya. Knob yang benar-benar terkirim di
+> 3.0.0 bernama `--surface-filter`, `--surface-inset` dan `--color-surface-raised`, dan janji
+> "tanpa mengubah komponen" **tidak** terpenuhi: keluarga panel harus ikut membaca token permukaan
+> terangkat, karena memfrost `--color-surface` sendiri akan membuat kolom beku tabel tembus pandang.
 
 ---
 

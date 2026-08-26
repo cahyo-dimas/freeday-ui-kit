@@ -6,7 +6,7 @@
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
  * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 .fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
 /* Brand is a fixed header, same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
@@ -95,7 +95,7 @@
      also apply — it would fight the transform for the same panel. */
   .fdy-app--nav-overlay.fdy-app--nav-collapsed .fdy-app__sidebar{width:16rem;border-right-width:var(--bw);}
 }
-.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__main{flex:1;padding:var(--space-8);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}

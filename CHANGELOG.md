@@ -93,7 +93,31 @@ mengubah satu baris pun.
   `noir` bukan hue: ia mengarahkan ramp alias ke ramp netral, jadi "primary" jadi mendekati hitam di
   terang dan mendekati putih di gelap.
 
+- **Sumbu gaya visual: `data-style="soft | glass"`.** `soft` default dan tampilan kit selama ini;
+  `glass` memfrost **permukaan terangkat** — card, modal, drawer, menu, appbar, sidebar & topbar app
+  shell. Dipasang di mana pun `data-theme` bisa, dan `[data-style="soft"]` adalah **rule sungguhan**,
+  jadi satu region bisa keluar dari root yang kaca. Sumbu ini menyerap toggle glass yang selama ini
+  jadi fitur terpisah di app konsumen: satu sumbu dua nilai, bukan empat kombinasi yang dua di
+  antaranya tak punya definisi visual.
+
+  Yang difrost adalah `--color-surface-raised`, **bukan `--color-surface`**: token itu juga isian
+  input, chip, sel tabel dan **kolom beku**, dan kolom beku yang tembus pandang memperlihatkan baris
+  yang menggulung di bawahnya. Komponen tak membawa selector `[data-style]` sama sekali; mereka
+  membaca tiga knob yang no-op di `soft` — `--color-surface-raised`, `--surface-filter`,
+  `--surface-inset`.
+
+  **Seberapa tembus kaca boleh jadi ditentukan gerbang kontras, bukan selera.** Di bawah `.82`
+  (terang) / `.90` (gelap), tinta muted dan `primary-strong` berhenti lolos 4.5:1 begitu panel
+  dikomposit di atas latar sembarang. Gerbangnya sengaja diuji terhadap **dua ekstrem — di atas hitam
+  dan di atas putih** — bukan terhadap warna halaman kit sendiri: versi pertama memakai warna halaman,
+  dan panel empat kali lebih tembus pun lolos, jadi gerbangnya nyaris hampa. Konsekuensinya jujur:
+  kaca di sini **halus**, dan frost yang terlihat datang dari blur-nya, bukan dari alpha-nya.
+
 ### Fixed
+- **`--color-surface-raised` tak ikut saat satu subtree di-gelapkan.** Custom property beralias
+  `var(--color-surface)` di-compute di tempat ia dideklarasikan, jadi tanpa nilai `$dark` sendiri ia
+  membeku pada permukaan terang dan sebuah `.fdy-card` di dalam panel `data-theme="dark"` tetap
+  mengecat terang. Ditangkap spec browser `theme.mjs` yang sudah ada, bukan oleh review.
 - **`resolveValue` melewatkan referensi token di dalam ekspresi.** Pola lamanya mengikat seluruh
   string, jadi `{primary.600}` di dalam `color-mix(...)` lolos mentah ke stylesheet sebagai teks
   literal. Ketahuan saat wash `-soft` gelap diturunkan dari alias alih-alih memaku warna azure.
@@ -127,7 +151,7 @@ mengubah satu baris pun.
   halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
   melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
   dengan mutasi**, bukan hanya dijalankan sekali.
-- node 68 → 107 · browser 83 → 92 · bUnit 14 → 21.
+- node 68 → 111 · browser 83 → 92 · bUnit 14 → 21.
 
 ### Fixed: the kit's own suite
 - **A coordinate click now reaches its target on a window that is not the author's.** CI went red

@@ -21,6 +21,8 @@ export function flatten(tokens, prefix = []) {
         value: val.$value,
         dark: val.$dark,
         compact: val.$compact,
+        glass: val.$glass,
+        glassDark: val.$glassDark,
       });
     } else if (val && typeof val === 'object') {
       out.push(...flatten(val, [...prefix, key]));
@@ -83,7 +85,40 @@ ${compact}
 [data-density="comfortable"] {
 ${comfortable}
 }
-${buildPrimariesCss(tokens)}`;
+${buildStylesCss(flat)}${buildPrimariesCss(tokens)}`;
+}
+
+/* The visual-style axis. `soft` is the kit's own look and the default; `glass` frosts the RAISED
+ * surfaces — the panel family only, never `--color-surface` itself, because that token is also the
+ * fill of inputs, chips, table cells and frozen columns, and a translucent frozen column shows the
+ * rows scrolling underneath it.
+ *
+ * Like theme and density, the selector is bare, so one region can be glass inside a soft app; and
+ * `[data-style="soft"]` is a REAL rule, not an absence, so a region can opt back OUT of a glass
+ * root. Density learned that the hard way, and this axis does not get to relearn it.
+ *
+ * Components never carry a [data-style] selector. They read the knobs — `--surface-filter`,
+ * `--surface-inset`, `--color-surface-raised` — which are no-ops under `soft`, so a component that
+ * cannot follow the axis through tokens is reporting a MISSING TOKEN, not asking for a rule. */
+export function buildStylesCss(flat) {
+  const glassTokens = flat.filter(t => t.glass !== undefined);
+  if (glassTokens.length === 0) return '';
+  const glass = glassTokens.map(t => decl(t.name, t.glass)).join('\n');
+  const soft = glassTokens.map(t => decl(t.name, t.value)).join('\n');
+  const darkTokens = glassTokens.filter(t => t.glassDark !== undefined);
+  const glassDark = darkTokens.map(t => decl(t.name, t.glassDark)).join('\n');
+  const glassLight = darkTokens.map(t => decl(t.name, t.glass)).join('\n');
+
+  let out = `[data-style="glass"] {\n${glass}\n}\n[data-style="soft"] {\n${soft}\n}\n`;
+  if (darkTokens.length > 0) {
+    /* Glass is the only axis so far whose values differ per THEME as well: a frosted panel is a
+       tint of the surface it sits on, and that surface flips. Emitted for the differing keys only,
+       in the same three scopes the theme itself uses. */
+    out += `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"])[data-style="glass"] {\n${glassDark}\n  }\n}\n`
+      + `[data-theme="dark"][data-style="glass"] {\n${glassDark}\n}\n`
+      + `[data-theme="light"][data-style="glass"] {\n${glassLight}\n}\n`;
+  }
+  return out;
 }
 
 /* The primary-palette axis. Each palette redefines the eight-shade `primary` ALIAS ramp, never the

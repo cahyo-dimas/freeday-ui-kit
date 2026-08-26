@@ -289,6 +289,32 @@ sidebar from off-canvas drawer to static column at 721px, *not* at `md`. Any `ma
 utility variant that has to agree with the shell must use `nav`; using `md` leaves 721–959px broken
 (sidebar already static while your script still treats it as an overlay).
 
+**Visual style: `data-style="soft | glass"`.** `soft` is the default and the look the kit has always
+had; `glass` frosts the **raised** surfaces — card, modal, drawer, menu, appbar, the app shell's
+sidebar and topbar. Set it wherever `data-theme` goes, and `[data-style="soft"]` is a real rule, so a
+region can opt back **out** of a glass root.
+
+```html
+<html data-style="glass">
+<section data-style="soft"><!-- this region stays flat --></section>
+```
+
+It frosts `--color-surface-raised`, **never `--color-surface`** — that token is also the fill of
+inputs, chips, table cells and frozen columns, and a translucent frozen column shows the rows
+scrolling underneath it. Components carry no `[data-style]` selector of their own; they read three
+knobs that are no-ops under `soft`: `--color-surface-raised`, `--surface-filter` (the
+`backdrop-filter` value) and `--surface-inset` (a hairline top edge, chained onto the panel's
+shadow). A component that cannot follow the axis through those is reporting a **missing token**, not
+asking for a rule.
+
+**How transparent glass may be is decided by the contrast gate, not by taste.** Below `.82` in light
+and `.90` in dark, muted text and `primary-strong` stop clearing 4.5:1 once the panel is composited
+over an arbitrary ground — measured, and asserted against the two extremes (over black and over
+white) rather than against the kit's own page colour, which is close enough to the panel's own
+lightness that a panel four times more transparent still passed. So glass here is a **subtle** frost:
+the effect people actually see comes from the blur, not from the alpha. Put a photo or a gradient
+behind a panel and the promise still holds; that is what "over any ground" buys.
+
 **Primary palette: `data-primary`.** 18 options — `azure` (the default, and what you get with no
 attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`
 `yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it anywhere `data-theme` works,
