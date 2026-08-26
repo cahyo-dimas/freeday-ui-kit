@@ -11,11 +11,10 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`2.1.0`, dan itu yang terbit** (2026-08-25). npm `latest` = `2.1.0`; tag `v2.1.0` = `origin/main`;
-live Pages menstempel `v2.1.0`. Karena `publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan
-paket itu di npm sekaligus bukti kedua suite hijau di tag tersebut. Isi tarball ikut diperiksa dari
-registry, bukan dari `npm pack` lokal: `adapters/core/cfl-value.js` + `.d.ts` ada, dan
-`COMPONENTS.md` di dalam paket memuat 12 tabel `### Props`.
+**`2.2.0`, dan itu yang terbit** (2026-08-26). npm `latest` = `2.2.0`; tag `v2.2.0` = `origin/main`;
+live Pages menstempel `v2.2.0`. Karena `publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan
+paket itu di npm sekaligus bukti kedua suite hijau di tag tersebut. Isi tarball diperiksa dari
+registry, bukan dari `npm pack` lokal.
 
 Sampai 2026-08-25 dua baris ini berbunyi sebaliknya, "npm masih di 1.53.0 … belum di-push", ditulis
 dari ingatan sesi yang merilisnya. Sebelum menyentuhnya lagi, tiga perintah: `npm view
@@ -93,6 +92,12 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 
 ## Yang diketahui dan belum diselesaikan
 
+- **Suite browser pernah merah sekali di CI tanpa sebab yang terlihat** (run CI `b1e1ca3`,
+  2026-08-26, step "Browser suite"). Commit itu **docs-only**: bedanya dengan `98c3133` yang lulus
+  hanya 5 baris `HANDOFF.md`, dan tag berikutnya (`v2.2.0`, 40ed451) hijau lagi. Jadi flaky, bukan
+  regresi. Lognya perlu hak admin repo, jadi tak terbaca dari sesi ini — spec mana yang gugur masih
+  belum diketahui. Lokal 79/79 di Chromium 133 **dan** Chrome 151. Kalau terulang, buka log run-nya
+  dari web sebelum menduga-duga.
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
   tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan, karena
   halaman itu bertugas menunjukkan default kit yang sebenarnya.
