@@ -853,10 +853,41 @@ variant is `role="img"` + `aria-label`; each interactive star needs a `.fdy-visu
 Linear multi-step flow: marker → check, one panel at a time, back/next. Needs
 `freeday-stepper.js`.
 
-- `.fdy-stepper` (`<ol>`) of `.fdy-step` (`is-active` / `is-complete` set by JS) ·
-  `.fdy-step__btn` `__marker` `__label`
+- `.fdy-stepper` (`<ol>`) of `.fdy-step` (`is-active` / `is-complete` set by JS, `is-error` set by
+  **you**) · `.fdy-step__btn` `__marker` `__badge` `__label`
 - `.fdy-step-panels` wrapping one `.fdy-step-panel` per step (`hidden` on the inactive ones)
 - `.fdy-step-nav` with `data-fdy-step-prev` / `data-fdy-step-next` buttons
+
+**A step with problems: `is-error` + `__badge`.** The marker turns danger and the label with it,
+but colour is never the carrier — put the count in `.fdy-step__badge` and name it in text, because
+a red ring says "something" and a reader who cannot see red is told nothing at all. The badge is a
+**sibling** of the marker, not a child: the enhancer rewrites the marker's contents on every render,
+so a badge inside it would vanish the first time the reader moved a step.
+
+```html
+<li class="fdy-step is-error">
+  <span class="fdy-step__marker">2</span>
+  <span class="fdy-step__badge" aria-hidden="true">3</span>
+  <span class="fdy-step__label">Lines <span class="fdy-visually-hidden">— 3 problems</span></span>
+</li>
+```
+
+**Leaving a step is refusable.** Next, and a forward jump to an already-reached step, both fire a
+cancelable `fdy-step-before-change` (`detail: { from, to, waitFor }`). Going *back* never asks —
+nothing is being committed.
+
+```js
+el.addEventListener('fdy-step-before-change', (e) => {
+  e.preventDefault();                    // refuse now, when the answer is already known
+  e.detail.waitFor = validate(e.detail.from);  // …or defer: a promise resolving false refuses
+});
+```
+
+The enhancer disables both nav buttons and sets `aria-busy` on the `.fdy-stepper` while a promise is
+outstanding, so a second click has nothing to aim at. Resolving to anything but `false` advances —
+a handler that forgets to return is not read as a rejection — and a guard that **throws** advances
+nothing, since it decided nothing. **How validity is decided stays with you**: the kit takes no
+opinion on form libraries, and this event is the line that keeps it that way.
 
 ---
 

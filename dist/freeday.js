@@ -3643,7 +3643,9 @@
  *     <div class="fdy-step-panel">…</div>… </div>
  *   <div class="fdy-step-nav"><button data-fdy-step-prev>…</button>
  *     <button data-fdy-step-next>…</button></div></div>
- * Emits bubbling "fdy-step-change" {index} and "fdy-step-finish" (Next on the last step).
+ * Emits bubbling "fdy-step-change" {index} and "fdy-step-finish" (Next on the last step), and a
+ * cancelable "fdy-step-before-change" {from, to, waitFor} that a guard refuses with
+ * preventDefault() or defers by assigning a promise to detail.waitFor.
  */
 (function () {
   'use strict';
@@ -3722,14 +3724,62 @@
       render();
     }
 
+    /* Leaving a step is REFUSABLE, because a wizard whose Next cannot be stopped is a wizard that
+     * validates nothing. Two ways to refuse, and the second is why an event alone was not enough:
+     *
+     *   sync   handler calls ev.preventDefault()      — the answer is already known
+     *   async  handler sets ev.detail.waitFor = promise — the answer is a server round-trip away
+     *
+     * Resolving to `false` refuses; anything else advances, so a handler that forgets to return is
+     * not read as a rejection. HOW validity is decided stays entirely with the app: the kit has no
+     * opinion about form libraries and this is the line that keeps it that way. */
+    var deciding = false;
+
+    function lock(on) {
+      deciding = on;
+      var list = root.querySelector('.fdy-stepper');
+      if (list) { if (on) list.setAttribute('aria-busy', 'true'); else list.removeAttribute('aria-busy'); }
+      if (prevBtn) prevBtn.disabled = on || active === 0;
+      if (nextBtn) nextBtn.disabled = on;
+    }
+
+    function request(to, onAllowed) {
+      if (deciding) return;
+      var ev = new CustomEvent('fdy-step-before-change', {
+        bubbles: true,
+        cancelable: true,
+        detail: { from: active, to: to, waitFor: null },
+      });
+      root.dispatchEvent(ev);
+      if (ev.defaultPrevented) return;
+
+      var pending = ev.detail.waitFor;
+      if (pending === null || typeof pending.then !== 'function') { onAllowed(); return; }
+
+      lock(true);
+      pending.then(
+        function (ok) { lock(false); if (ok !== false) onAllowed(); },
+        // A guard that THREW decided nothing, so it must not advance. Staying put with the nav
+        // released is the only safe reading; the app's own error handling reports the failure.
+        function () { lock(false); },
+      );
+    }
+
     if (prevBtn) prevBtn.addEventListener('click', function () { go(active - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () {
-      if (active < steps.length - 1) go(active + 1);
-      else root.dispatchEvent(new CustomEvent('fdy-step-finish', { bubbles: true }));
+      if (active < steps.length - 1) request(active + 1, function () { go(active + 1); });
+      else request(active + 1, function () { root.dispatchEvent(new CustomEvent('fdy-step-finish', { bubbles: true })); });
     });
     steps.forEach(function (s, i) {
       var btn = s.querySelector('.fdy-step__btn');
-      if (btn) btn.addEventListener('click', function () { if (i <= maxReached) go(i); });
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        if (i > maxReached) return;
+        // Going BACK is always allowed — nothing is being committed. Jumping forward to a step
+        // already reached still leaves the current one behind, so it asks the guard like Next does.
+        if (i <= active) go(i);
+        else request(i, function () { go(i); });
+      });
     });
 
     render();

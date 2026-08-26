@@ -223,3 +223,62 @@ test('busy: a fast operation never paints a scrim', { skip }, async () => {
       'and nothing may be left inert by an overlay that never appeared');
   });
 });
+
+/* A wizard whose Next cannot be stopped validates nothing, and the guard has to survive the case an
+ * event alone cannot express: the answer is a server round-trip away. Refusing synchronously is
+ * easy to get right; the failures worth a real browser are the async ones — advancing while the
+ * promise is still pending, and letting a second click through the gap. */
+test('stepper: a refused guard leaves the panel exactly where it was', { skip }, async () => {
+  await withPage(fixture('vanilla-stepper-guard.html'), async (p) => {
+    await p.waitFor(`!!document.querySelector('#wiz .fdy-step.is-active')`);
+
+    const onStep = async () => p.evalJS(`document.getElementById('p2').hidden ? 1 : 2`);
+    assert.equal(await onStep(), 1, 'starts on step one');
+
+    await p.evalJS(`window.mode = 'refuse'`);
+    await p.clickCenter('[data-fdy-step-next]');
+    assert.deepEqual(await p.evalJS('window.asked'), ['0->1'], 'the guard was asked');
+    assert.equal(await onStep(), 1, 'preventDefault must leave the panel unchanged');
+    assert.equal(
+      await p.evalJS(`document.querySelector('#wiz .fdy-step:nth-child(2)').classList.contains('is-active')`),
+      false, 'and the header must not move either',
+    );
+
+    // Async: the pending window is the whole point — nothing may advance until it settles.
+    await p.evalJS(`window.mode = 'async'`);
+    await p.clickCenter('[data-fdy-step-next]');
+    const pending = await p.waitFor(`document.querySelector('#wiz .fdy-stepper').getAttribute('aria-busy') === 'true'`);
+    assert.ok(pending, 'a deferred decision marks the header busy');
+    assert.equal(await p.evalJS(`document.querySelector('[data-fdy-step-next]').disabled`), true,
+      'both nav buttons are disabled while deciding, so a second click has nothing to aim at');
+    assert.equal(await onStep(), 1, 'nothing advances on a promise that has not settled');
+
+    await p.evalJS(`window.settle(false)`);
+    await p.evalJS(`new Promise(r => setTimeout(r, 50))`);
+    assert.equal(await onStep(), 1, 'resolving false refuses');
+    assert.equal(await p.evalJS(`document.querySelector('#wiz .fdy-stepper').hasAttribute('aria-busy')`), false,
+      'and the control is released again, or the wizard is stuck for good');
+    assert.equal(await p.evalJS(`document.querySelector('[data-fdy-step-next]').disabled`), false, 'Next is usable again');
+
+    // Resolving to anything but false advances: a handler that forgets to return is not a refusal.
+    await p.clickCenter('[data-fdy-step-next]');
+    await p.evalJS(`window.settle(undefined)`);
+    const moved = await p.waitFor(`document.getElementById('p2').hidden === false`);
+    assert.ok(moved, 'an answer that is not `false` lets the step through');
+  });
+});
+
+test('stepper: going back never asks the guard', { skip }, async () => {
+  await withPage(fixture('vanilla-stepper-guard.html'), async (p) => {
+    await p.waitFor(`!!document.querySelector('#wiz .fdy-step.is-active')`);
+
+    await p.clickCenter('[data-fdy-step-next]');            // mode 'allow' — straight through
+    assert.ok(await p.waitFor(`document.getElementById('p2').hidden === false`), 'on step two');
+
+    await p.evalJS(`window.asked = []; window.mode = 'refuse';`);
+    await p.clickCenter('[data-fdy-step-prev]');
+    assert.deepEqual(await p.evalJS('window.asked'), [],
+      'nothing is committed by going back, so a guard that would refuse must never be consulted');
+    assert.equal(await p.evalJS(`document.getElementById('p2').hidden`), true, 'and it really went back');
+  });
+});

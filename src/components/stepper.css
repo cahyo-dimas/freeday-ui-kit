@@ -17,7 +17,18 @@
 .fdy-step.is-active .fdy-step__marker{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
 .fdy-step.is-complete .fdy-step__marker{border-color:var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);}
 .fdy-step.is-error .fdy-step__marker{border-color:var(--color-danger);background:var(--color-danger-btn);color:var(--color-on-danger);}
+/* The error badge. Colour alone cannot carry "this step has a problem" — the marker already turns
+   red and that is exactly the signal a colour-blind reader loses — so the badge holds a COUNT and
+   the step names it in text. Positioned against `.fdy-step` rather than `__btn`, because the
+   indicator-only variant has no `__btn` and the badge has to land in the same place in both.
+   It is a SIBLING of the marker, never a child: the enhancer rewrites `__marker.innerHTML` on
+   every render, so a badge inside it would be destroyed the first time the reader moved a step. */
+.fdy-step__badge{position:absolute;top:0;left:50%;z-index:2;transform:translate(.45rem,-.3rem);min-width:1.05rem;height:1.05rem;padding:0 .25rem;display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-full);background:var(--color-danger-btn);color:var(--color-on-danger);font-size:var(--text-xs);font-weight:var(--weight-semibold);font-variant-numeric:tabular-nums;line-height:1;}
 .fdy-step__label{font-size:var(--text-sm);color:var(--color-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.fdy-step.is-error .fdy-step__label{color:var(--color-danger-strong);}
+/* While a guard is deciding, the whole control is spoken for: the nav buttons are disabled by the
+   enhancer, and this dims the header so a second click has nothing to aim at. */
+.fdy-stepper[aria-busy="true"]{opacity:.72;}
 .fdy-step.is-active .fdy-step__label{color:var(--color-text);font-weight:var(--weight-semibold);}
 .fdy-step__btn:focus-visible{outline:none;}
 .fdy-step__btn:focus-visible .fdy-step__marker{box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 30%,transparent);}

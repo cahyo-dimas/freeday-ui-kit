@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — a stepper guard can refuse, now or later</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <div data-fdy-stepper id="wiz" style="padding:40px">
+    <ol class="fdy-stepper">
+      <li class="fdy-step is-active">
+        <button class="fdy-step__btn" type="button"><span class="fdy-step__marker">1</span><span class="fdy-step__label">One</span></button>
+      </li>
+      <li class="fdy-step">
+        <button class="fdy-step__btn" type="button"><span class="fdy-step__marker">2</span><span class="fdy-step__label">Two</span></button>
+      </li>
+    </ol>
+    <div class="fdy-step-panels">
+      <div class="fdy-step-panel" id="p1">Panel one</div>
+      <div class="fdy-step-panel" id="p2" hidden>Panel two</div>
+    </div>
+    <div class="fdy-step-nav">
+      <button class="fdy-btn fdy-btn--ghost" type="button" data-fdy-step-prev>Back</button>
+      <button class="fdy-btn" type="button" data-fdy-step-next>Next</button>
+    </div>
+  </div>
+<script>
+  // 'allow' answers nothing (the enhancer advances), 'refuse' says no now, 'async' defers to a
+  // promise the spec resolves by hand so the pending window can actually be observed.
+  window.mode = 'allow';
+  window.asked = [];
+  window.settle = null;
+
+  document.addEventListener('fdy-step-before-change', (e) => {
+    window.asked.push(e.detail.from + '->' + e.detail.to);
+    if (window.mode === 'refuse') { e.preventDefault(); return; }
+    if (window.mode === 'async') {
+      e.detail.waitFor = new Promise((resolve) => { window.settle = resolve; });
+    }
+  });
+</script>
+</body>
+</html>
