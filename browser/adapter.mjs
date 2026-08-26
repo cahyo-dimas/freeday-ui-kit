@@ -79,6 +79,69 @@ test('React FdyTable: controlled pageIndex round-trips with an external pager', 
   await assertControlledPageIndex('react-table-pageindex.html');
 });
 
+/* Controlled row selection (NEXT-UP #3). Four failures this guards, none of which a markup
+ * assertion would catch:
+ *   1. the row checkbox ALSO activating its row, so selecting a row navigates away from it — only a
+ *      real click bubbles, a synthetic one on the input does not reproduce it;
+ *   2. select-all reaching rows the reader cannot see (every row, not the page);
+ *   3. keys picked on a page you then leave being silently dropped;
+ *   4. the header box never going `indeterminate` — a DOM PROPERTY with no attribute, so it is
+ *      invisible to any assertion made against the HTML. */
+async function assertSelection(fixtureName) {
+  await withPage(fixture(fixtureName), async (p) => {
+    await p.waitFor(`document.querySelector('.fdy-datatable tbody tr [data-fdy-row-select]')`);
+
+    const selected = async () => p.evalJS('window.__selected');
+    const countText = async () => p.evalJS(`document.querySelector('.fdy-table-bulkbar__count').textContent.trim()`);
+    const barHidden = async () => p.evalJS(`document.querySelector('.fdy-table-bulkbar').hidden`);
+
+    assert.equal(await barHidden(), true, 'the bulk bar stays out of the way until something is picked');
+
+    // 1. Ticking a row must select it and must NOT activate it.
+    await p.clickCenter('.fdy-datatable tbody tr:nth-child(1) [data-fdy-row-select]');
+    assert.ok(await p.waitFor(`window.__selected.length === 1`), 'ticking a row emits the selection');
+    assert.deepEqual(await selected(), ['C-1'], 'and emits the rowKey, not the row object');
+    assert.equal(await p.evalJS('window.__activated'), null,
+      'the checkbox click must not bubble into row activation, or selecting a row navigates away from it');
+    assert.equal(await barHidden(), false, 'the bulk bar appears with the first pick');
+    assert.equal(await countText(), '1 selected', 'the count substitutes {n}');
+
+    // 2. Select-all covers the visible page only (4 rows, pageSize 2).
+    await p.clickCenter('[data-fdy-select-all]');
+    assert.ok(await p.waitFor(`window.__selected.length === 2`), 'select-all ticks the page');
+    assert.deepEqual(await selected(), ['C-1', 'C-2'], 'the page, never the rows off screen');
+
+    // 3. Leave the page, pick there, and the earlier keys must survive.
+    await p.clickCenter('.fdy-table-footer button[aria-label="Next page"]');
+    assert.ok(await p.waitFor(`document.querySelector('.fdy-datatable tbody tr td:nth-child(2)').textContent.trim() === 'C-3'`),
+      'moved to page 2');
+    assert.equal(await p.evalJS(`document.querySelector('[data-fdy-select-all]').checked`), false,
+      'a fresh page starts unticked even though the other page is fully selected');
+
+    await p.clickCenter('.fdy-datatable tbody tr:nth-child(1) [data-fdy-row-select]');
+    assert.ok(await p.waitFor(`window.__selected.length === 3`), 'a pick on page 2 adds to the page-1 keys');
+    assert.deepEqual(await selected(), ['C-1', 'C-2', 'C-3'], 'nothing from the page we left was dropped');
+    assert.equal(await countText(), '3 selected', 'the count is the true total, above the rows in view');
+
+    // 4. Half a page ticked = indeterminate, the state that only exists as a DOM property.
+    assert.equal(await p.evalJS(`document.querySelector('[data-fdy-select-all]').indeterminate`), true,
+      'one of two rows ticked must render the header box as mixed, not as unchecked');
+
+    // Clear empties everything, not just the page in view.
+    await p.clickCenter('.fdy-table-bulkbar__actions button');
+    assert.ok(await p.waitFor(`window.__selected.length === 0`), 'clear empties the whole selection');
+    assert.equal(await barHidden(), true, 'and the bar goes away with it');
+  });
+}
+
+test('Vue FdyTable: controlled selection spans pages and never activates the row', { skip }, async () => {
+  await assertSelection('vue-table-select.html');
+});
+
+test('React FdyTable: controlled selection spans pages and never activates the row', { skip }, async () => {
+  await assertSelection('react-table-select.html');
+});
+
 /* Clearable choose-from-list (note 001 §3). The failure this guards is an API asymmetry, not a
  * rendering bug: `modelValue`/`value` accept `Row | null`, but the emit was typed and implemented as
  * `Row` only, so an OPTIONAL foreign key could be set and never unset, and a user who picked the

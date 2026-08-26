@@ -76,6 +76,21 @@ const props = withDefaults(defineProps<{
   rowClass?: (row: Row) => string | undefined;
   /** Controlled: row keys whose `row-detail` slot is shown as a full-width row beneath them. */
   expandedKeys?: ReadonlyArray<string | number>;
+  /** Render the checkbox column and the bulk bar. */
+  selectable?: boolean;
+  /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
+   *  still works with nothing wired). */
+  selectedKeys?: ReadonlyArray<string | number>;
+  /** Bulk-bar count, `{n}` substituted. Default `{n} selected`. */
+  selectedText?: string;
+  /** Bulk-bar clear button. Default `Clear`. */
+  clearSelectionText?: string;
+  /** Accessible name of the header checkbox. Default `Select all rows on this page`. */
+  selectAllLabel?: string;
+  /** Accessible name of each row checkbox. Default `Select row`. */
+  selectRowLabel?: string;
+  /** Accessible name of the bulk bar region. Default `Bulk actions`. */
+  bulkLabel?: string;
 }>(), { pager: true });
 
 const emit = defineEmits<{
@@ -90,6 +105,9 @@ const emit = defineEmits<{
   'update:pageSize': [size: number];
   /** A row was activated (click, or Enter/Space while the row itself is focused). */
   'row-activate': [row: Row];
+  /** Selection changed, as `rowKey` values. Fires in both modes, so a screen can watch the
+   *  selection without owning it. */
+  'update:selectedKeys': [keys: Array<string | number>];
   /** The processed page of rows (after filter/sort/paginate) plus the total row count, fires in
    *  BOTH modes whenever they change. Lets a consumer render the SAME processed set elsewhere
    *  (a `< md` card list, a "selected" summary, export-to-CSV) without re-deriving the pipeline. */
@@ -262,6 +280,65 @@ function onRowKeydown(e: KeyboardEvent, row: Row): void {
 function isExpanded(row: Row): boolean {
   return props.expandedKeys?.includes(props.rowKey(row)) === true;
 }
+
+/* Selection is keyed by `rowKey`, exactly as `expandedKeys` is, and for the same reason: a key
+ * survives the re-fetch that replaces every row object, an object identity does not. Controlled when
+ * `selectedKeys` is provided, internal otherwise, so the column works with nothing wired. */
+const internalSelectedKeys: Ref<Array<string | number>> = ref([]);
+const selectionControlled: ComputedRef<boolean> = computed((): boolean => props.selectedKeys !== undefined);
+const effectiveSelectedKeys: ComputedRef<ReadonlyArray<string | number>> = computed(
+  (): ReadonlyArray<string | number> =>
+    selectionControlled.value ? (props.selectedKeys as ReadonlyArray<string | number>) : internalSelectedKeys.value,
+);
+const selectedCount: ComputedRef<number> = computed((): number => effectiveSelectedKeys.value.length);
+/* The select-all box acts on the CURRENT PAGE, not on every filtered row: a header checkbox that
+ * silently selects rows the reader cannot see is how bulk deletes go wrong. Keys picked on other
+ * pages are preserved rather than dropped, so paging away and back does not lose them. */
+const pageKeys: ComputedRef<Array<string | number>> = computed((): Array<string | number> =>
+  displayRows.value.map((row: Row): string | number => props.rowKey(row)),
+);
+const allPageSelected: ComputedRef<boolean> = computed((): boolean =>
+  pageKeys.value.length > 0 && pageKeys.value.every((k: string | number): boolean => effectiveSelectedKeys.value.includes(k)),
+);
+const somePageSelected: ComputedRef<boolean> = computed((): boolean =>
+  !allPageSelected.value && pageKeys.value.some((k: string | number): boolean => effectiveSelectedKeys.value.includes(k)),
+);
+
+/* Always emits, controlled or not — the same call the `update:pageSize` control makes, and for the
+ * same reason: a screen that only wants to WATCH the selection (a summary line, an export button)
+ * should not have to take ownership of it to hear about it. */
+function setSelection(keys: Array<string | number>): void {
+  if (!selectionControlled.value) internalSelectedKeys.value = keys;
+  emit('update:selectedKeys', keys);
+}
+function isSelected(row: Row): boolean {
+  return effectiveSelectedKeys.value.includes(props.rowKey(row));
+}
+function toggleRow(row: Row, checked: boolean): void {
+  const key: string | number = props.rowKey(row);
+  const next: Array<string | number> = effectiveSelectedKeys.value.filter((k: string | number): boolean => k !== key);
+  if (checked) next.push(key);
+  setSelection(next);
+}
+function toggleAllOnPage(checked: boolean): void {
+  const onPage: Set<string | number> = new Set(pageKeys.value);
+  const offPage: Array<string | number> = effectiveSelectedKeys.value.filter(
+    (k: string | number): boolean => !onPage.has(k),
+  );
+  setSelection(checked ? offPage.concat(pageKeys.value) : offPage);
+}
+function clearSelection(): void {
+  setSelection([]);
+}
+function selectedLabel(n: number): string {
+  return (props.selectedText ?? '{n} selected').replace('{n}', String(n));
+}
+
+/* The checkbox column widens every full-width row (loading, empty, row detail) by one. Deriving it
+ * once is what keeps a later column change from leaving one of the three behind. */
+const colSpan: ComputedRef<number> = computed((): number =>
+  props.columns.length + (props.selectable === true ? 1 : 0),
+);
 </script>
 
 <template>
@@ -270,10 +347,38 @@ function isExpanded(row: Row): boolean {
       <slot name="toolbar" />
     </div>
 
+    <div
+      v-if="selectable"
+      class="fdy-table-bulkbar"
+      :hidden="selectedCount === 0"
+      role="region"
+      :aria-label="bulkLabel ?? 'Bulk actions'"
+    >
+      <span class="fdy-table-bulkbar__count" aria-live="polite">{{ selectedLabel(selectedCount) }}</span>
+      <span class="fdy-table-bulkbar__spacer"></span>
+      <div class="fdy-table-bulkbar__actions">
+        <slot name="bulk-actions" :keys="effectiveSelectedKeys" :clear="clearSelection" />
+        <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" @click="clearSelection">
+          {{ clearSelectionText ?? 'Clear' }}
+        </button>
+      </div>
+    </div>
+
     <div class="fdy-table-scroll">
       <table class="fdy-table" :aria-label="ariaLabel">
         <thead>
           <tr>
+            <th v-if="selectable" class="fdy-table__selcol" scope="col">
+              <input
+                type="checkbox"
+                class="fdy-checkbox"
+                data-fdy-select-all
+                :checked="allPageSelected"
+                :indeterminate.prop="somePageSelected"
+                :aria-label="selectAllLabel ?? 'Select all rows on this page'"
+                @change="toggleAllOnPage(($event.target as HTMLInputElement).checked)"
+              >
+            </th>
             <th v-for="col in columns" :key="col.key" scope="col" :style="alignStyle(col)" :aria-sort="ariaSortOf(col)">
               <button
                 v-if="col.sortable"
@@ -295,10 +400,10 @@ function isExpanded(row: Row): boolean {
         </thead>
         <tbody>
           <tr v-if="loading">
-            <td :colspan="columns.length" class="fdy-table__state" role="status">Loading…</td>
+            <td :colspan="colSpan" class="fdy-table__state" role="status">Loading…</td>
           </tr>
           <tr v-else-if="displayRows.length === 0">
-            <td :colspan="columns.length" class="fdy-table__state">
+            <td :colspan="colSpan" class="fdy-table__state">
               <slot name="empty">{{ emptyText ?? 'No data' }}</slot>
             </td>
           </tr>
@@ -308,15 +413,29 @@ function isExpanded(row: Row): boolean {
                 :class="rowClasses(row)"
                 :tabindex="rowActivatable ? 0 : undefined"
                 :aria-expanded="$slots['row-detail'] ? (isExpanded(row) ? 'true' : 'false') : undefined"
+                :aria-selected="selectable ? (isSelected(row) ? 'true' : 'false') : undefined"
                 @click="onRowClick(row)"
                 @keydown="onRowKeydown($event, row)"
               >
+                <td v-if="selectable" class="fdy-table__selcol">
+                  <!-- `.stop`: without it, ticking a checkbox in an activatable row also fires
+                       `row-activate`, so selecting a row would navigate away from it. -->
+                  <input
+                    type="checkbox"
+                    class="fdy-checkbox"
+                    data-fdy-row-select
+                    :checked="isSelected(row)"
+                    :aria-label="selectRowLabel ?? 'Select row'"
+                    @click.stop
+                    @change="toggleRow(row, ($event.target as HTMLInputElement).checked)"
+                  >
+                </td>
                 <td v-for="col in columns" :key="col.key" :class="cellClass(col)" :style="alignStyle(col)">
                   <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col)">{{ cellText(row, col) }}</slot>
                 </td>
               </tr>
               <tr v-if="$slots['row-detail'] && isExpanded(row)" class="fdy-table__detailrow">
-                <td :colspan="columns.length"><slot name="row-detail" :row="row" /></td>
+                <td :colspan="colSpan"><slot name="row-detail" :row="row" /></td>
               </tr>
             </template>
           </template>

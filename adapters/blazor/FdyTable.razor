@@ -17,10 +17,34 @@
         </div>
     }
 
+    @if (Selectable)
+    {
+        <div class="fdy-table-bulkbar" hidden="@(SelectedCount == 0)" role="region" aria-label="@BulkLabel">
+            <span class="fdy-table-bulkbar__count" aria-live="polite">@SelectedLabel()</span>
+            <span class="fdy-table-bulkbar__spacer"></span>
+            <div class="fdy-table-bulkbar__actions">
+                @BulkContent
+                <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" @onclick="ClearSelection">@ClearSelectionText</button>
+            </div>
+        </div>
+    }
+
     <div class="fdy-table-scroll">
         <table class="fdy-table" aria-label="@AriaLabel">
             <thead>
                 <tr>
+                    @if (Selectable)
+                    {
+                        <th class="fdy-table__selcol" scope="col">
+                            <input type="checkbox"
+                                   class="fdy-checkbox"
+                                   data-fdy-select-all
+                                   @ref="_selectAllRef"
+                                   checked="@AllPageSelected"
+                                   aria-label="@SelectAllLabel"
+                                   @onchange="e => ToggleAllOnPage((bool)(e.Value ?? false))" />
+                        </th>
+                    }
                     @foreach (FdyTableColumn<TRow> col in Columns)
                     {
                         <th scope="col" style="@AlignStyle(col)" aria-sort="@AriaSortOf(col)">
@@ -47,12 +71,12 @@
             <tbody>
                 @if (Loading)
                 {
-                    <tr><td colspan="@Columns.Count" class="fdy-table__state" role="status">@LoadingText</td></tr>
+                    <tr><td colspan="@ColSpan" class="fdy-table__state" role="status">@LoadingText</td></tr>
                 }
                 else if (_displayRows.Count == 0)
                 {
                     <tr>
-                        <td colspan="@Columns.Count" class="fdy-table__state">
+                        <td colspan="@ColSpan" class="fdy-table__state">
                             @if (EmptyContent is not null)
                             {
                                 @EmptyContent
@@ -72,8 +96,24 @@
                         <tr class="@RowClasses(r)"
                             tabindex="@(RowActivatable ? 0 : (int?)null)"
                             aria-expanded="@ExpandedAttr(r)"
+                            aria-selected="@SelectedAttr(r)"
                             @onclick="() => OnRowClick(r)"
                             @onkeydown="e => OnRowKeydown(e, r)">
+                            @if (Selectable)
+                            {
+                                @* @onclick:stopPropagation: without it, ticking a checkbox in an
+                                   activatable row also raises RowActivate, so selecting a row
+                                   would navigate away from it. *@
+                                <td class="fdy-table__selcol">
+                                    <input type="checkbox"
+                                           class="fdy-checkbox"
+                                           data-fdy-row-select
+                                           checked="@IsSelected(r)"
+                                           aria-label="@SelectRowLabel"
+                                           @onclick:stopPropagation="true"
+                                           @onchange="e => ToggleRow(r, (bool)(e.Value ?? false))" />
+                                </td>
+                            }
                             @foreach (FdyTableColumn<TRow> col in Columns)
                             {
                                 <td class="@CellClass(col)" style="@AlignStyle(col)">
@@ -91,7 +131,7 @@
                         @if (RowDetail is not null && IsExpanded(r))
                         {
                             <tr class="fdy-table__detailrow">
-                                <td colspan="@Columns.Count">@RowDetail(r)</td>
+                                <td colspan="@ColSpan">@RowDetail(r)</td>
                             </tr>
                         }
                     }

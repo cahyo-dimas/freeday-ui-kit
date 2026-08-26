@@ -991,6 +991,11 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
 | `rowClass?` | `(row: Row) => string \| undefined` | Per-row class hook, e.g. marking the selected row. |
 | `expandedKeys?` · `renderRowDetail?` | `ReadonlyArray<string \| number>` · `(row) => ReactNode` | Controlled expansion: these keys get a full-width detail row. Vue uses the `row-detail` slot. |
+| `selectable?` | `boolean` | Render the checkbox column and the bulk bar. |
+| `selectedKeys?` · `onSelectedKeysChange?` | `ReadonlyArray<string \| number>` · `(keys) => void` | Controlled selection, as `rowKey` values — the same identity `expandedKeys` uses, because a key survives the re-fetch that replaces every row object. Omit `selectedKeys` and the column still works, keeping the selection internally. The callback fires in **both** modes, so a screen can watch the selection without owning it. Vue emits `update:selectedKeys`; Blazor binds `@bind-SelectedKeys`. |
+| `bulkActions?` | `ReactNode` | React. Content in the bulk bar beside the count; Vue uses the `bulk-actions` slot (scoped: `keys`, `clear`), Blazor `BulkContent`. |
+| `selectedText?` · `clearSelectionText?` | `string` | Bulk-bar copy. Defaults `{n} selected` (with `{n}` substituted) and `Clear`. |
+| `selectAllLabel?` · `selectRowLabel?` · `bulkLabel?` | `string` | Accessible names for the header checkbox, each row checkbox, and the bulk-bar region. Defaults `Select all rows on this page`, `Select row`, `Bulk actions`. |
 | `renderCell?` | `(column, row, value) => ReactNode` | React. Custom cell rendering; Vue uses the `cell` slot. |
 | `toolbar?` | `ReactNode` | React. Content above the table; Vue uses the `toolbar` slot. |
 | `onProcess?` | `(result: { rows, total }) => void` | React. The processed page after filter/sort/paginate, in **both** modes. Vue emits `process`, Blazor calls it `Process`. Render the same set elsewhere — a card list, a summary, a CSV export — without re-deriving the pipeline. |
@@ -998,6 +1003,14 @@ provide the state prop for a concern and you own that concern instead. React nam
 Blazor matches this surface (`LoadingText` and `EmptyContent` in place of `emptyText`/`empty`,
 `Toolbar` and `RowDetail` as `RenderFragment`s) and is the one adapter that also exposes
 `FiltersChanged`.
+
+**Select-all ticks the current page, not the whole result set.** A header checkbox that silently
+selects rows the reader cannot see is how a bulk delete goes wrong, so it acts on the rows on
+screen — and it is `indeterminate` while only some of them are ticked. Keys picked on *other* pages
+are kept rather than dropped, so paging away and back does not lose them; the bulk bar's count is
+the true total across pages, which is why it can read higher than the rows in view. `Clear` empties
+the whole selection. A row checkbox stops its own click, so ticking a row in a `rowActivatable`
+table selects it instead of navigating away from it.
 
 The interactive table: global search, sort, per-column filters, row selection + bulk bar,
 pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` + `data-fdy-table`

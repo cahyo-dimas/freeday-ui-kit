@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 
 namespace Freeday.Blazor;
 
@@ -86,6 +87,26 @@ public partial class FdyTable<TRow>
     /// <summary>Optional toolbar (search box, actions) above the table.</summary>
     [Parameter] public RenderFragment? Toolbar { get; set; }
 
+    /// <summary>Render the checkbox column and the bulk bar.</summary>
+    [Parameter] public bool Selectable { get; set; }
+
+    /// <summary>
+    /// Controlled selection, as <see cref="RowKey"/> values. Wire <c>@bind-SelectedKeys</c> to own
+    /// it; omit for internal (the column still works with nothing wired).
+    /// </summary>
+    [Parameter] public IReadOnlyList<object>? SelectedKeys { get; set; }
+    [Parameter] public EventCallback<IReadOnlyList<object>> SelectedKeysChanged { get; set; }
+
+    /// <summary>Bulk-bar count, <c>{n}</c> substituted.</summary>
+    [Parameter] public string SelectedText { get; set; } = "{n} selected";
+    [Parameter] public string ClearSelectionText { get; set; } = "Clear";
+    [Parameter] public string SelectAllLabel { get; set; } = "Select all rows on this page";
+    [Parameter] public string SelectRowLabel { get; set; } = "Select row";
+    [Parameter] public string BulkLabel { get; set; } = "Bulk actions";
+
+    /// <summary>Bulk-bar actions (Blazor equivalent of Vue's <c>bulk-actions</c> slot).</summary>
+    [Parameter] public RenderFragment? BulkContent { get; set; }
+
     private FdySortState? _internalSort;
     private Dictionary<string, FdyColumnFilter> _internalFilters = new();
     private int _internalPageIndex;
@@ -148,6 +169,7 @@ public partial class FdyTable<TRow>
             _processDirty = false;
             if (Process.HasDelegate) await Process.InvokeAsync(new FdyTableProcess<TRow>(_displayRows, _totalCount));
         }
+        await SyncSelectAllIndeterminateAsync();
     }
 
     // Recompute the visible rows from the current effective sort/filter/page. Called on every
@@ -305,6 +327,91 @@ public partial class FdyTable<TRow>
         if (e.Key is not ("Enter" or " ")) return;
         await RowActivate.InvokeAsync(row);
     }
+
+    // Selection is keyed by RowKey, exactly as ExpandedKeys is, and for the same reason: a key
+    // survives the re-fetch that replaces every row object, an object identity does not.
+    private List<object> _internalSelectedKeys = new();
+    private bool SelectionControlled => SelectedKeysChanged.HasDelegate;
+    private IReadOnlyList<object> EffectiveSelectedKeys =>
+        SelectionControlled ? (SelectedKeys ?? Array.Empty<object>()) : _internalSelectedKeys;
+    private int SelectedCount => EffectiveSelectedKeys.Count;
+
+    // The select-all box acts on the CURRENT PAGE, not on every filtered row: a header checkbox that
+    // silently selects rows the reader cannot see is how bulk deletes go wrong. Keys picked on other
+    // pages are preserved rather than dropped, so paging away and back does not lose them.
+    private List<object> PageKeys => _displayRows.Select(RowKey).ToList();
+    private bool AllPageSelected
+    {
+        get
+        {
+            List<object> keys = PageKeys;
+            return keys.Count > 0 && keys.All(EffectiveSelectedKeys.Contains);
+        }
+    }
+    private bool SomePageSelected => !AllPageSelected && PageKeys.Any(EffectiveSelectedKeys.Contains);
+
+    private async Task SetSelection(List<object> keys)
+    {
+        if (!SelectionControlled) _internalSelectedKeys = keys;
+        if (SelectedKeysChanged.HasDelegate) await SelectedKeysChanged.InvokeAsync(keys);
+    }
+
+    private bool IsSelected(TRow row) => EffectiveSelectedKeys.Contains(RowKey(row));
+
+    private async Task ToggleRow(TRow row, bool selected)
+    {
+        object key = RowKey(row);
+        List<object> next = EffectiveSelectedKeys.Where(k => !Equals(k, key)).ToList();
+        if (selected) next.Add(key);
+        await SetSelection(next);
+    }
+
+    private async Task ToggleAllOnPage(bool selected)
+    {
+        HashSet<object> onPage = PageKeys.ToHashSet();
+        List<object> offPage = EffectiveSelectedKeys.Where(k => !onPage.Contains(k)).ToList();
+        if (selected) offPage.AddRange(PageKeys);
+        await SetSelection(offPage);
+    }
+
+    private Task ClearSelection() => SetSelection(new List<object>());
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    private ElementReference _selectAllRef;
+    private bool? _pushedIndeterminate;
+
+    /// <summary>
+    /// <c>indeterminate</c> is a DOM property with no HTML attribute, so Blazor's renderer cannot
+    /// express it — without this the tri-state select-all box would render as a plain unchecked one
+    /// whenever only some rows on the page are selected. Pushed only when it actually changed, and
+    /// only while <see cref="Selectable"/>, so a table without a checkbox column makes no JS call at
+    /// all. The table's subtree already depends on the JS bridge (FdyTableFilter), so this adds no
+    /// new dependency, and running in OnAfterRender keeps it out of the prerender pass where there
+    /// is no element to touch yet.
+    /// </summary>
+    private async Task SyncSelectAllIndeterminateAsync()
+    {
+        if (!Selectable) return;
+        bool mixed = SomePageSelected;
+        if (_pushedIndeterminate == mixed) return;
+        _pushedIndeterminate = mixed;
+        try
+        {
+            await JS.InvokeVoidAsync("FreedayBlazor.setIndeterminate", _selectAllRef, mixed);
+        }
+        catch (JSDisconnectedException)
+        {
+            // circuit/runtime already gone
+        }
+    }
+
+    private string SelectedLabel() => SelectedText.Replace("{n}", SelectedCount.ToString());
+
+    private string? SelectedAttr(TRow row) => Selectable ? (IsSelected(row) ? "true" : "false") : null;
+
+    // The checkbox column widens every full-width row (loading, empty, row detail) by one. Deriving
+    // it once is what keeps a later column change from leaving one of the three behind.
+    private int ColSpan => Columns.Count + (Selectable ? 1 : 0);
 
     private bool IsExpanded(TRow row) => ExpandedKeys?.Contains(RowKey(row)) == true;
     private string? ExpandedAttr(TRow row) => RowDetail is null ? null : (IsExpanded(row) ? "true" : "false");

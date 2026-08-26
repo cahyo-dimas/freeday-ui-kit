@@ -94,6 +94,25 @@ export interface FdyTableProps<Row extends object> {
   expandedKeys?: ReadonlyArray<string | number>;
   /** Renders the expandable detail row for an expanded row (React equivalent of Vue's `row-detail` slot). */
   renderRowDetail?: (row: Row) => ReactNode;
+  /** Render the checkbox column and the bulk bar. */
+  selectable?: boolean;
+  /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
+   *  still works with nothing wired). */
+  selectedKeys?: ReadonlyArray<string | number>;
+  /** Selection changed, as `rowKey` values. Vue emits `update:selectedKeys`. */
+  onSelectedKeysChange?: (keys: Array<string | number>) => void;
+  /** Bulk-bar count, `{n}` substituted. Default `{n} selected`. */
+  selectedText?: string;
+  /** Bulk-bar clear button. Default `Clear`. */
+  clearSelectionText?: string;
+  /** Accessible name of the header checkbox. Default `Select all rows on this page`. */
+  selectAllLabel?: string;
+  /** Accessible name of each row checkbox. Default `Select row`. */
+  selectRowLabel?: string;
+  /** Accessible name of the bulk bar region. Default `Bulk actions`. */
+  bulkLabel?: string;
+  /** Bulk-bar actions (React equivalent of Vue's `bulk-actions` slot). */
+  bulkActions?: ReactNode;
 }
 
 export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Element {
@@ -103,6 +122,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
 
   const [internalSort, setInternalSort] = useState<FdySortState | null>(null);
   const [internalFilters, setInternalFilters] = useState<FdyFilterMap>({});
+  const [internalSelectedKeys, setInternalSelectedKeys] = useState<Array<string | number>>([]);
   const [internalPageIndex, setInternalPageIndex] = useState<number>(0);
   /* Client-mode rows-per-page. `pageSize` is a plain prop with no callback, so a footer control that
    * only reported would do nothing in the app that wired nothing, the table applies the pick itself
@@ -258,16 +278,96 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
     return cellText(row, col);
   }
 
-  const colCount: number = props.columns.length;
+  /* Selection is keyed by `rowKey`, exactly as `expandedKeys` is, and for the same reason: a key
+   * survives the re-fetch that replaces every row object, an object identity does not. Controlled
+   * when `selectedKeys` is provided, internal otherwise, so the column works with nothing wired. */
+  const selectionControlled: boolean = props.selectedKeys !== undefined;
+  const effectiveSelectedKeys: ReadonlyArray<string | number> = selectionControlled
+    ? (props.selectedKeys as ReadonlyArray<string | number>)
+    : internalSelectedKeys;
+  const selectedCount: number = effectiveSelectedKeys.length;
+  /* The select-all box acts on the CURRENT PAGE, not on every filtered row: a header checkbox that
+   * silently selects rows the reader cannot see is how bulk deletes go wrong. Keys picked on other
+   * pages are preserved rather than dropped, so paging away and back does not lose them. */
+  const pageKeys: Array<string | number> = displayRows.map((row: Row): string | number => props.rowKey(row));
+  const allPageSelected: boolean =
+    pageKeys.length > 0 && pageKeys.every((k: string | number): boolean => effectiveSelectedKeys.includes(k));
+  const somePageSelected: boolean =
+    !allPageSelected && pageKeys.some((k: string | number): boolean => effectiveSelectedKeys.includes(k));
+
+  function setSelection(keys: Array<string | number>): void {
+    if (!selectionControlled) setInternalSelectedKeys(keys);
+    props.onSelectedKeysChange?.(keys);
+  }
+  function isSelected(row: Row): boolean {
+    return effectiveSelectedKeys.includes(props.rowKey(row));
+  }
+  function toggleRow(row: Row, checked: boolean): void {
+    const key: string | number = props.rowKey(row);
+    const next: Array<string | number> = effectiveSelectedKeys.filter((k: string | number): boolean => k !== key);
+    if (checked) next.push(key);
+    setSelection(next);
+  }
+  function toggleAllOnPage(checked: boolean): void {
+    const onPage: Set<string | number> = new Set(pageKeys);
+    const offPage: Array<string | number> = effectiveSelectedKeys.filter(
+      (k: string | number): boolean => !onPage.has(k),
+    );
+    setSelection(checked ? offPage.concat(pageKeys) : offPage);
+  }
+  function clearSelection(): void {
+    setSelection([]);
+  }
+  function selectedLabel(n: number): string {
+    return (props.selectedText ?? '{n} selected').replace('{n}', String(n));
+  }
+
+  /* The checkbox column widens every full-width row (loading, empty, row detail) by one. Deriving it
+   * once is what keeps a later column change from leaving one of the three behind. */
+  const colCount: number = props.columns.length + (props.selectable === true ? 1 : 0);
 
   return (
     <div className="fdy-datatable">
       {props.toolbar !== undefined && <div className="fdy-table-toolbar">{props.toolbar}</div>}
 
+      {props.selectable === true && (
+        <div
+          className="fdy-table-bulkbar"
+          hidden={selectedCount === 0}
+          role="region"
+          aria-label={props.bulkLabel ?? 'Bulk actions'}
+        >
+          <span className="fdy-table-bulkbar__count" aria-live="polite">{selectedLabel(selectedCount)}</span>
+          <span className="fdy-table-bulkbar__spacer" />
+          <div className="fdy-table-bulkbar__actions">
+            {props.bulkActions}
+            <button type="button" className="fdy-btn fdy-btn--ghost fdy-btn--sm" onClick={clearSelection}>
+              {props.clearSelectionText ?? 'Clear'}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="fdy-table-scroll">
         <table className="fdy-table" aria-label={props.ariaLabel}>
           <thead>
             <tr>
+              {props.selectable === true && (
+                <th className="fdy-table__selcol" scope="col">
+                  <input
+                    type="checkbox"
+                    className="fdy-checkbox"
+                    data-fdy-select-all
+                    checked={allPageSelected}
+                    ref={(el: HTMLInputElement | null): void => {
+                      // `indeterminate` is a DOM property with no attribute, so JSX cannot set it.
+                      if (el !== null) el.indeterminate = somePageSelected;
+                    }}
+                    aria-label={props.selectAllLabel ?? 'Select all rows on this page'}
+                    onChange={(e): void => toggleAllOnPage(e.target.checked)}
+                  />
+                </th>
+              )}
               {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
                 <th key={col.key} scope="col" style={alignStyle(col)} aria-sort={ariaSortOf(col)}>
                   {col.sortable ? (
@@ -306,11 +406,27 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
                     className={rowClassName(row)}
                     tabIndex={props.rowActivatable ? 0 : undefined}
                     aria-expanded={props.renderRowDetail !== undefined ? (isExpanded(row) ? 'true' : 'false') : undefined}
+                    aria-selected={props.selectable === true ? (isSelected(row) ? 'true' : 'false') : undefined}
                     onClick={(): void => {
                       if (props.rowActivatable === true) props.onRowActivate?.(row);
                     }}
                     onKeyDown={(e): void => onRowKeydown(e, row)}
                   >
+                    {props.selectable === true && (
+                      <td className="fdy-table__selcol">
+                        {/* stopPropagation: without it, ticking a checkbox in an activatable row also
+                            fires onRowActivate, so selecting a row would navigate away from it. */}
+                        <input
+                          type="checkbox"
+                          className="fdy-checkbox"
+                          data-fdy-row-select
+                          checked={isSelected(row)}
+                          aria-label={props.selectRowLabel ?? 'Select row'}
+                          onClick={(e): void => e.stopPropagation()}
+                          onChange={(e): void => toggleRow(row, e.target.checked)}
+                        />
+                      </td>
+                    )}
                     {props.columns.map((col: FdyTableColumn<Row>): JSX.Element => (
                       <td key={col.key} className={cellClass(col)} style={alignStyle(col)}>{renderCellContent(col, row)}</td>
                     ))}

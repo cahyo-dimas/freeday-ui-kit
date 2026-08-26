@@ -168,6 +168,13 @@
     }
   }
 
+  // `indeterminate` is a DOM PROPERTY with no matching HTML attribute, so Blazor's renderer cannot
+  // express it and a tri-state select-all box would silently render as a plain unchecked one. Vue
+  // and React set the property directly; this is Blazor's way to the same place.
+  function setIndeterminate(element, value) {
+    if (element) element.indeterminate = !!value;
+  }
+
   // Flip the document theme (data-theme on <html>), for the demo toggle.
   function toggleTheme() {
     var e = document.documentElement;
@@ -177,6 +184,7 @@
   window.FreedayBlazor = {
     initAll: initAll, on: on, off: off, onOutside: onOutside, toast: toast, toggleTheme: toggleTheme,
     comboSetValue: comboSetValue, dateRangeOn: dateRangeOn, chartUpdate: chartUpdate,
+    setIndeterminate: setIndeterminate,
     dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,
   };
 })();
