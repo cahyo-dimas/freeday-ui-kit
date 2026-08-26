@@ -29,6 +29,28 @@
 
   var NS = 'http://www.w3.org/2000/svg';
 
+  /* User-facing strings. Two of them, and both shipped wrong until 2.2.0: the legend's fallback
+   * label read `Seri 1` — Indonesian, three months after 2.0.0 turned every enhancer English —
+   * and the donut's centre caption was hard-coded, so no host could rename it. Neither was
+   * reachable by the guards: one goes into the DOM through `createTextNode`, the other through
+   * `innerHTML`, and both guards look for `textContent` / `setAttribute`. Overridable per element
+   * with `data-fdy-text-<key>`, like every other enhancer. */
+  var TEXT = {
+    series: 'Series {n}',
+    total: 'Total'
+  };
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   // Categorical chart palette: 8 validated fixed-order slots (--chart-1..8). Series index i
   // (0-based) -> slot i+1; series beyond the 8-slot cap reuse --chart-8 (never cycled).
   function chartSlotVar(i) { return 'var(--chart-' + (i < 8 ? i + 1 : 8) + ')'; }
@@ -237,7 +259,7 @@
         var li = document.createElement('li');
         var sw = document.createElement('span'); sw.className = 'fdy-chart__swatch'; sw.style.background = colorFor(si);
         li.appendChild(sw);
-        li.appendChild(document.createTextNode(s.label || ('Seri ' + (si + 1))));
+        li.appendChild(document.createTextNode(s.label || textOf(el, 'series', { n: si + 1 })));
         legend.appendChild(li);
       });
       el.appendChild(legend);
@@ -411,8 +433,16 @@
     ring.style.background = 'conic-gradient(' + stops.join(',') + ')';
     var center = document.createElement('div'); center.className = 'fdy-donut__center';
     var centerLabel = el.getAttribute('data-fdy-center');
-    center.innerHTML = centerLabel ? '<b></b>' : '<b></b><span>Total</span>';
-    center.querySelector('b').textContent = centerLabel != null ? centerLabel : String(total);
+    var centerValue = document.createElement('b');
+    centerValue.textContent = centerLabel != null ? centerLabel : String(total);
+    center.appendChild(centerValue);
+    /* Built rather than assigned as innerHTML: the caption is overridable now, and an author's
+       string is not markup. */
+    if (!centerLabel) {
+      var centerCaption = document.createElement('span');
+      centerCaption.textContent = textOf(el, 'total');
+      center.appendChild(centerCaption);
+    }
     ring.appendChild(center);
     var svg = svgEl('svg');
     svg.setAttribute('class', 'fdy-donut__hit');

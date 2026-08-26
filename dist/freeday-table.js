@@ -47,6 +47,8 @@
     filterText: 'Contains text',
     filterTextPlaceholder: 'Contains…',
     filterEnum: 'Show values',
+    filterMin: 'Min',
+    filterMax: 'Max',
     filterRange: 'Value range',
     reset: 'Reset',
     close: 'Close',
@@ -319,8 +321,8 @@
         pop.appendChild(filterTitle(textOf(root, 'filterRange')));
         var range = document.createElement('div');
         range.className = 'fdy-filter__range';
-        var minI = numberInput('Min', f.min);
-        var maxI = numberInput('Maks', f.max);
+        var minI = numberInput(textOf(root, 'filterMin'), f.min);
+        var maxI = numberInput(textOf(root, 'filterMax'), f.max);
         var applyRange = function () {
           f.min = minI.value !== '' ? parseNum(minI.value) : null;
           f.max = maxI.value !== '' ? parseNum(maxI.value) : null;

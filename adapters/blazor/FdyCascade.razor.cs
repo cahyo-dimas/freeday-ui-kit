@@ -31,7 +31,31 @@ public partial class FdyCascade
     protected override async ValueTask OnHydratedAsync()
         => await SubscribeAsync("fdy-cascade-change", nameof(OnChange));
 
+    /// <summary>Id for the trigger the enhancer builds, so a form's label can point at it.</summary>
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>Id of the help or error text the trigger describes itself with.</summary>
+    [Parameter] public string? Describedby { get; set; }
+
+    /// <summary>Greyed and out of the tab order.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Locked/view mode: focusable and showing its value, but it will not open.</summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>Marks the field invalid (<c>aria-invalid</c> + the error styling).</summary>
+    [Parameter] public bool Invalid { get; set; }
+
     protected override bool ShouldRender() => !Hydrated;
+
+    /* Pushed, not re-rendered: the seed's <ul> is consumed and removed by the enhancer, so this
+       component can never render again. */
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Hydrated) return;
+        await JS.InvokeVoidAsync("FreedayCascade.setState", Root,
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+    }
 
     /// <summary>Invoked by the bridge when the user selects a leaf.</summary>
     [JSInvokable]

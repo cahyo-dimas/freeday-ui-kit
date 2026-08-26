@@ -9,6 +9,73 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [2.2.0] - 2026-08-26
+### Added
+- **The raw path can disable, lock and invalidate a picker** (`NEXT-UP.md` #12). `datepicker.css`
+  and `cascade.css` have styled `:disabled`, `[aria-readonly="true"]` and `[aria-invalid="true"]`
+  since they were written, and the enhancers never set any of them — so the states existed only in
+  the stacks that re-implement the control natively (Vue, React), and a **Blazor** app, whose
+  picker *is* the enhancer, could not disable a field at all. Now `data-disabled` /
+  `data-readonly` / `data-invalid` on the seed, plus `data-id` and `data-describedby` so the
+  trigger the enhancer builds can be labelled and described by a form's own markup.
+- **`setState` on four enhancers** — `FreedayDatepicker`, `FreedayCascade`, `FreedayCombo`,
+  `FreedayAutocomplete`: `setState(root, { disabled, readonly, invalid })`. Not decoration: every
+  Blazor wrapper stops rendering once hydrated (`ShouldRender => !Hydrated`), so a parameter that
+  is only *rendered* goes quiet the moment a real form toggles it. The wrappers push through this
+  instead.
+- **The Blazor pickers reach parity** with their Vue and React twins. `FdyDatepicker` goes from 6
+  parameters to 20 (the three states, `Id`, `Describedby`, and the nine calendar navigation
+  labels), `FdyAutocomplete` from 6 to 12, `FdyCascade` from 8 to 13, and `FdyCombo` finally has
+  `Describedby`. Four exemptions remain, each about the platform rather than effort, and each
+  named in `COMPONENTS.md`: `locale` (the enhancer formats through `Intl` from `<html lang>`),
+  `clearable`/`clearLabel` (this path builds no clear button), `ariaLabelledby` (the built trigger
+  is named by `Label`).
+- **`closeLabel` on `FdyModal` and `FdyDrawer`** in Vue and React. Blazor has had `CloseLabel`
+  since it shipped; the other two hard-coded `aria-label="Close"`, so the gap ran in both
+  directions and this is the half nobody had reported yet.
+- **The datepicker's ten labels are overridable**, as `data-fdy-text-prev-month`,
+  `-next-month`, `-prev-year`, `-next-year`, `-prev-years`, `-next-years`, `-choose-month`,
+  `-choose-year`, `-back-to-months`. Month and weekday NAMES still come from `Intl` via the page's
+  `lang`, which is the better hatch; these are the buttons around them.
+### Fixed
+- **A chart series with no label read `Seri 1`.** Indonesian, in a release train whose 2.0.0
+  exists precisely to stop the enhancers mixing languages. It is `Series {n}` now, and
+  overridable. The donut's centre caption (`Total`) was hard-coded in the same file and is
+  overridable too; it is also built as an element rather than assigned through `innerHTML`, since
+  an author-supplied string is not markup.
+- **The table's number-range filter offered `Min` and `Maks`.** Same leftover, same fix:
+  `filterMin` / `filterMax` in the strings table, English by default.
+- **The cascade's own `Select` / `Select…` defaults and the timepicker's `Choose a time`** were
+  literals no host could reach. Both tables now carry them.
+- **A `readonly` autocomplete opened its suggestion list.** The input carries `readonly` natively
+  and the enhancer never read it, so the list dropped over a field nobody could edit.
+### Changed
+- **The hard-coded-string guard (#016) is inverted.** It used to find the line that writes to the
+  DOM and read the literals on it, which cannot see a string passed to a helper —
+  `navButton('‹', 'Previous month', fn)` writes its label inside `navButton`, where the value is a
+  variable. Ten datepicker labels, the timepicker's, the cascade's two, the table's two and the
+  chart's `Seri 1` all hid there, some of them for the whole life of the file. It now reads every
+  literal in every enhancer and asks the opposite question — is this prose, and is it in the
+  `TEXT` table — dropping non-prose by shape (selectors, CSS custom properties, kebab keys,
+  camelCase identifiers, URLs, locale tags) and one short vocabulary of DOM tokens. Verified by
+  reintroducing both blind spots and watching it fail.
+### Added: guards
+- `test/blazor/FdyPickerStateTests.cs`: 7 bUnit tests covering what `dotnet build` cannot see —
+  each parameter reaching the markup the enhancer reads, an absent one leaving no empty attribute
+  behind, and a state change **after** the first render arriving through interop.
+- `browser/picker-states.mjs`: 7 tests in real Chrome with real mouse gestures — a disabled picker
+  that will not open, a readonly one that keeps focus and still refuses, both `aria-invalid` and
+  the `--error` class, `setState` unlocking a picker, and a nav label overridden per element.
+- `test/docs.test.mjs`: the Blazor picker parity guard, Vue's prop surface against the four
+  wrappers, with the four exemptions written out with their reasons rather than a bare list.
+### Notes on the shape of the fix
+- The regression this work caused, and what caught it: naming the new flag `isDisabled` shadowed
+  an **existing** `isDisabled(date)` in the datepicker that decides whether a day falls outside
+  `min`/`max`, so the day grid threw on every render — while the panel still opened and only its
+  cells went missing. Nothing in the node suite noticed; `browser/vanilla.mjs`, which clicks
+  through the calendar in a real browser, failed immediately. The flags are named `state*` now,
+  with the collision written above them.
+
 ## [2.1.0] - 2026-08-25
 ### Added
 - **`singleRow()`, exported from `@cahyo-dimas/freeday/vue` and `/react`** (#045). `FdyCfl` emits

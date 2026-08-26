@@ -14,6 +14,8 @@ export interface FdyDrawerProps {
   onClose: () => void;
   side?: 'left' | 'right';
   dismissible?: boolean;
+  /** aria-label for the × button. Default 'Close'. */
+  closeLabel?: string;
   footer?: ReactNode;
   children?: ReactNode;
 }
@@ -47,7 +49,7 @@ export function FdyDrawer(props: FdyDrawerProps): JSX.Element {
       <div className="fdy-drawer__header">
         <h3 id={titleId} className="fdy-drawer__title">{props.title}</h3>
         {dismissible && (
-          <button className="fdy-drawer__close" type="button" aria-label="Close" onClick={props.onClose}>&times;</button>
+          <button className="fdy-drawer__close" type="button" aria-label={props.closeLabel ?? 'Close'} onClick={props.onClose}>&times;</button>
         )}
       </div>
 

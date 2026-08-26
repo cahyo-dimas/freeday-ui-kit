@@ -8,7 +8,10 @@
 <div @ref="Root" data-fdy-autocomplete class="fdy-autocomplete">
     <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
            aria-controls="@_listId" autocomplete="off" value="@Value"
-           placeholder="@Placeholder" aria-label="@AriaLabel" />
+           placeholder="@Placeholder" aria-label="@AriaLabel"
+           id="@Id" aria-labelledby="@AriaLabelledby" aria-describedby="@Describedby"
+           disabled="@Disabled" readonly="@Readonly"
+           aria-invalid="@(Invalid ? "true" : null)" />
     <ul class="fdy-autocomplete__listbox" id="@_listId" role="listbox" hidden>
         @foreach (string item in Options)
         {

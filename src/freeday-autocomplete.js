@@ -40,6 +40,9 @@
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, input); return _pop; }
     function open() {
+      /* The input carries these natively; a disabled one fires nothing, but a READONLY one still
+         takes focus and clicks, and the list used to open over a field nobody can edit. */
+      if (input.readOnly || input.disabled) return;
       if (!listbox.hidden) return;
       var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       input.setAttribute('aria-expanded', 'true');
@@ -134,5 +137,18 @@
     initAll();
   }
 
-  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll };
+  /* Same contract as the combo's: the states live on the input natively, and a host that stops
+     re-rendering after hydration needs a way to change them afterwards. */
+  function setState(root, state) {
+    var input = root ? root.querySelector('input') : null;
+    if (!input || !state) return;
+    if (state.disabled != null) input.disabled = !!state.disabled;
+    if (state.readonly != null) input.readOnly = !!state.readonly;
+    if (state.invalid != null) {
+      if (state.invalid) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+  }
+
+  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState };
 })();

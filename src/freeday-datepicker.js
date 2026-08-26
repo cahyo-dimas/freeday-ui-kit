@@ -3,12 +3,12 @@
  * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
  *
  * Markup contract:
- *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal unggah"
- *               data-placeholder="Pilih tanggal" data-min="2026-01-01" data-max="2026-12-31"></div>
- *  - Range:   <div data-fdy-daterange role="group" aria-label="Rentang tanggal">
- *               <div data-fdy-datepicker data-role="from" data-placeholder="Dari"></div>
+ *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Upload date"
+ *               data-placeholder="Choose a date" data-min="2026-01-01" data-max="2026-12-31"></div>
+ *  - Range:   <div data-fdy-daterange role="group" aria-label="Date range">
+ *               <div data-fdy-datepicker data-role="from" data-placeholder="From"></div>
  *               <span class="fdy-daterange__sep">–</span>
- *               <div data-fdy-datepicker data-role="to" data-placeholder="Sampai"></div>
+ *               <div data-fdy-datepicker data-role="to" data-placeholder="To"></div>
  *             </div>
  *    The range links the two: the end can never precede the start (out-of-range days disable).
  *
@@ -24,6 +24,47 @@
      weekday names back automatically. The FALLBACK follows the kit's default language, or a
      page without `lang` would read English labels around Indonesian month names. */
   var LOCALE = document.documentElement.getAttribute('lang') || 'en';
+
+  /* User-facing strings. English by default, and every one overridable per element with
+   * `data-fdy-text-<key>`, so a host that speaks another language (an Indonesian app on the raw
+   * path, and every Blazor app, whose picker IS this enhancer) supplies its own without forking
+   * this file.
+   *
+   * This table arrived late, in 2.2.0: the ten labels below were written as literals passed to
+   * `navButton()` / `titleButton()`, so the guard that proves no enhancer string is hard-coded
+   * never saw them — it looks for the line that writes to the DOM, and here that line only ever
+   * sees a variable. Month and weekday names are NOT here on purpose: they come from `Intl`
+   * through the page's `lang`, which is a better hatch than anything the kit could invent.
+   * The `{label}` in the three title strings is the period the button drills into. */
+  var TEXT = {
+    label: 'Date',
+    placeholder: 'Choose a date',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    prevYear: 'Previous year',
+    nextYear: 'Next year',
+    prevYears: 'Previous years',
+    nextYears: 'Next years',
+    chooseMonth: '{label}, choose month',
+    chooseYear: '{label}, choose year',
+    backToMonths: '{start} to {end}, back to months'
+  };
+  /* HTML lowercases attribute names, so a camelCase key like `prevMonth` can only ever be written
+     as `data-fdy-text-prevmonth`, while the kebab form anybody would reach for,
+     `data-fdy-text-prev-month`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
   var uidSeq = 0;
   function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -61,8 +102,8 @@
     wrap.dataset.fdyDpReady = '1';
     wrap.classList.add('fdy-datepicker');
 
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Choose a date';
-    var label = wrap.getAttribute('data-label') || 'Date';
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, 'placeholder');
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
     var selected = parseISO(wrap.getAttribute('data-value'));
     var minDate = parseISO(wrap.getAttribute('data-min'));
     var maxDate = parseISO(wrap.getAttribute('data-max'));
@@ -160,16 +201,16 @@
       panel.innerHTML = '';
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(monthFmt.format(view), monthFmt.format(view) + ', choose month', function () {
+      var title = titleButton(monthFmt.format(view), textOf(wrap, 'chooseMonth', { label: monthFmt.format(view) }), function () {
         mode = 'months';
         focusMonth = view.getMonth();
         render();
         focusMonthCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous month', function () { view = addMonths(view, -1); render(); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevMonth'), function () { view = addMonths(view, -1); render(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next month', function () { view = addMonths(view, 1); render(); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextMonth'), function () { view = addMonths(view, 1); render(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -226,16 +267,16 @@
       var year = view.getFullYear();
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(String(year), year + ', choose year', function () {
+      var title = titleButton(String(year), textOf(wrap, 'chooseYear', { label: year }), function () {
         mode = 'years';
         focusYear = year;
         render();
         focusYearCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous year', function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevYear'), function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next year', function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextYear'), function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -287,16 +328,16 @@
       var end = start + YEARS_PER_PAGE - 1;
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(start + ' – ' + end, start + ' to ' + end + ', back to months', function () {
+      var title = titleButton(start + ' – ' + end, textOf(wrap, 'backToMonths', { start: start, end: end }), function () {
         mode = 'months';
         focusMonth = view.getMonth();
         render();
         focusMonthCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous years', function () { moveYearFocus(focusYear - YEARS_PER_PAGE); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevYears'), function () { moveYearFocus(focusYear - YEARS_PER_PAGE); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next years', function () { moveYearFocus(focusYear + YEARS_PER_PAGE); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextYears'), function () { moveYearFocus(focusYear + YEARS_PER_PAGE); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -457,7 +498,46 @@
 
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
+
+    /* The three field states the CSS has always styled (`:disabled`, `[aria-readonly="true"]`,
+       `[aria-invalid="true"]`) and this enhancer never set, so only the stacks that re-implement
+       the control natively had them. Read from the seed at init and settable afterwards, because
+       a host that renders once — every Blazor wrapper does, `ShouldRender => false` — cannot
+       express a later change any other way. */
+    function flagOf(name) {
+      var v = wrap.getAttribute('data-' + name);
+      return v != null && v !== 'false';
+    }
+    /* Named `state*`, not `is*`: this file already has an `isDisabled(date)` deciding whether a
+       DAY falls outside min/max, and shadowing it with a boolean made the day grid throw on every
+       render — silently, since the panel still opened and only its cells went missing. */
+    var stateDisabled = flagOf('disabled');
+    var stateReadonly = flagOf('readonly');
+    var stateInvalid = flagOf('invalid');
+    /* `data-id` and `data-describedby`: the trigger this enhancer BUILDS is the element a form
+       has to point its label and its error text at, and the raw path had no way to say so. */
+    if (wrap.getAttribute('data-id')) trigger.id = wrap.getAttribute('data-id');
+    if (wrap.getAttribute('data-describedby')) trigger.setAttribute('aria-describedby', wrap.getAttribute('data-describedby'));
+
+    function applyState() {
+      trigger.disabled = stateDisabled;
+      if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
+      else trigger.removeAttribute('aria-readonly');
+      if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
+      else trigger.removeAttribute('aria-invalid');
+      wrap.classList.toggle('fdy-datepicker--error', stateInvalid);
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    function setState(next) {
+      if (!next) return;
+      if (next.disabled != null) stateDisabled = !!next.disabled;
+      if (next.readonly != null) stateReadonly = !!next.readonly;
+      if (next.invalid != null) stateInvalid = !!next.invalid;
+      applyState();
+    }
+
     function open() {
+      if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
       mode = 'days';
       focusDate = selected || focusDate || new Date();
@@ -487,8 +567,11 @@
 
     updateDisplay();
 
+    applyState();
+
     var api = {
       wrap: wrap,
+      setState: setState,
       getValue: function () { return selected ? toISO(selected) : ''; },
       clear: function () { selected = null; updateDisplay(); if (!panel.hidden) render(); },
       setMin: function (iso) { minDate = parseISO(iso); if (!panel.hidden) render(); },
@@ -548,5 +631,14 @@
     initAll();
   }
 
-  window.FreedayDatepicker = { init: initPicker, initAll: initAll };
+  window.FreedayDatepicker = {
+    init: initPicker,
+    initAll: initAll,
+    /* A host that rendered its seed once and cannot re-render it (Blazor) still has to be able to
+       disable, lock or invalidate the field later. */
+    setState: function (root, state) {
+      var api = root && root._fdyDp ? root._fdyDp : null;
+      if (api && api.setState) api.setState(state);
+    }
+  };
 })();

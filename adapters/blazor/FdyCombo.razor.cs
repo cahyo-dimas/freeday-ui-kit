@@ -29,6 +29,10 @@ public partial class FdyCombo<TValue>
 
     [Parameter] public bool Invalid { get; set; }
 
+    /// <summary>Id of the help or error text the combobox describes itself with. Vue and React
+    /// have always had this one; Blazor was the odd stack out.</summary>
+    [Parameter] public string? Describedby { get; set; }
+
     private readonly string _autoId = $"fdy-combo-{Guid.NewGuid():N}";
     private TValue _lastValue = default!;
     private bool _ready;
@@ -65,6 +69,15 @@ public partial class FdyCombo<TValue>
         {
             _lastValue = Value;
             await JS.InvokeVoidAsync("FreedayBlazor.comboSetValue", Root, KeyOf(Value));
+        }
+
+        /* The three states need the same treatment for the same reason the value did: this
+           component stops rendering once hydrated, so a page that disables the field afterwards
+           was changing a parameter nothing read. */
+        if (_ready)
+        {
+            await JS.InvokeVoidAsync("FreedayCombo.setState", Root,
+                new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
         }
     }
 

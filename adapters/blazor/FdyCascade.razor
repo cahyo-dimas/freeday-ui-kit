@@ -11,7 +11,12 @@
      data-placeholder="@Placeholder"
      data-separator="@Separator"
      data-fdy-text-back="@BackLabel"
-     data-fdy-text-submenu="@SubmenuLabel">
+     data-fdy-text-submenu="@SubmenuLabel"
+     data-id="@Id"
+     data-describedby="@Describedby"
+     data-disabled="@(Disabled ? "true" : null)"
+     data-readonly="@(Readonly ? "true" : null)"
+     data-invalid="@(Invalid ? "true" : null)">
     <ul>
         @foreach (FdyCascadeNode node in Nodes)
         {

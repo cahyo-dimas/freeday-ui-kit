@@ -210,5 +210,22 @@
     if (root && root._fdyCombo) root._fdyCombo.setValue(value);
   }
 
-  window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue };
+  /* Beside setValue for the same reason it exists: a host that renders its markup once (every
+     Blazor wrapper, `ShouldRender => false`) cannot express a later state change any other way,
+     and a parameter that silently stops working after the first render is worse than none. */
+  function setState(root, state) {
+    var button = root ? root.querySelector('.fdy-combo__button') : null;
+    if (!button || !state) return;
+    if (state.disabled != null) button.disabled = !!state.disabled;
+    if (state.readonly != null) {
+      if (state.readonly) button.setAttribute('aria-readonly', 'true');
+      else button.removeAttribute('aria-readonly');
+    }
+    if (state.invalid != null) {
+      if (state.invalid) button.setAttribute('aria-invalid', 'true');
+      else button.removeAttribute('aria-invalid');
+    }
+  }
+
+  window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue, setState: setState };
 })();

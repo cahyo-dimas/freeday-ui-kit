@@ -16,6 +16,9 @@ const props = withDefaults(defineProps<{
   title: string;
   side?: 'left' | 'right';
   dismissible?: boolean;
+  /** aria-label for the × button. Default 'Close'. Blazor has had `CloseLabel` since it
+   *  shipped; these two hard-coded the string, so a non-English app could not rename it. */
+  closeLabel?: string;
 }>(), { dismissible: true });
 
 const emit = defineEmits<{
@@ -58,7 +61,7 @@ function onClick(e: MouseEvent): void {
       <h3 :id="titleId" class="fdy-drawer__title">
         <slot name="title">{{ title }}</slot>
       </h3>
-      <button v-if="dismissible" class="fdy-drawer__close" type="button" aria-label="Close" @click="$emit('close')">&times;</button>
+      <button v-if="dismissible" class="fdy-drawer__close" type="button" :aria-label="closeLabel ?? 'Close'" @click="$emit('close')">&times;</button>
     </div>
 
     <div class="fdy-drawer__body">

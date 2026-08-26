@@ -60,6 +60,8 @@
    * forking this file. Keeping them in ONE table is also what lets a guard prove none is
    * hard-coded further down. */
   var TEXT = {
+    label: 'Select',
+    placeholder: 'Select…',
     back: 'Back one level',
     submenu: '{label}, submenu'
   };
@@ -89,8 +91,8 @@
     var root = sourceUl ? parse(sourceUl) : [];
     if (sourceUl) sourceUl.remove();
 
-    var label = wrap.getAttribute('data-label') || 'Select';
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Select…';
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, 'placeholder');
     var sep = wrap.getAttribute('data-separator') || ' / ';
 
     var trigger = document.createElement('button');
@@ -205,7 +207,44 @@
 
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
+
+    /* The three field states the CSS has always styled (`:disabled`, `[aria-readonly="true"]`,
+       `[aria-invalid="true"]`) and this enhancer never set, so only the stacks that re-implement
+       the control natively had them. Read from the seed at init and settable afterwards, because
+       a host that renders once — every Blazor wrapper does, `ShouldRender => false` — cannot
+       express a later change any other way. */
+    function flagOf(name) {
+      var v = wrap.getAttribute('data-' + name);
+      return v != null && v !== 'false';
+    }
+    /* Named `state*` to match the datepicker, where `is*` collided with an older function. */
+    var stateDisabled = flagOf('disabled');
+    var stateReadonly = flagOf('readonly');
+    var stateInvalid = flagOf('invalid');
+    /* `data-id` and `data-describedby`: the trigger this enhancer BUILDS is the element a form
+       has to point its label and its error text at, and the raw path had no way to say so. */
+    if (wrap.getAttribute('data-id')) trigger.id = wrap.getAttribute('data-id');
+    if (wrap.getAttribute('data-describedby')) trigger.setAttribute('aria-describedby', wrap.getAttribute('data-describedby'));
+
+    function applyState() {
+      trigger.disabled = stateDisabled;
+      if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
+      else trigger.removeAttribute('aria-readonly');
+      if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
+      else trigger.removeAttribute('aria-invalid');
+      wrap.classList.toggle('fdy-cascade--error', stateInvalid);
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    function setState(next) {
+      if (!next) return;
+      if (next.disabled != null) stateDisabled = !!next.disabled;
+      if (next.readonly != null) stateReadonly = !!next.readonly;
+      if (next.invalid != null) stateInvalid = !!next.invalid;
+      applyState();
+    }
+
     function open() {
+      if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
       // Re-open at the selected leaf's level for quick re-selection.
       var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
@@ -260,8 +299,11 @@
       valueSpan.classList.add('fdy-cascade__value--placeholder');
     }
 
+    applyState();
+
     var api = {
       wrap: wrap,
+      setState: setState,
       getValue: function () { return selectedValue; },
       clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); }
     };
@@ -282,5 +324,13 @@
     initAll();
   }
 
-  window.FreedayCascade = { init: initCascade, initAll: initAll };
+  window.FreedayCascade = {
+    init: initCascade,
+    initAll: initAll,
+    /* Same reason as the datepicker's: a seed rendered once still has to be lockable later. */
+    setState: function (root, state) {
+      var api = root && root._fdyCascade ? root._fdyCascade : null;
+      if (api && api.setState) api.setState(state);
+    }
+  };
 })();

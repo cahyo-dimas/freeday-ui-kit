@@ -456,8 +456,9 @@ Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrap
 | `invalid?` | `boolean` | Sets `aria-invalid`; pair it with `describedby` pointing at the error text. |
 | `describedby?` | `string` | Id of the help or error text (`aria-describedby`). |
 
-Blazor: the same names in `PascalCase`, bound with `@bind-Value` (`Value` / `ValueChanged`),
-with one absence — there is no `Describedby`, so a Blazor combo cannot point at its own error text.
+Blazor: the same names in `PascalCase`, bound with `@bind-Value` (`Value` / `ValueChanged`).
+`FreedayCombo.setState(root, { disabled, readonly, invalid })` pushes a state change onto a combo
+whose host has stopped re-rendering.
 
 Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
@@ -501,9 +502,10 @@ keeps matching after selection. Do not put a glyph in that span.
 | `id?` · `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Input id; its accessible name as text or as a reference; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its value, but the input is not editable and the list will not open. Unlike `disabled` it is not greyed. |
 
-Blazor takes six of these — `Value` / `ValueChanged`, `Options`, `Placeholder`, `AriaLabel`,
-`EmptyText` — and no state flags or ids. Its wrapper renders a fixed seed element and does not
-splat unmatched attributes, so those are not reachable from a Blazor page at all.
+Blazor carries all of these. The states live on the input natively, and
+`FreedayAutocomplete.setState(root, { disabled, readonly, invalid })` changes them after the first
+render. A `readonly` input no longer opens its suggestion list, which it used to do over a field
+nobody could edit.
 
 Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 
@@ -528,7 +530,10 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | As on `<FdyCombo>`. |
 
-Blazor calls the tree `Nodes`, adds `SubmenuLabel`, and takes neither the state flags nor the ids.
+Raw path: `data-disabled` / `data-readonly` / `data-invalid`, `data-id`, `data-describedby`, and
+`FreedayCascade.setState(root, { disabled, readonly, invalid })` for a host that rendered once.
+Blazor calls the tree `Nodes`, adds `SubmenuLabel`, and carries everything else except
+`ariaLabelledby` — the trigger it builds is named by `Label`.
 
 Hierarchical drill-down. The data model is a **nested `<ul>`** inside the wrapper: an `<li>` with a
 child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
@@ -675,9 +680,15 @@ a new class.
 The ten label props exist because month and weekday names follow `locale` while the buttons around
 them do not: without these, a Spanish calendar would be navigated by English arrows.
 
-Blazor's picker is much thinner — `Value` / `ValueChanged`, `Label`, `Placeholder`, `Min`, `Max`
-— and its seed element takes no unmatched attributes, so state flags, ids, `clearable` and every
-label above are unreachable there.
+On the **raw path** these all have hooks now: `data-disabled` / `data-readonly` / `data-invalid`,
+`data-id`, `data-describedby`, and one `data-fdy-text-<key>` per label above
+(`data-fdy-text-prev-month`, …). A host that renders its markup once and cannot re-render it can
+change the three states afterwards with `FreedayDatepicker.setState(root, { disabled, readonly,
+invalid })`.
+
+Blazor carries the same surface bar four: `locale` (the enhancer formats through `Intl` from the
+page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear button), and
+`ariaLabelledby` (the trigger it builds is named by `Label`).
 
 ### Props — `<FdyDateRange>`
 
@@ -1038,7 +1049,11 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   (`data-fdy-text-required`, `data-fdy-text-type`, …), narrower than the per-field
   `data-fdy-msg-<alias>` that still wins. `Freeday.toast()` takes `closeLabel` in its options
   object. `npm test` asserts no enhancer string is written outside its `TEXT` table, so a new one
-  arrives overridable or not at all.
+  arrives overridable or not at all — a claim that was only half true until **2.2.0**, when the
+  guard stopped looking for the line that writes to the DOM and started reading every literal in
+  the file. The old shape could not see a string handed to a helper, which is how ten datepicker
+  labels, the timepicker's, the cascade's two defaults, the table's `Min`/`Maks` filter
+  placeholders and the chart's `Seri 1` all sat outside it.
 
 **Testing note:** a column's filter button and the dialog it opens deliberately share one
 accessible name (`Filter <column>`), since a dialog named after its trigger is the normal pattern. In a
@@ -1132,6 +1147,10 @@ Pure SVG/CSS, no dependency, re-colours with the theme. Needs `freeday-chart.js`
 - Colour: `data-fdy-color="primary"` or `data-fdy-colors="success,warning,danger"` for semantic token
   names **or** `chart-1`…`chart-8` slots to pin a category's colour. Multi-series defaults to the
   validated categorical palette `--chart-1`…`--chart-8`.
+- **Its two strings are overridable**, and until 2.2.0 neither was: a series with no `label` fell
+  back to `Seri 1` — Indonesian, three months after 2.0.0 turned the enhancers English — and the
+  donut's centre caption was hard-coded. Both take the usual hook now:
+  `data-fdy-text-series="Series {n}"` and `data-fdy-text-total="Total"`.
 - Format: `data-fdy-format="number|percent|currency"`; legend `data-fdy-legend` (`none` to drop);
   axes `data-fdy-axes`
 - Sizing is already set by the kit. Override **these**, never a `height` on the chart root (a
@@ -1328,12 +1347,13 @@ so the same look serves routed sub-navigation built from plain links. See the no
 | `onClose` | `() => void` | React. Vue emits `close`. Fires from Escape, a backdrop click and the ×, all three of which exist only under `dismissible`. |
 | `size?` | `'sm' \| 'md' \| 'lg' \| 'wide'` | Dialog width. |
 | `dismissible?` | `boolean` | Whether Escape, the backdrop and the × can close it. Off means the reader has to take a footer action, which is the point of a blocking confirm. |
+| `closeLabel?` | `string` | Accessible name for the × button. Default `Close`. |
 | `footer?` | `ReactNode` | React. Vue: the `footer` slot. |
 | `children?` | `ReactNode` | React. The body. Vue: the default slot. |
 
-Blazor binds `@bind-Open` and takes `TitleContent` / `ChildContent` / `FooterContent`, plus two
-things Vue and React do not have: `OnClose` and **`CloseLabel`**. The × in Vue and React is labelled
-`Close` and cannot be renamed.
+Blazor binds `@bind-Open` and takes `TitleContent` / `ChildContent` / `FooterContent`, plus
+`OnClose`. `CloseLabel` used to be Blazor-only, which left the × in Vue and React fixed at `Close`;
+all three stacks carry it now.
 
 Native `<dialog>`: focus trap, Esc and backdrop come from the browser. Sizes `--sm` `--md` `--lg`
 `--wide`; `--cfl` for the choose-from-list dialog.
@@ -1381,6 +1401,7 @@ The modal's props with `side` in place of `size`; the behaviour notes there appl
 | `onClose` | `() => void` | React. Vue emits `close`. |
 | `side?` | `'left' \| 'right'` | Which edge it slides from. |
 | `dismissible?` | `boolean` | Escape, backdrop and × on or off. |
+| `closeLabel?` | `string` | Accessible name for the × button. Default `Close`. |
 | `footer?` | `ReactNode` | React. Vue: the `footer` slot. |
 | `children?` | `ReactNode` | React. The body. Vue: the default slot. |
 

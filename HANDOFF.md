@@ -24,11 +24,6 @@ live.
 
 Tiga rilis terakhir, dan apa artinya bagi konsumen:
 
-- **1.54.0: `<FdyAppShell>` jadi komponen typed ke-11** di Vue/React/Blazor. Satu model:
-  `navOpen` = "nav terlihat"; kit yang memetakan ke `--nav-open`/`--nav-collapsed`. Prop-nya opsional
-  karena default-nya **ditentukan viewport**, dan pemanggil tak bisa menyatakan itu lewat satu nilai
-  awal. Vue/React memakai `adapters/core/app-shell.js`; Blazor **mengikat ke enhancer** lewat
-  `fdy-app-nav` + `FreedayAppShell.setVisible`. Dua implementasi, bukan empat.
 - **2.0.0: enhancer vanilla berbahasa Inggris.** 39 string di 9 enhancer, plus fallback locale
   datepicker (`lang || 'en'`) yang menentukan nama bulan/hari. **Breaking** untuk app Indonesia di
   jalur mentah; migrasinya atribut, bukan fork: `data-fdy-text-<key>` (dan `<html lang="id">` untuk
@@ -38,14 +33,20 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
   `FdyTableColumn`, plus kebijakan "tipe publik yang melebar = breaking" di kepala CHANGELOG.
   Empat guard baru menahan semuanya, dan dua di antaranya menemukan kebasian yang sudah berumur
   satu rilis mayor: `FdyAppShell` absen dari empat daftar wrapper.
+- **2.2.0: jalur mentah menyusul apa yang Vue/React implementasi sendiri.** `disabled`/`readonly`/
+  `invalid` di datepicker & cascade (CSS-nya sudah menata ketiganya sejak awal, enhancer-nya tak
+  pernah menyetel), `setState()` di empat enhancer, label kalender jadi overridable, dan paritas
+  prop Blazor untuk empat picker. Ikut terangkat: `Seri 1` dan `Maks`, dua string Indonesia yang
+  masih terbit setelah 2.0.0, ketahuan saat guard string dibalik dari "cari baris yang menulis ke
+  DOM" jadi "baca setiap literal".
 
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 67 test  · node --test, gerbang default, tanpa browser
-npm run test:browser     72 test  · 18 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
+npm test                 68 test  · node --test, gerbang default, tanpa browser
+npm run test:browser     79 test  · 19 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
-npm run test:blazor       7 test  · bUnit, komponen Blazor dirender sungguhan
+npm run test:blazor      14 test  · bUnit, komponen Blazor dirender sungguhan
 ```
 
 - **Blazor akhirnya punya gerbang perilaku** (2026-08-25). Sebelumnya hanya `dotnet build`, yaitu

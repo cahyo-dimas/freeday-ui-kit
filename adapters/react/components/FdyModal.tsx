@@ -15,6 +15,8 @@ export interface FdyModalProps {
   onClose: () => void;
   size?: 'sm' | 'md' | 'lg' | 'wide';
   dismissible?: boolean;
+  /** aria-label for the × button. Default 'Close'. */
+  closeLabel?: string;
   footer?: ReactNode;
   children?: ReactNode;
 }
@@ -51,7 +53,7 @@ export function FdyModal(props: FdyModalProps): JSX.Element {
       <div className="fdy-modal__header">
         <h3 id={titleId} className="fdy-modal__title">{props.title}</h3>
         {dismissible && (
-          <button className="fdy-modal__close" type="button" aria-label="Close" onClick={props.onClose}>&times;</button>
+          <button className="fdy-modal__close" type="button" aria-label={props.closeLabel ?? 'Close'} onClick={props.onClose}>&times;</button>
         )}
       </div>
 

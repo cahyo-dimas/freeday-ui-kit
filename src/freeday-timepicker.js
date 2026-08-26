@@ -14,6 +14,24 @@
 (function () {
   'use strict';
 
+  /* User-facing strings, overridable per element with `data-fdy-text-<key>`. One entry, and it
+   * still needed the table: it reached the DOM as an argument to a helper, which is how it sat
+   * outside every string guard until 2.2.0. */
+  var TEXT = {
+    label: 'Choose a time'
+  };
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   var seq = 0;
   var CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
 
@@ -28,7 +46,7 @@
     wrap.dataset.fdyTpReady = '1';
     wrap.classList.add('fdy-timepicker');
 
-    var label = wrap.getAttribute('data-label') || 'Choose a time';
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
     var placeholder = wrap.getAttribute('data-placeholder') || '--:--';
     var step = Math.max(1, parseInt(wrap.getAttribute('data-step') || '30', 10));
     var minM = valid(wrap.getAttribute('data-min')) ? toMin(wrap.getAttribute('data-min')) : 0;

@@ -250,6 +250,9 @@
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, input); return _pop; }
     function open() {
+      /* The input carries these natively; a disabled one fires nothing, but a READONLY one still
+         takes focus and clicks, and the list used to open over a field nobody can edit. */
+      if (input.readOnly || input.disabled) return;
       if (!listbox.hidden) return;
       var p = popCtl(); if (p) p.show(); else listbox.hidden = false;
       input.setAttribute('aria-expanded', 'true');
@@ -344,7 +347,20 @@
     initAll();
   }
 
-  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll };
+  /* Same contract as the combo's: the states live on the input natively, and a host that stops
+     re-rendering after hydration needs a way to change them afterwards. */
+  function setState(root, state) {
+    var input = root ? root.querySelector('input') : null;
+    if (!input || !state) return;
+    if (state.disabled != null) input.disabled = !!state.disabled;
+    if (state.readonly != null) input.readOnly = !!state.readonly;
+    if (state.invalid != null) {
+      if (state.invalid) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+  }
+
+  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState };
 })();
 
 /* Freeday, breakpoint provider (optional, zero-dependency).
@@ -603,6 +619,8 @@
    * forking this file. Keeping them in ONE table is also what lets a guard prove none is
    * hard-coded further down. */
   var TEXT = {
+    label: 'Select',
+    placeholder: 'Select…',
     back: 'Back one level',
     submenu: '{label}, submenu'
   };
@@ -632,8 +650,8 @@
     var root = sourceUl ? parse(sourceUl) : [];
     if (sourceUl) sourceUl.remove();
 
-    var label = wrap.getAttribute('data-label') || 'Select';
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Select…';
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, 'placeholder');
     var sep = wrap.getAttribute('data-separator') || ' / ';
 
     var trigger = document.createElement('button');
@@ -748,7 +766,44 @@
 
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
+
+    /* The three field states the CSS has always styled (`:disabled`, `[aria-readonly="true"]`,
+       `[aria-invalid="true"]`) and this enhancer never set, so only the stacks that re-implement
+       the control natively had them. Read from the seed at init and settable afterwards, because
+       a host that renders once — every Blazor wrapper does, `ShouldRender => false` — cannot
+       express a later change any other way. */
+    function flagOf(name) {
+      var v = wrap.getAttribute('data-' + name);
+      return v != null && v !== 'false';
+    }
+    /* Named `state*` to match the datepicker, where `is*` collided with an older function. */
+    var stateDisabled = flagOf('disabled');
+    var stateReadonly = flagOf('readonly');
+    var stateInvalid = flagOf('invalid');
+    /* `data-id` and `data-describedby`: the trigger this enhancer BUILDS is the element a form
+       has to point its label and its error text at, and the raw path had no way to say so. */
+    if (wrap.getAttribute('data-id')) trigger.id = wrap.getAttribute('data-id');
+    if (wrap.getAttribute('data-describedby')) trigger.setAttribute('aria-describedby', wrap.getAttribute('data-describedby'));
+
+    function applyState() {
+      trigger.disabled = stateDisabled;
+      if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
+      else trigger.removeAttribute('aria-readonly');
+      if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
+      else trigger.removeAttribute('aria-invalid');
+      wrap.classList.toggle('fdy-cascade--error', stateInvalid);
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    function setState(next) {
+      if (!next) return;
+      if (next.disabled != null) stateDisabled = !!next.disabled;
+      if (next.readonly != null) stateReadonly = !!next.readonly;
+      if (next.invalid != null) stateInvalid = !!next.invalid;
+      applyState();
+    }
+
     function open() {
+      if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
       // Re-open at the selected leaf's level for quick re-selection.
       var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
@@ -803,8 +858,11 @@
       valueSpan.classList.add('fdy-cascade__value--placeholder');
     }
 
+    applyState();
+
     var api = {
       wrap: wrap,
+      setState: setState,
       getValue: function () { return selectedValue; },
       clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); }
     };
@@ -825,7 +883,15 @@
     initAll();
   }
 
-  window.FreedayCascade = { init: initCascade, initAll: initAll };
+  window.FreedayCascade = {
+    init: initCascade,
+    initAll: initAll,
+    /* Same reason as the datepicker's: a seed rendered once still has to be lockable later. */
+    setState: function (root, state) {
+      var api = root && root._fdyCascade ? root._fdyCascade : null;
+      if (api && api.setState) api.setState(state);
+    }
+  };
 })();
 
 /* Freeday, choose-from-list enhancer (optional, zero-dependency).
@@ -1104,6 +1170,28 @@
 
   var NS = 'http://www.w3.org/2000/svg';
 
+  /* User-facing strings. Two of them, and both shipped wrong until 2.2.0: the legend's fallback
+   * label read `Seri 1` — Indonesian, three months after 2.0.0 turned every enhancer English —
+   * and the donut's centre caption was hard-coded, so no host could rename it. Neither was
+   * reachable by the guards: one goes into the DOM through `createTextNode`, the other through
+   * `innerHTML`, and both guards look for `textContent` / `setAttribute`. Overridable per element
+   * with `data-fdy-text-<key>`, like every other enhancer. */
+  var TEXT = {
+    series: 'Series {n}',
+    total: 'Total'
+  };
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   // Categorical chart palette: 8 validated fixed-order slots (--chart-1..8). Series index i
   // (0-based) -> slot i+1; series beyond the 8-slot cap reuse --chart-8 (never cycled).
   function chartSlotVar(i) { return 'var(--chart-' + (i < 8 ? i + 1 : 8) + ')'; }
@@ -1312,7 +1400,7 @@
         var li = document.createElement('li');
         var sw = document.createElement('span'); sw.className = 'fdy-chart__swatch'; sw.style.background = colorFor(si);
         li.appendChild(sw);
-        li.appendChild(document.createTextNode(s.label || ('Seri ' + (si + 1))));
+        li.appendChild(document.createTextNode(s.label || textOf(el, 'series', { n: si + 1 })));
         legend.appendChild(li);
       });
       el.appendChild(legend);
@@ -1486,8 +1574,16 @@
     ring.style.background = 'conic-gradient(' + stops.join(',') + ')';
     var center = document.createElement('div'); center.className = 'fdy-donut__center';
     var centerLabel = el.getAttribute('data-fdy-center');
-    center.innerHTML = centerLabel ? '<b></b>' : '<b></b><span>Total</span>';
-    center.querySelector('b').textContent = centerLabel != null ? centerLabel : String(total);
+    var centerValue = document.createElement('b');
+    centerValue.textContent = centerLabel != null ? centerLabel : String(total);
+    center.appendChild(centerValue);
+    /* Built rather than assigned as innerHTML: the caption is overridable now, and an author's
+       string is not markup. */
+    if (!centerLabel) {
+      var centerCaption = document.createElement('span');
+      centerCaption.textContent = textOf(el, 'total');
+      center.appendChild(centerCaption);
+    }
     ring.appendChild(center);
     var svg = svgEl('svg');
     svg.setAttribute('class', 'fdy-donut__hit');
@@ -1646,12 +1742,12 @@
  * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
  *
  * Markup contract:
- *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Tanggal unggah"
- *               data-placeholder="Pilih tanggal" data-min="2026-01-01" data-max="2026-12-31"></div>
- *  - Range:   <div data-fdy-daterange role="group" aria-label="Rentang tanggal">
- *               <div data-fdy-datepicker data-role="from" data-placeholder="Dari"></div>
+ *  - Single:  <div data-fdy-datepicker data-value="2026-07-21" data-label="Upload date"
+ *               data-placeholder="Choose a date" data-min="2026-01-01" data-max="2026-12-31"></div>
+ *  - Range:   <div data-fdy-daterange role="group" aria-label="Date range">
+ *               <div data-fdy-datepicker data-role="from" data-placeholder="From"></div>
  *               <span class="fdy-daterange__sep">–</span>
- *               <div data-fdy-datepicker data-role="to" data-placeholder="Sampai"></div>
+ *               <div data-fdy-datepicker data-role="to" data-placeholder="To"></div>
  *             </div>
  *    The range links the two: the end can never precede the start (out-of-range days disable).
  *
@@ -1667,6 +1763,47 @@
      weekday names back automatically. The FALLBACK follows the kit's default language, or a
      page without `lang` would read English labels around Indonesian month names. */
   var LOCALE = document.documentElement.getAttribute('lang') || 'en';
+
+  /* User-facing strings. English by default, and every one overridable per element with
+   * `data-fdy-text-<key>`, so a host that speaks another language (an Indonesian app on the raw
+   * path, and every Blazor app, whose picker IS this enhancer) supplies its own without forking
+   * this file.
+   *
+   * This table arrived late, in 2.2.0: the ten labels below were written as literals passed to
+   * `navButton()` / `titleButton()`, so the guard that proves no enhancer string is hard-coded
+   * never saw them — it looks for the line that writes to the DOM, and here that line only ever
+   * sees a variable. Month and weekday names are NOT here on purpose: they come from `Intl`
+   * through the page's `lang`, which is a better hatch than anything the kit could invent.
+   * The `{label}` in the three title strings is the period the button drills into. */
+  var TEXT = {
+    label: 'Date',
+    placeholder: 'Choose a date',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    prevYear: 'Previous year',
+    nextYear: 'Next year',
+    prevYears: 'Previous years',
+    nextYears: 'Next years',
+    chooseMonth: '{label}, choose month',
+    chooseYear: '{label}, choose year',
+    backToMonths: '{start} to {end}, back to months'
+  };
+  /* HTML lowercases attribute names, so a camelCase key like `prevMonth` can only ever be written
+     as `data-fdy-text-prevmonth`, while the kebab form anybody would reach for,
+     `data-fdy-text-prev-month`, becomes a DIFFERENT attribute the enhancer never reads, and the
+     override fails silently. So the key is kebab-cased for the lookup; the run-together spelling
+     still resolves. */
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
   var uidSeq = 0;
   function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -1704,8 +1841,8 @@
     wrap.dataset.fdyDpReady = '1';
     wrap.classList.add('fdy-datepicker');
 
-    var placeholder = wrap.getAttribute('data-placeholder') || 'Choose a date';
-    var label = wrap.getAttribute('data-label') || 'Date';
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, 'placeholder');
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
     var selected = parseISO(wrap.getAttribute('data-value'));
     var minDate = parseISO(wrap.getAttribute('data-min'));
     var maxDate = parseISO(wrap.getAttribute('data-max'));
@@ -1803,16 +1940,16 @@
       panel.innerHTML = '';
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(monthFmt.format(view), monthFmt.format(view) + ', choose month', function () {
+      var title = titleButton(monthFmt.format(view), textOf(wrap, 'chooseMonth', { label: monthFmt.format(view) }), function () {
         mode = 'months';
         focusMonth = view.getMonth();
         render();
         focusMonthCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous month', function () { view = addMonths(view, -1); render(); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevMonth'), function () { view = addMonths(view, -1); render(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next month', function () { view = addMonths(view, 1); render(); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextMonth'), function () { view = addMonths(view, 1); render(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -1869,16 +2006,16 @@
       var year = view.getFullYear();
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(String(year), year + ', choose year', function () {
+      var title = titleButton(String(year), textOf(wrap, 'chooseYear', { label: year }), function () {
         mode = 'years';
         focusYear = year;
         render();
         focusYearCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous year', function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevYear'), function () { view = addMonths(view, -12); render(); focusMonthCell(); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next year', function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextYear'), function () { view = addMonths(view, 12); render(); focusMonthCell(); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -1930,16 +2067,16 @@
       var end = start + YEARS_PER_PAGE - 1;
       var head = document.createElement('div');
       head.className = 'fdy-cal__head';
-      var title = titleButton(start + ' – ' + end, start + ' to ' + end + ', back to months', function () {
+      var title = titleButton(start + ' – ' + end, textOf(wrap, 'backToMonths', { start: start, end: end }), function () {
         mode = 'months';
         focusMonth = view.getMonth();
         render();
         focusMonthCell();
       });
       panel.setAttribute('aria-labelledby', title.id);
-      head.appendChild(navButton('‹', 'Previous years', function () { moveYearFocus(focusYear - YEARS_PER_PAGE); }));
+      head.appendChild(navButton('‹', textOf(wrap, 'prevYears'), function () { moveYearFocus(focusYear - YEARS_PER_PAGE); }));
       head.appendChild(title);
-      head.appendChild(navButton('›', 'Next years', function () { moveYearFocus(focusYear + YEARS_PER_PAGE); }));
+      head.appendChild(navButton('›', textOf(wrap, 'nextYears'), function () { moveYearFocus(focusYear + YEARS_PER_PAGE); }));
       panel.appendChild(head);
 
       var grid = document.createElement('div');
@@ -2100,7 +2237,46 @@
 
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
+
+    /* The three field states the CSS has always styled (`:disabled`, `[aria-readonly="true"]`,
+       `[aria-invalid="true"]`) and this enhancer never set, so only the stacks that re-implement
+       the control natively had them. Read from the seed at init and settable afterwards, because
+       a host that renders once — every Blazor wrapper does, `ShouldRender => false` — cannot
+       express a later change any other way. */
+    function flagOf(name) {
+      var v = wrap.getAttribute('data-' + name);
+      return v != null && v !== 'false';
+    }
+    /* Named `state*`, not `is*`: this file already has an `isDisabled(date)` deciding whether a
+       DAY falls outside min/max, and shadowing it with a boolean made the day grid throw on every
+       render — silently, since the panel still opened and only its cells went missing. */
+    var stateDisabled = flagOf('disabled');
+    var stateReadonly = flagOf('readonly');
+    var stateInvalid = flagOf('invalid');
+    /* `data-id` and `data-describedby`: the trigger this enhancer BUILDS is the element a form
+       has to point its label and its error text at, and the raw path had no way to say so. */
+    if (wrap.getAttribute('data-id')) trigger.id = wrap.getAttribute('data-id');
+    if (wrap.getAttribute('data-describedby')) trigger.setAttribute('aria-describedby', wrap.getAttribute('data-describedby'));
+
+    function applyState() {
+      trigger.disabled = stateDisabled;
+      if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
+      else trigger.removeAttribute('aria-readonly');
+      if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
+      else trigger.removeAttribute('aria-invalid');
+      wrap.classList.toggle('fdy-datepicker--error', stateInvalid);
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    function setState(next) {
+      if (!next) return;
+      if (next.disabled != null) stateDisabled = !!next.disabled;
+      if (next.readonly != null) stateReadonly = !!next.readonly;
+      if (next.invalid != null) stateInvalid = !!next.invalid;
+      applyState();
+    }
+
     function open() {
+      if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
       mode = 'days';
       focusDate = selected || focusDate || new Date();
@@ -2130,8 +2306,11 @@
 
     updateDisplay();
 
+    applyState();
+
     var api = {
       wrap: wrap,
+      setState: setState,
       getValue: function () { return selected ? toISO(selected) : ''; },
       clear: function () { selected = null; updateDisplay(); if (!panel.hidden) render(); },
       setMin: function (iso) { minDate = parseISO(iso); if (!panel.hidden) render(); },
@@ -2191,7 +2370,16 @@
     initAll();
   }
 
-  window.FreedayDatepicker = { init: initPicker, initAll: initAll };
+  window.FreedayDatepicker = {
+    init: initPicker,
+    initAll: initAll,
+    /* A host that rendered its seed once and cannot re-render it (Blazor) still has to be able to
+       disable, lock or invalidate the field later. */
+    setState: function (root, state) {
+      var api = root && root._fdyDp ? root._fdyDp : null;
+      if (api && api.setState) api.setState(state);
+    }
+  };
 })();
 
 /* Freeday, datetime picker composer (optional, zero-dependency).
@@ -3215,7 +3403,24 @@
     if (root && root._fdyCombo) root._fdyCombo.setValue(value);
   }
 
-  window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue };
+  /* Beside setValue for the same reason it exists: a host that renders its markup once (every
+     Blazor wrapper, `ShouldRender => false`) cannot express a later state change any other way,
+     and a parameter that silently stops working after the first render is worse than none. */
+  function setState(root, state) {
+    var button = root ? root.querySelector('.fdy-combo__button') : null;
+    if (!button || !state) return;
+    if (state.disabled != null) button.disabled = !!state.disabled;
+    if (state.readonly != null) {
+      if (state.readonly) button.setAttribute('aria-readonly', 'true');
+      else button.removeAttribute('aria-readonly');
+    }
+    if (state.invalid != null) {
+      if (state.invalid) button.setAttribute('aria-invalid', 'true');
+      else button.removeAttribute('aria-invalid');
+    }
+  }
+
+  window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue, setState: setState };
 })();
 
 /* Freeday, slider value binding (optional, zero-dependency).
@@ -3426,6 +3631,8 @@
     filterText: 'Contains text',
     filterTextPlaceholder: 'Contains…',
     filterEnum: 'Show values',
+    filterMin: 'Min',
+    filterMax: 'Max',
     filterRange: 'Value range',
     reset: 'Reset',
     close: 'Close',
@@ -3698,8 +3905,8 @@
         pop.appendChild(filterTitle(textOf(root, 'filterRange')));
         var range = document.createElement('div');
         range.className = 'fdy-filter__range';
-        var minI = numberInput('Min', f.min);
-        var maxI = numberInput('Maks', f.max);
+        var minI = numberInput(textOf(root, 'filterMin'), f.min);
+        var maxI = numberInput(textOf(root, 'filterMax'), f.max);
         var applyRange = function () {
           f.min = minI.value !== '' ? parseNum(minI.value) : null;
           f.max = maxI.value !== '' ? parseNum(maxI.value) : null;
@@ -3998,6 +4205,24 @@
 (function () {
   'use strict';
 
+  /* User-facing strings, overridable per element with `data-fdy-text-<key>`. One entry, and it
+   * still needed the table: it reached the DOM as an argument to a helper, which is how it sat
+   * outside every string guard until 2.2.0. */
+  var TEXT = {
+    label: 'Choose a time'
+  };
+  function textAttr(root, key) {
+    if (!root || !root.getAttribute) return null;
+    var kebab = root.getAttribute('data-fdy-text-' + key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); }));
+    return kebab != null && kebab !== '' ? kebab : root.getAttribute('data-fdy-text-' + key);
+  }
+  function textOf(root, key, vars) {
+    var custom = textAttr(root, key);
+    var s = custom != null && custom !== '' ? custom : TEXT[key];
+    if (vars) for (var k in vars) if (Object.prototype.hasOwnProperty.call(vars, k)) s = s.split('{' + k + '}').join(vars[k]);
+    return s;
+  }
+
   var seq = 0;
   var CLOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>';
 
@@ -4012,7 +4237,7 @@
     wrap.dataset.fdyTpReady = '1';
     wrap.classList.add('fdy-timepicker');
 
-    var label = wrap.getAttribute('data-label') || 'Choose a time';
+    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
     var placeholder = wrap.getAttribute('data-placeholder') || '--:--';
     var step = Math.max(1, parseInt(wrap.getAttribute('data-step') || '30', 10));
     var minM = valid(wrap.getAttribute('data-min')) ? toMin(wrap.getAttribute('data-min')) : 0;

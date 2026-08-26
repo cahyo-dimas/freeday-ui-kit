@@ -25,7 +25,33 @@ public partial class FdyAutocomplete
     protected override async ValueTask OnHydratedAsync()
         => await SubscribeAsync("fdy-autocomplete-select", nameof(OnSelect));
 
+    /// <summary>Explicit id for the input.</summary>
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>Id of the element that labels the input, when a visible label does the naming.</summary>
+    [Parameter] public string? AriaLabelledby { get; set; }
+
+    /// <summary>Id of the help or error text the input describes itself with.</summary>
+    [Parameter] public string? Describedby { get; set; }
+
+    /// <summary>Greyed and out of the tab order.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Locked/view mode: focusable and showing its value, not editable, and the
+    /// suggestion list will not open.</summary>
+    [Parameter] public bool Readonly { get; set; }
+
+    /// <summary>Marks the field invalid (<c>aria-invalid</c>).</summary>
+    [Parameter] public bool Invalid { get; set; }
+
     protected override bool ShouldRender() => !Hydrated;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Hydrated) return;
+        await JS.InvokeVoidAsync("FreedayAutocomplete.setState", Root,
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+    }
 
     /// <summary>Invoked by the bridge when the user picks a suggestion.</summary>
     [JSInvokable]

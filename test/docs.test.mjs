@@ -133,40 +133,73 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
  * #015's lesson was that a word list cannot see `pencarian` behind `\bcari\b`, and a second list
  * would have the same hole one affix over. */
 test('an enhancer string is overridable, not hard-coded (#016)', () => {
-  const SINK = /(\.textContent\s*=|setAttribute\('(aria-label|title|placeholder)'|\.placeholder\s*=)/;
-  const offenders = [];
+  /* Inverted in 2.2.0, and the rewrite is the point. The old form looked for the LINE that writes
+     to the DOM (`.textContent =`, `setAttribute('aria-label'`, `.placeholder =`) and read the
+     literals on it. Every string that reaches the DOM through a helper was therefore invisible:
+     `navButton('‹', 'Previous month', fn)` writes the label inside `navButton`, where the value is
+     a variable, and the line holding the prose writes nothing. That hid ten datepicker labels, the
+     timepicker's, the cascade's two defaults, the table's `Min`/`Maks` filter placeholders — and
+     `Seri 1`, an Indonesian legend label still shipping three months after 2.0.0 turned the
+     enhancers English, which the language guard missed for the same reason.
 
+     So it now reads every string literal in the file and asks the opposite question: is this
+     PROSE, and if so, is it in the TEXT table? Non-prose is dropped by shape (selectors, CSS
+     custom properties, kebab keys, camelCase identifiers, URLs, code fragments) and by one small
+     vocabulary of DOM tokens no translator would ever be handed. */
+  const KEY_TOKENS = new Set([
+    'DOMContentLoaded', 'Escape', 'Tab', 'Enter', 'Backspace', 'Home', 'End',
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown',
+    'UL', 'LI', 'Shift', 'Control', 'Alt', 'Meta', 'Space',
+  ]);
+  /* Units, deliberately: `B`/`KB`/`MB` are symbols rather than words, they read the same in the
+     languages this kit is used in, and making them overridable would mean threading the root
+     element through a pure formatter for no reader's benefit. */
+  const ALLOWED = new Set([' B', ' KB', ' MB', 'deg ']);
+
+  const isProse = s => {
+    const v = s.trim();
+    if (!/[A-Za-z]{2,}/.test(v)) return false;
+    if (ALLOWED.has(s) || KEY_TOKENS.has(v)) return false;
+    if (/^(--|\.|\[|:|#|&|<|\/|data-|aria-|fdy-|http)/.test(v)) return false;
+    if (/[;=()<>{}[\]]/.test(v)) return false;          // code fragments the matcher walked into
+    if (/^-?[a-z][a-z0-9-]*$/.test(v)) return false;     // kebab keys, id fragments, Intl options
+    if (/^[a-z][a-z0-9-]*(\s*,\s*[a-z][a-z0-9-]*)+$/.test(v)) return false; // selector lists
+    if (/^\d/.test(v)) return false;
+    if (/^[a-z]+([A-Z][a-z0-9]*)+$/.test(v)) return false; // camelCase identifiers
+    if (/^[a-z]{2}(-[A-Z]{2})?$/.test(v)) return false;  // locale tags
+    if (/^[\w.]+[.#][\w.-]+$/.test(v)) return false;     // 'table.fdy-table'
+    if (v === 'use strict') return false;
+    return true;
+  };
+
+  const offenders = [];
   for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
     const src = read(`src/${file}`);
-    /* The table's own span, so its entries are not read as hard-coded strings. */
     const open = src.indexOf('var TEXT = {');
     const close = open === -1 ? -1 : src.indexOf('};', open);
-
-    src.split('\n').forEach((line, i) => {
-      if (/^\s*(\*|\/\/|\/\*)/.test(line)) return;
-      if (!SINK.test(line)) return;
-      const at = src.split('\n').slice(0, i).join('\n').length;
-      if (open !== -1 && at > open && at < close) return;
-      /* A `textOf(root, 'key')` call is the overridable path, so its KEY is not a hard-coded
-       * string. Erased from the line rather than skipping the line, so a literal concatenated
-       * beside a legitimate lookup is still caught. */
-      const scan = line.replace(/textOf\([^)]*\)/g, '');
-      for (const m of scan.matchAll(/'([^']{2,80})'/g)) {
-        const text = m[1];
-        /* A literal is PROSE when it carries two or more consecutive letters and no code
-         * punctuation. That drops `aria-label` and `fdy-x` (markup), ` · ` (a separator glyph),
-         * and the code fragment a line with three quotes hands the matcher between strings two
-         * and three, none of which a translator would ever be given. */
-        if (!/[A-Za-z]{2,}/.test(text)) continue;
-        if (/[;=()]/.test(text)) continue;
-        if (/^[a-z-]+$/.test(text) || text.startsWith('&') || text.startsWith('fdy-')) continue;
-        offenders.push(`src/${file}:${i + 1}  ${text.trim()}`);
+    const inTable = new Set();
+    if (open !== -1) {
+      for (const m of src.slice(open, close).matchAll(/(\w+):\s*'([^']*)'/g)) inTable.add(m[2]);
+    }
+    /* Comments are stripped whole, not by line shape: an apostrophe inside prose ("the owner's
+       business") opens a string literal for any line-based matcher. */
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+    let offset = 0;
+    for (const line of code.split('\n')) {
+      const at = offset;
+      offset += line.length + 1;
+      if (open !== -1 && at > open && at < close) continue;
+      for (const m of line.matchAll(/'(?:[^'\\\n]|\\.)*'/g)) {
+        const text = m[0].slice(1, -1);
+        if (!isProse(text) || inTable.has(text)) continue;
+        offenders.push(`src/${file}  ${text}`);
       }
-    });
+    }
   }
 
   assert.deepEqual(offenders, [],
-    'these go straight into the DOM and no consumer can change them, move them into TEXT and read with textOf():\n' + offenders.join('\n'));
+    'these go straight into the DOM and no consumer can change them, move them into TEXT and read with textOf():\n' +
+    offenders.join('\n'));
 });
 
 test('every path speaks English (#009, and #006 from 2.0.0)', () => {
@@ -352,6 +385,45 @@ test('COMPONENTS.md documents the whole column contract (#040)', () => {
     'documented in COMPONENTS.md, absent from FdyTableColumn: it does not exist');
 });
 
+test('the picker wrappers reach Blazor too (NEXT-UP #12)', () => {
+  /* Blazor wraps the ENHANCER, Vue and React re-implement the control. So every capability the
+     enhancer lacked was a capability only Blazor lacked, and it showed: FdyDatepicker took six
+     parameters against twenty-one Vue props, FdyAutocomplete six against eleven, FdyCascade eight
+     against twelve. A Blazor page could not disable, lock or invalidate a picker at all.
+
+     Vue is the reference surface. Exemptions are listed with their reason and are about the
+     PLATFORM, never about effort — an exemption that stops being true should fail this test by
+     being deleted, not be quietly extended. */
+  const EXEMPT = {
+    FdyDatepicker: {
+      locale: 'the raw path formats through Intl from the page\'s <html lang>, which the enhancer reads',
+      clearable: 'the enhancer builds no clear button; NEXT-UP #10 is where that decision lives',
+      clearLabel: 'names the clear button that does not exist on this path',
+      ariaLabelledby: 'the built trigger is named by `Label`, there is no second element to point at',
+    },
+    FdyCascade: {
+      ariaLabelledby: 'the built trigger is named by `Label`, as with the datepicker',
+    },
+  };
+  /* Vue prop -> the Blazor property that carries it, where the name is not just PascalCase. */
+  const RENAMED = { modelValue: 'Value', FdyCascade: { options: 'Nodes' } };
+
+  const offenders = [];
+  for (const name of ['FdyCombo', 'FdyDatepicker', 'FdyAutocomplete', 'FdyCascade']) {
+    const blazor = read(`adapters/blazor/${name}.razor.cs`);
+    const exempt = EXEMPT[name] ?? {};
+    for (const prop of vueProps(name)) {
+      if (prop in exempt) continue;
+      const expected = RENAMED[name]?.[prop] ?? RENAMED[prop] ?? prop[0].toUpperCase() + prop.slice(1);
+      if (!new RegExp(`\\b${expected}\\b\\s*\\{\\s*get;`).test(blazor)) {
+        offenders.push(`${name}: \`${prop}\` is a Vue prop with no Blazor \`${expected}\` parameter`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [],
+    'a capability three stacks have and the fourth cannot express:\n' + offenders.join('\n'));
+});
+
 test('a hidden column label is rendered, not dropped (#026)', () => {
   /* The type surface above can be satisfied by a property nothing reads. Each of the three tables
      renders its own header, so each has to spend the flag on `.fdy-visually-hidden`: the cell looks
@@ -402,11 +474,30 @@ test('the enhancers ship exactly these strings (#006)', () => {
       slide: 'Slide {n}',
     },
     'freeday-cascade.js': {
+      label: 'Select',
+      placeholder: 'Select…',
       back: 'Back one level',
       submenu: '{label}, submenu',
     },
+    'freeday-chart.js': {
+      series: 'Series {n}',
+      total: 'Total',
+    },
     'freeday-cfl.js': {
       selected: '{n} selected',
+    },
+    'freeday-datepicker.js': {
+      label: 'Date',
+      placeholder: 'Choose a date',
+      prevMonth: 'Previous month',
+      nextMonth: 'Next month',
+      prevYear: 'Previous year',
+      nextYear: 'Next year',
+      prevYears: 'Previous years',
+      nextYears: 'Next years',
+      chooseMonth: '{label}, choose month',
+      chooseYear: '{label}, choose year',
+      backToMonths: '{start} to {end}, back to months',
     },
     'freeday-form.js': {
       invalid: 'Invalid.',
@@ -432,6 +523,8 @@ test('the enhancers ship exactly these strings (#006)', () => {
       close: 'Close',
       filter: 'Filter column',
       filterEnum: 'Show values',
+      filterMin: 'Min',
+      filterMax: 'Max',
       filterRange: 'Value range',
       filterText: 'Contains text',
       filterTextPlaceholder: 'Contains…',
@@ -441,6 +534,9 @@ test('the enhancers ship exactly these strings (#006)', () => {
       reset: 'Reset',
       rows: '{n} rows',
       selected: '{n} selected',
+    },
+    'freeday-timepicker.js': {
+      label: 'Choose a time',
     },
     'freeday-toast.js': {
       close: 'Close',
