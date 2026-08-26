@@ -79,6 +79,22 @@
 /* Desktop collapse: animate width -> 0 (content clips via overflow:hidden; the content area
  * flexes in to fill). Not display:none, so the collapse/expand slides instead of snapping. */
 @media (min-width:721px){.fdy-app--nav-collapsed .fdy-app__sidebar{width:0;border-right-width:0;}}
+/* Desktop OVERLAY: the nav floats over the content instead of displacing it, the arrangement a
+ * "menu mode" preference offers on a wide screen. The declarations below are the mobile off-canvas
+ * ones repeated, and that repetition is not an oversight: the two conditions are
+ * `(max-width:720px)` and `(min-width:721px) and .fdy-app--nav-overlay`, which no single selector
+ * can express, and the mobile path has to keep working with no JS and no class at all. What the
+ * modifier changes is the LAYOUT; every behaviour (backdrop, Escape, close-on-follow, focus return,
+ * inert, the Tab trap) is the same code path the drawer already used. */
+@media (min-width:721px){
+  .fdy-app--nav-overlay .fdy-app__sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:16rem;z-index:60;transform:translateX(-100%);box-shadow:var(--shadow-4);transition:transform var(--dur-base) var(--ease-standard);}
+  .fdy-app--nav-overlay.fdy-app--nav-open .fdy-app__sidebar{transform:translateX(0);}
+  .fdy-app--nav-overlay .fdy-app__backdrop{display:block;position:fixed;inset:0;z-index:55;background:var(--color-scrim);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--dur-base) var(--ease-standard),visibility var(--dur-base) var(--ease-standard);}
+  .fdy-app--nav-overlay.fdy-app--nav-open .fdy-app__backdrop{opacity:1;visibility:visible;pointer-events:auto;}
+  /* In overlay mode the sidebar is out of flow, so the collapse-to-zero-width rule above must not
+     also apply — it would fight the transform for the same panel. */
+  .fdy-app--nav-overlay.fdy-app--nav-collapsed .fdy-app__sidebar{width:16rem;border-right-width:var(--bw);}
+}
 .fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__main{flex:1;padding:var(--space-8);}
@@ -88,13 +104,21 @@
  * drop sticky so nothing escapes the box; sidebar stretches to fill it. */
 .fdy-app--static .fdy-app__sidebar{position:static;height:auto;align-self:stretch;}
 .fdy-app--static .fdy-app__topbar{position:static;}
-/* Mobile: the sidebar becomes an off-canvas drawer opened by the topbar toggle. */
+/* `pointer-events` on the backdrop is load-bearing, not a belt-and-braces extra. `visibility` is a
+ * TRANSITIONED property here, so a backdrop on its way out stays `visible` for the whole duration
+ * and keeps swallowing clicks aimed at the topbar underneath it — and switching INTO overlay mode is
+ * worse, because the element goes display:none -> display:block with its visibility animating from
+ * the initial `visible`, so a mode switch alone hands the page ~200ms of dead clicks. Measured: with
+ * only `visibility:hidden`, elementFromPoint over the nav toggle returned the backdrop.
+ * Mobile: the sidebar becomes an off-canvas drawer opened by the topbar toggle. */
 .fdy-app__backdrop{display:none;}
 @media (max-width:720px){
   .fdy-app__sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:16rem;z-index:60;transform:translateX(-100%);transition:transform var(--dur-base) var(--ease-standard);box-shadow:var(--shadow-4);}
   .fdy-app--nav-open .fdy-app__sidebar{transform:translateX(0);}
-  .fdy-app__backdrop{display:block;position:fixed;inset:0;z-index:55;background:rgba(8,10,20,.45);opacity:0;visibility:hidden;transition:opacity var(--dur-base) var(--ease-standard),visibility var(--dur-base) var(--ease-standard);}
-  .fdy-app--nav-open .fdy-app__backdrop{opacity:1;visibility:visible;}
+  /* --color-scrim, not a literal: this was the last raw colour left in a component stylesheet, and
+     it also means the drawer behind the nav dims exactly like every other overlay in the kit. */
+  .fdy-app__backdrop{display:block;position:fixed;inset:0;z-index:55;background:var(--color-scrim);opacity:0;visibility:hidden;pointer-events:none;transition:opacity var(--dur-base) var(--ease-standard),visibility var(--dur-base) var(--ease-standard);}
+  .fdy-app--nav-open .fdy-app__backdrop{opacity:1;visibility:visible;pointer-events:auto;}
   .fdy-app__main{padding:var(--space-5);}
   .fdy-app__topbar{padding:0 var(--space-4);}
 }

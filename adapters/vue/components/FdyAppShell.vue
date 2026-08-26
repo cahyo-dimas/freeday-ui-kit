@@ -26,14 +26,24 @@ const props = withDefaults(defineProps<{
   navOpen?: boolean;
   title?: string;
   toggleLabel?: string;
-}>(), { navOpen: undefined, title: '', toggleLabel: 'Toggle navigation' });
+  /**
+   * How a VISIBLE nav sits on a wide viewport: `push` (default) makes it a column that displaces
+   * the content, `overlay` floats it over the page with a backdrop. Below the nav breakpoint it is
+   * ignored — the nav is off-canvas there by definition, so there is nothing to choose.
+   */
+  navMode?: 'push' | 'overlay';
+}>(), { navOpen: undefined, title: '', toggleLabel: 'Toggle navigation', navMode: 'push' });
 
 const emit = defineEmits<{
   'update:navOpen': [boolean];
 }>();
 
 const root: Ref<HTMLElement | null> = ref(null);
-const overlay: Ref<boolean> = ref(false);
+/* The viewport half of the answer, kept separate from `overlay` now that a prop can also decide it:
+   a mode switch and a resize both change whether the nav floats, and only one of them is a viewport
+   event. */
+const wide: Ref<boolean> = ref(true);
+const overlay: ComputedRef<boolean> = computed((): boolean => !wide.value || props.navMode === 'overlay');
 const uncontrolled: Ref<boolean> = ref(true);
 const restoreTo: Ref<Element | null> = ref(null);
 let media: MediaQueryList | null = null;
@@ -46,8 +56,12 @@ const navVisible: ComputedRef<boolean> = computed((): boolean =>
 );
 
 const shellClass: ComputedRef<string> = computed((): string => {
-  if (overlay.value) return navVisible.value ? 'fdy-app fdy-app--nav-open' : 'fdy-app';
-  return navVisible.value ? 'fdy-app' : 'fdy-app fdy-app--nav-collapsed';
+  /* `--nav-overlay` rides on the MODE, not on the viewport: below the breakpoint the stylesheet's
+     own media query already makes the nav off-canvas, so the class would be redundant there, and
+     carrying it anyway is what lets one class answer "is this shell in overlay mode?" at any width. */
+  const mode: string = props.navMode === 'overlay' ? ' fdy-app--nav-overlay' : '';
+  if (overlay.value) return `fdy-app${mode}${navVisible.value ? ' fdy-app--nav-open' : ''}`;
+  return `fdy-app${mode}${navVisible.value ? '' : ' fdy-app--nav-collapsed'}`;
 });
 
 function setVisible(next: boolean): void {
@@ -102,17 +116,33 @@ function onKeydown(e: KeyboardEvent): void {
    the nav is hidden. Widening is harmless, a visible nav simply becomes the column again, and the
    watcher clears the `inert` the overlay had put on the content. */
 function onMediaChange(): void {
-  const nowOverlay: boolean = media !== null && !media.matches;
-  if (nowOverlay === overlay.value) return;
-  fromResize = true;
-  overlay.value = nowOverlay;
-  if (nowOverlay && navVisible.value) setVisible(false);
+  const nowWide: boolean = media !== null && media.matches;
+  if (nowWide === wide.value) return;
+  const wasOverlay: boolean = overlay.value;
+  const nextOverlay: boolean = !nowWide || props.navMode === 'overlay';
+  /* Only when the watcher will actually fire. In overlay MODE, crossing the breakpoint changes
+     neither `overlay` nor `navVisible`, so nothing re-runs — and a flag left standing here would
+     silently swallow the focus move of the next real toggle. */
+  if (nextOverlay !== wasOverlay) fromResize = true;
+  wide.value = nowWide;
+  if (nextOverlay && !wasOverlay && navVisible.value) setVisible(false);
 }
+
+/* Switching mode is not a reader asking to go somewhere either, so focus stays put. Turning overlay
+   ON over a visible column would drop a panel across a page nobody asked to leave, so it closes;
+   turning it OFF leaves visibility alone, because `navOpen` is the reader's answer and a mode change
+   is not a reason to overrule it. */
+watch((): 'push' | 'overlay' => props.navMode, (mode: 'push' | 'overlay'): void => {
+  fromResize = true;
+  if (mode === 'overlay' && wide.value && navVisible.value) setVisible(false);
+});
 
 onMounted((): void => {
   media = window.matchMedia(NAV_QUERY);
-  overlay.value = !media.matches;
-  uncontrolled.value = media.matches;
+  wide.value = media.matches;
+  /* An overlay nav starts CLOSED even on a wide screen: it covers the page, so opening it unasked
+     is the same intrusion it would be on a phone. A pushing column starts open. */
+  uncontrolled.value = media.matches && props.navMode !== 'overlay';
   media.addEventListener('change', onMediaChange);
   document.addEventListener('keydown', onKeydown);
   const el: HTMLElement | null = root.value;

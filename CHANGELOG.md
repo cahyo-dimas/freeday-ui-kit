@@ -61,6 +61,14 @@ mengubah satu baris pun.
 - **`FreedayBlazor.setIndeterminate`**, satu helper interop, karena `indeterminate` adalah properti
   DOM tanpa atribut HTML: renderer Blazor tak bisa mengekspresikannya, dan halaman yang separuh
   terpilih akan tampil polos "belum tercentang".
+- **Mode nav overlay di layar lebar** — `.fdy-app--nav-overlay`, dan `navMode` di keempat adapter
+  (Blazor: enum `FdyNavMode`). Nav mengambang di atas konten alih-alih menggesernya, yaitu pilihan
+  yang selama ini hanya bisa terjadi di layar sempit. **Modifier ini mengubah tata letak, bukan
+  perilaku**: backdrop, Escape, tutup-saat-link-diikuti, fokus masuk-dan-kembali, `inert`, dan Tab
+  trap semuanya jalur kode drawer yang sudah ada — shell kini bertanya pada sebuah class, bukan pada
+  media query, sehingga layar lebar tak lagi berarti "kolom". Konsekuensinya melintasi breakpoint
+  **tidak** menutup panel yang mengambang di kedua sisi. `FreedayAppShell.refresh(root)` ditambahkan
+  untuk jalur mentah yang mengubah class itu sendiri.
 
 ### Fixed
 - **`CLAUDE.md` mengklaim `data-style` sudah ada.** Grep ke `src/`, `dist/` dan `tokens/`
@@ -71,13 +79,23 @@ mengubah satu baris pun.
 - **`.fdy-busy__panel` disamakan dengan doktrin elevasi** (`USAGE.md`): panel di atas scrim adalah
   kerabat modal, jadi `--shadow-lift`, bukan `--shadow-3` yang dipakai benda melayang di atas
   halaman.
+- **Backdrop app-shell menelan klik selama transisinya.** `visibility` adalah properti yang
+  di-transisi, jadi backdrop yang sedang menghilang tetap `visible` sepanjang durasinya dan terus
+  menangkap klik yang ditujukan ke topbar di bawahnya — dan masuk ke mode overlay lebih buruk lagi,
+  karena elemennya berpindah `display:none` → `display:block` dengan visibility beranimasi dari
+  `visible` bawaan, sehingga **sekadar mengganti mode memberi halaman ~200 ms klik mati**. Terukur:
+  `elementFromPoint` di atas tombol nav mengembalikan backdrop-nya. Kini `pointer-events:none`
+  selama tertutup, di jalur mobile maupun overlay. Spec app-shell yang lama sudah menyebut gejala
+  ini dan menyiasatinya dengan menunggu; ini menghapus sebabnya.
+- **Backdrop mobile berhenti memakai warna mentah** (`rgba(8,10,20,.45)`), nilai kasar terakhir yang
+  tersisa di stylesheet komponen. Kini `--color-scrim`, jadi ia menggelap persis seperti overlay lain.
 
 ### Guarded
-- 4 test node baru (invariant urutan stripe + warnanya), 6 test Chrome baru (selection lintas
+- 4 test node baru (invariant urutan stripe + warnanya), 11 test Chrome baru (selection lintas
   halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
   melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
   dengan mutasi**, bukan hanya dijalankan sekali.
-- node 68 → 70 · browser 83 → 87 · bUnit 14 → 21.
+- node 68 → 70 · browser 83 → 92 · bUnit 14 → 21.
 
 ### Fixed: the kit's own suite
 - **A coordinate click now reaches its target on a window that is not the author's.** CI went red

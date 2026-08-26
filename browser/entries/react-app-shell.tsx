@@ -2,23 +2,33 @@
 // adapter.mjs can hold all three to one contract. Left UNCONTROLLED on purpose: the component's own
 // default, a column on a wide viewport, hidden on a narrow one, is the case an app cannot express
 // as a single initial value.
+import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { FdyAppShell } from '../../adapters/react/components/FdyAppShell';
 
-createRoot(document.getElementById('app')!).render(
-  <FdyAppShell
-    title="Invoices"
-    brand={<a className="fdy-app__brand" href="#" id="brand">Acme</a>}
-    nav={
-      <nav className="fdy-nav">
-        <a className="fdy-nav__item" href="#one" id="nav-one">One</a>
-        <a className="fdy-nav__item" href="#two" id="nav-two">Two</a>
-      </nav>
-    }
-  >
-    <button className="fdy-btn" id="in-content" type="button">Behind the backdrop</button>
-  </FdyAppShell>,
-);
+// Switchable at runtime, because a "menu mode" preference IS a runtime switch: the risky path is
+// not rendering in overlay mode, it is CHANGING to it while a column is on screen.
+function App(): JSX.Element {
+  const [navMode, setNavMode] = useState<'push' | 'overlay'>('push');
+  (window as unknown as Record<string, unknown>).setNavMode = setNavMode;
+  return (
+    <FdyAppShell
+      title="Invoices"
+      navMode={navMode}
+      brand={<a className="fdy-app__brand" href="#" id="brand">Acme</a>}
+      nav={
+        <nav className="fdy-nav">
+          <a className="fdy-nav__item" href="#one" id="nav-one">One</a>
+          <a className="fdy-nav__item" href="#two" id="nav-two">Two</a>
+        </nav>
+      }
+    >
+      <button className="fdy-btn" id="in-content" type="button">Behind the backdrop</button>
+    </FdyAppShell>
+  );
+}
+
+createRoot(document.getElementById('app')!).render(<App />);
 
 (window as unknown as Record<string, unknown>).state = (): unknown => {
   const app = document.querySelector('.fdy-app') as HTMLElement;

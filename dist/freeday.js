@@ -62,7 +62,13 @@
 
     function isOverlayOpen() { return app.classList.contains('fdy-app--nav-open'); }
     function isCollapsed() { return app.classList.contains('fdy-app--nav-collapsed'); }
-    function navVisible() { return mqWide.matches ? !isCollapsed() : isOverlayOpen(); }
+    /* Whether the nav FLOATS. Two ways to be true, and only one of them is the viewport: below the
+       breakpoint it is off-canvas by definition, and above it `--nav-overlay` says the app chose to
+       float a nav that could have been a column. Everything downstream — which class means visible,
+       what the toggle does, whether the content goes inert — asks this instead of the media query,
+       so overlay mode reuses the drawer's whole code path rather than growing a second one. */
+    function isOverlayMode() { return !mqWide.matches || app.classList.contains('fdy-app--nav-overlay'); }
+    function navVisible() { return isOverlayMode() ? isOverlayOpen() : !isCollapsed(); }
 
     /* aria-expanded answers "is the nav showing?" in BOTH modes, the two state classes are the
        kit's business, not the reader's. */
@@ -70,7 +76,7 @@
       var visible = navVisible();
       toggle.setAttribute('aria-expanded', String(visible));
       setInert(sidebar, !visible);
-      setInert(content, !mqWide.matches && visible);
+      setInert(content, isOverlayMode() && visible);
       /* Announce only real changes. The first sync() runs at init to describe the state the markup
          arrived in, which is not something a host asked for and must not look like one. */
       if (lastVisible !== null && visible !== lastVisible) {
@@ -108,7 +114,7 @@
     }
 
     toggle.addEventListener('click', function () {
-      if (mqWide.matches) {
+      if (!isOverlayMode()) {
         app.classList.toggle('fdy-app--nav-collapsed');
         sync();
       } else if (isOverlayOpen()) {
@@ -156,7 +162,10 @@
        content inert forever: the panel becomes a static column again, and the page it is covering
        can no longer be clicked or read. */
     mqWide.addEventListener('change', function () {
-      if (mqWide.matches && isOverlayOpen()) close(false);
+      /* Only when the panel stops floating. In overlay MODE it floats at every width, so widening
+         must leave an open panel exactly as it is — closing it there would be the shell overruling
+         a reader who never asked for anything. */
+      if (mqWide.matches && !isOverlayMode() && isOverlayOpen()) close(false);
       else sync();
     });
 
@@ -166,9 +175,14 @@
        own state needs to drive this without reaching for the class names the kit reserves. */
     app._fdyAppShell = {
       isVisible: navVisible,
+      /* Re-read the DOM and reconcile `inert` + `aria-expanded`. Needed when something OUTSIDE the
+         enhancer changes what the state classes mean — switching `--nav-overlay` on or off does
+         exactly that, because it moves the answer to "is the nav visible?" from `--nav-collapsed`
+         to `--nav-open`. Without this a mode switch leaves a visible sidebar marked inert. */
+      refresh: sync,
       setVisible: function (visible) {
         if (visible === navVisible()) return;
-        if (mqWide.matches) {
+        if (!isOverlayMode()) {
           app.classList.toggle('fdy-app--nav-collapsed', !visible);
           sync();
         } else if (visible) {
@@ -204,6 +218,10 @@
     },
     isVisible: function (root) {
       return !!(root && root._fdyAppShell && root._fdyAppShell.isVisible());
+    },
+    /* Call after changing `--nav-overlay` from outside; see the note on the handle above. */
+    refresh: function (root) {
+      if (root && root._fdyAppShell) root._fdyAppShell.refresh();
     },
   };
 })();

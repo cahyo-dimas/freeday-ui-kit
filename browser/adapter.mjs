@@ -426,3 +426,41 @@ for (const [stack, shellFixture] of [['vue', 'vue-app-shell.html'], ['react', 'r
     });
   });
 }
+
+/* navMode on the typed wrappers (spec 2026-08-26 §D5). Vue and React do NOT use the enhancer — they
+ * re-implement the shell's behaviour over adapters/core/app-shell.js — so passing in the vanilla
+ * spec proves nothing about them. The risky path is not rendering in overlay mode, it is SWITCHING
+ * to it while a column is on screen, which is what a "menu mode" preference actually does. */
+for (const [stack, shellFixture] of [['vue', 'vue-app-shell.html'], ['react', 'react-app-shell.html']]) {
+  test(`${stack} FdyAppShell: switching to overlay stands the column down (#D5)`, { skip }, async () => {
+    await withPage(fixture(shellFixture), async (p) => {
+      await shellUntil(p, '!!window.state', 'the shell to mount');
+      await p.setViewport(1000, 900);
+      await shellUntil(p, `window.state().expanded === 'true'`, 'the shell to adopt the wide viewport');
+
+      const column = await shellState(p);
+      assert.equal(column.sidebarInert, false, 'push mode starts as a visible column');
+      assert.equal(column.contentInert, false, 'and a column never makes the page inert');
+
+      await p.evalJS(`window.setNavMode('overlay')`);
+      await shellUntil(p, `window.state().expanded === 'false'`, 'the shell to stand the column down');
+
+      const switched = await shellState(p);
+      assert.equal(switched.open, false,
+        'turning overlay on over a visible column must close it — otherwise a panel lands across a page nobody asked to leave');
+      assert.equal(switched.sidebarInert, true, 'a hidden floating panel leaves the tab order');
+      assert.equal(switched.contentInert, false, 'and nothing is inert while it is closed');
+      assert.equal(
+        await p.evalJS(`document.querySelector('.fdy-app').classList.contains('fdy-app--nav-overlay')`),
+        true, 'the mode reaches the DOM as a class, so the stylesheet can float the panel',
+      );
+
+      // And it still opens, on a viewport where before there was nothing to open.
+      await p.clickCenter('.fdy-app__navtoggle');
+      await shellUntil(p, `window.state().open && window.state().contentInert`, 'the floating panel to open');
+      const open = await shellState(p);
+      assert.equal(open.contentInert, true, 'the page behind a floating nav is inert, even on a wide screen');
+      assert.equal(open.sidebarInert, false, 'and the panel itself is reachable');
+    });
+  });
+}

@@ -2,12 +2,17 @@
 // browser/adapter.mjs can hold the typed wrapper to the behaviour the enhancer already passes.
 // Left UNBOUND (`navOpen` not passed) on purpose: the component's own default, visible on a wide
 // viewport, hidden on a narrow one, is the case an app cannot express as one initial value.
-import { createApp, h } from 'vue';
+import { createApp, h, ref } from 'vue';
 import FdyAppShell from '../../adapters/vue/components/FdyAppShell.vue';
+
+// Switchable at runtime, because a "menu mode" preference IS a runtime switch: the risky path is
+// not rendering in overlay mode, it is CHANGING to it while a column is on screen.
+const navMode = ref('push');
+window.setNavMode = (mode) => { navMode.value = mode; };
 
 createApp({
   render: () =>
-    h(FdyAppShell, { title: 'Invoices' }, {
+    h(FdyAppShell, { title: 'Invoices', navMode: navMode.value }, {
       brand: () => h('a', { class: 'fdy-app__brand', href: '#', id: 'brand' }, 'Acme'),
       nav: () => h('nav', { class: 'fdy-nav' }, [
         h('a', { class: 'fdy-nav__item', href: '#one', id: 'nav-one' }, 'One'),

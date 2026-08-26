@@ -47,14 +47,18 @@ const until = async (p, condition, what) => {
   assert.ok(await p.waitFor(condition), `timed out waiting for ${what}, condition never became true: ${condition}`);
 };
 
-const ready = async (p, [w, h]) => {
+/* `expectExpanded` exists because "wide" stopped implying "open" when overlay mode arrived: a
+   floating nav starts CLOSED at every width. Default keeps the push-mode reading every existing
+   test was written against. */
+const ready = async (p, [w, h], expectExpanded) => {
   await until(p, 'document.readyState === "complete" && !!window.state', 'the page and its state probe');
   await p.setViewport(w, h);
   await until(p, isWide(w >= 721), `the ${w >= 721 ? 'wide' : 'narrow'} media query`);
   /* matchMedia().matches flips BEFORE the change listener that reacts to it has run, so waiting on
      the query alone reads the shell mid-transition between modes, invisible on an idle machine,
      visible the moment the suite runs 18 specs at once. Wait for the shell's own answer instead. */
-  await until(p, `window.state().expanded === '${w >= 721 ? 'true' : 'false'}'`,
+  const want = expectExpanded === undefined ? String(w >= 721) : String(expectExpanded);
+  await until(p, `window.state().expanded === '${want}'`,
     'the shell to finish reacting to the viewport change');
 };
 
@@ -245,5 +249,70 @@ test('a shell mounted after load is hydrated by initAll, the way the bridge does
     assert.equal(
       await p.evalJS(`document.querySelector('#late .fdy-app__content').hasAttribute('inert')`),
       true, 'and to do the whole job for its own subtree');
+  });
+});
+
+/* Overlay mode on a WIDE viewport (spec 2026-08-26 §D5). The point of the modifier is that it
+ * changes the LAYOUT and nothing else: every behaviour below is the drawer's existing code path,
+ * reached at a width where it previously could not run at all. What is genuinely new — and what
+ * these guard — is that the shell now asks a class instead of the media query, so a wide viewport
+ * no longer implies "column", and crossing the breakpoint no longer implies "stop floating". */
+test('wide + overlay: the nav floats over the page and makes it inert (#D5)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell-overlay.html'), async (p) => {
+    await ready(p, WIDE, false);
+
+    const before = await state(p);
+    assert.equal(before.open, false, 'an overlay nav starts closed even on a wide screen — it covers the page');
+    assert.equal(before.contentInert, false, 'nothing is inert while it is closed');
+    assert.equal(before.expanded, 'false', 'and the toggle says so');
+    assert.equal(before.sidebarInert, true, 'a hidden panel must leave the tab order, floating or not');
+
+    await openNav(p);
+
+    const open = await state(p);
+    assert.equal(open.contentInert, true,
+      'the page behind a floating nav must be inert — on a wide screen this used to be impossible');
+    assert.equal(open.expanded, 'true');
+    assert.equal(open.sidebarInert, false, 'the panel is reachable now');
+    assert.equal(
+      await p.evalJS(`getComputedStyle(document.getElementById('sidebar')).position`), 'fixed',
+      'floating means out of flow — a wide sidebar is normally sticky',
+    );
+    assert.equal(await p.evalJS(`window.focusablesInSidebar().includes(window.state().focused)`), true,
+      'focus enters the panel, exactly as the drawer does');
+  });
+});
+
+test('wide + overlay: Escape closes it and focus comes back (#D5)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell-overlay.html'), async (p) => {
+    await ready(p, WIDE, false);
+    await openNav(p);
+
+    await p.pressKey('Escape');
+    await expectShut(p);
+
+    const shut = await state(p);
+    assert.equal(shut.contentInert, false, 'inert must come off, or the page is unusable behind a closed panel');
+    assert.equal(shut.focused, 'toggle', 'focus goes back to the control that opened it, never to <body>');
+  });
+});
+
+/* The sharpest difference from `push`. There, widening with the panel open CLOSES it, because the
+ * panel is about to become a column and leaving --nav-open set would strand `inert` on the page.
+ * In overlay mode it floats at every width, so the same widening must change nothing at all —
+ * closing it would be the shell overruling a reader who never asked for anything. */
+test('overlay: crossing the breakpoint leaves an open panel alone (#D5)', { skip }, async () => {
+  await withPage(fixture('vanilla-app-shell-overlay.html'), async (p) => {
+    await ready(p, NARROW);
+    await openNav(p);
+    assert.equal((await state(p)).contentInert, true, 'open on a narrow viewport');
+
+    await p.setViewport(...WIDE);
+    await until(p, isWide(true), 'the wide media query');
+
+    const after = await state(p);
+    assert.equal(after.open, true, 'widening must not close a nav that floats at every width');
+    assert.equal(after.contentInert, true, 'and the page behind it stays inert');
+    assert.equal(after.expanded, 'true', 'aria-expanded still answers the same question');
   });
 });

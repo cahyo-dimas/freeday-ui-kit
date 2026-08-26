@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — app shell in overlay mode on a wide viewport</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- Same skeleton as vanilla-app-shell.html, plus --nav-overlay: on a WIDE viewport the nav floats
+       over the content instead of displacing it, which is the arrangement a "menu mode" preference
+       offers. Everything else must behave exactly like the drawer already does. -->
+  <div class="fdy-app fdy-app--nav-overlay" id="app" data-fdy-app>
+    <a class="fdy-skip" href="#main">Skip to content</a>
+
+    <aside class="fdy-app__sidebar" id="sidebar">
+      <a class="fdy-app__brand" href="#" id="brand">
+        <span class="fdy-app__brand-mark">F</span>
+        <span class="fdy-app__brand-text"><span class="fdy-app__brand-title">Acme</span></span>
+      </a>
+      <nav class="fdy-nav">
+        <a class="fdy-nav__item" href="#one" id="nav-one"><span class="fdy-nav__label">One</span></a>
+        <a class="fdy-nav__item" href="#two" id="nav-two"><span class="fdy-nav__label">Two</span></a>
+      </nav>
+    </aside>
+
+    <div class="fdy-app__content" id="content">
+      <header class="fdy-app__topbar">
+        <button class="fdy-app__navtoggle" id="toggle" type="button" aria-label="Toggle navigation">&#9776;</button>
+        <h1 class="fdy-app__title">Invoices</h1>
+      </header>
+      <main class="fdy-app__main" id="main">
+        <!-- The control that must become unreachable while the overlay nav is open. -->
+        <button class="fdy-btn" id="in-content" type="button">Behind the backdrop</button>
+      </main>
+    </div>
+
+    <div class="fdy-app__backdrop" id="backdrop"></div>
+  </div>
+
+<script src="../../dist/freeday.js"></script>
+<script>
+  var app = document.getElementById('app');
+
+  // Everything the shell announces, in order, what a host binding its own state would receive.
+  window.navEvents = [];
+  document.addEventListener('fdy-app-nav', function (e) { window.navEvents.push(e.detail.visible); });
+
+  window.state = function () {
+    return {
+      open: app.classList.contains('fdy-app--nav-open'),
+      collapsed: app.classList.contains('fdy-app--nav-collapsed'),
+      expanded: document.getElementById('toggle').getAttribute('aria-expanded'),
+      sidebarInert: document.getElementById('sidebar').hasAttribute('inert'),
+      contentInert: document.getElementById('content').hasAttribute('inert'),
+      focused: document.activeElement ? (document.activeElement.id || document.activeElement.tagName) : null,
+    };
+  };
+
+  // Where focus can actually go from here, in order, the question a trap is really about.
+  window.focusablesInSidebar = function () {
+    return Array.prototype.map.call(
+      document.getElementById('sidebar').querySelectorAll('a[href], button:not([disabled])'),
+      function (el) { return el.id; }
+    );
+  };
+</script>
+</body>
+</html>

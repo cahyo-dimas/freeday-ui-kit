@@ -126,6 +126,7 @@ which is why React's list is longer while offering the same thing.
 |---|---|---|
 | `navOpen?` | `boolean` | Whether the nav is visible. Optional because the default is the **viewport's**, and a caller cannot state that in one initial value. Vue binds `v-model:navOpen`. |
 | `onNavOpenChange?` | `(open: boolean) => void` | React. Visibility changed: the toggle, Escape, the backdrop, or a followed nav item. Vue emits `update:navOpen`. |
+| `navMode?` | `'push' \| 'overlay'` | How a **visible** nav sits on a **wide** viewport: `push` (default) is the column that displaces the content, `overlay` floats it over the page with a backdrop. Below the nav breakpoint it is ignored — the nav is off-canvas there by definition, so there is nothing to choose. Blazor takes the enum `FdyNavMode`. |
 | `title?` | `string` (Vue) · `ReactNode` | Topbar title. |
 | `toggleLabel?` | `string` | Accessible name for the nav toggle button. |
 | `toggleIcon?` | `ReactNode` | React. Replaces the default hamburger; Vue uses the slot of that name. |
@@ -141,8 +142,18 @@ off-canvas drawer and backdrop are built in.
 
 - Parts: `__sidebar` `__brand` (`__brand-mark` `__brand-text` `__brand-title` `__brand-subtitle`)
   `__content` `__topbar` `__navtoggle` `__title` `__main` `__backdrop`
-- Modifiers: `--nav-open` (mobile drawer open, ≤720px) · `--nav-collapsed` (collapse to zero width,
-  ≥721px) · `--static` (embed the shell in a page instead of filling the viewport)
+- Modifiers: `--nav-open` (drawer open) · `--nav-collapsed` (collapse to zero width, ≥721px) ·
+  `--nav-overlay` (≥721px: float the nav over the content instead of displacing it) · `--static`
+  (embed the shell in a page instead of filling the viewport)
+
+**`--nav-overlay` is a layout choice, not a second behaviour.** With it the nav floats at *every*
+width, so the drawer's whole code path — backdrop, Escape, close-on-follow, focus into the panel and
+back, `inert` on the content, the Tab trap — is reused rather than re-implemented; only the
+positioning rules differ, and only above the breakpoint. It also changes which state class means
+"visible": `--nav-open` instead of the absence of `--nav-collapsed`, exactly as on a narrow screen.
+On the raw path, if you add or remove the class yourself, call
+**`FreedayAppShell.refresh(root)`** afterwards — the shell has to re-read the DOM, or `inert` and
+`aria-expanded` keep describing the arrangement you just left.
 - Also: `.fdy-skip`, the skip-to-content link, first child of the shell.
 - **Behaviour: `freeday-app-shell.js`.** Opt in with `data-fdy-app` on the root. The markup below
   is unchanged. It owns the toggle in both modes plus everything an overlay needs that hand-rolling

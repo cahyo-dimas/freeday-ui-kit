@@ -31,6 +31,12 @@ export interface FdyAppShellProps {
   nav?: ReactNode;
   topbar?: ReactNode;
   children?: ReactNode;
+  /**
+   * How a VISIBLE nav sits on a wide viewport: `push` (default) makes it a column that displaces
+   * the content, `overlay` floats it over the page with a backdrop. Below the nav breakpoint it is
+   * ignored — the nav is off-canvas there by definition, so there is nothing to choose.
+   */
+  navMode?: 'push' | 'overlay';
 }
 
 export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
@@ -39,9 +45,19 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
   /* Set while a viewport change is driving the state, so the effect below reconciles `inert` and
      the classes but leaves FOCUS alone: a resize is not a reader asking to go somewhere. */
   const fromResizeRef = useRef<boolean>(false);
-  const [overlay, setOverlay] = useState<boolean>(false);
+  /* The viewport half of the answer, kept separate from `overlay` now that a prop can also decide
+     it: a mode switch and a resize both change whether the nav floats, and only one of them is a
+     viewport event. The ref shadows the state because the media listener subscribes once and must
+     read the CURRENT value without resubscribing. */
+  const [wide, setWide] = useState<boolean>(true);
+  const wideRef = useRef<boolean>(true);
   const [uncontrolled, setUncontrolled] = useState<boolean>(true);
 
+  const navMode: 'push' | 'overlay' = props.navMode ?? 'push';
+  const navModeRef = useRef<'push' | 'overlay'>(navMode);
+  navModeRef.current = navMode;
+
+  const overlay: boolean = !wide || navMode === 'overlay';
   const controlled: boolean = props.navOpen !== undefined;
   const navVisible: boolean = controlled ? props.navOpen === true : uncontrolled;
 
@@ -65,19 +81,40 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
   useEffect((): (() => void) => {
     const media: MediaQueryList = window.matchMedia(NAV_QUERY);
     const onChange = (): void => {
-      const nowOverlay: boolean = !media.matches;
-      setOverlay((was: boolean): boolean => {
-        if (was !== nowOverlay) fromResizeRef.current = true;
-        return nowOverlay;
-      });
-      if (nowOverlay && navVisibleRef.current) setVisibleRef.current(false);
+      const nowWide: boolean = media.matches;
+      if (nowWide === wideRef.current) return;
+      const mode: 'push' | 'overlay' = navModeRef.current;
+      const wasOverlay: boolean = !wideRef.current || mode === 'overlay';
+      const nextOverlay: boolean = !nowWide || mode === 'overlay';
+      /* Only when the effect below will actually re-run. In overlay MODE, crossing the breakpoint
+         changes neither `overlay` nor `navVisible`, and a flag left standing here would silently
+         swallow the focus move of the next real toggle. */
+      if (wasOverlay !== nextOverlay) fromResizeRef.current = true;
+      wideRef.current = nowWide;
+      setWide(nowWide);
+      if (nextOverlay && !wasOverlay && navVisibleRef.current) setVisibleRef.current(false);
     };
     // Mount: adopt the viewport without the hide-on-narrow side effect, nothing is open yet.
-    setOverlay(!media.matches);
-    if (!controlled) setUncontrolled(media.matches);
+    wideRef.current = media.matches;
+    setWide(media.matches);
+    /* An overlay nav starts CLOSED even on a wide screen: it covers the page, so opening it unasked
+       is the same intrusion it would be on a phone. A pushing column starts open. */
+    if (!controlled) setUncontrolled(media.matches && navModeRef.current !== 'overlay');
     media.addEventListener('change', onChange);
     return (): void => media.removeEventListener('change', onChange);
   }, [controlled]);
+
+  /* Switching mode is not a reader asking to go somewhere either, so focus stays put. Turning
+     overlay ON over a visible column would drop a panel across a page nobody asked to leave, so it
+     closes; turning it OFF leaves visibility alone, because `navOpen` is the reader's answer and a
+     mode change is not a reason to overrule it. */
+  const prevModeRef = useRef<'push' | 'overlay'>(navMode);
+  useEffect((): void => {
+    if (prevModeRef.current === navMode) return;
+    prevModeRef.current = navMode;
+    fromResizeRef.current = true;
+    if (navMode === 'overlay' && wideRef.current && navVisibleRef.current) setVisibleRef.current(false);
+  }, [navMode]);
 
   // Focus moves only after the class change has been painted, or the panel is still off-canvas and
   // the browser refuses to focus what it cannot lay out.
@@ -109,9 +146,13 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
     return (): void => document.removeEventListener('keydown', onKeydown);
   }, [overlay, navVisible, setVisible]);
 
+  /* `--nav-overlay` rides on the MODE, not on the viewport: below the breakpoint the stylesheet's
+     own media query already makes the nav off-canvas, so the class would be redundant there, and
+     carrying it anyway is what lets one class answer "is this shell in overlay mode?" at any width. */
+  const modeClass: string = navMode === 'overlay' ? ' fdy-app--nav-overlay' : '';
   const shellClass: string = overlay
-    ? (navVisible ? 'fdy-app fdy-app--nav-open' : 'fdy-app')
-    : (navVisible ? 'fdy-app' : 'fdy-app fdy-app--nav-collapsed');
+    ? `fdy-app${modeClass}${navVisible ? ' fdy-app--nav-open' : ''}`
+    : `fdy-app${modeClass}${navVisible ? '' : ' fdy-app--nav-collapsed'}`;
 
   return (
     <div ref={rootRef} className={shellClass}>

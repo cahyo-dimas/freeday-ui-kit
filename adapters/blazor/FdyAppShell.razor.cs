@@ -43,8 +43,20 @@ public partial class FdyAppShell
 
     [Parameter] public string ToggleLabel { get; set; } = "Toggle navigation";
 
+    /// <summary>
+    /// How a VISIBLE nav sits on a wide viewport: <see cref="FdyNavMode.Push"/> (default) makes it
+    /// a column that displaces the content, <see cref="FdyNavMode.Overlay"/> floats it over the page
+    /// with a backdrop. Below the nav breakpoint it is ignored — the nav is off-canvas there by
+    /// definition, so there is nothing to choose.
+    /// </summary>
+    [Parameter] public FdyNavMode NavMode { get; set; } = FdyNavMode.Push;
+
+    private string ShellClass =>
+        NavMode == FdyNavMode.Overlay ? "fdy-app fdy-app--nav-overlay" : "fdy-app";
+
     private int _navToken;
     private bool? _lastNavOpen;
+    private FdyNavMode _lastNavMode = FdyNavMode.Push;
 
     protected override async ValueTask HydrateAsync()
     {
@@ -76,6 +88,15 @@ public partial class FdyAppShell
         {
             _lastNavOpen = wanted;
             await JS.InvokeVoidAsync("FreedayAppShell.setVisible", Root, wanted);
+        }
+
+        // Switching the mode moves the answer to "is the nav visible?" from one state class to the
+        // other, so `inert` and `aria-expanded` describe the old arrangement until the shell re-reads
+        // the DOM. Blazor has rendered the new class by now; this tells the enhancer to look again.
+        if (_navToken != 0 && NavMode != _lastNavMode)
+        {
+            _lastNavMode = NavMode;
+            await JS.InvokeVoidAsync("FreedayAppShell.refresh", Root);
         }
     }
 
@@ -111,4 +132,18 @@ public partial class FdyAppShell
     }
 
     public sealed record NavDetail(bool Visible);
+}
+
+/// <summary>
+/// How a visible nav sits on a wide viewport. The JS adapters take the same idea as the string
+/// union <c>'push' | 'overlay'</c>; C# gets an enum, for the same reason the column filter type is
+/// one — a typo in a string reaches the renderer, a typo in an enum member does not compile.
+/// </summary>
+public enum FdyNavMode
+{
+    /// <summary>A column that displaces the content (the default, and what every 2.x shell did).</summary>
+    Push,
+
+    /// <summary>Floats over the page with a backdrop, the way it already behaves on a narrow one.</summary>
+    Overlay,
 }
