@@ -39,6 +39,12 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
   `:root`), jadi bisa dipasang di ancestor mana pun untuk membalik satu region; default sistem
   (`prefers-color-scheme`) sengaja tetap root-scoped.
 - `data-density="comfortable|compact"` → `--control-h` (compact untuk layar data-dense).
+- `data-primary="<nama>"` → 18 palet primary (default `azure`). Yang di-redefinisi adalah **ramp
+  alias** `--primary-*` berisi delapan shade, bukan token semantic-nya: pemetaan "shade mana yang
+  jadi fill / hover / wash" ditulis sekali di `color.primary*`, jadi sebuah palet tak mungkin
+  berbeda pendapat soal arti "primary". Sumbernya `$primaries` di `tokens.json`; **setiap palet
+  dijaga gerbang kontras di kedua tema** (`test/contrast.test.mjs`), dan nilai `on`/`onDark`-nya
+  hasil ukur, bukan tebakan.
 - `data-style` → **belum ada di kode sama sekali.** Baris ini dulu berbunyi seolah `soft` adalah
   nilai default yang dibaca sesuatu; grep ke `src/`, `dist/` dan `tokens/` mengembalikan nol. `soft`
   adalah *deskripsi* tampilan kit hari ini, bukan sebuah nilai. Sumbu gayanya sendiri (`soft`/`glass`)

@@ -70,7 +70,39 @@ mengubah satu baris pun.
   **tidak** menutup panel yang mengambang di kedua sisi. `FreedayAppShell.refresh(root)` ditambahkan
   untuk jalur mentah yang mengubah class itu sendiri.
 
+- **Sumbu palet primary: `data-primary`, 18 pilihan.** `azure` (default) · `sky` `blue` `indigo`
+  `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber` `yellow` `lime` `green` `emerald`
+  `teal` `cyan` · `noir`. Dipasang di mana pun `data-theme` bisa, termasuk di wrapper untuk
+  me-rebrand satu region.
+
+  Yang di-redefinisi sebuah palet adalah **ramp alias delapan shade**, bukan token semantic-nya.
+  Pemetaan "shade mana yang jadi fill, mana hover, mana wash" ditulis **sekali** di `color.primary*`,
+  jadi palet yang salah memetakan salah satunya bukan bentuk yang bisa dihasilkan sistem ini — dan
+  `--color-primary`, `-hover`, `-active`, `-soft`, `-border`, `-strong` serta `--focus-ring`
+  semuanya ikut, di kedua tema, tanpa apa pun untuk disetel.
+
+  **Ke-18 dijaga gerbang kontras di kedua tema**: label di atas fill (AA 4.5), fill terhadap surface
+  dan cincin fokus (1.4.11, 3:1), dan `primary-strong` di atas wash-nya sendiri di atas ketiga
+  surface. 36 kombinasi, dan tiga hasilnya **dipaksa oleh pengukuran, bukan selera**: `yellow`
+  memakai fill lebih gelap di tema terang (di shade aslinya cuma 2.94:1 di atas putih, di bawah
+  ambang untuk sebuah fill UI) dan karena itu berlabel putih sementara semua palet hangat lain
+  berlabel gelap; `indigo` dan `violet` bergeser satu langkah lebih terang di tema gelap, karena di
+  shade tengahnya tak ada — putih maupun mendekati-hitam — yang mencapai 4.5:1. Ketiganya
+  didokumentasikan, karena tanpa penjelasan mereka terlihat seperti kekeliruan.
+
+  `noir` bukan hue: ia mengarahkan ramp alias ke ramp netral, jadi "primary" jadi mendekati hitam di
+  terang dan mendekati putih di gelap.
+
 ### Fixed
+- **`resolveValue` melewatkan referensi token di dalam ekspresi.** Pola lamanya mengikat seluruh
+  string, jadi `{primary.600}` di dalam `color-mix(...)` lolos mentah ke stylesheet sebagai teks
+  literal. Ketahuan saat wash `-soft` gelap diturunkan dari alias alih-alih memaku warna azure.
+- **Gerbang kontras memipihkan alpha-nya sendiri.** Cabang `color-mix` mengembalikan `a: 1` apa pun
+  masukannya, jadi setiap wash `-soft` diuji seolah-olah opak — kekeliruan yang justru merupakan
+  hal yang pasangan `-soft` itu ada untuk menangkapnya, bersembunyi di dalam alatnya. Kini
+  premultiplied dan alpha-nya dibawa keluar.
+- **`--focus-ring` menunjuk ramp brand langsung**, jadi cincin fokus akan tetap biru di aplikasi
+  yang memilih palet hijau. Kini ikut alias primary.
 - **`CLAUDE.md` mengklaim `data-style` sudah ada.** Grep ke `src/`, `dist/` dan `tokens/`
   mengembalikan nol: kit belum punya sumbu gaya sama sekali, dan `soft` adalah deskripsi tampilan,
   bukan sebuah nilai. Spec `2026-07-21` §6 juga menyebut knob `--blur`/`--sat`/`--inset`
@@ -95,7 +127,7 @@ mengubah satu baris pun.
   halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
   melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
   dengan mutasi**, bukan hanya dijalankan sekali.
-- node 68 → 70 · browser 83 → 92 · bUnit 14 → 21.
+- node 68 → 107 · browser 83 → 92 · bUnit 14 → 21.
 
 ### Fixed: the kit's own suite
 - **A coordinate click now reaches its target on a window that is not the author's.** CI went red

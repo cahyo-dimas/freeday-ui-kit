@@ -2,10 +2,13 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
-// {a.b.c} -> var(--a-b-c) ; literal lain apa adanya
+/* {a.b.c} -> var(--a-b-c). Every occurrence, not just a value that IS one reference: a token whose
+ * value is an expression — `color-mix(in srgb, {primary.600} 20%, transparent)` — has to resolve its
+ * references too, and the previous whole-string anchor let those through untouched, emitting a
+ * literal `{primary.600}` into the stylesheet. No existing value contains braces for any other
+ * reason, so a global replace is the same answer everywhere it used to apply. */
 export function resolveValue(raw) {
-  const m = /^\{([^}]+)\}$/.exec(String(raw).trim());
-  return m ? `var(--${m[1].replace(/\./g, '-')})` : String(raw);
+  return String(raw).trim().replace(/\{([^}]+)\}/g, (_, ref) => `var(--${ref.replace(/\./g, '-')})`);
 }
 
 // leaf = objek dengan $value ; name = path digabung '-'
@@ -80,7 +83,58 @@ ${compact}
 [data-density="comfortable"] {
 ${comfortable}
 }
-`;
+${buildPrimariesCss(tokens)}`;
+}
+
+/* The primary-palette axis. Each palette redefines the eight-shade `primary` ALIAS ramp, never the
+ * semantics — so which shade is the fill, which is hover and which is the soft wash is stated once,
+ * in `color.primary*`, and a palette that got one of them wrong is not a shape this can produce.
+ *
+ * Scoping follows `data-theme` exactly, and for the same reasons: the selector is bare, so a palette
+ * can be set on any ancestor and re-brand one region; the dark scopes are emitted only for the keys
+ * that actually DIFFER in dark (the label ink, and the shifted aliases), because restating the
+ * unchanged ones is how two blocks drift apart; and a `[data-theme="light"]` re-assert follows, so a
+ * light island inside a dark region wins back. */
+export function buildPrimariesCss(tokens) {
+  const spec = tokens.$primaries;
+  if (spec === undefined) return '';
+  const SHADES = ['50', '100', '300', '400', '500', '600', '700', '800'];
+  /* One step lighter, for a hue whose 500 sits where neither white nor ink clears 4.5:1 on it. */
+  const SHIFT = { 500: '400', 400: '300', 300: '200' };
+  const out = [];
+
+  for (const [name, p] of Object.entries(spec)) {
+    if (name.startsWith('_')) continue;
+    const light = p.light ?? Object.fromEntries(SHADES.map(s => [s, `{${p.ramp}.${s}}`]));
+    const dark = p.dark ?? (p.darkShift === true
+      ? Object.fromEntries(SHADES.map(s => [s, `{${p.ramp}.${SHIFT[s] ?? s}}`]))
+      : null);
+
+    const sel = `[data-primary="${name}"]`;
+    const lightDecls = [
+      ...SHADES.map(s => decl(`primary-${s}`, light[s])),
+      decl('color-on-primary', p.on),
+    ].join('\n');
+    out.push(`${sel} {\n${lightDecls}\n}`);
+
+    // Only what dark actually changes.
+    const darkDecls = [
+      ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, dark[s]))),
+      ...(p.onDark !== p.on ? [decl('color-on-primary', p.onDark)] : []),
+    ];
+    if (darkDecls.length === 0) continue;
+    const backLight = [
+      ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, light[s]))),
+      ...(p.onDark !== p.on ? [decl('color-on-primary', p.on)] : []),
+    ].join('\n');
+    out.push(
+      `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"])${sel} {\n${darkDecls.join('\n')}\n  }\n}`,
+      `[data-theme="dark"]${sel} {\n${darkDecls.join('\n')}\n}`,
+      `[data-theme="light"]${sel} {\n${backLight}\n}`,
+    );
+  }
+  return `/* Primary palette axis. ${Object.keys(spec).filter(k => !k.startsWith('_')).length} options, see $primaries in tokens.json. */\n`
+    + out.join('\n') + '\n';
 }
 
 export function bundleCss(parts) {

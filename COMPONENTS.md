@@ -289,6 +289,31 @@ sidebar from off-canvas drawer to static column at 721px, *not* at `md`. Any `ma
 utility variant that has to agree with the shell must use `nav`; using `md` leaves 721–959px broken
 (sidebar already static while your script still treats it as an overlay).
 
+**Primary palette: `data-primary`.** 18 options — `azure` (the default, and what you get with no
+attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`
+`yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it anywhere `data-theme` works,
+including on a wrapper to re-brand one region:
+
+```html
+<html data-primary="emerald" data-theme="dark">
+```
+
+A palette redefines an eight-shade **alias ramp**, never the semantic tokens. Which shade is the
+fill, which is hover, which is the soft wash is stated once in the token source, so a palette cannot
+disagree with the others about what "primary" means — and `--color-primary`, `--color-primary-hover`,
+`--color-primary-soft`, `--color-primary-border`, `--color-primary-strong` and `--focus-ring` all
+follow, in both themes, with nothing to wire.
+
+**Every palette is contrast-gated, and two carry an exception the gate forced.** All 18 are asserted
+in both themes for the label on a primary fill (AA 4.5), the fill against the surface and the focus
+ring (1.4.11, 3:1), and `primary-strong` on its soft wash over all three surfaces. Three results
+worth knowing, because they look like mistakes otherwise: `yellow` uses a **darker** fill in light
+than the other palettes (at its natural shade it is 2.94:1 on white — below the floor for a UI
+fill), and takes a **white** label there while every other warm palette takes a dark one; `indigo`
+and `violet` shift one step lighter in dark, because at their mid shade neither white nor near-black
+reaches 4.5:1. `noir` is not a hue at all — it re-points the alias ramp at the neutral ramp, so
+"primary" becomes near-black in light and near-white in dark.
+
 Density: `data-density="compact"` works on `<html>` **or any wrapper**, because the selector is a bare
 `[data-density="compact"]` over inheriting custom properties, so one screen can be dense while the
 rest of the app is not. `data-density="comfortable"` is a real rule too, so the reverse also works:

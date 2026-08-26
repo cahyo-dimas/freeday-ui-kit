@@ -42,7 +42,7 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 70 test  · node --test, gerbang default, tanpa browser
+npm test                 107 test  · node --test, gerbang default, tanpa browser
 npm run test:browser     92 test  · 20 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      21 test  · bUnit, komponen Blazor dirender sungguhan

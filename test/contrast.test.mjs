@@ -35,9 +35,18 @@ function parse(v, theme, depth = 0) {
   if (depth > 20) throw new Error('var cycle: ' + v);
   v = v.trim();
   let m = v.match(/^var\((--[\w-]+)\)$/); if (m) return parse(theme[m[1]], theme, depth + 1);
+  if (v === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
   m = v.match(/^color-mix\(in srgb,\s*(.+?)\s+([\d.]+)%\s*,\s*(.+?)\s*\)$/);
-  if (m) { const A = parse(m[1], theme, depth + 1), B = parse(m[3], theme, depth + 1), p = +m[2] / 100;
-    return { r: A.r * p + B.r * (1 - p), g: A.g * p + B.g * (1 - p), b: A.b * p + B.b * (1 - p), a: 1 }; }
+  if (m) {
+    const A = parse(m[1], theme, depth + 1), B = parse(m[3], theme, depth + 1), p = +m[2] / 100;
+    /* PREMULTIPLIED, and the alpha is carried out rather than forced to 1. Mixing with
+       `transparent` is how every -soft fill is now derived, and flattening its alpha here would
+       composite the fill as if it were opaque — the exact error the -soft pairings exist to catch,
+       hidden inside the tool that checks them. */
+    const a = A.a * p + B.a * (1 - p);
+    const chan = (ca, cb) => (a === 0 ? 0 : (ca * A.a * p + cb * B.a * (1 - p)) / a);
+    return { r: chan(A.r, B.r), g: chan(A.g, B.g), b: chan(A.b, B.b), a };
+  }
   m = v.match(/^#([0-9a-f]{6})$/i); if (m) { const n = parseInt(m[1], 16); return { r: n >> 16 & 255, g: n >> 8 & 255, b: n & 255, a: 1 }; }
   m = v.match(/^#([0-9a-f]{3})$/i); if (m) { const h = m[1]; return { r: parseInt(h[0] + h[0], 16), g: parseInt(h[1] + h[1], 16), b: parseInt(h[2] + h[2], 16), a: 1 }; }
   m = v.match(/^rgba?\(([^)]+)\)$/); if (m) { const p = m[1].split(',').map(s => s.trim()); return { r: +p[0], g: +p[1], b: +p[2], a: p[3] == null ? 1 : +p[3] }; }
@@ -110,4 +119,57 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
       assert.ok(r >= AA_TEXT, `${themeName}: tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
     }
   });
+}
+
+/* --- the primary palette axis ------------------------------------------------------------------
+ *
+ * 18 palettes x 2 themes, and the pairs that actually move when the hue does. This is the gate that
+ * decides whether a palette may ship: `on`/`onDark` in $primaries are a DESIGN choice about which
+ * ink survives on a fill, and a choice nobody measured is a choice that fails on exactly the hues
+ * where it is least obvious — the mid-luminance ones, where white and near-black are both marginal.
+ *
+ * Two of them, indigo and violet, do not clear 4.5 at shade 500 with either ink; they carry a
+ * `darkShift` for that reason, and this suite is what says so rather than a comment claiming it. */
+const paletteScope = (name, sel) => {
+  const re = new RegExp(`\\n${sel.replace(/[[\]"^$.*+?()|{}\\]/g, '\\$&')}\\[data-primary="${name}"\\]\\s*\\{([\\s\\S]*?)\\n\\}`);
+  return vars(scope(re));
+};
+
+const PALETTES = Object.keys(JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url))).$primaries)
+  .filter((k) => !k.startsWith('_'));
+
+test('every palette is actually emitted', () => {
+  assert.ok(PALETTES.length >= 18, `expected the full axis, found ${PALETTES.length}`);
+  for (const name of PALETTES) {
+    assert.ok(Object.keys(paletteScope(name, '')).length >= 9,
+      `[data-primary="${name}"] emitted nothing — a palette that does not resolve is as green as one that passes`);
+  }
+});
+
+for (const name of PALETTES) {
+  /* Cascade order, not convenience order. The palette blocks are emitted AFTER the theme blocks and
+     match at the same specificity (0,1,0), so a palette's `--color-on-primary` wins over the
+     theme's generic one — which is the point: the ink that survives on a fill is a property of the
+     HUE, not of the theme. Spreading darkVars last would have re-tested every warm palette with the
+     default white label and failed nine of them for a reason the stylesheet does not have. */
+  const light = { ...base, ...paletteScope(name, '') };
+  const dark = { ...base, ...darkVars, ...paletteScope(name, ''), ...paletteScope(name, '[data-theme="dark"]') };
+
+  for (const [themeName, theme] of [['LIGHT', light], ['DARK', dark]]) {
+    test(`WCAG contrast: palette ${name} (${themeName})`, () => {
+      const fails = [];
+      const check = (fg, bg, min, label) => {
+        const r = R(fg, bg, theme);
+        if (r < min) fails.push(`${label}: ${r.toFixed(2)} < ${min}`);
+      };
+      check('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
+      check('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
+      check('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
+      for (const s of SURF) {
+        check('--color-primary-strong', { soft: '--color-primary-soft', on: s }, AA_TEXT,
+          `primary-strong on primary-soft/${s.replace('--color-surface', 'surf')}`);
+      }
+      assert.deepEqual(fails, [], `palette "${name}" (${themeName}) fails its contract:\n  ` + fails.join('\n  '));
+    });
+  }
 }

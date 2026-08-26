@@ -485,6 +485,20 @@
           <label class="doc-sw"><i style="background:var(--color-border-strong)"></i><span>border-strong</span></label>
         </div>
       </div>
+
+      <p class="doc-desc"><strong>Palet primary: <code>data-primary</code>.</strong> 18 pilihan. Yang di-redefinisi adalah ramp <em>alias</em> delapan shade, bukan token semantic-nya — jadi pemetaan "shade mana yang jadi fill, hover, wash" ditulis sekali dan sebuah palet tak mungkin berbeda pendapat soal arti "primary". Bisa dipasang di <code>&lt;html&gt;</code> atau di wrapper mana pun untuk me-rebrand satu region. <strong>Setiap palet dijaga gerbang kontras di kedua tema</strong>; tiga hasilnya tampak seperti kekeliruan kalau tak dijelaskan: <code>yellow</code> memakai fill lebih gelap di tema terang (di shade aslinya cuma 2.94:1 di atas putih) dan karenanya berlabel putih, sedangkan <code>indigo</code> dan <code>violet</code> bergeser satu langkah lebih terang di tema gelap. <code>noir</code> bukan hue sama sekali — ia mengarahkan ramp alias ke ramp netral.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-swatches" role="group" aria-label="Pilih palet primary">
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.removeAttribute('data-primary')">azure (default)</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='emerald'">emerald</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='violet'">violet</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='amber'">amber</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='yellow'">yellow</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='rose'">rose</button>
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" onclick="document.documentElement.dataset.primary='noir'">noir</button>
+        </div>
+        <p class="doc-desc" style="margin-top:var(--space-3)">Tekan salah satu, lalu telusuri halaman ini: tombol, tab, fokus, chart, dan setiap <code>-soft</code> wash ikut berubah tanpa satu baris pun disetel per komponen.</p>
+      </div>
     </section>
 
     <section class="doc-section" id="sec-tipografi">
