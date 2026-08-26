@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <!-- A REAL Blazor Server host, not a bUnit double. bUnit renders components in-process with a
+       mocked JS runtime, which is exactly the thing that cannot answer NEXT-UP #2: under Server
+       with prerendering the first render happens with NO JS at all, and the interop the pickers
+       and the app shell depend on only becomes available once the circuit connects. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Freeday.Blazor.ServerHarness</RootNamespace>
+    <!-- Never shipped: this lives outside adapters/, which is what goes to npm. -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../adapters/blazor/Freeday.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

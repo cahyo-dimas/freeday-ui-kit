@@ -1,0 +1,40 @@
+@page "/"
+@rendermode InteractiveServer
+
+@* The three shapes NEXT-UP #2 is actually about, on one page:
+     - FdyCombo   its DOM is OWNED by the enhancer, and it stops rendering once hydrated
+                  (ShouldRender => !Hydrated). Under prerender the first render has no JS at all.
+     - FdyModal   a native <dialog>: show/close go through JS interop, so opening one from a
+                  parameter set BEFORE the circuit connects is the ordering that breaks.
+     - FdyAppShell two-way binding reconciled against a DOM the enhancer mutates. *@
+
+<FdyAppShell @bind-NavOpen="_navOpen" Title="Harness">
+    <BrandContent><a class="fdy-app__brand" href="#" id="brand">Acme</a></BrandContent>
+    <NavContent>
+        <nav class="fdy-nav">
+            <a class="fdy-nav__item" href="#one" id="nav-one">One</a>
+        </nav>
+    </NavContent>
+    <ChildContent>
+        <div class="fdy-page">
+            <FdyCombo TValue="string" @bind-Value="_pick" Options="_options" Id="cb" Placeholder="Pick one" />
+
+            <button class="fdy-btn" type="button" id="open-modal" @onclick="() => _modalOpen = true">Open modal</button>
+            <FdyModal @bind-Open="_modalOpen" Title="Confirm">
+                <ChildContent><p id="modal-body">Body</p></ChildContent>
+            </FdyModal>
+        </div>
+    </ChildContent>
+</FdyAppShell>
+
+@code {
+    private bool? _navOpen;
+    private string? _pick;
+    private bool _modalOpen;
+
+    private static readonly IReadOnlyList<FdyComboOption<string>> _options = new[]
+    {
+        new FdyComboOption<string>("a", "Alpha"),
+        new FdyComboOption<string>("b", "Badge"),
+    };
+}

@@ -24,9 +24,9 @@ Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang; pemicunya di kolom 
 | # | Kandidat | Kerjakan saat |
 |---|---|---|
 | 1 | **NuGet package `Freeday.Blazor`**: kini source-only via `<ProjectReference>`; NuGet (bundle static asset lewat RCL `wwwroot`) = distribusi bersih di luar repo | ada consumer di luar repo ini |
-| 2 | **Verifikasi Blazor Server + prerender**: baru WASM yang diverifikasi; SSR/prerender beda timing JS-interop (tak ada JS saat prerender; `<dialog>` show/close) | project pakai Server / Auto render mode |
+| 2 | **Verifikasi Blazor Server + prerender.** **Harness-nya berdiri** (2026-08-26, `test/blazor-server/` + `browser/blazor-server.mjs`, `npm run test:blazor-server`) dan menjawab tiga dari empat: prerender mengeluarkan markup penuh **tanpa satu pun penanda hidrasi**, enhancer hidrat begitu circuit tersambung, dan `<dialog>` show/close dari .NET benar. Yang **gagal** — dan ini alasan item ini ada: pada klik mouse ASLI, `FdyCombo` terbuka lalu **menutup dirinya sendiri**. Urutan terukur: `click` → `aria-expanded=true` → `blur` (`activeElement=BODY`, `relatedTarget=null`) → `focusout` → `aria-expanded=false`. `relatedTarget=null` + fokus jatuh ke BODY = node yang sedang fokus **dilepas**, bukan berpindah — Blazor mengganti DOM di bawah enhancer setelah klik. Klik sintetik berhasil dan `setValue()` benar, jadi enhancer & markup-nya sehat; yang rusak adalah **kepemilikan DOM bersama** di mode Server. Ditandai `todo` di suite, bukan dihapus. | **pemicunya sudah datang**: prasyarat item edit-sel (spec 2026-08-26 §D4) |
 | 3 | ~~**Row selection + bulk-action bar** di `FdyTable` (ketiga adapter).~~ **selesai** (2026-08-26, 3.0.0): pemicunya datang dari layar back-office nyata (note `#049`). `selectable` + `selectedKeys` di Vue/React/Blazor, ber-key `rowKey` seperti `expandedKeys`. Select-all sengaja hanya menjangkau **halaman yang terlihat**, dan key dari halaman lain dipertahankan. Blazor butuh satu interop (`setIndeterminate`) karena `indeterminate` properti DOM tanpa atribut. Dijaga 2 test Chrome + 7 bUnit, keduanya diverifikasi dengan mutasi | — |
-| 4 | **Deferred YAGNI** (tak berubah): data grid virtualized · form master-detail 2-kolom · `data-style` lain (glass/neumorph) | on-demand murni |
+| 4 | **Deferred YAGNI**: data grid virtualized · form master-detail 2-kolom · `data-style` **selain** `soft`/`glass` (neumorph/clay/dst.) — `glass` sendiri **terkirim di 3.0.0** | on-demand murni |
 | 5 | ~~_Opsional infra:_ bUnit guard komponen Blazor di CI~~ **selesai** (2026-08-25): `test/blazor/`, 7 test, jalan di `npm run test:blazor` dan di CI. Catatan lama menyebut "manual runtime-verify via `drive-*.mjs` + CDP", padahal skrip itu **tak ada**; sebelum ini satu-satunya gerbang Blazor adalah `dotnet build`, yaitu kompilasi | — |
 | 6 | ~~**String UI vanilla bisa di-override.**~~ **selesai** (2026-08-25): owner memilih (b), ganti default ke English, terbit di **2.0.0** — 39 string di 9 enhancer plus fallback locale datepicker (`lang || 'en'`). Hook override (a) ternyata sudah ada sejak 1.39.0, jadi migrasinya atribut: `data-fdy-text-<key>`, dan `<html lang="id">` untuk nama tanggal | — |
 | 7 | **`groupBy` di `FdyTable`.** Layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
@@ -52,7 +52,7 @@ tidak ada. Kondisi terkini: **[`HANDOFF.md`](HANDOFF.md)**.
 
 - **Data grid virtualisasi**, spec §7
 - **Form master-detail / 2 kolom**, spec §7
-- **`data-style` lain** (glass / neumorph / dst.): v1 sengaja hanya `soft`; spec §6
+- **`data-style` selain `soft`/`glass`** (neumorph / clay / dst.): `glass` terkirim di 3.0.0; sisanya spec §6
 
 Ini bukan utang. Ini keputusan sadar: design system tak pernah "selesai", dia ber-versi.
 

@@ -96,7 +96,8 @@
     "prepack": "node tokens/build.mjs",
     "version": "node tokens/build.mjs && git add dist",
     "typecheck:react": "tsc -p adapters/react/tsconfig.json --noEmit",
-    "test:blazor": "dotnet test test/blazor -v quiet --nologo"
+    "test:blazor": "dotnet test test/blazor -v quiet --nologo",
+    "test:blazor-server": "node --test browser/blazor-server.mjs"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

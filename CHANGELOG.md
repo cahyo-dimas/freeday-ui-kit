@@ -147,6 +147,20 @@ mengubah satu baris pun.
   tersisa di stylesheet komponen. Kini `--color-scrim`, jadi ia menggelap persis seperti overlay lain.
 
 ### Guarded
+- **Harness Blazor Server + prerender yang sungguhan** (`test/blazor-server/`, `npm run
+  test:blazor-server`) — host Blazor Server betulan, bukan double bUnit, digerakkan lewat CDP. bUnit
+  merender in-process dengan JS runtime tiruan, jadi setiap test Blazor selama ini **berangkat dari
+  dunia di mana interop sudah bekerja**; justru itu yang tak bisa menjawab `NEXT-UP` #2.
+
+  Tiga dari empat hijau: prerender mengeluarkan markup penuh **tanpa satu pun penanda hidrasi**,
+  enhancer hidrat begitu circuit tersambung, dan `<dialog>` yang dibuka dari .NET benar-benar
+  terbuka lalu tertutup oleh Escape. Yang keempat **menemukan cacat nyata** dan ditandai `todo`,
+  bukan dihapus: pada klik mouse **asli**, `FdyCombo` terbuka lalu menutup dirinya sendiri.
+  Urutan terukur `click → aria-expanded=true → blur (activeElement=BODY, relatedTarget=null) →
+  focusout → aria-expanded=false`; `relatedTarget` kosong dengan fokus jatuh ke BODY berarti node
+  yang sedang fokus **dilepas**, bukan berpindah. Klik sintetik berhasil dan `setValue()` benar, jadi
+  enhancer dan markup-nya sehat — yang rusak **kepemilikan DOM bersama** di mode Server. Ini menahan
+  item edit-sel, persis seperti yang diminta keputusan §D4.
 - 4 test node baru (invariant urutan stripe + warnanya), 11 test Chrome baru (selection lintas
   halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
   melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
