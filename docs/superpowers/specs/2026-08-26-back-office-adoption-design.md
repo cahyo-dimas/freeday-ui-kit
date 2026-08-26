@@ -185,7 +185,13 @@ Per note `#049` §1. The full rationale is there; the decisions this spec fixes:
 - **Imperative only**, `Freeday.busy({ caption, delay })` / `Freeday.idle()`, returning the node the
   way `Freeday.toast()` does. A component API invites two instances; the consuming app shipped
   exactly that bug and left a comment about it.
-- `role="alertdialog"` + `aria-modal` + `aria-busy` + accessible name from the caption.
+- **Revised while implementing (2026-08-26): no dialog role.** This spec first said
+  `role="alertdialog"` + `aria-modal`, copied from the app that raised the note. That is wrong on
+  its own terms: an alertdialog asks the reader for a response, and this asks for nothing — it
+  cannot be dismissed and has no controls. Shipped instead: `aria-busy` on the overlay and
+  `role="status"` on the caption, so the message is announced politely and nothing pretends to be a
+  dialog. Focus still parks on the panel and is returned on `idle()`, because the element that had
+  it is inert by then and the browser would otherwise drop focus to `<body>`.
 - A **delay before appearing** (default in the 100–150ms range, `0` disables) so a fast operation
   never flashes a scrim.
 - `inert` on the app root while up — it is not a dialog and has nothing to focus; blocking
@@ -193,15 +199,28 @@ Per note `#049` §1. The full rationale is there; the decisions this spec fixes:
 - Reduced motion: nothing travels; the caption carries the signal.
 - The animated mark is a **slot**. The kit ships one plain spinner; brand marks stay with the app.
 
-### D8 — Stepper gains an invalid state and a guarded next
+### D8 — Stepper gains an error state and a refusable next
 
-Per note `#049` §3.
+Per note `#049` §3. **Both halves were revised while implementing (2026-08-26); the reasons are the
+useful part.**
 
-- `.fdy-step.is-invalid` plus a `.fdy-step__badge` in the marker. Colour alone does not carry it;
-  the badge needs an accessible name naming the step and the count.
-- `data-fdy-step-guard` on the panel: the enhancer awaits it and refuses to advance on a falsy
-  result. **How validity is decided stays with the app** — the kit stays form-library agnostic, and
-  this is the line that keeps it so.
+- **The state is `is-error`, not `is-invalid`.** `stepper.css` already carried
+  `.fdy-step.is-error` — styled, unused, and documented nowhere, so nothing could reach it. Adding
+  a second class for one state would have been the worse outcome. Shipped: the existing name, now
+  documented, with the label following the marker into danger, plus `.fdy-step__badge` for the
+  count, because colour alone tells a reader who cannot see red nothing at all. The badge is a
+  **sibling** of the marker, not a slot inside it — the enhancer rewrites `__marker.innerHTML` on
+  every render, so a child would vanish the first time the reader moved a step.
+- **A cancelable event, not an attribute.** `data-fdy-step-guard` was unimplementable as written:
+  an HTML attribute cannot carry a function, and validation is usually a round-trip away, which a
+  synchronous `preventDefault()` cannot express either. Shipped: a cancelable
+  `fdy-step-before-change` (`detail: { from, to, waitFor }`), refused with `preventDefault()` **or**
+  deferred by assigning a promise to `detail.waitFor`. While one is outstanding the nav is disabled
+  and the header carries `aria-busy`. Resolving to anything but `false` advances — a handler that
+  forgets to return is not a refusal — and a guard that throws advances nothing, since it decided
+  nothing. Going back never asks; a forward jump to an already-reached step does.
+- **How validity is decided stays with the app** — the kit stays form-library agnostic, and this
+  event is the line that keeps it so.
 
 ---
 
