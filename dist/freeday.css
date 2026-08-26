@@ -364,7 +364,16 @@ a { color: var(--color-primary); }
 
 /* The caption sits on a solid surface, not on the scrim. A scrim is semi-transparent over unknown
  * content, so text on it has no computable contrast ratio and no gate could ever cover it. On
- * --color-surface it is the same pair the contrast suite already checks. */
+ * --color-surface it is the same pair the contrast suite already checks.
+ *
+ * THIS IS ALSO WHY THIS PANEL DOES NOT JOIN THE GLASS AXIS, and the omission is a decision rather
+ * than an oversight. Every other raised panel reads --color-surface-raised and frosts under
+ * [data-style="glass"]; this one stays opaque. The glass gate asserts its ink against the panel
+ * composited over the PAGE GROUND (--color-surface-2), which is what sits behind a card or a modal.
+ * Behind this one is the scrim, over arbitrary content — the very case that has no computable
+ * ratio. A frosted busy panel would be the one surface in the kit whose caption nothing could
+ * verify, while it is up precisely because the app is doing something the reader must not
+ * interrupt. Left opaque on purpose; do not "fix" it for consistency. */
 .fdy-busy__panel{display:flex;flex-direction:column;align-items:center;gap:var(--space-4);padding:var(--space-6) var(--space-8);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-lift);max-width:min(20rem,calc(100vw - var(--space-8)));}
 .fdy-busy__mark{display:flex;align-items:center;justify-content:center;min-height:2.5rem;}
 .fdy-busy__caption{margin:0;font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);text-align:center;}
