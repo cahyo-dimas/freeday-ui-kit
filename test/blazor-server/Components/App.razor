@@ -13,6 +13,10 @@
 </head>
 <body>
     <Routes @rendermode="InteractiveServer" />
+    @* A signal the spec can WAIT on. Without it a test races the circuit: the enhancers auto-init
+       on DOMContentLoaded over the PRERENDERED markup, which Blazor then replaces wholesale when it
+       goes interactive — so a click landing in that window hits a node about to be detached. *@
+    <script>window.__markInteractive = function () { window.__interactive = true; };</script>
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>

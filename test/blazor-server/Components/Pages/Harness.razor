@@ -27,7 +27,16 @@
     </ChildContent>
 </FdyAppShell>
 
+@inject Microsoft.JSInterop.IJSRuntime JS
+
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Fires only once the component is INTERACTIVE — i.e. after the circuit connected and
+        // Blazor replaced the prerendered DOM. Everything before this point is throwaway markup.
+        if (firstRender) await JS.InvokeVoidAsync("__markInteractive");
+    }
+
     private bool? _navOpen;
     private string? _pick;
     private bool _modalOpen;

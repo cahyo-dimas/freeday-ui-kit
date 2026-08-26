@@ -158,16 +158,20 @@ mode", i.e. it had no trigger of its own. It now has one: **item 1 cannot start 
 + prerender is verified**, which means someone must stand up a Server-rendered harness rather than
 wait for a project to supply it. Budget that before item 1, not during it.
 
-**Update 2026-08-26: the harness is built, and it found a blocker.** `test/blazor-server/` is a real
-Blazor Server host (not a bUnit double) driven by the CDP harness. Three of its four checks pass —
-prerender emits full markup with no hydration marker, the enhancers hydrate once the circuit
-connects, and a `<dialog>` opened from .NET really opens. The fourth does not: on a **real** mouse
-click `FdyCombo` opens and then closes itself, because Blazor detaches the focused node under the
-enhancer (`relatedTarget=null`, focus falls to `BODY`) and the enhancer's own `focusout` handler
-shuts what it had just opened. A synthetic `.click()` works and `setValue()` commits, so neither the
-markup nor the enhancer is at fault — **DOM co-ownership under Server is**. Item 1 stays blocked, and
-the owner's decision to require this verification is what stopped a broken editable grid shipping to
-Blazor consumers.
+**Update 2026-08-26: the harness is built, and the prerequisite is SATISFIED.**
+`test/blazor-server/` is a real Blazor Server host (not a bUnit double) driven by the CDP harness,
+and all four checks pass: prerender emits full markup with no hydration marker, the enhancers
+hydrate once the circuit connects, a `<dialog>` opened from .NET really opens and closes on Escape,
+and a combo picked with a real mouse reaches the .NET binding.
+
+One check first went red and was briefly reported here as a kit defect. **It was not.** The enhancers
+auto-init on DOMContentLoaded, so they stamp `data-fdy-*-ready` on the PRERENDERED markup that Blazor
+then replaces wholesale when it goes interactive — a test waiting on that marker is waiting for the
+wrong thing, and its click landed on a node about to be detached. Waiting for the component to
+actually go interactive makes it pass, three runs out of three. The lesson is real even though the
+defect was not: **under prerendering a hydration marker can be true about a DOM with no future.**
+
+**Item 1 is therefore unblocked for Blazor.**
 
 ### D5 — The shell grows a desktop overlay mode
 

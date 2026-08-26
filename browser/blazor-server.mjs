@@ -69,6 +69,7 @@ test('prerender emits the full markup with no JS having run (#2)', { skip }, asy
 
 test('the enhancer hydrates once the circuit connects (#2)', { skip }, async () => {
   await withPage(URL, async (p) => {
+    await p.waitFor('window.__interactive === true');
     const hydrated = await p.waitFor(`!!document.querySelector('[data-fdy-combo-ready]')`);
     assert.ok(hydrated, 'FdyCombo never hydrated under Server — its DOM is owned by the enhancer, so it would stay inert');
     assert.equal(await p.evalJS(`document.querySelector('[data-fdy-app]')._fdyAppShell !== undefined`), true,
@@ -76,26 +77,26 @@ test('the enhancer hydrates once the circuit connects (#2)', { skip }, async () 
   });
 });
 
-/* KNOWN FAILURE, and the reason this harness exists. Marked `todo` rather than deleted or silently
- * skipped: it records a defect nobody had measured, and it must go red the day it is fixed rather
- * than be rediscovered.
+/* The check that first appeared to fail, and the correction is the useful part.
  *
- * Measured sequence on a real mouse click, Blazor Server + prerender:
- *   pointerdown -> mousedown -> focus -> pointerup -> mouseup -> click
- *   -> aria-expanded=true      (the enhancer DID open it)
- *   -> blur (activeElement=BODY, relatedTarget=null)
- *   -> focusout -> aria-expanded=false
+ * It went red with a precise, plausible story: on a real click the combo opened and then closed
+ * itself, focus landing on BODY with `relatedTarget=null` — which is what a browser does when the
+ * focused node is DETACHED. The node really was detached. The wrong conclusion was WHO detached it.
  *
- * `relatedTarget=null` with focus landing on BODY is what the browser does when the focused node is
- * DETACHED, not when focus moves — so Blazor is replacing DOM under the enhancer after the click,
- * the button goes with it, and the enhancer's own focusout handler closes what it had just opened.
- * A SYNTHETIC `.click()` opens it and stays open; `FreedayCombo.setValue()` commits correctly. So the
- * enhancer is wired and the markup is right: what is broken is co-ownership of the DOM under Server.
+ * Not Blazor patching under the enhancer per click: Blazor replacing the whole PRERENDERED subtree
+ * once, when the circuit connects. The enhancers auto-init on DOMContentLoaded, so they stamp
+ * `data-fdy-*-ready` on markup that is about to be thrown away — and a test that waits on that
+ * marker is waiting for the wrong thing. Waiting for the component to actually go interactive
+ * (`window.__interactive`, set from OnAfterRenderAsync) makes it pass, three runs out of three.
  *
- * This is the class of failure NEXT-UP #2 was written for, and it says the editable cell (spec §D4)
- * must not ship to Blazor until it is resolved — which is exactly what the owner's decision required. */
-test('a combo picked with a real mouse reaches the Blazor binding (#2)', { skip, todo: 'Blazor Server detaches the focused node under the enhancer; the combo closes itself' }, async () => {
+ * So the kit is fine here, and the real lesson is about hydration markers: under prerendering they
+ * are true about a DOM with no future. That is worth knowing for any app on this render mode. */
+test('a combo picked with a real mouse reaches the Blazor binding (#2)', { skip }, async () => {
   await withPage(URL, async (p) => {
+    /* Wait for the circuit, not just for a hydration marker. The enhancers auto-init on
+       DOMContentLoaded over the PRERENDERED markup, and Blazor replaces that wholesale when it goes
+       interactive — so the marker can be true about a subtree that is about to be thrown away. */
+    await p.waitFor('window.__interactive === true');
     await p.waitFor(`!!document.querySelector('[data-fdy-combo-ready]')`);
     await p.clickCenter('.fdy-combo__button');
     const opened = await p.waitFor(`document.querySelector('.fdy-combo__button').getAttribute('aria-expanded') === 'true'`);
@@ -112,6 +113,7 @@ test('a combo picked with a real mouse reaches the Blazor binding (#2)', { skip,
 
 test('a <dialog> opened from .NET actually opens under Server (#2)', { skip }, async () => {
   await withPage(URL, async (p) => {
+    await p.waitFor('window.__interactive === true');
     await p.waitFor(`!!document.querySelector('[data-fdy-combo-ready]')`);
     assert.equal(await p.evalJS(`document.querySelector('dialog.fdy-modal').open`), false, 'starts shut');
 

@@ -150,22 +150,23 @@ mengubah satu baris pun.
 - **Harness Blazor Server + prerender yang sungguhan** (`test/blazor-server/`, `npm run
   test:blazor-server`) — host Blazor Server betulan, bukan double bUnit, digerakkan lewat CDP. bUnit
   merender in-process dengan JS runtime tiruan, jadi setiap test Blazor selama ini **berangkat dari
-  dunia di mana interop sudah bekerja**; justru itu yang tak bisa menjawab `NEXT-UP` #2.
+  dunia di mana interop sudah bekerja**; justru itu yang tak bisa menjawab `NEXT-UP` #2. **4/4
+  hijau**: prerender mengeluarkan markup penuh tanpa satu pun penanda hidrasi, enhancer hidrat begitu
+  circuit tersambung, `<dialog>` yang dibuka dari .NET benar-benar terbuka lalu tertutup Escape, dan
+  combo yang dipilih dengan mouse asli sampai ke binding .NET.
 
-  Tiga dari empat hijau: prerender mengeluarkan markup penuh **tanpa satu pun penanda hidrasi**,
-  enhancer hidrat begitu circuit tersambung, dan `<dialog>` yang dibuka dari .NET benar-benar
-  terbuka lalu tertutup oleh Escape. Yang keempat **menemukan cacat nyata** dan ditandai `todo`,
-  bukan dihapus: pada klik mouse **asli**, `FdyCombo` terbuka lalu menutup dirinya sendiri.
-  Urutan terukur `click → aria-expanded=true → blur (activeElement=BODY, relatedTarget=null) →
-  focusout → aria-expanded=false`; `relatedTarget` kosong dengan fokus jatuh ke BODY berarti node
-  yang sedang fokus **dilepas**, bukan berpindah. Klik sintetik berhasil dan `setValue()` benar, jadi
-  enhancer dan markup-nya sehat — yang rusak **kepemilikan DOM bersama** di mode Server. Ini menahan
-  item edit-sel, persis seperti yang diminta keputusan §D4.
+  **Satu check sempat merah dan sempat dilaporkan sebagai cacat kit. Ia bukan cacat kit.** Enhancer
+  auto-init saat `DOMContentLoaded`, jadi mereka menstempel `data-fdy-*-ready` pada markup
+  **prerender yang sebentar lagi dibuang** Blazor ketika circuit tersambung. Test yang menunggu
+  penanda itu menunggu hal yang salah, dan klik-nya mendarat di node yang akan dilepas — persis
+  gejala "node dilepas, bukan fokus berpindah" yang terukur. Menunggu komponen benar-benar interaktif
+  membuatnya hijau, 3 dari 3 run. Pelajarannya tetap berlaku meski cacatnya tidak ada: **di bawah
+  prerendering, penanda hidrasi bisa benar tentang DOM yang tak punya masa depan.**
 - 4 test node baru (invariant urutan stripe + warnanya), 11 test Chrome baru (selection lintas
   halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
   melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
   dengan mutasi**, bukan hanya dijalankan sekali.
-- node 68 → 111 · browser 83 → 92 · bUnit 14 → 21.
+- node 68 → 113 · browser 83 → 92 · bUnit 14 → 21 · **suite baru** blazor-server 4.
 
 ### Fixed: the kit's own suite
 - **A coordinate click now reaches its target on a window that is not the author's.** CI went red

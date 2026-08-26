@@ -42,11 +42,11 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 111 test  · node --test, gerbang default, tanpa browser
+npm test                 113 test  · node --test, gerbang default, tanpa browser
 npm run test:browser     92 test  · 20 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      21 test  · bUnit, komponen Blazor dirender sungguhan
-npm run test:blazor-server 3 test + 1 todo · Blazor Server SUNGGUHAN + prerender, lewat CDP
+npm run test:blazor-server 4 test  · Blazor Server SUNGGUHAN + prerender, lewat CDP
 ```
 
 - **Blazor akhirnya punya gerbang perilaku** (2026-08-25). Sebelumnya hanya `dotnet build`, yaitu
