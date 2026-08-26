@@ -20,7 +20,6 @@
   --primary-600: var(--azure-600);
   --primary-700: var(--azure-700);
   --primary-800: var(--azure-800);
-  --primary-_comment: Alias ramp. The primary semantics read THESE, never a brand ramp directly, so swapping a palette is eight declarations under [data-primary] instead of re-deriving every semantic token twice (once per theme). Only the eight shades the semantics actually consume are aliased.;
   --slate-0: #ffffff;
   --slate-50: #f7f8fa;
   --slate-100: #eef0f4;

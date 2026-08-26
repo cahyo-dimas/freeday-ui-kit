@@ -15,6 +15,12 @@ export function resolveValue(raw) {
 export function flatten(tokens, prefix = []) {
   const out = [];
   for (const [key, val] of Object.entries(tokens)) {
+    /* `_`-prefixed keys are documentation, never tokens. Without this a note written as
+       `"_comment": { "$value": "…" }` — the shape the rest of the file uses for real tokens —
+       becomes `--primary-_comment: Alias ramp. The primary semantics read THESE…;` in the shipped
+       stylesheet: a custom property holding a paragraph of English, invalid at the first `[`, and
+       silently carried into every consumer's bundle. */
+    if (key.startsWith('_')) continue;
     if (val && typeof val === 'object' && '$value' in val) {
       out.push({
         name: [...prefix, key].join('-'),

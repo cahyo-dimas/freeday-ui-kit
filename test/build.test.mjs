@@ -108,3 +108,31 @@ test('density opts back out, and its values are derived rather than restated (#0
     assert.notEqual(v, compact[k], `${k} is identical in both densities, so one of them does nothing`);
   }
 });
+
+/* Documentation nodes must never become tokens.
+ *
+ * tokens.json carries notes, and the natural place to put a long one is a node of its own. Written
+ * in the same shape as a real token — `"_comment": { "$value": "…" }` — it flattened into
+ * `--primary-_comment: Alias ramp. The primary semantics read THESE…;`: a custom property holding a
+ * paragraph of English, invalid at its first `[`, shipped in every consumer's bundle. It reached
+ * dist and no suite noticed, which is why this guard is a unit test on the function rather than a
+ * grep over the output. */
+test('flatten skips _-prefixed keys, whatever shape they are written in', () => {
+  const flat = flatten({
+    ramp: {
+      _comment: { $value: 'a note that happens to look exactly like a token' },
+      500: { $value: '#abcdef' },
+    },
+    _private: { 500: { $value: '#000000' } },
+  });
+  assert.deepEqual(flat.map((t) => t.name), ['ramp-500'],
+    'a documentation node must not emit a custom property');
+});
+
+test('no shipped custom property carries prose', () => {
+  const css = readFileSync(new URL('../dist/freeday.tokens.css', import.meta.url), 'utf8');
+  const offenders = [...css.matchAll(/^\s*(--[\w-]+)\s*:\s*([^;]{0,400});/gm)]
+    .filter(([, name, value]) => name.includes('_comment') || /\s\w+\s\w+\s\w+\s\w+\s\w+\s/.test(value))
+    .map(([, name]) => name);
+  assert.deepEqual(offenders, [], 'these read as sentences, not values:\n  ' + offenders.join('\n  '));
+});
