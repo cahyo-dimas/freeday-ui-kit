@@ -73,6 +73,13 @@ jobs:
           npm run test:browser 2>&1 | tee /tmp/browser.tap || failed=1
           if [ -n "${failed:-}" ]; then
             grep -E '^not ok ' /tmp/browser.tap | while IFS= read -r line; do echo "::error::$line"; done
+            # ...and WHY. The name alone cost a full cycle once (see HANDOFF): a red run said which
+            # test failed and nothing about the assertion, so the only way on was to guess. TAP puts
+            # the diagnostic in an indented YAML block after the `not ok` line; this lifts the
+            # `error:` and `expected/actual` lines out of it, one annotation per line, since a
+            # workflow command cannot carry a raw newline anyway.
+            awk '/^not ok /{f=1} f && /^ +(error|expected|actual|operator):/{print} /^ +\.\.\./{f=0}' /tmp/browser.tap \
+              | sed 's/^ *//' | while IFS= read -r line; do echo "::error::  $line"; done
             echo "::error::Browser suite failed. The failing test names are annotated above."
             exit 1
           fi

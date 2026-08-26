@@ -11,6 +11,12 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const fixture = (name) => 'file://' + join(HERE, 'fixtures', name);
 const skip = findChrome() === null ? 'no Chrome binary (set CHROME_BIN to run browser tests)' : false;
 
+/* waitFor RETURNS false on timeout rather than throwing, so an unmet condition sails on and fails
+   some later assertion with a message about the wrong thing. Say which wait expired. */
+const until = async (p, condition, what) => {
+  assert.ok(await p.waitFor(condition), `timed out waiting for ${what}, condition never became true: ${condition}`);
+};
+
 test('vanilla datetime: disabled reflects onto BOTH child triggers', { skip }, async () => {
   await withPage(fixture('vanilla-datetime.html'), async (p) => {
     const applied = await p.waitFor(
@@ -228,6 +234,20 @@ test('busy: a fast operation never paints a scrim', { skip }, async () => {
  * event alone cannot express: the answer is a server round-trip away. Refusing synchronously is
  * easy to get right; the failures worth a real browser are the async ones — advancing while the
  * promise is still pending, and letting a second click through the gap. */
+/* Settling a deferred guard is only safe once the enhancer has actually TAKEN the promise, and
+ * `aria-busy` is the moment it did. A click ack from CDP means the events were dispatched, NOT that
+ * the page's handlers have run — so calling `window.settle` straight after a click can call the
+ * PREVIOUS cycle's resolver, which is already settled and therefore a no-op. The new promise then
+ * hangs forever and the panel never moves. That passed on this machine and failed on CI's Chrome,
+ * both times, which is exactly the shape of a test that is racing rather than asserting. */
+const settleWith = async (p, answer) => {
+  await until(p, `document.querySelector('#wiz .fdy-stepper').getAttribute('aria-busy') === 'true'`,
+    'the enhancer to take the guard\'s promise before it is settled');
+  await p.evalJS(`window.settle(${answer})`);
+  await until(p, `!document.querySelector('#wiz .fdy-stepper').hasAttribute('aria-busy')`,
+    'the stepper to be released after the guard answered');
+};
+
 test('stepper: a refused guard leaves the panel exactly where it was', { skip }, async () => {
   await withPage(fixture('vanilla-stepper-guard.html'), async (p) => {
     await p.waitFor(`!!document.querySelector('#wiz .fdy-step.is-active')`);
@@ -253,8 +273,7 @@ test('stepper: a refused guard leaves the panel exactly where it was', { skip },
       'both nav buttons are disabled while deciding, so a second click has nothing to aim at');
     assert.equal(await onStep(), 1, 'nothing advances on a promise that has not settled');
 
-    await p.evalJS(`window.settle(false)`);
-    await p.evalJS(`new Promise(r => setTimeout(r, 50))`);
+    await settleWith(p, 'false');
     assert.equal(await onStep(), 1, 'resolving false refuses');
     assert.equal(await p.evalJS(`document.querySelector('#wiz .fdy-stepper').hasAttribute('aria-busy')`), false,
       'and the control is released again, or the wizard is stuck for good');
@@ -262,7 +281,7 @@ test('stepper: a refused guard leaves the panel exactly where it was', { skip },
 
     // Resolving to anything but false advances: a handler that forgets to return is not a refusal.
     await p.clickCenter('[data-fdy-step-next]');
-    await p.evalJS(`window.settle(undefined)`);
+    await settleWith(p, 'undefined');
     const moved = await p.waitFor(`document.getElementById('p2').hidden === false`);
     assert.ok(moved, 'an answer that is not `false` lets the step through');
   });
