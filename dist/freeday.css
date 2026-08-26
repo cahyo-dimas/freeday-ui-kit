@@ -341,7 +341,7 @@ a { color: var(--color-primary); }
 /* The caption sits on a solid surface, not on the scrim. A scrim is semi-transparent over unknown
  * content, so text on it has no computable contrast ratio and no gate could ever cover it. On
  * --color-surface it is the same pair the contrast suite already checks. */
-.fdy-busy__panel{display:flex;flex-direction:column;align-items:center;gap:var(--space-4);padding:var(--space-6) var(--space-8);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-3);max-width:min(20rem,calc(100vw - var(--space-8)));}
+.fdy-busy__panel{display:flex;flex-direction:column;align-items:center;gap:var(--space-4);padding:var(--space-6) var(--space-8);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-lift);max-width:min(20rem,calc(100vw - var(--space-8)));}
 .fdy-busy__mark{display:flex;align-items:center;justify-content:center;min-height:2.5rem;}
 .fdy-busy__caption{margin:0;font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);text-align:center;}
 

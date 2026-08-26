@@ -284,6 +284,7 @@
           <a class="fdy-nav__item" href="#sec-list">List (baris rata)</a>
           <a class="fdy-nav__item" href="#sec-dl">Detail (key-value)</a>
           <a class="fdy-nav__item" href="#sec-progress">Progress · Spinner</a>
+          <a class="fdy-nav__item" href="#sec-busy">Busy overlay</a>
           <a class="fdy-nav__item" href="#sec-skeleton">Skeleton</a>
           <a class="fdy-nav__item" href="#sec-carousel">Carousel</a>
           <a class="fdy-nav__item" href="#sec-timeline">Timeline</a>
@@ -331,7 +332,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v2.2.0</p>
+          <p class="doc-eyebrow">Design System · v3.0.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday adalah sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -880,6 +881,7 @@
     <section class="doc-section" id="sec-stepper">
       <h2>Stepper / Wizard</h2>
       <p class="doc-desc">Alur multi-langkah: indikator progres (nomor → centang), panel per langkah, tombol Kembali/Lanjut. Langkah yang sudah dilewati bisa diklik untuk ditinjau (linear, tak bisa lompat maju). Butuh <code>freeday-stepper.js</code>.</p>
+      <p class="doc-desc"><strong>Langkah bermasalah</strong> pakai <code>is-error</code> plus <code>.fdy-step__badge</code> berisi jumlahnya — warna saja tidak membawa pesan apa pun bagi pembaca yang tak bisa melihat merah, jadi jumlah itu disebut juga dalam teks. <strong>Meninggalkan langkah bisa ditolak</strong>: tombol Lanjut memicu <code>fdy-step-before-change</code> yang bisa dibatalkan, dan validasi yang perlu menunggu server menitipkan promise-nya ke <code>detail.waitFor</code>. Selama promise itu belum selesai, kedua tombol nav dinonaktifkan. Mundur tak pernah ditanya.</p>
       <div class="doc-demo doc-demo--block">
         <div data-fdy-stepper>
           <ol class="fdy-stepper">
@@ -903,6 +905,18 @@
             <button type="button" class="fdy-btn" data-fdy-step-next>Lanjut</button>
           </div>
         </div>
+      </div>
+      <p class="doc-desc">Indikator saja (tanpa <code>__btn</code>), dengan langkah kedua bermasalah:</p>
+      <div class="doc-demo doc-demo--block">
+        <ol class="fdy-stepper">
+          <li class="fdy-step is-complete"><span class="fdy-step__marker">1</span><span class="fdy-step__label">Data pelanggan</span></li>
+          <li class="fdy-step is-active is-error">
+            <span class="fdy-step__marker">2</span>
+            <span class="fdy-step__badge" aria-hidden="true">3</span>
+            <span class="fdy-step__label">Item <span class="fdy-visually-hidden">— 3 masalah</span></span>
+          </li>
+          <li class="fdy-step"><span class="fdy-step__marker">3</span><span class="fdy-step__label">Ringkasan</span></li>
+        </ol>
       </div>
     </section>
 
@@ -1268,10 +1282,10 @@
 
     <section class="doc-section" id="sec-table">
       <h2>Table</h2>
-      <p class="doc-desc">Tabel semantik statis: <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, angka tabular kanan.</p>
+      <p class="doc-desc">Tabel semantik statis: <code>&lt;caption&gt;</code>, <code>&lt;th scope&gt;</code>, angka tabular kanan. <code>--striped</code> memberi zebra pada baris genap — warnanya sengaja <em>setengah</em> langkah surface, bukan langkah penuh yang dipakai hover, supaya hover tetap terbaca di baris yang sudah berwarna. Override lewat token <code>--fdy-table-stripe</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-table-wrap">
-          <table class="fdy-table">
+          <table class="fdy-table fdy-table--striped">
             <caption>Faktur terbaru</caption>
             <thead><tr><th scope="col">Faktur</th><th scope="col">Pelanggan</th><th scope="col">Status</th><th scope="col" style="text-align:right">Nilai</th></tr></thead>
             <tbody>
@@ -1710,6 +1724,15 @@
       </div>
     </section>
 
+    <section class="doc-section" id="sec-busy">
+      <h2>Busy overlay</h2>
+      <p class="doc-desc">Menghalangi layar selama operasi yang tak boleh diinterupsi atau dikirim dua kali. Imperatif saja — <code>Freeday.busy({ caption, delay, mark })</code> dan <code>Freeday.idle()</code> — karena API komponen mengundang dua instans, dan dua scrim dengan dua caption adalah persis kegagalan yang komponen ini cegah. Bukan dialog: tak ada yang ditanyakan dan tak ada yang bisa ditutup, interaksi dicabut dengan <code>inert</code> pada sisa halaman. Muncul setelah jeda <strong>120&nbsp;ms</strong> secara default, supaya operasi 80&nbsp;ms tak sempat mengedipkan scrim.</p>
+      <div class="doc-demo">
+        <button type="button" class="fdy-btn" onclick="Freeday.busy({ caption: 'Memposting faktur…', delay: 0 }); setTimeout(function () { Freeday.idle(); }, 1800);">Simulasikan penyimpanan</button>
+        <button type="button" class="fdy-btn fdy-btn--ghost" onclick="Freeday.busy({ caption: 'Ini tak akan terlihat' }); Freeday.idle();">Operasi cepat (tak melukis apa pun)</button>
+      </div>
+    </section>
+
     <section class="doc-section" id="sec-skeleton">
       <h2>Skeleton</h2>
       <p class="doc-desc"><code>--title</code>/<code>--text</code> untuk teks, <code>--circle</code> untuk bentuk bulat, dan <strong><code>--avatar</code></strong> (+<code>--avatar-sm</code>/<code>--avatar-lg</code>) yang <strong>seukuran <code>.fdy-avatar</code></strong>, jadi placeholder memesan kotak yang persis sama dan tak ada geser tata letak saat data datang.</p>
@@ -2101,7 +2124,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v2.2.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.0.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

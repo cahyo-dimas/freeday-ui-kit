@@ -9,7 +9,76 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
-## [Unreleased]
+## [3.0.0] - 2026-08-26
+
+**Kenapa MAJOR padahal rilis ini seluruhnya aditif.** Tak ada satu pun perubahan di bawah yang
+mematahkan konsumen: prop-nya opsional, class-nya baru, dan `fdy-step-before-change` tanpa listener
+berperilaku persis seperti sebelumnya. Secara semver murni ini MINOR. Nomor mayor diambil sebagai
+keputusan pemilik untuk **membuka lini adopsi back-office** yang dispesifikasikan di
+[`docs/superpowers/specs/2026-08-26-back-office-adoption-design.md`](docs/superpowers/specs/2026-08-26-back-office-adoption-design.md):
+delapan item, empat di antaranya terkirim di sini, dan **paruh yang benar-benar breaking masih di
+depan** — sumbu `data-style` mengubah arti atribut yang sudah terdokumentasi, `FdyTableColumn`
+melebar untuk edit sel, `FdyAppShell` mendapat mode nav baru. Konsumen 2.x bisa naik ke 3.0.0 tanpa
+mengubah satu baris pun.
+
+### Added
+- **Row selection terkontrol di keempat stack** (`NEXT-UP.md` #3). Enhancer vanilla sudah punya
+  `.fdy-table-bulkbar` + kolom pilih sejak awal; adapter typed tidak, jadi tiap layar list yang
+  butuh aksi massal merakit kolom checkbox sendiri di samping tabel terkontrol. Kini `selectable` +
+  `selectedKeys` di Vue/React/Blazor, ber-key `rowKey` — identitas yang sudah dipakai
+  `expandedKeys`, karena sebuah key selamat dari re-fetch yang mengganti seluruh objek baris,
+  sedangkan identitas objek tidak. Select-all menyentuh **halaman yang terlihat**, bukan seluruh
+  hasil filter: checkbox header yang diam-diam memilih baris yang tak bisa dilihat pembaca adalah
+  cara bulk delete jadi bencana. Key dari halaman lain dipertahankan, jadi hitungan di bulk bar
+  bisa lebih besar dari jumlah baris di layar — didokumentasikan, karena kalau tidak terbaca
+  seperti bug.
+- **`.fdy-table--striped`** + prop `striped` di keempat adapter, plus token Tier-3
+  `--fdy-table-stripe`. Warnanya **setengah** langkah surface, bukan langkah penuh yang dipakai
+  hover: stripe dengan warna hover membuat hover tak terlihat di setiap baris genap. Kolom beku
+  ikut dicat ulang, karena sel beku membawa background opak sendiri.
+- **`Freeday.busy()` / `Freeday.idle()`** — overlay yang menghalangi layar selama operasi yang tak
+  boleh diinterupsi. Imperatif seperti `toast()`, dan alasannya lebih tajam: API komponen mengundang
+  dua instans, dan dua scrim dengan dua caption dari dua komponen yang sama-sama merasa memiliki
+  layar adalah kegagalan yang komponen ini cegah. Bukan dialog — tak ada yang ditanyakan dan tak ada
+  yang bisa ditutup, jadi interaksi dicabut dengan `inert`, bukan dengan focus trap. Jeda default
+  120 ms supaya operasi 80 ms tak mengedipkan scrim, dan `idle()` membatalkan tampilan yang masih
+  tertunda alih-alih menyembunyikannya setelah terlanjur terlihat.
+- **Token semantic `--color-scrim`**, sengaja identik di light dan dark: scrim menggelapkan apa pun
+  di belakangnya, jadi ia tak ikut membalik bersama palet.
+- **`.fdy-step__badge`** dan status `is-error` stepper yang **sudah ada di CSS tapi tak
+  terdokumentasi**, sehingga tak terjangkau siapa pun. Label kini ikut ke danger, dan badge memuat
+  jumlahnya — karena cincin merah bilang "ada sesuatu" dan tak mengatakan apa-apa kepada pembaca
+  yang tak bisa melihat merah. Badge adalah **saudara** marker, bukan anaknya: enhancer menulis
+  ulang `__marker.innerHTML` di tiap render.
+- **`fdy-step-before-change`**, event cancelable yang membuat Lanjut bisa ditolak. Event saja tak
+  cukup — validasi biasanya sejauh satu round-trip — jadi handler bisa `preventDefault()` **atau**
+  menitipkan promise ke `detail.waitFor`. Selama promise itu tertunda kedua tombol nav dinonaktifkan
+  dan header membawa `aria-busy`. Menjawab apa pun selain `false` meneruskan (handler yang lupa
+  `return` bukan penolakan), dan guard yang **melempar** tak meneruskan apa pun karena ia tak
+  memutuskan apa pun. Mundur tak pernah ditanya; lompat maju ke langkah yang sudah dicapai ditanya.
+  **Cara validitas diputuskan tetap milik aplikasi** — kit tak berpendapat soal library form, dan
+  event inilah batasnya.
+- **`FreedayBlazor.setIndeterminate`**, satu helper interop, karena `indeterminate` adalah properti
+  DOM tanpa atribut HTML: renderer Blazor tak bisa mengekspresikannya, dan halaman yang separuh
+  terpilih akan tampil polos "belum tercentang".
+
+### Fixed
+- **`CLAUDE.md` mengklaim `data-style` sudah ada.** Grep ke `src/`, `dist/` dan `tokens/`
+  mengembalikan nol: kit belum punya sumbu gaya sama sekali, dan `soft` adalah deskripsi tampilan,
+  bukan sebuah nilai. Spec `2026-07-21` §6 juga menyebut knob `--blur`/`--sat`/`--inset`
+  "dicadangkan, default no-op" — ketiganya tak pernah dibuat. Keduanya kini dikoreksi, karena klaim
+  palsu di dokumen menaikkan estimasi pekerjaan yang bergantung padanya.
+- **`.fdy-busy__panel` disamakan dengan doktrin elevasi** (`USAGE.md`): panel di atas scrim adalah
+  kerabat modal, jadi `--shadow-lift`, bukan `--shadow-3` yang dipakai benda melayang di atas
+  halaman.
+
+### Guarded
+- 4 test node baru (invariant urutan stripe + warnanya), 6 test Chrome baru (selection lintas
+  halaman & non-aktivasi baris, `inert` yang mendarat **dan dilepas**, operasi cepat yang tak
+  melukis apa pun, guard stepper yang menolak), 7 test bUnit baru. **Setiap invariant diverifikasi
+  dengan mutasi**, bukan hanya dijalankan sekali.
+- node 68 → 70 · browser 83 → 87 · bUnit 14 → 21.
+
 ### Fixed: the kit's own suite
 - **A coordinate click now reaches its target on a window that is not the author's.** CI went red
   on a **docs-only** commit — five lines of `HANDOFF.md` — with three unrelated specs failing at

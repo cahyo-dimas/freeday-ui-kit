@@ -128,6 +128,10 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `pageSizes` on `FdyTable` | a rows-per-page control bolted above the table, away from the pager |
 | `FdyTableFooter` | rebuilding the range + pager to add a size control, on a responsive list |
 | the calendar's month grid (press the title) | clicking "previous month" thirty times |
+| `Freeday.busy()` / `Freeday.idle()` | a hand-rolled scrim, and a second one from the component that also thought it owned the screen |
+| `selectable` + `selectedKeys` on `FdyTable` | a checkbox column bolted beside a controlled table, with its own bulk bar |
+| `fdy-step-before-change` | a wizard whose Next cannot be stopped while the server is still deciding |
+| `.fdy-table--striped` | a `:nth-child` rule of your own that turns out to be the same colour as hover |
 
 ## 3. Starting a new screen
 

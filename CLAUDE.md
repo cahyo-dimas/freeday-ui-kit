@@ -39,7 +39,12 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
   `:root`), jadi bisa dipasang di ancestor mana pun untuk membalik satu region; default sistem
   (`prefers-color-scheme`) sengaja tetap root-scoped.
 - `data-density="comfortable|compact"` → `--control-h` (compact untuk layar data-dense).
-- `data-style="soft"` → default; gaya lain (glass/neumorph/…) = roadmap, jangan diimplement di v1.
+- `data-style` → **belum ada di kode sama sekali.** Baris ini dulu berbunyi seolah `soft` adalah
+  nilai default yang dibaca sesuatu; grep ke `src/`, `dist/` dan `tokens/` mengembalikan nol. `soft`
+  adalah *deskripsi* tampilan kit hari ini, bukan sebuah nilai. Sumbu gayanya sendiri (`soft`/`glass`)
+  disetujui dan dispesifikasikan di
+  [spec adopsi back-office](docs/superpowers/specs/2026-08-26-back-office-adoption-design.md) §D1–D2;
+  hapus catatan ini begitu sumbunya benar-benar terkirim.
 
 ## Aksesibilitas (wajib)
 - Kontras **WCAG AA** di light & dark. `:focus-visible` selalu terlihat (outline 2px `--focus-ring`).

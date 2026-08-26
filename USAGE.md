@@ -65,7 +65,7 @@ Shadow is a signal, not decoration. There are two families, and the difference m
 | Raised | `--shadow-2` | `.fdy-tooltip`, `.fdy-appbar--elevated` |
 | Floating | `--shadow-3` | Things that float over the page: `.fdy-menu`, `.fdy-filter`, `.fdy-toast`, `.fdy-fab` |
 | Overlay | `--shadow-4` | `.fdy-drawer` |
-| **Lift** | `--shadow-lift` / `--shadow-lift-hover` | **`.fdy-card`** (and `--elevated` / `--interactive:hover`), `.fdy-modal` |
+| **Lift** | `--shadow-lift` / `--shadow-lift-hover` | **`.fdy-card`** (and `--elevated` / `--interactive:hover`), `.fdy-modal`, `.fdy-busy__panel` |
 
 **`.fdy-card` is a lifted surface, not a hairline one.** `--shadow-lift` is a real 34px lift, ~6×
 heavier than `--shadow-1`. That is the whole point of a card, and it is also why a *stack* of them
