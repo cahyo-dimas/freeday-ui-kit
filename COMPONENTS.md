@@ -1284,6 +1284,41 @@ gets `aria-describedby` → the `.fdy-tooltip[role="tooltip"]` `id`.
 duration. `role="progressbar"` with `aria-valuenow/min/max` (omit `valuenow` when indeterminate).
 `.fdy-spinner` (+`--sm` `--lg`) with `role="status"` + `aria-label`.
 
+## Busy overlay — `Freeday.busy()`
+Blocks the screen while an operation runs — a save that must not be double-submitted, a report the
+server is still building. Imperative only, and that is the design, not a shortcut:
+
+```js
+Freeday.busy({ caption: 'Posting invoice…' })   // returns the element
+Freeday.idle()                                  // releases it
+```
+
+- `caption?` — what is happening. Announced politely (`role="status"`). Omitted, it falls back to
+  the kit's default, overridable page-wide with `data-fdy-text-caption` on `<html>`.
+- `delay?` — ms before it appears, default `120`, `0` shows immediately. An operation that finishes
+  in 80ms should never flash a scrim; that reads as a glitch rather than as progress. `idle()`
+  cancels a still-pending show, so a fast operation leaves nothing behind.
+- `mark?` — an `Element` to use instead of the spinner. **Element only, never an HTML string** — a
+  string here would be an injection point in every app that passed user text through it. Brand marks
+  are yours; the kit ships the box and one spinner.
+
+Classes (rendered for you): `.fdy-busy` (+`.is-open`) · `__panel` `__mark` `__caption`.
+
+**One overlay, always.** A second `busy()` while one is up replaces the caption instead of stacking
+a second scrim. That is the whole reason there is no component API and no markup to hand-write: two
+of these on screen, with two captions, from two components that each thought they owned it, is the
+bug this prevents.
+
+**It is not a dialog.** Nothing asks a question and nothing can be dismissed, so there is no focus
+trap and no Escape. Interaction is removed with `inert` on every other child of `<body>` — and only
+on the ones the kit set it on, so an app's own `inert` is never cleared. Focus is parked on the panel
+and handed back to the element that had it once `idle()` runs, because by then that element's
+ancestor is inert and the browser would otherwise have dropped focus to `<body>`.
+
+**Above modals, and not by z-index.** Like the toast region it is a `popover`, so it enters the top
+layer over an open `<dialog>`. Where the Popover API is missing it falls back to a fixed layer at
+`z-index: 190`, which cannot clear an open modal — the same trade the toast region documents.
+
 ## Skeleton — `.fdy-skeleton`
 Size-matched placeholders so nothing shifts when data lands: `--title` `--text` `--circle`
 `--avatar` (+`--avatar-sm` `--avatar-lg`, exactly `.fdy-avatar`'s box).

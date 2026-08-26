@@ -469,6 +469,9 @@ test('the enhancers ship exactly these strings (#006)', () => {
   }
 
   assert.deepEqual(tables, {
+    'freeday-busy.js': {
+      caption: 'Working…',
+    },
     'freeday-carousel.js': {
       position: '{n} of {total}',
       slide: 'Slide {n}',

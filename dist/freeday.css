@@ -317,6 +317,40 @@ a { color: var(--color-primary); }
 @media (min-width:960px){.fdy-hide-above-md{display:none !important;}}
 @media (min-width:1280px){.fdy-hide-above-lg{display:none !important;}}
 
+/* Freeday. Busy overlay */
+/* The blocking "the app is working" state, for an operation the reader must not interrupt or
+ * double-submit. There is deliberately NO markup contract to hand-write: it is created by
+ * `Freeday.busy()` and removed by `Freeday.idle()`, because two of these on screen at once — with
+ * two different captions, from two components that each thought they owned it — is the exact bug
+ * this component exists to prevent. One owner, enforced by there being only one way in.
+ *
+ * It is not a dialog. Nothing here asks a question and nothing can be dismissed; interaction is
+ * removed with `inert` on everything else, not with a focus trap. */
+
+/* `display` is gated on `.is-open` rather than on `:popover-open`, and that is load-bearing. The UA
+ * sheet hides a popover with `[popover]:not(:popover-open){display:none}`, but AUTHOR rules beat UA
+ * rules whatever the specificity, so a bare `.fdy-busy{display:flex}` would paint the overlay
+ * permanently the moment the element existed. Gating on a class instead also means the overlay
+ * still works where the Popover API does not: it falls back to a plain fixed layer at this
+ * z-index, which cannot clear an open <dialog> but does everything else. */
+.fdy-busy{display:none;position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:hidden;background:var(--color-scrim);z-index:190;}
+.fdy-busy.is-open{display:flex;align-items:center;justify-content:center;}
+/* The popover's own backdrop would double the dim; this element paints its own. */
+.fdy-busy::backdrop{background:transparent;}
+
+/* The caption sits on a solid surface, not on the scrim. A scrim is semi-transparent over unknown
+ * content, so text on it has no computable contrast ratio and no gate could ever cover it. On
+ * --color-surface it is the same pair the contrast suite already checks. */
+.fdy-busy__panel{display:flex;flex-direction:column;align-items:center;gap:var(--space-4);padding:var(--space-6) var(--space-8);border-radius:var(--radius-lg);background:var(--color-surface);box-shadow:var(--shadow-3);max-width:min(20rem,calc(100vw - var(--space-8)));}
+.fdy-busy__mark{display:flex;align-items:center;justify-content:center;min-height:2.5rem;}
+.fdy-busy__caption{margin:0;font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);text-align:center;}
+
+/* Nothing travels under reduced motion. The spinner keeps turning (slowed by spinner.css): a
+ * loading indicator that stops moving reads as "finished", which is the opposite of the message. */
+@media (prefers-reduced-motion:reduce){
+  .fdy-busy{transition:none;}
+}
+
 /* Freeday. Button */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);

@@ -167,3 +167,59 @@ test('an option keeps its accessible name when it becomes selected', { skip }, a
       'only aria-selected carries the state');
   });
 });
+
+/* Busy overlay. Three failures, none of which markup can show:
+ *   1. `inert` never landing — the scrim looks blocking but Tab still walks the form behind it;
+ *   2. `inert` never coming OFF, which bricks the page after one save and looks like a hang;
+ *   3. the kit clearing an app's OWN inert on release, un-hiding a region the app hid on purpose.
+ * Plus the delay: a fast operation must leave nothing painted at all. */
+test('busy: blocks the page, and gives back exactly what it took', { skip }, async () => {
+  await withPage(fixture('vanilla-busy.html'), async (p) => {
+    await p.waitFor(`typeof window.Freeday?.busy === 'function'`);
+
+    const inertOf = async (id) => p.evalJS(`document.getElementById('${id}').hasAttribute('inert')`);
+    assert.equal(await inertOf('app'), false, 'nothing is inert before the overlay');
+    assert.equal(await inertOf('already-inert'), true, "the app's own inert is there to begin with");
+
+    await p.evalJS(`window.Freeday.busy({ caption: 'Posting invoice…', delay: 0 })`);
+    const up = await p.waitFor(`!!document.querySelector('.fdy-busy.is-open')`);
+    assert.ok(up, 'the overlay paints with delay 0');
+
+    assert.equal(await inertOf('app'), true, 'the page behind must be inert, or Tab still reaches it');
+    assert.equal(
+      await p.evalJS(`document.querySelector('.fdy-busy').hasAttribute('inert')`), false,
+      'the overlay itself must not be inert — it is a child of <body> like the rest',
+    );
+    assert.equal(
+      await p.evalJS(`document.querySelector('.fdy-busy__caption').textContent`), 'Posting invoice…',
+      'the caption is what was asked for',
+    );
+    assert.equal(
+      await p.evalJS(`document.activeElement.classList.contains('fdy-busy')`), true,
+      'focus parks on the panel, or it falls to <body> when its old home goes inert',
+    );
+
+    await p.evalJS(`window.Freeday.idle()`);
+    const gone = await p.waitFor(`document.querySelector('.fdy-busy') === null`);
+    assert.ok(gone, 'idle() removes the overlay');
+    assert.equal(await inertOf('app'), false, 'inert must come OFF, or the page is bricked after one save');
+    assert.equal(await inertOf('already-inert'), true,
+      "releasing must not clear an inert the kit did not set — that would un-hide a region the app hid");
+  });
+});
+
+test('busy: a fast operation never paints a scrim', { skip }, async () => {
+  await withPage(fixture('vanilla-busy.html'), async (p) => {
+    await p.waitFor(`typeof window.Freeday?.busy === 'function'`);
+
+    // Default delay, released well inside it: the flash this prevents reads as a glitch, not
+    // as progress, and is the single most common complaint about blocking overlays.
+    await p.evalJS(`window.Freeday.busy({ caption: 'Saving…' }); window.Freeday.idle();`);
+    await p.evalJS(`new Promise(r => setTimeout(r, 300))`);
+
+    assert.equal(await p.evalJS(`document.querySelector('.fdy-busy') === null`), true,
+      'a pending show must be cancelled by idle(), not merely hidden afterwards');
+    assert.equal(await p.evalJS(`document.getElementById('app').hasAttribute('inert')`), false,
+      'and nothing may be left inert by an overlay that never appeared');
+  });
+});

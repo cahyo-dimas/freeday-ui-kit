@@ -131,6 +131,7 @@
   --color-surface: var(--slate-0);
   --color-surface-2: var(--slate-50);
   --color-surface-3: var(--slate-100);
+  --color-scrim: rgba(10,12,25,.5);
   --color-text: var(--slate-900);
   --color-text-muted: var(--slate-600);
   --color-text-subtle: var(--slate-500);

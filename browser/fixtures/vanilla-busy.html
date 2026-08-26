@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — busy overlay blocks, then gives everything back</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- Two siblings of <body>, because `inert` is applied per top-level child. The second one starts
+       inert on its own: releasing the overlay must NOT clear an app's own inert, only what the kit
+       set. -->
+  <main id="app">
+    <button class="fdy-btn" id="trigger" type="button">Post invoice</button>
+  </main>
+  <aside id="already-inert" inert>
+    <button class="fdy-btn" id="buried" type="button">Should stay unreachable</button>
+  </aside>
+<script>
+  window.state = { started: false };
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('trigger').addEventListener('click', () => {
+      window.state.started = true;
+    });
+  });
+</script>
+</body>
+</html>
