@@ -11,11 +11,11 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`2.0.0`, dan itu yang terbit.** npm `latest` = `2.0.0`; tag `v2.0.0`, `origin/main` dan HEAD
-menunjuk commit yang sama, nol commit menggantung; live Pages menstempel `v2.0.0`. Karena
-`publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan paket itu di npm sekaligus bukti kedua
-suite hijau di tag tersebut, termasuk perbaikan flaky animasi listbox dan pembatasan paralelisme
-yang dulu hanya terukur di laptop ini.
+**`2.1.0`, dan itu yang terbit** (2026-08-25). npm `latest` = `2.1.0`; tag `v2.1.0` = `origin/main`;
+live Pages menstempel `v2.1.0`. Karena `publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan
+paket itu di npm sekaligus bukti kedua suite hijau di tag tersebut. Isi tarball ikut diperiksa dari
+registry, bukan dari `npm pack` lokal: `adapters/core/cfl-value.js` + `.d.ts` ada, dan
+`COMPONENTS.md` di dalam paket memuat 12 tabel `### Props`.
 
 Sampai 2026-08-25 dua baris ini berbunyi sebaliknya, "npm masih di 1.53.0 … belum di-push", ditulis
 dari ingatan sesi yang merilisnya. Sebelum menyentuhnya lagi, tiga perintah: `npm view
