@@ -88,7 +88,7 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 - `src/components/*.css` (48) + `src/freeday-*.js` (26 enhancer) authored · `dist/` hasil build (di-commit)
 - `adapters/{vue,react,blazor}/` integrasi framework · `adapters/core/` logika lintas-adapter
   (`table-model.js`, `app-shell.js`) · `examples/*-faktur/` bukti pakai
-- `browser/` 18 spec + fixture + harness CDP (tak ikut di-ship)
+- `browser/` spec + fixture + harness CDP (tak ikut di-ship; jumlahnya ada di blok gerbang di atas, satu tempat saja)
 - `COMPONENTS.md` seluruh class publik · `USAGE.md` doktrin · `docs/agent-onboarding.md` untuk AI agent
 - `docs/index.html` demo-site · `docs/reference-screen.html` 1 layar utuh · `getting-started.md` · `integrations.md`
 - `docs/superpowers/specs/` spec/blueprint (sumber-kebenaran desain)

@@ -1,6 +1,6 @@
 # Both suites, on every push and before every publish.
 #
-# The browser suite (18 specs, 58 tests) is the half that was never running here: pixel-level paint
+# The browser suite is the half that was never running here: pixel-level paint
 # order for stacked overlays, chart accessible subtrees read off the AX tree, the user-activation
 # matrix that decides who owns Escape. Those need a real engine, so they only ever ran when someone
 # remembered to run them locally, and since 1.52.0 a tag publishes to npm with no human in the loop.
@@ -43,7 +43,7 @@ jobs:
 
       # Every browser spec SKIPS itself when no Chrome is found, and a skipped suite still exits 0 —
       # so without this step a green check could mean "ran nothing at all" and look identical to a
-      # green check that ran 58 tests. Refusing to run has to be louder than passing.
+      # green check that ran the whole suite. Refusing to run has to be louder than passing.
       - name: Chrome present
         env:
           CHROME_BIN: /usr/bin/google-chrome
