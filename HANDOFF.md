@@ -11,18 +11,27 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`2.2.0`, dan itu yang terbit** (2026-08-26). npm `latest` = `2.2.0`; tag `v2.2.0` = `origin/main`;
-live Pages menstempel `v2.2.0`. Karena `publish.yml` memanggil `ci.yml` sebagai gerbang, keberadaan
-paket itu di npm sekaligus bukti kedua suite hijau di tag tersebut. Isi tarball diperiksa dari
-registry, bukan dari `npm pack` lokal.
+**`3.0.0`, tag baru saja dipotong dan di-push** (2026-08-26). Karena `publish.yml` memanggil
+`ci.yml` sebagai gerbang, terbitnya paket di npm sekaligus bukti kelima suite hijau di tag itu —
+**tapi itu harus DIPERIKSA, bukan diasumsikan.** Baris ini pernah salah selama dua puluh rilis
+karena ditulis dari ingatan sesi yang merilisnya. Tiga perintah, sebelum menyentuhnya lagi:
 
-Sampai 2026-08-25 dua baris ini berbunyi sebaliknya, "npm masih di 1.53.0 … belum di-push", ditulis
-dari ingatan sesi yang merilisnya. Sebelum menyentuhnya lagi, tiga perintah: `npm view
-@cahyo-dimas/freeday version` · `git rev-list --left-right --count origin/main...main` · `curl` docs
-live.
+```bash
+npm view @cahyo-dimas/freeday version          # harus 3.0.0
+git rev-list --left-right --count origin/main...main
+curl -s https://cahyo-dimas.github.io/freeday-ui-kit/ | grep -o 'v3\.0\.0'
+```
 
-Tiga rilis terakhir, dan apa artinya bagi konsumen:
+Sebelum ini `latest` = `2.2.0`.
 
+Rilis terakhir, dan apa artinya bagi konsumen:
+
+- **3.0.0: adopsi back-office.** Tujuh item dari spec `2026-08-26`: row selection terkontrol di 4
+  stack · `.fdy-table--striped` · `Freeday.busy()` · stepper `is-error` + Lanjut yang bisa ditolak ·
+  mode nav overlay di layar lebar · **sumbu palet primary 18 pilihan** · **sumbu gaya
+  `soft`/`glass`**. Seluruhnya **aditif** — konsumen 2.x naik tanpa mengubah satu baris; nomor mayor
+  diambil sebagai keputusan pemilik untuk membuka lini ini, dan alasannya tertulis di CHANGELOG.
+  Suite baru: `npm run test:blazor-server`, host Blazor Server sungguhan, yang menutup `NEXT-UP` #2.
 - **2.0.0: enhancer vanilla berbahasa Inggris.** 39 string di 9 enhancer, plus fallback locale
   datepicker (`lang || 'en'`) yang menentukan nama bulan/hari. **Breaking** untuk app Indonesia di
   jalur mentah; migrasinya atribut, bukan fork: `data-fdy-text-<key>` (dan `<html lang="id">` untuk
