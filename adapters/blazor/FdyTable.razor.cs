@@ -87,6 +87,9 @@ public partial class FdyTable<TRow>
     /// <summary>Optional toolbar (search box, actions) above the table.</summary>
     [Parameter] public RenderFragment? Toolbar { get; set; }
 
+    /// <summary>Zebra-stripe the body rows.</summary>
+    [Parameter] public bool Striped { get; set; }
+
     /// <summary>Render the checkbox column and the bulk bar.</summary>
     [Parameter] public bool Selectable { get; set; }
 

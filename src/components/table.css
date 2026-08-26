@@ -9,6 +9,13 @@
 .fdy-table td{padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);color:var(--color-text);}
 .fdy-table tbody tr:last-child td{border-bottom:0;}
 .fdy-table tbody tr{transition:background-color var(--dur-fast) var(--ease-standard);}
+/* Zebra rows. Sits BEFORE :hover and [aria-selected] on purpose: all three land on the same
+   specificity (0,2,2), so source order is what decides, and a stripe that won would make hover
+   invisible on every second row. The tint is HALF a surface step rather than --color-surface-2
+   itself, for the same reason: hover paints the full step, so the two must not be the same colour.
+   Exposed as a Tier-3 token through the var() FALLBACK, never as a declaration — a custom property
+   set here would outrank a host's own :root override. */
+.fdy-table--striped tbody tr:nth-child(even){background:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));}
 .fdy-table tbody tr:hover{background:var(--color-surface-2);}
 /* Monospace data, ids, codes, IPs, timestamps. Alignment-neutral so it works in any cell
    or inline (`<span class="fdy-mono">`), not just numeric columns. */
@@ -73,6 +80,12 @@
    a hovered row should band unbroken across the freeze line, says so itself. */
 .fdy-table--sticky tbody .fdy-table__freeze{z-index:1;}
 .fdy-table--sticky tbody td.fdy-table__freeze{background:var(--color-surface);}
+/* A frozen cell has to paint an OPAQUE background of its own (it scrolls over its neighbours), so
+   on a striped table it would cut a plain column straight through the zebra. Repaint it with the
+   stripe — and deliberately WITHOUT `.fdy-table--sticky` in the selector, which would push this to
+   (0,4,3) and beat the hover rule below. At (0,3,3) it ties, and the later rule wins, so a hovered
+   row still bands unbroken across the freeze line. */
+.fdy-table--striped tbody tr:nth-child(even) td.fdy-table__freeze{background:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));}
 .fdy-table--sticky tbody tr:hover td.fdy-table__freeze{background:var(--color-surface-2);}
 /* A frozen header cell is stuck on both axes wherever the head is frozen too, so
    it has to outrank both. */

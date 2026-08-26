@@ -76,6 +76,8 @@ const props = withDefaults(defineProps<{
   rowClass?: (row: Row) => string | undefined;
   /** Controlled: row keys whose `row-detail` slot is shown as a full-width row beneath them. */
   expandedKeys?: ReadonlyArray<string | number>;
+  /** Zebra-stripe the body rows. */
+  striped?: boolean;
   /** Render the checkbox column and the bulk bar. */
   selectable?: boolean;
   /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
@@ -365,7 +367,7 @@ const colSpan: ComputedRef<number> = computed((): number =>
     </div>
 
     <div class="fdy-table-scroll">
-      <table class="fdy-table" :aria-label="ariaLabel">
+      <table class="fdy-table" :class="{ 'fdy-table--striped': striped }" :aria-label="ariaLabel">
         <thead>
           <tr>
             <th v-if="selectable" class="fdy-table__selcol" scope="col">

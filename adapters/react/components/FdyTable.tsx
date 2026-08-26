@@ -94,6 +94,8 @@ export interface FdyTableProps<Row extends object> {
   expandedKeys?: ReadonlyArray<string | number>;
   /** Renders the expandable detail row for an expanded row (React equivalent of Vue's `row-detail` slot). */
   renderRowDetail?: (row: Row) => ReactNode;
+  /** Zebra-stripe the body rows. */
+  striped?: boolean;
   /** Render the checkbox column and the bulk bar. */
   selectable?: boolean;
   /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
@@ -349,7 +351,10 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
       )}
 
       <div className="fdy-table-scroll">
-        <table className="fdy-table" aria-label={props.ariaLabel}>
+        <table
+          className={props.striped === true ? 'fdy-table fdy-table--striped' : 'fdy-table'}
+          aria-label={props.ariaLabel}
+        >
           <thead>
             <tr>
               {props.selectable === true && (

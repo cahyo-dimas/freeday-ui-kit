@@ -493,3 +493,41 @@ test('a grouped input wears its focus ring on the group (#024)', () => {
   assert.ok(inner && /box-shadow:\s*none/.test(inner.body),
     'the inner input must NOT also ring, or a grouped control paints two rings');
 });
+
+/* Zebra striping lands on the same specificity as hover and as selection — all three are one class
+ * plus two element names plus one pseudo/attribute, (0,2,2) — so SOURCE ORDER is the whole contract.
+ * A stripe rule written after `:hover` wins on every even row, and hover stops existing there: the
+ * row the pointer is on looks identical to the one below it. Nothing about the declarations looks
+ * wrong when that happens, which is why it is guarded here rather than left to review.
+ *
+ * The colour is the second half of the same idea. Hover paints a full surface step, so a stripe
+ * painted with the SAME token is invisible under the pointer for the opposite reason. */
+test('striping never outranks the states painted over it', () => {
+  const all = rules(css);
+  const at = (predicate) => all.findIndex(predicate);
+
+  const stripe = at(r => r.selector === '.fdy-table--striped tbody tr:nth-child(even)');
+  const hover = at(r => r.selector === '.fdy-table tbody tr:hover');
+  const selected = at(r => r.selector.includes('.fdy-table tbody tr[aria-selected="true"]'));
+
+  assert.notEqual(stripe, -1, '.fdy-table--striped must exist');
+  assert.notEqual(hover, -1, 'the hover rule must exist');
+  assert.notEqual(selected, -1, 'the selected-row rule must exist');
+
+  assert.ok(stripe < hover, 'the stripe must be declared BEFORE :hover, or hover cannot be seen on an even row');
+  assert.ok(stripe < selected, 'the stripe must be declared BEFORE [aria-selected], or a selected even row reads as unselected');
+});
+
+test('the stripe is not the colour hover paints', () => {
+  const stripe = rules(css).find(r => r.selector === '.fdy-table--striped tbody tr:nth-child(even)');
+  const hover = rules(css).find(r => r.selector === '.fdy-table tbody tr:hover');
+
+  // Hover is the full step; the stripe must be a mix, not that same token standing alone.
+  assert.match(hover.body, /var\(--color-surface-2\)/);
+  assert.doesNotMatch(stripe.body, /background:\s*var\(--color-surface-2\)\s*;?$/,
+    'a stripe painted in the hover colour makes hover invisible on every second row');
+  assert.match(stripe.body, /color-mix/, 'the stripe is a fraction of a surface step, composed from tokens');
+  // Tier-3 override reaches it through the var() FALLBACK, never as a declaration of its own —
+  // a custom property set on the element would outrank a host's :root override.
+  assert.match(stripe.body, /var\(--fdy-table-stripe,/, 'the stripe must be overridable through its component token');
+});

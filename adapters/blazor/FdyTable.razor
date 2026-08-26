@@ -30,7 +30,7 @@
     }
 
     <div class="fdy-table-scroll">
-        <table class="fdy-table" aria-label="@AriaLabel">
+        <table class="fdy-table @(Striped ? "fdy-table--striped" : null)" aria-label="@AriaLabel">
             <thead>
                 <tr>
                     @if (Selectable)

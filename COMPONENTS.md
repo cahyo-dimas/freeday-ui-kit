@@ -879,6 +879,12 @@ Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-tab
 (horizontal scroll). Always a `<caption>` (use `.fdy-visually-hidden` if it shouldn't show) and
 `<th scope="col">`. Numeric cells get `.fdy-table__num` (right-aligned, tabular).
 
+**`--striped`** zebras the even body rows. The tint is deliberately *half* a surface step, not the
+full one hover uses, so hover still reads on a striped row instead of matching it — and stripe,
+hover and selection are ordered so the later state always wins. Override the colour through the
+Tier-3 token **`--fdy-table-stripe`** (set it on any ancestor; the rule reads it as a `var()`
+fallback, so your value wins without a specificity fight). Frozen columns stay striped.
+
 ```html
 <div class="fdy-table-wrap">
   <table class="fdy-table">
@@ -991,6 +997,7 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
 | `rowClass?` | `(row: Row) => string \| undefined` | Per-row class hook, e.g. marking the selected row. |
 | `expandedKeys?` · `renderRowDetail?` | `ReadonlyArray<string \| number>` · `(row) => ReactNode` | Controlled expansion: these keys get a full-width detail row. Vue uses the `row-detail` slot. |
+| `striped?` | `boolean` | Zebra-stripe the body rows (`.fdy-table--striped`). |
 | `selectable?` | `boolean` | Render the checkbox column and the bulk bar. |
 | `selectedKeys?` · `onSelectedKeysChange?` | `ReadonlyArray<string \| number>` · `(keys) => void` | Controlled selection, as `rowKey` values — the same identity `expandedKeys` uses, because a key survives the re-fetch that replaces every row object. Omit `selectedKeys` and the column still works, keeping the selection internally. The callback fires in **both** modes, so a screen can watch the selection without owning it. Vue emits `update:selectedKeys`; Blazor binds `@bind-SelectedKeys`. |
 | `bulkActions?` | `ReactNode` | React. Content in the bulk bar beside the count; Vue uses the `bulk-actions` slot (scoped: `keys`, `clear`), Blazor `BulkContent`. |
