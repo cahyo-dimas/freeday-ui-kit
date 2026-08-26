@@ -190,10 +190,47 @@ export async function withPage(fileUrl, fn) {
       return false;
     })()`;
 
+    /* Does the point exist at all. A click is delivered to COORDINATES, so a target below the fold
+       is clicked at a spot nobody can see and the run fails as an assertion three lines later,
+       naming a symptom. That is what CI going red on a docs-only commit looked like: three
+       coordinate-clicking specs failing at once on a runner whose window is not this laptop's.
+
+       Interception is deliberately NOT judged here. The obvious rule — reject when something else
+       is on top — fails on the kit's own stretch pattern, where .fdy-btn--stretch covers its card
+       through an ::after pseudo-element that getBoundingClientRect cannot see, and a test clicking
+       the card title is asserting exactly that the overlay takes it. A check with false positives
+       on a documented pattern is worse than no check. */
+    const hitTest = (selector, x, y) => `(function () {
+      var el = document.querySelector(${JSON.stringify(selector)});
+      if (!el) return { ok: false, why: 'gone' };
+      if (!document.elementFromPoint(${x}, ${y})) {
+        return { ok: false, why: 'nothing', vw: innerWidth, vh: innerHeight,
+                 rect: el.getBoundingClientRect().toJSON() };
+      }
+      return { ok: true };
+    })()`;
+
     const clickCenter = async (selector) => {
       await waitFor(`!${stillMoving(selector)}`, { timeout: ANIMATION_SETTLE_MS });
+      /* Bring it into view first: a viewport shorter than the author's leaves the target below the
+         fold, and a click at coordinates nobody can see is a silent no-op. */
+      await evalJS(`(function () {
+        var el = document.querySelector(${JSON.stringify(selector)});
+        if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center', inline: 'center' });
+        return true;
+      })()`);
+      await waitFor(`!${stillMoving(selector)}`, { timeout: ANIMATION_SETTLE_MS });
+
       const c = await centerOf(selector);
       if (c === null) throw new Error('cannot click missing element: ' + selector);
+
+      const hit = JSON.parse(await evalJS(`JSON.stringify(${hitTest(selector, '(' + c.x + ')', '(' + c.y + ')')})`));
+      if (!hit.ok) {
+        const detail = hit.why === 'gone'
+          ? 'the element disappeared between measuring and clicking'
+          : `the point is empty — viewport ${hit.vw}x${hit.vh}, element at ${JSON.stringify(hit.rect)}`;
+        throw new Error(`click on ${selector} would not reach it: ${detail}`);
+      }
       await clickAt(c.x, c.y);
     };
 

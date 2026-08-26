@@ -9,6 +9,25 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [Unreleased]
+### Fixed: the kit's own suite
+- **A coordinate click now reaches its target on a window that is not the author's.** CI went red
+  on a **docs-only** commit — five lines of `HANDOFF.md` — with three unrelated specs failing at
+  once: the stretched card target, the app shell's wide toggle, and the Vue combo's mouse select.
+  All three click at coordinates. The tree that failed differs from the tree that passed by nothing
+  a browser can see, so the cause was the runner's window, not the commit: a target below the fold
+  is clicked where nobody can see it, `elementFromPoint` there is `null`, the click reaches nothing,
+  and the run reports whatever assertion came three lines later. `clickCenter` scrolls the target
+  into view before measuring, and refuses an empty point with an error naming the viewport and the
+  element's rect. Demonstrated on the real failure mode: with the target pushed below a 420×240
+  window the point is provably empty, and the click lands anyway.
+- **`browser/harness-contract.mjs`** (2 tests) pins both halves, because a harness that quietly
+  stops clicking is the one bug the rest of the suite cannot report.
+- An earlier attempt at this also rejected *intercepted* clicks and was reverted: `.fdy-btn--stretch`
+  covers its card through an `::after` pseudo-element that `getBoundingClientRect` cannot see, so
+  the check fired on two tests that were asserting exactly that behaviour. A check with false
+  positives on a documented pattern is worse than no check.
+
 ## [2.2.0] - 2026-08-26
 ### Added
 - **The raw path can disable, lock and invalidate a picker** (`NEXT-UP.md` #12). `datepicker.css`

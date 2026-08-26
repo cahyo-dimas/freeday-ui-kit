@@ -43,7 +43,7 @@ Tiga rilis terakhir, dan apa artinya bagi konsumen:
 
 ```
 npm test                 68 test  · node --test, gerbang default, tanpa browser
-npm run test:browser     79 test  · 19 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
+npm run test:browser     81 test  · 20 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      14 test  · bUnit, komponen Blazor dirender sungguhan
 ```
@@ -55,6 +55,11 @@ npm run test:blazor      14 test  · bUnit, komponen Blazor dirender sungguhan
   `publish.yml` memanggilnya sebagai gerbang, jadi tag dengan guard merah tak pernah sampai ke npm.
   Job-nya **mengasersikan jumlahnya sendiri**: `node --test` keluar 0 untuk suite yang mem-skip
   semuanya, jadi "hijau" dan "guard-nya jalan" adalah dua fakta berbeda.
+- **Kalau CI merah, baca anotasinya, bukan lognya.** `ci.yml` mengubah tiap baris `not ok` jadi
+  `::error::`, dan anotasi terbaca **tanpa autentikasi**:
+  `curl .../actions/runs/<id>/jobs` → ambil `check_run_url` → `curl <check_run_url>/annotations`.
+  Unduhan log mentah butuh hak admin dan akan menjawab 403. Satu putaran penuh 2026-08-26 hilang
+  karena menduga-duga alih-alih memanggil endpoint itu.
 - **Engine sengaja berbeda**: CI memakai Chrome stable bawaan runner (yang dipakai konsumen), lokal
   memakai Chromium 133 dari cache puppeteer. `CHROME_BIN=<Chrome mana pun>` bisa dipakai langsung.
 - Paralelisme suite dibatasi `--test-concurrency=3`: delapan Chrome tidak lebih cepat dari tiga
@@ -92,12 +97,6 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 
 ## Yang diketahui dan belum diselesaikan
 
-- **Suite browser pernah merah sekali di CI tanpa sebab yang terlihat** (run CI `b1e1ca3`,
-  2026-08-26, step "Browser suite"). Commit itu **docs-only**: bedanya dengan `98c3133` yang lulus
-  hanya 5 baris `HANDOFF.md`, dan tag berikutnya (`v2.2.0`, 40ed451) hijau lagi. Jadi flaky, bukan
-  regresi. Lognya perlu hak admin repo, jadi tak terbaca dari sesi ini — spec mana yang gugur masih
-  belum diketahui. Lokal 79/79 di Chromium 133 **dan** Chrome 151. Kalau terulang, buka log run-nya
-  dari web sebelum menduga-duga.
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
   tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan, karena
   halaman itu bertugas menunjukkan default kit yang sebenarnya.
