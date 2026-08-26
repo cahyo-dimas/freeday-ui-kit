@@ -11,18 +11,16 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.0.0`, tag baru saja dipotong dan di-push** (2026-08-26). Karena `publish.yml` memanggil
-`ci.yml` sebagai gerbang, terbitnya paket di npm sekaligus bukti kelima suite hijau di tag itu —
-**tapi itu harus DIPERIKSA, bukan diasumsikan.** Baris ini pernah salah selama dua puluh rilis
-karena ditulis dari ingatan sesi yang merilisnya. Tiga perintah, sebelum menyentuhnya lagi:
+**`3.0.0`, dan itu yang terbit** (2026-08-26). Diperiksa, bukan diingat — ketiga perintah yang
+berkas ini resepkan benar-benar dijalankan:
 
-```bash
-npm view @cahyo-dimas/freeday version          # harus 3.0.0
-git rev-list --left-right --count origin/main...main
-curl -s https://cahyo-dimas.github.io/freeday-ui-kit/ | grep -o 'v3\.0\.0'
+```
+npm view @cahyo-dimas/freeday version   -> 3.0.0   (dist-tags latest = 3.0.0)
+git rev-list --left-right --count origin/main...main -> 0  0
+curl .../freeday-ui-kit/docs/           -> v3.0.0
 ```
 
-Sebelum ini `latest` = `2.2.0`.
+Isi tarball diperiksa dari registry, bukan dari `npm pack` lokal. Sebelum ini `latest` = `2.2.0`.
 
 Rilis terakhir, dan apa artinya bagi konsumen:
 
@@ -110,6 +108,14 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
 - `docs/index.html` berprosa Indonesia dengan toggle ID→EN untuk chrome demo-nya sendiri; toggle itu
   tak menjangkau string enhancer, jadi sejak 2.0.0 mode Indonesia mencampur. Sengaja dibiarkan, karena
   halaman itu bertugas menunjukkan default kit yang sebenarnya.
+- **Job browser di CI kadang gagal karena Chrome-nya tak pernah hidup**, bukan karena kodenya:
+  `error: 'Chrome never wrote DevToolsActivePort'`, lalu lima sampai enam test berkoordinat ikut
+  merah sebagai korban. Terlihat 2026-08-26: run `CI` di `main` merah karena ini, sementara run
+  `Publish` menjalankan suite yang sama pada commit yang sama dan hijau, beberapa menit berselang.
+  **Cara membedakannya cuma satu: baca anotasinya.** Sejak rilis ini `ci.yml` ikut menganotasikan
+  baris `error:`/`expected`/`actual` dari diagnostik TAP, bukan cuma nama test — persis supaya
+  kegagalan peluncuran browser tak lagi terbaca seperti regresi. Kalau muncul lagi: jalankan ulang
+  job-nya, jangan kejar test-nya.
 
 ## Selanjutnya
 
