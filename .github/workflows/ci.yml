@@ -78,7 +78,18 @@ jobs:
             # the diagnostic in an indented YAML block after the `not ok` line; this lifts the
             # `error:` and `expected/actual` lines out of it, one annotation per line, since a
             # workflow command cannot carry a raw newline anyway.
-            awk '/^not ok /{f=1} f && /^ +(error|expected|actual|operator):/{print} /^ +\.\.\./{f=0}' /tmp/browser.tap \
+            # `error:` is a YAML BLOCK scalar (`error: |-`) whenever the message has a newline or a
+            # quote, and an assert message usually does. The old expression printed the `error: |-`
+            # marker and dropped the message under it, so an annotation could say a test failed with
+            # `actual: 2, expected: 1` and never say WHICH of that test's four equal-to-1 assertions
+            # it was. That is the same "the name alone is not enough" problem this block was written
+            # for, one level down, and it cost a cycle chasing 3.1.0.
+            awk '/^not ok /{f=1}
+                 f && /^ +error: \|-$/{e=1; next}
+                 e && /^ +[a-zA-Z_]+:/{e=0}
+                 e {sub(/^ +/, ""); if ($0 != "") print "error: " $0; next}
+                 f && /^ +(error|expected|actual|operator):/{print}
+                 /^ +\.\.\./{f=0; e=0}' /tmp/browser.tap \
               | sed 's/^ *//' | while IFS= read -r line; do echo "::error::  $line"; done
             echo "::error::Browser suite failed. The failing test names are annotated above."
             exit 1

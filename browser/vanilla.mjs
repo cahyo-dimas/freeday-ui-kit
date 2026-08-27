@@ -248,9 +248,27 @@ const settleWith = async (p, answer) => {
     'the stepper to be released after the guard answered');
 };
 
+/* Ready means BOTH scripts have run, not that the markup exists.
+ *
+ * These two specs used to wait on `#wiz .fdy-step.is-active`, which is in the fixture's STATIC
+ * HTML: it is satisfied the moment the parser passes the <li>, and so proves nothing about the
+ * enhancer having attached or about the fixture's own script — the one at the end of <body> that
+ * registers the guard listener and sets `window.mode` — having run. `fdyStepperReady` is the
+ * enhancer's own marker and an array `window.asked` is the fixture script's; neither exists in the
+ * parsed document, so neither can be true early.
+ *
+ * Stated honestly: this is NOT a proven fix for `stepper: a refused guard leaves the panel exactly
+ * where it was`, which failed on 3817482 and twice more cutting 3.1.0 with `expected 1, actual 2`.
+ * That was not reproduced here — not on either engine, not at concurrency 3, and not with the
+ * stylesheet inflated to 20MB to widen the window before the inline script runs. This removes one
+ * unproven variable because waiting on parsed markup is wrong on its own terms. If the next run is
+ * green, that is not evidence this was the cause. */
+const STEPPER_READY = `document.getElementById('wiz')?.dataset.fdyStepperReady === '1'`
+  + ` && Array.isArray(window.asked)`;
+
 test('stepper: a refused guard leaves the panel exactly where it was', { skip }, async () => {
   await withPage(fixture('vanilla-stepper-guard.html'), async (p) => {
-    await p.waitFor(`!!document.querySelector('#wiz .fdy-step.is-active')`);
+    await p.waitFor(STEPPER_READY);
 
     const onStep = async () => p.evalJS(`document.getElementById('p2').hidden ? 1 : 2`);
     assert.equal(await onStep(), 1, 'starts on step one');
@@ -289,7 +307,7 @@ test('stepper: a refused guard leaves the panel exactly where it was', { skip },
 
 test('stepper: going back never asks the guard', { skip }, async () => {
   await withPage(fixture('vanilla-stepper-guard.html'), async (p) => {
-    await p.waitFor(`!!document.querySelector('#wiz .fdy-step.is-active')`);
+    await p.waitFor(STEPPER_READY);
 
     await p.clickCenter('[data-fdy-step-next]');            // mode 'allow' — straight through
     assert.ok(await p.waitFor(`document.getElementById('p2').hidden === false`), 'on step two');
