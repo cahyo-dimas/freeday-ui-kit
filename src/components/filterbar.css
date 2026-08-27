@@ -13,8 +13,9 @@
 /* Fields are direct children. Drop the standalone field's 22rem cap; default to the
  * medium column width with no unbounded growth (that's what caused the raggedness). */
 .fdy-filterbar>.fdy-field{max-width:none;flex:0 0 auto;width:12rem;}
-/* Controls fill their field's column (drop the standalone input-group/combo caps). */
-.fdy-filterbar>.fdy-field .fdy-input-group,.fdy-filterbar>.fdy-field .fdy-combo{max-width:none;width:100%;}
+/* Controls fill their field's column: released in input.css for every field, not just this one.
+   The rule used to live here, naming the input group and the combo only, which is why an
+   .fdy-autocomplete or an .fdy-cascade in a --w-2xl field still stopped 48px short of it (#051). */
 /* Column-width rhythm, pick one per field so bars across the app line up. */
 .fdy-filterbar>.fdy-field--w-sm{width:9rem;}
 .fdy-filterbar>.fdy-field--w-lg{width:15rem;}

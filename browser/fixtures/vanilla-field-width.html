@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — a field's width, and its control's</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  /* The app states a width on the field, which is the whole point: a field with a width of its own
+     is the case the 22rem cap stops making sense in (#051 §2). 26rem so the placeholder can say
+     what it searches. */
+  .app-search{width:26rem;max-width:26rem;}
+  /* A page header: title left, KPI strip right, the strip hugging rather than spanning (#050). */
+  .page-head{display:flex;align-items:center;gap:1.5rem;}
+  .page-head .fdy-stats{flex:none;}
+  .frame{width:640px;}
+</style>
+</head>
+<body style="padding:2rem">
+
+<!-- #050: the strip that measured 40px wide, all of it gap, because a size-contained tile
+     contributes no width and the header re-tracked the grid onto content. -->
+<div class="page-head">
+  <h1 style="margin:0">Home</h1>
+  <div class="fdy-stats fdy-stats--inline" id="inline">
+    <div class="fdy-stat"><span class="fdy-stat__label">Companies</span><div class="fdy-stat__value">12</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">Members</span><div class="fdy-stat__value">48</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">Status</span><div class="fdy-stat__value">Active</div></div>
+  </div>
+</div>
+
+<!-- What "hugs its content" means, measured rather than asserted: the same three tiles as plain
+     flex items, which size to their own content by construction. --inline must match this. Without
+     it the guard cannot see a track that kept the 11rem floor, and `auto-fit` leaves exactly one
+     of those behind when the explicit template is not cleared. -->
+<div style="display:flex;gap:1.25rem;width:max-content" id="inline-ref">
+  <div class="fdy-stat"><span class="fdy-stat__label">Companies</span><div class="fdy-stat__value">12</div></div>
+  <div class="fdy-stat"><span class="fdy-stat__label">Members</span><div class="fdy-stat__value">48</div></div>
+  <div class="fdy-stat"><span class="fdy-stat__label">Status</span><div class="fdy-stat__value">Active</div></div>
+</div>
+
+<!-- The default strip must be untouched by that: full width, and the fluid value it has today. -->
+<div class="frame">
+  <div class="fdy-stats" id="band">
+    <div class="fdy-stat"><span class="fdy-stat__label">ADVANCED</span><div class="fdy-stat__value" id="band-value">IDR 200,000.00</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">SETTLED</span><div class="fdy-stat__value">IDR 300,000.00</div></div>
+    <div class="fdy-stat"><span class="fdy-stat__label">DIFFERENCE</span><div class="fdy-stat__value">IDR 0.00</div></div>
+  </div>
+</div>
+
+<!-- #051 §1: two --full rows that disagreed about what full means. -->
+<div class="fdy-form-grid frame" id="grid">
+  <div class="fdy-field fdy-field--full" id="f-combo">
+    <span class="fdy-label">Approvers</span>
+    <div class="fdy-combo" data-fdy-combo>
+      <button type="button" class="fdy-combo__button"><span class="fdy-combo__value">Pick</span></button>
+      <ul class="fdy-combo__listbox" role="listbox" hidden></ul>
+    </div>
+  </div>
+  <div class="fdy-field fdy-field--full" id="f-input">
+    <span class="fdy-label">Description</span>
+    <input class="fdy-input">
+  </div>
+  <div class="fdy-field fdy-field--full" id="f-group">
+    <span class="fdy-label">Amount</span>
+    <div class="fdy-input-group"><span class="fdy-input-group__addon">Rp</span><input class="fdy-input"></div>
+  </div>
+</div>
+
+<!-- #051 §2: the report was "isn't the gap between the search and the status filter a bit far?",
+     and the 64px was dead space INSIDE the first field, invisible to every obvious check. -->
+<div class="fdy-toolbar" id="toolbar">
+  <div class="fdy-field app-search" id="t-search">
+    <div class="fdy-input-group"><input class="fdy-input" placeholder="Search by name, code or email"></div>
+  </div>
+  <button class="fdy-btn" id="t-next">Status</button>
+</div>
+
+<!-- The controls the filterbar's own rule never named. --w-2xl is 25rem, wider than the cap. -->
+<div class="fdy-filterbar" id="bar">
+  <div class="fdy-field fdy-field--w-2xl" id="b-auto">
+    <div class="fdy-autocomplete"><input class="fdy-input"></div>
+  </div>
+  <div class="fdy-field fdy-field--w-2xl" id="b-cascade">
+    <div class="fdy-cascade"><button type="button" class="fdy-cascade__trigger">Pick</button></div>
+  </div>
+</div>
+
+<!-- The other half of the contract: a field nobody widened is still capped, and so is its control. -->
+<div class="fdy-field" id="lone">
+  <span class="fdy-label">Status</span>
+  <div class="fdy-combo"><button type="button" class="fdy-combo__button"><span class="fdy-combo__value">Pending</span></button></div>
+</div>
+
+<script>
+  var wOf = function (el) { return Math.round(el.getBoundingClientRect().width); };
+  var pair = function (fieldId, controlSel) {
+    var field = document.getElementById(fieldId);
+    var control = field.querySelector(controlSel);
+    return { field: wOf(field), control: wOf(control) };
+  };
+  window.widths = function () {
+    var strip = document.getElementById('inline');
+    var band = document.getElementById('band');
+    var search = document.getElementById('t-search');
+    return {
+      /* The strip and what it is allowed to take: hugging means well under the row it sits in. */
+      inlineStrip: wOf(strip),
+      inlineRow: wOf(strip.parentNode),
+      inlineTiles: [].map.call(strip.querySelectorAll('.fdy-stat'), wOf),
+      refTiles: [].map.call(document.getElementById('inline-ref').querySelectorAll('.fdy-stat'), wOf),
+      /* A hugging track is never the narrow track the clamp exists for, so the type stays flat. */
+      inlineValuePx: getComputedStyle(strip.querySelector('.fdy-stat__value')).fontSize,
+      bandTiles: [].map.call(band.querySelectorAll('.fdy-stat'), wOf),
+      bandValuePx: getComputedStyle(document.getElementById('band-value')).fontSize,
+      bandValueLines: Math.round(
+        document.getElementById('band-value').getBoundingClientRect().height
+        / parseFloat(getComputedStyle(document.getElementById('band-value')).lineHeight)),
+
+      fullCombo: pair('f-combo', '.fdy-combo'),
+      fullInput: pair('f-input', '.fdy-input'),
+      fullGroup: pair('f-group', '.fdy-input-group'),
+      search: pair('t-search', '.fdy-input-group'),
+      /* What the reader actually sees between the two controls: the declared gap plus whatever the
+         first field failed to fill. */
+      seenGap: Math.round(
+        document.getElementById('t-next').getBoundingClientRect().left
+        - search.querySelector('.fdy-input-group').getBoundingClientRect().right),
+      declaredGap: Math.round(parseFloat(getComputedStyle(document.getElementById('toolbar')).columnGap)),
+      barAuto: pair('b-auto', '.fdy-autocomplete'),
+      barCascade: pair('b-cascade', '.fdy-cascade'),
+      lone: pair('lone', '.fdy-combo'),
+    };
+  };
+</script>
+</body>
+</html>

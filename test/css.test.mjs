@@ -444,6 +444,86 @@ test('a picker inside a field is not capped narrower than the field (#017)', () 
 });
 
 
+/* #017's release was not "every other control", it was the pickers only (#051).
+ *
+ * The four below cap at 22rem for a control standing on its own, and the cap was lifted in ONE
+ * container, `.fdy-filterbar`, naming two of them. So a `--full` row in a form grid held a 352px
+ * combo under a 600px label, an .fdy-autocomplete in a --w-2xl filter field stopped 48px short of
+ * its own field, and a 26rem toolbar search hid 64px of dead space inside itself, which reads on
+ * screen as a gap six times the one the author wrote. A field is the thing that owns the width;
+ * a control in one follows it. Enumerated, not pattern-matched: a fifth capped control added later
+ * is exactly the miss this guard exists to catch, and it will only be caught by someone adding it
+ * to this list. */
+test('every capped control fills the field it is in (#051)', () => {
+  const all = rules(css);
+  const CAPPED_IN_A_FIELD = ['.fdy-input-group', '.fdy-combo', '.fdy-autocomplete', '.fdy-cascade'];
+
+  for (const control of CAPPED_IN_A_FIELD) {
+    const own = all.find(r => r.selector.split(',').some(sel => sel.trim() === control));
+    assert.ok(own && /max-width:\s*22rem/.test(own.body),
+      `${control} is expected to carry the standalone 22rem cap; if that moved, this guard is `
+        + 'measuring the wrong thing and the release below may no longer be needed');
+    const released = all.find(r =>
+      r.selector.split(',').some(sel => sel.trim() === `.fdy-field>${control}`) &&
+      /max-width:\s*none/.test(r.body));
+    assert.ok(released, `${control} in a .fdy-field must drop the 22rem cap, or the field is wider `
+      + 'than the control it contains and the dead space is invisible in the DOM');
+  }
+
+  /* The other half: the cap must still hold for a field nobody has widened, or every standalone
+     combo in the kit goes full-bleed. `.fdy-field` is what carries that width. */
+  const field = all.find(r => r.selector.split(',').some(sel => sel.trim() === '.fdy-field'));
+  assert.ok(field && /max-width:\s*22rem/.test(field.body),
+    '.fdy-field must keep its own 22rem cap: it is the only thing bounding the controls now');
+
+  /* And the rule that used to do this for one container must be gone, not left beside the general
+     one: two rules saying the same thing is how the filterbar came to know something input.css
+     did not. */
+  const legacy = all.find(r => /\.fdy-filterbar>\.fdy-field \.fdy-combo/.test(r.selector));
+  assert.equal(legacy, undefined,
+    'the filterbar-scoped release is now redundant; keeping it re-splits the rule that #051 merged');
+});
+
+
+/* A stat tile is size-contained, and --inline is the way out (#050).
+ *
+ * `container-type:inline-size` is what gives `__value` its `11cqw` clamp, and it applies inline-size
+ * CONTAINMENT: the tile contributes zero intrinsic width. The 11rem floor is therefore not a taste
+ * choice but the only thing sizing those tracks, and a page header that re-tracks the grid to hug
+ * its content gets three tracks of 0 and three labels painted on top of each other. --inline is the
+ * hugging strip, so it must NOT be a container: with one, it would hug nothing. */
+test('.fdy-stats--inline opts out of the container it cannot hug inside (#050)', () => {
+  const all = rules(css);
+
+  const container = all.filter(r => /container-type:\s*inline-size/.test(r.body));
+  assert.ok(container.length > 0, 'the stat container moved; #050 measured it on .fdy-stats>.fdy-stat');
+  for (const r of container) {
+    assert.ok(/:not\(\.fdy-stats--inline\)/.test(r.selector),
+      `${r.selector} declares a size container that --inline cannot hug inside; exclude it`);
+  }
+  /* The clamp reads `cqw`, which with no eligible container resolves against the VIEWPORT rather
+     than the tile. Measured honestly: that is not a visible bug today, because `clamp()`'s upper
+     bound is --text-3xl and 11cqw passes it on any viewport wider than ~282px, so the value lands on
+     31px either way. This is scoped out to remove the coupling, not to fix a symptom: a rule whose
+     correctness rests on the max token happening to be smaller is one density change from mattering,
+     and no browser guard can see it until it does. Which is why the assertion lives here. */
+  const clamp = all.filter(r => /font-size:\s*clamp\([\s\S]*?cqw/.test(r.body));
+  assert.ok(clamp.length > 0, 'the fluid stat value moved; #050 measured it as an 11cqw clamp');
+  for (const r of clamp) {
+    assert.ok(/:not\(\.fdy-stats--inline\)/.test(r.selector),
+      `${r.selector} sizes type in cqw with no container in --inline, which resolves to the viewport`);
+  }
+
+  const inline = all.find(r => r.selector.split(',').some(sel => sel.trim() === '.fdy-stats--inline'));
+  assert.ok(inline, '.fdy-stats--inline must exist: it is the header strip #050 was written for');
+  /* `.fdy-stats` sets an explicit template; implicit column flow cannot hug until that is cleared. */
+  assert.ok(/grid-template-columns:\s*none/.test(inline.body),
+    '--inline must clear the 11rem template, or the explicit tracks size it before the auto ones do');
+  assert.ok(/grid-auto-flow:\s*column/.test(inline.body),
+    '--inline must flow its tiles as columns');
+});
+
+
 /* A status vocabulary bigger than five needs more than five looks (#021).
  *
  * `.fdy-avatar--tone-*` and `.fdy-chip--tone-*` both carry the categorical scale; the badge,

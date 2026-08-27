@@ -801,9 +801,22 @@ a { color: var(--color-primary); }
    grid track, `container-type:inline-size` on a standalone .fdy-stat would stop it sizing to its
    own content. The unconditional rule above stays as the fallback wherever @container is missing. */
 @supports (container-type:inline-size){
-  .fdy-stats>.fdy-stat{container-type:inline-size;}
-  .fdy-stats>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
+  .fdy-stats:not(.fdy-stats--inline)>.fdy-stat{container-type:inline-size;}
+  .fdy-stats:not(.fdy-stats--inline)>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
 }
+/* The price of that container, and the reason --inline opts out of it (#050). `container-type`
+   applies inline-size CONTAINMENT: the tile's min-content and max-content contributions are both
+   ZERO. So the 11rem floor above is not a taste choice, it is the only thing giving these tracks a
+   size, and re-tracking the grid on content (`auto`, `max-content`, `minmax(0,…)`) resolves every
+   track to 0. `justify-items` is the sharper edge: anything but the default `stretch` sizes the
+   tile to that zero contribution even when the track is correctly wide, and three labels paint on
+   top of each other. Measured from IDU_EMATE_ACCT_WEB's page header, where a hugging strip came out
+   40px wide, all of it gap.
+   --inline is the shape that header wanted: a strip that hugs its numbers and sits beside a page
+   title, instead of a full-width band whose 11rem floor collapses to one column at 390px. It cannot
+   have both, so it drops the container and keeps the flat --text-3xl the base rule already sets;
+   a track sized to its own content is never the narrow track the clamp exists for. */
+.fdy-stats--inline{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,max-content);}
 .fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}
@@ -1009,8 +1022,9 @@ a { color: var(--color-primary); }
 /* Fields are direct children. Drop the standalone field's 22rem cap; default to the
  * medium column width with no unbounded growth (that's what caused the raggedness). */
 .fdy-filterbar>.fdy-field{max-width:none;flex:0 0 auto;width:12rem;}
-/* Controls fill their field's column (drop the standalone input-group/combo caps). */
-.fdy-filterbar>.fdy-field .fdy-input-group,.fdy-filterbar>.fdy-field .fdy-combo{max-width:none;width:100%;}
+/* Controls fill their field's column: released in input.css for every field, not just this one.
+   The rule used to live here, naming the input group and the combo only, which is why an
+   .fdy-autocomplete or an .fdy-cascade in a --w-2xl field still stopped 48px short of it (#051). */
 /* Column-width rhythm, pick one per field so bars across the app line up. */
 .fdy-filterbar>.fdy-field--w-sm{width:9rem;}
 .fdy-filterbar>.fdy-field--w-lg{width:15rem;}
@@ -1087,6 +1101,15 @@ a { color: var(--color-primary); }
 
 /* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+/* Inside a labelled field, a control fills the field (#051). The 22rem cap those controls carry is
+   for one standing on its own, with no field to take a width from; #017 already released the date
+   and time pickers here for exactly this reason, and its comment claims a picker then fills its
+   field "like every other control". That was not true of these four: a `--full` row in a
+   .fdy-form-grid held a 352px combo under a 600px label, and a 26rem toolbar search field hid 64px
+   of dead space INSIDE itself, so an author who wrote `gap:var(--space-3)` measured 76px on screen.
+   The field's own max-width above is what governs, and it still caps a field nobody has widened, so
+   this changes nothing wherever the cap was already doing its job. */
+.fdy-field>.fdy-input-group,.fdy-field>.fdy-combo,.fdy-field>.fdy-autocomplete,.fdy-field>.fdy-cascade{max-width:none;}
 /* A grouped field is legitimately a <fieldset> (it needs a <legend>), e.g. a radio/checkbox group.
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */

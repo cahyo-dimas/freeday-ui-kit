@@ -11,8 +11,12 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.0.0`, dan itu yang terbit** (2026-08-26). Diperiksa, bukan diingat — ketiga perintah yang
-berkas ini resepkan benar-benar dijalankan:
+**`3.1.0` sudah dipotong lokal; `3.0.0` yang masih terbit.** Belum ada commit, tag, atau publish
+untuk 3.1.0 — `git status` masih kotor dan `origin/main` masih di `6f3e466`. Diperiksa 2026-08-27:
+`npm view @cahyo-dimas/freeday version` -> `3.0.0`. Jalankan resep di §Rilis untuk menutupnya.
+
+Yang di bawah ini adalah keadaan 3.0.0 (2026-08-26), dan tetap benar sampai 3.1.0 terbit.
+Diperiksa, bukan diingat — ketiga perintah yang berkas ini resepkan benar-benar dijalankan:
 
 ```
 npm view @cahyo-dimas/freeday version   -> 3.0.0   (dist-tags latest = 3.0.0)
@@ -24,6 +28,13 @@ Isi tarball diperiksa dari registry, bukan dari `npm pack` lokal. Sebelum ini `l
 
 Rilis terakhir, dan apa artinya bagi konsumen:
 
+- **3.1.0 (belum terbit): lebar yang tak kelihatan di DOM.** Dua cacat dari layar sungguhan
+  (`improvement-notes` #050, #051). Kontrol di dalam `.fdy-field` kini selebar field-nya — cap
+  `22rem`-nya dulu hanya dilepas di `.fdy-filterbar`, untuk dua dari empat kontrol, jadi toolbar
+  dengan field `26rem` menyembunyikan **64px ruang mati di dalam field** dan `gap:var(--space-3)`
+  terbaca 76px. Plus `.fdy-stats--inline`, strip KPI yang memeluk angkanya: `.fdy-stat` bawaan
+  `container-type:inline-size`, jadi ia **tak menyumbang lebar intrinsik**, dan header yang
+  me-retrack grid-nya ke konten dapat tiga track nol. Keduanya aditif untuk konsumen 3.0.x.
 - **3.0.0: adopsi back-office.** Tujuh item dari spec `2026-08-26`: row selection terkontrol di 4
   stack · `.fdy-table--striped` · `Freeday.busy()` · stepper `is-error` + Lanjut yang bisa ditolak ·
   mode nav overlay di layar lebar · **sumbu palet primary 18 pilihan** · **sumbu gaya
@@ -49,8 +60,8 @@ Rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 113 test  · node --test, gerbang default, tanpa browser
-npm run test:browser     92 test  · 20 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
+npm test                 116 test  · node --test, gerbang default, tanpa browser
+npm run test:browser     98 test  · 21 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      21 test  · bUnit, komponen Blazor dirender sungguhan
 npm run test:blazor-server 4 test  · Blazor Server SUNGGUHAN + prerender, lewat CDP
@@ -123,6 +134,8 @@ Backlog aktif ada di **[`NEXT-UP.md`](NEXT-UP.md)**. Dua item yang pemicunya sud
 (perilaku app-shell) dan #6 (bahasa default), **selesai** di 1.53.0/1.54.0/2.0.0. Dua catatan
 friksi yang masih terbuka, `improvement-notes` #040 (kontrak kolom typed tak ada di COMPONENTS.md)
 dan #045 (tipe emit `FdyCfl` melebar tanpa diumumkan), ditutup 2026-08-25 dan menunggu 2.1.0.
+
+`improvement-notes` #050 dan #051 ditutup 2026-08-27 dan menunggu 3.1.0.
 
 Sikap default tetap: **tunggu demand**. Tapi malam 24–25 Agustus 2026 memberi satu pelajaran yang
 layak dibawa: **NEXT-UP sendiri bisa basi**. #6 menuliskan "bikin hook override" sebagai pilihan,

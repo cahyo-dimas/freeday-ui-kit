@@ -227,7 +227,22 @@ carry the doctrine in markup.
   sits half a label-height low in it, so labelled fields belong in `.fdy-filterbar`
   (`align-items:flex-end`). In a toolbar, hide the label with `.fdy-visually-hidden`.
 - `.fdy-stats` is a KPI grid of `.fdy-stat` (`__label` `__value` `__meta`). Deliberately **not**
-  cards. `.fdy-stats--boxed` for one shared surface with dividers.
+  cards. `.fdy-stats--boxed` for one shared surface with dividers; `.fdy-stats--inline` for a strip
+  that **hugs its numbers** instead of spanning the row, which is what a page header wants.
+- **A `.fdy-stat` in the default grid is size-contained, and that constrains what you may override.**
+  It carries `container-type:inline-size` — that is what gives `__value` its fluid type — and
+  inline-size containment means the tile contributes **no intrinsic width**. Two consequences, and
+  re-tracking the grid hits both at once:
+  - Content-based track sizing cannot work: `auto`, `max-content`, `min-content` and `minmax(0, …)`
+    all resolve to a **zero** track. The default `minmax(11rem, 1fr)` floor is not a style choice,
+    it is the only thing giving these tracks a size, so **any `grid-template-columns` override needs
+    an explicit floor of its own**.
+  - `justify-items` must stay `stretch`. A non-stretched grid item is sized to its (zero)
+    contribution, so `start` collapses the tile to nothing **even when the track is correctly wide**.
+
+  Use `--inline` rather than working around either: it drops the container, so its tiles size to
+  their own content, and its `__value` keeps the flat `--text-3xl`. A hugging track is never the
+  narrow track the fluid type exists for.
 
 ```html
 <div class="fdy-page">
@@ -409,6 +424,13 @@ native control, otherwise a `<div>` + explicitly associated label.
 
 - `.fdy-field` (+ `--full` inside `.fdy-form-grid`; widths `--w-sm` `--w-lg` `--w-xl` `--w-2xl`
   `--w-grow` inside `.fdy-filterbar`)
+- **The field owns the width; the control in it follows.** `.fdy-field` caps at `22rem` so a lone
+  field does not run the width of the page. `.fdy-form-grid` and `.fdy-filterbar` lift that cap, and
+  so does any width you state yourself — and in every one of those cases the control (`.fdy-input`,
+  `.fdy-input-group`, `.fdy-combo`, `.fdy-autocomplete`, `.fdy-cascade`, and the pickers) spans the
+  field. So **size the field, never the control**: styling the control instead leaves the field
+  wider than what is in it, and that dead space is invisible in the DOM — it reads on screen as a
+  gap you did not write.
 - `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
 
 **Grouped controls are a `<fieldset>`, not a new block.** Put `.fdy-field` on the fieldset and
@@ -1216,7 +1238,9 @@ and breaks the moment the class changes.
 ## Pagination — `.fdy-pagination`
 The block class on the `<nav>` is a **structural hook only**. It carries no rule of its own; the
 `__list` / `__link` / `__ellipsis` elements do all the styling, and the data table targets
-`data-fdy-table-pagination`. Keep it on the wrapper anyway, for consistency with the rest of the kit.
+`data-fdy-table-pagination`. Keep it on the wrapper anyway, for consistency with the rest of the kit
+— and the kit keeps it too: the enhancer sets it on the element it finds, and all three typed
+footers render it, so a selector or an e2e assertion on the block matches either path.
 
 `<nav class="fdy-pagination" aria-label="Pagination">` → `<ul class="fdy-pagination__list">`;
 each item is a `.fdy-pagination__link` (`<button>` when navigable, `<span aria-current="page">`

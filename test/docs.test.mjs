@@ -580,3 +580,53 @@ test('the public version stamps match package.json', () => {
   assert.deepEqual(stale, [],
     'these are what a reader sees on the live docs and in an install command:\n' + stale.join('\n'));
 });
+
+
+/* The documented markup must be the markup the kit produces (#050 §2).
+ *
+ * COMPONENTS.md tells consumers to write `<nav class="fdy-pagination" data-fdy-table-pagination>`,
+ * and the block class appeared in no shipped file: not in the enhancer, not in the three typed
+ * footers. Nothing rendered differently, since the block carries no rule (NEXT-UP #9), but a
+ * consumer selector or an e2e assertion on it passed against hand-written markup and failed against
+ * the kit's own output, and the raw and typed paths are supposed to be interchangeable.
+ *
+ * Found by structure, not by a list of the four files that had it wrong: the fifth pager renderer
+ * is the one nobody will remember to add here. Anything that writes an __element of a block is
+ * rendering that block, and must name it. */
+test('a renderer that emits a block\'s parts also names the block (#050)', () => {
+  const sources = [];
+  const walk = (rel) => {
+    for (const e of readdirSync(join(root, rel), { withFileTypes: true })) {
+      if (e.name === 'node_modules' || e.name === 'obj' || e.name === 'bin') continue;
+      if (e.isDirectory()) walk(`${rel}/${e.name}`);
+      else if (/\.(js|vue|tsx|razor)$/.test(e.name)) sources.push(`${rel}/${e.name}`);
+    }
+  };
+  walk('src');
+  walk('adapters');
+
+  /* Comments first, and for the reason css.test.mjs strips them too: the three FdyTable files each
+     carry a header line explaining that the footer renders `.fdy-pagination__*`, which is prose
+     about a renderer, not a renderer. Matching raw source reported all three as defects. */
+  const stripComments = (src) => src
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/@\*[\s\S]*?\*@/g, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/^\s*\/\/.*$/gm, ' ');
+
+  const BLOCK = 'fdy-pagination';
+  const code = new Map(sources.map(f => [f, stripComments(read(f))]));
+  const emitters = sources.filter(f => code.get(f).includes(`${BLOCK}__`));
+  /* A guard that finds no emitter would pass while proving nothing; the renderers exist. */
+  assert.ok(emitters.length >= 4,
+    `expected the enhancer plus three typed footers to render ${BLOCK}, found ${emitters.length}`);
+
+  const silent = emitters.filter(f => {
+    /* The block as a class VALUE or a classList argument, never as the `__element` prefix. */
+    const src = code.get(f).replace(new RegExp(`${BLOCK}__`, 'g'), '');
+    return !new RegExp(`${BLOCK}(?![\\w-])`).test(src);
+  });
+  assert.deepEqual(silent, [],
+    `these render .${BLOCK}'s parts and never write .${BLOCK} itself, so COMPONENTS.md documents `
+      + 'markup the kit does not produce:\n' + silent.join('\n'));
+});

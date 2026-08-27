@@ -1,5 +1,14 @@
 /* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+/* Inside a labelled field, a control fills the field (#051). The 22rem cap those controls carry is
+   for one standing on its own, with no field to take a width from; #017 already released the date
+   and time pickers here for exactly this reason, and its comment claims a picker then fills its
+   field "like every other control". That was not true of these four: a `--full` row in a
+   .fdy-form-grid held a 352px combo under a 600px label, and a 26rem toolbar search field hid 64px
+   of dead space INSIDE itself, so an author who wrote `gap:var(--space-3)` measured 76px on screen.
+   The field's own max-width above is what governs, and it still caps a field nobody has widened, so
+   this changes nothing wherever the cap was already doing its job. */
+.fdy-field>.fdy-input-group,.fdy-field>.fdy-combo,.fdy-field>.fdy-autocomplete,.fdy-field>.fdy-cascade{max-width:none;}
 /* A grouped field is legitimately a <fieldset> (it needs a <legend>), e.g. a radio/checkbox group.
    Neutralise the UA groove border / padding / min-inline-size so it lays out identically to the
    <div> form (min-inline-size:min-content would otherwise block the filterbar column widths). */

@@ -90,7 +90,7 @@ function onSize(value: string): void {
       />
     </div>
 
-    <nav v-if="hasPager" aria-label="Pagination">
+    <nav v-if="hasPager" class="fdy-pagination" aria-label="Pagination">
       <ul class="fdy-pagination__list">
         <li>
           <button

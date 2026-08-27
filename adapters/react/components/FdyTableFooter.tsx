@@ -75,7 +75,7 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
       )}
 
       {hasPager && (
-        <nav aria-label="Pagination">
+        <nav className="fdy-pagination" aria-label="Pagination">
           <ul className="fdy-pagination__list">
             <li>
               <button type="button" className="fdy-pagination__link" aria-label="Previous page" disabled={currentPage1 === 1} onClick={(): void => goTo(currentPage1 - 1)}>‹</button>

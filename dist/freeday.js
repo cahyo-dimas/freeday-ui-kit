@@ -3905,6 +3905,13 @@
     var countEl = root.querySelector('[data-fdy-table-count]');
     var infoEl = root.querySelector('[data-fdy-table-info]');
     var pagerEl = root.querySelector('[data-fdy-table-pagination]');
+    /* COMPONENTS.md documents the wrapper as <nav class="fdy-pagination" data-fdy-table-pagination>
+       and nothing in the kit ever wrote that class, here or in the three typed footers (#050 §2).
+       It carries no rule (NEXT-UP #9), so nothing rendered differently, but a consumer selector or
+       an e2e assertion on the block passed against hand-written markup and failed against the kit's
+       own output, and the raw and typed paths are supposed to be interchangeable. Set once at init,
+       not per render: the wrapper outlives every pager we build into it. */
+    if (pagerEl) pagerEl.classList.add('fdy-pagination');
     var pageSizeEl = root.querySelector('[data-fdy-table-page-size]');
     var selectAll = root.querySelector('[data-fdy-select-all]');
     var pageSize = parseInt(root.getAttribute('data-page-size'), 10) || 0; // 0 = no pagination

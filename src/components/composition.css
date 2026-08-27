@@ -60,9 +60,22 @@
    grid track, `container-type:inline-size` on a standalone .fdy-stat would stop it sizing to its
    own content. The unconditional rule above stays as the fallback wherever @container is missing. */
 @supports (container-type:inline-size){
-  .fdy-stats>.fdy-stat{container-type:inline-size;}
-  .fdy-stats>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
+  .fdy-stats:not(.fdy-stats--inline)>.fdy-stat{container-type:inline-size;}
+  .fdy-stats:not(.fdy-stats--inline)>.fdy-stat .fdy-stat__value{font-size:clamp(var(--text-xl),11cqw,var(--text-3xl));}
 }
+/* The price of that container, and the reason --inline opts out of it (#050). `container-type`
+   applies inline-size CONTAINMENT: the tile's min-content and max-content contributions are both
+   ZERO. So the 11rem floor above is not a taste choice, it is the only thing giving these tracks a
+   size, and re-tracking the grid on content (`auto`, `max-content`, `minmax(0,…)`) resolves every
+   track to 0. `justify-items` is the sharper edge: anything but the default `stretch` sizes the
+   tile to that zero contribution even when the track is correctly wide, and three labels paint on
+   top of each other. Measured from IDU_EMATE_ACCT_WEB's page header, where a hugging strip came out
+   40px wide, all of it gap.
+   --inline is the shape that header wanted: a strip that hugs its numbers and sits beside a page
+   title, instead of a full-width band whose 11rem floor collapses to one column at 390px. It cannot
+   have both, so it drops the container and keeps the flat --text-3xl the base rule already sets;
+   a track sized to its own content is never the narrow track the clamp exists for. */
+.fdy-stats--inline{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,max-content);}
 .fdy-stats--boxed{background:var(--color-surface);border:var(--bw) solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);gap:0;}
 .fdy-stats--boxed .fdy-stat{padding:var(--space-5);border-right:var(--bw) solid var(--color-border-muted);}
 .fdy-stats--boxed .fdy-stat:last-child{border-right:0;}

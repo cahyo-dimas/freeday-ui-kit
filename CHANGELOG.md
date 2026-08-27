@@ -9,6 +9,80 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.1.0] - 2026-08-27
+
+**Dua cacat lebar yang dilaporkan dari layar sungguhan, dan keduanya tak kelihatan di DOM.** Markup-nya
+benar, class-nya benar, kotaknya cuma berhenti lebih awal. Rilis ini juga membuat satu kalimat
+`COMPONENTS.md` jadi benar setelah lama tidak.
+
+### Fixed
+- **Kontrol di dalam `.fdy-field` kini selebar field-nya** (`improvement-notes` #051, dari
+  `IDU_EMATE_APPL_WEB` dan `IDU_EMATE_ACCT_WEB`). `.fdy-input-group`, `.fdy-combo`,
+  `.fdy-autocomplete` dan `.fdy-cascade` masing-masing di-cap `22rem` — cap untuk kontrol yang
+  berdiri sendiri, tanpa field yang bisa memberinya lebar — dan cap itu hanya dilepas **di satu
+  container**, `.fdy-filterbar`, yang menyebut dua dari empatnya. Akibatnya baris `--full` di
+  `.fdy-form-grid` memegang combo 352px di bawah label 600px, sementara `.fdy-input`
+  di sebelahnya (yang tak pernah punya cap) mengisi penuh: satu form terlihat tak sejajar dengan
+  dirinya sendiri. Yang paling mahal justru versi yang dilaporkan pengguna tanpa diminta — *"jarak
+  search ke filter status agak jauh, ya?"* — pada toolbar dengan field `26rem`: kontrolnya 352px,
+  jadi **64px ruang mati ada DI DALAM field**, dan `gap:var(--space-3)` yang ditulis penulisnya
+  terbaca 76px di layar. Tak ada satu pun langkah debug yang wajar bisa melihatnya: gap-nya benar,
+  flex-nya benar.
+  Perbaikannya satu aturan di `input.css`, bukan selector ketiga di samping filterbar, dan bentuknya
+  **sudah ada di kit sejak #017** — `.fdy-field>.fdy-datepicker` melepas cap picker dengan komentar
+  "a picker fills the field *like every other control*". Kalimat itu tidak benar untuk empat kontrol
+  di atas, dan sekarang benar. Cap `22rem` tetap ada **di `.fdy-field`**, jadi field yang tak
+  dilebarkan siapa pun tak berubah sedikit pun.
+  Ikut terangkat, dan tak ada di laporan mana pun: `.fdy-autocomplete` dan `.fdy-cascade` di field
+  `--w-2xl` (25rem) berhenti 48px lebih pendek **di dalam filterbar sendiri** — container yang kit
+  kira sudah beres. Aturan lama di `filterbar.css` dihapus, bukan dibiarkan di samping yang baru:
+  dua aturan yang mengatakan hal sama persis adalah cara filterbar jadi tahu sesuatu yang tak
+  diketahui `input.css`.
+- **`.fdy-pagination` akhirnya benar-benar dikirim** (#050 §2). `COMPONENTS.md` menyuruh konsumen
+  menulis `<nav class="fdy-pagination" data-fdy-table-pagination>`, dan class blok itu **nol match di
+  seluruh paket** — bukan di enhancer, bukan di tiga footer typed. Tak ada yang tampak berbeda,
+  karena blok itu memang tak punya rule (`NEXT-UP` #9), tapi selector konsumen atau asersi e2e pada
+  blok itu **lulus terhadap markup tulisan tangan dan gagal terhadap keluaran kit sendiri**, padahal
+  kedua jalur seharusnya bisa saling menggantikan. Enhancer kini menyetelnya sekali saat init;
+  `FdyTableFooter` Vue/React/Blazor merendernya.
+
+### Added
+- **`.fdy-stats--inline`** — strip KPI yang **memeluk angkanya** alih-alih membentang, untuk yang
+  duduk di samping judul halaman (#050 §1). Ini jawaban atas cacat yang tak bisa diperbaiki dengan
+  dokumentasi saja: `.fdy-stat` membawa `container-type:inline-size` (itu yang memberi `__value`
+  tipe fluidnya), dan **inline-size containment berarti tile tak menyumbang lebar intrinsik sama
+  sekali**. Jadi floor `11rem` bawaan bukan pilihan rasa — ia satu-satunya yang memberi track itu
+  ukuran — dan konsumen yang me-retrack grid ke konten mendapat tiga track nol: tiga label saling
+  menimpa (`COMPAMEMBERSTA…`) dan halaman meluber ke samping. Terukur dari header
+  `IDU_EMATE_ACCT_WEB`: strip 40px, seluruhnya gap. `justify-items` lebih tajam lagi — apa pun
+  selain `stretch` mengecilkan tile ke sumbangan nol itu **walau track-nya sudah benar lebarnya**.
+  `--inline` melepas container-nya, jadi tile-nya berukuran sesuai kontennya sendiri dan `__value`
+  memakai `--text-3xl` datar: track yang seukuran kontennya tak pernah jadi track sempit yang
+  membuat tipe fluid itu ada. Konsumen tak perlu lagi menebak floor sendiri.
+
+### Docs
+- **`COMPONENTS.md` §Stats akhirnya menyebut containment-nya.** `container-type`, `cqw`,
+  `inline-size` dan `contain` nol match di seluruh berkas itu sebelum rilis ini, padahal detail
+  implementasi tipe `__value` itu bocor langsung ke kontrak layout siapa pun yang me-retrack grid-nya.
+  Kini tertulis sebagai batasan: override `grid-template-columns` wajib punya floor eksplisit, dan
+  `justify-items` harus tetap `stretch`.
+- **§Field menyebut cap-nya.** `22rem` dan `max-width` juga nol match di `COMPONENTS.md` sebelum ini,
+  jadi cap maupun pengecualian filterbar-nya hanya bisa ditemukan dengan mengukur form yang sudah
+  dirender. Aturannya sekarang satu kalimat: **beri ukuran pada field, jangan pada kontrolnya.**
+
+### Guarded
+- `test/css.test.mjs`: bentuk CSS-nya — keempat kontrol dilepas di `.fdy-field`, `.fdy-field`
+  mempertahankan cap-nya sendiri, aturan filterbar lama tak boleh kembali, dan `--inline` harus
+  keluar dari container maupun clamp `cqw`-nya.
+- `browser/field-width.mjs` (6 test, Chrome sungguhan): hasilnya — keduanya adalah **outcome layout**
+  yang tak terlihat di stylesheet. Termasuk asersi bahwa gap yang terlihat pembaca sama dengan gap
+  yang ditulis penulisnya, dan tile `--inline` diukur terhadap referensi yang berukuran-konten
+  secara konstruksi, bukan sekadar "bukan nol": tanpa itu, satu track yang masih memegang floor
+  `11rem` lolos karena strip-nya tetap masuk akal.
+- `test/docs.test.mjs`: berkas mana pun yang merender `__element` sebuah blok harus menyebut bloknya.
+  Dicari **secara struktur**, bukan dari daftar empat berkas yang salah — renderer pager kelima
+  adalah yang tak akan diingat siapa pun.
+
 ## [3.0.0] - 2026-08-26
 
 **Kenapa MAJOR padahal rilis ini seluruhnya aditif.** Tak ada satu pun perubahan di bawah yang
