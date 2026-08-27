@@ -11,24 +11,32 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.1.0` sudah dipotong lokal; `3.0.0` yang masih terbit.** Belum ada commit, tag, atau publish
-untuk 3.1.0 — `git status` masih kotor dan `origin/main` masih di `6f3e466`. Diperiksa 2026-08-27:
-`npm view @cahyo-dimas/freeday version` -> `3.0.0`. Jalankan resep di §Rilis untuk menutupnya.
-
-Yang di bawah ini adalah keadaan 3.0.0 (2026-08-26), dan tetap benar sampai 3.1.0 terbit.
-Diperiksa, bukan diingat — ketiga perintah yang berkas ini resepkan benar-benar dijalankan:
+**`3.1.0`, dan itu yang terbit** (2026-08-27). Diperiksa, bukan diingat — ketiga perintah yang
+berkas ini resepkan benar-benar dijalankan:
 
 ```
-npm view @cahyo-dimas/freeday version   -> 3.0.0   (dist-tags latest = 3.0.0)
+npm view @cahyo-dimas/freeday version   -> 3.1.0   (dist-tags latest = 3.1.0)
 git rev-list --left-right --count origin/main...main -> 0  0
-curl .../freeday-ui-kit/docs/           -> v3.0.0
+curl -L .../freeday-ui-kit/docs/        -> v3.1.0
 ```
 
-Isi tarball diperiksa dari registry, bukan dari `npm pack` lokal. Sebelum ini `latest` = `2.2.0`.
+Isi tarball diperiksa dari registry, bukan dari `npm pack` lokal: keempat perubahan 3.1.0 ada di
+dalamnya. Sebelum ini `latest` = `3.0.0`.
+
+Catatan kecil pada perintah ketiga: **sertakan `/docs/`**. Root Pages hanya stub 301-byte dengan
+`<meta http-equiv="refresh">`, dan meta refresh bukan redirect HTTP, jadi `curl -L` pada root ikut
+berhenti di sana dan grep versinya pulang kosong — yang terbaca persis seperti Pages belum terbit.
+
+**Rilis ini ditolak gerbangnya tiga kali sebelum lolos, dan tak satu pun menerbitkan apa pun.**
+Layak dicatat karena dua di antaranya bukan cacat kit: (1) guard baru menjumlahkan piksel yang sudah
+dibulatkan sendiri-sendiri, `302` lawan `301` — hanya terlihat di runner, karena Chrome stable di
+mesin dev berbagi font dengan Chromium-nya; (2) race stepper yang sudah merah sejak `3817482`;
+(3) Chrome tak pernah hidup di runner. Nomor 1 diperbaiki, nomor 3 kini di-retry oleh harness, dan
+nomor 2 **masih terbuka** — lihat §Yang diketahui dan belum diselesaikan.
 
 Rilis terakhir, dan apa artinya bagi konsumen:
 
-- **3.1.0 (belum terbit): lebar yang tak kelihatan di DOM.** Dua cacat dari layar sungguhan
+- **3.1.0: lebar yang tak kelihatan di DOM.** Dua cacat dari layar sungguhan
   (`improvement-notes` #050, #051). Kontrol di dalam `.fdy-field` kini selebar field-nya — cap
   `22rem`-nya dulu hanya dilepas di `.fdy-filterbar`, untuk dua dari empat kontrol, jadi toolbar
   dengan field `26rem` menyembunyikan **64px ruang mati di dalam field** dan `gap:var(--space-3)`
@@ -123,10 +131,32 @@ membatasinya ([gh.io/npm-gat-bypass2fa-deprecation](https://gh.io/npm-gat-bypass
   `error: 'Chrome never wrote DevToolsActivePort'`, lalu lima sampai enam test berkoordinat ikut
   merah sebagai korban. Terlihat 2026-08-26: run `CI` di `main` merah karena ini, sementara run
   `Publish` menjalankan suite yang sama pada commit yang sama dan hijau, beberapa menit berselang.
-  **Cara membedakannya cuma satu: baca anotasinya.** Sejak rilis ini `ci.yml` ikut menganotasikan
-  baris `error:`/`expected`/`actual` dari diagnostik TAP, bukan cuma nama test — persis supaya
-  kegagalan peluncuran browser tak lagi terbaca seperti regresi. Kalau muncul lagi: jalankan ulang
-  job-nya, jangan kejar test-nya.
+  **Cara membedakannya cuma satu: baca anotasinya.** `ci.yml` menganotasikan baris
+  `error:`/`expected`/`actual` dari diagnostik TAP, bukan cuma nama test — persis supaya kegagalan
+  peluncuran browser tak lagi terbaca seperti regresi.
+  **Sejak 3.1.0 saran "jalankan ulang job-nya" tak lagi jadi langkah pertama:** `browser/harness.mjs`
+  mencoba peluncuran tiga kali, masing-masing dengan profil sendiri (profil setengah jadi adalah
+  alasan peluncuran berikutnya ikut gagal), dan `stdio` stderr Chrome tak lagi dibuang — kalau ketiga
+  percobaan habis, errornya menyebut `(attempt 3 of 3), chrome said: …`. Diuji dua arah dengan binary
+  tiruan yang bisa disuruh gagal. Peluncuran bukan asersi; mengulanginya tak melemahkan apa pun.
+  Kalau tetap merah setelah tiga percobaan, itu bukan lagi flake — baca apa kata Chrome.
+- **Anotasi CI pernah menyebut angka tanpa menyebut asersinya.** `error:` TAP adalah block scalar
+  begitu pesannya multi-baris, dan `assert.equal` selalu menambahkan `\n\n2 !== 1`, jadi setiap pesan
+  asersi nyata datang sebagai `error: |-` dengan teksnya di bawah — dan teks itu dulu dibuang. Sebuah
+  run bisa bilang `expected 1, actual 2` untuk test yang punya empat asersi `=== 1`. Diperbaiki di
+  3.1.0; kalau menambah ekstraksi baru, uji terhadap TAP sungguhan dari kegagalan yang dipaksa, bukan
+  terhadap TAP yang dibayangkan.
+- **`stepper: a refused guard leaves the panel exactly where it was` masih bisa merah di runner.**
+  `expected 1, actual 2` — panelnya maju padahal guard menolak. Sudah merah di `3817482` dan sekali
+  lagi saat memotong 3.1.0, jadi `1549278` (yang mengejar race `settle`) belum menutupnya. **Tidak
+  tereproduksi** di mesin dev: tidak di kedua engine, tidak di `--test-concurrency=3`, tidak di 4 run
+  paralel, dan tidak dengan stylesheet digelembungkan ke 20MB untuk melebarkan jendela sebelum script
+  inline fixture jalan — di percobaan terakhir itu `window.mode` justru sudah tersetel saat kondisi
+  tunggu lama terpenuhi, jadi hipotesis "mode ditimpa" **tidak berlaku**. Yang sudah dilakukan:
+  kedua spec stepper berhenti menunggu `.fdy-step.is-active` (markup statis, benar sejak parser
+  melewatinya, membuktikan nol) dan kini menunggu `fdyStepperReady` + `window.asked`. Itu bukan
+  perbaikan yang terbukti — run hijau berikutnya bukan bukti. Kalau muncul lagi, anotasinya sekarang
+  akan menyebut asersi yang mana; mulai dari situ.
 
 ## Selanjutnya
 
@@ -135,7 +165,7 @@ Backlog aktif ada di **[`NEXT-UP.md`](NEXT-UP.md)**. Dua item yang pemicunya sud
 friksi yang masih terbuka, `improvement-notes` #040 (kontrak kolom typed tak ada di COMPONENTS.md)
 dan #045 (tipe emit `FdyCfl` melebar tanpa diumumkan), ditutup 2026-08-25 dan menunggu 2.1.0.
 
-`improvement-notes` #050 dan #051 ditutup 2026-08-27 dan menunggu 3.1.0.
+`improvement-notes` #050 dan #051 ditutup 2026-08-27 dan **terbit di 3.1.0**.
 
 Sikap default tetap: **tunggu demand**. Tapi malam 24–25 Agustus 2026 memberi satu pelajaran yang
 layak dibawa: **NEXT-UP sendiri bisa basi**. #6 menuliskan "bikin hook override" sebagai pilihan,
