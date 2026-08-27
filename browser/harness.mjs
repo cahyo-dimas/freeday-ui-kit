@@ -64,6 +64,42 @@ async function readDevToolsPort(userDataDir) {
   throw new Error('Chrome never wrote DevToolsActivePort');
 }
 
+/* A launch is not an assertion, so retrying one weakens nothing.
+ *
+ * On a hosted runner three Chromes start at once (the suite runs at --test-concurrency=3) and one
+ * of them sometimes dies before writing DevToolsActivePort, taking five or six coordinate tests red
+ * with it as collateral. HANDOFF's answer was to re-run the job, which is right and costs a whole
+ * release run each time: it refused 3.1.0 once, on a commit whose only changes were CSS widths.
+ *
+ * Each attempt gets its OWN profile directory — a half-initialised one is a reason the next launch
+ * fails too — and Chrome's stderr is kept rather than discarded, so a launch that never recovers
+ * says why instead of only that it did not appear. That was the other half of the problem: with
+ * `stdio: 'ignore'` the process could explain itself and nobody was listening. */
+const LAUNCH_ATTEMPTS = 3;
+
+async function launchChrome(chrome, args) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= LAUNCH_ATTEMPTS; attempt++) {
+    const userDataDir = await mkdtemp(join(tmpdir(), 'fdy-cdp-'));
+    let stderr = '';
+    const proc = spawn(chrome, [`--user-data-dir=${userDataDir}`, ...args], { stdio: ['ignore', 'ignore', 'pipe'] });
+    proc.stderr.on('data', (chunk) => { stderr += chunk; });
+    proc.on('error', () => { /* surfaced by the port read failing below */ });
+    try {
+      const port = await readDevToolsPort(userDataDir);
+      return { proc, userDataDir, port };
+    } catch (err) {
+      proc.kill();
+      await rm(userDataDir, { recursive: true, force: true }).catch(() => {});
+      const said = stderr.trim().split('\n').filter(Boolean).slice(-3).join(' / ');
+      lastError = new Error(
+        `${err.message} (attempt ${attempt} of ${LAUNCH_ATTEMPTS})`
+        + (said === '' ? ', and it printed nothing' : `, chrome said: ${said}`));
+    }
+  }
+  throw lastError;
+}
+
 async function firstPageTarget(port) {
   for (let i = 0; i < 80; i++) {
     try {
@@ -86,7 +122,6 @@ async function firstPageTarget(port) {
 export async function withPage(fileUrl, fn) {
   const chrome = findChrome();
   if (chrome === null) throw new Error('no Chrome binary (set CHROME_BIN)');
-  const userDataDir = await mkdtemp(join(tmpdir(), 'fdy-cdp-'));
   /* chrome-headless-shell is headless by construction; a normal Chrome binary is not, and on a
      machine with no display it goes looking for one and dies. Telling the two apart is also what
      lets CHROME_BIN point at any installed Chrome, which is how #048 was settled, by running the
@@ -95,25 +130,19 @@ export async function withPage(fileUrl, fn) {
   const headless = chrome.includes('headless-shell') ? [] : ['--headless=new'];
   const sandbox = process.env.CI ? ['--no-sandbox'] : [];
 
-  const proc = spawn(
-    chrome,
-    [
-      ...headless,
-      ...sandbox,
-      '--remote-debugging-port=0',
-      `--user-data-dir=${userDataDir}`,
-      '--no-first-run',
-      '--no-default-browser-check',
-      '--disable-gpu',
-      '--window-size=1000,900',
-      fileUrl,
-    ],
-    { stdio: ['ignore', 'ignore', 'ignore'] },
-  );
+  const { proc, userDataDir, port } = await launchChrome(chrome, [
+    ...headless,
+    ...sandbox,
+    '--remote-debugging-port=0',
+    '--no-first-run',
+    '--no-default-browser-check',
+    '--disable-gpu',
+    '--window-size=1000,900',
+    fileUrl,
+  ]);
 
   let ws = null;
   try {
-    const port = await readDevToolsPort(userDataDir);
     const wsUrl = await firstPageTarget(port);
     ws = new WebSocket(wsUrl);
     await new Promise((resolve, reject) => {
