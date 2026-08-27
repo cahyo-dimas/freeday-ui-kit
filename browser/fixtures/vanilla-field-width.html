@@ -93,6 +93,10 @@
 
 <script>
   var wOf = function (el) { return Math.round(el.getBoundingClientRect().width); };
+  /* Unrounded, for anything that gets SUMMED or DIFFERENCED. Rounding each part first and comparing
+     to the rounded whole is off by a pixel the moment the engine's font metrics change, which is
+     precisely what differs between the runner's Chrome stable and the local Chromium. */
+  var rawW = function (el) { return el.getBoundingClientRect().width; };
   var pair = function (fieldId, controlSel) {
     var field = document.getElementById(fieldId);
     var control = field.querySelector(controlSel);
@@ -108,6 +112,12 @@
       inlineRow: wOf(strip.parentNode),
       inlineTiles: [].map.call(strip.querySelectorAll('.fdy-stat'), wOf),
       refTiles: [].map.call(document.getElementById('inline-ref').querySelectorAll('.fdy-stat'), wOf),
+      inlineStripRaw: rawW(strip),
+      inlineTilesRaw: [].map.call(strip.querySelectorAll('.fdy-stat'), rawW),
+      refTilesRaw: [].map.call(document.getElementById('inline-ref').querySelectorAll('.fdy-stat'), rawW),
+      /* Read the gap rather than restate it: --space-5 is a token, and a guard that hard-codes 40
+         fails on a density change that is not a defect. */
+      inlineGap: parseFloat(getComputedStyle(strip).columnGap),
       /* A hugging track is never the narrow track the clamp exists for, so the type stays flat. */
       inlineValuePx: getComputedStyle(strip.querySelector('.fdy-stat__value')).fontSize,
       bandTiles: [].map.call(band.querySelectorAll('.fdy-stat'), wOf),
@@ -122,10 +132,9 @@
       search: pair('t-search', '.fdy-input-group'),
       /* What the reader actually sees between the two controls: the declared gap plus whatever the
          first field failed to fill. */
-      seenGap: Math.round(
-        document.getElementById('t-next').getBoundingClientRect().left
-        - search.querySelector('.fdy-input-group').getBoundingClientRect().right),
-      declaredGap: Math.round(parseFloat(getComputedStyle(document.getElementById('toolbar')).columnGap)),
+      seenGap: document.getElementById('t-next').getBoundingClientRect().left
+        - search.querySelector('.fdy-input-group').getBoundingClientRect().right,
+      declaredGap: parseFloat(getComputedStyle(document.getElementById('toolbar')).columnGap),
       barAuto: pair('b-auto', '.fdy-autocomplete'),
       barCascade: pair('b-cascade', '.fdy-cascade'),
       lone: pair('lone', '.fdy-combo'),

@@ -20,6 +20,17 @@ const read = async (p) => {
   return JSON.parse(await p.evalJS('JSON.stringify(window.widths())'));
 };
 
+/* Sub-pixel tolerance for anything summed or differenced across boxes.
+ *
+ * CI runs the runner's Chrome stable and this machine runs Chromium from the puppeteer cache,
+ * deliberately (see HANDOFF), so text measures differently and fractional box widths differ. The
+ * first version of this spec added three independently rounded tiles and compared them to a rounded
+ * strip, which held here and came out 302 against 301 on the runner. One pixel is far below every
+ * defect this file guards: the miss it exists to catch is a track stuck at the 11rem floor, which is
+ * ~97px wide. */
+const EPS = 1.5;
+const near = (a, b) => Math.abs(a - b) <= EPS;
+
 test('a control is as wide as the field it is in (#051)', { skip }, async () => {
   await withPage(fixture('vanilla-field-width.html'), async (p) => {
     const w = await read(p);
@@ -46,8 +57,8 @@ test('a stated field width is the gap the author wrote (#051 §2)', { skip }, as
       `a 26rem search field must hold a 26rem control, got ${w.search.control}px in ${w.search.field}px`);
     /* The reported symptom, and the only one a person could see: 12px of declared gap read as 76px,
        because 64px of it was dead space inside the field before it. */
-    assert.equal(w.seenGap, w.declaredGap,
-      `the visible gap must be the declared one, saw ${w.seenGap}px against ${w.declaredGap}px`);
+    assert.ok(near(w.seenGap, w.declaredGap),
+      `the visible gap must be the declared one, saw ${w.seenGap.toFixed(2)}px against ${w.declaredGap}px`);
   });
 });
 
@@ -85,14 +96,21 @@ test('.fdy-stats--inline hugs its numbers instead of collapsing (#050)', { skip 
        each other and the page overflowing sideways. */
     assert.ok(w.inlineTiles.every((t) => t > 0),
       `a size-contained tile contributes no width; --inline must not be a container, got ${w.inlineTiles.join('/')}`);
-    assert.equal(w.inlineStrip, w.inlineTiles.reduce((a, b) => a + b, 0) + 40,
-      `the strip must be exactly its tiles plus its two gaps, got ${w.inlineStrip}px for ${w.inlineTiles.join('/')}`);
+    const expected = w.inlineTilesRaw.reduce((a, b) => a + b, 0) + 2 * w.inlineGap;
+    assert.ok(near(w.inlineStripRaw, expected),
+      `the strip must be exactly its tiles plus its two ${w.inlineGap}px gaps, `
+        + `got ${w.inlineStripRaw.toFixed(2)}px against ${expected.toFixed(2)}px`);
     /* Non-zero is not the same as hugging. `.fdy-stats` states an explicit template, and `auto-fit`
        resolves it to ONE track that keeps the 11rem floor while the other two tiles fall into
        implicit columns, so the strip stays plausible (368px, sum-of-tiles still holds) with its
        first tile at 176px against 79px of content. Only a reference sized by construction sees it. */
-    assert.deepEqual(w.inlineTiles, w.refTiles,
-      `every tile must be its own content wide, got ${w.inlineTiles.join('/')} against ${w.refTiles.join('/')}`);
+    assert.equal(w.inlineTilesRaw.length, w.refTilesRaw.length, 'the reference must hold the same tiles');
+    w.inlineTilesRaw.forEach((tile, i) => {
+      assert.ok(near(tile, w.refTilesRaw[i]),
+        `tile ${i + 1} must be its own content wide, got ${tile.toFixed(2)}px against a `
+          + `content-sized ${w.refTilesRaw[i].toFixed(2)}px (all: ${w.inlineTiles.join('/')} `
+          + `against ${w.refTiles.join('/')})`);
+    });
     /* Hugging, not spanning: that is the whole difference from the default band. */
     assert.ok(w.inlineStrip < w.inlineRow / 2,
       `--inline must hug beside the title, took ${w.inlineStrip}px of a ${w.inlineRow}px row`);
