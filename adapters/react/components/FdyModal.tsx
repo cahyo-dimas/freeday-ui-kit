@@ -13,7 +13,8 @@ export interface FdyModalProps {
   open: boolean;
   title: ReactNode;
   onClose: () => void;
-  size?: 'sm' | 'md' | 'lg' | 'wide';
+  /* 'cfl' is the choose-from-list width (46rem); see the Vue wrapper for why it was missing. */
+  size?: 'sm' | 'md' | 'lg' | 'wide' | 'cfl';
   dismissible?: boolean;
   /** aria-label for the × button. Default 'Close'. */
   closeLabel?: string;

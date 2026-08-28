@@ -19,7 +19,7 @@ public partial class FdyModal
     /// <summary>Optional footer (action buttons). Omitted entirely when null.</summary>
     [Parameter] public RenderFragment? FooterContent { get; set; }
 
-    /// <summary>Size modifier: <c>sm</c> | <c>md</c> | <c>lg</c> | <c>wide</c>.</summary>
+    /// <summary>Size modifier: <c>sm</c> | <c>md</c> | <c>lg</c> | <c>wide</c> | <c>cfl</c> (the 46rem choose-from-list width).</summary>
     [Parameter] public string? Size { get; set; }
 
     /// <summary>When true (default), Esc and a backdrop click dismiss the dialog and a close

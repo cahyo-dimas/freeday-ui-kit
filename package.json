@@ -1,6 +1,6 @@
 {
   "name": "@cahyo-dimas/freeday",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Freeday: token-driven, framework-agnostic UI KIT (design source-of-truth).",
   "type": "module",
   "license": "MIT",
@@ -92,7 +92,7 @@
   "scripts": {
     "build": "node tokens/build.mjs",
     "test": "node --test",
-    "test:browser": "node --test --test-concurrency=3 browser/vanilla.mjs browser/adapter.mjs browser/layout.mjs browser/theme.mjs browser/state.mjs browser/root-init.mjs browser/upload-states.mjs browser/number.mjs browser/card-stretch.mjs browser/text-override.mjs browser/control-heights.mjs browser/field-width.mjs browser/cfl-multi.mjs browser/crowding.mjs browser/over-dialog.mjs browser/chart-scale.mjs browser/overlay-stack.mjs browser/chart-a11y.mjs browser/app-shell.mjs browser/picker-states.mjs browser/harness-contract.mjs",
+    "test:browser": "node --test --test-concurrency=3 browser/vanilla.mjs browser/adapter.mjs browser/layout.mjs browser/theme.mjs browser/state.mjs browser/root-init.mjs browser/upload-states.mjs browser/number.mjs browser/card-stretch.mjs browser/text-override.mjs browser/control-heights.mjs browser/field-width.mjs browser/cfl-multi.mjs browser/crowding.mjs browser/over-dialog.mjs browser/chart-scale.mjs browser/overlay-stack.mjs browser/chart-a11y.mjs browser/app-shell.mjs browser/picker-states.mjs browser/tabs-strip.mjs browser/cfl-narrow.mjs browser/harness-contract.mjs",
     "prepack": "node tokens/build.mjs",
     "version": "node tokens/build.mjs && git add dist",
     "typecheck:react": "tsc -p adapters/react/tsconfig.json --noEmit",

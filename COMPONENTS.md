@@ -640,6 +640,15 @@ child `<ul>` is a branch, one without is a leaf. Needs `freeday-cascade.js`.
 ## Choose-from-list (CFL) — `data-fdy-cfl`
 > **Typed wrapper: `<FdyCfl>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
 
+> **Narrow: the results stack, and there is no prop for it** (`#053`). Under a `.fdy-cfl__results`
+> narrower than **30rem** — a docked add-on panel, a phone — the rows lay out as list items instead
+> of table cells: the first column becomes the title, the remaining columns become one detail line
+> under it, and `<thead>` is dropped. It is a **container** query, so what decides is the dialog's
+> width and not the viewport's; the same component is a table on a desktop page and a list inside a
+> 420px panel, with no flag to pass and nothing to keep in sync. Your data contract does not change:
+> `columns`, `display` and `rowKey` already say which column is the identity. If a screen genuinely
+> needs columns at that width, override the `@container` block — do not widen the dialog.
+
 ### Props — `<FdyCfl>`
 
 Four of these are required and carry the whole component: `fetchPage`, `columns`, `display`,
@@ -1496,6 +1505,16 @@ APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 `.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
 so the same look serves routed sub-navigation built from plain links. See the note under Nav.
 
+> **The strip's line is an inset `box-shadow`, not a `border-bottom`** (`#052`; through 3.1.0 it
+> was a border, so an app upgrading past that release changes the override with it). To
+> remove it — a strip inside a header that draws its own rule — override `box-shadow:none`;
+> `border-bottom:0` no longer reaches it. The swap is not cosmetic: `.fdy-tabs__list` scrolls
+> horizontally, a scroll container clips its descendants to the padding box, and the tab's
+> `margin-bottom:-1px` (which lifted its 2px underline onto that border) therefore pushed the
+> underline's lower half into the clip — the underline painted 1px, and the strip carried 1px of
+> vertical scroll that ate trackpad gestures. A shadow paints on the box, not on the scrolled
+> content, so the line needs no overhang to sit under. Guarded in `browser/tabs-strip.mjs`.
+
 ```html
 <div class="fdy-tabs" data-fdy-tabs>
   <div class="fdy-tabs__list" role="tablist" aria-label="Invoice detail">
@@ -1521,7 +1540,7 @@ so the same look serves routed sub-navigation built from plain links. See the no
 | `open` | `boolean` | Controlled: your state decides. The wrapper cancels the native `cancel` event so the DOM can never disagree with it. |
 | `title` | `string` (Vue) · `ReactNode` | Names the dialog through `aria-labelledby`. Vue also offers a `title` slot when the heading needs markup. |
 | `onClose` | `() => void` | React. Vue emits `close`. Fires from Escape, a backdrop click and the ×, all three of which exist only under `dismissible`. |
-| `size?` | `'sm' \| 'md' \| 'lg' \| 'wide'` | Dialog width. |
+| `size?` | `'sm' \| 'md' \| 'lg' \| 'wide' \| 'cfl'` | Dialog width. `cfl` is the 46rem choose-from-list width; `FdyCfl` applies it itself, so pass it only for a dialog you build at that width. |
 | `dismissible?` | `boolean` | Whether Escape, the backdrop and the × can close it. Off means the reader has to take a footer action, which is the point of a blocking confirm. |
 | `closeLabel?` | `string` | Accessible name for the × button. Default `Close`. |
 | `footer?` | `ReactNode` | React. Vue: the `footer` slot. |

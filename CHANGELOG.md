@@ -9,6 +9,76 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.2.0] - 2026-08-28
+
+**Dua cacat yang tak bisa di-screenshot, dan satu komponen yang akhirnya muat di panel 420px.**
+Ketiganya datang dari layar sungguhan. Yang menyatukannya: tak satu pun terlihat di DOM atau di
+stylesheet — yang satu hanya bergerak, yang satu hanya terbaca, yang satu hanya muat atau tidak.
+
+### Fixed
+- **Strip tab tak lagi menggulung vertikal, dan garis aktifnya kini benar-benar 2px** (`#052`, dari
+  `IDU_AI_DOC_SAPB1_CLIENT`). Dilaporkan pengguna yang bisa merasakannya tapi tak bisa memotretnya:
+  *"panel tab ini menggulung vertikal, susah di-screenshot."* Memang begitu — **1px**.
+  `overflow-x:auto` tak bisa meminta satu sumbu saja (CSS Overflow §3: sumbu lain yang `visible`
+  ikut jadi `auto`), jadi 1px yang digantungkan `margin-bottom:-1px` milik tab — yang ada justru
+  untuk mengangkat underline 2px-nya ke atas garis strip — berubah jadi scrollport sungguhan yang
+  memakan gestur trackpad. Yang tak dilaporkan siapa pun, dan hanya piksel yang bisa membedakannya:
+  scroll container **memotong** keturunannya di padding box, jadi separuh bawah underline itu ikut
+  terpotong. Underline aktif terkirim **1px** selama negative margin itu ada — CSS-nya bilang 2px,
+  DOM-nya bilang 2px, layarnya bilang 1. Garis strip kini `box-shadow` inset (dicat di kotaknya,
+  bukan di konten yang menggulung), dan tab tak lagi menggantung. **Bagi konsumen yang menyembunyikan
+  garis itu:** `border-bottom:0` tak lagi menjangkaunya, pakai `box-shadow:none`. Sapuan ke seluruh
+  scroller lain (`.fdy-table-scroll`, `.fdy-nav--horizontal`, `.fdy-carousel__viewport`) bersih —
+  `.fdy-tabs__list` satu-satunya.
+- **`--color-text-subtle` gelap naik ke `slate-450`** (`#053` §2, dari
+  `IDU_AI_DOC_SAPB1_ADDON_DESKTOP_APP`). 4.02:1 di `--color-surface` gelap, di bawah AA, dan yang
+  memakainya bukan cuma app: **placeholder kit sendiri** (`.fdy-datepicker__value--placeholder` dan
+  sebelas `.fdy-cal__day.is-outside` dalam satu kalender). Yang menarik, tokennya tak melanggar
+  kontraknya — gerbang kontras memang menguji tier ini di **3:1 sebagai non-teks**; yang salah
+  adalah kit memakai tier dekoratif untuk teks yang berutang AA. Sekarang **4.88:1** di
+  `--color-surface`, yaitu permukaan yang dicat setiap `.fdy-input`, jadi placeholder lolos di tempat
+  placeholder benar-benar duduk. Light tak disentuh (sudah 4.69). **AA di ketiga permukaan gelap
+  sengaja tidak dikejar**: mencapainya butuh nada sejengkal dari `slate-400`, yang *adalah*
+  `--color-text-muted`, dan subtle yang sama dengan muted bukan tier lagi.
+
+### Added
+- **`FdyCfl` punya layout sempit, tanpa satu pun prop baru** (`#053` §1). Di bawah **30rem**,
+  barisnya menata diri sebagai list item: kolom pertama jadi judul, sisanya satu baris detail di
+  bawahnya, `<thead>` dilepas. **Container query, bukan media query** — dialog bukan viewport, dan
+  komponen yang sama adalah tabel di halaman desktop sekaligus daftar di dalam panel 420px yang
+  ditambatkan di SAP Business One. Kontrak datanya tak berubah: `columns` sudah menyebut kolom mana
+  yang identitas. Keempat stack dapat sekaligus, karena yang bekerja CSS.
+- **`size="cfl"` di `FdyModal`** (`#053` §4), Vue · React · Blazor. `.fdy-modal--cfl` (46rem) sudah
+  ada di CSS sejak lama tapi tak terjangkau dari adapter mana pun; `FdyCfl` memasang kelasnya
+  sendiri, jadi celah ini hanya muncul bagi yang membangun dialog sendiri selebar itu. **Bukan
+  breaking** meski union publiknya melebar: kebijakan 2.1.0 menyasar tipe di posisi *keluaran*
+  (handler yang menerima nilai lebih lebar); ini masukan, dan pemanggil yang mengirim nilai lama
+  tetap valid.
+
+### Added: guards
+- `browser/tabs-strip.mjs` — nol overflow vertikal, underline 2px terbaca dari **piksel** yang
+  benar-benar dicat, dan gulir horizontal yang tetap hidup. Diverifikasi mutasi: dengan aturan 3.1.0
+  dikembalikan, 2 dari 3 merah.
+- `browser/cfl-narrow.mjs` — menjalankan `FdyCfl.vue` sungguhan di viewport **420px**, lebar
+  konsumen yang melaporkannya, karena container query menanyakan lebar *dialog* dan hanya dialog
+  sungguhan yang punya lebar.
+- `test/contrast.test.mjs` dapat pasangan baru khusus placeholder, terpisah dari tier dekoratifnya,
+  jadi kedua paruh keputusan itu dijaga: gagal di 4.02 kalau tokennya dikembalikan, dan tetap 3:1
+  untuk chevron/separator.
+
+### Docs
+- `COMPONENTS.md`: kontrak override garis strip tab, layout sempit `FdyCfl`, dan `size="cfl"`.
+- `USAGE.md`: `.fdy-text-subtle` akhirnya masuk tabel peran teks — tabel itu berhenti di "muted",
+  padahal kelasnya publik — beserta kontrak kontrasnya di kedua tema.
+
+### Tidak diperbaiki, dan alasannya
+- **`--color-text-muted` 3.94:1 di `--color-surface-raised`** (`#053` §3) **tidak reproduksi.** Di
+  `soft`, `--color-surface-raised` *identik* dengan `--color-surface` (7.28:1); di `glass`,
+  komposit terburuknya 6.70:1; dan muted tak pernah turun di bawah **5.46:1** di mana pun dalam ramp
+  gelap. Angka 3.94 itu sendiri nyata: ia persis `slate-400` di atas `slate-700`, yaitu
+  `--color-border-strong` — token border yang tak dipakai komponen mana pun sebagai latar. Item ini
+  dibiarkan **open** dengan pertanyaan balik ke pelapor, bukan ditutup sebagai withdrawn.
+
 ## [3.1.0] - 2026-08-27
 
 **Dua cacat lebar yang dilaporkan dari layar sungguhan, dan keduanya tak kelihatan di DOM.** Markup-nya

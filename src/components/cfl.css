@@ -7,9 +7,16 @@
 /* Search bar, single leading-icon field; Enter/typing filters the results. */
 .fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 
-/* Results, dense rows, sticky header, its own scroll region. */
-.fdy-cfl__results{overflow:auto;max-height:min(24rem,50vh);}
+/* Results, dense rows, sticky header, its own scroll region.
+ *
+ * `container-type: inline-size` makes this box the query container for the stacked layout below.
+ * Safe here and nowhere near free in general: a size container stops contributing intrinsic inline
+ * size, which is what made `.fdy-stats--inline` collapse to three zero tracks in 3.1.0. This box
+ * takes its width from the dialog (`min(46rem, 100vw - …)`, an explicit width) and already scrolls
+ * its own content, so it never sized to the table to begin with. */
+.fdy-cfl__results{container:fdy-cfl / inline-size;overflow:auto;max-height:min(24rem,50vh);}
 .fdy-cfl__results .fdy-table th{position:sticky;top:0;z-index:1;}
+
 .fdy-cfl__row{cursor:pointer;}
 .fdy-cfl__row:hover{background:var(--color-surface-2);}
 .fdy-cfl__row:focus-visible{outline:none;background:var(--color-primary-soft);box-shadow:inset 2px 0 0 var(--color-primary);}
@@ -26,3 +33,51 @@
 .fdy-modal--cfl .fdy-modal__footer{justify-content:space-between;}
 .fdy-cfl__count{font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-cfl__actions{display:flex;gap:var(--space-2);}
+
+/* Narrow: the same rows as list items, not table cells (#053).
+ *
+ * A 420px add-on panel gives this dialog ~372px. A three- or four-column master-data table in that
+ * space either squeezes every column below legibility or scrolls on both axes, in a dialog whose
+ * whole job is "search, look, click one". So the first cell becomes the title and the rest become
+ * one detail line under it — the shape a picker takes when it is narrow.
+ *
+ * A CONTAINER query, not a media query: the dialog is not the viewport. The same component is wide
+ * on a desktop page and narrow inside a docked panel, and only the container knows which.
+ *
+ * No ARIA roles come with this, and that is a MEASURED decision rather than an omission. The
+ * received wisdom from the responsive-table era is that `display:block` on a table box drops its
+ * implicit role; explicit `role="table"/"row"/"cell"` were written into all four stacks here on
+ * that belief and then taken out again, because Chrome's own accessibility tree says otherwise:
+ * with the rows at `display:flex`, stripping every `role` attribute leaves
+ * `table → row → cell` intact (Chromium 133; only `rowgroup`, which associates nothing, is lost).
+ * Redundant ARIA is what the kit's own rule calls worse than none, so the guard asserts the
+ * OUTCOME — that a stacked row is still a row in the a11y tree — and stays silent about how.
+ * `browser/cfl-narrow.mjs` is where a future engine that does dissolve them shows up as red.
+ *
+ * Column headers ARE a real loss here, and a deliberate one: `<thead>` is hidden, because a header
+ * row that costs a third of the width buys nothing when each row is labelled by its own title. */
+@container fdy-cfl (max-width: 30rem){
+  .fdy-cfl__results .fdy-table,
+  .fdy-cfl__results .fdy-table tbody{display:block;width:100%;}
+  .fdy-cfl__results .fdy-table thead{display:none;}
+  .fdy-cfl__row{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);}
+  .fdy-cfl__results .fdy-table tbody tr:last-child{border-bottom:0;}
+  .fdy-cfl__row > td{display:block;padding:0;border:0;}
+  /* The title takes the whole first line, which is what pushes every remaining cell onto the second
+     one — no selector has to know how many columns there are, or which of them is last. */
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check),
+  .fdy-cfl__row > .fdy-cfl__check + td{font-weight:var(--weight-semibold);color:var(--color-text);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check){flex:0 0 100%;}
+  /* Multi-select: the checkbox shares line one with the title, so the title claims the rest of it. */
+  .fdy-cfl__row > .fdy-cfl__check + td{flex:1 0 calc(100% - var(--space-6));}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td{font-size:var(--text-xs);color:var(--color-text-muted);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td:empty,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td:empty{display:none;}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td::before,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td::before{content:"·";margin-right:var(--space-2);color:var(--color-text-subtle);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) + td::before,
+  .fdy-cfl__row > .fdy-cfl__check + td + td::before{content:none;}
+  /* The checkbox keeps its own line position beside the title rather than above it. */
+  .fdy-cfl__row > .fdy-cfl__check{flex:none;width:auto;align-self:center;}
+}

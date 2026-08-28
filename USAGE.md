@@ -23,9 +23,19 @@ the single biggest cause of "flat grey mush". Pick the role, not the size:
 | Card / row title | `.fdy-title-card` (or `.fdy-card__title`) | A title inside a card or list row (`<h3>`). |
 | Body | *(default)* | Running text. |
 | Muted / caption | `.fdy-text-muted`, `.fdy-text-caption` | Secondary text, timestamps, help. |
+| Subtle | `.fdy-text-subtle` | The faintest ink. Placeholders and decoration — chevrons, separators, out-of-month days. **Read the contract below before using it for a sentence.** |
 
 Everything else is body. If you reach for a fourth title size, you probably need a section, not a
 font size.
+
+**`--color-text-subtle` is not a third body-text tier, and dark is where that bites.** It clears AA
+on `--color-surface` in both themes (light 4.69:1, dark 4.88:1) — which is what `.fdy-input` and
+`.fdy-textarea` paint, so a placeholder is safe. It clears AA on **nothing else**, in either theme:
+`--color-surface-3` reads 4.11:1 in light and 3.66:1 in dark. Nor will it ever: reaching 4.5 there
+needs a tone within a hair of `--color-text-muted`, and a subtle that equals muted is not a tier. So a small uppercase
+label, a card's second line, or anything a reader must actually read on a raised or tinted surface
+takes `--color-text-muted`. `test/contrast.test.mjs` holds both halves of that split, which is why
+the ramp cannot quietly drift into either mistake.
 
 
 ## Borders: two roles, two contrast contracts

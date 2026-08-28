@@ -69,8 +69,16 @@ const add = (fg, bg, min, label) => req.push({ fg, bg, min, label });
 for (const s of SURF) {
   add('--color-text', s, AA_TEXT, `body text on ${s}`);
   add('--color-text-muted', s, AA_TEXT, `muted text (labels/help/day-headers/timestamps) on ${s}`);
-  add('--color-text-subtle', s, AA_UI, `subtle (decorative/placeholder, non-text 3:1) on ${s}`);
+  add('--color-text-subtle', s, AA_UI, `subtle (decorative: chevrons, separators, out-of-month days, non-text 3:1) on ${s}`);
 }
+/* A placeholder is not decorative (#053). It is the only thing telling an operator what an empty
+ * field wants, and it is the first thing they read, so it owes AA — but only on the surface it can
+ * actually appear on: `.fdy-input`/`.fdy-textarea` paint `--color-surface`, never surface-2 or -3.
+ * That is the whole reason dark `--color-text-subtle` is slate-450 and not slate-500 (4.02, which
+ * shipped through 3.1.0 and put twelve of the kit's OWN elements under AA in a dark app). Asserting
+ * it on all three surfaces instead would force subtle up to slate-400, which is `--color-text-muted`,
+ * and collapse two tiers into one. */
+add('--color-text-subtle', '--color-surface', AA_TEXT, 'placeholder ink on the surface .fdy-input paints (#053)');
 for (const [strong, soft] of [['--color-primary-strong', '--color-primary-soft'], ['--color-success-strong', '--color-success-soft'], ['--color-warning-strong', '--color-warning-soft'], ['--color-danger-strong', '--color-danger-soft'], ['--color-info-strong', '--color-info-soft']])
   for (const s of SURF) add(strong, { soft, on: s }, AA_TEXT, `${strong.replace('--color-', '')} on ${soft.replace('--color-', '')}/${s.replace('--color-surface', 'surf')}`);
 /* Inline state text (.fdy-text-success/-warning/-danger, note 001 §5) puts these inks on a PLAIN

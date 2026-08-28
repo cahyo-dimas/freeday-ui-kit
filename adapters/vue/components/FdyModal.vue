@@ -16,7 +16,10 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 const props = withDefaults(defineProps<{
   open: boolean;
   title: string;
-  size?: 'sm' | 'md' | 'lg' | 'wide';
+  /* 'cfl' is the width the choose-from-list dialog uses (46rem). It was reachable from the CSS
+     and from nowhere else until #053: FdyCfl sets the class itself, so the gap only ever showed up
+     when an app built its own dialog at that width and had to hand-write the class. */
+  size?: 'sm' | 'md' | 'lg' | 'wide' | 'cfl';
   dismissible?: boolean;
   /** aria-label for the × button. Default 'Close'. Blazor has had `CloseLabel` since it
    *  shipped; these two hard-coded the string, so a non-English app could not rename it. */

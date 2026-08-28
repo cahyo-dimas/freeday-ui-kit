@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — the tab strip's own geometry</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  /* The narrow strip is what asks the question the whole rule exists for: more tabs than room.
+     A fixed width, not a viewport width, so the assertion does not depend on the runner's window. */
+  #narrow{width:220px;}
+</style>
+</head>
+<body style="margin:0;padding:24px;background:var(--color-surface)">
+
+  <!-- Wide enough that nothing scrolls sideways: this is the strip whose VERTICAL overflow is the
+       defect, and whose active underline the scrollport used to clip. -->
+  <div class="fdy-tabs" id="plain">
+    <div class="fdy-tabs__list" role="tablist" aria-label="Invoice detail">
+      <button class="fdy-tabs__tab" role="tab" id="t-1" aria-controls="p-1" aria-selected="true">Document</button>
+      <button class="fdy-tabs__tab" role="tab" id="t-2" aria-controls="p-2" aria-selected="false" tabindex="-1">Timeline</button>
+      <button class="fdy-tabs__tab" role="tab" id="t-3" aria-controls="p-3" aria-selected="false" tabindex="-1">SAP</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="p-1" aria-labelledby="t-1" tabindex="0">Panel</div>
+  </div>
+
+  <div class="fdy-tabs" id="narrow" style="margin-top:32px">
+    <div class="fdy-tabs__list" role="tablist" aria-label="Narrow strip">
+      <button class="fdy-tabs__tab" role="tab" id="n-1" aria-controls="np-1" aria-selected="true">Document</button>
+      <button class="fdy-tabs__tab" role="tab" id="n-2" aria-controls="np-2" aria-selected="false" tabindex="-1">Timeline</button>
+      <button class="fdy-tabs__tab" role="tab" id="n-3" aria-controls="np-3" aria-selected="false" tabindex="-1">SAP</button>
+      <button class="fdy-tabs__tab" role="tab" id="n-4" aria-controls="np-4" aria-selected="false" tabindex="-1">Source file</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="np-1" aria-labelledby="n-1" tabindex="0">Panel</div>
+  </div>
+
+<script>
+/* Resolve a token to the rgb the compositor will actually paint, so the spec compares pixels to the
+   theme rather than to a hex literal copied out of tokens.json. */
+window.tone = function (token) {
+  var probe = document.createElement('span');
+  probe.style.color = 'var(' + token + ')';
+  probe.style.position = 'absolute';
+  document.body.appendChild(probe);
+  var rgb = getComputedStyle(probe).color;
+  probe.remove();
+  var m = rgb.match(/\d+/g);
+  return { r: Number(m[0]), g: Number(m[1]), b: Number(m[2]) };
+};
+
+/* Both axes, and what a scripted scroll actually achieves on each. `scrollTop` settling anywhere
+   but 0 is the defect: it means a trackpad gesture over the strip is eaten before it reaches the
+   page, and Firefox hands the strip a keyboard focus stop for the same reason. */
+window.strip = function (id) {
+  var el = document.querySelector('#' + id + ' .fdy-tabs__list');
+  var cs = getComputedStyle(el);
+  el.scrollTop = 999;
+  var stuckTop = el.scrollTop;
+  el.scrollTop = 0;
+  el.scrollLeft = 999;
+  var stuckLeft = el.scrollLeft;
+  el.scrollLeft = 0;
+  var rect = el.getBoundingClientRect();
+  return {
+    overflowX: cs.overflowX, overflowY: cs.overflowY,
+    clientH: el.clientHeight, scrollH: el.scrollHeight,
+    clientW: el.clientWidth, scrollW: el.scrollWidth,
+    stuckTop: stuckTop, stuckLeft: stuckLeft,
+    bottom: Math.round(rect.bottom)
+  };
+};
+
+window.ready = true;
+</script>
+</body>
+</html>

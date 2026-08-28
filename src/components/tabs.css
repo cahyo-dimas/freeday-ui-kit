@@ -1,7 +1,22 @@
 /* Freeday. Tabs (WAI-ARIA APG) */
-/* position:relative, containing block for out-of-flow content in the tabs (see base.css). */
-.fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
-.fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+/* position:relative, containing block for out-of-flow content in the tabs (see base.css).
+ *
+ * The strip's own line is an INSET SHADOW, not a border, and the tab carries no negative margin
+ * (#052). The pair those two replace — `border-bottom` here plus `margin-bottom:-1px` on the tab,
+ * to lift the active tab's 2px underline onto the strip's 1px line so the two read as one — was
+ * broken by the `overflow-x:auto` beside it, in two ways at once:
+ *   1. CSS Overflow §3 gives no way to scroll one axis alone: `overflow-y` computes from `visible`
+ *      to `auto` because the other axis is not visible, so the 1px the tab hangs below the content
+ *      box became a real scrollport. Measured 47 client / 48 scroll, `scrollTop` settling at 1 —
+ *      invisible in a screenshot, and a trackpad gesture over the strip is eaten by it.
+ *   2. A scroll container clips its descendants to the padding box, so the pixel the negative
+ *      margin pushed out was clipped away and the strip's own line painted in its place: the
+ *      active underline rendered ONE pixel of primary, never the two it asks for.
+ * An inset shadow paints on the box, not on the scrolled content, so the line stays put while the
+ * tabs scroll sideways, and the tab's own border-bottom paints over it — same look, no overflow.
+ * To hide the line, override `box-shadow`, not `border-bottom` (guarded in browser/tabs-strip.mjs). */
+.fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--color-border);overflow-x:auto;}
+.fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
 .fdy-tabs__tab:disabled,.fdy-tabs__tab[aria-disabled="true"]{opacity:.5;cursor:not-allowed;color:var(--color-text-muted);}
 .fdy-tabs__tab:disabled:hover,.fdy-tabs__tab[aria-disabled="true"]:hover{color:var(--color-text-muted);}

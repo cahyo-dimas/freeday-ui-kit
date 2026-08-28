@@ -592,9 +592,16 @@ a { color: var(--color-primary); }
 /* Search bar, single leading-icon field; Enter/typing filters the results. */
 .fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
 
-/* Results, dense rows, sticky header, its own scroll region. */
-.fdy-cfl__results{overflow:auto;max-height:min(24rem,50vh);}
+/* Results, dense rows, sticky header, its own scroll region.
+ *
+ * `container-type: inline-size` makes this box the query container for the stacked layout below.
+ * Safe here and nowhere near free in general: a size container stops contributing intrinsic inline
+ * size, which is what made `.fdy-stats--inline` collapse to three zero tracks in 3.1.0. This box
+ * takes its width from the dialog (`min(46rem, 100vw - …)`, an explicit width) and already scrolls
+ * its own content, so it never sized to the table to begin with. */
+.fdy-cfl__results{container:fdy-cfl / inline-size;overflow:auto;max-height:min(24rem,50vh);}
 .fdy-cfl__results .fdy-table th{position:sticky;top:0;z-index:1;}
+
 .fdy-cfl__row{cursor:pointer;}
 .fdy-cfl__row:hover{background:var(--color-surface-2);}
 .fdy-cfl__row:focus-visible{outline:none;background:var(--color-primary-soft);box-shadow:inset 2px 0 0 var(--color-primary);}
@@ -611,6 +618,54 @@ a { color: var(--color-primary); }
 .fdy-modal--cfl .fdy-modal__footer{justify-content:space-between;}
 .fdy-cfl__count{font-size:var(--text-sm);color:var(--color-text-muted);}
 .fdy-cfl__actions{display:flex;gap:var(--space-2);}
+
+/* Narrow: the same rows as list items, not table cells (#053).
+ *
+ * A 420px add-on panel gives this dialog ~372px. A three- or four-column master-data table in that
+ * space either squeezes every column below legibility or scrolls on both axes, in a dialog whose
+ * whole job is "search, look, click one". So the first cell becomes the title and the rest become
+ * one detail line under it — the shape a picker takes when it is narrow.
+ *
+ * A CONTAINER query, not a media query: the dialog is not the viewport. The same component is wide
+ * on a desktop page and narrow inside a docked panel, and only the container knows which.
+ *
+ * No ARIA roles come with this, and that is a MEASURED decision rather than an omission. The
+ * received wisdom from the responsive-table era is that `display:block` on a table box drops its
+ * implicit role; explicit `role="table"/"row"/"cell"` were written into all four stacks here on
+ * that belief and then taken out again, because Chrome's own accessibility tree says otherwise:
+ * with the rows at `display:flex`, stripping every `role` attribute leaves
+ * `table → row → cell` intact (Chromium 133; only `rowgroup`, which associates nothing, is lost).
+ * Redundant ARIA is what the kit's own rule calls worse than none, so the guard asserts the
+ * OUTCOME — that a stacked row is still a row in the a11y tree — and stays silent about how.
+ * `browser/cfl-narrow.mjs` is where a future engine that does dissolve them shows up as red.
+ *
+ * Column headers ARE a real loss here, and a deliberate one: `<thead>` is hidden, because a header
+ * row that costs a third of the width buys nothing when each row is labelled by its own title. */
+@container fdy-cfl (max-width: 30rem){
+  .fdy-cfl__results .fdy-table,
+  .fdy-cfl__results .fdy-table tbody{display:block;width:100%;}
+  .fdy-cfl__results .fdy-table thead{display:none;}
+  .fdy-cfl__row{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);}
+  .fdy-cfl__results .fdy-table tbody tr:last-child{border-bottom:0;}
+  .fdy-cfl__row > td{display:block;padding:0;border:0;}
+  /* The title takes the whole first line, which is what pushes every remaining cell onto the second
+     one — no selector has to know how many columns there are, or which of them is last. */
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check),
+  .fdy-cfl__row > .fdy-cfl__check + td{font-weight:var(--weight-semibold);color:var(--color-text);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check){flex:0 0 100%;}
+  /* Multi-select: the checkbox shares line one with the title, so the title claims the rest of it. */
+  .fdy-cfl__row > .fdy-cfl__check + td{flex:1 0 calc(100% - var(--space-6));}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td{font-size:var(--text-xs);color:var(--color-text-muted);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td:empty,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td:empty{display:none;}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td::before,
+  .fdy-cfl__row > .fdy-cfl__check + td ~ td::before{content:"·";margin-right:var(--space-2);color:var(--color-text-subtle);}
+  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) + td::before,
+  .fdy-cfl__row > .fdy-cfl__check + td + td::before{content:none;}
+  /* The checkbox keeps its own line position beside the title rather than above it. */
+  .fdy-cfl__row > .fdy-cfl__check{flex:none;width:auto;align-self:center;}
+}
 
 /* Freeday. Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).
  * Colour comes from --fdy-chart (a token, set inline by the renderer from data-fdy-color). */
@@ -1550,9 +1605,24 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table td>.fdy-input,.fdy-table td>.fdy-textarea,.fdy-table td>.fdy-combo,.fdy-table td>.fdy-input-group,.fdy-table td>.fdy-datepicker,.fdy-table td>.fdy-timepicker{min-width:7rem;}
 
 /* Freeday. Tabs (WAI-ARIA APG) */
-/* position:relative, containing block for out-of-flow content in the tabs (see base.css). */
-.fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);border-bottom:var(--bw) solid var(--color-border);overflow-x:auto;}
-.fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
+/* position:relative, containing block for out-of-flow content in the tabs (see base.css).
+ *
+ * The strip's own line is an INSET SHADOW, not a border, and the tab carries no negative margin
+ * (#052). The pair those two replace — `border-bottom` here plus `margin-bottom:-1px` on the tab,
+ * to lift the active tab's 2px underline onto the strip's 1px line so the two read as one — was
+ * broken by the `overflow-x:auto` beside it, in two ways at once:
+ *   1. CSS Overflow §3 gives no way to scroll one axis alone: `overflow-y` computes from `visible`
+ *      to `auto` because the other axis is not visible, so the 1px the tab hangs below the content
+ *      box became a real scrollport. Measured 47 client / 48 scroll, `scrollTop` settling at 1 —
+ *      invisible in a screenshot, and a trackpad gesture over the strip is eaten by it.
+ *   2. A scroll container clips its descendants to the padding box, so the pixel the negative
+ *      margin pushed out was clipped away and the strip's own line painted in its place: the
+ *      active underline rendered ONE pixel of primary, never the two it asks for.
+ * An inset shadow paints on the box, not on the scrolled content, so the line stays put while the
+ * tabs scroll sideways, and the tab's own border-bottom paints over it — same look, no overflow.
+ * To hide the line, override `box-shadow`, not `border-bottom` (guarded in browser/tabs-strip.mjs). */
+.fdy-tabs__list{position:relative;display:flex;gap:var(--space-1);box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--color-border);overflow-x:auto;}
+.fdy-tabs__tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text-muted);padding:var(--space-3) var(--space-4);border-bottom:2px solid transparent;transition:color var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-tabs__tab:hover{color:var(--color-text);}
 .fdy-tabs__tab:disabled,.fdy-tabs__tab[aria-disabled="true"]{opacity:.5;cursor:not-allowed;color:var(--color-text-muted);}
 .fdy-tabs__tab:disabled:hover,.fdy-tabs__tab[aria-disabled="true"]:hover{color:var(--color-text-muted);}
