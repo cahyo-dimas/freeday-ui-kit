@@ -11,34 +11,41 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.3.0` sudah lengkap di working tree, dan BELUM terbit** (2026-08-28). Kode, docs, versi stamp
-dan gerbangnya selesai; yang belum dijalankan adalah tag + `npm publish` + push (Pages ikut push).
-Jadi sampai itu dilakukan, `npm view @cahyo-dimas/freeday version` masih menjawab **3.2.0** dan docs
-live masih `v3.2.0` — dan itu bukan kebasian, itu keadaan yang benar. Jangan tulis di mana pun bahwa
-3.3.0 terbit sebelum ketiga perintah verifikasi di bawah dijalankan ulang dan menjawab 3.3.0.
+**`3.3.0`, dan itu yang terbit** (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
+berkas ini resepkan benar-benar dijalankan:
+
+```
+npm view @cahyo-dimas/freeday version   -> 3.3.0   (dist-tags latest = 3.3.0)
+git rev-list --left-right --count origin/main...main -> 0  0
+curl -L .../freeday-ui-kit/docs/        -> v3.3.0
+```
+
+Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.3.0`), bukan dari `npm pack`
+lokal: ketujuh perubahan ada di dalamnya — `.fdy-field--full{max-width:none}`,
+`.fdy-cfl__host{display:contents}`, `min-width:0;min-height:0` di `__content`, `flex:none` di
+`__topbar`, `var(--fdy-app-sidebar-w,15.5rem)`, `.fdy-cfl__search .fdy-input-group`, dan
+`dialogOnly`/`DialogOnly` + `defineExpose({ open …})` di ketiga adapter.
+
+**Rilisnya lewat tag, bukan `npm publish` lokal.** `publish.yml` memicu pada tag `v*`, memanggil
+`ci.yml` lebih dulu (jadi tag yang gerbangnya merah tak pernah sampai ke npm), lalu publish dengan
+**OIDC trusted publishing** — tanpa token tersimpan, provenance otomatis. `npm publish` dari mesin
+dev bukan cuma tak perlu, ia **melewati gerbang itu**, dan tetap akan berhenti di `EOTP` karena 2FA.
+Perintahnya: `git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags`.
 
 Isi 3.3.0 dalam satu kalimat: **tiga kemampuan yang sudah ada di kit dan tak ada yang bisa
 memintanya** — `FdyCfl` yang hanya bisa dibuka oleh field-nya sendiri (`#054`), cap `.fdy-field`
 yang hanya bisa dilepas oleh `.fdy-form-grid` (`#055` §1), dan `.fdy-nav--flat` yang ada sejak 1.1.0
 tapi dijelaskan salah di COMPONENTS.md (`#055` §3). Detail di CHANGELOG.
 
-Gerbang yang benar-benar dijalankan untuk 3.3.0, bukan diingat: `node --test` **119/119**,
-`npm run test:browser` **108/108** (24 spec), `npm run typecheck:react` bersih,
-`npm run test:blazor` **21/21**. Empat gerbang baru diverifikasi dengan **mutasi**, satu per satu.
+Gerbang untuk 3.3.0, lokal **dan** di runner: `node --test` **119/119**, `npm run test:browser`
+**108/108** (24 spec), `npm run typecheck:react` bersih, `npm run test:blazor` **21/21**. Empat
+gerbang baru diverifikasi dengan **mutasi**, satu per satu.
 
 ---
 
-Snapshot rilis terakhir yang **benar-benar terbit**, `3.2.0` (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
-berkas ini resepkan benar-benar dijalankan:
-
-```
-npm view @cahyo-dimas/freeday version   -> 3.2.0   (dist-tags latest = 3.2.0)
-git rev-list --left-right --count origin/main...main -> 0  0
-curl -L .../freeday-ui-kit/docs/        -> v3.2.0
-```
-
-Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.2.0`), bukan dari `npm pack`
-lokal: keempat perubahan 3.2.0 ada di dalamnya — `box-shadow` inset di `.fdy-tabs__list`, blok
+Snapshot rilis sebelumnya, `3.2.0` (2026-08-28), disimpan karena catatan kegagalan gerbangnya
+masih berlaku. Waktu itu ketiga perintah yang sama dijalankan dan menjawab `3.2.0`; isi tarballnya
+diperiksa dari registry, dan keempat perubahan 3.2.0 ada di dalamnya — `box-shadow` inset di `.fdy-tabs__list`, blok
 `@container fdy-cfl`, `--color-text-subtle: var(--slate-450)` di scope gelap, dan `'wide' | 'cfl'`
 di `FdyModal`. Sebelum ini `latest` = `3.1.0`.
 

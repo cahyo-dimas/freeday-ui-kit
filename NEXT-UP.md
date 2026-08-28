@@ -161,5 +161,17 @@ per v1.34.0 yang kena: `package.json` · `package-lock.json` (2 field) · `READM
 **Jangan disentuh:** `README.md` baris "WCAG **1.4.11**" (itu nomor sukses WCAG, bukan versi) dan
 entri historis di `CHANGELOG.md`.
 
+**Yang menerbitkan adalah TAG, bukan `npm publish`.** `.github/workflows/publish.yml` memicu pada
+tag `v*`, memanggil `ci.yml` dulu (jadi tag yang gerbangnya merah tak pernah sampai ke npm), lalu
+publish lewat **OIDC trusted publishing** — tanpa token tersimpan, provenance otomatis. Jadi:
+
+```bash
+git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags
+```
+
+`npm publish` dari mesin dev bukan cuma tak perlu, ia **melewati gerbang CI itu** — dan tetap akan
+berhenti di `EOTP` karena akun ini ber-2FA, yang justru desainnya: token yang bisa memintas 2FA
+sengaja tak disimpan di mana pun.
+
 Setelah push, Pages rebuild otomatis (~belasan detik). Verifikasi dengan meng-`curl` docs live dan
 memastikan install command sudah menunjukkan versi baru.
