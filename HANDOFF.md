@@ -11,23 +11,25 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.1.0`, dan itu yang terbit** (2026-08-27). Diperiksa, bukan diingat — ketiga perintah yang
+**`3.2.0`, dan itu yang terbit** (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
 berkas ini resepkan benar-benar dijalankan:
 
 ```
-npm view @cahyo-dimas/freeday version   -> 3.1.0   (dist-tags latest = 3.1.0)
+npm view @cahyo-dimas/freeday version   -> 3.2.0   (dist-tags latest = 3.2.0)
 git rev-list --left-right --count origin/main...main -> 0  0
-curl -L .../freeday-ui-kit/docs/        -> v3.1.0
+curl -L .../freeday-ui-kit/docs/        -> v3.2.0
 ```
 
-Isi tarball diperiksa dari registry, bukan dari `npm pack` lokal: keempat perubahan 3.1.0 ada di
-dalamnya. Sebelum ini `latest` = `3.0.0`.
+Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.2.0`), bukan dari `npm pack`
+lokal: keempat perubahan 3.2.0 ada di dalamnya — `box-shadow` inset di `.fdy-tabs__list`, blok
+`@container fdy-cfl`, `--color-text-subtle: var(--slate-450)` di scope gelap, dan `'wide' | 'cfl'`
+di `FdyModal`. Sebelum ini `latest` = `3.1.0`.
 
 Catatan kecil pada perintah ketiga: **sertakan `/docs/`**. Root Pages hanya stub 301-byte dengan
 `<meta http-equiv="refresh">`, dan meta refresh bukan redirect HTTP, jadi `curl -L` pada root ikut
 berhenti di sana dan grep versinya pulang kosong — yang terbaca persis seperti Pages belum terbit.
 
-**Rilis ini ditolak gerbangnya tiga kali sebelum lolos, dan tak satu pun menerbitkan apa pun.**
+**3.1.0 ditolak gerbangnya tiga kali sebelum lolos, dan tak satu pun menerbitkan apa pun.**
 Layak dicatat karena dua di antaranya bukan cacat kit: (1) guard baru menjumlahkan piksel yang sudah
 dibulatkan sendiri-sendiri, `302` lawan `301` — hanya terlihat di runner, karena Chrome stable di
 mesin dev berbagi font dengan Chromium-nya; (2) race stepper yang sudah merah sejak `3817482`;
@@ -36,6 +38,16 @@ nomor 2 **masih terbuka** — lihat §Yang diketahui dan belum diselesaikan.
 
 Rilis terakhir, dan apa artinya bagi konsumen:
 
+- **3.2.0: dua cacat yang tak bisa dipotret, dan satu komponen yang akhirnya muat di 420px.**
+  `improvement-notes` #052 dan #053. Strip tab menggulung 1px karena `overflow-x:auto` tak bisa
+  meminta satu sumbu saja — dan scrollport yang sama **memotong** separuh bawah underline tab aktif,
+  jadi garis 2px itu selama ini terkirim 1px; keduanya hilang begitu garis strip jadi `box-shadow`
+  inset. `--color-text-subtle` gelap naik ke `slate-450` (4.02 → **4.88:1** di `--color-surface`),
+  karena tier dekoratif itu dipakai untuk placeholder kit sendiri. `FdyCfl` menata barisnya sebagai
+  list di bawah container 30rem — **container query, nol prop baru**, jadi keempat stack dapat
+  sekaligus. Plus `size="cfl"` di `FdyModal`. Aditif seluruhnya untuk konsumen 3.1.x, kecuali satu
+  hal yang perlu dibaca: konsumen yang menyembunyikan garis strip tab dengan `border-bottom:0`
+  sekarang harus memakai `box-shadow:none`.
 - **3.1.0: lebar yang tak kelihatan di DOM.** Dua cacat dari layar sungguhan
   (`improvement-notes` #050, #051). Kontrol di dalam `.fdy-field` kini selebar field-nya — cap
   `22rem`-nya dulu hanya dilepas di `.fdy-filterbar`, untuk dua dari empat kontrol, jadi toolbar

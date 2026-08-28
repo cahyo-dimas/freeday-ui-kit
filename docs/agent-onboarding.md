@@ -132,6 +132,8 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `selectable` + `selectedKeys` on `FdyTable` | a checkbox column bolted beside a controlled table, with its own bulk bar |
 | `fdy-step-before-change` | a wizard whose Next cannot be stopped while the server is still deciding |
 | `.fdy-table--striped` | a `:nth-child` rule of your own that turns out to be the same colour as hover |
+| `FdyCfl` in a narrow surface | a hand-rolled card picker, because the kit's was a table — it stacks itself under a 30rem container, no prop to pass |
+| `size="cfl"` on `FdyModal` | writing `.fdy-modal--cfl` by hand to reach the 46rem width |
 
 ## 3. Starting a new screen
 
