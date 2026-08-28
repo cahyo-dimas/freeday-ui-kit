@@ -70,6 +70,13 @@ public partial class FdyCfl<TRow>
     /// <summary>Debounce (ms) between a keystroke and the search request.</summary>
     [Parameter] public int SearchDebounceMs { get; set; } = 250;
 
+    /// <summary>Render the dialog and NO field, for a caller whose trigger is already its own — a chip,
+    /// a table cell, a menu item — opened through <c>@ref</c>: <c>await picker.OpenAsync()</c>. The raw
+    /// path has had exactly this since the enhancer's <c>[data-fdy-cfl-open]</c>. <c>Placeholder</c>,
+    /// <c>Clearable</c> and the field's aria parameters have nothing to name here and are ignored;
+    /// <c>Disabled</c> and <c>Readonly</c> still refuse to open.</summary>
+    [Parameter] public bool DialogOnly { get; set; }
+
     private readonly string _titleId = $"fdy-cfl-{Guid.NewGuid():N}-title";
     private int _dialogToken;
     private bool _open;
@@ -93,7 +100,10 @@ public partial class FdyCfl<TRow>
     protected override async ValueTask HydrateAsync()
         => _dialogToken = await JS.InvokeAsync<int>("FreedayBlazor.dialogInit", Root, Self, nameof(OnDismiss), true);
 
-    private async Task OpenAsync()
+    /// <summary>Open the picker. Public because with <see cref="DialogOnly"/> there is no field to
+    /// open it, and because a caller with its own trigger is the case that made #054: it guards
+    /// exactly as the built trigger does, so this cannot bypass Disabled/Readonly.</summary>
+    public async Task OpenAsync()
     {
         if (Disabled || Readonly || _open) return;
         _open = true;
@@ -105,7 +115,8 @@ public partial class FdyCfl<TRow>
         await LoadAsync(reset: true);
     }
 
-    private async Task CloseAsync()
+    /// <summary>Close the picker without committing, the same path Esc and the footer button take.</summary>
+    public async Task CloseAsync()
     {
         if (!_open) return;
         _open = false;

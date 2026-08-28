@@ -142,6 +142,8 @@ off-canvas drawer and backdrop are built in.
 
 - Parts: `__sidebar` `__brand` (`__brand-mark` `__brand-text` `__brand-title` `__brand-subtitle`)
   `__content` `__topbar` `__navtoggle` `__title` `__main` `__backdrop`
+- Sidebar width: `--fdy-app-sidebar-w` on `.fdy-app` (default `15.5rem`). Set it rather than
+  overriding `width` on `.fdy-app__sidebar`, whose value also feeds the collapse transition.
 - Modifiers: `--nav-open` (drawer open) · `--nav-collapsed` (collapse to zero width, ≥721px) ·
   `--nav-overlay` (≥721px: float the nav over the content instead of displacing it) · `--static`
   (embed the shell in a page instead of filling the viewport)
@@ -422,15 +424,22 @@ WAI-ARIA APG menu-button. Keyboard ↑/↓/Home/End/Esc handled by the enhancer.
 The field wrapper owns the vertical rhythm; `<label class="fdy-field">` when it wraps a single
 native control, otherwise a `<div>` + explicitly associated label.
 
-- `.fdy-field` (+ `--full` inside `.fdy-form-grid`; widths `--w-sm` `--w-lg` `--w-xl` `--w-2xl`
-  `--w-grow` inside `.fdy-filterbar`)
+- `.fdy-field` (+ `--full`, which releases the width cap **wherever the field is**, and inside
+  `.fdy-form-grid` also spans the row; widths `--w-sm` `--w-lg` `--w-xl` `--w-2xl` `--w-grow`
+  inside `.fdy-filterbar`)
 - **The field owns the width; the control in it follows.** `.fdy-field` caps at `22rem` so a lone
-  field does not run the width of the page. `.fdy-form-grid` and `.fdy-filterbar` lift that cap, and
-  so does any width you state yourself — and in every one of those cases the control (`.fdy-input`,
+  field does not run the width of the page. `.fdy-form-grid` and `.fdy-filterbar` lift that cap,
+  `.fdy-field--full` lifts it on one field anywhere, and so does any width you state yourself — and in every one of those cases the control (`.fdy-input`,
   `.fdy-input-group`, `.fdy-combo`, `.fdy-autocomplete`, `.fdy-cascade`, and the pickers) spans the
   field. So **size the field, never the control**: styling the control instead leaves the field
   wider than what is in it, and that dead space is invisible in the DOM — it reads on screen as a
   gap you did not write.
+- **A single-column form is not a grid.** `.fdy-form-grid` pairs fields up the moment there is room,
+  which is right for a document header and wrong for a settings pane, a login card, or a dialog at
+  420px. Those are a plain flex column, and the way one says *"these fields fill me"* is
+  `.fdy-field--full` on the fields — **not** a `max-width` override on the container. Both of this
+  kit's own consoles wrote that override, once per form, before this modifier reached outside the
+  grid.
 - `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
 
 **Grouped controls are a `<fieldset>`, not a new block.** Put `.fdy-field` on the fieldset and
@@ -674,6 +683,31 @@ Four of these are required and carry the whole component: `fetchPage`, `columns`
 | `clearLabel?` | `string` | Accessible name for that button. Default `Clear selection`. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps the picked value visible, focusable and copyable, but the dialog cannot be opened. |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Field id; the element that labels it; the help/error text it points at. |
+| `dialogOnly?` | `boolean` | Render the **dialog and no field**, for a caller whose trigger is already its own. See below. |
+
+**Opening it yourself.** The field is one way in, not the only one. A ref gives you `open()` and
+`close()` — Vue `defineExpose`, React a `FdyCflHandle` through `ref`, Blazor `OpenAsync()` /
+`CloseAsync()` on the `@ref` — and `dialogOnly` drops the field entirely so the picker can be
+triggered by a chip, a table cell, a menu item, or anything else that is not a 22rem readonly input.
+This is what the raw path has always had in `[data-fdy-cfl-open]`; before 3.3.0 the typed wrappers
+were a field *plus* a dialog with no door, and a screen that could not spend a field per trigger had
+to hand-roll the whole picker. With `dialogOnly` the component's host generates no box
+(`.fdy-cfl__host` is `display:contents`), so it can be rendered anywhere — Blazor renders only the
+`<dialog>` and needs no host. `placeholder`, `clearable`, `id` and the field's aria props have
+nothing to name in that mode and are ignored; `disabled` and `readonly` still refuse to open, so a
+programmatic `open()` cannot bypass them.
+
+```vue
+<script setup lang="ts">
+const picker = ref<InstanceType<typeof FdyCfl> | null>(null);
+</script>
+
+<template>
+  <button class="fdy-chip" type="button" @click="picker?.open()">Cost centre</button>
+  <FdyCfl ref="picker" dialog-only v-model="costCentre" :fetch-page="fetchPage"
+          :columns="columns" :display="d" :row-key="k" />
+</template>
+```
 
 Blazor carries the same surface in `PascalCase` with three differences: multi-select is a second
 pair (`Values` / `ValuesChanged`) rather than a widened single binding, the fetch delegate is
@@ -920,7 +954,9 @@ button chrome). `data-fdy-mask="####-####"` formats while typing: `#` digit, `A`
 alphanumeric, anything else is a literal. Needs `freeday-mask.js`.
 
 ## Form grid — `.fdy-form-grid`
-Responsive two-column document header. Children are `.fdy-field`; `.fdy-field--full` spans both.
+Responsive two-column document header. Children are `.fdy-field`; `.fdy-field--full` spans both
+columns. For a form that must stay **one** column, do not reach for this grid — it pairs fields up
+as soon as the container is wide enough. Use a flex column and mark the fields `--full`.
 
 ## Filter bar — `.fdy-filterbar`
 A consistent filter row of `.fdy-field`s with a width rhythm (`--w-sm` · default · `--w-lg` ·
@@ -1460,11 +1496,17 @@ Size-matched placeholders so nothing shifts when data lands: `--title` `--text` 
 ## Nav (menu) — `.fdy-nav`
 Navigation links, **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with
 `__icon` / `__label` / `__badge`; the current one gets `aria-current="page"`.
-`--flat` drops the surface. Nested groups are native `<details>`:
+Nested groups are native `<details>`:
 
 - `.fdy-nav__tree` + `<summary class="fdy-nav__item">` + `.fdy-nav__caret` → children in
   `.fdy-nav__sub`
 - `.fdy-nav__group` + `<summary class="fdy-nav__grouplabel">` → a collapsible section
+- **`--flat` on the `<nav>` is the static variant**: group labels that never collapse. It drops the
+  disclosure caret, returns the label to `cursor: default`, and removes the divider between groups,
+  so `.fdy-nav__grouplabel` can be a plain `<p>`/`<div>` heading ("OVERVIEW", "ADMINISTRATION")
+  outside any `<details>`. Reach for it instead of undoing those three rules per app — which is what
+  two consoles did for four months, because this line used to claim `--flat` "drops the surface",
+  and it never did: `.fdy-nav` paints no surface to drop.
 - **`--horizontal`** lays the same links out as a row, for a **top-nav application** (primary
   navigation in `.fdy-appbar` or `.fdy-app__topbar`, no sidebar). Same item, same states, same
   `aria-current="page"`; the row scrolls if it runs out of width. On `.fdy-appbar--primary` the

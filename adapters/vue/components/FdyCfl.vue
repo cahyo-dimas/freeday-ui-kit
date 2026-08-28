@@ -72,6 +72,14 @@ const props = defineProps<{
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
+  /** Render the dialog and NO field, for a caller whose trigger is already its own — a chip, a table
+   *  cell, a menu item — opened by ref: `picker.value?.open()`. The raw path has had exactly this
+   *  since the enhancer's `[data-fdy-cfl-open]`; the typed wrappers were a field *plus* a dialog
+   *  with no way in, so a screen that could not spend a 22rem readonly input per trigger had to
+   *  hand-roll the picker (#054). The host generates no box, so it can sit anywhere. `placeholder`,
+   *  `clearable`, `id` and the field's aria props have nothing to name here and are ignored;
+   *  `disabled` and `readonly` still refuse to open. */
+  dialogOnly?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -99,6 +107,7 @@ const loading: Ref<boolean> = ref(false);
 const error: Ref<Error | null> = ref(null);
 const activeIndex: Ref<number> = ref(-1);
 
+const isDialogOnly: ComputedRef<boolean> = computed((): boolean => props.dialogOnly === true);
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
 const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 
@@ -321,6 +330,11 @@ function onClose(): void {
   triggerEl.value?.focus();
 }
 
+/* The dialog is reachable from outside, which is what makes `dialogOnly` usable at all: with no
+   field there is no trigger, and `open()` is the only door. Both guard exactly as the trigger did,
+   so a programmatic open cannot bypass `disabled`/`readonly`. */
+defineExpose({ open: openDialog, close: closeDialog });
+
 function cellText(row: Row, key: keyof Row & string): string {
   const value: unknown = row[key];
   return value === null || value === undefined ? '' : String(value);
@@ -332,45 +346,47 @@ onBeforeUnmount((): void => {
 </script>
 
 <template>
-  <div class="fdy-input-group">
-    <input
-      :id="fieldId"
-      class="fdy-input"
-      type="text"
-      readonly
-      :value="displayValue"
-      :placeholder="placeholder"
-      :aria-labelledby="ariaLabelledby"
-      :aria-invalid="isInvalid ? 'true' : undefined"
-      :aria-describedby="describedby"
-      :disabled="isDisabled"
-    />
-    <button
-      v-if="showClear"
-      type="button"
-      class="fdy-input-group__btn"
-      :aria-label="clearLabelText"
-      @click="clearValue"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <path d="M6 6l12 12M18 6L6 18"></path>
-      </svg>
-    </button>
-    <button
-      ref="triggerEl"
-      type="button"
-      class="fdy-input-group__btn"
-      aria-haspopup="dialog"
-      :aria-labelledby="ariaLabelledby"
-      :aria-label="ariaLabelledby ? undefined : (openLabel ?? 'Open search')"
-      :disabled="isDisabled || isReadonly"
-      @click="openDialog"
-    >
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"></circle>
-        <path d="m21 21-4.35-4.35"></path>
-      </svg>
-    </button>
+  <div :class="isDialogOnly ? 'fdy-cfl__host' : 'fdy-input-group'">
+    <template v-if="!isDialogOnly">
+      <input
+        :id="fieldId"
+        class="fdy-input"
+        type="text"
+        readonly
+        :value="displayValue"
+        :placeholder="placeholder"
+        :aria-labelledby="ariaLabelledby"
+        :aria-invalid="isInvalid ? 'true' : undefined"
+        :aria-describedby="describedby"
+        :disabled="isDisabled"
+      />
+      <button
+        v-if="showClear"
+        type="button"
+        class="fdy-input-group__btn"
+        :aria-label="clearLabelText"
+        @click="clearValue"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+      <button
+        ref="triggerEl"
+        type="button"
+        class="fdy-input-group__btn"
+        aria-haspopup="dialog"
+        :aria-labelledby="ariaLabelledby"
+        :aria-label="ariaLabelledby ? undefined : (openLabel ?? 'Open search')"
+        :disabled="isDisabled || isReadonly"
+        @click="openDialog"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+    </template>
 
     <dialog ref="dialogEl" class="fdy-modal fdy-modal--cfl" :aria-labelledby="titleId" @close="onClose" @keydown="onKeydown">
       <div class="fdy-modal__header">
@@ -380,7 +396,7 @@ onBeforeUnmount((): void => {
 
       <div class="fdy-modal__body">
         <div class="fdy-cfl__search">
-          <div class="fdy-input-group" style="max-width:none">
+          <div class="fdy-input-group">
             <span class="fdy-input-group__addon fdy-input-group__addon--icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="11" cy="11" r="7"></circle>

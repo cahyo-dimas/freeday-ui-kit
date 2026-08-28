@@ -134,6 +134,10 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `.fdy-table--striped` | a `:nth-child` rule of your own that turns out to be the same colour as hover |
 | `FdyCfl` in a narrow surface | a hand-rolled card picker, because the kit's was a table — it stacks itself under a 30rem container, no prop to pass |
 | `size="cfl"` on `FdyModal` | writing `.fdy-modal--cfl` by hand to reach the 46rem width |
+| `dialogOnly` + `open()` on `FdyCfl` | a hand-rolled picker, because the trigger is a chip or a table cell and not a 22rem field |
+| `.fdy-field--full` | `max-width: none` on the form container, once per form, because the fields are a flex column and not a `.fdy-form-grid` |
+| `.fdy-nav--flat` | undoing the caret, the pointer cursor and the group divider yourself, on a sidebar whose group labels never collapse |
+| `--fdy-app-sidebar-w` | overriding `width` on `.fdy-app__sidebar`, which is also the rule that animates the collapse |
 
 ## 3. Starting a new screen
 

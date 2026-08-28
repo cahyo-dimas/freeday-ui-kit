@@ -9,6 +9,87 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.3.0] - 2026-08-28
+
+**Tiga kemampuan yang sebenarnya sudah ada di kit ini, dan tak satu pun bisa diminta.** `#054` dan
+`#055` datang dari tiga app berbeda dan bermuara pada satu bentuk kegagalan yang sama: kemampuannya
+ada — di jalur mentah, di satu container, di satu varian — tapi **kosakata untuk memintanya tidak**.
+Itu jenis gap yang paling mahal, karena tak terlihat seperti gap: yang membacanya menyimpulkan kit
+tak bisa, lalu membangun ulang. Satu di antaranya membuat dua console menulis 23 override yang sama,
+satu lagi membuat sebuah panel menyimpan dialog 420 baris di sebelah komponen yang melakukan hal itu
+persis, dan yang ketiga bertahan empat bulan hanya karena satu kalimat dokumentasi salah.
+
+### Added
+- **`FdyCfl` bisa dibuka oleh sesuatu yang bukan field-nya sendiri** (`#054`, dari
+  `IDU_AI_DOC_SAPB1_ADDON_DESKTOP_APP`). Enhancer punya `[data-fdy-cfl-open]` — *"opens the dialog
+  with no bound field"* — sejak ia terbit, dan COMPONENTS.md mendaftarnya. Ketiga wrapper typed
+  adalah **field plus dialog** dengan `openDialog` terkunci di dalam: tak ada ref, tak ada prop, tak
+  ada pintu. Jadi jalur mentah bisa melakukan hal yang jalur typed tidak — satu-satunya asimetri yang
+  dilarang klaim paritas kit ini. Panel 420px yang melaporkannya memicu picker dari **chip 12px**,
+  dua per baris dokumen; ia tak bisa membelanjakan satu readonly input 22rem per pemicu, jadi ia
+  menyimpan `CflGridDialog.vue` 420 baris. Sekarang: prop **`dialogOnly`** merender dialog tanpa
+  field, dan **`open()`/`close()`** terjangkau — Vue lewat `defineExpose`, React lewat
+  `FdyCflHandle` di `ref`, Blazor lewat `OpenAsync()`/`CloseAsync()` yang kini `public`. Host-nya
+  `display:contents` (`.fdy-cfl__host`), jadi ia **tak menghasilkan box sama sekali**: div berukuran
+  nol pun tetap jadi flex item atau sel grid di tempat pemicunya diletakkan, dan itu persis yang
+  akan merusak barisan chip. Blazor tak butuh host — ia memang sudah merender field dan dialog
+  sebagai sibling. `disabled`/`readonly` tetap menolak membuka, karena tanpa field tak ada tombol
+  disabled yang menahan klik: penjaganya harus ada di `open()` sendiri, dan itu yang diuji.
+- **`.fdy-field--full` melepas cap 22rem di mana pun field itu berada** (`#055` §1, dari
+  `IDU_AI_DOC_SAPB1_CLIENT` **dan** `IDU_AI_DOC_SAAS` — dua consumer independen yang meraih override
+  yang sama adalah buktinya, jumlahnya adalah argumennya). Kit sudah mengirim idenya:
+  `.fdy-form-grid > .fdy-field { max-width: none }`. Tapi setiap form nyata adalah **flex column**,
+  bukan grid itu — `.fdy-form-grid` adalah `repeat(auto-fit,minmax(14rem,1fr))`, yang memasangkan
+  field berdua begitu ada ruang. Benar untuk header dokumen, salah untuk settings pane, kartu login,
+  atau dialog 420px. Dan di luar grid, modifier-nya bukan sekadar "tak melepas cap": **ia tak
+  melakukan apa-apa**, satu-satunya rule-nya ber-scope grid. Jadi form kolom tunggal tak punya cara
+  mengatakan maksudnya, dan keduanya mengatakannya di container — 23 blok. Kit ini pun menulisnya
+  **empat kali di halaman referensinya sendiri** sebagai `style="max-width:none"`; keempatnya kini
+  `fdy-field--full`. Di dalam grid tak ada yang berubah (rule grid sudah mengatakannya), dan
+  `grid-column` tetap urusan grid.
+- **`--fdy-app-sidebar-w`** (default `15.5rem`) di `.fdy-app__sidebar`. Kedua console meng-override
+  `width`-nya ke `16.5rem` — yaitu meng-override rule yang juga menganimasikan collapse.
+
+### Fixed
+- **Shell bisa memuat anak yang menggulung** (`#055` §2). `.fdy-app__content` punya `min-width:0`
+  dan **tidak** `min-height:0`. Di flex column, sumbu **block**-lah yang menjebak overflow: automatic
+  minimum size sebuah flex item adalah kontennya, jadi consumer yang memaku shell ke viewport lalu
+  menggulung `.fdy-app__main` mendorong shell-nya terbuka, bukan menggulung. Topbar cerita yang sama
+  satu baris di bawah: flex item tanpa `flex`, jadi topbar yang kontennya membungkus melewati
+  `min-height` bisa terperas. Kedua console menulis kedua rule itu sendiri-sendiri, di `app.css`,
+  sebelum layar kelima mereka. Keduanya kini di kit; tak ada layout yang hari ini benar yang berubah.
+- **Kotak pencarian `.fdy-cfl__search` tak lagi ter-cap 22rem.** Empat berkas menulis ini sebagai
+  `style="max-width:none"` — kedua adapter typed dan kedua contoh docs — yaitu kosakata yang hilang
+  dari `#055` §1, satu class di sebelahnya. Sekarang satu rule, nol inline style.
+
+### Docs
+- **`.fdy-nav--flat` akhirnya dijelaskan sebagai dirinya sendiri** (`#055` §3, dan ini temuan yang
+  lebih berharga daripada item aslinya). Catatan itu meminta "bentuk resmi untuk nav grup statis".
+  Bentuk itu **sudah ada sejak 1.1.0** dan melakukan persis tiga hal yang kedua console tulis
+  tangan: caret hilang, `cursor:default`, pemisah antar-grup hilang — plus dukungan markup
+  non-`<details>`, yang persis kasus `<p class="fdy-nav__grouplabel">` mereka. Yang menyembunyikannya
+  adalah satu kalimat di COMPONENTS.md: *"`--flat` drops the surface"*, yang **tidak benar** —
+  `.fdy-nav` tak mengecat surface apa pun untuk dibuang. Deskripsi yang akurat hanya hidup di entri
+  CHANGELOG 1.1.0. Dua consumer membaca satu kalimat yang salah, menyimpulkan varian itu bukan
+  untuk mereka, lalu membangun ulang sesuatu yang sudah mereka punya, selama empat bulan.
+  **Pelajarannya bukan tentang nav:** deskripsi varian yang salah lebih mahal daripada varian yang
+  hilang, karena yang hilang menghasilkan laporan dan yang salah menghasilkan pekerjaan diam-diam.
+- `COMPONENTS.md`: `.fdy-field--full` kini dijelaskan sebagai pelepas cap (bukan hanya span kolom),
+  plus paragraf "single-column form is not a grid"; tabel props `<FdyCfl>` dapat `dialogOnly` dan
+  satu bagian tentang membuka picker lewat ref; `--fdy-app-sidebar-w` didaftar di App shell.
+
+### Guarded
+- **Empat gerbang baru, semuanya diverifikasi dengan mutasi.** `test/css.test.mjs`: `--full` melepas
+  cap **dan** berada setelah `.fdy-field` (spesifisitas sama, jadi urutan sumber adalah seluruh
+  mekanismenya); shell punya kedua `min-*` dan topbar punya `flex:none`. `test/docs.test.mjs`:
+  paritas `#054` di tiga stack **plus** hook `[data-fdy-cfl-open]` di enhancer — kalau hook itu
+  hilang, gerbangnya membandingkan dengan ketiadaan. `browser/cfl-dialog-only.mjs`: 4 test Chrome
+  nyata (Vue + React), dibuka lewat **klik sungguhan** pada chip milik app, bukan dengan memanggil
+  method — plus satu asersi yang mengukur **akibat** dan bukan CSS: fixture-nya flex row bergap 8px
+  dengan komponen di antara dua chip, jadi host yang punya box terbaca sebagai 16px. Asersi itu juga
+  yang menangkap kesalahan pertama penulisnya: hitungan `.fdy-input-group` yang naif menghitung
+  **kotak pencarian di dalam dialog**, bukan field.
+
 ## [3.2.0] - 2026-08-28
 
 **Dua cacat yang tak bisa di-screenshot, dan satu komponen yang akhirnya muat di panel 420px.**

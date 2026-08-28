@@ -630,3 +630,45 @@ test('a renderer that emits a block\'s parts also names the block (#050)', () =>
     `these render .${BLOCK}'s parts and never write .${BLOCK} itself, so COMPONENTS.md documents `
       + 'markup the kit does not produce:\n' + silent.join('\n'));
 });
+
+
+/* The picker is reachable from a trigger that is not its own field (#054).
+ *
+ * The vanilla enhancer has had `[data-fdy-cfl-open]` — "opens the dialog with no bound field" —
+ * since it shipped, and COMPONENTS.md lists it among the raw hooks. The three typed wrappers were a
+ * field PLUS a dialog with `openDialog` closed over inside them: no ref, no prop, no way in. So a
+ * 420px panel that wanted the picker behind a 12px chip could not use the wrapper at all and
+ * hand-rolled a 420-line dialog instead — the raw path could do the thing the typed path could not,
+ * which is the one asymmetry this kit's parity claim forbids.
+ *
+ * Both halves are checked per stack, because either alone is useless: a field-less picker with no
+ * `open()` can never be opened, and an `open()` that still renders a field cannot be put behind a
+ * chip. */
+test('a CFL can be opened by something other than its own field (#054)', () => {
+  const missing = [];
+
+  if (!vueProps('FdyCfl').includes('dialogOnly')) missing.push('Vue: no `dialogOnly` prop');
+  if (!/defineExpose\(\{[^}]*\bopen\b/.test(read('adapters/vue/components/FdyCfl.vue')))
+    missing.push('Vue: `open` is not exposed, a ref reaches nothing');
+
+  const react = read('adapters/react/components/FdyCfl.tsx');
+  if (!reactProps('FdyCfl').includes('dialogOnly')) missing.push('React: no `dialogOnly` prop');
+  if (!/useImperativeHandle\(\s*ref/.test(react)) missing.push('React: no imperative handle on the ref');
+  if (!/export interface FdyCflHandle/.test(react)) missing.push('React: `FdyCflHandle` is not exported');
+  if (!/type FdyCflHandle/.test(read('adapters/react/index.d.ts')))
+    missing.push('React: the handle type is unreachable from the package entry, so the ref cannot be typed');
+
+  const blazor = read('adapters/blazor/FdyCfl.razor.cs');
+  if (!/\bDialogOnly\b\s*\{\s*get;/.test(blazor)) missing.push('Blazor: no `DialogOnly` parameter');
+  if (!/public\s+async\s+Task\s+OpenAsync\b/.test(blazor)) missing.push('Blazor: `OpenAsync` is not public');
+  if (!/@if \(!DialogOnly\)/.test(read('adapters/blazor/FdyCfl.razor')))
+    missing.push('Blazor: the field is rendered unconditionally, so `DialogOnly` names nothing');
+
+  /* The raw path is the reference here, not an afterthought: if this hook ever goes, the typed
+     wrappers stopped being the same component and this guard is comparing against nothing. */
+  if (!/data-fdy-cfl-open/.test(read('src/freeday-cfl.js')))
+    missing.push('the enhancer lost `[data-fdy-cfl-open]`, which is what the typed wrappers now match');
+
+  assert.deepEqual(missing, [],
+    'a capability the raw path has and a typed stack does not:\n' + missing.join('\n'));
+});

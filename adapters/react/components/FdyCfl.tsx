@@ -1,5 +1,5 @@
-import type { JSX } from 'react';
-import { useEffect, useId, useRef, useState } from 'react';
+import type { JSX, Ref } from 'react';
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
 
 // React port of adapters/vue/components/FdyCfl.vue over freeday's `.fdy-cfl*` +
 // `.fdy-input-group` classes (see src/components/cfl.css, input-group.css). A controlled
@@ -71,9 +71,27 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   describedby?: string;
   id?: string;
   ariaLabelledby?: string;
+  /** Render the dialog and NO field, for a caller whose trigger is already its own — a chip, a table
+   *  cell, a menu item — opened through the ref: `picker.current?.open()`. The raw path has had
+   *  exactly this since the enhancer's `[data-fdy-cfl-open]`; the typed wrappers were a field *plus*
+   *  a dialog with no way in, so a screen that could not spend a 22rem readonly input per trigger had
+   *  to hand-roll the picker (#054). The host generates no box, so it can sit anywhere.
+   *  `placeholder`, `clearable`, `id` and the field's aria props have nothing to name here and are
+   *  ignored; `disabled` and `readonly` still refuse to open. */
+  dialogOnly?: boolean;
 }
 
-export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<Row>): JSX.Element {
+/** What a `ref` on `<FdyCfl>` gives you. Both guard exactly as the trigger does, so a programmatic
+ *  open cannot bypass `disabled`/`readonly`. */
+export interface FdyCflHandle {
+  open: () => void;
+  close: () => void;
+}
+
+function FdyCflInner<Row extends Record<string, unknown>>(
+  props: FdyCflProps<Row>,
+  ref: Ref<FdyCflHandle>,
+): JSX.Element {
   const baseId: string = useId();
   const fieldId: string = props.id ?? `${baseId}-field`;
   const titleId: string = `${baseId}-title`;
@@ -301,6 +319,10 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     dialogRef.current?.close();
   }
 
+  /* No dependency array on purpose: both close over state (the ticks to seed, whether the field is
+     disabled), so a handle frozen at first render would open a picker with last week's props. */
+  useImperativeHandle(ref, (): FdyCflHandle => ({ open: openDialog, close: closeDialog }));
+
   // Fires for every close path (button, Esc, commit); centralise cleanup here.
   function onClose(): void {
     reqIdRef.current++; // invalidate any in-flight fetch so it can't apply after close
@@ -330,46 +352,50 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
   }, []);
 
   return (
-    <div className="fdy-input-group">
-      <input
-        id={fieldId}
-        className="fdy-input"
-        type="text"
-        readOnly
-        value={displayValue}
-        placeholder={props.placeholder}
-        aria-labelledby={props.ariaLabelledby}
-        aria-invalid={isInvalid ? 'true' : undefined}
-        aria-describedby={props.describedby}
-        disabled={isDisabled}
-      />
-      {showClear ? (
-        <button
-          type="button"
-          className="fdy-input-group__btn"
-          aria-label={clearLabelText}
-          onClick={clearValue}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
-      ) : null}
-      <button
-        ref={triggerRef}
-        type="button"
-        className="fdy-input-group__btn"
-        aria-haspopup="dialog"
-        aria-labelledby={props.ariaLabelledby}
-        aria-label={props.ariaLabelledby ? undefined : (props.openLabel ?? 'Open search')}
-        disabled={isDisabled || isReadonly}
-        onClick={openDialog}
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <circle cx={11} cy={11} r={7}></circle>
-          <path d="m21 21-4.35-4.35"></path>
-        </svg>
-      </button>
+    <div className={props.dialogOnly === true ? 'fdy-cfl__host' : 'fdy-input-group'}>
+      {props.dialogOnly === true ? null : (
+        <>
+          <input
+            id={fieldId}
+            className="fdy-input"
+            type="text"
+            readOnly
+            value={displayValue}
+            placeholder={props.placeholder}
+            aria-labelledby={props.ariaLabelledby}
+            aria-invalid={isInvalid ? 'true' : undefined}
+            aria-describedby={props.describedby}
+            disabled={isDisabled}
+          />
+          {showClear ? (
+            <button
+              type="button"
+              className="fdy-input-group__btn"
+              aria-label={clearLabelText}
+              onClick={clearValue}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+          ) : null}
+          <button
+            ref={triggerRef}
+            type="button"
+            className="fdy-input-group__btn"
+            aria-haspopup="dialog"
+            aria-labelledby={props.ariaLabelledby}
+            aria-label={props.ariaLabelledby ? undefined : (props.openLabel ?? 'Open search')}
+            disabled={isDisabled || isReadonly}
+            onClick={openDialog}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx={11} cy={11} r={7}></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </button>
+        </>
+      )}
 
       <dialog ref={dialogRef} className="fdy-modal fdy-modal--cfl" aria-labelledby={titleId} onClose={onClose} onKeyDown={onKeydown}>
         <div className="fdy-modal__header">
@@ -379,7 +405,7 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
 
         <div className="fdy-modal__body">
           <div className="fdy-cfl__search">
-            <div className="fdy-input-group" style={{ maxWidth: 'none' }}>
+            <div className="fdy-input-group">
               <span className="fdy-input-group__addon fdy-input-group__addon--icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <circle cx={11} cy={11} r={7}></circle>
@@ -478,3 +504,12 @@ export function FdyCfl<Row extends Record<string, unknown>>(props: FdyCflProps<R
     </div>
   );
 }
+
+/* `forwardRef` types its argument as a plain function, which erases `Row`: every consumer would get
+   `FdyCflProps<Record<string, unknown>>` and lose the row type the whole component exists to carry.
+   The cast restores the generic call signature, and it is the standard shape for a generic component
+   with a ref while `react` is `>=18` (React 19's ref-as-prop would not need it, and the peer range
+   still admits 18). */
+export const FdyCfl = forwardRef(FdyCflInner) as <Row extends Record<string, unknown>>(
+  props: FdyCflProps<Row> & { ref?: Ref<FdyCflHandle> },
+) => JSX.Element;

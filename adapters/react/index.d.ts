@@ -33,7 +33,7 @@ export { FdyDatepicker, type FdyDatepickerProps } from './components/FdyDatepick
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';
-export { FdyCfl, type FdyCflProps, type CflColumn, type CflPage } from './components/FdyCfl';
+export { FdyCfl, type FdyCflProps, type FdyCflHandle, type CflColumn, type CflPage } from './components/FdyCfl';
 /** Narrow `FdyCfl`'s `Row | Row[] | null` to the `Row | null` a single-select can produce; throws
  *  on the array only a `multiple` field emits. */
 export { singleRow } from '../core/cfl-value';

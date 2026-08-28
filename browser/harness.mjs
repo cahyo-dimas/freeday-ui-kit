@@ -415,6 +415,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-table-pagesize.js'),
       join(HERE, 'entries', 'vue-cfl-multi.js'),
       join(HERE, 'entries', 'react-cfl-multi.tsx'),
+      join(HERE, 'entries', 'vue-cfl-dialog-only.js'),
+      join(HERE, 'entries', 'react-cfl-dialog-only.tsx'),
       join(HERE, 'entries', 'vue-table-label-hidden.js'),
       join(HERE, 'entries', 'react-table-label-hidden.tsx'),
       join(HERE, 'entries', 'vue-app-shell.js'),

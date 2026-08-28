@@ -1,5 +1,15 @@
 /* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+/* A field marked --full fills whatever contains it (#055 §1). The cap above is for a field standing
+   on its own in a row — a filter bar, a toolbar — and it is right there. But every real form is a
+   single-column flex stack (a settings pane, a login card, a dialog at 420px), and the only release
+   the kit shipped was `.fdy-form-grid > .fdy-field`, which a flex column can never reach:
+   .fdy-form-grid is `repeat(auto-fit,minmax(14rem,1fr))`, which pairs fields up the moment there is
+   room. So a stack had no vocabulary at all and said it on the container instead — 23 times across
+   two consoles, and four times in this kit's OWN reference page as `style="max-width:none"`.
+   Inside .fdy-form-grid this changes nothing (that rule already says it); outside one the modifier
+   finally means what its name says, and the grid keeps `grid-column` as its own concern. */
+.fdy-field--full{max-width:none;}
 /* Inside a labelled field, a control fills the field (#051). The 22rem cap those controls carry is
    for one standing on its own, with no field to take a width from; #017 already released the date
    and time pickers here for exactly this reason, and its comment claims a picker then fills its

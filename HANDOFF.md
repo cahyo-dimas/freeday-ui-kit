@@ -11,7 +11,24 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.2.0`, dan itu yang terbit** (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
+**`3.3.0` sudah lengkap di working tree, dan BELUM terbit** (2026-08-28). Kode, docs, versi stamp
+dan gerbangnya selesai; yang belum dijalankan adalah tag + `npm publish` + push (Pages ikut push).
+Jadi sampai itu dilakukan, `npm view @cahyo-dimas/freeday version` masih menjawab **3.2.0** dan docs
+live masih `v3.2.0` — dan itu bukan kebasian, itu keadaan yang benar. Jangan tulis di mana pun bahwa
+3.3.0 terbit sebelum ketiga perintah verifikasi di bawah dijalankan ulang dan menjawab 3.3.0.
+
+Isi 3.3.0 dalam satu kalimat: **tiga kemampuan yang sudah ada di kit dan tak ada yang bisa
+memintanya** — `FdyCfl` yang hanya bisa dibuka oleh field-nya sendiri (`#054`), cap `.fdy-field`
+yang hanya bisa dilepas oleh `.fdy-form-grid` (`#055` §1), dan `.fdy-nav--flat` yang ada sejak 1.1.0
+tapi dijelaskan salah di COMPONENTS.md (`#055` §3). Detail di CHANGELOG.
+
+Gerbang yang benar-benar dijalankan untuk 3.3.0, bukan diingat: `node --test` **119/119**,
+`npm run test:browser` **108/108** (24 spec), `npm run typecheck:react` bersih,
+`npm run test:blazor` **21/21**. Empat gerbang baru diverifikasi dengan **mutasi**, satu per satu.
+
+---
+
+Snapshot rilis terakhir yang **benar-benar terbit**, `3.2.0` (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
 berkas ini resepkan benar-benar dijalankan:
 
 ```
@@ -80,8 +97,8 @@ Rilis terakhir, dan apa artinya bagi konsumen:
 ## Yang terjaga, dan seberapa
 
 ```
-npm test                 116 test  · node --test, gerbang default, tanpa browser
-npm run test:browser     98 test  · 21 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
+npm test                 119 test  · node --test, gerbang default, tanpa browser
+npm run test:browser     108 test  · 24 spec, Chrome sungguhan (fokus/pointer/piksel/AX tree)
 npm run typecheck:react  tsc --noEmit
 npm run test:blazor      21 test  · bUnit, komponen Blazor dirender sungguhan
 npm run test:blazor-server 4 test  · Blazor Server SUNGGUHAN + prerender, lewat CDP

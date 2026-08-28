@@ -611,3 +611,67 @@ test('the stripe is not the colour hover paints', () => {
   // a custom property set on the element would outrank a host's :root override.
   assert.match(stripe.body, /var\(--fdy-table-stripe,/, 'the stripe must be overridable through its component token');
 });
+
+
+/* A single-column form can reach past the field cap (#055 §1).
+ *
+ * The kit shipped the idea and scoped it to one container: `.fdy-form-grid > .fdy-field` released
+ * the 22rem cap, and `.fdy-field--full` only spanned the row. But .fdy-form-grid is
+ * `repeat(auto-fit,minmax(14rem,1fr))`, so it PAIRS FIELDS UP — right for a document header, wrong
+ * for a settings pane, a login card, or a dialog at 420px, all of which are a flex column. Outside
+ * a grid the modifier did not merely fail to release the cap, it did nothing at all: its only rule
+ * was grid-scoped. Two consoles said it on the container instead, 23 times, and this kit's own
+ * reference page said it four times as `style="max-width:none"`.
+ *
+ * Both halves are asserted, because both are load-bearing: the release must exist unscoped, and it
+ * must come AFTER `.fdy-field` — same specificity, so source order is the whole mechanism. */
+test('.fdy-field--full releases the cap outside a grid too (#055 §1)', () => {
+  const all = rules(css);
+  const isSel = (r, sel) => r.selector.split(',').some(s => s.trim() === sel);
+  const fieldAt = all.findIndex(r => isSel(r, '.fdy-field'));
+  const fullAt = all.findIndex(r => isSel(r, '.fdy-field--full'));
+
+  assert.ok(fieldAt !== -1, '.fdy-field must still carry the cap this modifier releases');
+  assert.ok(fullAt !== -1,
+    '.fdy-field--full must have a rule of its own; grid-scoped only means a flex column cannot say it');
+  assert.match(all[fullAt].body, /max-width:\s*none/,
+    '.fdy-field--full must release the width cap, not only span a grid row');
+  assert.ok(fullAt > fieldAt,
+    'both are one class deep, so only source order decides: --full must come after .fdy-field');
+
+  /* The grid keeps its own concern. Merging the two would make `--full` mean "span" everywhere,
+     which is meaningless outside a grid and would be a silent no-op there. */
+  const grid = all.find(r => isSel(r, '.fdy-form-grid>.fdy-field--full'));
+  assert.ok(grid && /grid-column/.test(grid.body),
+    '.fdy-form-grid>.fdy-field--full still owns the row span');
+});
+
+
+/* The app shell contains its own scrolling (#055 §2).
+ *
+ * `.fdy-app__content` is a column flex container AND a flex item. It had `min-width:0` and not
+ * `min-height:0` — but in a column it is the BLOCK axis that traps overflow: a flex item's automatic
+ * minimum size is its content, so a consumer who pins the shell to the viewport and scrolls
+ * `.fdy-app__main` gets the shell pushed open instead. The topbar is the same story: a flex item
+ * with no `flex`, so content that wraps past `min-height` can be squeezed. Both consoles wrote both
+ * rules into their own app.css, independently, before their fifth screen. */
+test('the shell column can contain a scrolling child (#055 §2)', () => {
+  const all = rules(css);
+  const one = sel => all.find(r => r.selector.split(',').some(s => s.trim() === sel));
+
+  const content = one('.fdy-app__content');
+  assert.ok(content, '.fdy-app__content rule not found, this guard is measuring nothing');
+  assert.match(content.body, /min-height:\s*0/,
+    '.fdy-app__content needs min-height:0 or a scrolling descendant pushes the shell open');
+  assert.match(content.body, /min-width:\s*0/,
+    'the inline-axis half must stay: a wide table would otherwise widen the whole shell');
+
+  const topbar = one('.fdy-app__topbar');
+  assert.ok(topbar && /flex:\s*none/.test(topbar.body),
+    '.fdy-app__topbar is a flex item in that column; without flex:none it can be squeezed');
+
+  /* And the width both consoles overrode is a knob now, not a constant. */
+  const sidebar = one('.fdy-app__sidebar');
+  assert.ok(sidebar && /width:\s*var\(--fdy-app-sidebar-w,\s*15\.5rem\)/.test(sidebar.body),
+    '.fdy-app__sidebar width must be settable, or every app overrides the rule that transitions it');
+});

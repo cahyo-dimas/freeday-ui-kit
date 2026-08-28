@@ -85,8 +85,15 @@ a { color: var(--color-primary); }
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
  * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:15.5rem;box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
-.fdy-app__content{flex:1;min-width:0;display:flex;flex-direction:column;}
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:var(--fdy-app-sidebar-w,15.5rem);box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
+/* `min-height:0` is the height-axis twin of `min-width:0`, and its absence was invisible for as long
+ * as the shell scrolled the PAGE (#055 §2). A consumer that pins the shell to the viewport and
+ * scrolls .fdy-app__main instead hits it immediately: a column flex item's automatic minimum size is
+ * its content, so the scrolling child pushes this box — and the shell — open instead of scrolling.
+ * `flex:none` on the topbar is the same story one line down: it is a flex item in this column, and
+ * a topbar whose content wraps past `min-height` is a topbar that can be squeezed. Both consoles
+ * wrote these two rules independently, in app.css, before the fifth screen. */
+.fdy-app__content{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;}
 /* Brand is a fixed header, same height as the topbar so they align, and only
  * the nav below it scrolls. Bare text (no children) renders as one bold
  * display line via the rules on .fdy-app__brand itself. For a mark + two-line
@@ -174,7 +181,7 @@ a { color: var(--color-primary); }
      also apply — it would fight the transform for the same panel. */
   .fdy-app--nav-overlay.fdy-app--nav-collapsed .fdy-app__sidebar{width:16rem;border-right-width:var(--bw);}
 }
-.fdy-app__topbar{position:sticky;top:0;z-index:20;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-bottom:var(--bw) solid var(--color-border);}
+.fdy-app__topbar{position:sticky;top:0;z-index:20;flex:none;min-height:var(--space-16);display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-8);background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-app__title{font-family:var(--font-display);font-size:var(--text-xl);font-weight:var(--weight-semibold);color:var(--color-text);margin:0 auto 0 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-app__main{flex:1;padding:var(--space-8);}
 .fdy-skip{position:absolute;left:var(--space-2);top:var(--space-2);background:var(--color-primary);color:var(--color-on-primary);padding:var(--space-2) var(--space-4);border-radius:var(--radius-md);z-index:100;transform:translateY(-250%);transition:transform var(--dur-fast) var(--ease-standard);}
@@ -591,6 +598,15 @@ a { color: var(--color-primary); }
 
 /* Search bar, single leading-icon field; Enter/typing filters the results. */
 .fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
+/* The search group spans the bar. Four files wrote this as `style="max-width:none"` — both typed
+   adapters and both docs examples — which is the same missing vocabulary as #055 §1, one class over. */
+.fdy-cfl__search .fdy-input-group{max-width:none;}
+
+/* Field-less host (#054). With `dialogOnly` the typed wrappers render the dialog and no field, for a
+   caller whose trigger is its own — a chip, a table cell, a menu item — which is what the raw path
+   has always had in `[data-fdy-cfl-open]`. `display:contents` so the host generates no box at all:
+   a zero-size div would still be a flex item or a grid cell in whatever laid the trigger out. */
+.fdy-cfl__host{display:contents;}
 
 /* Results, dense rows, sticky header, its own scroll region.
  *
@@ -1156,6 +1172,16 @@ a { color: var(--color-primary); }
 
 /* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
+/* A field marked --full fills whatever contains it (#055 §1). The cap above is for a field standing
+   on its own in a row — a filter bar, a toolbar — and it is right there. But every real form is a
+   single-column flex stack (a settings pane, a login card, a dialog at 420px), and the only release
+   the kit shipped was `.fdy-form-grid > .fdy-field`, which a flex column can never reach:
+   .fdy-form-grid is `repeat(auto-fit,minmax(14rem,1fr))`, which pairs fields up the moment there is
+   room. So a stack had no vocabulary at all and said it on the container instead — 23 times across
+   two consoles, and four times in this kit's OWN reference page as `style="max-width:none"`.
+   Inside .fdy-form-grid this changes nothing (that rule already says it); outside one the modifier
+   finally means what its name says, and the grid keeps `grid-column` as its own concern. */
+.fdy-field--full{max-width:none;}
 /* Inside a labelled field, a control fills the field (#051). The 22rem cap those controls carry is
    for one standing on its own, with no field to take a width from; #017 already released the date
    and time pickers here for exactly this reason, and its comment claims a picker then fills its

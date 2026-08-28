@@ -332,7 +332,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v3.2.0</p>
+          <p class="doc-eyebrow">Design System · v3.3.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday adalah sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -352,7 +352,7 @@
             <span class="fdy-sparkline" data-fdy-chart="sparkline" data-values="8,11,9,14,13,18" data-fdy-color="primary" role="img" aria-label="Tren pembayaran enam bulan terakhir, naik dari 8 ke 18 juta"></span>
             <span class="fdy-badge" aria-label="naik 18 persen">▲ 18%</span>
           </div>
-          <label class="fdy-field" style="max-width:none">
+          <label class="fdy-field fdy-field--full">
             <span class="fdy-label" data-i18n="sc.customer">Pelanggan</span>
             <input class="fdy-input" value="PT Sumber Makmur" readonly aria-readonly="true">
           </label>
@@ -743,7 +743,7 @@
         </div>
         <div class="fdy-modal__body">
           <div class="fdy-cfl__search">
-            <div class="fdy-input-group" style="max-width:none">
+            <div class="fdy-input-group">
               <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
               <input class="fdy-input" type="search" placeholder="Cari kode / nama…" aria-label="Cari pelanggan" data-fdy-cfl-search>
             </div>
@@ -776,7 +776,7 @@
         </div>
         <div class="fdy-modal__body">
           <div class="fdy-cfl__search">
-            <div class="fdy-input-group" style="max-width:none">
+            <div class="fdy-input-group">
               <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
               <input class="fdy-input" type="search" placeholder="Cari kode / nama…" aria-label="Cari item" data-fdy-cfl-search>
             </div>
@@ -1065,15 +1065,15 @@
       <p class="doc-sublabel">Validasi inline</p>
       <div class="doc-demo doc-demo--block">
         <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-3);max-width:24rem">
-          <label class="fdy-field" style="max-width:none">
+          <label class="fdy-field fdy-field--full">
             <span class="fdy-label">Email <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
             <input class="fdy-input" name="email" type="email" required data-fdy-msg-required="Email wajib diisi." data-fdy-msg-type="Format email tidak valid.">
           </label>
-          <label class="fdy-field" style="max-width:none">
+          <label class="fdy-field fdy-field--full">
             <span class="fdy-label">Kata sandi <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
             <input class="fdy-input" id="fm-pw" name="password" type="password" required minlength="8" data-fdy-msg-required="Kata sandi wajib diisi." data-fdy-msg-minlength="Minimal 8 karakter.">
           </label>
-          <label class="fdy-field" style="max-width:none">
+          <label class="fdy-field fdy-field--full">
             <span class="fdy-label">Ulangi kata sandi <span aria-hidden="true" style="color:var(--color-danger)">*</span></span>
             <input class="fdy-input" name="confirm" type="password" required data-fdy-match="#fm-pw" data-fdy-msg-required="Ulangi kata sandi." data-fdy-msg-mismatch="Kata sandi tidak cocok.">
           </label>
@@ -2146,7 +2146,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.2.0 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.3.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

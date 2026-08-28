@@ -6,6 +6,15 @@
 
 /* Search bar, single leading-icon field; Enter/typing filters the results. */
 .fdy-cfl__search{flex:none;padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
+/* The search group spans the bar. Four files wrote this as `style="max-width:none"` — both typed
+   adapters and both docs examples — which is the same missing vocabulary as #055 §1, one class over. */
+.fdy-cfl__search .fdy-input-group{max-width:none;}
+
+/* Field-less host (#054). With `dialogOnly` the typed wrappers render the dialog and no field, for a
+   caller whose trigger is its own — a chip, a table cell, a menu item — which is what the raw path
+   has always had in `[data-fdy-cfl-open]`. `display:contents` so the host generates no box at all:
+   a zero-size div would still be a flex item or a grid cell in whatever laid the trigger out. */
+.fdy-cfl__host{display:contents;}
 
 /* Results, dense rows, sticky header, its own scroll region.
  *

@@ -38,6 +38,8 @@ Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang; pemicunya di kolom 
 | 13 | ~~**Bikin kegagalan CI bisa dibaca tanpa hak admin.**~~ **selesai** (2026-08-26), tapi bukan seperti yang ditulis di sini: artifact TAP tak pernah dibutuhkan, karena `ci.yml` **sudah** menganotasi tiap baris `not ok` lewat `::error::`, dan anotasi itu terbaca via API tanpa autentikasi. Anotasi itulah yang menjawab flake-nya: tiga test **berkoordinat** gagal bersamaan. Sebabnya geometri, bukan asersi — target di bawah lipatan pada jendela runner, klik mendarat di titik kosong. `clickCenter` kini men-scroll target ke tampilan lalu menolak titik kosong dengan pesan yang menyebut viewport + rect | — |
 | 14 | **Permukaan di balik 3.94:1.** Note `#053` §3 melaporkan `--color-text-muted` di 3.94:1 atas `--color-surface-raised` gelap. Tak reproduksi: di `soft` permukaan itu **identik** dengan `--color-surface` (7.28:1), di `glass` terburuknya 6.70:1, dan muted tak pernah di bawah 5.46:1 di mana pun ramp gelap. Angkanya sendiri nyata — 3.94 persis `slate-400` di atas `slate-700`, yaitu `--color-border-strong`, token border yang tak dipakai komponen mana pun sebagai latar. Kalau ternyata ada komponen kit yang mengecatnya sebagai latar, itu cacat | pelapor menyebut selector/permukaan yang diukurnya |
 
+| 15 | **Sapuan deskripsi modifier di `COMPONENTS.md`.** `#055` §3: `.fdy-nav--flat` ada sejak 1.1.0, melakukan tiga hal, dan dijelaskan sebagai *"drops the surface"* — yang tak pernah dilakukannya. Dua console lalu membangun ulang varian yang sudah mereka punya, empat bulan. Pola ini tak mungkin cuma sekali: setiap `--modifier` yang deskripsinya ditulis tangan bisa hanyut dari rule-nya, dan tak ada gerbang yang membandingkan keduanya. Bentuknya: baca tiap `.fdy-*--*` di `dist/freeday.css`, cocokkan dengan kalimat yang menjelaskannya, laporkan yang tak bisa dibenarkan oleh deklarasinya | ada satu lagi yang ketahuan salah — atau saat ada waktu, karena satu temuan sudah membayar sapuannya |
+
 Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras AA gate wajib hijau;
 tiap rilis sinkron SEMUA ref versi publik incl. live Pages ([[sync-docs-on-version-bump]]); repo
 PUBLIC ([[public-repo-keep-internal-out]]).
@@ -58,6 +60,29 @@ tidak ada. Kondisi terkini: **[`HANDOFF.md`](HANDOFF.md)**.
 Ini bukan utang. Ini keputusan sadar: design system tak pernah "selesai", dia ber-versi.
 
 ---
+
+## Pelajaran / invariant: varian yang dijelaskan salah lebih mahal daripada varian yang hilang
+
+**Kejadian (2026-08-28, `#055` §3).** `.fdy-nav--flat` — varian nav grup statis — terkirim di
+**1.1.0**: caret hilang, `cursor:default`, pemisah antar-grup hilang, plus dukungan markup
+non-`<details>`. Satu-satunya kalimat yang menjelaskannya di `COMPONENTS.md` berbunyi *"`--flat`
+drops the surface"*, dan itu salah: `.fdy-nav` tak mengecat surface apa pun. Deskripsi yang benar
+hanya hidup di entri CHANGELOG 1.1.0, yang tak akan dibaca siapa pun yang sedang mencari cara
+membuat grup nav statis.
+
+Akibatnya **dua console independen** menulis sendiri ketiga rule itu (`cursor:default`,
+`::after{display:none}`, `border-top:0`) dan menaruhnya di `app.css` masing-masing, lalu melaporkan
+"kit tak punya bentuk untuk grup statis" — sebuah gap yang tak pernah ada.
+
+**Bedanya dengan gap sungguhan, dan ini intinya:** varian yang **hilang** menghasilkan laporan —
+seseorang menabraknya, menulis catatan, kit menjawab. Varian yang **dijelaskan salah** menghasilkan
+pekerjaan duplikat yang diam: pembacanya menyimpulkan kit tak bisa, membangun sendiri, dan tak ada
+sinyal apa pun yang sampai ke sini. Biayanya berulang di tiap consumer dan tak pernah terhitung.
+
+**Aturan saat menulis/menyentuh deskripsi modifier:** kalimatnya harus bisa dibenarkan oleh
+deklarasi CSS-nya, bukan oleh ingatan tentang niat waktu menulisnya. Kalau sebuah modifier melakukan
+tiga hal, sebut ketiganya; kalau namanya tak menjelaskan dirinya, itu justru alasan deskripsinya
+harus akurat, bukan alasan untuk meringkas. Sapuan menyeluruhnya = kandidat #15 di atas.
 
 ## Pelajaran / invariant: docs jangan pernah menyalin nilai token ke prosa
 
