@@ -180,7 +180,7 @@ onBeforeUnmount((): void => {
         <slot name="topbar" />
       </header>
 
-      <main class="fdy-app__main">
+      <main class="fdy-app__main" id="main" tabindex="-1">
         <slot />
       </main>
     </div>

@@ -410,6 +410,23 @@ for (const [stack, shellFixture] of [['vue', 'vue-app-shell.html'], ['react', 'r
     });
   });
 
+  /* The skip link is the one control whose failure is invisible: it renders, it takes focus, and a
+   * missing target simply does nothing. COMPONENTS.md promises the raw markup IS what the wrapper
+   * renders, and that markup carries `id="main"`; docs/reference-screen.html adds `tabindex="-1"`,
+   * without which a fragment link scrolls without moving focus in several engines. Raised as #056
+   * from keamanan-cluster, which shipped no skip link at all because there was nothing to aim at. */
+  test(`${stack} FdyAppShell: <main> is a skip-link target, as the raw markup promises (#056)`, { skip }, async () => {
+    await withPage(fixture(shellFixture), async (p) => {
+      await shellUntil(p, '!!window.state', 'the shell to mount');
+      const main = JSON.parse(await p.evalJS(`JSON.stringify((() => {
+        const m = document.querySelector('.fdy-app__main');
+        return { id: m.id, tabindex: m.getAttribute('tabindex') };
+      })())`));
+      assert.equal(main.id, 'main', 'href="#main" in the documented skip link must resolve');
+      assert.equal(main.tabindex, '-1', 'and activating it must move focus, not only scroll');
+    });
+  });
+
   test(`${stack} FdyAppShell: a nav item closes the overlay it was followed from (#8)`, { skip }, async () => {
     await withPage(fixture(shellFixture), async (p) => {
       await shellUntil(p, '!!window.state', 'the shell to mount');

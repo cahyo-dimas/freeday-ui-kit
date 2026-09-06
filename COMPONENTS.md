@@ -156,7 +156,10 @@ positioning rules differ, and only above the breakpoint. It also changes which s
 On the raw path, if you add or remove the class yourself, call
 **`FreedayAppShell.refresh(root)`** afterwards — the shell has to re-read the DOM, or `inert` and
 `aria-expanded` keep describing the arrangement you just left.
-- Also: `.fdy-skip`, the skip-to-content link, first child of the shell.
+- Also: `.fdy-skip`, the skip-to-content link, first child of the shell. Its target is
+  `__main`, which carries `id="main"` **and `tabindex="-1"`** — without the latter a fragment
+  link scrolls the page without moving focus, so the next Tab resumes from where the reader
+  was, not from where they were sent. The typed wrappers render both.
 - **Behaviour: `freeday-app-shell.js`.** Opt in with `data-fdy-app` on the root. The markup below
   is unchanged. It owns the toggle in both modes plus everything an overlay needs that hand-rolling
   reliably forgets: Escape, backdrop click, closing when a `.fdy-nav__item` is followed, focus moved
@@ -209,7 +212,7 @@ tall containing block. The brand goes in the **sidebar** (sized to match the top
       <h1 class="fdy-app__title">Invoices</h1><!-- auto-spacer: pushes what follows right -->
       <!-- topbar actions -->
     </header>
-    <main class="fdy-app__main" id="main"><!-- .fdy-page goes here --></main>
+    <main class="fdy-app__main" id="main" tabindex="-1"><!-- .fdy-page goes here --></main>
   </div>
 
   <div class="fdy-app__backdrop"></div>
@@ -283,7 +286,7 @@ One role per level of hierarchy. Never re-use a card title for a page title.
 | Class | Element | Use |
 |---|---|---|
 | `.fdy-eyebrow` | `<p>` | Small uppercase label above a title. Optional. |
-| `.fdy-title-page` | `<h1>` | One per screen. |
+| `.fdy-title-page` | `<h1>` · `<h2>` in a shell | One `<h1>` per screen. Standalone page: `<h1>`. Inside `.fdy-app`, the topbar's `.fdy-app__title` is already that `<h1>`, so the page title steps down to `<h2>` — as `docs/reference-screen.html` does. |
 | `.fdy-title-section` | `<h2>` | A region inside the page. |
 | `.fdy-title-card` | `<h3>` | A title inside a card or row (`.fdy-card__title` is equivalent). |
 | `.fdy-text-muted` · `.fdy-text-subtle` | any | Secondary / tertiary text colour. |

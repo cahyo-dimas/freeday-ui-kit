@@ -186,7 +186,7 @@ export function FdyAppShell(props: FdyAppShellProps): JSX.Element {
           {props.topbar}
         </header>
 
-        <main className="fdy-app__main">{props.children}</main>
+        <main className="fdy-app__main" id="main" tabIndex={-1}>{props.children}</main>
       </div>
 
       <div

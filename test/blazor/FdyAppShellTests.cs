@@ -133,4 +133,20 @@ public class FdyAppShellTests : BunitContext
         cut.Find(".fdy-app__backdrop");
         Assert.Contains("Invoices", cut.Find(".fdy-app__title").TextContent);
     }
+
+    // The skip link is the one control whose failure is invisible: it renders, it takes focus, and
+    // a missing target simply does nothing. COMPONENTS.md promises the raw markup IS what the
+    // wrapper renders, and that markup carries id="main"; reference-screen.html adds tabindex="-1",
+    // without which a fragment link scrolls without moving focus. Raised as #056.
+    [Fact]
+    public void Main_is_a_skip_link_target_as_the_raw_markup_promises()
+    {
+        JSInterop.Setup<bool>(IsVisible, _ => true).SetResult(true);
+
+        var cut = Render<FdyAppShell>(p => p.Add(c => c.Title, "Invoices"));
+
+        var main = cut.Find(".fdy-app__main");
+        Assert.Equal("main", main.GetAttribute("id"));
+        Assert.Equal("-1", main.GetAttribute("tabindex"));
+    }
 }

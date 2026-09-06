@@ -9,6 +9,34 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [Unreleased]
+
+**Tautan lewati yang tak punya tujuan, di tiga stack sekaligus.** `#056` (dari `keamanan-cluster`)
+menunjuk satu kalimat di COMPONENTS.md — *"the markup below is for stacks without an adapter (and is
+what the wrapper renders)"* — lalu menunjukkan bahwa untuk `.fdy-app__main` kalimat itu tidak benar.
+Markup mentahnya membawa `id="main"`; ketiga wrapper typed tidak membawa apa pun. Jadi `.fdy-skip`
+yang didokumentasikan dengan `href="#main"` merender tautan yang menerima fokus lalu tidak
+memindahkan siapa pun. Ini bentuk kegagalan yang paling sulit terlihat: tak ada galat, tak ada yang
+tampak salah, dan pemeriksaan visual tak akan pernah menangkapnya — app yang melaporkannya memilih
+**tidak memasang tautan lewati sama sekali**, karena tak ada yang bisa dituju.
+
+### Fixed
+- **`FdyAppShell` merender `<main id="main" tabindex="-1">` di Vue, React dan Blazor** (`#056` §1).
+  `id` menyamakan wrapper dengan markup mentah yang sudah didokumentasikan; `tabindex="-1"` diambil
+  dari `docs/reference-screen.html`, yang selama ini lebih benar daripada skeleton di COMPONENTS.md —
+  tanpa itu tautan fragmen menggulung halaman tanpa memindahkan fokus, sehingga Tab berikutnya
+  melanjutkan dari tempat pembaca tadi, bukan dari tempat ia dikirim. Skeleton COMPONENTS.md ikut
+  disamakan. Dijaga uji paritas baru di `browser/adapter.mjs` (Vue, React) dan
+  `test/blazor/FdyAppShellTests.cs` (Blazor).
+
+### Docs
+- **`.fdy-title-page` menyebut level headingnya di dalam shell** (`#056` §2). Tabel tipografi
+  menuliskan `<h1>`, "One per screen", sementara `docs/reference-screen.html` memakai
+  `<h2 class="fdy-title-page">` karena `.fdy-app__title` di topbar sudah menjadi `<h1>` layar itu.
+  Menyusun keduanya persis seperti dokumentasi menghasilkan dua `<h1>` — yang justru dilarang
+  kalimat di sebelahnya. Tabelnya kini menyebut kedua kasus; keputusan yang dipakai adalah keputusan
+  yang sudah diambil reference screen, bukan keputusan baru.
+
 ## [3.3.0] - 2026-08-28
 
 **Tiga kemampuan yang sebenarnya sudah ada di kit ini, dan tak satu pun bisa diminta.** `#054` dan
