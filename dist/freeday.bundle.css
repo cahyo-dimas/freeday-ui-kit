@@ -1040,6 +1040,13 @@ a { color: var(--color-primary); }
 .fdy-app__navtoggle:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-app__navtoggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}
 .fdy-app__navtoggle svg{display:block;width:1.25rem;height:1.25rem;}
+/* --navtoggle-end moves the toggle to the far side of the topbar. The title already
+ * carries `margin-right:auto`, so ordering the toggle last is enough; nothing else needs
+ * to know. On a large phone held in one hand the top-LEFT corner is the hardest place on
+ * the screen for a right thumb to reach, and the toggle is the control most often pressed
+ * there — so this is ergonomics, not taste. Left as an opt-in because a desktop shell that
+ * also puts an avatar on the right has the opposite problem. */
+.fdy-app--navtoggle-end .fdy-app__navtoggle{order:1;}
 /* Desktop collapse: animate width -> 0 (content clips via overflow:hidden; the content area
  * flexes in to fill). Not display:none, so the collapse/expand slides instead of snapping. */
 @media (min-width:721px){.fdy-app--nav-collapsed .fdy-app__sidebar{width:0;border-right-width:0;}}
@@ -1075,7 +1082,15 @@ a { color: var(--color-primary); }
  * the initial `visible`, so a mode switch alone hands the page ~200ms of dead clicks. Measured: with
  * only `visibility:hidden`, elementFromPoint over the nav toggle returned the backdrop.
  * Mobile: the sidebar becomes an off-canvas drawer opened by the topbar toggle. */
-.fdy-app__backdrop{display:none;}
+/* `cursor:pointer` here is not decoration, and not for the mouse. Safari on iOS only
+ * synthesises a `click` from a tap on elements it treats as interactive, and the cursor
+ * being a pointer is one of the signals it uses. The backdrop is a plain <div> with a
+ * click handler — no button, no role, no tabindex — so without this rule a tap on it
+ * produces no click at all: the drawer stays open, the scrim stays dark, and the only way
+ * out is reloading the page. Reported from a real iPhone X; not reproducible in Chromium
+ * with either mouse click or `touchscreen.tap()`, which is why no test in this kit or in
+ * the consuming app had ever caught it. */
+.fdy-app__backdrop{display:none;cursor:pointer;}
 @media (max-width:720px){
   .fdy-app__sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:16rem;z-index:60;transform:translateX(-100%);transition:transform var(--dur-base) var(--ease-standard);box-shadow:var(--shadow-4);}
   .fdy-app--nav-open .fdy-app__sidebar{transform:translateX(0);}
@@ -1199,6 +1214,69 @@ a { color: var(--color-primary); }
 .fdy-badge-ov--top-left{right:auto;left:0;transform:translate(-50%,-50%);}
 .fdy-badge-ov--bottom-right{top:auto;bottom:0;transform:translate(50%,50%);}
 .fdy-badge-ov--bottom-left{top:auto;bottom:0;right:auto;left:0;transform:translate(-50%,50%);}
+
+/* Freeday. Bottom navigation
+ *
+ * The bar a phone application puts its three-to-five most-used destinations on. The kit
+ * had `.fdy-nav--horizontal` for a top-nav application and the off-canvas drawer for a
+ * sidebar one, and nothing for the arrangement almost every phone application actually
+ * uses — which was only noticed when an app shipped to real phones and its owner reached
+ * for a thumb-reachable bar that did not exist.
+ *
+ * Deliberately NOT part of `.fdy-app`'s markup: it is `position:fixed`, so it works from
+ * anywhere inside the shell's content slot, and an application that does not want one
+ * pays nothing. `.fdy-app--has-bottomnav` on the shell is what reserves room for it. */
+.fdy-bottomnav{display:none;}
+@media (max-width:720px){
+  .fdy-bottomnav{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;
+    align-items:stretch;justify-content:space-around;gap:var(--space-1);
+    padding:var(--space-2) var(--space-2);
+    /* The home indicator on a notched phone sits over the bottom of the viewport, and a
+     * bar that ignores it puts its labels underneath a physical UI element. Added to the
+     * padding rather than substituted for it, so a phone without one is unaffected. */
+    padding-bottom:calc(var(--space-2) + env(safe-area-inset-bottom,0px));
+    background:var(--color-surface-raised);
+    backdrop-filter:var(--surface-filter);
+    -webkit-backdrop-filter:var(--surface-filter);
+    border-top:var(--bw) solid var(--color-border);
+  }
+  /* Room for the bar, or the last row of every list on every screen sits under it -- and
+     a row you cannot scroll to is a row nobody knows is there. */
+  .fdy-app--has-bottomnav .fdy-app__main{
+    padding-bottom:calc(var(--space-20) + env(safe-area-inset-bottom,0px));
+  }
+}
+.fdy-bottomnav__item{
+  display:flex;flex:1 1 0;min-width:0;flex-direction:column;align-items:center;
+  justify-content:center;gap:2px;
+  /* 44px is the smallest target a thumb hits reliably; anything under it turns a tap into
+   * a retry, and this bar is pressed more than any other control in the application. */
+  min-height:2.75rem;padding:var(--space-1);
+  border-radius:var(--radius-md);
+  font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-medium);
+  color:var(--color-text-muted);text-decoration:none;text-align:center;
+  transition:background var(--dur-fast) var(--ease-standard),
+             color var(--dur-fast) var(--ease-standard);
+}
+.fdy-bottomnav__item:hover{color:var(--color-text);}
+.fdy-bottomnav__item:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}
+/* The current destination is marked by `aria-current="page"`, the same attribute
+ * `.fdy-nav__item` uses -- one contract for "you are here", not two. */
+.fdy-bottomnav__item[aria-current="page"]{
+  color:var(--color-primary-strong);background:var(--color-primary-soft);
+}
+.fdy-bottomnav__icon{display:block;width:1.25rem;height:1.25rem;flex:none;}
+.fdy-bottomnav__icon svg{display:block;width:100%;height:100%;}
+/* Labels are never dropped in favour of icons alone: an icon-only bar asks every user to
+ * have already learned what each glyph means, and the people using this kit's applications
+ * on a phone are often using them for the first time. Long labels ellipsis rather than
+ * wrap, so the bar keeps one height. */
+.fdy-bottomnav__label{
+  display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  line-height:1.2;
+}
+@media (prefers-reduced-motion:reduce){.fdy-bottomnav__item{transition:none;}}
 
 /* Freeday. Breadcrumb */
 .fdy-breadcrumb{font-size:var(--text-sm);}

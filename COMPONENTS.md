@@ -146,7 +146,16 @@ off-canvas drawer and backdrop are built in.
   overriding `width` on `.fdy-app__sidebar`, whose value also feeds the collapse transition.
 - Modifiers: `--nav-open` (drawer open) · `--nav-collapsed` (collapse to zero width, ≥721px) ·
   `--nav-overlay` (≥721px: float the nav over the content instead of displacing it) · `--static`
-  (embed the shell in a page instead of filling the viewport)
+  (embed the shell in a page instead of filling the viewport) · `--navtoggle-end` (move the nav
+  toggle to the far side of the topbar) · `--has-bottomnav` (reserve room for `.fdy-bottomnav`)
+- **`--navtoggle-end`** is ergonomics, not taste: on a large phone held in one hand the top-LEFT
+  corner is the hardest place on the screen for a right thumb to reach, and the toggle is the
+  control pressed there most. Opt-in, because a desktop shell that also puts an avatar on the right
+  has the opposite problem.
+- The backdrop carries `cursor:pointer`. That is **not** for the mouse: Safari on iOS only
+  synthesises a `click` from a tap on elements it treats as interactive, and the cursor is one of
+  the signals it uses. Without it, tapping outside the drawer on an iPhone does nothing at all —
+  the drawer stays open, the scrim stays dark, and reloading is the only way out.
 
 **`--nav-overlay` is a layout choice, not a second behaviour.** With it the nav floats at *every*
 width, so the drawer's whole code path — backdrop, Escape, close-on-follow, focus into the panel and
@@ -1495,6 +1504,39 @@ Size-matched placeholders so nothing shifts when data lands: `--title` `--text` 
 ---
 
 # Navigation
+
+## Bottom navigation — `.fdy-bottomnav`
+The bar a **phone** application puts its three-to-five most-used destinations on, where a thumb
+reaches them. Shown only at `max-width:720px`; on a desktop the sidebar already carries the same
+links, and a second copy would be duplication.
+
+Not part of `.fdy-app`'s markup: it is `position:fixed`, so it works from anywhere inside the
+shell, and an application that does not want one pays nothing. Put **`.fdy-app--has-bottomnav`** on
+the shell to reserve room for it — without that, the last row of every list ends underneath the bar,
+and a row nobody can scroll to is a row nobody knows is there.
+
+- Items are `<a class="fdy-bottomnav__item">` with `__icon` / `__label`; the current one gets
+  `aria-current="page"` — the same contract `.fdy-nav__item` uses, so "you are here" has one
+  meaning in this kit, not two.
+- Targets are at least 44px tall. Under that a tap becomes a retry, and this bar is pressed more
+  than any other control in a phone application.
+- Labels are **not** optional. An icon-only bar asks every user to have already learned what each
+  glyph means. Long labels ellipsis rather than wrap, so the bar keeps one height.
+- Bottom padding includes `env(safe-area-inset-bottom)`, so labels do not sit under the home
+  indicator on a notched phone.
+
+```html
+<nav class="fdy-bottomnav" aria-label="Main">
+  <a class="fdy-bottomnav__item" href="/dashboard" aria-current="page">
+    <span class="fdy-bottomnav__icon"><!--svg--></span>
+    <span class="fdy-bottomnav__label">Dashboard</span>
+  </a>
+  <a class="fdy-bottomnav__item" href="/schedule">
+    <span class="fdy-bottomnav__icon"><!--svg--></span>
+    <span class="fdy-bottomnav__label">Schedule</span>
+  </a>
+</nav>
+```
 
 ## Nav (menu) — `.fdy-nav`
 Navigation links, **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with

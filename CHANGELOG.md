@@ -9,6 +9,46 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.4.0] - 2026-09-07
+
+**Tiga hal yang hanya terlihat setelah sebuah app bertemu telepon sungguhan.** `#057` (dari
+`keamanan-cluster`) datang dari pemilik yang menguji di iPhone X, dan ketiganya punya bentuk yang
+sama: tak satu pun dapat ditemukan di Chromium, dan tak satu pun akan pernah ditangkap uji yang
+sudah ada — bukan karena ujinya kurang, melainkan karena mesin peramban di laptop tidak berperilaku
+seperti Safari di HP, dan laptop tidak punya ibu jari.
+
+Yang pertama mengunci navigasi sepenuhnya: tap di luar drawer tidak menutupnya, layar tetap gelap,
+dan satu-satunya jalan keluar adalah memuat ulang halaman.
+
+### Added
+- **`.fdy-bottomnav`** — bilah navigasi bawah untuk aplikasi di HP. Kit punya `--horizontal` untuk
+  top-nav dan drawer off-canvas untuk sidebar, dan tidak punya apa pun untuk susunan yang justru
+  dipakai hampir semua aplikasi telepon. Tampil hanya di `max-width:720px`; di desktop sidebar sudah
+  membawa tautan yang sama dan salinan kedua hanya duplikasi.
+  Sengaja **bukan** bagian markup `.fdy-app`: ia `position:fixed` sehingga bekerja dari mana pun di
+  dalam shell, dan aplikasi yang tidak memakainya tidak membayar apa pun.
+  Target minimal 44px — di bawah itu satu tap menjadi satu percobaan ulang, dan bilah ini ditekan
+  lebih sering daripada kontrol mana pun. Label tidak opsional: bilah ikon-saja menuntut setiap
+  pengguna sudah hafal arti tiap glyph. `env(safe-area-inset-bottom)` masuk ke padding, jadi label
+  tidak duduk di bawah home indicator pada HP bernotch.
+- **`.fdy-app--has-bottomnav`** menyediakan ruang bawah untuk bilah itu. Tanpanya baris terakhir
+  setiap daftar di setiap layar berakhir di bawah bilah — dan baris yang tak bisa digulir ke sana
+  adalah baris yang tak seorang pun tahu ada.
+- **`.fdy-app--navtoggle-end`** memindahkan tombol nav ke sisi jauh topbar. Ini ergonomi, bukan
+  selera: pada HP besar yang dipegang satu tangan, pojok kiri-ATAS adalah tempat tersulit dijangkau
+  ibu jari kanan, dan tombol itu yang paling sering ditekan di sana. Opt-in, sebab shell desktop yang
+  juga menaruh avatar di kanan punya persoalan sebaliknya.
+
+### Fixed
+- **`.fdy-app__backdrop` kini membawa `cursor:pointer`** (`#057`). Ini bukan untuk tetikus. Safari
+  iOS hanya mensintesis `click` dari tap pada elemen yang dianggapnya interaktif, dan bentuk kursor
+  salah satu penanda yang dipakainya. Backdrop-nya `<div>` polos dengan handler klik — tanpa button,
+  tanpa role, tanpa tabindex — sehingga tanpa aturan ini sebuah tap di atasnya sama sekali tidak
+  menghasilkan klik: drawer tetap terbuka, scrim tetap gelap, dan memuat ulang halaman adalah
+  satu-satunya jalan keluar. Tidak dapat direproduksi di Chromium, baik dengan klik tetikus maupun
+  `touchscreen.tap()` — itu sebabnya tidak satu pun uji di kit ini maupun di app yang memakainya
+  pernah menangkapnya. Dijaga `browser/bottom-nav.mjs`.
+
 ## [3.3.1] - 2026-09-07
 
 **Tautan lewati yang tak punya tujuan, di tiga stack sekaligus.** `#056` (dari `keamanan-cluster`)

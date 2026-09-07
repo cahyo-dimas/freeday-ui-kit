@@ -83,6 +83,13 @@
 .fdy-app__navtoggle:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-app__navtoggle:focus-visible{outline:none;box-shadow:0 0 0 2px var(--color-primary);}
 .fdy-app__navtoggle svg{display:block;width:1.25rem;height:1.25rem;}
+/* --navtoggle-end moves the toggle to the far side of the topbar. The title already
+ * carries `margin-right:auto`, so ordering the toggle last is enough; nothing else needs
+ * to know. On a large phone held in one hand the top-LEFT corner is the hardest place on
+ * the screen for a right thumb to reach, and the toggle is the control most often pressed
+ * there — so this is ergonomics, not taste. Left as an opt-in because a desktop shell that
+ * also puts an avatar on the right has the opposite problem. */
+.fdy-app--navtoggle-end .fdy-app__navtoggle{order:1;}
 /* Desktop collapse: animate width -> 0 (content clips via overflow:hidden; the content area
  * flexes in to fill). Not display:none, so the collapse/expand slides instead of snapping. */
 @media (min-width:721px){.fdy-app--nav-collapsed .fdy-app__sidebar{width:0;border-right-width:0;}}
@@ -118,7 +125,15 @@
  * the initial `visible`, so a mode switch alone hands the page ~200ms of dead clicks. Measured: with
  * only `visibility:hidden`, elementFromPoint over the nav toggle returned the backdrop.
  * Mobile: the sidebar becomes an off-canvas drawer opened by the topbar toggle. */
-.fdy-app__backdrop{display:none;}
+/* `cursor:pointer` here is not decoration, and not for the mouse. Safari on iOS only
+ * synthesises a `click` from a tap on elements it treats as interactive, and the cursor
+ * being a pointer is one of the signals it uses. The backdrop is a plain <div> with a
+ * click handler — no button, no role, no tabindex — so without this rule a tap on it
+ * produces no click at all: the drawer stays open, the scrim stays dark, and the only way
+ * out is reloading the page. Reported from a real iPhone X; not reproducible in Chromium
+ * with either mouse click or `touchscreen.tap()`, which is why no test in this kit or in
+ * the consuming app had ever caught it. */
+.fdy-app__backdrop{display:none;cursor:pointer;}
 @media (max-width:720px){
   .fdy-app__sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:16rem;z-index:60;transform:translateX(-100%);transition:transform var(--dur-base) var(--ease-standard);box-shadow:var(--shadow-4);}
   .fdy-app--nav-open .fdy-app__sidebar{transform:translateX(0);}

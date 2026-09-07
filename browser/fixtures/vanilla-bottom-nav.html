@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — bottom navigation</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <div class="fdy-app fdy-app--has-bottomnav fdy-app--navtoggle-end" id="app">
+    <aside class="fdy-app__sidebar" id="sidebar">
+      <nav class="fdy-nav"><a class="fdy-nav__item" href="#">Beranda</a></nav>
+    </aside>
+
+    <div class="fdy-app__content">
+      <header class="fdy-app__topbar">
+        <button class="fdy-app__navtoggle" type="button" id="toggle"
+                aria-label="Toggle navigation">≡</button>
+        <h1 class="fdy-app__title" id="title">Ronda</h1>
+        <span id="after">·</span>
+      </header>
+      <main class="fdy-app__main" id="main"><p>Isi halaman.</p></main>
+    </div>
+
+    <nav class="fdy-bottomnav" id="bottomnav" aria-label="Navigasi utama">
+      <a class="fdy-bottomnav__item" id="item1" href="#" aria-current="page">
+        <span class="fdy-bottomnav__icon">▣</span>
+        <span class="fdy-bottomnav__label">Dashboard</span>
+      </a>
+      <a class="fdy-bottomnav__item" id="item2" href="#">
+        <span class="fdy-bottomnav__icon">▤</span>
+        <span class="fdy-bottomnav__label">Jadwal yang namanya sangat panjang sekali</span>
+      </a>
+      <a class="fdy-bottomnav__item" id="item3" href="#">
+        <span class="fdy-bottomnav__icon">▥</span>
+        <span class="fdy-bottomnav__label">Laporan</span>
+      </a>
+    </nav>
+
+    <div class="fdy-app__backdrop" id="backdrop"></div>
+  </div>
+</body>
+</html>
