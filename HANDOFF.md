@@ -32,6 +32,20 @@ lokal: ketujuh perubahan ada di dalamnya — `.fdy-field--full{max-width:none}`,
 dev bukan cuma tak perlu, ia **melewati gerbang itu**, dan tetap akan berhenti di `EOTP` karena 2FA.
 Perintahnya: `git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags`.
 
+Isi 3.4.0 dalam satu kalimat: **tiga hal yang hanya terlihat setelah sebuah app bertemu telepon
+sungguhan** (`#057`, dari `keamanan-cluster`) — backdrop yang tak menerima tap di Safari iOS
+sehingga drawer tak bisa ditutup sama sekali, bilah navigasi bawah yang tak pernah ada padahal
+hampir semua aplikasi telepon memakainya, dan tombol nav yang selalu di pojok tersulit dijangkau
+ibu jari. Ketiganya **tidak dapat direproduksi di Chromium** — bukan karena ujinya kurang,
+melainkan karena mesin peramban di laptop tidak berperilaku seperti Safari di HP, dan laptop tidak
+punya ibu jari. Detail di CHANGELOG.
+
+Gerbang untuk 3.4.0, lokal: `node --test` **119/119**, `npm run test:browser` **116/116** (25 spec,
+`browser/bottom-nav.mjs` baru). Uji backdrop diverifikasi dengan mutasi: `cursor:pointer` dilepas,
+ujinya merah.
+
+---
+
 Isi 3.3.0 dalam satu kalimat: **tiga kemampuan yang sudah ada di kit dan tak ada yang bisa
 memintanya** — `FdyCfl` yang hanya bisa dibuka oleh field-nya sendiri (`#054`), cap `.fdy-field`
 yang hanya bisa dilepas oleh `.fdy-form-grid` (`#055` §1), dan `.fdy-nav--flat` yang ada sejak 1.1.0
