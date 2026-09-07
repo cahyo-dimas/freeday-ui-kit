@@ -9,7 +9,7 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
-## [Unreleased]
+## [3.3.1] - 2026-09-07
 
 **Tautan lewati yang tak punya tujuan, di tiga stack sekaligus.** `#056` (dari `keamanan-cluster`)
 menunjuk satu kalimat di COMPONENTS.md — *"the markup below is for stacks without an adapter (and is
