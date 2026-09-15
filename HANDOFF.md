@@ -32,6 +32,24 @@ lokal: ketujuh perubahan ada di dalamnya — `.fdy-field--full{max-width:none}`,
 dev bukan cuma tak perlu, ia **melewati gerbang itu**, dan tetap akan berhenti di `EOTP` karena 2FA.
 Perintahnya: `git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags`.
 
+Isi 3.5.0 dalam satu kalimat: **satu angka yang hanya bisa ditemukan dengan membaca stylesheet
+kit, dan tak ada cara membagi angka itu ke app lewat CSS** (`#058`, dari `IDU_AI_DOC_SAPB1_CLIENT`
+dan `IDU_AI_DOC_SAAS`). Keduanya berakar pada satu kenyataan: `@media` tak bisa membaca custom
+property, jadi breakpoint kit hanya hidup sebagai literal dan app mengetik ulang literal itu.
+`.fdy-filterbar` menumpuk di **640** — bukan anak tangga ramp, dan sengaja **tidak** dipindahkan
+karena 640 adalah lebar telepon-lanskap yang nyata; ia **dinamai** (`breakpoints.filterbar`), sebab
+menyelaraskan rule app ke `sm` merusak 600–640px. Dan `@cahyo-dimas/freeday/media` kini membagi
+seluruh skala sebagai `@custom-media`, **di-generate** dari `tokens/breakpoints.mjs` supaya kedua
+paruhnya tak mungkin berbeda pendapat. Opt-in, nol rule, tidak ikut bundle. Detail di CHANGELOG.
+
+Gerbang untuk 3.5.0, lokal: `node --test` **122/122**, `npm run test:browser` **116/116** (25 spec),
+`npm run typecheck:react` bersih, `npm run test:blazor` **22/22**. Tiga gerbang baru diverifikasi
+dengan **mutasi**: 640 digeser di `filterbar.css`, 599.98 digeser di `breakpoints.css`, dan
+`dist/freeday.media.css` dibiarkan basi — ketiganya merah, lalu hijau lagi setelah dipulihkan.
+Bundle tak berubah satu rule pun (hanya komentar), jadi tak ada perilaku terender yang bergeser.
+
+---
+
 Isi 3.4.0 dalam satu kalimat: **tiga hal yang hanya terlihat setelah sebuah app bertemu telepon
 sungguhan** (`#057`, dari `keamanan-cluster`) — backdrop yang tak menerima tap di Safari iOS
 sehingga drawer tak bisa ditutup sama sekali, bilah navigasi bawah yang tak pernah ada padahal
