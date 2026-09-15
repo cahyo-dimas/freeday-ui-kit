@@ -104,6 +104,45 @@ test('breakpoints: nav mirrors the shell switch in app-shell.css', async () => {
   assert.equal(Number(max[1]), breakpoints.nav - 1, 'the max-width query must be nav - 1');
 });
 
+test('breakpoints: filterbar mirrors the stacking query in filterbar.css (#058 §1)', async () => {
+  const { breakpoints } = await import('../tokens/breakpoints.mjs');
+  const css = read('src/components/filterbar.css');
+  /* Same contract as `nav` above, for the same reason: the bar hard-wires its own width, and an app
+     rule that has to fire with the stack can only match it by reading this number. It is 640 and not
+     `sm` on purpose; the day someone retunes the stylesheet, this fails instead of leaving every
+     consuming app aligned to a width the kit no longer uses. Comments stripped first — the header
+     explains the number in prose and would otherwise be matched as the rule. */
+  const stack = css.replace(/\/\*[\s\S]*?\*\//g, ' ').match(/@media \(max-width:\s*([\d.]+)px\)/);
+  assert.ok(stack, 'filterbar.css should carry its stacking media query');
+  assert.equal(breakpoints.filterbar, Number(stack[1]), 'breakpoints.filterbar must equal the stacking width');
+});
+
+/* The shipped @custom-media sheet must state the SAME widths the kit's own stylesheets do (#058 §2).
+ *
+ * It is generated from tokens/breakpoints.mjs, so it cannot drift from the JS half by construction;
+ * what it CAN drift from is the CSS the numbers describe, since breakpoints.css is hand-written
+ * literals by necessity. A consumer aligning to `--fdy-below-sm` is trusting that it means the same
+ * thing as `.fdy-hide-below-sm`, and nothing but this checks that it does. */
+test('media: the custom-media sheet agrees with the utilities it describes', () => {
+  const media = read('dist/freeday.media.css');
+  const utils = read('src/components/breakpoints.css');
+  const queries = [...utils.matchAll(/@media \((max|min)-width:\s*([\d.]+)px\)\{\.fdy-hide-(below|above)-(sm|md|lg)/g)];
+  assert.ok(queries.length >= 6, 'parsed too few utility queries from breakpoints.css');
+  for (const [, dir, px, , step] of queries) {
+    /* hide-above-X hides AT X and up, so it is the same min-width as --fdy-from-X. */
+    const name = dir === 'max' ? `--fdy-below-${step}` : `--fdy-from-${step}`;
+    assert.ok(media.includes(`@custom-media ${name} (${dir}-width: ${px}px);`),
+      `${name} must be (${dir}-width: ${px}px) to match .fdy-hide-*-${step}`);
+  }
+  /* And the two that are not ramp steps, each against the stylesheet that hard-wires it. */
+  const shell = read('src/components/app-shell.css').match(/@media \(max-width:\s*(\d+)px\)/);
+  assert.ok(media.includes(`@custom-media --fdy-nav-drawer (max-width: ${shell[1]}px);`),
+    '--fdy-nav-drawer must match the shell drawer query');
+  const stack = read('src/components/filterbar.css').replace(/\/\*[\s\S]*?\*\//g, ' ').match(/@media \(max-width:\s*([\d.]+)px\)/);
+  assert.ok(media.includes(`@custom-media --fdy-filterbar-stacked (max-width: ${stack[1]}px);`),
+    '--fdy-filterbar-stacked must match the filter bar stacking query');
+});
+
 /* The typed wrappers are English, and now the suite says so.
  *
  * COMPONENTS.md's language caveat draws one line: the vanilla ENHANCERS write Indonesian, the

@@ -96,6 +96,7 @@ Blazor). Then verify the agent can actually read those files. An agent that can'
 | `docs/agent-onboarding.md` | This file. |
 | `CHANGELOG.md` | **What changed between the version this project had and the one it has now.** Read it after every upgrade; each entry says what broke, what is new, and why. |
 | `dist/` | Built CSS + enhancers. **`freeday.bundle.css` = tokens + components** (what `@cahyo-dimas/freeday/css` resolves to); `freeday.css` is components **only**, `freeday.tokens.css` tokens only, so linking `freeday.css` alone leaves every `var(--…)` unresolved. Plus `freeday-*.js` and the `.d.ts` files. |
+| `dist/freeday.media.css` | The breakpoints as `@custom-media` (`@cahyo-dimas/freeday/media`), so a responsive rule in your CSS states the kit's condition instead of a retyped literal. Needs PostCSS; carries no rules, and is **not** in the bundle. |
 | `src/components/*.css` | The authoritative source for every class, when a doc is ambiguous. |
 | `tokens/tokens.json` | Every token in W3C DTCG format, machine-readable. |
 | `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers, 11 components each (plus `FdyTableFooter`). |
@@ -138,6 +139,7 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `.fdy-field--full` | `max-width: none` on the form container, once per form, because the fields are a flex column and not a `.fdy-form-grid` |
 | `.fdy-nav--flat` | undoing the caret, the pointer cursor and the group divider yourself, on a sidebar whose group labels never collapse |
 | `--fdy-app-sidebar-w` | overriding `width` on `.fdy-app__sidebar`, which is also the rule that animates the collapse |
+| `@media (--fdy-filterbar-stacked)` / `(--fdy-nav-drawer)`, from `@cahyo-dimas/freeday/media` | a literal `640px` or `720px` retyped into your stylesheet, which no longer matches the kit's rule the day the kit retunes it — and which you could only have found by reading `filterbar.css` |
 
 ## 3. Starting a new screen
 

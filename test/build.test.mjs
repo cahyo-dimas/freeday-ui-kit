@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss } from '../tokens/build.mjs';
 
 test('bundleFullCss: tokens then components, both present', () => {
   const out = bundleFullCss('/* tok */\n:root{--a:1}', '/* comp */\n.fdy-x{color:var(--a)}');
@@ -135,4 +135,25 @@ test('no shipped custom property carries prose', () => {
     .filter(([, name, value]) => name.includes('_comment') || /\s\w+\s\w+\s\w+\s\w+\s\w+\s/.test(value))
     .map(([, name]) => name);
   assert.deepEqual(offenders, [], 'these read as sentences, not values:\n  ' + offenders.join('\n  '));
+});
+
+/* The CSS half of the breakpoint scale is GENERATED from the JS half, which is the whole point of
+ * it (#058 §2): a hand-written second copy is the drift it exists to end. Asserted on a fake scale
+ * so the shape is checked, not the kit's current numbers — those are checked against the
+ * stylesheets themselves in docs.test.mjs. */
+test('buildMediaCss: a below/from pair per ramp step, and the off-ramp widths named', () => {
+  const out = buildMediaCss({ nav: 101, filterbar: 90, sm: 200, md: 300 });
+  assert.match(out, /@custom-media --fdy-below-sm \(max-width: 199\.98px\);/);
+  assert.match(out, /@custom-media --fdy-from-sm \(min-width: 200px\);/);
+  assert.match(out, /@custom-media --fdy-below-md \(max-width: 299\.98px\);/);
+  assert.match(out, /@custom-media --fdy-from-md \(min-width: 300px\);/);
+  /* nav mirrors app-shell's own pair exactly (nav-1 / nav), not the ramp's n-0.02 split. */
+  assert.match(out, /@custom-media --fdy-nav-drawer \(max-width: 100px\);/);
+  assert.match(out, /@custom-media --fdy-nav-static \(min-width: 101px\);/);
+  assert.match(out, /@custom-media --fdy-filterbar-stacked \(max-width: 90px\);/);
+  /* The off-ramp widths must never also appear as ramp steps: a `--fdy-below-nav` would read as
+     one and invite exactly the substitution the names exist to prevent. */
+  assert.ok(!/--fdy-(below|from)-(nav|filterbar)\b/.test(out), 'nav/filterbar must not be emitted as ramp steps');
+  /* Rules here would be silently dropped by a consumer that runs no PostCSS. */
+  assert.ok(!/\{/.test(out.replace(/\/\*[\s\S]*?\*\//g, '')), 'the media sheet carries at-rules only, never rules');
 });

@@ -60,7 +60,7 @@ npm i @cahyo-dimas/freeday
 ```js
 import '@cahyo-dimas/freeday/css';   // token + komponen (satu file)
 import '@cahyo-dimas/freeday';       // semua enhancer JS (auto-init [data-fdy-*])
-// granular bila perlu: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<nama>'
+// granular bila perlu: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<nama>' · '@cahyo-dimas/freeday/media' (breakpoint @custom-media)
 ```
 Set tema di root app: `<html data-theme="light" data-density="comfortable">`. `dist/` di-commit &
 ter-publish → install tanpa build step; minify diserahkan ke bundler konsumen. Karena terbit di
@@ -153,9 +153,13 @@ container-nya, bukan scroll sendiri.
   menyusut/melebar saat `data-density` berubah.
 - (roadmap) `data-style` untuk varian visual lain.
 - Skala breakpoint (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
-  `src/components/breakpoints.css`) juga tersedia di JS: `import { breakpoints } from
-  '@cahyo-dimas/freeday/breakpoints'`. Pakai itu untuk menyamakan `matchMedia`/`@media` app-mu
-  dengan skala Freeday.
+  `src/components/breakpoints.css`) tersedia untuk app-mu dalam dua bahasa: `import { breakpoints }
+  from '@cahyo-dimas/freeday/breakpoints'` untuk JS (`matchMedia`, varian utility), dan `@import
+  '@cahyo-dimas/freeday/media'` untuk CSS, yang mendeklarasikan tiap lebar sebagai `@custom-media`
+  sehingga sebuah rule ditulis `@media (--fdy-below-sm)`, bukan literal yang diketik ulang (butuh
+  PostCSS; opt-in). Objeknya juga membawa dua lebar yang **bukan** anak tangga ramp dan tak boleh
+  dibulatkan ke salah satunya: `nav` (721, saklar drawer↔sidebar milik shell) dan `filterbar` (640,
+  tempat `.fdy-filterbar` menumpuk). Lihat [`COMPONENTS.md`](COMPONENTS.md) untuk apa yang diaturnya.
 
 ## Integrasi framework (SPA)
 > **Peta library lengkap:** [`docs/integrations.md`](docs/integrations.md). Tiap area

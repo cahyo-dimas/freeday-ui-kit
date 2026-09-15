@@ -412,8 +412,14 @@ a { color: var(--color-primary); }
 
 /* Freeday. Responsive display utilities (pairs with freeday-breakpoint.js).
  * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
+ * Two further widths exist and are NOT ramp steps: `nav` (app-shell.css, off-canvas drawer vs
+ * static sidebar) and `filterbar` (filterbar.css, the width its fields stack at). Both are named
+ * in tokens/breakpoints.mjs; a rule that has to fire with one of them aligns to it, not to the
+ * nearest ramp step, which is a band of broken widths in both directions.
  * NOTE: media-query breakpoints must be literal. CSS can't read custom properties
- * inside @media, so these px are structural, not stray magic numbers. */
+ * inside @media, so these px are structural, not stray magic numbers. An app that runs PostCSS
+ * need not retype them: `@cahyo-dimas/freeday/media` declares every width above as a
+ * @custom-media, so it can write `@media (--fdy-below-sm)` and never drift (#058 §2). */
 .fdy-hidden{display:none !important;}
 
 /* hide-below-X, hidden when the viewport is narrower than X (content shows at X and up) */
@@ -1199,7 +1205,14 @@ a { color: var(--color-primary); }
 /* Opt-in: sit the actions inline right after the last field instead of at the far edge, so when the
  * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
 .fdy-filterbar--actions-inline .fdy-filterbar__actions{margin-left:0;}
-/* Stack on narrow screens so nothing overflows the row. */
+/* Stack on narrow screens so nothing overflows the row.
+ * 640 is deliberately not a ramp step (sm is 600): it is a real phone-landscape width, and moving
+ * it now would reflow every filter bar in every consuming app. So it is NAMED instead — `filterbar`
+ * in tokens/breakpoints.mjs, `--fdy-filterbar-stacked` in the media sheet — because an app rule
+ * that must fire with the stack (releasing a --w-grow field's max-width, say) has to match this
+ * exact condition, and aligning it to sm from the docs alone leaves 600–640px half-stacked: the
+ * fields are already full width while the app still caps the growing one. Raised from
+ * IDU_AI_DOC_SAPB1_CLIENT and IDU_AI_DOC_SAAS (#058 §1). */
 @media (max-width:640px){
   .fdy-filterbar>.fdy-field,.fdy-filterbar>.fdy-field--w-sm,.fdy-filterbar>.fdy-field--w-lg,.fdy-filterbar>.fdy-field--w-xl,.fdy-filterbar>.fdy-field--w-2xl,.fdy-filterbar>.fdy-field--w-grow{width:100%;flex:1 1 100%;}
   .fdy-filterbar__actions{width:100%;margin-left:0;}

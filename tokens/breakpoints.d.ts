@@ -4,6 +4,10 @@ export declare const breakpoints: {
   /** Width at which .fdy-app's sidebar turns from off-canvas drawer into a static column.
    *  Not part of the sm/md/lg/xl ramp; it mirrors app-shell.css and nothing else. */
   nav: number;
+  /** Width at or below which .fdy-filterbar stacks every field full-width.
+   *  Not part of the sm/md/lg/xl ramp; it mirrors filterbar.css and nothing else. A rule that
+   *  must fire with the stack uses this, not `sm` — `sm` leaves 600–640px half-stacked. */
+  filterbar: number;
   sm: number;
   md: number;
   lg: number;

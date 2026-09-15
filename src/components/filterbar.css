@@ -41,7 +41,14 @@
 /* Opt-in: sit the actions inline right after the last field instead of at the far edge, so when the
  * bar wraps they read as attached to the filters rather than shoved to the right of a lonely row. */
 .fdy-filterbar--actions-inline .fdy-filterbar__actions{margin-left:0;}
-/* Stack on narrow screens so nothing overflows the row. */
+/* Stack on narrow screens so nothing overflows the row.
+ * 640 is deliberately not a ramp step (sm is 600): it is a real phone-landscape width, and moving
+ * it now would reflow every filter bar in every consuming app. So it is NAMED instead — `filterbar`
+ * in tokens/breakpoints.mjs, `--fdy-filterbar-stacked` in the media sheet — because an app rule
+ * that must fire with the stack (releasing a --w-grow field's max-width, say) has to match this
+ * exact condition, and aligning it to sm from the docs alone leaves 600–640px half-stacked: the
+ * fields are already full width while the app still caps the growing one. Raised from
+ * IDU_AI_DOC_SAPB1_CLIENT and IDU_AI_DOC_SAAS (#058 §1). */
 @media (max-width:640px){
   .fdy-filterbar>.fdy-field,.fdy-filterbar>.fdy-field--w-sm,.fdy-filterbar>.fdy-field--w-lg,.fdy-filterbar>.fdy-field--w-xl,.fdy-filterbar>.fdy-field--w-2xl,.fdy-filterbar>.fdy-field--w-grow{width:100%;flex:1 1 100%;}
   .fdy-filterbar__actions{width:100%;margin-left:0;}

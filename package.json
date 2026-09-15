@@ -54,6 +54,10 @@
       "types": "./dist/asset.d.ts",
       "default": "./dist/freeday.tokens.css"
     },
+    "./media": {
+      "types": "./dist/asset.d.ts",
+      "default": "./dist/freeday.media.css"
+    },
     "./breakpoints": {
       "types": "./tokens/breakpoints.d.ts",
       "default": "./tokens/breakpoints.mjs"

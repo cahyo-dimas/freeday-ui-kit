@@ -313,10 +313,33 @@ Responsive display: `.fdy-hide-below-sm|md|lg` · `.fdy-hide-above-sm|md|lg`.
 Breakpoints (min-width): `sm` 600 · `md` 960 · `lg` 1280 · `xl` 1920, importable as
 `import { breakpoints } from '@cahyo-dimas/freeday/breakpoints'`.
 
-**`breakpoints.nav` (721) is separate and is the one the shell uses.** `.fdy-app` switches the
-sidebar from off-canvas drawer to static column at 721px, *not* at `md`. Any `matchMedia` guard or
-utility variant that has to agree with the shell must use `nav`; using `md` leaves 721–959px broken
-(sidebar already static while your script still treats it as an overlay).
+**Two widths in that object are not ramp steps**, and each is the one to use when your rule has to
+fire with a kit rule. Aligning either to the nearest ramp step leaves a band of broken widths, in
+which the kit has already switched and your app has not:
+
+| | px | Governs | Aligning to the ramp instead breaks |
+|---|---|---|---|
+| `breakpoints.nav` | 721 | `.fdy-app` switches the sidebar from off-canvas drawer to static column — and `.fdy-app__main`'s padding step and `.fdy-bottomnav` ride the same width | 721–959px, if you use `md`: sidebar already static while your script still treats it as an overlay |
+| `breakpoints.filterbar` | 640 | `.fdy-filterbar` stacks every field full-width | 600–640px, if you use `sm`: fields already stacked while your rule still caps the `--w-grow` one, so it sits visibly narrower than the fields under it |
+
+**In CSS, import the breakpoints instead of retyping them.** `@media` cannot read a custom property,
+so there is no `--breakpoint-*` token and never will be; `@cahyo-dimas/freeday/media` answers it the
+only way CSS can, as a `@custom-media` sheet:
+
+```css
+@import '@cahyo-dimas/freeday/media';           /* once, above the rules that use it */
+
+@media (--fdy-filterbar-stacked) { .page-filters > .fdy-field--w-grow { max-width: none } }
+@media (--fdy-nav-drawer)        { .page-banner { padding-inline: var(--space-5) } }
+```
+
+Declared: `--fdy-below-sm|md|lg|xl` and `--fdy-from-sm|md|lg|xl` (the ramp, matching the utilities
+above), plus `--fdy-nav-drawer` / `--fdy-nav-static` and `--fdy-filterbar-stacked` for the two
+widths in the table. It is **opt-in**: `@custom-media` is a PostCSS transform
+(`postcss-custom-media`, included in `postcss-preset-env`), so an app that runs PostCSS — anything on
+Vite already does — gets it, and an app that does not keeps writing literals exactly as before. The
+sheet carries no rules, so importing it costs nothing at runtime, and it is deliberately not part of
+`freeday.css` or `freeday.bundle.css`.
 
 **Visual style: `data-style="soft | glass"`.** `soft` is the default and the look the kit has always
 had; `glass` frosts the **raised** surfaces — card, modal, drawer, menu, appbar, the app shell's

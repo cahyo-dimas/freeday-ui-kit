@@ -1,7 +1,13 @@
 /* Freeday. Responsive display utilities (pairs with freeday-breakpoint.js).
  * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
+ * Two further widths exist and are NOT ramp steps: `nav` (app-shell.css, off-canvas drawer vs
+ * static sidebar) and `filterbar` (filterbar.css, the width its fields stack at). Both are named
+ * in tokens/breakpoints.mjs; a rule that has to fire with one of them aligns to it, not to the
+ * nearest ramp step, which is a band of broken widths in both directions.
  * NOTE: media-query breakpoints must be literal. CSS can't read custom properties
- * inside @media, so these px are structural, not stray magic numbers. */
+ * inside @media, so these px are structural, not stray magic numbers. An app that runs PostCSS
+ * need not retype them: `@cahyo-dimas/freeday/media` declares every width above as a
+ * @custom-media, so it can write `@media (--fdy-below-sm)` and never drift (#058 §2). */
 .fdy-hidden{display:none !important;}
 
 /* hide-below-X, hidden when the viewport is narrower than X (content shows at X and up) */

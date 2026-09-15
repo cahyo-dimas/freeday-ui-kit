@@ -9,6 +9,49 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.5.0] - 2026-09-15
+
+**Sebuah angka yang hanya bisa ditemukan dengan membaca stylesheet kit.** `#058` (dari
+`IDU_AI_DOC_SAPB1_CLIENT` dan `IDU_AI_DOC_SAAS`, satu sapuan atas dua konsol) datang dari audit yang
+hasilnya nyaris bersih: tipografi, spasi dan warna tak menyisakan satu pun nilai mentah. Yang tersisa
+cuma media query — dan di situlah dua hal yang sama-sama berakar pada satu kenyataan CSS: `@media`
+tak bisa membaca custom property.
+
+Akibatnya angka breakpoint kit hanya hidup sebagai literal, app mengetik ulang literal itu, dan
+literal yang diketik ulang hanyut. Dua konsol itu menuliskan satu lebar yang sama dengan tiga cara
+(`640px`, `40rem`, `45rem`) untuk satu maksud yang sama.
+
+### Added
+- **`@cahyo-dimas/freeday/media`** — berkas `@custom-media` (`dist/freeday.media.css`), jawaban
+  sisi-CSS untuk apa yang selama ini hanya dijawab `tokens/breakpoints.mjs` di sisi JS. App menulis
+  `@media (--fdy-below-sm)` atau `@media (--fdy-filterbar-stacked)`, bukan literal yang diketik
+  ulang, dan karenanya tak bisa hanyut.
+  Isinya `--fdy-below-*` / `--fdy-from-*` untuk ramp (`sm`·`md`·`lg`·`xl`), plus `--fdy-nav-drawer`,
+  `--fdy-nav-static` dan `--fdy-filterbar-stacked` untuk dua lebar yang bukan anak tangga ramp.
+  **Opt-in, dan tak mengubah apa pun bagi yang tidak memakainya:** `@custom-media` adalah transform
+  PostCSS (`postcss-custom-media`, sudah termasuk di `postcss-preset-env`), jadi app ber-Vite
+  mendapatkannya cuma-cuma dan app tanpa PostCSS tetap menulis literal seperti kemarin. Berkas ini
+  **tidak** ikut `freeday.css` maupun `freeday.bundle.css` — at-rule waktu-build tak punya urusan di
+  stylesheet yang dimuat tiap app — dan tak membawa satu rule pun, jadi meng-import-nya tak berbiaya
+  saat runtime.
+  Di-**generate** dari objek yang sama yang diekspor sisi JS, jadi kedua paruh skala itu tak mungkin
+  berbeda pendapat; yang menjaganya agar tetap sama dengan CSS yang dideskripsikannya adalah dua tes
+  baru di `test/docs.test.mjs`, diverifikasi dengan mutasi.
+- **`breakpoints.filterbar` (640)** — lebar tempat `.fdy-filterbar` menumpuk fieldnya jadi selebar
+  penuh, kini bernama, bukan cuma tertulis di `filterbar.css:45`.
+
+### Changed
+- **640 tetap 640, tapi berhenti jadi angka siluman.** Ia bukan anak tangga ramp (`sm` = 600) dan
+  sengaja tidak dipindahkan: 640 adalah lebar telepon-lanskap yang nyata, dan menggesernya akan
+  me-reflow setiap filter bar di setiap app. Yang salah bukan angkanya, melainkan bahwa satu-satunya
+  cara menemukannya adalah membaca stylesheet kit lalu mempercayai sumber di atas dokumentasi.
+  Menyelaraskan rule app ke `sm` — hal yang wajar dilakukan dari dokumentasi saja — merusak
+  600–640px: fieldnya sudah ditumpuk kit sementara app masih membatasi lebar field `--w-grow`-nya,
+  sehingga field itu terlihat lebih sempit dari tetangganya di tumpukan.
+  Header `breakpoints.css`, komentar `filterbar.css`, `COMPONENTS.md` dan kedua README kini menyebut
+  `nav` **dan** `filterbar` sebagai dua lebar yang bukan ramp, lengkap dengan pita px yang rusak
+  kalau dibulatkan ke anak tangga terdekat.
+
 ## [3.4.0] - 2026-09-07
 
 **Tiga hal yang hanya terlihat setelah sebuah app bertemu telepon sungguhan.** `#057` (dari

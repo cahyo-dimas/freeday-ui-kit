@@ -61,7 +61,7 @@ npm i @cahyo-dimas/freeday
 ```js
 import '@cahyo-dimas/freeday/css';   // tokens + components (single file)
 import '@cahyo-dimas/freeday';       // all JS enhancers (auto-init [data-fdy-*])
-// granular if needed: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<name>'
+// granular if needed: '@cahyo-dimas/freeday/tokens' · '@cahyo-dimas/freeday/css/components' · '@cahyo-dimas/freeday/enhancers/<name>' · '@cahyo-dimas/freeday/media' (@custom-media breakpoints)
 ```
 Set the theme on your app root: `<html data-theme="light" data-density="comfortable">`. `dist/` is
 committed and published, so install needs **no build step**; minification is left to the consumer's
@@ -154,9 +154,13 @@ of scrolling.
   to shrink or grow when `data-density` changes.
 - (roadmap) `data-style` for alternative visual variants.
 - The breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, matching the
-  `src/components/breakpoints.css` utilities) is also available in JS: `import { breakpoints } from
-  '@cahyo-dimas/freeday/breakpoints'`. Use it to keep your app's `matchMedia`/`@media` on the same
-  scale as Freeday's.
+  `src/components/breakpoints.css` utilities) is available to your app in both languages: `import
+  { breakpoints } from '@cahyo-dimas/freeday/breakpoints'` for JS (`matchMedia`, utility variants),
+  and `@import '@cahyo-dimas/freeday/media'` for CSS, which declares each one as a `@custom-media`
+  so a rule reads `@media (--fdy-below-sm)` instead of a retyped literal (needs PostCSS; opt-in).
+  The object also carries the two widths that are **not** ramp steps and must not be rounded to one:
+  `nav` (721, the shell's drawer↔sidebar switch) and `filterbar` (640, where `.fdy-filterbar`
+  stacks). See [`COMPONENTS.md`](COMPONENTS.md) for what each governs.
 
 ## Framework integration (SPA)
 > **Full library map:** [`docs/integrations.md`](docs/integrations.md). Each area (forms/validation,
