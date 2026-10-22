@@ -9,7 +9,15 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
-## [Unreleased]
+## [3.6.0] - 2026-10-22
+
+**Tiga belas hal yang dibangun ulang sebuah app back-office karena kit belum punya.** App-nya tidak
+memakai Freeday (Vue + PrimeVue), jadi yang diangkat adalah polanya, bukan komponennya: setiap
+kandidat dibandingkan dengan kit, dan hanya yang generik dan benar-benar belum ada yang masuk
+(`#059`–`#071`). Satu di antaranya cacat yang kit punya juga: submit yang ditolak memfokus field
+yang tak terlihat. Satu lagi mengubah tampilan setiap tabel, jadi dikirim sebagai opt-in dan
+dijadwalkan jadi default di 4.0 (NEXT-UP #16). Tidak ada tipe publik yang menyempit dan tidak ada
+tampilan yang berubah tanpa diminta, jadi ini rilis minor.
 
 ### Added
 - **`Freeday.confirm()`** (`#060`). Pertanyaan ya/tidak sebelum aksi yang tak bisa diulang, tanpa

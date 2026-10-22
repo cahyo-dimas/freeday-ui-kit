@@ -32,6 +32,25 @@ lokal: ketujuh perubahan ada di dalamnya — `.fdy-field--full{max-width:none}`,
 dev bukan cuma tak perlu, ia **melewati gerbang itu**, dan tetap akan berhenti di `EOTP` karena 2FA.
 Perintahnya: `git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags`.
 
+Isi 3.6.0 dalam satu kalimat: **tiga belas hal yang sebuah app back-office bangun sendiri karena kit
+belum punya** (`#059`–`#071`). App asalnya tidak memakai Freeday, jadi yang diangkat polanya, dan
+hanya yang generik. Satu cacat kit ikut tertutup: submit yang ditolak kini membuka `<details>`, tab,
+atau step yang menyembunyikan field-nya sebelum memfokusnya. Hover baris tabel yang hanya untuk
+baris yang bisa diklik dikirim sebagai opt-in (`--hover-actionable`) karena mengubah tampilan setiap
+tabel; jadi default di 4.0 (NEXT-UP #16). Detail di CHANGELOG.
+
+Gerbang untuk 3.6.0, lokal: `node --test` **122/122**, `npm run test:browser` **147/147**,
+`npm run typecheck:react` bersih, `npm run test:blazor` **28/28**. Setiap perilaku baru diverifikasi
+dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
+membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang
+dipulihkan harus disentuh (`touch`) sebelum build berikutnya.
+
+Docs live sempat tertinggal satu rilis: Pages masih menyajikan 3.4.0 sampai 22 Okt, karena push 3.5.0
+tidak memicu build Pages (build terakhir dari `eff5134`, 7 Sep). Cek situs live setelah setiap rilis,
+jangan anggap push sudah cukup.
+
+---
+
 Isi 3.5.0 dalam satu kalimat: **satu angka yang hanya bisa ditemukan dengan membaca stylesheet
 kit, dan tak ada cara membagi angka itu ke app lewat CSS** (`#058`, dari `IDU_AI_DOC_SAPB1_CLIENT`
 dan `IDU_AI_DOC_SAAS`). Keduanya berakar pada satu kenyataan: `@media` tak bisa membaca custom
