@@ -11,20 +11,19 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.3.0`, dan itu yang terbit** (2026-08-28). Diperiksa, bukan diingat — ketiga perintah yang
+**`3.6.0`, dan itu yang terbit** (2026-10-22). Diperiksa, bukan diingat — ketiga perintah yang
 berkas ini resepkan benar-benar dijalankan:
 
 ```
-npm view @cahyo-dimas/freeday version   -> 3.3.0   (dist-tags latest = 3.3.0)
+npm view @cahyo-dimas/freeday version   -> 3.6.0   (dist-tags latest = 3.6.0)
 git rev-list --left-right --count origin/main...main -> 0  0
-curl -L .../freeday-ui-kit/docs/        -> v3.3.0
+curl -L .../freeday-ui-kit/docs/        -> v3.6.0
 ```
 
-Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.3.0`), bukan dari `npm pack`
-lokal: ketujuh perubahan ada di dalamnya — `.fdy-field--full{max-width:none}`,
-`.fdy-cfl__host{display:contents}`, `min-width:0;min-height:0` di `__content`, `flex:none` di
-`__topbar`, `var(--fdy-app-sidebar-w,15.5rem)`, `.fdy-cfl__search .fdy-input-group`, dan
-`dialogOnly`/`DialogOnly` + `defineExpose({ open …})` di ketiga adapter.
+Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.6.0`), bukan dari `npm pack`
+lokal: `dist/freeday-confirm.js`, `-copy.js` dan `-search.js` ada; `freeday.css` memuat
+`--hover-actionable`, `__columns`, `--grid` dan `__head`; `freeday-form.js` memuat `reveal()`;
+`freeday.d.ts` mengetik `confirm()`. Docs live memuat keempat demo baru.
 
 **Rilisnya lewat tag, bukan `npm publish` lokal.** `publish.yml` memicu pada tag `v*`, memanggil
 `ci.yml` lebih dulu (jadi tag yang gerbangnya merah tak pernah sampai ke npm), lalu publish dengan
