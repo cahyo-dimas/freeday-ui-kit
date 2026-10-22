@@ -59,6 +59,21 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 - Status jangan hanya lewat warna. Hormati `prefers-reduced-motion`.
 - **ARIA:** HTML native dulu ("no ARIA is better than bad ARIA"); komponen interaktif ikut **kontrak spec §11.3** (role/aria/keyboard, pola WAI-ARIA APG). Markup di `docs/` = versi aksesibel, bukan hanya visual. Contoh: input error → `aria-invalid` + `aria-describedby`; modal → `role="dialog"` + `aria-modal` + focus trap; toast → `role="status"`/`aria-live`.
 
+## Tulisan: semua prosa lewat `/humanizer:humanizer`
+Setiap prosa yang ditulis atau diubah di repo ini dijalankan lewat skill `/humanizer:humanizer`
+sebelum commit. Cakupannya semua yang dibaca orang:
+- **docs live (GitHub Pages):** `docs/index.html` (teks deskripsi section, label demo),
+  `docs/getting-started.md`, `docs/integrations.md`, `docs/agent-onboarding.md`,
+  `docs/reference-screen.html`
+- **docs repo / npm:** `README.md`, `README.id.md`, `COMPONENTS.md`, `USAGE.md`, `CHANGELOG.md`,
+  `HANDOFF.md`, `NEXT-UP.md`, `improvement-notes/`
+- **copy UI:** string default di tabel `TEXT` enhancer dan copy di markup contoh
+- **pesan commit, isi tag, dan release notes GitHub**
+
+Yang tidak disentuh: blok kode, inline code, nama class/token/atribut, path, URL, perintah. Aturan
+skill soal tanda pisah (em/en dash) berlaku untuk teks baru dan teks yang sedang diubah; prosa lama
+yang belum disentuh tidak ikut diubah kecuali memang sedang disapu.
+
 ## Struktur
 ```
 tokens/tokens.json  tokens/build.mjs   sumber token + generator (Node murni)
@@ -77,7 +92,7 @@ reference/                             material input, TAK PERNAH di-ship
 tak dikirim karena byte-identik dengan `dist/*.js` dan tak ada jalur `exports` yang menyentuhnya.
 
 ## Status: **feature-complete**, demand-driven
-Kit ini sudah lewat fase roadmap: 48 stylesheet di `src/components/` + 26 enhancer di
+Kit ini sudah lewat fase roadmap: 48 stylesheet di `src/components/` + 30 enhancer di
 `src/freeday-*.js` (keduanya angka terhitung, bukan hafalan), paritas 11/11 komponen typed di
 **4 stack** (vanilla · Vue · React · Blazor), terbit publik di npm. **Sikap default sekarang =
 tunggu demand**, bukan bangun spekulatif; friksi dari app nyata yang menentukan rilis berikutnya.

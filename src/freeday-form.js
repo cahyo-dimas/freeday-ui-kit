@@ -13,7 +13,7 @@
  *   data-fdy-msg-min | -max | -step | -mismatch, then generic data-fdy-msg.
  * Cross-field match (e.g. confirm password): data-fdy-match="#otherId".
  *
- * Timing: validates on submit (blocks + focuses the first invalid control); after
+ * Timing: validates on submit (blocks, reveals + focuses the first invalid control); after
  * the first submit attempt each field re-validates on input/blur so errors clear
  * live. Add data-fdy-eager to validate on blur from the start.
  *
@@ -126,6 +126,34 @@
     }
   }
 
+  /* focus() on a control that is not rendered does nothing and reports nothing: the field turns red
+   * where nobody can see it, and the submit reads as a dead button (#059). So whatever hides the
+   * control is undone first, each through that component's own control, so its state agrees with
+   * what is shown:
+   *   closed <details>        opened (accordion, tree, nav group)
+   *   hidden [role=tabpanel]  its tab is clicked; freeday-tabs selects on click
+   *   hidden .fdy-step-panel  its step button is clicked. A step not yet reached has a disabled
+   *                           button, so this only ever goes BACK and never skips a step guard.
+   * Anything else that hides it belongs to the app, and is left alone. */
+  function reveal(el) {
+    for (var node = el.parentElement; node; node = node.parentElement) {
+      if (node.localName === 'details' && !node.open) {
+        node.open = true;
+      } else if (node.hidden && node.getAttribute('role') === 'tabpanel' && node.id) {
+        var tab = Array.prototype.filter.call(document.querySelectorAll('[role="tab"]'), function (t) {
+          return t.getAttribute('aria-controls') === node.id;
+        })[0];
+        if (tab) tab.click();
+      } else if (node.hidden && node.classList.contains('fdy-step-panel')) {
+        var stepper = node.closest('[data-fdy-stepper]');
+        if (!stepper) continue;
+        var index = Array.prototype.indexOf.call(stepper.querySelectorAll('.fdy-step-panel'), node);
+        var btn = stepper.querySelectorAll('.fdy-step__btn')[index];
+        if (btn && !btn.disabled) btn.click();
+      }
+    }
+  }
+
   function initForm(form) {
     if (form.dataset.fdyFormReady === '1') return;
     form.dataset.fdyFormReady = '1';
@@ -160,6 +188,7 @@
       });
       if (invalid.length) {
         e.preventDefault();
+        reveal(invalid[0]);
         invalid[0].focus();
         form.dispatchEvent(new CustomEvent('fdy-form-invalid', { bubbles: true, detail: { invalid: invalid } }));
       } else {

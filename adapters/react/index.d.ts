@@ -38,7 +38,7 @@ export { FdyCfl, type FdyCflProps, type FdyCflHandle, type CflColumn, type CflPa
  *  on the array only a `multiple` field emits. */
 export { singleRow } from '../core/cfl-value';
 export { FdyChart, type FdyChartProps, type FdyChartSeries } from './components/FdyChart';
-export { FdyTable, type FdyTableProps } from './components/FdyTable';
+export { FdyTable, type FdyTableProps, type FdyTableEmptyContext } from './components/FdyTable';
 /** The table's own footer, standalone, for a responsive list whose table is hidden at some
  *  breakpoints and so cannot host it. */
 export { FdyTableFooter, type FdyTableFooterProps } from './components/FdyTableFooter';

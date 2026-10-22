@@ -297,6 +297,24 @@ export async function withPage(fileUrl, fn) {
       return self && self.name ? self.name.value : null;
     };
 
+    /* The accessible DESCRIPTION, computed by the engine for the same reason as axName: which
+       aria-describedby targets are read depends on whether they are hidden and HOW they are
+       referenced, a rule textContent knows nothing about (#068). */
+    const axDescription = async (selector) => {
+      await cmd('DOM.enable');
+      await cmd('Accessibility.enable');
+      const doc = await cmd('DOM.getDocument', { depth: -1 });
+      const root = doc.result && doc.result.root ? doc.result.root.nodeId : null;
+      if (root === null) throw new Error('no DOM root');
+      const found = await cmd('DOM.querySelector', { nodeId: root, selector });
+      const nodeId = found.result ? found.result.nodeId : 0;
+      if (!nodeId) throw new Error('axDescription: no element for ' + selector);
+      const ax = await cmd('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false });
+      const nodes = (ax.result && ax.result.nodes) || [];
+      const self = nodes[nodes.length - 1];
+      return self && self.description ? self.description.value : null;
+    };
+
     /* The VIEWPORT the page believes it has. Media queries and matchMedia('change') both respond
        to it, so this is what makes a responsive contract testable at all, and the only way to
        exercise the moment a layout CROSSES a breakpoint, which is where an app shell can strand an
@@ -368,7 +386,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axSubtree, pixelAt, centerXY, setViewport });
+    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport });
   } finally {
     if (ws !== null) {
       try {
@@ -423,6 +441,10 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-app-shell.tsx'),
       join(HERE, 'entries', 'vue-table-select.js'),
       join(HERE, 'entries', 'react-table-select.tsx'),
+      join(HERE, 'entries', 'vue-daterange.js'),
+      join(HERE, 'entries', 'react-daterange.tsx'),
+      join(HERE, 'entries', 'vue-table-empty.js'),
+      join(HERE, 'entries', 'react-table-empty.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

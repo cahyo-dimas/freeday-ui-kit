@@ -77,7 +77,7 @@ element is fine. Events are bubbling
 | `data-fdy-autocomplete` | `freeday-autocomplete.js` | `FreedayAutocomplete` | `fdy-autocomplete-select` |
 | `data-fdy-cascade` | `freeday-cascade.js` | `FreedayCascade` | `fdy-cascade-change` |
 | `data-fdy-cfl` | `freeday-cfl.js` | `FreedayCfl` | `fdy-cfl-select` |
-| `data-fdy-datepicker`, `data-fdy-daterange` | `freeday-datepicker.js` | `FreedayDatepicker` | `fdy-datepicker-change` |
+| `data-fdy-datepicker`, `data-fdy-daterange` | `freeday-datepicker.js` | `FreedayDatepicker` | `fdy-datepicker-change`, `fdy-daterange-settled` |
 | `data-fdy-timepicker` | `freeday-timepicker.js` | `FreedayTimepicker` | `fdy-time-select` |
 | `data-fdy-datetimepicker` | `freeday-datetime.js` | `FreedayDatetime` | `fdy-datetime-change` |
 | `data-fdy-table` | `freeday-table.js` | `FreedayTable` | `fdy-table-change` |
@@ -93,9 +93,12 @@ element is fine. Events are bubbling
 | `data-fdy-rating` | `freeday-rating.js` | `FreedayRating` | — (native `change`) |
 | `data-fdy-slider` | `freeday-slider.js` | `FreedaySlider` | — (native `input`) |
 | `data-fdy-number` | `freeday-number.js` | `FreedayNumber` | — (native `input`, `change`) |
+| `data-fdy-search` | `freeday-search.js` | `FreedaySearch` | `fdy-search` (+ native `input` on clear) |
+| `data-fdy-copy="value"` (delegated, no hydration) | `freeday-copy.js` | `FreedayCopy` | `fdy-copy` |
 | `data-fdy-drawer="id"` | `freeday-drawer.js` | `FreedayDrawer` | — |
 | `data-fdy-chart="type"` | `freeday-chart.js` | `FreedayChart` | — (`.update(el)` to repaint) |
 | — (imperative) | `freeday-toast.js` | `Freeday.toast()` / `Freeday.dismiss()` | — |
+| — (imperative, returns `Promise<boolean>`) | `freeday-confirm.js` | `Freeday.confirm()` | — |
 | — (stamps `<html data-breakpoint>`) | `freeday-breakpoint.js` | `FreedayBreakpoint` | `fdy-breakpoint-change` |
 | — (internal positioning) | `freeday-popover.js` | `FreedayPopover` | — |
 
@@ -288,6 +291,78 @@ carry the doctrine in markup.
   </section>
 </div>
 ```
+
+### Document columns — `.fdy-page__columns`
+
+A record or form page with side rails: `__lead` on the left for the record's identity (avatar,
+number, status), `__main` for the sections, `__aside` on the right for the summary (totals, what
+happens next). The column widths follow which rails are **present**, so no screen picks them:
+
+| Children | From `md` | From `lg` |
+|---|---|---|
+| `__main` | one column | one column |
+| `__main` + `__aside` | 8 / 4 | 8 / 4 |
+| `__lead` + `__main` | 3 / 9 | 3 / 9 |
+| `__lead` + `__main` + `__aside` | rails stacked on the left, main on the right | 3 / 6 / 3 |
+
+- Below `md` everything stacks, and **the summary rail comes first**. Last, it would sit under
+  every section, and the button in it with it.
+- From `md` each rail is **sticky and scrolls on its own**: the total and the status stay in view
+  while `__main` scrolls with the page, and a rail taller than the screen scrolls inside itself
+  instead of hanging its end off the bottom. The exception is both rails sharing the left column
+  (between `md` and `lg`): two sticky rails in one column would slide over each other, so there they
+  scroll with the page.
+- Inside `.fdy-app` the rails stick below the topbar. Set `--fdy-page-sticky-top` on the columns or
+  an ancestor if your header is taller.
+- A rail's box starts `--space-1` early on every side, room for a focus ring that a scrolling box
+  would otherwise clip. Its content still lines up with `__main`.
+- Put `.fdy-dl--grid` in a rail as is: it measures the rail, not the window, so it stays one column.
+
+```html
+<div class="fdy-page__columns">
+  <aside class="fdy-page__lead" aria-label="Record">…</aside>
+  <div class="fdy-page__main">…sections…</div>
+  <aside class="fdy-page__aside" aria-label="Summary">…</aside>
+</div>
+```
+
+### Record actions — a form's `.fdy-page__actions`
+
+A document or master form carries more than one button: its own actions (Print, Send, Cancel
+document, Copy from…) and Save. Without a rule the row grows with every module, reflows at tablet
+width and pushes Save off the end, and two screens with the same actions order them differently.
+The kit's rule, in this fixed order:
+
+1. **Find | New** as one `.fdy-btn-group`, ghost. Hide New on the create screen itself: a button
+   that navigates to the screen you are on appears to do nothing.
+2. **At most two** of the form's own actions inline, ghost, in the order they are declared.
+3. **More**: an `.fdy-menu` holding every other action, in the **same declared order**. A
+   destructive item keeps `.fdy-menu__item--danger`: an action that loses its colour on the way
+   into a menu is one the reader no longer recognises. Keep each action's test hook the same
+   whether it is inline or in the menu.
+4. **Save**, last, the **only** solid button on the row. Never green: green says something already
+   succeeded.
+
+```html
+<div class="fdy-page__actions">
+  <div class="fdy-btn-group" role="group" aria-label="Records">
+    <a class="fdy-btn fdy-btn--ghost" href="/orders">Find</a>
+    <a class="fdy-btn fdy-btn--ghost" href="/orders/new">New</a>
+  </div>
+  <button class="fdy-btn fdy-btn--ghost" type="button">Print</button>
+  <button class="fdy-btn fdy-btn--ghost" type="button">Send</button>
+  <div class="fdy-menu-wrap" data-fdy-menu>
+    <button class="fdy-btn fdy-btn--ghost" type="button" aria-haspopup="menu" aria-expanded="false">More</button>
+    <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+      <li role="none"><button class="fdy-menu__item" role="menuitem">Copy from quotation</button></li>
+      <li role="none"><button class="fdy-menu__item fdy-menu__item--danger" role="menuitem">Cancel document</button></li>
+    </ul>
+  </div>
+  <button class="fdy-btn" type="submit" form="order-form">Save</button>
+</div>
+```
+
+Ask before a destructive action with `Freeday.confirm({ tone: 'danger', … })`.
 
 ## Type roles & text
 One role per level of hierarchy. Never re-use a card title for a page title.
@@ -513,7 +588,7 @@ cannot guarantee.
 
 | Type | What the UA still draws | What to do |
 |---|---|---|
-| `search` | WebKit's clear (×) button, in OS colours | **Left alone on purpose** — it is the only way to empty the field. Want it themed? Drop the type back to `text` and add a `.fdy-input-group__btn` that clears. |
+| `search` | WebKit's clear (×) button, in OS colours | **Left alone on purpose** — it is the only way to empty the field. Want it themed, and want clearing to search again? Use [`data-fdy-search`](#search-box--data-fdy-search), which is `type="text"` with a clear button of its own. |
 | `date` `time` `datetime-local` | the picker indicator glyph, and the whole native picker | Use `.fdy-datepicker` / `.fdy-timepicker` / `.fdy-datetimepicker` instead — the kit ships its own. |
 
 `number` used to be a third: the UA spin buttons are unthemeable, so `.fdy-input[type="number"]`
@@ -557,6 +632,31 @@ the shared border, focus ring and error promotion. Needs `freeday-number.js`.
   `aria-label`, so pointer and browse-mode users still get a named control.
 - `type="button"` is required. Inside a `<form>`, a bare `<button>` submits it.
 
+## Search box — `[data-fdy-search]`
+The search box above a list: it searches when the reader pauses typing, at once on Enter, and has a
+clear button that brings every row back. **Not a new block.** It is an `.fdy-input-group`, like the
+number field. Needs `freeday-search.js`.
+
+```html
+<div class="fdy-input-group" data-fdy-search>
+  <span class="fdy-input-group__addon fdy-input-group__addon--icon"><!-- search svg --></span>
+  <input class="fdy-input" type="text" aria-label="Search orders">
+  <button type="button" class="fdy-input-group__btn" data-fdy-search-clear aria-label="Clear search">&times;</button>
+</div>
+```
+
+- **One event for all three paths.** The group emits bubbling `fdy-search` with `detail.term`
+  (trimmed) after the pause, on Enter, and on clear. `""` means "show everything again". Listen to
+  that and nothing else.
+- The pause is `data-fdy-search-delay` in ms on the group, default `400`. A new keystroke restarts
+  it; Enter and clear send at once and cancel what was pending.
+- `type="text"`, not `search`: WebKit's own × is unthemed, and emptying a field with it never
+  searched again on a list that only listened for Enter.
+- The clear button is yours, and so is its `aria-label`. The enhancer hides it while the box is
+  empty. Clearing writes through the native value setter and fires a native `input`, so `v-model`,
+  a React `onChange` and Blazor `@bind` see the empty value, then puts focus back in the box.
+- Enter is `preventDefault`ed, so a search box inside a `<form>` does not submit it.
+
 ## Checkbox · radio · switch
 Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrapping `<label>`;
 `.fdy-checkbox` on a bare `<input type="checkbox">` used inside tables/trees.
@@ -564,6 +664,23 @@ Native inputs, styled. `.fdy-check` · `.fdy-radio` · `.fdy-switch` on the wrap
 ```html
 <label class="fdy-check"><input type="checkbox" checked> Email me a copy</label>
 <label class="fdy-switch"><input type="checkbox"> Enable notifications</label>
+```
+
+**A state hint** says what the switch's **current** state means, for a label that does not explain
+"on" by itself ("Approval" on a notification rule). Two lines in one `.fdy-help`, and the kit
+shows the one that matches. Point `aria-describedby` at the **wrapper**, not at the two lines: a
+hidden child of a referenced element is skipped, so a screen reader hears only the line on screen,
+while each line referenced directly would be read even when hidden. Zero JS; works for
+`.fdy-check` too. Needs a `.fdy-field` around both.
+
+```html
+<div class="fdy-field">
+  <label class="fdy-switch"><input type="checkbox" aria-describedby="appr-hint"> Approval</label>
+  <div class="fdy-help" id="appr-hint">
+    <span data-fdy-when="on">Each change waits for a supervisor.</span>
+    <span data-fdy-when="off">Changes apply at once; nobody reviews them.</span>
+  </div>
+</div>
 ```
 
 ## Select / combobox — `.fdy-combo`
@@ -857,7 +974,8 @@ page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear b
 | Prop | Type | What it does |
 |---|---|---|
 | `modelValue` · `value` | `DateRangeValue` = `{ start, end }`, each `string \| null` | Both ends at once, so the pair can never be half-applied. |
-| `onChange` | `(value: DateRangeValue) => void` | React. Vue emits `update:modelValue` and `change`. |
+| `onChange` | `(value: DateRangeValue) => void` | React. Vue emits `update:modelValue` and `change`. Fires on **each** end, which is right for a binding and wrong for a reload. |
+| `onSettled?` | `(value: DateRangeValue) => void` | React. Vue emits `settled`, Blazor `Settled` (`SettledRange(From, To)`), the raw path `fdy-daterange-settled` `{ from, to }` on the group. Fires only when **both ends are chosen or both are empty**, so a list that reloads on it never filters on half a range. |
 | `min?` · `max?` | `string` | ISO bounds for both ends. The end can never precede the start. |
 | `locale?` | `string` | As on the single picker. |
 | `startPlaceholder?` · `endPlaceholder?` | `string` | One per field. |
@@ -874,7 +992,9 @@ The enhancer builds everything.
   `__panel`; calendar internals `.fdy-cal__head` `__nav` `__title` `__grid` (+`--months` `--years`)
   `__dow` `__day` `__month` `__year`
 - Range: wrap two pickers in `.fdy-daterange` + `data-fdy-daterange` (`role="group"`), children
-  get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start.
+  get `data-role="from"` / `"to"`; separator `.fdy-daterange__sep`. The end can't precede the start:
+  a start picked past the end clears the end, and that clear fires `fdy-datepicker-change` with
+  `value: ''` like a pick. Reload on `fdy-daterange-settled`, not on each change.
   **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor). Use it in those stacks.
 **Getting to a distant date.** The title is a **button**, and it drills up one level each press:
 day grid → 12-cell month grid (`.fdy-cal__grid--months` of `.fdy-cal__month`) → 12-cell year grid
@@ -982,6 +1102,13 @@ blur/input. Needs `freeday-form.js`.
 - Per-control messages: `data-fdy-msg-required`, `-type`, `-minlength`, `-min`, `-mismatch`, …
 - Cross-field: `data-fdy-match="#otherFieldId"`
 - Emits `fdy-form-valid` / `fdy-form-invalid`.
+- **A refused field is revealed before it is focused**, because `focus()` on a control that is not
+  rendered does nothing. A closed `<details>` around it (accordion, tree, nav group) is opened, an
+  unselected tab is selected by clicking it, and a `.fdy-step-panel` left behind is returned to by
+  clicking its step. A step **not yet reached** is never jumped to, since that would skip its
+  `fdy-step-before-change` guard: put the submit where every refusable field is already reachable,
+  or mark the step `is-error` from `fdy-form-invalid`. Anything else hiding the field (your own
+  `hidden`, a closed drawer) stays as you left it.
 
 ## Password & mask
 `data-fdy-password` on `<input type="password">` adds a reveal toggle (reusing the input-group
@@ -1079,6 +1206,15 @@ full one hover uses, so hover still reads on a striped row instead of matching i
 hover and selection are ordered so the later state always wins. Override the colour through the
 Tier-3 token **`--fdy-table-stripe`** (set it on any ancestor; the rule reads it as a `var()`
 fallback, so your value wins without a specificity fight). Frozen columns stay striped.
+
+**`--hover-actionable`** keeps the hover tint for rows that do something
+(`.fdy-table__row--activatable`) and gives every other row none. A selected row keeps its selected
+colour either way. A tinted row
+with no click handler promises a target that is not there: people click it, nothing happens, and
+the button they needed was elsewhere in the row. Striping is what keeps the eye on a line; hover
+says "target". An inert row hovers back to its own resting colour, stripe included, and a frozen
+cell to its opaque surface. Opt-in in 3.x so no existing table changes; planned as the default
+for 4.0.
 
 ```html
 <div class="fdy-table-wrap">
@@ -1187,12 +1323,13 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `pageSizes?` · `onPageSizeChange?` | `readonly number[]` · `(size) => void` | Offer a rows-per-page control. Server mode reports the pick through the page event (read its `size`); client mode applies it itself and reports it too, so it works with nothing wired. |
 | `pager?` | `boolean` | Default true. Turn it off to withhold the table's own footer when the screen renders one. |
 | `loading?` | `boolean` | Show the in-table loading state. |
-| `emptyText?` · `empty?` | `string` · `ReactNode` | The empty state as text, or as markup (React `empty`, Vue's `empty` slot). |
+| `emptyText?` · `empty?` | `string` · `ReactNode \| (ctx) => ReactNode` | The empty state as text, or as markup (React `empty`, Vue's `empty` slot). As a React function or through the Vue slot's props it receives `{ filtered, clearFilters }`: whether an active column filter is what emptied the table, and how to clear every filter (through `onFiltersChange` / `update:filters` when they are controlled). "No rows match" wants a Clear button, "nothing here yet" a Create one. |
 | `ariaLabel?` | `string` | Names the table for assistive tech. |
 | `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
 | `rowClass?` | `(row: Row) => string \| undefined` | Per-row class hook, e.g. marking the selected row. |
 | `expandedKeys?` · `renderRowDetail?` | `ReadonlyArray<string \| number>` · `(row) => ReactNode` | Controlled expansion: these keys get a full-width detail row. Vue uses the `row-detail` slot. |
 | `striped?` | `boolean` | Zebra-stripe the body rows (`.fdy-table--striped`). |
+| `hoverActionable?` | `boolean` | Hover only the rows that do something (`rowActivatable`), `.fdy-table--hover-actionable`. A tint on a row with no handler promises a target that is not there. Inert rows keep their resting colour, stripe included. Off by default so existing tables do not change; planned as the default for 4.0. |
 | `selectable?` | `boolean` | Render the checkbox column and the bulk bar. |
 | `selectedKeys?` · `onSelectedKeysChange?` | `ReadonlyArray<string \| number>` · `(keys) => void` | Controlled selection, as `rowKey` values — the same identity `expandedKeys` uses, because a key survives the re-fetch that replaces every row object. Omit `selectedKeys` and the column still works, keeping the selection internally. The callback fires in **both** modes, so a screen can watch the selection without owning it. Vue emits `update:selectedKeys`; Blazor binds `@bind-SelectedKeys`. |
 | `bulkActions?` | `ReactNode` | React. Content in the bulk bar beside the count; Vue uses the `bulk-actions` slot (scoped: `keys`, `clear`), Blazor `BulkContent`. |
@@ -1204,7 +1341,8 @@ provide the state prop for a concern and you own that concern instead. React nam
 
 Blazor matches this surface (`LoadingText` and `EmptyContent` in place of `emptyText`/`empty`,
 `Toolbar` and `RowDetail` as `RenderFragment`s) and is the one adapter that also exposes
-`FiltersChanged`.
+`FiltersChanged`. Its filter-aware empty state is `EmptyTemplate`, a
+`RenderFragment<FdyTableEmptyContext>` (`Filtered`, `ClearFilters`) that wins over `EmptyContent`.
 
 **Select-all ticks the current page, not the whole result set.** A header checkbox that silently
 selects rows the reader cannot see is how a bulk delete goes wrong, so it acts on the rows on
@@ -1332,6 +1470,11 @@ Empty / error placeholder for a data area. `--danger` for failures. Parts: `__ic
 (`aria-hidden="true"`) `__title` `__text` `__actions`. Put it inside the card or table area it
 replaces.
 
+`--compact` is the same state inside a small card or dashboard widget: icon and text on one line,
+`__actions` pushed to the end, no `__title`. Give a failed load its own `--compact --danger` line
+rather than rendering zero: a widget that shows 0 for a request that failed reads as "nothing to
+do", the opposite of what happened.
+
 ## Charts — `data-fdy-chart`
 > **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
 
@@ -1433,11 +1576,54 @@ responsive `.fdy-datatable` should become below `md`, rather than a stack of `.f
 
 ## Description list — `.fdy-dl`
 Key–value detail view: `<dl class="fdy-dl">` with `<dt>`/`<dd>` pairs. `--rows` for a row-per-pair
-layout.
+layout. Every `dd` wraps a long unbreakable value (an email, an order code, a 13-digit phone) inside
+its column instead of printing over the next one.
+
+**`--grid` is the facts panel:** caption above value, each pair wrapped in a `<div>` (valid inside
+`<dl>`), in as many columns as the list's **own** width holds, never more than three. It is sized
+by the element, not the window, so the same markup is three columns in a wide main column and one
+column in a narrow side rail, with no modifier. `--fdy-dl-col-min` (default `14rem`) is the
+narrowest a column may get.
+
+```html
+<dl class="fdy-dl fdy-dl--grid">
+  <div><dt>Customer</dt><dd>PT Sumber Makmur</dd></div>
+  <div><dt>Email</dt><dd>procurement@sumbermakmur.co.id</dd></div>
+  <div><dt>Phone</dt><dd class="fdy-mono">0812345678901</dd></div>
+</dl>
+```
+
+A fact is not a field: use this for read-only values, `.fdy-form-grid` only where something can be
+typed.
 
 ---
 
 # Feedback
+
+## Copy a value — `[data-fdy-copy]`
+A button that copies a value the reader takes somewhere else: an external document number, an
+event ID. Needs `freeday-copy.js`; uses `Freeday.toast()` for its feedback.
+
+```html
+<dd>
+  <span class="fdy-mono">INV-2026-00042</span>
+  <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm"
+          data-fdy-copy="INV-2026-00042" aria-label="Copy invoice number"><!-- copy svg --></button>
+</dd>
+```
+
+- **The value is the attribute.** Write it from the same variable as the visible text; a table row
+  needs no ids to find its own cell. An empty value copies nothing, so render the button only when
+  there is something to copy.
+- One delegated listener on the document: a button rendered later needs no hydration.
+- The toast says `Copied.` on success. Without a Clipboard API (plain `http`, an old browser) or
+  when the write is refused, a sticky danger toast tells the reader to copy by hand. A copy that
+  silently does nothing is the one outcome it never produces. Override both strings per button
+  with `data-fdy-text-copied` / `data-fdy-text-failed`.
+- Emits bubbling `fdy-copy` with `detail.value` and `detail.ok`.
+- Name the button for its value (`Copy invoice number`); an icon alone has no name.
+- Inside a clickable table row the click still reaches the row's handler. Stop it there if copying
+  should not also open the row.
 
 ## Alert — `.fdy-alert`
 Inline message. Modifiers `--info` `--success` `--warning` `--danger`. Parts `__icon` `__body`
@@ -1475,6 +1661,35 @@ a toast of yours is hidden behind something, a bigger `z-index` is not the fix; 
 something is in the top layer too. Where the Popover API is unavailable (before Chrome 114 /
 Safari 17 / Firefox 125) the region falls back to a fixed block at `z-index: 200`, which cannot
 clear an open modal, the message is still announced to a screen reader.
+
+## Confirm — `Freeday.confirm()`
+A yes/no question before an action that cannot be taken back. Imperative, like the toast. Needs
+`freeday-confirm.js`; renders a `.fdy-modal--sm`.
+
+```js
+const yes = await Freeday.confirm({
+  title: 'Delete order?',
+  message: 'Order SO-1042 will be deleted permanently.',
+  details: ['2 payments are deleted with it'],   // optional, shown as a list
+  acceptText: 'Delete order', rejectText: 'Keep', // name the action
+  tone: 'danger',                                 // 'primary' (default) | 'danger'
+})
+```
+
+- Resolves `true` on accept, `false` on reject, **Escape, or a click on the backdrop**. One dialog
+  gives one answer.
+- `details` is for a confirm that has to name its findings. Five findings folded into `message`
+  read as one long sentence.
+- Focus starts on the reject button, so an Enter that was meant for the page behind cannot
+  confirm. Focus returns to the opener when it closes, and the dialog leaves the DOM.
+- Text is set as text, never parsed as HTML, so a record name can go into `message` as is.
+- The buttons carry `data-fdy-confirm-accept` / `data-fdy-confirm-reject`. A test needs them: an
+  accept labelled "Delete" shares its accessible name with every row's own Delete button.
+- Defaults are `Confirm` / `Cancel`; pass `acceptText` / `rejectText` instead of relying on them.
+- Vue and React call it as is. Blazor awaits it through interop:
+  `await JS.InvokeAsync<bool>("Freeday.confirm", new { title = "Delete order?", tone = "danger" })`.
+- An "unsaved changes" guard is three lines on top of it, in your router's leave hook:
+  `return isDirty() ? Freeday.confirm({ … }) : true`.
 
 ## Tooltip — `.fdy-tooltip`
 Hover/focus only, never the sole carrier of information. Wrap in `.fdy-tooltip-wrap`; the trigger
@@ -1610,6 +1825,12 @@ for primary navigation (see Nav above).
 `.fdy-breadcrumb__item` (last one `aria-current="page"`, no link), `.fdy-breadcrumb__link`, and
 `.fdy-breadcrumb__sep` marked `aria-hidden="true"`.
 
+`aria-current="page"` belongs to the crumb that **is** this page, not to whichever crumb is last. A
+trail that stops at the parent (a record form whose last crumb is its list) keeps that crumb a
+link with no `aria-current`; otherwise the reader is told they are on the list while looking at a
+record. A crumb for a menu group that has no page of its own is plain text in the item, not a link
+to nowhere.
+
 ## Tabs — `.fdy-tabs`
 APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 `.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
@@ -1736,7 +1957,7 @@ is `role="group" aria-roledescription="slide"`.
 # Display
 
 ## Card — `.fdy-card`
-Parts `__body` `__title` `__desc` `__footer`. Modifiers:
+Parts `__head` `__body` `__title` `__desc` `__action` `__footer`. Modifiers:
 
 - `--elevated` raises it (use sparingly; most surfaces are flat)
 - `--interactive` gives cursor + hover-lift to a card that *has* a click handler. **Presentational
@@ -1752,6 +1973,26 @@ Parts `__body` `__title` `__desc` `__footer`. Modifiers:
   cursor and the `--interactive` hover-lift.
 - The card is `position:relative`, so a badge or ribbon you absolutely position inside it anchors
   to the card. That is also what keeps hidden labels inside it from escaping. See *Containment*.
+
+**Header band: `__head`.** A mark, the title and the card's way out on one row, with a rule under
+it from edge to edge. The action sits beside the title so it is in the same place on every card;
+under the content it moved each time the content grew. The title truncates rather than wrapping
+under the action. The mark is an `.fdy-avatar --sm --square --tone-N`, so its tints are the ones
+the contrast gate already covers; pick the tone for what the card is **about** and keep it fixed.
+
+```html
+<article class="fdy-card">
+  <header class="fdy-card__head">
+    <span class="fdy-avatar fdy-avatar--sm fdy-avatar--square fdy-avatar--tone-3" aria-hidden="true"><!-- icon --></span>
+    <h3 class="fdy-card__title">Due today</h3>
+    <div class="fdy-card__action"><a class="fdy-btn fdy-btn--text fdy-btn--sm" href="/queue">View all</a></div>
+  </header>
+  <div class="fdy-card__body">…</div>
+</article>
+```
+
+A collapsible section whose band is a `<button>` cannot hold the action inside it (a button in a
+button is invalid and is read as one control): put `__action` beside the button, not in it.
 
 ### One card, one primary action, one escape hatch
 
@@ -1812,6 +2053,8 @@ Put the count in the wrapper's `aria-label` and mark the overlay `aria-hidden="t
 Initials or image. Sizes `--sm` / default / `--lg`; `.fdy-avatar-group` stacks them (label the
 group). `--tone-1`…`--tone-8` are decorative tints (WCAG AA in both themes) to distinguish
 same-initial avatars. Hash the index off the **full** name, not the initials.
+
+`--square` for a mark that is not a person: a company logo, a card's icon chip.
 
 Sizes: `--xs` 1.5rem · *(base)* 2.5rem · `--sm` 2rem · `--lg` 3.5rem. Use **`--xs` inside a control**
 because `.fdy-btn--sm` is itself 2rem tall, so an `--sm` avatar fills a small button edge to edge and the

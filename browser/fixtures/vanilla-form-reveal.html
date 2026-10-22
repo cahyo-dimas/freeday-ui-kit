@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — a refused submit reveals the field it refused</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body style="padding:40px">
+  <!-- Folded accordion: focus() on a control inside a closed <details> does nothing. -->
+  <form data-fdy-validate id="f-acc">
+    <details class="fdy-accordion__item" id="acc">
+      <summary>Address</summary>
+      <div class="fdy-accordion__panel">
+        <div class="fdy-field"><label class="fdy-label" for="acc-in">Street</label><input class="fdy-input" id="acc-in" required></div>
+      </div>
+    </details>
+    <button class="fdy-btn" type="submit">Save</button>
+  </form>
+
+  <!-- Tab that is not selected: its panel is [hidden]. -->
+  <form data-fdy-validate id="f-tab">
+    <div data-fdy-tabs>
+      <div role="tablist" class="fdy-tabs">
+        <button role="tab" id="t1" aria-controls="tp1" aria-selected="true" class="fdy-tab" type="button">General</button>
+        <button role="tab" id="t2" aria-controls="tp2" aria-selected="false" class="fdy-tab" type="button">Billing</button>
+      </div>
+      <div role="tabpanel" id="tp1" aria-labelledby="t1">Nothing required here.</div>
+      <div role="tabpanel" id="tp2" aria-labelledby="t2" hidden>
+        <div class="fdy-field"><label class="fdy-label" for="tab-in">Tax ID</label><input class="fdy-input" id="tab-in" required></div>
+      </div>
+    </div>
+    <button class="fdy-btn" type="submit">Save</button>
+  </form>
+
+  <!-- Both at once: a folded section inside an unselected tab. -->
+  <form data-fdy-validate id="f-nest">
+    <div data-fdy-tabs>
+      <div role="tablist" class="fdy-tabs">
+        <button role="tab" id="n1" aria-controls="np1" aria-selected="true" class="fdy-tab" type="button">One</button>
+        <button role="tab" id="n2" aria-controls="np2" aria-selected="false" class="fdy-tab" type="button">Two</button>
+      </div>
+      <div role="tabpanel" id="np1" aria-labelledby="n1">Nothing required here.</div>
+      <div role="tabpanel" id="np2" aria-labelledby="n2" hidden>
+        <details class="fdy-accordion__item" id="nest-acc">
+          <summary>More</summary>
+          <div class="fdy-accordion__panel">
+            <div class="fdy-field"><label class="fdy-label" for="nest-in">Note</label><input class="fdy-input" id="nest-in" required></div>
+          </div>
+        </details>
+      </div>
+    </div>
+    <button class="fdy-btn" type="submit">Save</button>
+  </form>
+
+  <!-- Wizard on its last step; the refused field sits on a step already passed. -->
+  <form data-fdy-validate id="f-step">
+    <div data-fdy-stepper id="wiz-back">
+      <ol class="fdy-stepper">
+        <li class="fdy-step"><button class="fdy-step__btn" type="button"><span class="fdy-step__marker">1</span><span class="fdy-step__label">Customer</span></button></li>
+        <li class="fdy-step is-active"><button class="fdy-step__btn" type="button"><span class="fdy-step__marker">2</span><span class="fdy-step__label">Review</span></button></li>
+      </ol>
+      <div class="fdy-step-panels">
+        <div class="fdy-step-panel" id="sp1">
+          <div class="fdy-field"><label class="fdy-label" for="step-in">Name</label><input class="fdy-input" id="step-in" required></div>
+        </div>
+        <div class="fdy-step-panel" id="sp2"><button class="fdy-btn" type="submit">Submit</button></div>
+      </div>
+    </div>
+  </form>
+
+  <!-- The boundary: a refused field on a step NOT yet reached. Revealing it would skip the step
+       guard, so the kit must stay where it is. -->
+  <form data-fdy-validate id="f-ahead">
+    <div data-fdy-stepper id="wiz-ahead">
+      <ol class="fdy-stepper">
+        <li class="fdy-step is-active"><button class="fdy-step__btn" type="button"><span class="fdy-step__marker">1</span><span class="fdy-step__label">One</span></button></li>
+        <li class="fdy-step"><button class="fdy-step__btn" type="button"><span class="fdy-step__marker">2</span><span class="fdy-step__label">Two</span></button></li>
+      </ol>
+      <div class="fdy-step-panels">
+        <div class="fdy-step-panel" id="ap1"><button class="fdy-btn" type="submit">Submit</button></div>
+        <div class="fdy-step-panel" id="ap2">
+          <div class="fdy-field"><label class="fdy-label" for="ahead-in">Later</label><input class="fdy-input" id="ahead-in" required></div>
+        </div>
+      </div>
+    </div>
+  </form>
+<script>
+  window.guardAsked = 0;
+  document.getElementById('wiz-ahead').addEventListener('fdy-step-before-change', () => { window.guardAsked += 1; });
+</script>
+</body>
+</html>

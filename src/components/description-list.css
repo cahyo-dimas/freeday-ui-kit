@@ -1,6 +1,16 @@
 /* Freeday. Description list (key-value detail view) */
 .fdy-dl{display:grid;grid-template-columns:auto 1fr;gap:var(--space-2) var(--space-5);margin:0;}
 .fdy-dl dt{color:var(--color-text-muted);font-size:var(--text-sm);}
-.fdy-dl dd{margin:0;color:var(--color-text);font-size:var(--text-sm);font-weight:var(--weight-medium);}
+/* overflow-wrap: an email, an order code or a 13-digit phone number is one unbreakable token, and
+   without it the value prints over whatever sits beside it (#066). */
+.fdy-dl dd{margin:0;min-width:0;color:var(--color-text);font-size:var(--text-sm);font-weight:var(--weight-medium);overflow-wrap:anywhere;}
 .fdy-dl--rows{grid-template-columns:1fr;gap:var(--space-1);}
 .fdy-dl--rows dt{margin-top:var(--space-2);}
+/* Facts grid (#066): each pair a <div> (allowed inside <dl>), caption above value, as many columns
+   as the list's OWN width holds, never more than three. Sized by the element rather than the
+   window, so a grid in a narrow side rail stays one column with no modifier: a window breakpoint
+   gave a rail two columns of about 110px. min(100%, …) keeps a single column from overflowing a
+   rail narrower than the column floor. */
+.fdy-dl--grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,max(var(--fdy-dl-col-min,14rem),calc((100% - 2 * var(--space-6)) / 3))),1fr));gap:var(--space-5) var(--space-6);}
+.fdy-dl--grid > div{min-width:0;}
+.fdy-dl--grid dd{margin-top:var(--space-1);}

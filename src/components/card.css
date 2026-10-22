@@ -32,6 +32,13 @@
    absolutely positioned dismiss button back into the flow. Do not merge these two rules. */
 :where(:is(.fdy-card,.fdy-list__row):has(.fdy-btn--stretch) :is(a[href],button,input,select,textarea,[tabindex]):not(.fdy-btn--stretch)){position:relative;}
 .fdy-card__body{padding:var(--space-5);}
+/* Header band (#070): an identity mark, the title, and the card's way out pinned right. Beside the
+   title the action sits in one place on every card; under the content it moved each time the
+   content grew. Outside __body's padding, so its rule spans the card edge to edge. The mark is an
+   .fdy-avatar (--sm --square --tone-N), so its tints are the ones the contrast gate already covers. */
+.fdy-card__head{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4) var(--space-5);border-bottom:var(--bw) solid var(--color-border-muted);}
+.fdy-card__head .fdy-card__title{flex:1 1 auto;min-width:0;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fdy-card__action{flex:none;display:inline-flex;align-items:center;gap:var(--space-2);}
 .fdy-card__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-tight);color:var(--color-text);margin:0 0 var(--space-1);}
 .fdy-card__desc{font-size:var(--text-sm);color:var(--color-text-muted);margin:0;line-height:var(--leading-normal);}
 .fdy-card__footer{padding:var(--space-3) var(--space-5);border-top:var(--bw) solid var(--color-border-muted);background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));display:flex;gap:var(--space-2);justify-content:flex-end;}

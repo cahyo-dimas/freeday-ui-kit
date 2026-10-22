@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — confirm, search and copy</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body style="padding:40px">
+  <!-- Sits under the confirm's backdrop, so a click on it is a click outside the dialog. -->
+  <div id="outside" style="position:fixed;top:8px;left:8px;width:24px;height:24px"></div>
+
+  <button class="fdy-btn" id="ask" type="button">Delete</button>
+  <button class="fdy-btn" id="ask-danger" type="button">Delete with findings</button>
+
+  <div class="fdy-input-group" data-fdy-search data-fdy-search-delay="300" id="search" style="max-width:320px;margin-top:24px">
+    <input class="fdy-input" type="text" id="search-in" aria-label="Search orders">
+    <button type="button" class="fdy-input-group__btn" data-fdy-search-clear id="search-clear" aria-label="Clear search">×</button>
+  </div>
+
+  <dl class="fdy-dl" style="margin-top:24px">
+    <dt>Order ID</dt>
+    <dd><span class="fdy-mono">INV-2026-00042</span>
+      <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm" id="copy"
+              data-fdy-copy="INV-2026-00042" aria-label="Copy order ID">⧉</button></dd>
+    <dt>Empty</dt>
+    <dd><button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm" id="copy-empty"
+              data-fdy-copy="" aria-label="Copy nothing">⧉</button></dd>
+  </dl>
+<script>
+  window.answers = [];
+  document.getElementById('ask').addEventListener('click', () => {
+    Freeday.confirm({ title: 'Delete order?', message: 'This cannot be undone.', acceptText: 'Delete order', rejectText: 'Keep' })
+      .then((a) => window.answers.push(a));
+  });
+  document.getElementById('ask-danger').addEventListener('click', () => {
+    Freeday.confirm({
+      title: 'Send anyway?', message: '<b>not markup</b>', tone: 'danger',
+      details: ['Phone is empty', 'Email is invalid'],
+    }).then((a) => window.answers.push(a));
+  });
+
+  window.searches = [];
+  window.inputs = 0;
+  document.addEventListener('fdy-search', (e) => window.searches.push(e.detail.term));
+  document.getElementById('search-in').addEventListener('input', () => { window.inputs += 1; });
+
+  window.copies = [];
+  document.addEventListener('fdy-copy', (e) => window.copies.push(e.detail));
+</script>
+</body>
+</html>

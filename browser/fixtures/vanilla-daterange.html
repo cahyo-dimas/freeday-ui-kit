@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: vanilla daterange settles only on a whole range</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>body { padding: 40px; }</style>
+<div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Period" id="range">
+  <div data-fdy-datepicker data-role="from" data-label="Start date"></div>
+  <span class="fdy-daterange__sep" aria-hidden="true">–</span>
+  <div data-fdy-datepicker data-role="to" data-label="End date"></div>
+</div>
+<script>
+  window.__changes = [];
+  window.__settled = [];
+  const range = document.getElementById('range');
+  range.addEventListener('fdy-datepicker-change', (e) => {
+    const role = e.target.closest('[data-role]').getAttribute('data-role');
+    window.__changes.push(role + ':' + ((e.detail && e.detail.value) || ''));
+  });
+  range.addEventListener('fdy-daterange-settled', (e) => window.__settled.push(e.detail));
+</script>

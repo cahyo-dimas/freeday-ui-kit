@@ -9,6 +9,82 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [Unreleased]
+
+### Added
+- **`Freeday.confirm()`** (`#060`). Pertanyaan ya/tidak sebelum aksi yang tak bisa diulang, tanpa
+  merakit dialog sendiri. Mengembalikan `Promise<boolean>`: `true` saat accept, `false` saat reject,
+  Escape atau klik backdrop. `details[]` tampil sebagai daftar di bawah pesan, untuk konfirmasi yang
+  harus menyebut temuannya. Fokus awal di tombol reject, teks dipasang sebagai teks (bukan HTML), dan
+  kedua tombol punya hook `data-fdy-confirm-accept` / `-reject` untuk test. Tipe ada di
+  `freeday.d.ts`; Blazor memanggilnya lewat `JS.InvokeAsync<bool>`.
+- **`[data-fdy-search]`** (`#061`, menjawab NEXT-UP #10). `.fdy-input-group` yang mencari saat
+  pengetik berhenti sejenak (`data-fdy-search-delay`, default 400 ms), langsung saat Enter, dan
+  punya tombol clear. Ketiga jalur berakhir di satu event `fdy-search {term}`. Clear menulis lewat
+  setter native dan memicu `input` native, jadi `v-model`, `onChange` React dan `@bind` Blazor ikut.
+- **`[data-fdy-copy]`** (`#062`). Tombol yang menyalin nilainya sendiri lalu memberi toast. Tanpa
+  Clipboard API (http) pembaca diberi tahu untuk menyalin manual. Listener-nya didelegasikan di
+  `document`, jadi tombol yang dirender belakangan tak perlu hidrasi.
+- Ketiganya dijaga `browser/confirm-search-copy.mjs` (7 spec), dan tiap spec diverifikasi dengan
+  mutasi: delapan mutasi pada kode baru, delapan merah.
+- **`settled` pada date range** (`#063`). Vue `@settled`, React `onSettled`, Blazor `Settled`,
+  jalur mentah `fdy-daterange-settled`. Terpancar hanya saat kedua ujung terisi atau keduanya
+  kosong. Sebelumnya setiap stack memancarkan per ujung, jadi list yang reload saat berubah memuat
+  data dengan tanggal awal saja lalu memuat lagi saat tanggal akhir dipilih. `change` dan `v-model`
+  tidak berubah. Dijaga `browser/daterange-settled.mjs` (4 spec) + `FdyDateRangeTests` (2 bUnit),
+  lima mutasi, lima merah.
+- **`.fdy-dl--grid`** (`#066`). Grid fakta: label di atas nilai, kolom sebanyak yang muat di lebar
+  list itu SENDIRI, maksimal tiga. Diukur dari elemen, bukan jendela, jadi markup yang sama tiga
+  kolom di area utama dan satu kolom di rail sempit tanpa modifier. Semua `.fdy-dl dd` kini
+  `overflow-wrap:anywhere`, jadi email atau nomor panjang tidak lagi tercetak di atas kolom sebelah.
+- **`.fdy-card__head` + `__action`** (`#070`). Header kartu: tanda, judul yang di-truncate, dan
+  satu aksi di kanan, dengan garis selebar kartu. Tandanya `.fdy-avatar --sm --square --tone-N`.
+- **`.fdy-avatar--square`** untuk tanda yang bukan orang (logo perusahaan, chip ikon kartu).
+- **Hint state switch** (`#068`). Dua baris `[data-fdy-when="on|off"]` di satu `.fdy-help`; kit
+  menampilkan yang cocok dengan state sekarang, tanpa JS. `aria-describedby` menunjuk ke
+  pembungkusnya, jadi pembaca layar hanya mendengar baris yang tampil (diverifikasi lewat deskripsi
+  aksesibel yang dihitung Chrome).
+- **`.fdy-state--compact`** (`#069`) untuk state di dalam kartu kecil.
+- **Empty state `FdyTable` tahu kenapa ia kosong** (`#069`). Slot Vue `empty` dan fungsi React
+  `empty` menerima `{ filtered, clearFilters }`; Blazor punya `EmptyTemplate`
+  (`RenderFragment<FdyTableEmptyContext>`). "Tidak ada yang cocok" bisa menawarkan Clear, "belum
+  ada data" menawarkan Create.
+- **`.fdy-page__columns`** (`#065`, menutup "Form master-detail / 2 kolom" yang ditunda di
+  NEXT-UP). Rail `__lead` / `__aside` di samping `__main`; lebar dipilih dari rail mana yang ada
+  (8/4, 3/9, 3/6/3). Saat menumpuk, rail ringkasan didahulukan. Mulai `md` rail sticky dan
+  scroll sendiri, jadi total dan status tetap terlihat dan rail yang lebih tinggi dari layar tidak
+  menggantung. Diadaptasi dari layout yang di app asalnya menahan seluruh halaman; di kit shell-nya
+  tetap scroll halaman, jadi tidak ada consumer yang dipaksa mengubah layout-nya. Dijaga
+  `browser/page-columns.mjs` (5 spec, 6 mutasi, 6 merah).
+- **`.fdy-table--hover-actionable`** (`#064`), prop `hoverActionable` / `HoverActionable` di ketiga
+  adapter. Hanya baris yang melakukan sesuatu (`rowActivatable`) yang ber-hover (baris terpilih tetap berwarna terpilih);
+  baris inert kembali ke warna istirahatnya sendiri, termasuk stripe, dan sel beku tetap opak.
+  Opt-in di 3.x supaya tidak ada tabel yang berubah; direncanakan jadi default di 4.0. Hover dasar
+  kini membaca `--_fdy-row-hover` (privat), tampilannya tidak berubah. Dijaga
+  `browser/table-hover.mjs` (4 spec, 5 mutasi, 5 merah) + `FdyTableHoverTests` (2 bUnit).
+- **Docs: breadcrumb** (`#071 §8`). `aria-current="page"` hanya untuk crumb yang memang halaman ini;
+  trail yang berhenti di induknya (form record yang crumb terakhirnya list) membiarkan crumb itu
+  tetap link.
+- **Docs: Record actions** (`#067`). Urutan tetap untuk aksi form di `.fdy-page__actions`:
+  Find | New, maksimal dua aksi inline, sisanya di menu More dengan urutan deklarasi yang sama dan
+  warna danger yang tetap terbawa, Save terakhir dan satu-satunya tombol solid.
+- Dijaga `browser/display-parts.mjs` (4), `browser/table-empty.mjs` (2) dan `FdyTableEmptyTests`
+  (2 bUnit). Setiap perilaku baru diverifikasi dengan mutasi (13 mutasi, 13 merah).
+### Fixed
+- **Date range jalur mentah: ujung yang dihapus kini diumumkan.** Tanggal awal yang melewati
+  tanggal akhir mengosongkan tanggal akhir tanpa event apa pun, jadi `To` di Blazor (yang hanya
+  mendengar pilihan) tetap memegang tanggal yang sudah tidak ada. Pengosongan itu sekarang
+  memancarkan `fdy-datepicker-change` dengan `value: ''`.
+- **Submit yang ditolak kini memperlihatkan field yang ditolaknya** (`#059`). `freeday-form.js`
+  memanggil `focus()` pada kontrol invalid pertama dan berhenti di situ. Kalau kontrol itu tidak
+  dirender (di dalam `<details>` tertutup, di tab yang tak dipilih, di panel stepper yang sudah
+  dilewati), `focus()` tidak melakukan apa pun dan tidak melapor apa pun: field memerah di tempat
+  yang tak terlihat, dan tombol Save terbaca mati. Sekarang penghalangnya dibuka dulu lewat kontrol
+  milik komponennya sendiri, supaya state komponen itu tetap cocok dengan yang tampil: `<details>`
+  di-`open`, tab-nya diklik, tombol step-nya diklik. Step yang **belum dicapai** sengaja tidak
+  dilompati, karena itu sama dengan melewati guard `fdy-step-before-change`. Dijaga
+  `browser/form-reveal.mjs` (5 spec); empat di antaranya merah sebelum perbaikan.
+
 ## [3.5.0] - 2026-09-15
 
 **Sebuah angka yang hanya bisa ditemukan dengan membaca stylesheet kit.** `#058` (dari

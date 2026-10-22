@@ -525,6 +525,14 @@ test('the enhancers ship exactly these strings (#006)', () => {
       series: 'Series {n}',
       total: 'Total',
     },
+    'freeday-confirm.js': {
+      accept: 'Confirm',
+      reject: 'Cancel',
+    },
+    'freeday-copy.js': {
+      copied: 'Copied.',
+      failed: 'Could not copy. Select the text and copy it manually.',
+    },
     'freeday-cfl.js': {
       selected: '{n} selected',
     },

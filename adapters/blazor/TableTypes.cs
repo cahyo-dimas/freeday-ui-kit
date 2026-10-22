@@ -21,6 +21,10 @@ public sealed record FdySortState(string Key, FdySortDir Dir);
 /// <see cref="FdyTable{TRow}.Page"/> switches the table into server mode.</summary>
 public sealed record FdyPageState(int Index, int Size, int Total);
 
+/// <summary>What <c>EmptyTemplate</c> is told (#069): whether an active column filter emptied the
+/// table, and how to clear every filter.</summary>
+public sealed record FdyTableEmptyContext(bool Filtered, Func<Task> ClearFilters);
+
 /// <summary>The processed page of rows (after filter/sort/paginate) plus the total row count, as
 /// raised by <see cref="FdyTable{TRow}.Process"/>. Lets a consumer render the same processed set
 /// somewhere else, a card list below the <c>md</c> breakpoint, a summary, an export, without

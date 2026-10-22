@@ -137,6 +137,14 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 | `size="cfl"` on `FdyModal` | writing `.fdy-modal--cfl` by hand to reach the 46rem width |
 | `dialogOnly` + `open()` on `FdyCfl` | a hand-rolled picker, because the trigger is a chip or a table cell and not a 22rem field |
 | `.fdy-field--full` | `max-width: none` on the form container, once per form, because the fields are a flex column and not a `.fdy-form-grid` |
+| `.fdy-page__columns` | a hand-rolled 8/4 or 3/6/3 grid per screen, with a summary rail that falls under every section on a phone |
+| `.fdy-dl--grid` | a facts grid whose columns follow the window, so a side rail gets two 110px columns |
+| `.fdy-card__head` | a card title row with its "View all" link at the bottom, moving every time the content grows |
+| `settled` on `FdyDateRange` | reloading a list on each end of a range, the first time with the start alone |
+| `{ filtered, clearFilters }` on `FdyTable`'s empty state | one "No data" sentence for both "nothing matches" and "nothing yet" |
+| `Freeday.confirm()` | a confirm dialog assembled from a modal, two buttons and a flag so it answers only once |
+| `[data-fdy-search]` | a search box that only searches on Enter, so emptying it leaves the old rows on screen |
+| `[data-fdy-copy]` | selecting an ID by hand, or a copy button that silently does nothing over http |
 | `.fdy-nav--flat` | undoing the caret, the pointer cursor and the group divider yourself, on a sidebar whose group labels never collapse |
 | `--fdy-app-sidebar-w` | overriding `width` on `.fdy-app__sidebar`, which is also the rule that animates the collapse |
 | `@media (--fdy-filterbar-stacked)` / `(--fdy-nav-drawer)`, from `@cahyo-dimas/freeday/media` | a literal `640px` or `720px` retyped into your stylesheet, which no longer matches the kit's rule the day the kit retunes it — and which you could only have found by reading `filterbar.css` |

@@ -15,6 +15,8 @@ export interface DateRangeValue {
 export interface FdyDateRangeProps {
   value: DateRangeValue;
   onChange: (value: DateRangeValue) => void;
+  /** Both ends chosen, or both cleared: the only states worth reloading a list for (#063). */
+  onSettled?: (value: DateRangeValue) => void;
   min?: string;
   max?: string;
   locale?: string;
@@ -30,8 +32,12 @@ export interface FdyDateRangeProps {
 }
 
 export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
-  const onStart = (start: string): void => props.onChange({ start, end: props.value.end });
-  const onEnd = (end: string): void => props.onChange({ start: props.value.start, end });
+  const commit = (next: DateRangeValue): void => {
+    props.onChange(next);
+    if (!next.start === !next.end) props.onSettled?.(next);
+  };
+  const onStart = (start: string): void => commit({ start, end: props.value.end });
+  const onEnd = (end: string): void => commit({ start: props.value.start, end });
 
   return (
     <div

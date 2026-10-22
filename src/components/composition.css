@@ -95,3 +95,39 @@
 .fdy-text-success{color:var(--color-success-strong);}
 .fdy-text-warning{color:var(--color-warning-strong);}
 .fdy-text-danger{color:var(--color-danger-strong);}
+/* Document columns (#065): a form or record page with an optional identity rail on the left
+ * (__lead) and a summary rail on the right (__aside). The widths follow which rails are PRESENT,
+ * so the layout is decided once here and not again by every screen:
+ *   __main alone            one column
+ *   __main + __aside        8 / 4         (from md)
+ *   __lead + __main         3 / 9         (from md)
+ *   all three               3 / 6 / 3     (from lg; between md and lg both rails share the left)
+ * Stacked, the summary rail comes FIRST: last, it sits under every section, and its button with it.
+ * From md each rail is sticky and scrolls on its own, so the total and the status stay answerable
+ * while the main column scrolls with the page, and a rail taller than the screen never hangs its
+ * end off it. Screen only: a printed page is not held to a window. */
+.fdy-page__columns{--_fdy-rail-top:var(--fdy-page-sticky-top,var(--space-4));display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-6);align-items:start;}
+/* Under the shell the sticky topbar is in the way; --fdy-page-sticky-top overrides either default. */
+.fdy-app .fdy-page__columns{--_fdy-rail-top:var(--fdy-page-sticky-top,calc(var(--space-16) + var(--space-4)));}
+.fdy-page__columns > *{min-width:0;}
+@media (max-width:959.98px){.fdy-page__aside{order:-1;}}
+@media (min-width:960px){
+  .fdy-page__columns:has(> .fdy-page__aside){grid-template-columns:minmax(0,2fr) minmax(0,1fr);}
+  .fdy-page__columns:has(> .fdy-page__lead){grid-template-columns:minmax(0,1fr) minmax(0,3fr);}
+  /* Both rails, two columns: they stack on the left while __main spans both rows on the right. */
+  .fdy-page__columns:has(> .fdy-page__lead):has(> .fdy-page__aside) > .fdy-page__main{grid-row:span 2;}
+}
+@media (min-width:1280px){
+  .fdy-page__columns:has(> .fdy-page__lead):has(> .fdy-page__aside){grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);}
+  .fdy-page__columns:has(> .fdy-page__lead):has(> .fdy-page__aside) > .fdy-page__main{grid-row:auto;}
+}
+/* The padding, taken back by the margin, is room for a focus ring at a card's edge: a scrolling box
+   clips whatever draws outside it. */
+@media screen and (min-width:960px){
+  .fdy-page__lead,.fdy-page__aside{position:sticky;top:var(--_fdy-rail-top);max-height:calc(100dvh - var(--_fdy-rail-top) - var(--space-4));overflow-y:auto;overscroll-behavior:contain;padding:var(--space-1);margin:calc(var(--space-1) * -1);}
+}
+/* Two sticky rails in ONE column would slide over each other: between md and lg, with both rails
+   present, they scroll with the page instead. */
+@media screen and (min-width:960px) and (max-width:1279.98px){
+  .fdy-page__columns:has(> .fdy-page__lead):has(> .fdy-page__aside) > :is(.fdy-page__lead,.fdy-page__aside){position:static;max-height:none;overflow:visible;}
+}

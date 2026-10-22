@@ -71,6 +71,9 @@ public partial class FdyTable<TRow>
     [Parameter] public string LoadingText { get; set; } = "Loading…";
     [Parameter] public string EmptyText { get; set; } = "No data";
     [Parameter] public RenderFragment? EmptyContent { get; set; }
+    /// <summary>The empty state, told whether the column filters emptied the table and how to clear
+    /// them (#069). Wins over <see cref="EmptyContent"/> when both are set.</summary>
+    [Parameter] public RenderFragment<FdyTableEmptyContext>? EmptyTemplate { get; set; }
     [Parameter] public string? AriaLabel { get; set; }
 
     /// <summary>Opt in to row activation: rows become focusable and raise <see cref="RowActivate"/>.</summary>
@@ -89,6 +92,9 @@ public partial class FdyTable<TRow>
 
     /// <summary>Zebra-stripe the body rows.</summary>
     [Parameter] public bool Striped { get; set; }
+
+    /// <summary>Hover only the rows that do something (<c>RowActivatable</c>); inert rows keep their colour.</summary>
+    [Parameter] public bool HoverActionable { get; set; }
 
     /// <summary>Render the checkbox column and the bulk bar.</summary>
     [Parameter] public bool Selectable { get; set; }
@@ -230,6 +236,21 @@ public partial class FdyTable<TRow>
         else
         {
             _internalSort = next;
+            await SetClientPageAsync(0);
+        }
+    }
+
+    private bool Filtered => EffectiveFilters.Values.Any(TableModel.IsFilterActive);
+
+    private async Task ClearFiltersAsync()
+    {
+        if (FiltersControlled)
+        {
+            await FiltersChanged.InvokeAsync(new Dictionary<string, FdyColumnFilter>());
+        }
+        else
+        {
+            _internalFilters = new();
             await SetClientPageAsync(0);
         }
     }

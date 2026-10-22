@@ -21,6 +21,12 @@
 .fdy-switch input::before{content:"";position:absolute;top:2px;left:2px;width:calc(var(--control-switch-h) - 4px);height:calc(var(--control-switch-h) - 4px);border-radius:50%;background:var(--color-switch-thumb);box-shadow:var(--shadow-1);transition:transform var(--dur-base) var(--ease-spring);}
 .fdy-switch input:checked{background:var(--color-primary);}
 .fdy-switch input:checked::before{transform:translateX(calc(var(--control-switch-w) - var(--control-switch-h)));}
+/* State hint (#068): one line saying what the CURRENT state means, never "on means X, off means Y",
+   which leaves the reader to work out which half applies. The control's aria-describedby points at
+   the .fdy-help WRAPPING both lines: a hidden child of a referenced node is skipped, so a screen
+   reader hears only the line on screen. Point it at the two children and both are read. */
+.fdy-field:has(:is(.fdy-switch,.fdy-check) input:checked) [data-fdy-when="off"],
+.fdy-field:not(:has(:is(.fdy-switch,.fdy-check) input:checked)) [data-fdy-when="on"]{display:none;}
 
 /* Standalone checkbox (e.g. table row/select-all), supports :indeterminate */
 .fdy-checkbox{appearance:none;-webkit-appearance:none;flex:none;width:var(--control-box);height:var(--control-box);margin:0;border:1.5px solid var(--color-control-border);border-radius:var(--radius-sm);background:var(--color-surface);box-shadow:inset 0 1px 2px var(--color-shadow-inset);cursor:pointer;display:grid;place-content:center;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}

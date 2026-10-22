@@ -5,6 +5,7 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  isFilterActive,
   sortRows,
   paginate,
 } from '../../core/table-model.js';
@@ -78,6 +79,8 @@ const props = withDefaults(defineProps<{
   expandedKeys?: ReadonlyArray<string | number>;
   /** Zebra-stripe the body rows. */
   striped?: boolean;
+  /** Hover only the rows that do something (`rowActivatable`); inert rows keep their colour. */
+  hoverActionable?: boolean;
   /** Render the checkbox column and the bulk bar. */
   selectable?: boolean;
   /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
@@ -219,6 +222,19 @@ function onSort(col: FdyTableColumn<Row>): void {
   if (sortControlled.value) emit('update:sort', next);
   else {
     internalSort.value = next;
+    setClientPage(0);
+  }
+}
+/* "Nothing matches these filters" and "nothing here yet" are different news (#069): the first wants
+   a Clear button, the second a Create one. The table owns its column filters, so it is the one
+   that knows which it is; the `empty` slot receives both. */
+const filtered: ComputedRef<boolean> = computed((): boolean =>
+  Object.values(effectiveFilters.value).some((f: FdyColumnFilter): boolean => isFilterActive(f)),
+);
+function clearFilters(): void {
+  if (filtersControlled.value) emit('update:filters', {});
+  else {
+    internalFilters.value = {};
     setClientPage(0);
   }
 }
@@ -367,7 +383,7 @@ const colSpan: ComputedRef<number> = computed((): number =>
     </div>
 
     <div class="fdy-table-scroll">
-      <table class="fdy-table" :class="{ 'fdy-table--striped': striped }" :aria-label="ariaLabel">
+      <table class="fdy-table" :class="{ 'fdy-table--striped': striped, 'fdy-table--hover-actionable': hoverActionable }" :aria-label="ariaLabel">
         <thead>
           <tr>
             <th v-if="selectable" class="fdy-table__selcol" scope="col">
@@ -406,7 +422,7 @@ const colSpan: ComputedRef<number> = computed((): number =>
           </tr>
           <tr v-else-if="displayRows.length === 0">
             <td :colspan="colSpan" class="fdy-table__state">
-              <slot name="empty">{{ emptyText ?? 'No data' }}</slot>
+              <slot name="empty" :filtered="filtered" :clear-filters="clearFilters">{{ emptyText ?? 'No data' }}</slot>
             </td>
           </tr>
           <template v-else>

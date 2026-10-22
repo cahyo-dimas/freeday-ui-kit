@@ -603,15 +603,30 @@
       fromApi.setRange(f, t);     // start stays free, picking a later start clears the end below
       toApi.setRange(f, t);
     }
+    /* An end the new start overtook is cleared, and the clear is ANNOUNCED like a pick: a binding
+     * that only hears picks (Blazor's To) otherwise keeps the end the range no longer has. */
+    function clearEnd(el, api) {
+      api.clear();
+      el.dispatchEvent(new CustomEvent('fdy-datepicker-change', { bubbles: true, detail: { value: '' } }));
+    }
+    /* "Settled" = both ends chosen, or both empty: the only states worth a reload (#063). A pick of
+     * the first end, or a start that overtook the end, is half a range. */
+    function settle() {
+      var f = fromApi.getValue(), t = toApi.getValue();
+      if ((f === '') !== (t === '')) return;
+      root.dispatchEvent(new CustomEvent('fdy-daterange-settled', { bubbles: true, detail: { from: f, to: t } }));
+    }
     fromEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
-      if (f && t && t < f) toApi.clear();
+      if (f && t && t < f) clearEnd(toEl, toApi);
       sync();
+      settle();
     });
     toEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
-      if (f && t && t < f) fromApi.clear();
+      if (f && t && t < f) clearEnd(fromEl, fromApi);
       sync();
+      settle();
     });
     sync();
   }

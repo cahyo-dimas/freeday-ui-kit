@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<meta charset="utf-8">
+<title>Freeday — facts grid, card head, switch hint, compact state</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+<body>
+  <!-- #066: the same facts in a wide main column and in a narrow rail -->
+  <div id="wide" style="width:900px">
+    <dl class="fdy-dl fdy-dl--grid" id="facts-wide">
+      <div><dt>Customer</dt><dd>PT Sumber Makmur</dd></div>
+      <div><dt>Email</dt><dd id="email-wide">procurement.department.head@sumbermakmur-international.co.id</dd></div>
+      <div><dt>Phone</dt><dd>0812345678901</dd></div>
+      <div><dt>Chassis</dt><dd>MHFAB8GS1R0123456</dd></div>
+    </dl>
+  </div>
+  <div id="rail" style="width:240px;margin-top:24px">
+    <dl class="fdy-dl fdy-dl--grid" id="facts-rail">
+      <div><dt>Customer</dt><dd>PT Sumber Makmur</dd></div>
+      <div><dt>Email</dt><dd id="email-rail">procurement.department.head@sumbermakmur-international.co.id</dd></div>
+    </dl>
+  </div>
+
+  <!-- #070 -->
+  <article class="fdy-card" id="card" style="width:320px;margin-top:24px">
+    <header class="fdy-card__head">
+      <span class="fdy-avatar fdy-avatar--sm fdy-avatar--square fdy-avatar--tone-3" aria-hidden="true">★</span>
+      <h3 class="fdy-card__title" id="card-title">A work queue title long enough to need truncating somewhere</h3>
+      <div class="fdy-card__action"><a class="fdy-btn fdy-btn--text fdy-btn--sm" id="card-action" href="#">View all</a></div>
+    </header>
+    <div class="fdy-card__body">
+      <p class="fdy-state fdy-state--compact fdy-state--danger" id="compact"><span class="fdy-state__icon" aria-hidden="true">!</span><span class="fdy-state__text">Could not load the queue.</span></p>
+    </div>
+  </article>
+
+  <!-- #068 -->
+  <div class="fdy-field" style="margin-top:24px">
+    <label class="fdy-switch"><input type="checkbox" id="sw" aria-describedby="sw-hint"> Approval</label>
+    <div class="fdy-help" id="sw-hint">
+      <span data-fdy-when="on">Each change waits for a supervisor.</span>
+      <span data-fdy-when="off">Changes apply at once, nobody reviews them.</span>
+    </div>
+  </div>
+</body>
+</html>

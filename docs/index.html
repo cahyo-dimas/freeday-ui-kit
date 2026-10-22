@@ -1109,15 +1109,17 @@
 
     <section class="doc-section" id="sec-filterbar">
       <h2>Filter bar</h2>
-      <p class="doc-desc">Baris filter yang konsisten: <code>.fdy-filterbar</code> membungkus beberapa <code>.fdy-field</code>. Tiap field ikut <strong>ritme lebar</strong> (<code>--w-sm</code> · default · <code>--w-lg</code> · <code>--w-xl</code>); satu field <code>--w-grow</code> (biasanya pencarian) menyerap sisa ruang; aksi (<code>__actions</code>) menempel di ujung, sejajar kontrol. Membungkus rapi di layar sempit. Nol JS, cukup layout di atas <code>.fdy-field</code>.</p>
+      <p class="doc-desc">Baris filter yang konsisten: <code>.fdy-filterbar</code> membungkus beberapa <code>.fdy-field</code>. Tiap field ikut <strong>ritme lebar</strong> (<code>--w-sm</code> · default · <code>--w-lg</code> · <code>--w-xl</code>); satu field <code>--w-grow</code> (biasanya pencarian) menyerap sisa ruang; aksi (<code>__actions</code>) menempel di ujung, sejajar kontrol. Membungkus rapi di layar sempit. Nol JS, cukup layout di atas <code>.fdy-field</code>. Field pencarian di sini memakai <code>data-fdy-search</code>: mencari saat pengetik berhenti sejenak, langsung saat Enter, dan punya tombol kosongkan. Ketiganya berakhir di satu event <code>fdy-search</code>.</p>
       <div class="doc-demo doc-demo--block">
         <div class="fdy-filterbar">
           <div class="fdy-field fdy-field--w-grow">
             <span class="fdy-label" id="fb-q-l">Cari</span>
-            <div class="fdy-input-group">
+            <div class="fdy-input-group" data-fdy-search id="fb-q">
               <span class="fdy-input-group__addon fdy-input-group__addon--icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.35-4.35"></path></svg></span>
-              <input class="fdy-input" type="search" placeholder="Cari faktur / pelanggan…" aria-labelledby="fb-q-l">
+              <input class="fdy-input" type="text" placeholder="Cari faktur / pelanggan…" aria-labelledby="fb-q-l">
+              <button type="button" class="fdy-input-group__btn" data-fdy-search-clear aria-label="Kosongkan pencarian">&times;</button>
             </div>
+            <div class="fdy-help" id="fb-q-out" aria-live="polite">Belum ada pencarian.</div>
           </div>
           <div class="fdy-field fdy-field--w-sm">
             <span class="fdy-label" id="fb-status-l">Status</span>
@@ -1201,7 +1203,7 @@
 
     <section class="doc-section" id="sec-pilihan">
       <h2>Checkbox · Radio · Switch</h2>
-      <p class="doc-desc">Native <code>&lt;input&gt;</code> distyle, dengan Space, asosiasi label, <code>:focus-visible</code> tetap native.</p>
+      <p class="doc-desc">Native <code>&lt;input&gt;</code> distyle, dengan Space, asosiasi label, <code>:focus-visible</code> tetap native. Switch yang labelnya tidak menjelaskan arti "on" diberi <strong>hint state</strong>: dua baris <code>[data-fdy-when="on|off"]</code> di satu <code>.fdy-help</code>, kit menampilkan yang cocok dengan state sekarang, tanpa JS. Balik switch "Persetujuan" untuk melihatnya.</p>
       <div class="doc-demo" style="gap:var(--space-5)">
         <label class="fdy-check"><input type="checkbox" checked> Kirim salinan email</label>
         <span class="demo" style="gap:var(--space-4)">
@@ -1209,6 +1211,13 @@
           <label class="fdy-radio"><input type="radio" name="term"> 60 hari</label>
         </span>
         <label class="fdy-switch"><input type="checkbox" checked> Aktifkan notifikasi</label>
+        <div class="fdy-field" style="max-width:22rem">
+          <label class="fdy-switch"><input type="checkbox" aria-describedby="demo-appr-hint"> Persetujuan</label>
+          <div class="fdy-help" id="demo-appr-hint">
+            <span data-fdy-when="on">Setiap perubahan menunggu supervisor.</span>
+            <span data-fdy-when="off">Perubahan langsung berlaku, tanpa ditinjau.</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1555,7 +1564,7 @@
 
     <section class="doc-section" id="sec-card">
       <h2>Card</h2>
-      <p class="doc-desc"><code>--interactive</code> = kursor + hover-lift untuk kartu yang <em>diberi</em> handler klik. Modifier ini <strong>presentasional</strong>: CSS tak bisa tahu handler-nya ada; pasangkan dengan kontrol nyata, biasanya <code>.fdy-btn--stretch</code> yang membentangkan area kliknya ke seluruh kartu. Kalau kartunya <strong>adalah</strong> kontrol (baris pemilih yang keyboard-reachable &amp; diumumkan), render sebagai <code>&lt;button&gt;</code> dan tambah <strong><code>--button</code></strong> untuk me-reset kotak tombol UA tanpa membuang surface/border kartu.</p>
+      <p class="doc-desc"><code>__head</code> menaruh tanda, judul, dan jalan keluar kartu dalam satu baris; kartu terakhir di sini juga menunjukkan <code>.fdy-state--compact --danger</code> untuk muatan yang gagal. <code>--interactive</code> = kursor + hover-lift untuk kartu yang <em>diberi</em> handler klik. Modifier ini <strong>presentasional</strong>: CSS tak bisa tahu handler-nya ada; pasangkan dengan kontrol nyata, biasanya <code>.fdy-btn--stretch</code> yang membentangkan area kliknya ke seluruh kartu. Kalau kartunya <strong>adalah</strong> kontrol (baris pemilih yang keyboard-reachable &amp; diumumkan), render sebagai <code>&lt;button&gt;</code> dan tambah <strong><code>--button</code></strong> untuk me-reset kotak tombol UA tanpa membuang surface/border kartu.</p>
       <div class="doc-demo doc-cardgrid">
         <article class="fdy-card fdy-card--interactive">
           <div class="fdy-card__body">
@@ -1589,6 +1598,16 @@
             <p class="fdy-card__desc">Kartu ini sebuah <code>&lt;button&gt;</code> (<code>--button</code>): fokusabel, bisa Enter/Space.</p>
           </div>
         </button>
+        <article class="fdy-card">
+          <header class="fdy-card__head">
+            <span class="fdy-avatar fdy-avatar--sm fdy-avatar--square fdy-avatar--tone-3" aria-hidden="true"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+            <h3 class="fdy-card__title">Jatuh tempo hari ini</h3>
+            <div class="fdy-card__action"><a class="fdy-btn fdy-btn--text fdy-btn--sm" href="#sec-card">Lihat semua</a></div>
+          </header>
+          <div class="fdy-card__body">
+            <p class="fdy-state fdy-state--compact fdy-state--danger"><span class="fdy-state__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4M12 17h.01"></path><circle cx="12" cy="12" r="9"></circle></svg></span><span class="fdy-state__text">Gagal memuat antrean. Angka nol di sini tidak berarti tidak ada pekerjaan.</span></p>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -1723,7 +1742,7 @@
 
     <section class="doc-section" id="sec-dl">
       <h2>Detail (key-value)</h2>
-      <p class="doc-desc">Tampilan ringkas untuk halaman detail faktur / pelanggan.</p>
+      <p class="doc-desc">Tampilan ringkas untuk halaman detail faktur / pelanggan. Nilai yang dibawa pembaca ke tempat lain (nomor dokumen, ID event) diberi tombol salin: <code>data-fdy-copy="&lt;nilai&gt;"</code> menyalin nilainya lalu memberi toast, termasuk saat clipboard tidak tersedia (http).</p>
       <div class="doc-demo doc-cardgrid">
         <div class="fdy-card"><div class="fdy-card__body">
           <h3 class="fdy-card__title" style="margin-bottom:var(--space-4)">Faktur INV-1042</h3>
@@ -1732,6 +1751,15 @@
             <dt>Status</dt><dd><span class="fdy-badge fdy-badge--success">Lunas</span></dd>
             <dt>Jatuh tempo</dt><dd>30 Juli 2026</dd>
             <dt>Total</dt><dd>Rp 1.240.000</dd>
+            <dt>ID referensi</dt><dd><span class="fdy-mono">EVT-7F3A-0042</span> <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm" data-fdy-copy="EVT-7F3A-0042" data-fdy-text-copied="Tersalin." data-fdy-text-failed="Tidak bisa menyalin. Blok teksnya lalu salin manual." aria-label="Salin ID referensi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button></dd>
+          </dl>
+        </div></div>
+        <div class="fdy-card"><div class="fdy-card__body">
+          <h3 class="fdy-card__title" style="margin-bottom:var(--space-4)">Pelanggan</h3>
+          <dl class="fdy-dl fdy-dl--grid">
+            <div><dt>Nama</dt><dd>PT Sumber Makmur</dd></div>
+            <div><dt>Email</dt><dd>pengadaan.kepala-divisi@sumbermakmur-internasional.co.id</dd></div>
+            <div><dt>Telepon</dt><dd class="fdy-mono">0812345678901</dd></div>
           </dl>
         </div></div>
       </div>
@@ -1988,9 +2016,10 @@
 
     <section class="doc-section" id="sec-modal">
       <h2>Modal</h2>
-      <p class="doc-desc">Native <code>&lt;dialog&gt;</code>, dengan focus-trap, Esc, dan backdrop gratis dari browser. Muncul &amp; menghilang dengan <strong>fade + skala halus</strong> (backdrop ikut mem-blur), simetris masuk-keluar.</p>
+      <p class="doc-desc">Native <code>&lt;dialog&gt;</code>, dengan focus-trap, Esc, dan backdrop gratis dari browser. Muncul &amp; menghilang dengan <strong>fade + skala halus</strong> (backdrop ikut mem-blur), simetris masuk-keluar. Untuk pertanyaan ya/tidak tidak perlu merakit dialog sendiri: <code>await Freeday.confirm({ title, message, details, acceptText, tone })</code> menjawab <code>true</code> / <code>false</code>, dan Esc atau klik backdrop berarti tidak.</p>
       <div class="doc-demo">
         <button class="fdy-btn" id="open-modal">Buka modal</button>
+        <button class="fdy-btn fdy-btn--ghost" id="open-confirm" type="button">Freeday.confirm()</button>
         <dialog class="fdy-modal" id="demo-modal" aria-labelledby="demo-modal-title">
           <div class="fdy-modal__header">
             <h3 class="fdy-modal__title" id="demo-modal-title">Hapus faktur?</h3>
@@ -2184,6 +2213,9 @@
 <script src="../dist/freeday-chip.js"></script>
 <script src="../dist/freeday-tree.js"></script>
 <script src="../dist/freeday-number.js"></script>
+<script src="../dist/freeday-search.js"></script>
+<script src="../dist/freeday-copy.js"></script>
+<script src="../dist/freeday-confirm.js"></script>
 <script>
   const root = document.documentElement;
   const themeBtn = document.getElementById('theme');
@@ -2245,8 +2277,8 @@
     'sec-autocomplete': { h2: 'Autocomplete', desc: 'An editable combobox: type to filter suggestions (APG combobox + listbox), keyboard <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd>/<kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Esc</kbd>. Needs <code>freeday-autocomplete.js</code>. (Static options are filtered client-side; in a real app, fetch/filter server-side.)' },
     'sec-cascade': { h2: 'Cascade select', desc: 'A hierarchical (drill-down) picker; the data model is a hidden nested <code>&lt;ul&gt;</code>: an <code>&lt;li&gt;</code> with a child <code>&lt;ul&gt;</code> is a branch, without one it is a leaf. Branches drill in, a leaf selects (value = full path). Full keyboard support. Needs <code>freeday-cascade.js</code>.' },
     'sec-mask': { h2: 'Password &amp; mask', desc: 'A password field with a show/hide toggle (<code>data-fdy-password</code>, reusing the input-group button chrome) and an input that formats as you type (<code>data-fdy-mask</code>: <code>#</code> digit, <code>A</code> letter, <code>*</code> alnum; other characters become literals). Needs <code>freeday-mask.js</code>.' },
-    'sec-filterbar': { h2: 'Filter bar', desc: 'A consistent filter row: <code>.fdy-filterbar</code> wraps several <code>.fdy-field</code>. Each field follows a <strong>width rhythm</strong> (<code>--w-sm</code> · default · <code>--w-lg</code> · <code>--w-xl</code>); one <code>--w-grow</code> field (usually search) absorbs the slack; actions (<code>__actions</code>) sit at the end, aligned to the controls. Wraps cleanly on narrow screens. Zero JS, just layout over <code>.fdy-field</code>.' },
-    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors: <code>aria-invalid</code> + an <code>aria-describedby</code> message, focus to the first invalid field on submit, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>freeday-form.js</code>. A second example shows a document <strong>header + detail</strong> layout (<code>.fdy-form-grid</code> + a line-items table).' },
+    'sec-filterbar': { h2: 'Filter bar', desc: 'A consistent filter row: <code>.fdy-filterbar</code> wraps several <code>.fdy-field</code>. Each field follows a <strong>width rhythm</strong> (<code>--w-sm</code> · default · <code>--w-lg</code> · <code>--w-xl</code>); one <code>--w-grow</code> field (usually search) absorbs the slack; actions (<code>__actions</code>) sit at the end, aligned to the controls. Wraps cleanly on narrow screens. Zero JS, just layout over <code>.fdy-field</code>. The search field here uses <code>data-fdy-search</code>: it searches when the typist pauses, at once on Enter, and has a clear button. All three end in one <code>fdy-search</code> event.' },
+    'sec-form': { h2: 'Form validation', desc: 'Native validation (Constraint Validation API) wired to accessible inline errors: <code>aria-invalid</code> + an <code>aria-describedby</code> message, on submit the first invalid field is revealed (a folded section opened, its tab or passed step selected) and focused, then live re-validation on blur/input. Custom messages via <code>data-fdy-msg-*</code>, cross-field match via <code>data-fdy-match</code>. Try pressing <strong>Save</strong> while empty. Needs <code>freeday-form.js</code>. A second example shows a document <strong>header + detail</strong> layout (<code>.fdy-form-grid</code> + a line-items table).' },
     'sec-select': { h2: 'Select (combobox)', desc: 'A fully designed dropdown (WAI-ARIA APG): stylable popup, keyboard ↑↓/Enter/Esc/type-ahead. Needs <code>freeday-select.js</code>. Icon variants: <strong>default</strong> caret, <strong>none</strong> via <code>fdy-combo--no-icon</code>, or <strong>custom</strong> (<code>--no-icon</code> + <code>.fdy-combo__icon</code> inside the button).' },
     'sec-pilihan': { h2: 'Checkbox · Radio · Switch', desc: 'Native <code>&lt;input&gt;</code> styled, with Space, label association, and <code>:focus-visible</code> stay native.' },
     'sec-alert': { h2: 'Alert', desc: 'Inline messages. The danger variant uses <code>role="alert"</code>.' },
@@ -2260,12 +2292,12 @@
     'sec-states': { h2: 'States', desc: 'Empty / error placeholders for data areas.' },
     'sec-charts': { h2: 'Charts', desc: 'Sparkline, bar, line, area, and donut, all pure SVG/CSS with <strong>no dependency</strong>, data via <code>data-values</code>. Needs <code>freeday-chart.js</code>. Colours from tokens; multi-series uses the validated categorical palette <code>--chart-1</code>…<code>--chart-8</code>, overridable with <code>data-fdy-colors</code>, taking a semantic token name or a slot <code>chart-1</code>…<code>chart-8</code> to pin a colour per category. Each chart is <code>role="img"</code> + <code>aria-label</code>, donut/bar have a legend/label (not colour alone). Hover for a tooltip.' },
     'sec-tree': { h2: 'Tree view', desc: 'Hierarchy via native <code>&lt;details&gt;</code>, expand/collapse by click or <kbd class="fdy-kbd">Enter</kbd>/<kbd class="fdy-kbd">Space</kbd>, no JS. Branches collapse; a leaf is a plain row. The <strong>checkbox</strong> variant (right) adds cascading selection: check a branch → all children follow; some children → the branch turns <em>indeterminate</em>. Needs <code>freeday-tree.js</code> for the cascade; a checkbox never expands/collapses the branch.' },
-    'sec-card': { h2: 'Card', desc: '<code>--interactive</code> = cursor + hover-lift for a card you <em>attach</em> a click handler to. When the card <strong>is</strong> the control (a keyboard-reachable, announced picker row), render it as a <code>&lt;button&gt;</code> and add <strong><code>--button</code></strong>, which resets the UA button box without stripping the card\'s own surface/border. The modifier is <strong>presentational</strong>: the CSS cannot know whether a handler exists, so pair it with a real control, normally a <code>.fdy-btn--stretch</code> whose hit area covers the whole card.' },
+    'sec-card': { h2: 'Card', desc: '<code>__head</code> puts a mark, the title and the card\'s way out on one row; the last card here also shows <code>.fdy-state--compact --danger</code> for a failed load. <code>--interactive</code> = cursor + hover-lift for a card you <em>attach</em> a click handler to. When the card <strong>is</strong> the control (a keyboard-reachable, announced picker row), render it as a <code>&lt;button&gt;</code> and add <strong><code>--button</code></strong>, which resets the UA button box without stripping the card\'s own surface/border. The modifier is <strong>presentational</strong>: the CSS cannot know whether a handler exists, so pair it with a real control, normally a <code>.fdy-btn--stretch</code> whose hit area covers the whole card.' },
     'sec-badge': { h2: 'Badge', desc: 'Inline for status; an <strong>overlay</strong> for a count/dot anchored to the corner of an icon, button, or text.' },
     'sec-avatar': { h2: 'Avatar', desc: 'Sizes <code>--sm</code> / default / <code>--lg</code>, plus a stacked group. To tell apart same-initial avatars (e.g. many "PT …" names), use <strong><code>--tone-1</code>…<code>--tone-8</code></strong> are decorative tints that stay <strong>AA</strong>-contrast in light &amp; dark; hash a stable index off the full name (not the initials).' },
     'sec-chip': { h2: 'Chip', desc: 'Three roles: <strong>default / remove</strong> (a static tag or a removable active filter), <strong>choice</strong> (toggle-select), and <strong>filter</strong> (toggle with a check). The interactive ones are <code>&lt;button aria-pressed&gt;</code> managed by <code>freeday-chip.js</code>: wrap in <code>data-fdy-chips</code>, add <code>data-single</code> for single-select.' },
     'sec-list': { h2: 'List (flat rows)', desc: 'The FLAT row container: one bordered surface, hairline dividers, no shadow. This is what a .fdy-datatable should become below md, not a stack of .fdy-card, which carries --shadow-lift and turns ten rows into ten floating objects. A row can BE the control: render it as a &lt;button&gt; plus --button. Zero JS.' },
-    'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages.' },
+    'sec-dl': { h2: 'Detail (key-value)', desc: 'A compact view for invoice / customer detail pages. A value the reader takes elsewhere (a document number, an event ID) gets a copy button: <code>data-fdy-copy="&lt;value&gt;"</code> copies it and says so with a toast, including when the clipboard is unavailable (http).' },
     'sec-progress': { h2: 'Progress &amp; Spinner' },
     'sec-skeleton': { h2: 'Skeleton', desc: '<code>--title</code>/<code>--text</code> for text, <code>--circle</code> for round shapes, and <strong><code>--avatar</code></strong> (+<code>--avatar-sm</code>/<code>--avatar-lg</code>) which are <strong>size-matched to <code>.fdy-avatar</code></strong>, so the placeholder reserves the exact same box and data landing causes no layout shift.' },
     'sec-carousel': { h2: 'Carousel', desc: 'Scroll-snap + arrows + dot indicators. Keyboard <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd>, swipe on touch, optional autoplay (<code>data-fdy-autoplay</code>, pauses on hover/focus). Needs <code>freeday-carousel.js</code>.' },
@@ -2275,7 +2307,7 @@
     'sec-drawer': { h2: 'Drawer', desc: 'A temporary side panel (overlay + backdrop) on top of a native <code>&lt;dialog&gt;</code>, with focus-trap, <kbd class="fdy-kbd">Esc</kbd>, and return-focus for free. Left or right. Needs <code>freeday-drawer.js</code>. (The hamburger in the App bar above also opens it.)' },
     'sec-accordion': { h2: 'Accordion', desc: 'Native <code>&lt;details&gt;</code>, zero-JS and accessible by default.' },
     'sec-util': { h2: 'Divider · Kbd' },
-    'sec-modal': { h2: 'Modal', desc: 'Native <code>&lt;dialog&gt;</code>, with focus-trap, Esc, and a backdrop free from the browser.' },
+    'sec-modal': { h2: 'Modal', desc: 'Native <code>&lt;dialog&gt;</code>, with focus-trap, Esc, and a backdrop free from the browser. For a yes/no question you do not build the dialog yourself: <code>await Freeday.confirm({ title, message, details, acceptText, tone })</code> answers <code>true</code> / <code>false</code>, and Esc or a backdrop click means no.' },
     'sec-screen': { h2: 'Example: one business screen', desc: 'Every component assembled into a real invoice screen.' },
     'sec-breakpoint': { h2: 'Breakpoint', desc: 'Responsive display utilities + a JS provider. Scale (min-width): <code>sm</code> 600 · <code>md</code> 960 · <code>lg</code> 1280 · <code>xl</code> 1920. <code>.fdy-hide-below-*</code> / <code>.fdy-hide-above-*</code> hide per range. <code>freeday-breakpoint.js</code> stamps <code>&lt;html data-breakpoint&gt;</code> + emits <code>fdy-breakpoint-change</code>. Resize the window to see it.' },
     'sec-a11y': { h2: 'Accessibility', desc: 'A contract every component keeps, not an afterthought.' },
@@ -2408,6 +2440,17 @@
     if (c) { const d = c.closest('dialog'); if (d) d.close(); }
   });
   document.getElementById('open-modal').onclick = () => document.getElementById('demo-modal').showModal();
+  document.getElementById('open-confirm').onclick = async () => {
+    const yes = await Freeday.confirm({
+      title: 'Hapus faktur?', message: 'Faktur INV-1042 akan dihapus permanen.',
+      details: ['2 pembayaran ikut terhapus', 'Nomor faktur tidak bisa dipakai lagi'],
+      acceptText: 'Hapus faktur', rejectText: 'Batal', tone: 'danger',
+    });
+    Freeday.toast({ variant: yes ? 'success' : 'info', message: yes ? 'Dijawab: ya' : 'Dijawab: tidak' });
+  };
+  document.getElementById('fb-q').addEventListener('fdy-search', (e) => {
+    document.getElementById('fb-q-out').textContent = e.detail.term === '' ? 'Menampilkan semua.' : 'Mencari: ' + e.detail.term;
+  });
   const nm = document.getElementById('new-modal');
   document.getElementById('open-new').onclick = () => nm.showModal();
   // Choose-from-list: fill the sibling name field from the picked row (controlled pattern).

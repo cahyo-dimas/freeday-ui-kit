@@ -5,6 +5,7 @@ import {
   cellText,
   distinctValues,
   filterRows,
+  isFilterActive,
   sortRows,
   paginate,
 } from '../../core/table-model.js';
@@ -28,6 +29,14 @@ import { FdyTableFooter } from './FdyTableFooter';
 //     sorted/filtered/paged); the headers, filters and pager only signal intent via
 //     `onSortChange` / `onFiltersChange` / `onPageChange` for the caller to feed back into its query.
 // Column filters (text/enum/number/date) apply live; in server mode, debounce the callback if needed.
+
+/** What the `empty` render function is told (#069). */
+export interface FdyTableEmptyContext {
+  /** An active column filter is what emptied the table. */
+  filtered: boolean;
+  /** Clears every column filter, through `onFiltersChange` when the filters are controlled. */
+  clearFilters: () => void;
+}
 
 export interface FdyTableProps<Row extends object> {
   columns: ReadonlyArray<FdyTableColumn<Row>>;
@@ -79,7 +88,9 @@ export interface FdyTableProps<Row extends object> {
   /** Custom cell renderer; return undefined for a column to use the default text. */
   renderCell?: (column: FdyTableColumn<Row>, row: Row, value: unknown) => ReactNode;
   toolbar?: ReactNode;
-  empty?: ReactNode;
+  /** The empty state. As a function it is told whether the column filters are what emptied the
+   *  table, and how to clear them: "no match" wants a Clear button, "nothing yet" a Create one. */
+  empty?: ReactNode | ((ctx: FdyTableEmptyContext) => ReactNode);
   /** Opt in to row activation: rows become focusable and call `onRowActivate` on click/Enter/Space. */
   rowActivatable?: boolean;
   /** Per-row class hook, e.g. to mark a selected row. */
@@ -96,6 +107,8 @@ export interface FdyTableProps<Row extends object> {
   renderRowDetail?: (row: Row) => ReactNode;
   /** Zebra-stripe the body rows. */
   striped?: boolean;
+  /** Hover only the rows that do something (`rowActivatable`); inert rows keep their colour. */
+  hoverActionable?: boolean;
   /** Render the checkbox column and the bulk bar. */
   selectable?: boolean;
   /** Controlled selection, as `rowKey` values. Provide to own it; omit for internal (the column
@@ -210,6 +223,14 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
     if (sortControlled) props.onSortChange?.(next);
     else {
       setInternalSort(next);
+      setClientPage(0);
+    }
+  }
+  const filtered: boolean = Object.values(effectiveFilters).some((f: FdyColumnFilter): boolean => isFilterActive(f));
+  function clearFilters(): void {
+    if (filtersControlled) props.onFiltersChange?.({});
+    else {
+      setInternalFilters({});
       setClientPage(0);
     }
   }
@@ -352,7 +373,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
 
       <div className="fdy-table-scroll">
         <table
-          className={props.striped === true ? 'fdy-table fdy-table--striped' : 'fdy-table'}
+          className={['fdy-table', props.striped === true ? 'fdy-table--striped' : '', props.hoverActionable === true ? 'fdy-table--hover-actionable' : ''].filter(Boolean).join(' ')}
           aria-label={props.ariaLabel}
         >
           <thead>
@@ -402,7 +423,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
               </tr>
             ) : displayRows.length === 0 ? (
               <tr>
-                <td colSpan={colCount} className="fdy-table__state">{props.empty ?? props.emptyText ?? 'No data'}</td>
+                <td colSpan={colCount} className="fdy-table__state">{typeof props.empty === 'function' ? props.empty({ filtered, clearFilters }) : (props.empty ?? props.emptyText ?? 'No data')}</td>
               </tr>
             ) : (
               displayRows.map((row: Row): JSX.Element => (

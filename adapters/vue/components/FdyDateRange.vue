@@ -34,20 +34,26 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: DateRangeValue];
   change: [value: DateRangeValue];
+  /** Both ends chosen, or both cleared: the only states worth reloading a list for (#063). */
+  settled: [value: DateRangeValue];
 }>();
 
 const startMax: ComputedRef<string | undefined> = computed((): string | undefined => props.modelValue.end ?? props.max);
 const endMin: ComputedRef<string | undefined> = computed((): string | undefined => props.modelValue.start ?? props.min);
 
-function setStart(start: string): void {
-  const next: DateRangeValue = { start, end: props.modelValue.end };
+function isSettled(range: DateRangeValue): boolean {
+  return !range.start === !range.end;
+}
+function commit(next: DateRangeValue): void {
   emit('update:modelValue', next);
   emit('change', next);
+  if (isSettled(next)) emit('settled', next);
+}
+function setStart(start: string): void {
+  commit({ start, end: props.modelValue.end });
 }
 function setEnd(end: string): void {
-  const next: DateRangeValue = { start: props.modelValue.start, end };
-  emit('update:modelValue', next);
-  emit('change', next);
+  commit({ start: props.modelValue.start, end });
 }
 </script>
 

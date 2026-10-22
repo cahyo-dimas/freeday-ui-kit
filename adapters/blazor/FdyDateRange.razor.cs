@@ -13,6 +13,9 @@ public partial class FdyDateRange
     [Parameter] public string? To { get; set; }
     [Parameter] public EventCallback<string?> ToChanged { get; set; }
 
+    /// <summary>Both ends chosen, or both cleared: the only states worth reloading a list for (#063).</summary>
+    [Parameter] public EventCallback<SettledRange> Settled { get; set; }
+
     [Parameter] public string? AriaLabel { get; set; }
     [Parameter] public string? FromPlaceholder { get; set; }
     [Parameter] public string? ToPlaceholder { get; set; }
@@ -44,6 +47,10 @@ public partial class FdyDateRange
             To = detail.Value;
             await ToChanged.InvokeAsync(detail.Value);
         }
+        if (string.IsNullOrEmpty(From) == string.IsNullOrEmpty(To))
+        {
+            await Settled.InvokeAsync(new SettledRange(From, To));
+        }
     }
 
     protected override async ValueTask CleanupAsync()
@@ -55,4 +62,7 @@ public partial class FdyDateRange
     }
 
     public sealed record RangeDetail(string? Value, string? Role);
+
+    /// <summary>The range as it stands when it settles; both empty means "no period".</summary>
+    public sealed record SettledRange(string? From, string? To);
 }

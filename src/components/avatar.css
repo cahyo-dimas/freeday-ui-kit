@@ -8,6 +8,8 @@
 .fdy-avatar--xs{width:1.5rem;height:1.5rem;font-size:var(--text-xs);}
 .fdy-avatar--sm{width:2rem;height:2rem;font-size:var(--text-xs);}
 .fdy-avatar--lg{width:3.5rem;height:3.5rem;font-size:var(--text-lg);}
+/* Square: a mark that is not a person (a company logo, a card's icon chip, #070). */
+.fdy-avatar--square{border-radius:var(--radius-md);}
 .fdy-avatar-group{display:inline-flex;}
 .fdy-avatar-group .fdy-avatar{border:2px solid var(--color-surface);margin-left:calc(var(--space-2)*-1);}
 .fdy-avatar-group .fdy-avatar:first-child{margin-left:0;}

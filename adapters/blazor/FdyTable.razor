@@ -30,7 +30,7 @@
     }
 
     <div class="fdy-table-scroll">
-        <table class="fdy-table @(Striped ? "fdy-table--striped" : null)" aria-label="@AriaLabel">
+        <table class="fdy-table @(Striped ? "fdy-table--striped" : null) @(HoverActionable ? "fdy-table--hover-actionable" : null)" aria-label="@AriaLabel">
             <thead>
                 <tr>
                     @if (Selectable)
@@ -77,7 +77,11 @@
                 {
                     <tr>
                         <td colspan="@ColSpan" class="fdy-table__state">
-                            @if (EmptyContent is not null)
+                            @if (EmptyTemplate is not null)
+                            {
+                                @EmptyTemplate(new FdyTableEmptyContext(Filtered, ClearFiltersAsync))
+                            }
+                            else if (EmptyContent is not null)
                             {
                                 @EmptyContent
                             }

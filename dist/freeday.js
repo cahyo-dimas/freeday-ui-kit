@@ -1924,6 +1924,167 @@
   window.FreedayChip = { initGroup: initGroup, initRemove: initRemove, initAll: initAll };
 })();
 
+/* Freeday, confirm API (optional, zero-dependency). Note #060.
+ * Freeday.confirm({ title, message, details, acceptText, rejectText, tone }) opens a .fdy-modal
+ * and resolves a Promise<boolean>: true on accept; false on reject, Escape or a backdrop click.
+ *   details:  string[] shown as a list under the message, for a confirm that has to NAME its
+ *             findings ("these three fields will be refused") instead of folding them into one
+ *             long sentence
+ *   tone:     'primary' (default) | 'danger', the accept button's variant
+ *
+ * One dialog, one answer: every way out resolves the same Promise, and a Promise settles once, so
+ * a caller never hears "no" after "yes" (a framework dialog that reports reject and then hide, or
+ * hide after accept, does exactly that). Text is set with textContent, never parsed as HTML.
+ * Focus starts on the reject button: Enter on a dialog that just opened must not delete anything.
+ * The dialog is removed when it closes; the native <dialog> returns focus to where it was.
+ * Buttons carry data-fdy-confirm-accept / data-fdy-confirm-reject, stable hooks for tests, because
+ * an accept labelled "Delete" collides by accessible name with every row's own Delete button.
+ */
+(function () {
+  'use strict';
+
+  /* User-facing strings, English by default. Per call, acceptText / rejectText override them; a
+   * label that names the action ("Delete order") is better than either default. */
+  var TEXT = {
+    accept: 'Confirm',
+    reject: 'Cancel'
+  };
+
+  var seq = 0;
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function confirm(opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+      seq += 1;
+      var titleId = 'fdy-confirm-title-' + seq;
+      var dialog = el('dialog', 'fdy-modal fdy-modal--sm');
+      dialog.setAttribute('aria-labelledby', titleId);
+      dialog.setAttribute('data-fdy-confirm', '');
+
+      var header = el('header', 'fdy-modal__header');
+      var title = el('h2', 'fdy-modal__title', opts.title || '');
+      title.id = titleId;
+      header.appendChild(title);
+
+      var body = el('div', 'fdy-modal__body');
+      if (opts.message) {
+        var message = el('p', null, opts.message);
+        message.id = titleId + '-desc';
+        dialog.setAttribute('aria-describedby', message.id);
+        body.appendChild(message);
+      }
+      var details = Array.isArray(opts.details) ? opts.details : [];
+      if (details.length > 0) {
+        var list = el('ul');
+        details.forEach(function (line) { list.appendChild(el('li', null, line)); });
+        body.appendChild(list);
+      }
+
+      var footer = el('footer', 'fdy-modal__footer');
+      var reject = el('button', 'fdy-btn fdy-btn--ghost', opts.rejectText || TEXT.reject);
+      reject.type = 'button';
+      reject.setAttribute('data-fdy-confirm-reject', '');
+      var accept = el('button', opts.tone === 'danger' ? 'fdy-btn fdy-btn--danger' : 'fdy-btn', opts.acceptText || TEXT.accept);
+      accept.type = 'button';
+      accept.setAttribute('data-fdy-confirm-accept', '');
+      footer.appendChild(reject);
+      footer.appendChild(accept);
+
+      dialog.appendChild(header);
+      dialog.appendChild(body);
+      dialog.appendChild(footer);
+
+      function settle(answer) {
+        resolve(answer);
+        if (dialog.open) dialog.close();
+      }
+
+      accept.addEventListener('click', function () { settle(true); });
+      reject.addEventListener('click', function () { settle(false); });
+      // Escape fires `cancel` then `close`; a backdrop click lands on the <dialog> itself, since its
+      // children fill the box edge to edge. Both mean "no".
+      dialog.addEventListener('close', function () {
+        settle(false);
+        if (dialog.parentNode) dialog.parentNode.removeChild(dialog);
+      });
+      dialog.addEventListener('click', function (e) { if (e.target === dialog) settle(false); });
+
+      document.body.appendChild(dialog);
+      dialog.showModal();
+      reject.focus();
+    });
+  }
+
+  window.Freeday = window.Freeday || {};
+  window.Freeday.confirm = confirm;
+})();
+
+/* Freeday, copy-to-clipboard enhancer (optional, zero-dependency). Note #062.
+ * A button carrying data-fdy-copy="<value>" copies that value and says so with a toast. For
+ * reference values a reader takes elsewhere: an external document number, an event ID.
+ *
+ *   <dd><span class="fdy-mono">INV-2026-00042</span>
+ *     <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm"
+ *             data-fdy-copy="INV-2026-00042" aria-label="Copy invoice number">…svg…</button></dd>
+ *
+ * The value is the attribute, not a lookup of some neighbour's text: a framework writes it from
+ * the same variable as the visible text, and a row of a table needs no ids to find its own cell.
+ * One delegated listener on the document, so buttons rendered later need no hydration.
+ *
+ * The Clipboard API exists only in a secure context. Over plain http writeText is missing, and a
+ * copy that silently did nothing is the failure this refuses: the reader is told to copy by hand.
+ * Emits bubbling "fdy-copy" {value, ok} on the button. A click inside a clickable table row still
+ * reaches the row's own handler; stop it there if the row should not open. Exposes window.FreedayCopy.
+ */
+(function () {
+  'use strict';
+
+  /* User-facing strings, English by default and overridable per button with data-fdy-text-<key>,
+   * like every other enhancer's. */
+  var TEXT = {
+    copied: 'Copied.',
+    failed: 'Could not copy. Select the text and copy it manually.'
+  };
+  function textOf(el, key) {
+    var custom = el.getAttribute('data-fdy-text-' + key);
+    return custom != null && custom !== '' ? custom : TEXT[key];
+  }
+
+  function report(btn, value, ok) {
+    if (window.Freeday && typeof window.Freeday.toast === 'function') {
+      window.Freeday.toast(ok
+        ? { variant: 'success', message: textOf(btn, 'copied'), key: 'fdy-copy' }
+        : { variant: 'danger', message: textOf(btn, 'failed'), key: 'fdy-copy', timeout: 0 });
+    }
+    btn.dispatchEvent(new CustomEvent('fdy-copy', { bubbles: true, detail: { value: value, ok: ok } }));
+  }
+
+  function copy(btn) {
+    var value = btn.getAttribute('data-fdy-copy') || '';
+    if (value === '') return;
+    var clip = navigator.clipboard;
+    if (!clip || typeof clip.writeText !== 'function') { report(btn, value, false); return; }
+    clip.writeText(value).then(
+      function () { report(btn, value, true); },
+      function () { report(btn, value, false); }
+    );
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest && e.target.closest('[data-fdy-copy]');
+    if (btn && !btn.disabled) copy(btn);
+  });
+
+  window.FreedayCopy = { copy: copy };
+})();
+
 /* Freeday, date picker enhancer (optional, zero-dependency).
  * Builds an input-styled trigger + calendar popover from an empty wrapper.
  * Locale comes from <html lang> (via Intl), month/weekday/value formatting is not hardcoded.
@@ -2529,15 +2690,30 @@
       fromApi.setRange(f, t);     // start stays free, picking a later start clears the end below
       toApi.setRange(f, t);
     }
+    /* An end the new start overtook is cleared, and the clear is ANNOUNCED like a pick: a binding
+     * that only hears picks (Blazor's To) otherwise keeps the end the range no longer has. */
+    function clearEnd(el, api) {
+      api.clear();
+      el.dispatchEvent(new CustomEvent('fdy-datepicker-change', { bubbles: true, detail: { value: '' } }));
+    }
+    /* "Settled" = both ends chosen, or both empty: the only states worth a reload (#063). A pick of
+     * the first end, or a start that overtook the end, is half a range. */
+    function settle() {
+      var f = fromApi.getValue(), t = toApi.getValue();
+      if ((f === '') !== (t === '')) return;
+      root.dispatchEvent(new CustomEvent('fdy-daterange-settled', { bubbles: true, detail: { from: f, to: t } }));
+    }
     fromEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
-      if (f && t && t < f) toApi.clear();
+      if (f && t && t < f) clearEnd(toEl, toApi);
       sync();
+      settle();
     });
     toEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
-      if (f && t && t < f) fromApi.clear();
+      if (f && t && t < f) clearEnd(fromEl, fromApi);
       sync();
+      settle();
     });
     sync();
   }
@@ -2720,7 +2896,7 @@
  *   data-fdy-msg-min | -max | -step | -mismatch, then generic data-fdy-msg.
  * Cross-field match (e.g. confirm password): data-fdy-match="#otherId".
  *
- * Timing: validates on submit (blocks + focuses the first invalid control); after
+ * Timing: validates on submit (blocks, reveals + focuses the first invalid control); after
  * the first submit attempt each field re-validates on input/blur so errors clear
  * live. Add data-fdy-eager to validate on blur from the start.
  *
@@ -2833,6 +3009,34 @@
     }
   }
 
+  /* focus() on a control that is not rendered does nothing and reports nothing: the field turns red
+   * where nobody can see it, and the submit reads as a dead button (#059). So whatever hides the
+   * control is undone first, each through that component's own control, so its state agrees with
+   * what is shown:
+   *   closed <details>        opened (accordion, tree, nav group)
+   *   hidden [role=tabpanel]  its tab is clicked; freeday-tabs selects on click
+   *   hidden .fdy-step-panel  its step button is clicked. A step not yet reached has a disabled
+   *                           button, so this only ever goes BACK and never skips a step guard.
+   * Anything else that hides it belongs to the app, and is left alone. */
+  function reveal(el) {
+    for (var node = el.parentElement; node; node = node.parentElement) {
+      if (node.localName === 'details' && !node.open) {
+        node.open = true;
+      } else if (node.hidden && node.getAttribute('role') === 'tabpanel' && node.id) {
+        var tab = Array.prototype.filter.call(document.querySelectorAll('[role="tab"]'), function (t) {
+          return t.getAttribute('aria-controls') === node.id;
+        })[0];
+        if (tab) tab.click();
+      } else if (node.hidden && node.classList.contains('fdy-step-panel')) {
+        var stepper = node.closest('[data-fdy-stepper]');
+        if (!stepper) continue;
+        var index = Array.prototype.indexOf.call(stepper.querySelectorAll('.fdy-step-panel'), node);
+        var btn = stepper.querySelectorAll('.fdy-step__btn')[index];
+        if (btn && !btn.disabled) btn.click();
+      }
+    }
+  }
+
   function initForm(form) {
     if (form.dataset.fdyFormReady === '1') return;
     form.dataset.fdyFormReady = '1';
@@ -2867,6 +3071,7 @@
       });
       if (invalid.length) {
         e.preventDefault();
+        reveal(invalid[0]);
         invalid[0].focus();
         form.dispatchEvent(new CustomEvent('fdy-form-invalid', { bubbles: true, detail: { invalid: invalid } }));
       } else {
@@ -3376,6 +3581,84 @@
   }
 
   window.FreedayRating = { init: initRating, initAll: initAll };
+})();
+
+/* Freeday, list search enhancer (optional, zero-dependency). Note #061.
+ * Turns an .fdy-input-group into a search box that searches while the reader pauses, at once on
+ * Enter, and has a clear button. All three paths end in ONE bubbling event on the group,
+ * "fdy-search" {term}, so an app listens once instead of wiring keyup, a timer and a click.
+ *
+ * Markup (the group, not a new block; the clear button is yours, so is its aria-label):
+ *   <div class="fdy-input-group" data-fdy-search [data-fdy-search-delay="400"]>
+ *     <span class="fdy-input-group__addon fdy-input-group__addon--icon">…svg…</span>
+ *     <input class="fdy-input" type="text" aria-label="Search orders">
+ *     <button type="button" class="fdy-input-group__btn" data-fdy-search-clear aria-label="Clear search">×</button>
+ *   </div>
+ *
+ * type="text", not "search": WebKit's own × is unthemed and fires no Enter, which is what made
+ * clearing a field leave the old rows on screen until somebody pressed Enter on an empty box.
+ * The clear button is hidden while the box is empty. Clearing writes through the native value
+ * setter and fires a native `input`, so v-model, a React onChange and Blazor @bind all follow.
+ * `term` is trimmed; "" means "show everything again". Exposes window.FreedaySearch.
+ */
+(function () {
+  'use strict';
+
+  var DEFAULT_DELAY = 400;
+  var nativeValue = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+
+  function initSearch(root) {
+    if (root.dataset.fdySearchReady === '1') return;
+    var input = root.querySelector('input');
+    if (!input) return;
+    root.dataset.fdySearchReady = '1';
+    var clearBtn = root.querySelector('[data-fdy-search-clear]');
+    var delayAttr = parseInt(root.getAttribute('data-fdy-search-delay'), 10);
+    var delay = isNaN(delayAttr) ? DEFAULT_DELAY : delayAttr;
+    var timer = null;
+
+    function cancel() { if (timer !== null) { clearTimeout(timer); timer = null; } }
+    function emit() {
+      cancel();
+      root.dispatchEvent(new CustomEvent('fdy-search', { bubbles: true, detail: { term: input.value.trim() } }));
+    }
+    function syncClear() { if (clearBtn) clearBtn.hidden = input.value === ''; }
+
+    input.addEventListener('input', function () {
+      syncClear();
+      cancel();
+      timer = setTimeout(emit, delay);
+    });
+    input.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      e.preventDefault(); // inside a <form>, Enter would submit it as well
+      emit();
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        nativeValue.call(input, '');
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        emit(); // at once, and it cancels the pause the input event just started
+        input.focus();
+      });
+    }
+    syncClear();
+  }
+
+  function initAll(context) {
+    var root = context || document;
+    /* root included: querySelectorAll never matches its own root, and a framework ref often sits ON the widget. */
+    if (root.matches && root.matches('[data-fdy-search]')) initSearch(root);
+    Array.prototype.forEach.call(root.querySelectorAll('[data-fdy-search]'), initSearch);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initAll(); });
+  } else {
+    initAll();
+  }
+
+  window.FreedaySearch = { init: initSearch, initAll: initAll };
 })();
 
 /* Freeday, combobox enhancer (optional, zero-dependency).
