@@ -9,6 +9,110 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.9.0] - 2026-10-23
+
+**Rilis ini dimulai sebagai tiga penambahan dan berakhir dengan lima cacat, dan yang menemukan
+kelimanya adalah penambahan itu sendiri.** Pemiliknya memutuskan batas antara kit dan app yang
+memakainya ditentukan oleh satu pertanyaan: apakah sesuatu bisa diadaptasi universal. Di bawah
+ukuran itu beberapa hal yang sebelumnya dicatat sebagai "selera pemakai" atau diparkir menunggu
+pemanggil kedua ternyata pekerjaan kit, dan menutupnya membuka apa yang ada di belakangnya.
+
+Satu algoritma hidup di **empat salinan**. `#079` di 3.8.0 memperbaiki posisi panel popover di satu
+di antaranya, dan tiga butir rilis ini adalah akibat langsungnya: salinan bertipe membawa cacat yang
+sama untuk delapan komponen, salinan keempat di enhancer tabel memecah paritas begitu salinan
+bertipe dibetulkan, dan memindahkan panel filter ke tempat yang benar membuka dua hal lagi. Satu di
+antaranya sudah terkirim ke pengguna sejak lama tanpa ada yang melaporkannya: panel filter pada
+tabel di dalam modal terbuka, tergambar, lalu menolak segala masukan.
+
+### Fixed
+- **Cacat urutan `#079` ada di salinan bertipe juga** (`#081`), dan di sana ia kena delapan
+  komponen: `FdyDatepicker`, `FdyAutocomplete`, `FdyCascade` dan `FdyCombo`, masing-masing di Vue
+  dan React. `adapters/vue/usePopover.ts` dan padanannya di React membaca rect pemicu sebagai hal
+  pertama, sama seperti jalur mentah sebelum 3.8.0. Terukur: panel mendarat 741 lawan pemicu 756,
+  selisih tepat satu lebar scrollbar klasik. `FdyTableFilter` lolos, dan sebabnya menarik:
+  `.fdy-filter` satu-satunya panel kit yang `position:fixed`, jadi dokumen tidak pernah tumbuh dan
+  pemicunya tidak pernah bergeser.
+- **Panel filter pada tabel di dalam modal tidak bisa diisi** (`#082`). `showModal()` membuat
+  segalanya di luar subtree dialog `inert`, dan panel jalur mentah menempel ke `document.body`,
+  yaitu di luar itu. Panelnya terbuka, tergambar, lalu menolak fokus dan klik: `focus()` milik
+  enhancer sendiri jadi no-op dan `elementFromPoint` di tengah panel mengembalikan sel tabel di
+  belakangnya. Rect tidak bisa melihat ini, jadi yang menemukannya hit test. Panelnya kini anak
+  `<th>`-nya sendiri seperti `FdyTableFilter` bertipe, dan salinan keempat logika posisi yang
+  memosisikannya ikut terhapus.
+- **Panel filter mewarisi tipografi sel header** (`#083`). Dari sepuluh deklarasi `.fdy-table th`,
+  tujuh diwariskan, dan empat sudah ditimpa sejak terbit. Yang lolos: `white-space:nowrap`, yang
+  membuat nilai enum panjang melebar sampai `max-width` alih-alih membungkus, plus `font-size` dan
+  `text-align`. Sumber kedua dari sel yang sama: `.fdy-table__num` menambahkan
+  `font-family:var(--font-mono)`, jadi judul panel tercetak dengan huruf data.
+- **Panel filter jalur merosot terkurung konteks penumpukan sel header** (`#084`).
+  `.fdy-table--sticky-head thead th` adalah `position:sticky;z-index:2`, yang membuat konteks
+  penumpukan, jadi `z-index:130` milik panel diurutkan di dalam angka 2 itu. Jalur popover lolos
+  sebab top layer tidak peduli konteks penumpukan, tetapi Popover API baru ada di Chrome 114,
+  Safari 17 dan Firefox 125 sementara lantai dukungan kit Chrome 105, Safari 15.4 dan Firefox 121.
+  Terukur di jalur merosot: panel tumpang tindih 224x49px dengan `.fdy-bottomnav`, dan 49px itu
+  persis tombol Reset dan Close. Panelnya kini dipasang di akar tabel dan diposisikan lewat
+  `place()`. Menaikkan angkanya tidak akan menolong, sebab angka 2 itu yang menahan header beku di
+  atas sel badan beku dan menaikkannya di atas 50 akan mencetak seluruh baris header di atas pita
+  bawah.
+
+### Added
+- **`FdyTable` meneruskan keenam prop teks pita kakinya** (`#080`), di ketiga adapter. 3.8.0 memberi
+  `FdyTableFooter` prop itu, tetapi tabel merender pita kakinya sendiri tanpa meneruskannya, jadi
+  app non-Inggris yang memakai pita kaki bawaan tetap Inggris dan jalan keluarnya satu-satunya
+  `pager={false}` plus merender pita kakinya sendiri. Prop datar, bukan objek, sebab penjaga
+  dokumentasi membaca nama prop satu per satu dan sebuah objek akan menyembunyikan isinya dari
+  penjaga itu.
+- **Perataan untuk popover bertipe** (`#081`). `align: 'start' | 'end'`, nama yang sama dengan jalur
+  mentah, sebagai argumen posisi keempat `usePopover`. Objek opsi ditolak sebab literal objek di
+  `useEffect` React punya identitas baru setiap render sementara primitif masuk ke deps tanpa
+  menuntut `useMemo` dari pemanggil. Yang memilih perataan komponennya sendiri, jadi `FdyTable`
+  tidak bertambah prop: `FdyTableFilter` menulis `'end'` karena ia memang selalu duduk di header
+  kolom.
+- **`matchWidth` di jalur bertipe** (`#082`). Adapter selalu menulis `minWidth` selebar pemicu, dan
+  untuk corong filter 24px nilai inline itu mengalahkan `min-width:14rem` di stylesheet: panel
+  terukur 206px alih-alih 224. Yang lebarnya bergerak hanya `FdyTableFilter`, jadi hanya filter yang
+  mengirim `matchWidth:false`. Keempat panel lain memang harus tetap memakai bawaannya, dan
+  alasannya mekanisme yang sama dengan `#079`: ketiga listbox `min-width:100%`, dan di top layer
+  `100%` itu lebar viewport.
+- **`loadingText` di `FdyTable` Vue dan React** (`#085`). Blazor punya `LoadingText` sejak awal,
+  kedua adapter lain menulis `Loading…` sebagai literal di templat. Sapuan yang menemukannya juga
+  mencatat dua belas string di panel filter kolom dan satu nama aksesibel di `FdyCfl` yang masih
+  tertutup di ketiga adapter sekaligus; keduanya tercatat dengan nomor baris untuk rilis berikutnya.
+- **`FdyMonthpicker`** (`#086`), di ketiga adapter. 3.8.0 menambahkan `mode="month"` di
+  `FdyDatepicker`, dan bentuk itu membuat satu prop membawa dua format dengan prop lain yang memilih
+  format mana. Komponen tersendiri menutupnya dengan hitungan prop, bukan dengan alias tipe: tidak
+  ada `mode` yang bisa mengubah arti `modelValue`. Gridnya diangkat ke `adapters/core/month-grid.js`
+  dan dipakai balik oleh `FdyDatepicker`, jadi implementasi grid bulan di kit tetap dua, bukan tiga;
+  kedua datepicker menyusut 87 dan 82 baris. Jalur mentah tidak diubah dan `data-mode="month"` tidak
+  ditandai usang, sebab atribut string tidak punya tipe yang bisa berbohong soal isi `data-value`.
+
+### Deprecated
+- **`mode` di `FdyDatepicker`** (`#086`), bersama `FdyDatepickerMode.Month` dan parameter `Mode` di
+  Blazor. Tetap bekerja persis seperti di 3.8.0, dan ada uji paritas sel demi sel yang menjaga janji
+  itu. Dihapus di 4.0. Penandaannya lewat tipe dan bukan prosa, satu mekanisme per stack
+  (`@deprecated` di Vue dan React, `[Obsolete]` di Blazor), masing-masing menyebut penggantinya, dan
+  ada uji yang menuntut nama pengganti itu tetap ada di sana. Repo ini belum pernah memensiunkan apa
+  pun, jadi ini presedennya.
+
+### Catatan: lencana netral sudah ada
+Catatan app yang jadi sumber 3.8.0 dan 3.9.0 meminta `fdy-badge--neutral` untuk status yang tidak
+boleh terbaca seperti aksi. Kelas itu tidak dibuat, sebab `.fdy-badge--outline` sudah menjawabnya:
+tintanya 7.46:1 di tema terang dan 7.28:1 di gelap terhadap permukaan, jadi ia sudah lewat gerbang
+kontras pada ambang teks untuk ketiga permukaan. Yang ditambahkan dokumentasi yang mengatakannya,
+plus penjaga yang mengikat dokumen itu ke deklarasinya. Separuh usul yang lain, menjadikan netral
+sebagai **bawaan** `.fdy-badge`, tetap milik 4.0 sebab ia mengubah tampilan setiap lencana yang
+sudah terkirim.
+
+### Catatan: dokumen yang menjelaskan varian yang tidak bekerja
+`COMPONENTS.md` menulis bahwa `.fdy-table__num` meratakan ke kanan dan memasangnya di `<th>` pada
+dua contoh. Kelas itu berspesifisitas `(0,1,0)` sementara `.fdy-table th` `(0,2,0)`, jadi di sel
+header huruf data dan angka tabularnya sampai tetapi `text-align:left` dari aturan header yang
+menang. Keduanya lahir di commit yang sama pada Juli dan kalimat dokumennya baru datang pada
+Agustus, tidak ada uji yang pernah menegaskan perataan header lewat kelas itu, dan docs hidup kit
+mengirim bentuk itu di delapan tempat dengan header rata kiri sejak saat itu. Jadi yang dibetulkan
+dokumennya: perilakunya dibiarkan, sebab mengubahnya menggeser setiap header kolom angka yang sudah
+terkirim.
+
 ## [3.8.0] - 2026-10-23
 
 **Empat penambahan dari catatan yang sama, dan tiga di antaranya ternyata sudah separuh ada di

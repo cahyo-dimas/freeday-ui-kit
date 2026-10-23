@@ -11,61 +11,75 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.8.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
-sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah. 3.7.0 sudah
-terbit dan registry mengkonfirmasinya.
+**`3.9.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
+sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah. 3.8.0 sudah
+terbit dan registry mengkonfirmasinya, pada 12:02:36Z hari yang sama.
 
-Isi 3.8.0 dalam satu kalimat: **empat penambahan dari catatan app yang sama, dan tiga di antaranya
-ternyata sudah separuh ada di kit** (`#074`–`#078`). `.fdy-menu--end` sudah ada sejak lama, tetapi
-jalur popover menulis `inset:auto` yang menetralkan `right:0` lalu memasang `left` sendiri. Jalan
-keluar teks pita kaki sudah ada, tetapi cuma di jalur mentah, jadi app bertipe yang tidak berbahasa
-Inggris menulis ulang markupnya; satu app mengirim 81 baris untuk mengganti lima kata. Grid bulan
-sudah dipasang 1.32.0, tetapi tak pernah bisa jadi tujuan. Yang keempat, tab tegak, kurang dua
-literal di `switch` papan tombol `freeday-tabs.js`.
+Isi 3.9.0 dalam satu kalimat: **tiga penambahan dari ukuran universal, dan lima cacat yang ditemukan
+oleh penambahan itu** (`#080`–`#086`). Pemiliknya memutuskan batas kit lawan app ditentukan oleh
+apakah sesuatu bisa diadaptasi universal, bukan oleh jumlah pemanggil hari ini, dan di bawah ukuran
+itu beberapa hal yang tadinya dicatat sebagai selera pemakai ternyata pekerjaan kit.
 
-Pekerjaan keempat itu membuka satu cacat yang catatannya gambarkan tanpa pelapornya tahu: Vue dan
-React menyerahkan `props.locale` yang `undefined` langsung ke `Intl`, yang berarti bahasa peramban,
-sementara dokumen menjanjikan `<html lang>` sejak lama dan cuma enhancer vanilla yang betul
-melakukannya. Itu satu-satunya perubahan perilaku di rilis ini, dan ia kena mode hari juga.
+Yang membuatnya tumbuh dari tiga jadi tujuh: satu algoritma posisi panel hidup di **empat salinan**,
+dan `#079` di 3.8.0 memperbaiki satu di antaranya. Salinan bertipe membawa cacat yang sama untuk
+delapan komponen. Salinan keempat di enhancer tabel memecah paritas begitu salinan bertipe
+dibetulkan. Memindahkan panel filter ke tempat yang benar membuka dua hal lagi, dan satu di antaranya
+sudah terkirim ke pengguna sejak lama tanpa pernah dilaporkan: panel filter pada tabel di dalam modal
+terbuka, tergambar, lalu menolak segala masukan, sebab `showModal()` membuat segalanya di luar
+subtree dialog `inert` dan panel itu menempel ke `document.body`.
 
-Dan uji perataan `#074` menangkap cacat yang jauh lebih tua daripada rilis ini (`#079`). `place()`
-membaca rect pemicu sebagai hal pertama, padahal panel yang baru di-`show()` masih memakai
-`position:absolute` dengan `top:calc(100% + …)` dari stylesheet komponennya, dan di top layer
-`100%` itu tinggi viewport. Panel terjun satu viewport, dokumen mendapat scrollbar sesaat,
-halaman relayout lebih sempit, dan rect yang terukur milik tata letak yang tiga baris berikutnya
-batalkan. Ada sejak 1.4.1, kena keenam enhancer yang memakai `attach()`, dan tak terlihat di macOS
-sebab scrollbar overlay tidak memakan ruang tata letak. Yang melihatnya runner Linux di CI, sesudah
-tag `v3.8.0` pertama ditolak gerbang dan dihapus kembali. Reproduksinya kini ada di suite dan
-berjalan di macOS juga.
+Satu keputusan dibalik satu jam sesudah terbit. `mode="month"` dari 3.8.0 membuat satu prop membawa
+dua format dengan prop LAIN yang memilih format mana, jadi `FdyMonthpicker` lahir dan `mode` ditandai
+usang, tetap bekerja sampai 4.0 dengan uji paritas sel demi sel yang menjaga janji itu. Repo ini
+belum pernah memensiunkan apa pun, jadi mekanismenya ditetapkan di sini: tipe dan bukan prosa, satu
+per stack, masing-masing wajib menyebut penggantinya, dijaga uji. Detail di CHANGELOG.
 
-Detail di CHANGELOG.
+**Yang paling penting dibawa ke rilis berikutnya.** Pemiliknya memilih menyatukan **ketiga** salinan
+`place()` yang kini identik baris per baris, termasuk jalur mentah. Dua adapter saja setengah hari
+dan risiko rendah lewat `adapters/core/popover.js`; jalur mentah menuntut merombak kontrak "src
+ditulis tangan, dist salinannya" plus tahap inline di `tokens/build.mjs`, satu sampai dua hari dan
+risiko menengah, sebab `src/freeday-popover.js` IIFE yang menugaskan `window.FreedayPopover`,
+`src/*.js` sengaja tak ada di `files`, dan satu baris `import` akan tersalin ke `dist/` lalu meledak
+di 40-an fixture bertag `<script src>`. Dikerjakan sebagai cabang tersendiri sesudah 3.9.0 terbit,
+supaya rilis berisi tujuh butir tidak jadi rilis yang mustahil di-bisect.
 
-Utang yang dibawa rilis ini, tiga lama dan lima baru. Yang lama: floor dukungan di README diaudit
-dari fitur yang dipakai dan belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah
-di bawah `--test-concurrency=3` pada `bottom-nav`, `search`, `over-dialog` dan `cfl-multi`; dan
+Dua lubang teks yang tercatat lengkap dengan nomor baris, keduanya tertutup di ketiga adapter
+sekaligus sehingga bukan asimetri melainkan permukaan API baru: **dua belas string di panel filter
+kolom** (`Contains text`, `Show values`, `Value range`, `Min`, `Max`, `Date range`, `From`, `To`,
+`Reset`, `Close`, plus dua aria), yang menutupnya mendorong prop `FdyTable` melewati 50 dan menuntut
+keputusan bentuk prop datar lawan objek `filterText`; dan **`aria-label="Search results"`** di
+`FdyCfl` Vue dan React, di mana Blazor memakai `@Title`, sehingga kedua jalan keluarnya melanggar
+sesuatu.
+
+Utang yang dibawa rilis ini. Yang lama: floor dukungan di README diaudit dari fitur yang dipakai dan
+belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah di bawah
+`--test-concurrency=3` pada `bottom-nav`, `search`, `over-dialog` dan `cfl-multi`; dan
 `examples/blazor-faktur/wwwroot/freeday/freeday.bundle.css` masih memuat 86 `color-mix()` sebab ia
 salinan vendored yang tidak dilacak git.
 
-Yang baru, semuanya dari 3.8.0 dan semuanya pintu separuh:
+Yang baru:
 
-- `FdyTable` merender pita kakinya sendiri tanpa meneruskan keenam prop teks, jadi tabel yang
-  memakai pita kaki bawaan tetap Inggris. Jalan keluarnya `pager={false}` plus `<FdyTableFooter>`
-  sendiri, dan itu terdokumentasi, tapi ia akan memanggil laporan berikutnya.
-- `usePopover` Vue dan React masih rata-kiri saja. Benar hari ini sebab tak ada `FdyMenu` bertipe,
-  tetapi `FdyTableFilter` memasang panel corong di header kolom paling kanan dan gejalanya sama
-  dengan `#074`.
-- `YYYY-MM` duduk di prop bertipe `string` yang juga membawa `YYYY-MM-DD`, dan yang memilih format
-  adalah prop lain. Union terdiskriminasi memecah bentuk `defineProps` yang dibaca penjaga prop,
-  jadi alternatif sungguhannya `FdyMonthpicker` tersendiri.
-- Tab tegak terpilih memakai `--color-primary-soft` di atas apa pun yang ada di belakangnya, dan
-  di tema gelap token itu primer tembus. Gerbang kontras menutup pasangan tokennya, bukan komposit
-  ini. Empat komponen lain memakai pasangan yang sama, jadi risikonya tidak baru, cuma tidak diukur.
-- Bawaan `.fdy-badge` yang berwarna primer menunggu 4.0, sebab mengubahnya mengubah tampilan setiap
-  lencana yang sudah terkirim. `fdy-badge--neutral` sebagai opt-in bisa lebih awal.
+- **Skill `/humanizer:humanizer` tidak tersedia sebagai tool di sesi subagen.** Tiga agen
+  melaporkannya terpisah. Pluginnya ada di disk tetapi tak ada tool untuk memanggilnya, jadi aturan
+  CLAUDE.md repo ini secara harfiah tidak bisa dipenuhi subagen; ketiganya membaca `SKILL.md`
+  langsung dan menerapkannya tangan.
+- **`grep $'[—–]'` di zsh mencocokkan per BYTE**, jadi ia salah menuduh `‹` dan `›` (U+2039/203A)
+  sebagai en dash. Verifikasi dash harus membaca UTF-8, misalnya lewat Python.
+- **`parseISOMonth` menerima `YYYY-MM-DD` di prop nilai**, bukan cuma di batas, jadi
+  `FdyMonthpicker` yang diberi `'2026-10-21'` menampilkan Oktober 2026 dan diam. Diwarisi dari
+  `mode="month"` dan dijaga uji paritas, jadi mengetatkan satu sisi memerahkan paritas.
+- **`FdyMonthpicker` tidak punya uji peramban Blazor.** Empat bUnit membuktikan seed dan binding,
+  dan jalur render sesungguhnya enhancer yang sudah diuji, tetapi `FdyMonthpicker.razor` tak pernah
+  dijalankan di peramban sungguhan walau `browser/blazor-server.mjs` ada.
+- **Tidak ada penjaga yang menuntut penerusan prop teks pita kaki tetap lengkap** kalau
+  `FdyTableFooter` menambah prop kedelapan. Penjaganya harus memaafkan `page`, `pageSizes` dan
+  `onPageChange`, dan daftar pemaafan yang tumbuh adalah penjaga yang berhenti menjaga.
+- **Bawaan `.fdy-badge` yang berwarna primer menunggu 4.0**, bersama bawaan `--hover-actionable`.
+  `.fdy-badge--outline` sudah menjawab gejala status netral, jadi yang tersisa cuma soal bawaan.
 
 
-Gerbang untuk 3.8.0, lokal: `node --test` **128/128**, `npm run test:browser` **172/172**,
-`npm run typecheck:react` bersih, `npm run test:blazor` **33/33**. Setiap perilaku baru diverifikasi
+Gerbang untuk 3.9.0, lokal: `node --test` **131/131**, `npm run test:browser` **206/206**,
+`npm run typecheck:react` bersih, `npm run test:blazor` **39/39**. Setiap perilaku baru diverifikasi
 dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
 membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang
 dipulihkan harus disentuh (`touch`) sebelum build berikutnya.
