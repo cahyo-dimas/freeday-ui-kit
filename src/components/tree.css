@@ -6,7 +6,7 @@
 .fdy-tree__branch > summary{list-style:none;cursor:pointer;}
 .fdy-tree__branch > summary::-webkit-details-marker{display:none;}
 .fdy-tree__branch > summary:hover,.fdy-tree__leaf:hover{background:var(--color-surface-2);}
-.fdy-tree__branch > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-tree__branch > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-tree__chevron{flex:none;width:.9rem;height:.9rem;color:var(--color-text-subtle);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-tree__branch[open] > summary .fdy-tree__chevron{transform:rotate(90deg);}
 .fdy-tree__icon{flex:none;width:1rem;height:1rem;color:var(--color-text-muted);}

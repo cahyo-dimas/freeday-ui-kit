@@ -12,7 +12,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tighter); line-height: var(--leading-snug); margin: 0; }
-a { color: var(--color-primary); }
+a { color: var(--color-primary-strong); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
 /* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still
@@ -52,7 +52,7 @@ a { color: var(--color-primary); }
 .fdy-accordion__item > summary::after{content:"";margin-left:auto;margin-top:-.15rem;flex:none;width:.5rem;height:.5rem;border-right:2px solid var(--color-text-subtle);border-bottom:2px solid var(--color-text-subtle);transform:rotate(45deg);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-accordion__item[open] > summary::after{transform:rotate(225deg);margin-top:.1rem;}
 .fdy-accordion__item > summary:hover{background:var(--color-surface-2);}
-.fdy-accordion__item > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-accordion__item > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-accordion__panel{padding:0 var(--space-4) var(--space-4);color:var(--color-text-muted);font-size:var(--text-sm);line-height:var(--leading-normal);}
 /* Content reveal on open (fade + rise). Native <details> can't animate its own height cross-
  * browser without JS, so we animate the revealed panel instead, cheap, safe, reduced-motion gated. */
@@ -67,14 +67,14 @@ a { color: var(--color-primary); }
 .fdy-alert__text{color:var(--color-text);line-height:var(--leading-normal);}
 .fdy-alert__close{flex:none;align-self:flex-start;border:0;background:transparent;color:var(--color-text-muted);cursor:pointer;font-size:var(--text-lg);line-height:1;padding:0 var(--space-1);border-radius:var(--radius-sm);}
 .fdy-alert__close:hover{color:var(--color-text);}
-.fdy-alert__close:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-.fdy-alert--info{background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
+.fdy-alert__close:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+.fdy-alert--info{background:var(--color-info-soft);border-color:rgba(var(--color-info-rgb),.26);}
 .fdy-alert--info .fdy-alert__title,.fdy-alert--info .fdy-alert__icon{color:var(--color-info-strong);}
-.fdy-alert--success{background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
+.fdy-alert--success{background:var(--color-success-soft);border-color:rgba(var(--color-success-rgb),.26);}
 .fdy-alert--success .fdy-alert__title,.fdy-alert--success .fdy-alert__icon{color:var(--color-success-strong);}
-.fdy-alert--warning{background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
+.fdy-alert--warning{background:var(--color-warning-soft);border-color:rgba(var(--color-warning-rgb),.26);}
 .fdy-alert--warning .fdy-alert__title,.fdy-alert--warning .fdy-alert__icon{color:var(--color-warning-strong);}
-.fdy-alert--danger{background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-alert--danger{background:var(--color-danger-soft);border-color:rgba(var(--color-danger-rgb),.26);}
 .fdy-alert--danger .fdy-alert__title,.fdy-alert--danger .fdy-alert__icon{color:var(--color-danger-strong);}
 
 /* Freeday. App Shell.
@@ -123,7 +123,7 @@ a { color: var(--color-primary); }
 .fdy-nav__item:hover{background:var(--color-surface-2);color:var(--color-text);}
 /* Active indicator stays in the primary ramp so it never clashes with a re-themed accent. */
 .fdy-nav__item[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
-.fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-nav__item:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 /* Sidebar-menu extras: per-node icon (leading), count badge (trailing), and a
  * text label that truncates. Any of these are optional, a bare text item works. */
 .fdy-nav__icon{flex:none;display:inline-flex;width:1.15rem;height:1.15rem;}
@@ -141,7 +141,7 @@ a { color: var(--color-primary); }
 .fdy-nav__grouplabel{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);padding:var(--space-3) var(--space-3) var(--space-1);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
 .fdy-nav__grouplabel::-webkit-details-marker{display:none;}
 .fdy-nav__grouplabel:hover{color:var(--color-text-muted);}
-.fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-nav__grouplabel:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-nav__grouplabel::after{content:"";flex:none;width:.45rem;height:.45rem;margin-right:var(--space-1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--dur-fast) var(--ease-standard);opacity:.7;}
 .fdy-nav__group[open] > .fdy-nav__grouplabel::after{transform:rotate(45deg);}
 /* --flat: calmer, non-collapsible grouped nav, hide the caret, drop the
@@ -242,13 +242,13 @@ a { color: var(--color-primary); }
    is the same component whether the nav is a sidebar column or a top row. */
 /* Controls on a coloured app bar go on-colour (icons stay legible, hover is a light wash) */
 .fdy-appbar--primary .fdy-btn--ghost{background:transparent;border-color:transparent;color:var(--color-on-primary);box-shadow:none;}
-.fdy-appbar--primary .fdy-btn--ghost:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);transform:none;}
+.fdy-appbar--primary .fdy-btn--ghost:hover{background:rgba(var(--color-on-primary-rgb),.16);color:var(--color-on-primary);transform:none;}
 /* Nav links on a coloured bar: full on-colour ink in every state (a dimmed variant would trade away
    the contrast the bar's own token pair guarantees). The current page is carried by the background
    wash plus the semibold weight the base rule already applies, and by `aria-current` itself. */
 .fdy-appbar--primary .fdy-nav__item{color:var(--color-on-primary);}
-.fdy-appbar--primary .fdy-nav__item:hover{background:color-mix(in srgb,var(--color-on-primary) 16%,transparent);color:var(--color-on-primary);}
-.fdy-appbar--primary .fdy-nav__item[aria-current="page"]{background:color-mix(in srgb,var(--color-on-primary) 24%,transparent);color:var(--color-on-primary);}
+.fdy-appbar--primary .fdy-nav__item:hover{background:rgba(var(--color-on-primary-rgb),.16);color:var(--color-on-primary);}
+.fdy-appbar--primary .fdy-nav__item[aria-current="page"]{background:rgba(var(--color-on-primary-rgb),.24);color:var(--color-on-primary);}
 
 /* Freeday. Autocomplete (text input + filtered suggestion listbox, APG editable combobox).
  * Enhanced by freeday-autocomplete.js. */
@@ -282,22 +282,28 @@ a { color: var(--color-primary); }
  * text-leaning foreground so initials keep WCAG AA (verified >=4.5:1 in light & dark by
  * test/contrast.test.mjs). Use to disambiguate same-initial avatars (e.g. many "PT …" names):
  * hash a stable 1..8 index off the FULL name in your app, then apply .fdy-avatar--tone-<n>. */
-.fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:color-mix(in srgb,var(--_fdy-avatar-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-avatar-tone) 50%,var(--color-text));}
-.fdy-avatar--tone-1{--_fdy-avatar-tone:var(--tone-1);}
-.fdy-avatar--tone-2{--_fdy-avatar-tone:var(--tone-2);}
-.fdy-avatar--tone-3{--_fdy-avatar-tone:var(--tone-3);}
-.fdy-avatar--tone-4{--_fdy-avatar-tone:var(--tone-4);}
-.fdy-avatar--tone-5{--_fdy-avatar-tone:var(--tone-5);}
-.fdy-avatar--tone-6{--_fdy-avatar-tone:var(--tone-6);}
-.fdy-avatar--tone-7{--_fdy-avatar-tone:var(--tone-7);}
-.fdy-avatar--tone-8{--_fdy-avatar-tone:var(--tone-8);}
+/* One flat token per half, computed in advance by tokens/build.mjs: --tone-N-bg is 18% of the
+ * tone over --color-surface, --tone-N-ink is 50% of it toward --color-text, both per theme.
+ * They USED to be mixed here, with the hue injected per element through a private custom
+ * property — which put var() inside color-mix(), the one shape that cannot be rescued: valid at
+ * parse time, invalid at computed-value time, and there `background` and `color` drop to their
+ * INITIAL values, not to any fallback. @supports answered it for exactly as long as somebody
+ * remembered to write the counterpart; a precomputed token removes the question. */
+.fdy-avatar--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);}
+.fdy-avatar--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);}
+.fdy-avatar--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);}
+.fdy-avatar--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);}
+.fdy-avatar--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);}
+.fdy-avatar--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);}
+.fdy-avatar--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);}
+.fdy-avatar--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);}
 
 /* Freeday. Badge */
-.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
-.fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
-.fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
-.fdy-badge--danger{color:var(--color-danger-strong);background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
-.fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
+.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid rgba(var(--color-primary-rgb),.22);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
+.fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:rgba(var(--color-success-rgb),.26);}
+.fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:rgba(var(--color-warning-rgb),.26);}
+.fdy-badge--danger{color:var(--color-danger-strong);background:var(--color-danger-soft);border-color:rgba(var(--color-danger-rgb),.26);}
+.fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:rgba(var(--color-info-rgb),.26);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
 /* Categorical tone badges, a status vocabulary larger than the semantic palette, from the
@@ -309,15 +315,19 @@ a { color: var(--color-primary); }
  * cannot. A back-office document list carrying Draft, Submitted, Approved, Completed, Settled,
  * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
  * which is the report this shipped for. */
-.fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:color-mix(in srgb,var(--_fdy-badge-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-badge-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-badge-tone) 26%,transparent);}
-.fdy-badge--tone-1{--_fdy-badge-tone:var(--tone-1);}
-.fdy-badge--tone-2{--_fdy-badge-tone:var(--tone-2);}
-.fdy-badge--tone-3{--_fdy-badge-tone:var(--tone-3);}
-.fdy-badge--tone-4{--_fdy-badge-tone:var(--tone-4);}
-.fdy-badge--tone-5{--_fdy-badge-tone:var(--tone-5);}
-.fdy-badge--tone-6{--_fdy-badge-tone:var(--tone-6);}
-.fdy-badge--tone-7{--_fdy-badge-tone:var(--tone-7);}
-.fdy-badge--tone-8{--_fdy-badge-tone:var(--tone-8);}
+/* Precomputed tone tokens, the same --tone-N-bg / --tone-N-ink the avatar and the chip read, so
+ * one contrast assertion still covers all three. --tone-N-border-soft is the badge's own edge:
+ * 26% of the tone over transparent, which is a translucent colour and therefore stays rgba()
+ * rather than flattening to a hex. See avatar.css for why none of this is mixed in the
+ * component any more, and tokens/build.mjs for where the mixing moved to. */
+.fdy-badge--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);border-color:var(--tone-1-border-soft);}
+.fdy-badge--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);border-color:var(--tone-2-border-soft);}
+.fdy-badge--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);border-color:var(--tone-3-border-soft);}
+.fdy-badge--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);border-color:var(--tone-4-border-soft);}
+.fdy-badge--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);border-color:var(--tone-5-border-soft);}
+.fdy-badge--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);border-color:var(--tone-6-border-soft);}
+.fdy-badge--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);border-color:var(--tone-7-border-soft);}
+.fdy-badge--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);border-color:var(--tone-8-border-soft);}
 
 /* Overlay badge, anchors a small count/dot/icon badge to a corner of any element
  * (icon, button, text). Wrap the content in .fdy-badge-wrap; add .fdy-badge-ov as a
@@ -408,7 +418,7 @@ a { color: var(--color-primary); }
 .fdy-breadcrumb__item{display:inline-flex;align-items:center;gap:var(--space-2);color:var(--color-text-muted);}
 .fdy-breadcrumb__link{color:var(--color-text-muted);text-decoration:none;border-radius:var(--radius-sm);}
 .fdy-breadcrumb__link:hover{color:var(--color-primary-strong);text-decoration:underline;}
-.fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
 .fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}
 
@@ -478,16 +488,24 @@ a { color: var(--color-primary); }
 }
 
 /* Freeday. Button */
+/* The fill is a FLAT colour with a black veil laid over it, not a gradient between two shades.
+ * It used to be `linear-gradient(primary, color-mix(in srgb, #000 10%, primary))`, and that is the
+ * same colour at every stop — veiling a solid base with black 0 -> .1 darkens it by exactly 10% —
+ * but the mix form carries var(), so on Safari <= 16.1 the whole declaration failed at
+ * computed-value time and the button lost its fill rather than falling back. Measured identical to
+ * the mix it replaces (within the 1/255 the gradient's own 8-bit rounding costs); see
+ * test/color-mix.test.mjs for the rule and tokens/build.mjs for why none of these may use
+ * color-mix(). Pressed states veil from the TOP, which is the same trick read upside down. */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);
   font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);
   line-height:1;white-space:nowrap;cursor:pointer;text-decoration:none;color:var(--color-on-primary);
-  background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));
+  background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));
   border:var(--bw) solid transparent;border-radius:var(--radius-md);
-  box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-primary) 50%,transparent),inset 0 1px 0 rgba(255,255,255,.26);
+  box-shadow:0 2px 9px -1px rgba(var(--color-primary-rgb),.5),inset 0 1px 0 rgba(255,255,255,.26);
   transition:background var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard),transform var(--dur-fast) var(--ease-standard);}
-.fdy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.26);}
-.fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
+.fdy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-primary-rgb),.6),inset 0 1px 0 rgba(255,255,255,.26);}
+.fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px rgba(var(--color-primary-rgb),.46);}
 .fdy-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
 /* Pressed / toggle. `aria-pressed` is already the right attribute for a toggle button, so this adds
    no class and no new markup contract, and it is what makes .fdy-btn-group a complete segmented
@@ -495,8 +513,8 @@ a { color: var(--color-primary); }
    defines its OWN pressed look below; a single shared rule cannot work, because a gradient is a
    background-IMAGE and would blank the ghost variant's background-color. Solid: invert the gradient
    and sink the shadow inward, so a held button reads as depressed, not merely primary-coloured. */
-.fdy-btn[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 12%,var(--color-primary)),var(--color-primary));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
-.fdy-btn[aria-pressed="true"]:hover{transform:none;box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
+.fdy-btn[aria-pressed="true"]{background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0));box-shadow:inset 0 2px 6px rgba(0,0,0,.22);}
+.fdy-btn[aria-pressed="true"]:hover{transform:none;box-shadow:inset 0 2px 6px rgba(0,0,0,.22);}
 
 .fdy-btn--ghost{background:var(--color-surface);color:var(--color-primary-strong);border-color:var(--color-border-strong);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
@@ -508,15 +526,15 @@ a { color: var(--color-primary); }
    screen. `.fdy-menu__item--danger` has always modelled the quiet form (red text, not a red block);
    the pairing rules below bring it to the button. They are more specific than this one and come
    after it, so this rule needs no :not() guard of its own, one mechanism, not two. */
-.fdy-btn--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-danger-btn) 46%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
-.fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-danger-btn) 54%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
+.fdy-btn--danger{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.12));color:var(--color-on-danger);box-shadow:0 2px 9px -1px rgba(var(--color-danger-btn-rgb),.46),inset 0 1px 0 rgba(255,255,255,.22);}
+.fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-danger-btn-rgb),.54),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:active{transform:translateY(1px);}
 /* Quiet destructive: the variant keeps its own ground and only the ink turns. */
-.fdy-btn--ghost.fdy-btn--danger{background:transparent;color:var(--color-danger-strong);border-color:color-mix(in srgb,var(--color-danger) 40%,transparent);box-shadow:none;}
+.fdy-btn--ghost.fdy-btn--danger{background:transparent;color:var(--color-danger-strong);border-color:rgba(var(--color-danger-rgb),.4);box-shadow:none;}
 .fdy-btn--ghost.fdy-btn--danger:hover{background:var(--color-danger-soft);border-color:var(--color-danger);color:var(--color-danger-strong);}
 .fdy-btn--text.fdy-btn--danger{background:none;color:var(--color-danger-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text.fdy-btn--danger:hover{background:var(--color-danger-soft);color:var(--color-danger-strong);}
-.fdy-btn--danger[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 14%,var(--color-danger-btn)),var(--color-danger-btn));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 24%,transparent);}
+.fdy-btn--danger[aria-pressed="true"]{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,0));box-shadow:inset 0 2px 6px rgba(0,0,0,.24);}
 
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}
 .fdy-btn--lg{height:calc(var(--control-h) + var(--space-2));padding:0 var(--space-6);font-size:var(--text-base);border-radius:var(--radius-lg);}
@@ -565,7 +583,7 @@ a { color: var(--color-primary); }
 .fdy-btn-group .fdy-btn:last-child{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md);}
 
 /* FAB, circular elevated action button (icon), optional extended pill with label */
-.fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
+.fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-fab:hover{transform:translateY(-1px);box-shadow:var(--shadow-4);}
 .fdy-fab:active{transform:translateY(1px);}
 .fdy-fab:focus-visible{border-radius:var(--radius-full);}
@@ -574,8 +592,8 @@ a { color: var(--color-primary); }
 .fdy-fab--sm{width:2.5rem;height:2.5rem;}
 .fdy-fab--sm svg{width:1.25rem;height:1.25rem;}
 .fdy-fab--extended{width:auto;padding:0 var(--space-5);font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);}
-.fdy-fab--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);}
-.fdy-fab--accent{background:linear-gradient(180deg,var(--color-accent),color-mix(in srgb,#000 10%,var(--color-accent)));color:var(--color-on-accent);}
+.fdy-fab--danger{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.12));color:var(--color-on-danger);}
+.fdy-fab--accent{background:var(--color-accent) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));color:var(--color-on-accent);}
 
 /* Freeday. Card */
 /* position:relative, containing block for out-of-flow card content (see base.css); it also gives
@@ -630,9 +648,9 @@ a { color: var(--color-primary); }
 .fdy-carousel__viewport{position:relative;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;border-radius:var(--radius-lg);scrollbar-width:none;-ms-overflow-style:none;}
 .fdy-carousel__viewport::-webkit-scrollbar{display:none;}
 .fdy-carousel__slide{flex:0 0 100%;min-width:0;scroll-snap-align:center;}
-.fdy-carousel__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border:0;border-radius:var(--radius-full);background:color-mix(in srgb,var(--color-surface) 86%,transparent);color:var(--color-text);box-shadow:var(--shadow-2);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard);}
+.fdy-carousel__arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border:0;border-radius:var(--radius-full);background:rgba(var(--color-surface-rgb),.86);color:var(--color-text);box-shadow:var(--shadow-2);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard);}
 .fdy-carousel__arrow:hover{background:var(--color-surface);}
-.fdy-carousel__arrow:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-carousel__arrow:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.4);}
 .fdy-carousel__arrow:disabled{opacity:.4;cursor:not-allowed;}
 .fdy-carousel__arrow--prev{left:var(--space-3);}
 .fdy-carousel__arrow--next{right:var(--space-3);}
@@ -640,7 +658,7 @@ a { color: var(--color-primary); }
 .fdy-carousel__dots{display:flex;justify-content:center;gap:var(--space-2);margin-top:var(--space-3);}
 .fdy-carousel__dot{width:.5rem;height:.5rem;padding:0;border:0;border-radius:var(--radius-full);background:var(--color-border-strong);cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),width var(--dur-fast) var(--ease-standard);}
 .fdy-carousel__dot[aria-current="true"]{background:var(--color-primary);width:1.25rem;}
-.fdy-carousel__dot:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-carousel__dot:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.4);}
 @media (prefers-reduced-motion:reduce){.fdy-carousel__viewport{scroll-behavior:auto;}}
 
 /* Freeday. Cascade select (hierarchical drill-down picker).
@@ -652,14 +670,14 @@ a { color: var(--color-primary); }
 .fdy-cascade{position:relative;display:inline-block;width:100%;max-width:22rem;}
 .fdy-cascade__trigger{display:inline-flex;align-items:center;justify-content:space-between;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-cascade__trigger:hover{border-color:var(--color-text-muted);}
-.fdy-cascade__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-.fdy-cascade__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cascade__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+.fdy-cascade__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-cascade__trigger:disabled,.fdy-cascade__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-cascade__trigger[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
 .fdy-cascade__trigger[aria-readonly="true"]:hover{border-color:var(--color-border);}
 .fdy-cascade__trigger[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-cascade--error .fdy-cascade__trigger,.fdy-cascade__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
-.fdy-cascade--error .fdy-cascade__trigger:focus-visible,.fdy-cascade--error .fdy-cascade__trigger.is-open,.fdy-cascade__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-cascade--error .fdy-cascade__trigger:focus-visible,.fdy-cascade--error .fdy-cascade__trigger.is-open,.fdy-cascade__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 .fdy-cascade__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-cascade__value--placeholder{color:var(--color-text-subtle);}
 .fdy-cascade__trigger::after{content:"";flex:none;width:.5rem;height:.5rem;margin-top:-.15rem;border-right:2px solid var(--color-text-subtle);border-bottom:2px solid var(--color-text-subtle);transform:rotate(45deg);transition:transform var(--dur-fast) var(--ease-standard);}
@@ -671,7 +689,7 @@ a { color: var(--color-primary); }
 .fdy-cascade__head{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) var(--space-1) var(--space-2);margin-bottom:var(--space-1);border-bottom:var(--bw) solid var(--color-border);}
 .fdy-cascade__back{display:inline-flex;align-items:center;justify-content:center;flex:none;width:1.5rem;height:1.5rem;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);cursor:pointer;}
 .fdy-cascade__back:hover{background:var(--color-surface-3);color:var(--color-text);}
-.fdy-cascade__back:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-cascade__back:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-cascade__back[hidden]{display:none;}
 .fdy-cascade__back svg{display:block;width:1rem;height:1rem;}
 .fdy-cascade__crumb{min-width:0;flex:1;font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--color-text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -834,30 +852,48 @@ a { color: var(--color-primary); }
 
 /* Freeday. Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}
-.fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 22%,transparent);}
+.fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:rgba(var(--color-primary-rgb),.22);}
 /* Categorical tone chips, non-semantic category tags / legend swatches, from the general
  * --tone-1..8 palette. Same validated AA formula as .fdy-avatar--tone-* (text >=4.5:1 both themes,
  * gated by test/contrast.test.mjs). */
-.fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:color-mix(in srgb,var(--_fdy-chip-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-chip-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-chip-tone) 30%,var(--color-border));}
-.fdy-chip--tone-1{--_fdy-chip-tone:var(--tone-1);}
-.fdy-chip--tone-2{--_fdy-chip-tone:var(--tone-2);}
-.fdy-chip--tone-3{--_fdy-chip-tone:var(--tone-3);}
-.fdy-chip--tone-4{--_fdy-chip-tone:var(--tone-4);}
-.fdy-chip--tone-5{--_fdy-chip-tone:var(--tone-5);}
-.fdy-chip--tone-6{--_fdy-chip-tone:var(--tone-6);}
-.fdy-chip--tone-7{--_fdy-chip-tone:var(--tone-7);}
-.fdy-chip--tone-8{--_fdy-chip-tone:var(--tone-8);}
-.fdy-chip__remove{display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
-.fdy-chip__remove:hover{opacity:1;background:color-mix(in srgb,currentColor 16%,transparent);}
-.fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+/* Precomputed tone tokens, the same --tone-N-bg / --tone-N-ink the avatar and the badge read.
+ * --tone-N-border is the chip's edge: 30% of the tone over --color-border, opaque, which is a
+ * different edge from the badge's translucent one and so a different token. See avatar.css for
+ * why the mix left the component, and tokens/build.mjs for where it went. */
+.fdy-chip--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);border-color:var(--tone-1-border);}
+.fdy-chip--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);border-color:var(--tone-2-border);}
+.fdy-chip--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);border-color:var(--tone-3-border);}
+.fdy-chip--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);border-color:var(--tone-4-border);}
+.fdy-chip--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);border-color:var(--tone-5-border);}
+.fdy-chip--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);border-color:var(--tone-6-border);}
+.fdy-chip--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);border-color:var(--tone-7-border);}
+.fdy-chip--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);border-color:var(--tone-8-border);}
+.fdy-chip__remove{position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
+/* The hover wash is 16% of the chip's OWN ink, and the chip's ink is whatever the variant set:
+ * --color-text, --color-primary-strong, --tone-N-ink. So no token can stand in for it, which is why
+ * this was the last color-mix() in the kit — and the only one whose two-line fallback actually
+ * worked, the mix carrying no var() and therefore being rejected at parse time.
+ *
+ * It is a VEIL now, the same trick the button gradients use (button.css): currentColor at .16 over
+ * the chip, which is algebraically the colour the mix produced — `F·.16 + (1-.16)·ground` either
+ * way, including at the glyph's antialiased edges, where the veil's colour equals the glyph's and so
+ * composites back to itself. No @supports, no fallback line, and nothing newer than Safari 4.
+ *
+ * Absolutely positioned, so it paints above the × as well as the background; `border-radius:inherit`
+ * keeps it inside the pill. No transition: the mix had none, and a veil that fades is a different
+ * component. */
+.fdy-chip__remove::before{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;}
+.fdy-chip__remove:hover{opacity:1;}
+.fdy-chip__remove:hover::before{opacity:.16;}
+.fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 /* Group wrapper for a row of chips (choice / filter). */
 .fdy-chips{display:flex;flex-wrap:wrap;gap:var(--space-2);}
 /* Interactive chips: choice (toggle) + filter (toggle with a check when on).
  * Rendered as <button aria-pressed> and enhanced by freeday-chip.js. */
 .fdy-chip--choice,.fdy-chip--filter{cursor:pointer;font-family:inherit;background:var(--color-surface);border-color:var(--color-border);transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-chip--choice:hover,.fdy-chip--filter:hover{background:var(--color-surface-3);border-color:var(--color-text-subtle);}
-.fdy-chip--choice:focus-visible,.fdy-chip--filter:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
-.fdy-chip--choice[aria-pressed="true"],.fdy-chip--filter[aria-pressed="true"]{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-chip--choice:focus-visible,.fdy-chip--filter:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
+.fdy-chip--choice[aria-pressed="true"],.fdy-chip--filter[aria-pressed="true"]{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:rgba(var(--color-primary-rgb),.4);}
 .fdy-chip--choice:disabled,.fdy-chip--filter:disabled,.fdy-chip--choice[aria-disabled="true"],.fdy-chip--filter[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-chip__check{display:none;flex:none;width:.85rem;height:.85rem;margin-left:calc(var(--space-1)*-1);}
 .fdy-chip__check svg{display:block;width:100%;height:100%;}
@@ -867,8 +903,8 @@ a { color: var(--color-primary); }
 .fdy-combo{position:relative;display:block;max-width:22rem;}
 .fdy-combo__button{display:inline-flex;align-items:center;justify-content:space-between;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-combo__button:hover{border-color:var(--color-text-muted);}
-.fdy-combo__button:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-.fdy-combo__button.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-combo__button:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+.fdy-combo__button.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-combo__button:disabled,.fdy-combo__button[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 /* Read-only: stays focusable & shows its value at full contrast but can't open, muted surface,
    softened border, default cursor, no focus-ring escalation (matches input[readonly], #39). */
@@ -876,7 +912,7 @@ a { color: var(--color-primary); }
 .fdy-combo__button[aria-readonly="true"]:hover{border-color:var(--color-border);}
 .fdy-combo__button[aria-readonly="true"]:focus-visible{border-color:var(--color-border-strong);box-shadow:none;}
 .fdy-combo--error .fdy-combo__button,.fdy-combo__button[aria-invalid="true"]{border-color:var(--color-danger);}
-.fdy-combo--error .fdy-combo__button:focus-visible,.fdy-combo--error .fdy-combo__button.is-open,.fdy-combo__button[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-combo--error .fdy-combo__button:focus-visible,.fdy-combo--error .fdy-combo__button.is-open,.fdy-combo__button[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 .fdy-combo__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .fdy-combo__value--placeholder{color:var(--color-text-subtle);}
 .fdy-combo__button::after{content:"";flex:none;width:.5rem;height:.5rem;margin-top:-.15rem;border-right:2px solid var(--color-text-subtle);border-bottom:2px solid var(--color-text-subtle);transform:rotate(45deg);transition:transform var(--dur-fast) var(--ease-standard);}
@@ -891,14 +927,14 @@ a { color: var(--color-primary); }
 .fdy-combo__option{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-2) var(--space-3);border-radius:var(--radius-sm);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;white-space:nowrap;}
 .fdy-combo__option.is-highlighted{background:var(--color-surface-3);}
 .fdy-combo__option[aria-selected="true"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
-.fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
+.fdy-combo__option.is-highlighted[aria-selected="true"]{box-shadow:inset 0 0 0 2px rgba(var(--color-primary-rgb),.55);}
 /* The tick is CSS, not content (#004 §2). Inside role="option" it joined the option's ACCESSIBLE
    NAME, so the selected option announced "✓August" while every other announced "August": the state
    was read twice, once as aria-selected, once as decoration, and a test asking for an option by
    its own label stopped matching the one that was selected. The `/ ""` is alt text: the glyph is
    painted, the accessibility tree gets nothing. Same reasoning as .fdy-label--required (1.29.0).
    The empty box still reserves its width, so labels stay aligned whether selected or not. */
-.fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary);}
+.fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary-strong);}
 .fdy-combo__option[aria-selected="true"] .fdy-combo__check::after{content:"✓" / "";}
 @media (prefers-reduced-motion:no-preference){.fdy-combo__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 @keyframes fdy-combo-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
@@ -1048,10 +1084,10 @@ a { color: var(--color-primary); }
 .fdy-field>.fdy-datepicker,.fdy-field>.fdy-timepicker,.fdy-field>.fdy-daterange{max-width:none;}
 .fdy-datepicker__trigger{display:inline-flex;align-items:center;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-datepicker__trigger:hover{border-color:var(--color-text-muted);}
-.fdy-datepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-.fdy-datepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-datepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+.fdy-datepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-datepicker--error .fdy-datepicker__trigger,.fdy-datepicker__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
-.fdy-datepicker--error .fdy-datepicker__trigger:focus-visible,.fdy-datepicker--error .fdy-datepicker__trigger.is-open,.fdy-datepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-datepicker--error .fdy-datepicker__trigger:focus-visible,.fdy-datepicker--error .fdy-datepicker__trigger.is-open,.fdy-datepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 .fdy-datepicker__trigger:disabled,.fdy-datepicker__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-datepicker__trigger[aria-readonly="true"]{background:var(--color-surface-2);border-color:var(--color-border);cursor:default;}
 .fdy-datepicker__trigger[aria-readonly="true"]:hover{border-color:var(--color-border);}
@@ -1066,7 +1102,7 @@ a { color: var(--color-primary); }
 .fdy-datepicker__icon.is-hidden{visibility:hidden;}
 .fdy-datepicker__clear{position:absolute;top:50%;right:var(--space-3);transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:1.15rem;height:1.15rem;padding:0;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;transition:color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard);}
 .fdy-datepicker__clear:hover{color:var(--color-text);background:var(--color-surface-2);}
-.fdy-datepicker__clear:focus-visible{outline:none;color:var(--color-text);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-datepicker__clear:focus-visible{outline:none;color:var(--color-text);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-datepicker__clear svg{display:block;width:.9rem;height:.9rem;}
 
 .fdy-datepicker__panel{position:absolute;top:calc(100% + var(--space-1));left:0;z-index:130;padding:var(--space-3);background:var(--color-surface);color:var(--color-text);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);}
@@ -1078,16 +1114,16 @@ a { color: var(--color-primary); }
    reset and the same hover/focus treatment as the arrows beside it. */
 .fdy-cal__title{flex:1;appearance:none;border:0;background:transparent;margin:0;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);text-align:center;font-family:inherit;font-weight:var(--weight-semibold);font-size:var(--text-sm);color:var(--color-text);text-transform:capitalize;cursor:pointer;}
 .fdy-cal__title:hover{background:var(--color-surface-2);}
-.fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__title:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-cal__month,.fdy-cal__year{display:inline-flex;align-items:center;justify-content:center;height:2.25rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-family:inherit;font-size:var(--text-sm);text-transform:capitalize;cursor:pointer;}
 .fdy-cal__month:hover,.fdy-cal__year:hover{background:var(--color-surface-2);}
-.fdy-cal__month:focus-visible,.fdy-cal__year:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__month:focus-visible,.fdy-cal__year:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-cal__month:disabled,.fdy-cal__year:disabled{opacity:.4;cursor:not-allowed;background:transparent;}
 .fdy-cal__month.is-today,.fdy-cal__year.is-today{font-weight:var(--weight-bold);box-shadow:inset 0 0 0 1.5px var(--color-border-strong);}
 .fdy-cal__month.is-selected,.fdy-cal__year.is-selected{background:var(--color-primary);color:var(--color-on-primary);font-weight:var(--weight-semibold);}
 .fdy-cal__nav{display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;flex:none;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
 .fdy-cal__nav:hover{background:var(--color-surface-2);color:var(--color-text);}
-.fdy-cal__nav:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__nav:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-cal__grid{display:grid;grid-template-columns:repeat(7,2rem);gap:2px;}
 /* Month grid. 3×4 over the same track width as the 7-column day grid, so the panel does not resize
    when you drill and the pointer does not have to travel.
@@ -1099,7 +1135,7 @@ a { color: var(--color-primary); }
 .fdy-cal__dow{display:flex;align-items:center;justify-content:center;height:1.75rem;font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--color-text-muted);text-transform:capitalize;}
 .fdy-cal__day{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text);font-size:var(--text-sm);font-variant-numeric:tabular-nums;cursor:pointer;}
 .fdy-cal__day:hover{background:var(--color-surface-2);}
-.fdy-cal__day:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-cal__day:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-cal__day.is-outside{color:var(--color-text-subtle);opacity:.55;}
 .fdy-cal__day.is-today{font-weight:var(--weight-bold);box-shadow:inset 0 0 0 1.5px var(--color-border-strong);}
 .fdy-cal__day.in-range{background:var(--color-primary-soft);color:var(--color-primary-strong);border-radius:0;}
@@ -1180,11 +1216,11 @@ a { color: var(--color-primary); }
  * Enhanced by freeday-upload.js; states: idle · drag-over · uploading · done · error. */
 .fdy-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6);text-align:center;border:2px dashed var(--color-control-border);border-radius:var(--radius-lg);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
-.fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
 .fdy-dropzone[aria-disabled="true"],.fdy-dropzone.is-disabled{opacity:.55;cursor:not-allowed;pointer-events:none;}
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
-.fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
+.fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary-strong);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
 .fdy-dropzone__hint{font-size:var(--text-xs);}
@@ -1211,9 +1247,14 @@ a { color: var(--color-primary); }
 .fdy-file__progress{margin-top:var(--space-2);}
 .fdy-file__remove{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
 .fdy-file__remove:hover{background:var(--color-surface-2);color:var(--color-text);}
-.fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-file--success .fdy-file__icon{color:var(--color-success);}
-.fdy-file--error{border-color:color-mix(in srgb,var(--color-danger) 40%,var(--color-border));}
+/* 40% of --color-danger over --color-border, as a token rather than as a mix written here: it blends
+ * two ROLES, so no channel triple can state it, and mixing it in the component carried var() into
+ * color-mix() — the shape that goes invalid at computed-value time and drops border-color to its
+ * initial currentColor, which is the black box an iPhone 7 drew around a failed upload. The blend is
+ * now computed per theme by tokens/build.mjs. */
+.fdy-file--error{border-color:var(--color-danger-border);}
 .fdy-file--error .fdy-file__icon{color:var(--color-danger);}
 .fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}
 
@@ -1285,7 +1326,7 @@ a { color: var(--color-primary); }
 /* Freeday. Input group (prefix/suffix addons, e.g. Rp / % / icon) */
 .fdy-input-group{display:flex;align-items:stretch;height:var(--control-h);max-width:22rem;background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);overflow:hidden;transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input-group:hover{border-color:var(--color-text-muted);}
-.fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 /* The group owns the height; the input fills whatever the border leaves. It used to subtract 3px
    for two 1.5px borders, which is arithmetic the engine is free to round: at dpr 1 each border
    resolves to 1px, so the group rendered 1px short of every control beside it (#018). Stretching
@@ -1314,7 +1355,7 @@ a { color: var(--color-primary); }
 .fdy-input-group__btn:disabled:hover{background:var(--color-surface-2);color:var(--color-text-muted);}
 /* Error state must win over the neutralizing rules above, promote to the wrapper. */
 .fdy-input-group:has(.fdy-input--error),.fdy-input-group:has(.fdy-combo--error),.fdy-input-group:has([aria-invalid="true"]){border-color:var(--color-danger);}
-.fdy-input-group:has(.fdy-input--error):focus-within,.fdy-input-group:has(.fdy-combo--error):focus-within,.fdy-input-group:has([aria-invalid="true"]):focus-within{border-color:var(--color-danger);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-input-group:has(.fdy-input--error):focus-within,.fdy-input-group:has(.fdy-combo--error):focus-within,.fdy-input-group:has([aria-invalid="true"]):focus-within{border-color:var(--color-danger);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 
 /* Freeday. Field & Input */
 .fdy-field{display:flex;flex-direction:column;gap:var(--space-2);max-width:22rem;}
@@ -1350,7 +1391,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-input::placeholder,.fdy-textarea::placeholder{color:var(--color-text-subtle);}
 .fdy-textarea{height:auto;min-height:5.5rem;padding:var(--space-3);line-height:var(--leading-normal);resize:vertical;}
 .fdy-input:hover,.fdy-textarea:hover{border-color:var(--color-text-muted);}
-.fdy-input:focus,.fdy-textarea:focus{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-input:focus,.fdy-textarea:focus{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-input:disabled,.fdy-textarea:disabled,.fdy-input[aria-disabled="true"],.fdy-textarea[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 /* Read-only (#39): the value is real and may be read/copied, only not edited. Full contrast (unlike
    :disabled which dims to placeholder-grey), muted surface + softened border so it still reads as
@@ -1367,7 +1408,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-input[type="number"]{appearance:textfield;-webkit-appearance:textfield;}
 .fdy-input[type="number"]::-webkit-outer-spin-button,.fdy-input[type="number"]::-webkit-inner-spin-button{appearance:none;-webkit-appearance:none;margin:0;}
 .fdy-input--error,.fdy-input[aria-invalid="true"],.fdy-textarea[aria-invalid="true"]{border-color:var(--color-danger);}
-.fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-input--error:focus,.fdy-input[aria-invalid="true"]:focus,.fdy-textarea[aria-invalid="true"]:focus{border-color:var(--color-danger);box-shadow:0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 /* Required marker. The control already carries `required`, so the asterisk is decoration: the
    `/ ""` is CSS alt text, the glyph is painted but exposes NOTHING to the accessibility tree, so a
    screen reader does not read "star" after every label. That is stricter than a <span> an app has to
@@ -1433,7 +1474,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Focus is not hover. The enhancer moves real DOM focus (freeday-menu.js `.focus()`), so this is
    the only thing a keyboard user has to go on, with the hover fill alone, arrowing through the
    menu is invisible. Same ring as .fdy-nav__item, which got this right. Reported twice. */
-.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-menu__item:disabled{opacity:.5;cursor:not-allowed;background:transparent;}
 .fdy-menu__item--danger{color:var(--color-danger-strong);}
 .fdy-menu__item svg{display:block;width:1rem;height:1rem;flex:none;}
@@ -1450,8 +1491,8 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-btn-split__toggle{padding:0 var(--space-2);margin-left:calc(var(--bw) * -1);border-top-left-radius:0;border-bottom-left-radius:0;}
 /* Hairline divider between the halves (outranks the segment rule above). */
 .fdy-btn-split > .fdy-btn-split__toggle{box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(0,0,0,.16);}
-.fdy-btn-split:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
-.fdy-btn-split:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
+.fdy-btn-split:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-primary-rgb),.55);}
+.fdy-btn-split:active{transform:translateY(1px);box-shadow:0 1px 4px -1px rgba(var(--color-primary-rgb),.46);}
 .fdy-btn-split__toggle:hover,.fdy-btn-split__toggle:focus-visible{z-index:1;}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}
 
@@ -1482,7 +1523,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-pagination__list{display:flex;align-items:center;gap:var(--space-1);list-style:none;margin:0;padding:0;}
 .fdy-pagination__link{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;padding:0 var(--space-2);border-radius:var(--radius-md);font-size:var(--text-sm);font-weight:var(--weight-medium);color:var(--color-text);background:transparent;border:var(--bw) solid transparent;text-decoration:none;cursor:pointer;transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard);}
 .fdy-pagination__link:hover{background:var(--color-surface-2);border-color:var(--color-border);}
-.fdy-pagination__link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-pagination__link:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-pagination__link[aria-current="page"]{background:var(--color-primary);color:var(--color-on-primary);}
 .fdy-pagination__link[aria-disabled="true"],.fdy-pagination__link:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}
 .fdy-pagination__ellipsis{display:inline-flex;align-items:center;justify-content:center;min-width:2.25rem;height:2.25rem;color:var(--color-text-subtle);}
@@ -1528,7 +1569,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-radio input::before{content:"";width:.55rem;height:.55rem;border-radius:50%;transform:scale(0);transition:transform var(--dur-fast) var(--ease-spring);box-shadow:inset 1rem 1rem var(--color-on-primary);}
 .fdy-check input:checked,.fdy-radio input:checked{background:var(--color-primary);border-color:var(--color-primary);}
 .fdy-check input:checked::before,.fdy-radio input:checked::before{transform:scale(1);}
-.fdy-check input:focus-visible,.fdy-radio input:focus-visible,.fdy-switch input:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-check input:focus-visible,.fdy-radio input:focus-visible,.fdy-switch input:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-check input:disabled,.fdy-radio input:disabled,.fdy-switch input:disabled{opacity:.5;cursor:not-allowed;}
 .fdy-check:has(input:disabled),.fdy-radio:has(input:disabled),.fdy-switch:has(input:disabled){cursor:not-allowed;}
 .fdy-switch input{appearance:none;-webkit-appearance:none;flex:none;position:relative;width:var(--control-switch-w);height:var(--control-switch-h);margin:0;border-radius:var(--radius-full);background:var(--color-control-border);cursor:pointer;transition:background var(--dur-base) var(--ease-standard);}
@@ -1548,11 +1589,11 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-checkbox:checked,.fdy-checkbox:indeterminate{background:var(--color-primary);border-color:var(--color-primary);}
 .fdy-checkbox:checked::before{transform:scale(1);}
 .fdy-checkbox:indeterminate::before{width:.6rem;height:2px;transform:scale(1);clip-path:none;box-shadow:none;background:var(--color-on-primary);}
-.fdy-checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-checkbox:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-checkbox:disabled{opacity:.5;cursor:not-allowed;}
 
 /* Freeday. Skeleton */
-.fdy-skeleton{display:block;border-radius:var(--radius-sm);background:var(--color-surface-3);background-image:linear-gradient(90deg,transparent,color-mix(in srgb,var(--color-surface) 60%,transparent),transparent);background-size:200% 100%;background-repeat:no-repeat;animation:fdy-skeleton 1.4s ease-in-out infinite;}
+.fdy-skeleton{display:block;border-radius:var(--radius-sm);background:var(--color-surface-3);background-image:linear-gradient(90deg,transparent,rgba(var(--color-surface-rgb),.6),transparent);background-size:200% 100%;background-repeat:no-repeat;animation:fdy-skeleton 1.4s ease-in-out infinite;}
 .fdy-skeleton--text{height:.8rem;margin:.3rem 0;}
 .fdy-skeleton--title{height:1.2rem;width:40%;}
 .fdy-skeleton--circle{border-radius:var(--radius-full);}
@@ -1633,7 +1674,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-stepper[aria-busy="true"]{opacity:.72;}
 .fdy-step.is-active .fdy-step__label{color:var(--color-text);font-weight:var(--weight-semibold);}
 .fdy-step__btn:focus-visible{outline:none;}
-.fdy-step__btn:focus-visible .fdy-step__marker{box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 30%,transparent);}
+.fdy-step__btn:focus-visible .fdy-step__marker{box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.3);}
 
 .fdy-step-panels{margin-top:var(--space-5);}
 .fdy-step-nav{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-5);}
@@ -1654,10 +1695,15 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    invisible on every second row. The tint is HALF a surface step rather than --color-surface-2
    itself, for the same reason: hover paints the full step, so the two must not be the same colour.
    Exposed as a Tier-3 token through the var() FALLBACK, never as a declaration — a custom property
-   set here would outrank a host's own :root override. */
+   set here would outrank a host's own :root override.
+   The tint arrives as --color-surface-stripe, already flattened, rather than as a color-mix() of
+   two surfaces. A custom property cannot carry color-mix(): the `background` that finally reads it
+   contains var(), so on Safari <= 16.1 it failed at computed-value time and the stripe vanished,
+   and a preceding declaration is never consulted in that path. The token is also OPAQUE on
+   purpose, which the frozen column below depends on. */
 /* The resting colour is also published as --_fdy-row-rest, so a row that must not answer the
    pointer can hover back to exactly what it was (see --hover-actionable). */
-.fdy-table--striped tbody tr:nth-child(even){--_fdy-row-rest:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));background:var(--_fdy-row-rest);}
+.fdy-table--striped tbody tr:nth-child(even){--_fdy-row-rest:var(--fdy-table-stripe,var(--color-surface-stripe));background:var(--_fdy-row-rest);}
 .fdy-table tbody tr:hover{background:var(--_fdy-row-hover,var(--color-surface-2));}
 /* Opt-in (#064): only a row that DOES something answers the pointer. A tint on a row with no click
    handler promises a target that is not there: people click the row, nothing happens, and the
@@ -1681,13 +1727,13 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Expandable detail row (FdyTable row-detail slot): a muted panel under its row, no hover tint. */
 .fdy-table__detailrow>td,.fdy-table__detailrow:hover>td{background:var(--color-surface-2);}
 .fdy-table th[aria-sort]{cursor:pointer;}
-.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
-.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary-strong);}
+.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary-strong);}
 
 /* Sortable header button (accessible click target inside th) */
 .fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}
 .fdy-table__sortbtn:hover{color:var(--color-text);}
-.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 
 /* Selection column + selected row */
 .fdy-table__selcol{width:1px;white-space:nowrap;}
@@ -1734,7 +1780,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    stripe — and deliberately WITHOUT `.fdy-table--sticky` in the selector, which would push this to
    (0,4,3) and beat the hover rule below. At (0,3,3) it ties, and the later rule wins, so a hovered
    row still bands unbroken across the freeze line. */
-.fdy-table--striped tbody tr:nth-child(even) td.fdy-table__freeze{background:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));}
+.fdy-table--striped tbody tr:nth-child(even) td.fdy-table__freeze{background:var(--fdy-table-stripe,var(--color-surface-stripe));}
 .fdy-table--sticky tbody tr:hover td.fdy-table__freeze{background:var(--_fdy-row-hover,var(--color-surface-2));}
 /* A frozen header cell is stuck on both axes wherever the head is frozen too, so
    it has to outrank both. */
@@ -1771,7 +1817,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
 .fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
-.fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-table__filterbtn.is-active{color:var(--color-primary-strong);}
 .fdy-table__filterbtn svg{width:.85rem;height:.85rem;}
 
@@ -1827,7 +1873,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    a panel per tab) for in-page tabs; use these classes on plain links for routed ones, and
    `.fdy-nav--horizontal` for an application's PRIMARY navigation. */
 .fdy-tabs__tab[aria-selected="true"],.fdy-tabs__tab[aria-current="page"]{color:var(--color-primary-strong);border-bottom-color:var(--color-primary);}
-.fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}
 /* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */
@@ -1852,10 +1898,10 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-timepicker{position:relative;display:inline-block;width:100%;max-width:11rem;}
 .fdy-timepicker__trigger{display:inline-flex;align-items:center;gap:var(--space-2);width:100%;height:var(--control-h);padding:0 var(--space-3);text-align:left;cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-timepicker__trigger:hover{border-color:var(--color-text-muted);}
-.fdy-timepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
-.fdy-timepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-timepicker__trigger:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+.fdy-timepicker__trigger.is-open{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-timepicker--error .fdy-timepicker__trigger,.fdy-timepicker__trigger[aria-invalid="true"]{border-color:var(--color-danger);}
-.fdy-timepicker--error .fdy-timepicker__trigger:focus-visible,.fdy-timepicker--error .fdy-timepicker__trigger.is-open,.fdy-timepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-timepicker--error .fdy-timepicker__trigger:focus-visible,.fdy-timepicker--error .fdy-timepicker__trigger.is-open,.fdy-timepicker__trigger[aria-invalid="true"]:focus-visible{border-color:var(--color-danger);box-shadow:0 0 0 3px rgba(var(--color-danger-rgb),.26);}
 .fdy-timepicker__trigger:disabled,.fdy-timepicker__trigger[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-timepicker__value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .fdy-timepicker__value--placeholder{color:var(--color-text-subtle);}
@@ -1895,7 +1941,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-toast__text{opacity:.88;line-height:var(--leading-normal);}
 .fdy-toast__close{flex:none;border:0;background:transparent;color:var(--color-inverse-text);opacity:.7;cursor:pointer;font-size:var(--text-lg);line-height:1;padding:0 var(--space-1);border-radius:var(--radius-sm);}
 .fdy-toast__close:hover{opacity:1;}
-.fdy-toast__close:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-inverse-text) 40%,transparent);}
+.fdy-toast__close:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 3px rgba(var(--color-inverse-text-rgb),.4);}
 .fdy-toast.is-leaving{opacity:0;transform:translateX(16px);transition:opacity var(--dur-base) var(--ease-standard),transform var(--dur-base) var(--ease-standard);}
 @media (prefers-reduced-motion:no-preference){.fdy-toast{animation:fdy-toast-in var(--dur-base) var(--ease-spring);}}
 @keyframes fdy-toast-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
@@ -1915,7 +1961,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-tree__branch > summary{list-style:none;cursor:pointer;}
 .fdy-tree__branch > summary::-webkit-details-marker{display:none;}
 .fdy-tree__branch > summary:hover,.fdy-tree__leaf:hover{background:var(--color-surface-2);}
-.fdy-tree__branch > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-tree__branch > summary:focus-visible{outline:none;box-shadow:inset 0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-tree__chevron{flex:none;width:.9rem;height:.9rem;color:var(--color-text-subtle);transition:transform var(--dur-fast) var(--ease-standard);}
 .fdy-tree__branch[open] > summary .fdy-tree__chevron{transform:rotate(90deg);}
 .fdy-tree__icon{flex:none;width:1rem;height:1rem;color:var(--color-text-muted);}

@@ -1,7 +1,7 @@
 /* Freeday. Input group (prefix/suffix addons, e.g. Rp / % / icon) */
 .fdy-input-group{display:flex;align-items:stretch;height:var(--control-h);max-width:22rem;background:var(--color-surface);border:1.5px solid var(--color-control-border);border-radius:var(--radius-md);box-shadow:inset 0 1px 2px rgba(16,14,30,.06);overflow:hidden;transition:border-color var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-input-group:hover{border-color:var(--color-text-muted);}
-.fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-input-group:focus-within{border-color:var(--color-primary);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 /* The group owns the height; the input fills whatever the border leaves. It used to subtract 3px
    for two 1.5px borders, which is arithmetic the engine is free to round: at dpr 1 each border
    resolves to 1px, so the group rendered 1px short of every control beside it (#018). Stretching
@@ -30,4 +30,4 @@
 .fdy-input-group__btn:disabled:hover{background:var(--color-surface-2);color:var(--color-text-muted);}
 /* Error state must win over the neutralizing rules above, promote to the wrapper. */
 .fdy-input-group:has(.fdy-input--error),.fdy-input-group:has(.fdy-combo--error),.fdy-input-group:has([aria-invalid="true"]){border-color:var(--color-danger);}
-.fdy-input-group:has(.fdy-input--error):focus-within,.fdy-input-group:has(.fdy-combo--error):focus-within,.fdy-input-group:has([aria-invalid="true"]):focus-within{border-color:var(--color-danger);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px color-mix(in srgb,var(--color-danger) 26%,transparent);}
+.fdy-input-group:has(.fdy-input--error):focus-within,.fdy-input-group:has(.fdy-combo--error):focus-within,.fdy-input-group:has([aria-invalid="true"]):focus-within{border-color:var(--color-danger);box-shadow:inset 0 1px 2px rgba(16,14,30,.04),0 0 0 3px rgba(var(--color-danger-rgb),.26);}

@@ -27,7 +27,7 @@
    a panel per tab) for in-page tabs; use these classes on plain links for routed ones, and
    `.fdy-nav--horizontal` for an application's PRIMARY navigation. */
 .fdy-tabs__tab[aria-selected="true"],.fdy-tabs__tab[aria-current="page"]{color:var(--color-primary-strong);border-bottom-color:var(--color-primary);}
-.fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-tabs__tab:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-tabs__panel{padding:var(--space-5) 0;}
 .fdy-tabs__panel[hidden]{display:none;}
 /* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */

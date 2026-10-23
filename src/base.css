@@ -11,7 +11,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tighter); line-height: var(--leading-snug); margin: 0; }
-a { color: var(--color-primary); }
+a { color: var(--color-primary-strong); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
 /* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still

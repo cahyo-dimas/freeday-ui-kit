@@ -531,27 +531,38 @@ test('.fdy-stats--inline opts out of the container it cannot hug inside (#050)',
  * ten distinct statuses in ONE column collapsed to three colours, so Approved, Closed and
  * Completed were the same green and Draft, InDeclaration and Transferred the same grey.
  *
- * The three must stay on the IDENTICAL mix, because one contrast test covers all three: a badge
- * that drifted to its own ratio would be gated by a test measuring the avatar's. */
-test('the badge carries the categorical tone scale, on the same mix as the others (#021)', () => {
+ * All three must stay on the IDENTICAL pair of tokens, because one contrast test covers all three:
+ * a badge that drifted to its own tint would be gated by a test measuring the avatar's.
+ *
+ * The tokens replaced a mix written in each component (v3.7.0). The mix put var() inside
+ * color-mix(), which is the one shape with no fallback path, so on Safari <= 16.1 all three
+ * modifiers lost their fill and their ink entirely — see test/color-mix.test.mjs. */
+test('the three tone families bind the whole scale, from the same tokens (#021)', () => {
   const all = rules(css);
+  const ruleFor = (sel) => all.find(r => r.selector.split(',').some(s => s.trim() === sel));
 
-  const shared = all.find(r =>
-    r.selector.split(',').some(sel => sel.trim() === '.fdy-badge--tone-1') &&
-    /background:/.test(r.body));
-  assert.ok(shared, '.fdy-badge--tone-* must exist, or a status set of ten has five looks');
-
-  for (let i = 1; i <= 8; i++) {
-    assert.ok(all.some(r => r.selector.split(',').some(sel => sel.trim() === `.fdy-badge--tone-${i}`) &&
-      new RegExp(`--_fdy-badge-tone:\\s*var\\(--tone-${i}\\)`).test(r.body)),
-      `.fdy-badge--tone-${i} must bind --tone-${i}: a gap in the scale silently reuses a colour`);
+  for (const block of ['avatar', 'badge', 'chip']) {
+    for (let i = 1; i <= 8; i++) {
+      const r = ruleFor(`.fdy-${block}--tone-${i}`);
+      assert.ok(r, `.fdy-${block}--tone-${i} must exist: a gap in the scale silently reuses a colour`);
+      assert.ok(new RegExp(`background:\\s*var\\(--tone-${i}-bg\\)`).test(r.body),
+        `.fdy-${block}--tone-${i} must paint --tone-${i}-bg`);
+      assert.ok(new RegExp(`color:\\s*var\\(--tone-${i}-ink\\)`).test(r.body),
+        `.fdy-${block}--tone-${i} must ink with --tone-${i}-ink, the half test/contrast.test.mjs measures`);
+    }
   }
 
-  const mix = (body, pct, over) =>
-    new RegExp(`color-mix\\(in srgb,var\\(--_fdy-\\w+-tone\\) ${pct}%,var\\(${over}\\)\\)`).test(body);
-  assert.ok(mix(shared.body, 18, '--color-surface') && mix(shared.body, 50, '--color-text'),
-    'the badge tone mix must match .fdy-avatar--tone-* / .fdy-chip--tone-*, which is what ' +
-    'test/contrast.test.mjs actually measures');
+  /* The two edges are deliberately different tokens — the chip's is opaque over --color-border, the
+     badge's is translucent over nothing — and the avatar has none. Asserted so a later tidy-up does
+     not collapse them into one and move two components' borders. */
+  for (let i = 1; i <= 8; i++) {
+    assert.match(ruleFor(`.fdy-chip--tone-${i}`).body, new RegExp(`border-color:\\s*var\\(--tone-${i}-border\\)`),
+      `.fdy-chip--tone-${i} must edge with --tone-${i}-border`);
+    assert.match(ruleFor(`.fdy-badge--tone-${i}`).body, new RegExp(`border-color:\\s*var\\(--tone-${i}-border-soft\\)`),
+      `.fdy-badge--tone-${i} must edge with --tone-${i}-border-soft`);
+    assert.doesNotMatch(ruleFor(`.fdy-avatar--tone-${i}`).body, /border/,
+      `.fdy-avatar--tone-${i} must not draw a border; the group ring is the avatar's only edge`);
+  }
 });
 
 
@@ -606,7 +617,13 @@ test('the stripe is not the colour hover paints', () => {
   assert.match(hover.body, /var\(--color-surface-2\)/);
   assert.doesNotMatch(stripe.body, /background:\s*var\(--color-surface-2\)\s*;?$/,
     'a stripe painted in the hover colour makes hover invisible on every second row');
-  assert.match(stripe.body, /color-mix/, 'the stripe is a fraction of a surface step, composed from tokens');
+  /* It was a color-mix() of the two surfaces until v3.7.0. It cannot be: this is a CUSTOM
+     PROPERTY, and the `background` that reads it carries var(), so on Safari <= 16.1 the
+     declaration failed at computed-value time and the stripe vanished — with no preceding line to
+     catch it, because that path never consults one. The fraction now lives in the token, measured
+     against the mix it replaces (see tokens/tokens.json and test/color-mix.test.mjs). */
+  assert.match(stripe.body, /var\(--color-surface-stripe\)/,
+    'the stripe is a fraction of a surface step, carried by its own semantic token');
   // Tier-3 override reaches it through the var() FALLBACK, never as a declaration of its own —
   // a custom property set on the element would outrank a host's :root override.
   assert.match(stripe.body, /var\(--fdy-table-stripe,/, 'the stripe must be overridable through its component token');

@@ -264,11 +264,23 @@ patterns, and `prefers-reduced-motion` is respected. Status is never conveyed by
 the "Accessibility" section in `docs/index.html`.
 
 ## Browser support
-Needs an evergreen browser, roughly 2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (the floor is
-set by `color-mix()`). Other features used: native `<dialog>`/`::backdrop`, `accent-color`,
-`100dvh`, `conic-gradient`, `scroll-snap`, all of them ≥ Safari 15.4. Backdrop blur uses
+**Chrome 105 · Safari 15.4 · Firefox 121.** The floor is set by `:has()`, and by the Safari 15.4
+generation of native `<dialog>`/`::backdrop`, `accent-color` and `100dvh`. `conic-gradient` and
+`scroll-snap` are older still.
+
+`color-mix()` used to set that floor at Safari 16.4, and it no longer does. It was never worth it:
+a declaration that mixes a token carries `var()`, so it is assumed valid at parse time and only
+fails at computed-value time, where the property drops to its *initial* value instead of to a
+fallback line. On an iPhone that stopped at iOS 15 that turned 17 `border-color` declarations into
+`currentColor`, which is a thick black outline on roughly everything. Every alpha in the kit is now
+written `rgba(var(--color-primary-rgb), .26)`, which is the same colour and parses back to Safari 9;
+the four rules that cannot be answered statically carry a real `@supports` counterpart.
+`test/color-mix.test.mjs` keeps the next one honest.
+
+The newest things the kit touches (`@container`, `@starting-style`, `text-wrap`) are enhancements: a
+browser without them skips the block and keeps the unconditional rule underneath. Backdrop blur uses
 `-webkit-backdrop-filter` + `backdrop-filter` (older Safari still works, just without the blur).
-There's no CSS build or autoprefixer step, so supporting older browsers is the consumer's
+There's no CSS build or autoprefixer step, so supporting anything below the floor is the consumer's
 responsibility.
 
 ## License

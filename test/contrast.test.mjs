@@ -49,6 +49,19 @@ function parse(v, theme, depth = 0) {
   }
   m = v.match(/^#([0-9a-f]{6})$/i); if (m) { const n = parseInt(m[1], 16); return { r: n >> 16 & 255, g: n >> 8 & 255, b: n & 255, a: 1 }; }
   m = v.match(/^#([0-9a-f]{3})$/i); if (m) { const h = m[1]; return { r: parseInt(h[0] + h[0], 16), g: parseInt(h[1] + h[1], 16), b: parseInt(h[2] + h[2], 16), a: 1 }; }
+  /* A var() that is only PART of a value. The kit puts an alpha on a role with
+     `rgba(var(--primary-600-rgb), .2)` now, because color-mix() does not survive Safari <= 16.1 and
+     a declaration carrying var() never falls back to a preceding line (tokens/build.mjs explains
+     the mechanism). So the channels arrive as a nested reference, and the rgba branch below would
+     read them as NaN — which is a silently PASSING contrast test, since NaN comparisons are false
+     in whichever direction the assertion happens to point. Substituted here instead. */
+  if (v.includes('var(')) {
+    return parse(v.replace(/var\((--[\w-]+)\)/g, (_, name) => {
+      const inner = theme[name];
+      if (inner === undefined) throw new Error('undefined token: ' + name);
+      return inner;
+    }), theme, depth + 1);
+  }
   m = v.match(/^rgba?\(([^)]+)\)$/); if (m) { const p = m[1].split(',').map(s => s.trim()); return { r: +p[0], g: +p[1], b: +p[2], a: p[3] == null ? 1 : +p[3] }; }
   throw new Error('unparseable color: ' + v);
 }
@@ -100,6 +113,27 @@ const UI_MARGIN = 3.25;
 for (const s of SURF) add('--color-control-border', s, UI_MARGIN, `control border (input/select/checkbox…) on ${s}`);
 add('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
 add('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
+/* PRIMARY INK. A different threshold from the line above, and missing from this suite until v3.7.0.
+ *
+ * `--color-primary` is a FILL and a BORDER role, so 3:1 is all WCAG 1.4.11 asks of it and 3:1 is all
+ * the assertion above promises. But five declarations painted TEXT with it — the base `a`, the combo
+ * tick, the dropzone icon, and the two table sort arrows — and on teal/cyan/emerald/lime the role
+ * lands at 3.09–3.77 on white. The suite was 46/46 green while the kit printed sub-AA ink, because
+ * nothing in it asserted the TEXT threshold on a primary foreground at all. Azure, the default,
+ * happens to clear it in the light theme (6.56), which is why nobody saw it; azure DARK is 3.86.
+ * Those five read `--color-primary-strong` now, and these are the pairings that keep them honest.
+ *
+ * Only the surfaces primary ink can actually land on, the same reasoning as the placeholder (#053)
+ * above: the base `a` and `.fdy-combo__listbox` paint --color-surface, `.fdy-table th` paints
+ * --color-surface-2. surface-3 is asserted at the ICON threshold on purpose — the kit's only
+ * primary-strong-on-surface-3 pairing is `.fdy-table__filterbtn.is-active:hover`, an icon-only
+ * button, and every option row that turns primary-strong turns its background primary-soft in the
+ * same declaration. As TEXT surface-3 would not hold (lime 4.38, green 4.40, amber 4.40), and
+ * closing that gap means moving a ramp — a separate decision from this one, stated rather than
+ * hidden behind an assertion that quietly omits the surface. */
+add('--color-primary-strong', '--color-surface', AA_TEXT, 'primary ink (base `a`, combo tick) on the surface they paint');
+add('--color-primary-strong', '--color-surface-2', AA_TEXT, 'primary ink (table sort arrow) on the surface th paints');
+add('--color-primary-strong', '--color-surface-3', AA_UI, 'primary ink as an icon (active filter button, hovered) on surface-3');
 for (const s of SURF) add('--color-accent', s, AA_UI, `accent on ${s}`);
 
 // --- assert ---------------------------------------------------------------
@@ -114,20 +148,39 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 
 // Categorical tones: the text-leaning foreground on the tinted background must keep AA text
 // contrast. ONE test for three components: .fdy-avatar--tone-*, .fdy-chip--tone-* and
-// .fdy-badge--tone-* all use the identical mix (bg 18%, fg 50% toward --color-text over
-// --color-surface), so they pass or fail together. Keep the ratios here in sync with all three;
-// the css guard below asserts they stay identical.
+// .fdy-badge--tone-* all read the identical --tone-N-bg / --tone-N-ink pair, so they pass or fail
+// together; the css guard asserts they stay identical.
+//
+// These assert the SHIPPED TOKENS, not the formula they came from. Until v3.7.0 the mix was written
+// in each component and this test re-derived it from --chart-N, which measured the arithmetic rather
+// than the colour: the tint is computed at build time and ROUNDED to 8 bits now, so re-deriving it
+// would clear AA on a value no browser ever paints. The rounding moves a ratio by <0.01, well inside
+// the headroom every tone has, but the point is that the gate reads what ships.
 for (const [themeName, theme] of Object.entries(THEMES)) {
   test(`WCAG contrast, categorical tones: ${themeName}`, () => {
     for (let i = 1; i <= 8; i++) {
-      const c = `var(--chart-${i})`;
-      const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);
-      const fg = parse(`color-mix(in srgb, ${c} 50%, var(--color-text))`, theme);
+      const bg = parse(theme[`--tone-${i}-bg`], theme);
+      const fg = parse(theme[`--tone-${i}-ink`], theme);
       const r = ratio(fg, bg);
       assert.ok(r >= AA_TEXT, `${themeName}: tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
     }
   });
 }
+
+test('the tone tokens the contrast gate reads are really there', () => {
+  /* A missing token would make `parse(undefined)` throw rather than pass, but a token that resolved
+     to the LIGHT value under a dark label would not — the same trap the dark scope itself fell into
+     for nine versions. Asserted directly. */
+  for (let i = 1; i <= 8; i++) {
+    for (const part of ['bg', 'ink', 'border', 'border-soft']) {
+      assert.ok(base[`--tone-${i}-${part}`] !== undefined, `--tone-${i}-${part} is not in :root`);
+    }
+    assert.notEqual(dark[`--tone-${i}-bg`], base[`--tone-${i}-bg`],
+      `dark --tone-${i}-bg must not resolve to the light tint; it is mixed over a different surface`);
+    assert.notEqual(dark[`--tone-${i}-ink`], base[`--tone-${i}-ink`],
+      `dark --tone-${i}-ink must not resolve to the light ink; it is mixed toward a different text colour`);
+  }
+});
 
 /* --- the primary palette axis ------------------------------------------------------------------
  *
@@ -172,6 +225,12 @@ for (const name of PALETTES) {
       };
       check('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
       check('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
+      /* The palette axis is where the ink threshold has teeth: the generic pairing above only ever
+         measured azure. Thresholds and the surface-3 reasoning are explained where they are added
+         to `req`. */
+      check('--color-primary-strong', '--color-surface', AA_TEXT, 'primary ink on surface');
+      check('--color-primary-strong', '--color-surface-2', AA_TEXT, 'primary ink on surface-2');
+      check('--color-primary-strong', '--color-surface-3', AA_UI, 'primary ink as an icon on surface-3');
       check('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
       for (const s of SURF) {
         check('--color-primary-strong', { soft: '--color-primary-soft', on: s }, AA_TEXT,
@@ -242,4 +301,61 @@ test('soft is a real rule, not the absence of glass', () => {
   const glass = styleVars('[data-style="glass"]');
   assert.deepEqual(Object.keys(soft).sort(), Object.keys(glass).sort(),
     'every key glass sets must be reset by soft, or a region cannot opt back out');
+});
+
+/* --- no component paints TEXT with --color-primary ----------------------------------------------
+ *
+ * The numbers above bind the roles somebody thought to name. The defect this guard replaces was not
+ * a wrong number, it was a wrong ROLE: `color: var(--color-primary)` written in a component and
+ * measured by nothing, because the only primary pairing in the suite was the 3:1 fill one. A
+ * numeric gate cannot catch that — it can only ever check the roles it already knows about, and the
+ * mistake is reaching for a role the gate does not cover. So the shape is read instead.
+ *
+ * Fills and borders are deliberately NOT touched. `border-color: var(--color-primary)` is a UI
+ * component boundary and 3:1 is the correct bar for it; 19 of the 24 declarations that matched
+ * `color: *var(--color-primary)` in the bundle were exactly that (16 border-color, plus
+ * border-top-color, border-bottom-color and accent-color), and moving them would shift the design
+ * for no accessibility reason. This reads the PROPERTY NAME, not the substring, for that reason.
+ *
+ * dist, not src: what ships is what a browser paints, and the bundle is the file most apps load —
+ * it is also the only one of the two that carries the token layer, so a `color:` ink written there
+ * is caught too. Both sheets are read because `freeday.css` is what a consumer picks when they
+ * bring their own tokens. */
+const INK_PROPS = new Set(['color', '-webkit-text-fill-color']);
+/* The bare role only. `--color-primary-strong`, `-soft`, `-btn` and `-rgb` are different tokens
+   with their own assertions above, so the terminator is what distinguishes them. */
+const BARE_PRIMARY = /var\(\s*--color-primary\s*[,)]/;
+/* CARRIERS, not ink. Both set `color` solely so their SVG `stroke`/`fill` and the bar's
+   `background` can say currentColor; every text node inside them (.fdy-bars__val,
+   .fdy-bars__label) states its own colour, so nothing inherits this. They are graphic objects
+   under 1.4.11 and `primary fill vs surface` already covers them at 3:1. Asserted as an EXACT
+   set so a stale exemption fails as loudly as a new violation — an allowlist nobody rechecks is
+   how the next ink gets in. */
+const INK_CARRIERS = ['.fdy-bars', '.fdy-sparkline'];
+
+test('no component paints TEXT with --color-primary', () => {
+  for (const file of ['freeday.css', 'freeday.bundle.css']) {
+    const sheet = readFileSync(new URL(`../dist/${file}`, import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const found = new Set();
+    let rules = 0;
+    /* Leaf rules only. `[^{}]` cannot cross a brace, so an at-rule prelude never matches and the
+       rules nested inside it are found on their own — which is what we want, since an @media is
+       just as capable of carrying the wrong role as the top level. */
+    for (const rule of sheet.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      rules++;
+      const selector = rule[1].trim().replace(/\s+/g, ' ');
+      for (const decl of rule[2].split(';')) {
+        const colon = decl.indexOf(':');
+        if (colon === -1) continue;
+        if (INK_PROPS.has(decl.slice(0, colon).trim()) && BARE_PRIMARY.test(decl.slice(colon + 1))) found.add(selector);
+      }
+    }
+    /* Guard for the guard, the same lesson the dark scope taught this file: a walker that stops
+       matching reports zero violations, which is indistinguishable from a clean sheet. */
+    assert.ok(rules > 500, `dist/${file}: the rule walker found ${rules} rules — it stopped matching, and a guard that reads nothing is as green as one that passes`);
+    assert.deepEqual([...found].sort(), INK_CARRIERS,
+      `dist/${file}: --color-primary is a 3:1 FILL role, not an ink. These selectors print text with it:\n  ` +
+      [...found].sort().filter((s) => !INK_CARRIERS.includes(s)).join('\n  ') +
+      '\n  Use --color-primary-strong (it is already gated at 4.5:1 above), or state here why the declaration is a graphic object and not text.');
+  }
 });

@@ -107,6 +107,48 @@ point, everything around it quiet.
 - **Surfaces:** most backgrounds are `--color-surface`; `--color-surface-2`/`-3` for a recessed area;
   `--color-primary-soft` only when you want a tinted callout, not as a default panel colour.
 
+### Putting an alpha on a role: use the channel triple, not `color-mix()`
+
+Every role you are likely to fade has a companion triple, so a 26% primary wash is:
+
+```css
+background: rgba(var(--color-primary-rgb), .26);
+```
+
+Reach for `color-mix(in srgb, var(--color-primary) 26%, transparent)` instead and you get the same
+colour on your machine and a missing one on an older iPhone, with **no way to put a fallback under
+it.** A declaration that mentions a custom property is assumed valid when the stylesheet is parsed
+and is only checked later, when the variable is substituted; if `color-mix()` is unknown at that
+point the declaration is thrown away *there*, and the browser does not go back to the static line
+you wrote above it. The property takes its initial value instead, which for `border-color` means
+`currentColor`: a thick black outline. Safari learned `color-mix()` in 16.2, so every phone that
+stopped at iOS 15 sees that.
+
+The triples are generated from the tokens they are named after, in all 18 palettes and both themes,
+so they follow a re-brand on their own. The ones that ship: `--color-primary-rgb`,
+`--color-on-primary-rgb`, `--color-danger-rgb`, `--color-danger-btn-rgb`, `--color-success-rgb`,
+`--color-warning-rgb`, `--color-info-rgb`, `--color-surface-rgb` and `--color-inverse-text-rgb`.
+If you need one the kit does not publish, ask for it rather than hard-coding channels.
+
+### Tinting one role over another: the colour is already a token
+
+A triple puts an alpha on **one** role. It cannot say "18% of this tone over the surface", because
+the result depends on two roles and on the theme. Those blends are computed when the kit is built
+and published as flat tokens, so you never write the mix at all:
+
+```css
+background: var(--tone-3-bg);      /* 18% of --tone-3 over --color-surface  */
+color: var(--tone-3-ink);          /* 50% of --tone-3 toward --color-text    */
+border-color: var(--tone-3-border);/* 30% of --tone-3 over --color-border    */
+```
+
+`--tone-N-bg` / `-ink` / `-border` / `-border-soft` exist for all eight tones in both themes, and are
+exactly what `.fdy-avatar--tone-N`, `.fdy-badge--tone-N` and `.fdy-chip--tone-N` paint — the
+`-ink` on the `-bg` is the pair the WCAG gate measures, so a custom element built from the same two
+tokens inherits that guarantee. `--color-danger-border` (40% of danger over the border) is the same
+idea for a row that failed. If you need a blend the kit does not publish, ask for it: it belongs in
+`tokens/tokens.json`, where the build can resolve it down both themes, not in a component.
+
 ## 5b. Theme: global by default, per-subtree when a region is inverted
 
 `data-theme="light|dark"` redefines the semantic tokens. Set it on `<html>` and it themes the app;

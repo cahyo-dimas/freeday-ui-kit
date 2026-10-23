@@ -1,14 +1,22 @@
 /* Freeday. Button */
+/* The fill is a FLAT colour with a black veil laid over it, not a gradient between two shades.
+ * It used to be `linear-gradient(primary, color-mix(in srgb, #000 10%, primary))`, and that is the
+ * same colour at every stop — veiling a solid base with black 0 -> .1 darkens it by exactly 10% —
+ * but the mix form carries var(), so on Safari <= 16.1 the whole declaration failed at
+ * computed-value time and the button lost its fill rather than falling back. Measured identical to
+ * the mix it replaces (within the 1/255 the gradient's own 8-bit rounding costs); see
+ * test/color-mix.test.mjs for the rule and tokens/build.mjs for why none of these may use
+ * color-mix(). Pressed states veil from the TOP, which is the same trick read upside down. */
 .fdy-btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);
   height:var(--control-h);padding:0 var(--space-4);
   font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);
   line-height:1;white-space:nowrap;cursor:pointer;text-decoration:none;color:var(--color-on-primary);
-  background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));
+  background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));
   border:var(--bw) solid transparent;border-radius:var(--radius-md);
-  box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-primary) 50%,transparent),inset 0 1px 0 rgba(255,255,255,.26);
+  box-shadow:0 2px 9px -1px rgba(var(--color-primary-rgb),.5),inset 0 1px 0 rgba(255,255,255,.26);
   transition:background var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard),transform var(--dur-fast) var(--ease-standard);}
-.fdy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 60%,transparent),inset 0 1px 0 rgba(255,255,255,.26);}
-.fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
+.fdy-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-primary-rgb),.6),inset 0 1px 0 rgba(255,255,255,.26);}
+.fdy-btn:active{transform:translateY(1px);box-shadow:0 1px 4px -1px rgba(var(--color-primary-rgb),.46);}
 .fdy-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
 /* Pressed / toggle. `aria-pressed` is already the right attribute for a toggle button, so this adds
    no class and no new markup contract, and it is what makes .fdy-btn-group a complete segmented
@@ -16,8 +24,8 @@
    defines its OWN pressed look below; a single shared rule cannot work, because a gradient is a
    background-IMAGE and would blank the ghost variant's background-color. Solid: invert the gradient
    and sink the shadow inward, so a held button reads as depressed, not merely primary-coloured. */
-.fdy-btn[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 12%,var(--color-primary)),var(--color-primary));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
-.fdy-btn[aria-pressed="true"]:hover{transform:none;box-shadow:inset 0 2px 6px color-mix(in srgb,#000 22%,transparent);}
+.fdy-btn[aria-pressed="true"]{background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,0));box-shadow:inset 0 2px 6px rgba(0,0,0,.22);}
+.fdy-btn[aria-pressed="true"]:hover{transform:none;box-shadow:inset 0 2px 6px rgba(0,0,0,.22);}
 
 .fdy-btn--ghost{background:var(--color-surface);color:var(--color-primary-strong);border-color:var(--color-border-strong);box-shadow:var(--shadow-1);}
 .fdy-btn--ghost:hover{transform:none;background:var(--color-primary-soft);border-color:var(--color-primary-border);box-shadow:var(--shadow-1);}
@@ -29,15 +37,15 @@
    screen. `.fdy-menu__item--danger` has always modelled the quiet form (red text, not a red block);
    the pairing rules below bring it to the button. They are more specific than this one and come
    after it, so this rule needs no :not() guard of its own, one mechanism, not two. */
-.fdy-btn--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);box-shadow:0 2px 9px -1px color-mix(in srgb,var(--color-danger-btn) 46%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
-.fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-danger-btn) 54%,transparent),inset 0 1px 0 rgba(255,255,255,.22);}
+.fdy-btn--danger{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.12));color:var(--color-on-danger);box-shadow:0 2px 9px -1px rgba(var(--color-danger-btn-rgb),.46),inset 0 1px 0 rgba(255,255,255,.22);}
+.fdy-btn--danger:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-danger-btn-rgb),.54),inset 0 1px 0 rgba(255,255,255,.22);}
 .fdy-btn--danger:active{transform:translateY(1px);}
 /* Quiet destructive: the variant keeps its own ground and only the ink turns. */
-.fdy-btn--ghost.fdy-btn--danger{background:transparent;color:var(--color-danger-strong);border-color:color-mix(in srgb,var(--color-danger) 40%,transparent);box-shadow:none;}
+.fdy-btn--ghost.fdy-btn--danger{background:transparent;color:var(--color-danger-strong);border-color:rgba(var(--color-danger-rgb),.4);box-shadow:none;}
 .fdy-btn--ghost.fdy-btn--danger:hover{background:var(--color-danger-soft);border-color:var(--color-danger);color:var(--color-danger-strong);}
 .fdy-btn--text.fdy-btn--danger{background:none;color:var(--color-danger-strong);border-color:transparent;box-shadow:none;}
 .fdy-btn--text.fdy-btn--danger:hover{background:var(--color-danger-soft);color:var(--color-danger-strong);}
-.fdy-btn--danger[aria-pressed="true"]{background:linear-gradient(180deg,color-mix(in srgb,#000 14%,var(--color-danger-btn)),var(--color-danger-btn));box-shadow:inset 0 2px 6px color-mix(in srgb,#000 24%,transparent);}
+.fdy-btn--danger[aria-pressed="true"]{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,0));box-shadow:inset 0 2px 6px rgba(0,0,0,.24);}
 
 .fdy-btn--sm{height:calc(var(--control-h) - var(--space-2));padding:0 var(--space-3);font-size:var(--text-xs);border-radius:var(--radius-sm);}
 .fdy-btn--lg{height:calc(var(--control-h) + var(--space-2));padding:0 var(--space-6);font-size:var(--text-base);border-radius:var(--radius-lg);}
@@ -86,7 +94,7 @@
 .fdy-btn-group .fdy-btn:last-child{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md);}
 
 /* FAB, circular elevated action button (icon), optional extended pill with label */
-.fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:linear-gradient(180deg,var(--color-primary),color-mix(in srgb,#000 10%,var(--color-primary)));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
+.fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}
 .fdy-fab:hover{transform:translateY(-1px);box-shadow:var(--shadow-4);}
 .fdy-fab:active{transform:translateY(1px);}
 .fdy-fab:focus-visible{border-radius:var(--radius-full);}
@@ -95,5 +103,5 @@
 .fdy-fab--sm{width:2.5rem;height:2.5rem;}
 .fdy-fab--sm svg{width:1.25rem;height:1.25rem;}
 .fdy-fab--extended{width:auto;padding:0 var(--space-5);font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-semibold);}
-.fdy-fab--danger{background:linear-gradient(180deg,var(--color-danger-btn),color-mix(in srgb,#000 12%,var(--color-danger-btn)));color:var(--color-on-danger);}
-.fdy-fab--accent{background:linear-gradient(180deg,var(--color-accent),color-mix(in srgb,#000 10%,var(--color-accent)));color:var(--color-on-accent);}
+.fdy-fab--danger{background:var(--color-danger-btn) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.12));color:var(--color-on-danger);}
+.fdy-fab--accent{background:var(--color-accent) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));color:var(--color-on-accent);}
