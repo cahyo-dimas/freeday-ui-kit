@@ -566,6 +566,35 @@ test('the three tone families bind the whole scale, from the same tokens (#021)'
 });
 
 
+/* The NEUTRAL status badge is `.fdy-badge--outline`, and COMPONENTS.md now says so in as many
+ * words, which is what this guard is here to keep true.
+ *
+ * A bare `.fdy-badge` wears primary ink on a primary tint, the pair the primary button wears, so a
+ * status that means nothing in particular ("Not scheduled", "Read 0 of 3") reads as something to
+ * click. `--outline` already answered that: it drops the fill. There is no second neutral modifier
+ * because there is no neutral FILL to build one from. The only neutral surface step the token set
+ * has is `--color-surface-2`, and a status pill sits either on `--color-surface` or on the app
+ * ground, which IS `--color-surface-2`, so such a pill's body measures 1.00:1 to 1.10:1 against
+ * what is behind it. The semantic fills live at 1.03:1 to 1.44:1 and get away with it because they
+ * carry HUE; a neutral has none to carry, so the same luminance step buys a pill nobody can see.
+ *
+ * Dropping the fill is what makes the ink load-bearing: it is read against whatever surface the
+ * badge happens to sit on, so it owes AA on all three, and only `--color-text-muted` is asserted
+ * that way in test/contrast.test.mjs (7.46:1 light, 7.28:1 dark on --color-surface; 6.54 / 5.46 on
+ * surface-3). `--color-text-subtle` is asserted at the 3:1 UI threshold on surface-2 and -3, so
+ * swapping one for the other is a one-word edit that looks like a tidy-up and quietly puts the
+ * kit's documented neutral status under AA. That is the 3.7.0 lesson, where a green suite shipped
+ * sub-AA ink because nothing in it asserted the TEXT threshold on the role being painted. */
+test('the neutral status badge stays unfilled and keeps an ink gated as text', () => {
+  const r = rules(css).find(x => x.selector.split(',').some(s => s.trim() === '.fdy-badge--outline'));
+  assert.ok(r, '.fdy-badge--outline must exist: COMPONENTS.md sends neutral status to it');
+  assert.match(r.body, /background:\s*transparent/,
+    'outline is the badge with no fill; giving it one makes it a neutral tint nobody measured');
+  assert.match(r.body, /color:\s*var\(--color-text-muted\)/,
+    'the ink of an unfilled badge lands on the page surface, so it must be the role contrast.test.mjs asserts at 4.5:1 on all three surfaces');
+});
+
+
 /* The ring for a grouped control lives on the GROUP (#024, withdrawn).
  *
  * `.fdy-input-group:focus-within` carries the border and the 3px ring, and

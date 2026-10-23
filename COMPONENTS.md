@@ -2178,6 +2178,18 @@ the rest, so two states a workflow distinguishes never share a look. Map each st
 tone, never to a hash of the string: a status is a closed set, and a hash reassigns colours the
 moment the set grows.
 
+**Neutral status takes `--outline`.** A badge with no modifier is the page's accent: primary ink
+on a primary tint, the same pair the primary button wears, so a status that means nothing in
+particular ("Not scheduled", "Holiday", "Read 0 of 3") ends up looking like something to click.
+`--outline` is the neutral one: no fill, a `--color-border-strong` edge, and `--color-text-muted`
+ink at 7.46:1 on the light surface, 7.28:1 on the dark one.
+
+There is no filled neutral on purpose. The only neutral fill the token set offers is one surface
+step, `--color-surface-2`, and a status pill sits either on `--color-surface` or on the app ground,
+which is `--color-surface-2` itself, so the pill's body would land between 1.00:1 and 1.10:1
+against what is behind it: a badge whose shape you cannot see. The semantic fills live at 1.03:1 to
+1.44:1 and read clearly anyway because they carry hue, and a neutral has no hue to carry.
+
 **Notification badge is the overlay variant**, not a separate component: wrap anything in
 `.fdy-badge-wrap` and add `.fdy-badge-ov` (`--primary` `--danger` `--accent` `--info` `--success`
 `--warning`, `--dot` for a bare dot, `--top-left` / `--bottom-right` / `--bottom-left` to move it).

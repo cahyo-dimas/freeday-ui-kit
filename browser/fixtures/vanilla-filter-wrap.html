@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>fixture: column filter panel, typography it inherits from its own &lt;th&gt;</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<link rel="stylesheet" href="popover-probe.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- The panel is a child of its <th> on both paths since 3.9.0, so it inherits the HEADER's
+       typography: `.fdy-table th` is uppercase, extra-tracked, 12px, semibold, muted and
+       `white-space:nowrap`, and a `.fdy-table__num` header adds right-aligned mono on top of that.
+       Four of those the `.fdy-filter` rule already resets. The rest land on a panel of labels and
+       inputs, which is what this fixture is posed to measure.
+
+       Column 1 is an enum filter whose values are longer than the panel's 18rem cap: the row a
+       nowrap panel cannot break. Column 2 is a numeric header with the number filter, whose title
+       and separator carry no type of their own.
+
+       That header carries `.fdy-table__num` AND an inline `text-align:right`, and both of them earn
+       their place. `FdyTable` writes exactly that inline style for a column with `align:'right'`
+       (see `alignStyle`), and the class alone does NOT right-align a `<th>`, because `.fdy-table th` is
+       (0,2,0) against the class's (0,1,0), so the header rule wins and only the `<td>`s turn. The
+       inline value is therefore the shipped case, and it is also the hardest one: nothing an
+       ancestor declares can outrank it, so only a declaration on the panel itself can. -->
+  <div class="page">
+    <div class="fdy-datatable" id="tbl" data-fdy-table>
+      <table class="fdy-table">
+        <thead><tr>
+          <th scope="col" data-fdy-filter="enum">Status</th>
+          <th scope="col" class="fdy-table__num" style="text-align:right" data-fdy-filter="number">Amount</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Awaiting counter-signature from the regional office</td><td class="fdy-table__num">1200</td></tr>
+          <tr><td>Returned for correction by the warehouse supervisor</td><td class="fdy-table__num">980</td></tr>
+        </tbody>
+      </table>
+      <div class="fdy-table-footer"><span data-fdy-table-info></span></div>
+    </div>
+  </div>
+
+<script>
+  /* The enum panel's own geometry. `max-width` clamps the BOX whether or not the text can break, so
+     the panel's width says nothing; what moves is the row's height (one line against several) and
+     whether the list has content it must scroll sideways to show. Both read off the rendered box. */
+  window.__wrapBox = function () {
+    var panel = document.querySelector('.fdy-filter');
+    var list = panel.querySelector('.fdy-filter__list');
+    var row = list.querySelector('.fdy-filter__check');
+    var cs = getComputedStyle(panel);
+    var rootPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return {
+      panelWidth: panel.getBoundingClientRect().width,
+      maxWidth: parseFloat(cs.maxWidth),
+      rootPx: rootPx,
+      listClientWidth: list.clientWidth,
+      listScrollWidth: list.scrollWidth,
+      rowWidth: row.getBoundingClientRect().width,
+      rowHeight: row.getBoundingClientRect().height,
+      /* The height ONE line of this row costs, measured rather than assumed: the same row with its
+         text replaced by a single short word, under the same cascade, in the same place. */
+      oneLineHeight: (function () {
+        var probe = row.cloneNode(true);
+        probe.textContent = 'x';
+        list.appendChild(probe);
+        var h = probe.getBoundingClientRect().height;
+        probe.remove();
+        return h;
+      })(),
+    };
+  };
+
+  /* The number panel in a `.fdy-table__num` header. The title's text is located with a Range, not
+     with the element box: the title is a block that fills the panel either way, so only where its
+     INK sits can tell a left-aligned panel from a right-aligned one. */
+  window.__numBox = function () {
+    var panel = document.querySelector('.fdy-filter');
+    var title = panel.querySelector('.fdy-filter__title');
+    var range = panel.querySelector('.fdy-filter__range');
+    var sep = range.querySelector('span');
+    var input = range.querySelector('.fdy-input');
+    var cs = getComputedStyle(panel);
+    var pr = panel.getBoundingClientRect();
+    var r = document.createRange();
+    r.selectNodeContents(title);
+    return {
+      titleInkLeft: r.getBoundingClientRect().left,
+      titleInkWidth: r.getBoundingClientRect().width,
+      contentLeft: pr.left + parseFloat(cs.paddingLeft),
+      contentWidth: pr.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight),
+      titleFont: getComputedStyle(title).fontFamily,
+      bodyFont: getComputedStyle(input).fontFamily,
+      sepFontSize: getComputedStyle(sep).fontSize,
+      inputFontSize: getComputedStyle(input).fontSize,
+    };
+  };
+</script>
+</body>
+</html>
