@@ -1371,6 +1371,8 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `bulkActions?` | `ReactNode` | React. Content in the bulk bar beside the count; Vue uses the `bulk-actions` slot (scoped: `keys`, `clear`), Blazor `BulkContent`. |
 | `selectedText?` · `clearSelectionText?` | `string` | Bulk-bar copy. Defaults `{n} selected` (with `{n}` substituted) and `Clear`. |
 | `selectAllLabel?` · `selectRowLabel?` · `bulkLabel?` | `string` | Accessible names for the header checkbox, each row checkbox, and the bulk-bar region. Defaults `Select all rows on this page`, `Select row`, `Bulk actions`. |
+| `infoText?` · `pageSizeLabel?` | `string` | The footer this table draws itself: its range line (`{from}`, `{to}`, `{total}` substituted, every occurrence) and the visible word beside its rows-per-page control. Same names, same substitution and the same English defaults as `<FdyTableFooter>` below, `Showing {from}–{to} of {total}` and `Rows`, so a screen that moves between the table's footer and its own moves a prop instead of rewriting it. |
+| `paginationLabel?` · `prevLabel?` · `nextLabel?` · `pageLabel?` | `string` | The accessible names inside that footer: the pager landmark, both arrows, and a numbered page button (`{n}` substituted). Defaults `Pagination`, `Previous page`, `Next page`, `Go to page {n}`. |
 | `renderCell?` | `(column, row, value) => ReactNode` | React. Custom cell rendering; Vue uses the `cell` slot. |
 | `toolbar?` | `ReactNode` | React. Content above the table; Vue uses the `toolbar` slot. |
 | `onProcess?` | `(result: { rows, total }) => void` | React. The processed page after filter/sort/paginate, in **both** modes. Vue emits `process`, Blazor calls it `Process`. Render the same set elsewhere — a card list, a summary, a CSV export — without re-deriving the pipeline. |
@@ -1494,10 +1496,14 @@ that markup is the app's own: the word beside the rows-per-page control, the pag
 and the name of a numbered page button. It is `pageSizeLabel` and not `rows`, since the enhancer's
 `rows` key is the table's `{n} rows` count, a different string.
 
-Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` draws its
-own footer and does not pass these through, so a table that owns its footer still reads English; a
-screen that needs its own wording takes the footer over with `pager={false}` and renders
-`<FdyTableFooter>` beside it, which is the same route a responsive list already takes.
+Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` takes all
+six under the same names and hands them to the footer it draws itself, so a table keeps its own
+footer and still speaks the app's language. For one version it did not, and the only way out was to
+switch the footer off: a hatch that opened only if you stopped using the table.
+
+`pager={false}` plus your own `<FdyTableFooter>` is still the route for a **responsive** list, where
+one band has to serve a table at `lg` and a card list below it, and that is now the only reason to
+reach for it. Wording alone is not one.
 
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:

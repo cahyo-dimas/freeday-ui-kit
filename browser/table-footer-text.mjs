@@ -1,4 +1,5 @@
-/* Browser regression specs: the typed footer's strings come from the app.
+/* Browser regression specs: the typed footer's strings come from the app, whether the app hands
+ * them to the footer or to the table that draws one.
  * Run via `npm run test:browser`; auto-skips without Chrome.
  *
  * The raw path has read `data-fdy-text-<key>` through `textOf()` since 1.39.0 and the typed path
@@ -85,4 +86,18 @@ test('Vue FdyTableFooter: the app gives it its strings, and English without them
 
 test('React FdyTableFooter: the app gives it its strings, and English without them', { skip }, async () => {
   await assertFooterStrings('react-table-footer-text.html');
+});
+
+/* The same six strings, asked of the table rather than of the footer. 3.8.0 gave `FdyTableFooter`
+ * the props and left the three tables rendering their own footer with none of them forwarded, so
+ * the hatch existed everywhere except on the component almost every screen actually uses. The
+ * fixtures mount a table, never a bare footer, so a prop declared on the table and forwarded
+ * nowhere passes typechecking and fails here. Same two halves: the given wording has to win, and a
+ * table given no strings has to still read English. */
+test('Vue FdyTable: its own footer says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertFooterStrings('vue-table-forward-text.html');
+});
+
+test('React FdyTable: its own footer says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertFooterStrings('react-table-forward-text.html');
 });

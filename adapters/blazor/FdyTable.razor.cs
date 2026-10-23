@@ -116,6 +116,39 @@ public partial class FdyTable<TRow>
     /// <summary>Bulk-bar actions (Blazor equivalent of Vue's <c>bulk-actions</c> slot).</summary>
     [Parameter] public RenderFragment? BulkContent { get; set; }
 
+    // The footer's six strings, forwarded to the FdyTableFooter this table draws itself. 3.8.0 gave
+    // the footer those parameters and this table passed none of them on, so the hatch reached every
+    // footer except the one almost every page uses, and the documented way out was to switch the
+    // footer off and render it yourself: a door that opens only if you stop using the table. Flat
+    // parameters carrying the footer's own names, so moving between the two routes moves a
+    // parameter rather than reshaping it.
+    //
+    // Nullable, unlike SelectedText and its four neighbours above, which this component renders
+    // itself and therefore defaults itself. These six are rendered by FdyTableFooter, which already
+    // holds their English; a default repeated here would be a second copy to keep in step, and the
+    // two copies would disagree the first time one of them was edited.
+
+    /// <summary>Footer range line, <c>{from}</c> <c>{to}</c> <c>{total}</c> substituted.
+    /// Null leaves <c>FdyTableFooter</c>'s default, <c>Showing {from}–{to} of {total}</c>.</summary>
+    [Parameter] public string? InfoText { get; set; }
+
+    /// <summary>Footer: the visible word beside the rows-per-page control, which also names it.
+    /// Null leaves the default, <c>Rows</c>.</summary>
+    [Parameter] public string? PageSizeLabel { get; set; }
+
+    /// <summary>Footer: accessible name of the pager landmark. Null leaves <c>Pagination</c>.</summary>
+    [Parameter] public string? PaginationLabel { get; set; }
+
+    /// <summary>Footer: accessible name of the previous-page arrow. Null leaves <c>Previous page</c>.</summary>
+    [Parameter] public string? PrevLabel { get; set; }
+
+    /// <summary>Footer: accessible name of the next-page arrow. Null leaves <c>Next page</c>.</summary>
+    [Parameter] public string? NextLabel { get; set; }
+
+    /// <summary>Footer: accessible name of a numbered page button, <c>{n}</c> substituted. Null
+    /// leaves <c>Go to page {n}</c>.</summary>
+    [Parameter] public string? PageLabel { get; set; }
+
     private FdySortState? _internalSort;
     private Dictionary<string, FdyColumnFilter> _internalFilters = new();
     private int _internalPageIndex;

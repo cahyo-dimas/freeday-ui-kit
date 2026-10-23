@@ -96,6 +96,23 @@ const props = withDefaults(defineProps<{
   selectRowLabel?: string;
   /** Accessible name of the bulk bar region. Default `Bulk actions`. */
   bulkLabel?: string;
+  /* The footer's six strings, forwarded to the `FdyTableFooter` this table draws itself. 3.8.0 gave
+   * the footer those props and this table passed none of them on, so the hatch reached every footer
+   * except the one almost every screen uses, and the documented way out was to switch the footer off
+   * and render it yourself: a door that opens only if you stop using the table. Flat props, with the
+   * footer's own names, so moving between the two routes moves a prop rather than reshaping it. */
+  /** Footer range line, `{from}` `{to}` `{total}` substituted. Default `Showing {from}–{to} of {total}`. */
+  infoText?: string;
+  /** Footer: the visible word beside the rows-per-page control, which also names it. Default `Rows`. */
+  pageSizeLabel?: string;
+  /** Footer: accessible name of the pager landmark. Default `Pagination`. */
+  paginationLabel?: string;
+  /** Footer: accessible name of the previous-page arrow. Default `Previous page`. */
+  prevLabel?: string;
+  /** Footer: accessible name of the next-page arrow. Default `Next page`. */
+  nextLabel?: string;
+  /** Footer: accessible name of a numbered page button. `{n}` substituted. Default `Go to page {n}`. */
+  pageLabel?: string;
 }>(), { pager: true });
 
 const emit = defineEmits<{
@@ -461,10 +478,18 @@ const colSpan: ComputedRef<number> = computed((): number =>
       </table>
     </div>
 
+    <!-- The six strings are passed as given, `undefined` included: every default lives in the
+         footer, so an omitted prop here is the footer's English and not a second copy of it. -->
     <FdyTableFooter
       v-if="pager !== false"
       :page="footerPage"
       :page-sizes="pageSizes"
+      :info-text="infoText"
+      :page-size-label="pageSizeLabel"
+      :pagination-label="paginationLabel"
+      :prev-label="prevLabel"
+      :next-label="nextLabel"
+      :page-label="pageLabel"
       @update:page="onFooterPage"
     />
   </div>

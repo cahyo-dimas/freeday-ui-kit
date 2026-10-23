@@ -449,6 +449,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-table-footer-text.tsx'),
       join(HERE, 'entries', 'vue-month-mode.js'),
       join(HERE, 'entries', 'react-month-mode.tsx'),
+      join(HERE, 'entries', 'vue-table-forward-text.js'),
+      join(HERE, 'entries', 'react-table-forward-text.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,
