@@ -327,9 +327,17 @@ Use the `app-` prefix for its classes, and reuse the kit's plumbing rather than 
 ```ts
 import { usePopover } from '@cahyo-dimas/freeday/vue';   // or '/react'
 usePopover(panelRef, triggerRef, open);                  // panel needs popover="manual"
+usePopover(panelRef, triggerRef, open, 'end');           // right edges together, for a panel
+                                                         // wider than a trigger in a gutter
 ```
 
 This is what every kit dropdown uses to escape an ancestor's overflow clip, because `.fdy-card` is
 `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's edge. It is
 exported so a control you build behaves like one the kit ships, and improves when the kit's
 positioning does.
+
+The fourth argument is the alignment, `'start'` (the default, left edges together) or `'end'`
+(right edges together). Reach for `'end'` when the panel is much wider than its trigger and the
+trigger sits near the right of something, an icon in a page gutter or a funnel in a table
+header. The panel is kept inside the viewport on both sides either way, so `'end'` beside the
+left edge slides right rather than off the screen.

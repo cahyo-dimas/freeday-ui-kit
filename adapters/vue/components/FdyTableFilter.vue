@@ -28,7 +28,13 @@ const triggerEl: Ref<HTMLButtonElement | null> = ref(null);
 const panelEl: Ref<HTMLDivElement | null> = ref(null);
 const open: Ref<boolean> = ref(false);
 
-usePopover(panelEl, triggerEl, open);
+/* Always end-aligned, and not an option the parent can set: the funnel is a 24px button in a
+   column header while the panel runs past 200px, so lining up their LEFT edges aligns the panel
+   with nothing anybody can see. In the rightmost column, the one this was reported from, the panel
+   ran past the page and the viewport clamp parked it 4px off the screen edge. A prop no caller
+   would ever set to 'start' is a prop that should not exist. The clamp still catches the leftmost
+   column, where an end-aligned panel would hang off the other edge. */
+usePopover(panelEl, triggerEl, open, 'end');
 
 const active: ComputedRef<boolean> = computed((): boolean => isFilterActive(props.filter));
 

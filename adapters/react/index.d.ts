@@ -27,7 +27,7 @@ export interface FdyCflSelectDetail { row?: unknown; rows?: unknown[] }
 export interface FdyTableChangeDetail { page: number; sort: string | null; query: string }
 
 // Re-exports of React components and hooks
-export { usePopover } from './usePopover';
+export { usePopover, type FdyPopoverAlign } from './usePopover';
 export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/FdyCombo';
 export { FdyDatepicker, type FdyDatepickerProps, type FdyDatepickerMode } from './components/FdyDatepicker';
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';

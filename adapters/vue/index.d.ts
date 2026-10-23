@@ -13,6 +13,16 @@ export interface UseFreedayReturn {
 export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreedayReturn;
 
 /**
+ * Which of the panel's edges lines up with the trigger's. `'start'` (the default) puts the panel's
+ * LEFT edge on the trigger's left edge, right for an input-shaped dropdown; `'end'` puts its RIGHT
+ * edge on the trigger's right edge, which is what a panel much wider than its trigger needs when
+ * the trigger sits in a right-hand gutter or a table header. Either way the panel is kept inside
+ * the viewport, so `'end'` near the left edge slides right instead of hanging off it. Same two
+ * names as the raw `FreedayPopover.place()`.
+ */
+export type FdyPopoverAlign = 'start' | 'end';
+
+/**
  * Anchor a dropdown panel to its trigger in the top layer, so it escapes any ancestor overflow clip
  *, `.fdy-card` is `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's
  * edge. The panel element must carry `popover="manual"`. This is the plumbing every kit dropdown
@@ -23,6 +33,7 @@ export declare function usePopover(
   panelRef: Ref<HTMLElement | null>,
   triggerRef: Ref<HTMLElement | null>,
   open: Ref<boolean>,
+  align?: FdyPopoverAlign,
 ): void;
 
 export { default as FdyCombo } from './components/FdyCombo.vue';

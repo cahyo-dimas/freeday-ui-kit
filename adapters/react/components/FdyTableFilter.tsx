@@ -26,7 +26,13 @@ export function FdyTableFilter(props: FdyTableFilterProps): JSX.Element {
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 
-  usePopover(panelRef, triggerRef, open);
+  /* Always end-aligned, and not an option the parent can set: the funnel is a 24px button in a
+     column header while the panel runs past 200px, so lining up their LEFT edges aligns the panel
+     with nothing anybody can see. In the rightmost column, the one this was reported from, the
+     panel ran past the page and the viewport clamp parked it 4px off the screen edge. A prop no
+     caller would ever set to 'start' is a prop that should not exist. The clamp still catches the
+     leftmost column, where an end-aligned panel would hang off the other edge. */
+  usePopover(panelRef, triggerRef, open, 'end');
   // Popover attr for React 18/19 JSX typing: set once on mount (same as the other components).
   useEffect((): void => {
     panelRef.current?.setAttribute('popover', 'manual');

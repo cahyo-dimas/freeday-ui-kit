@@ -1317,7 +1317,7 @@ the two ever disagree.
 | `label` | `string` | Header label. |
 | `labelHidden` | `boolean` | Render the label for assistive tech only; the header cell looks empty. |
 | `sortable` | `boolean` | Show a sort toggle in the header. |
-| `filter` | `'text' \| 'enum' \| 'number' \| 'date'` | Offer a column filter of this type (the funnel popover). |
+| `filter` | `'text' \| 'enum' \| 'number' \| 'date'` | Offer a column filter of this type (the funnel popover). The panel is several times wider than the funnel, so it hangs from the funnel's RIGHT edge and the rightmost column keeps the page's gutter; near the left edge of a narrow screen it slides right instead of off it. |
 | `align` | `'left' \| 'right' \| 'center'` | Cell alignment. Default `left`. |
 | `mono` | `boolean` | Render cells in the monospace data font (`.fdy-mono`). |
 | `sortType` | `'text' \| 'number' \| 'date'` | Override the comparator; defaults to one derived from `filter`, else `text`. |
