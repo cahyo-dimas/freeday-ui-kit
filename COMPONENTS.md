@@ -1451,6 +1451,28 @@ render it once, outside both, with `pager={false}` on the table.
 | `page` | `FdyPageState` = `{ index, size, total }` | The page being shown. `size` drives both the range text and the rows-per-page control's value. |
 | `onPageChange?` | `(page: FdyPageState) => void` | React. A page click or a size change. Vue emits `update:page`; Blazor `PageChanged`. |
 | `pageSizes?` | `readonly number[]` | Offer a rows-per-page control. Omit it and the footer is range + pager only. Picking a size reports the new `size` together with the index that still holds the row the reader was looking at. |
+| `infoText?` | `string` | The range line, with `{from}`, `{to}` and `{total}` substituted. Default `Showing {from}–{to} of {total}`, the enhancer's `info` string. |
+| `pageSizeLabel?` | `string` | The word beside the rows-per-page control, which also names that control for a screen reader. Default `Rows`. |
+| `paginationLabel?` | `string` | Accessible name of the pager landmark. Default `Pagination`. |
+| `prevLabel?` | `string` | Accessible name of the previous-page arrow. Default `Previous page`. |
+| `nextLabel?` | `string` | Accessible name of the next-page arrow. Default `Next page`. |
+| `pageLabel?` | `string` | Accessible name of a numbered page button, with `{n}` substituted. Default `Go to page {n}`. |
+
+**Saying it in another language.** The raw path has had `data-fdy-text-<key>` since 1.39.0 and this
+one had nothing, so a Vue, React or Blazor app that does not speak English could only rewrite the
+band by hand. One did: eighty one lines of its own markup, to change five words. The six string
+props above are the hatch that was missing. Where the enhancer already keys a string the prop
+carries that key's name, `infoText` for `info`, `prevLabel` for `prev`, `nextLabel` for `next`,
+and the same `{from}` `{to}` `{total}` `{n}` substitution, every occurrence replaced, so an app on
+both paths writes one wording once. The other three have no enhancer twin because on the raw path
+that markup is the app's own: the word beside the rows-per-page control, the pager landmark's name,
+and the name of a numbered page button. It is `pageSizeLabel` and not `rows`, since the enhancer's
+`rows` key is the table's `{n} rows` count, a different string.
+
+Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` draws its
+own footer and does not pass these through, so a table that owns its footer still reads English; a
+screen that needs its own wording takes the footer over with `pager={false}` and renders
+`<FdyTableFooter>` beside it, which is the same route a responsive list already takes.
 
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:

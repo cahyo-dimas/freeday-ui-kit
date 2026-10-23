@@ -9,12 +9,12 @@
 @if (Visible)
 {
     <div class="fdy-table-footer">
-        <span class="fdy-table-footer__info">Showing @RangeFrom–@RangeTo of @Page.Total</span>
+        <span class="fdy-table-footer__info">@InfoLine</span>
 
         @if (Sizes.Count > 0)
         {
             <div class="fdy-table-footer__size">
-                <span id="@SizeLabelId">Rows</span>
+                <span id="@SizeLabelId">@(PageSizeLabel ?? "Rows")</span>
                 @* The kit's own listbox, not a native <select>: an OS menu is unthemeable, and on
                    macOS it drops a dark panel into a light page. FdyCombo's own header says so. *@
                 <FdyCombo TValue="string" Value="@Page.Size.ToString()" Options="SizeOptions"
@@ -24,10 +24,10 @@
 
         @if (HasPager)
         {
-            <nav class="fdy-pagination" aria-label="Pagination">
+            <nav class="fdy-pagination" aria-label="@(PaginationLabel ?? "Pagination")">
                 <ul class="fdy-pagination__list">
                     <li>
-                        <button type="button" class="fdy-pagination__link" aria-label="Previous page"
+                        <button type="button" class="fdy-pagination__link" aria-label="@(PrevLabel ?? "Previous page")"
                                 disabled="@(CurrentPage1 == 1)" @onclick="() => GoTo(CurrentPage1 - 1)">‹</button>
                     </li>
                     @foreach (int? p in Pages)
@@ -44,13 +44,13 @@
                             else
                             {
                                 int page = p.Value;
-                                <button type="button" class="fdy-pagination__link" aria-label="@($"Go to page {page}")"
+                                <button type="button" class="fdy-pagination__link" aria-label="@PageAriaLabel(page)"
                                         @onclick="() => GoTo(page)">@(page)</button>
                             }
                         </li>
                     }
                     <li>
-                        <button type="button" class="fdy-pagination__link" aria-label="Next page"
+                        <button type="button" class="fdy-pagination__link" aria-label="@(NextLabel ?? "Next page")"
                                 disabled="@(CurrentPage1 == TotalPages)" @onclick="() => GoTo(CurrentPage1 + 1)">›</button>
                     </li>
                 </ul>
