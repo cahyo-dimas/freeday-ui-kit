@@ -1890,9 +1890,14 @@ record. A crumb for a menu group that has no page of its own is plain text in th
 to nowhere.
 
 ## Tabs — `.fdy-tabs`
-APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
+APG tabs: arrows, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 `.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
 so the same look serves routed sub-navigation built from plain links. See the note under Nav.
+
+**Which arrows move the selection** comes from the tablist's `aria-orientation`: Left and Right by
+default, Up and Down when it says `vertical`. One axis per tablist, the way APG maps it. The other
+pair stays unmapped, so Left and Right over a column of tabs still reach whatever else on the page
+wants them. Home and End answer either way.
 
 > **The strip's line is an inset `box-shadow`, not a `border-bottom`** (`#052`; through 3.1.0 it
 > was a border, so an app upgrading past that release changes the override with it). To
@@ -1914,6 +1919,56 @@ so the same look serves routed sub-navigation built from plain links. See the no
   <div class="fdy-tabs__panel" role="tabpanel" id="p-2" aria-labelledby="t-2" tabindex="0" hidden>…</div>
 </div>
 ```
+
+### Vertical — `.fdy-tabs--vertical`
+
+The same tabs turned down the page: the list on the leading side, the panel beside it. For a
+settings screen whose sections are a list, not a strip.
+
+```html
+<div class="fdy-tabs fdy-tabs--vertical" data-fdy-tabs style="--fdy-tabs-list-w:16rem">
+  <div class="fdy-tabs__list" role="tablist" aria-orientation="vertical" aria-label="Settings">
+    <button class="fdy-tabs__tab" role="tab" id="s-1" aria-controls="sp-1" aria-selected="true">Identity</button>
+    <button class="fdy-tabs__tab" role="tab" id="s-2" aria-controls="sp-2" aria-selected="false" tabindex="-1">Posts</button>
+  </div>
+  <div class="fdy-tabs__panel" role="tabpanel" id="sp-1" aria-labelledby="s-1" tabindex="0">…</div>
+  <div class="fdy-tabs__panel" role="tabpanel" id="sp-2" aria-labelledby="s-2" tabindex="0" hidden>…</div>
+</div>
+```
+
+- **Two markers, and they are not the same marker.** `.fdy-tabs--vertical` decides the look,
+  because the two-column box belongs to `.fdy-tabs` and a stylesheet cannot reach a parent from a
+  child. `aria-orientation="vertical"` on the tablist decides the keyboard, because that is what an
+  assistive technology announces and APG asks for it on a vertical tablist regardless. Write
+  **either** one: `freeday-tabs.js` fills in the attribute when it finds the class without it, so
+  the ARIA can never drift from the layout. An `aria-orientation` you wrote always wins, including
+  when you write `horizontal` on a widget that carries the class.
+- **Selection is a soft fill.** A bar down the leading edge would be the wrong translation:
+  sideways the marker is an underline beneath the tab it belongs to, and turned ninety degrees that
+  line lands between two tabs and points at the wrong one. So the vertical variant spends
+  `--color-primary-soft` behind `--color-primary-strong`, the same pair
+  `.fdy-nav__item[aria-current="page"]` and the picker options already use for “this is where you
+  are” in a vertical list. The strip's own line (`box-shadow`) is dropped with the underline.
+- **Column width:** `--fdy-tabs-list-w` on `.fdy-tabs` (default `auto`, so the column hugs the
+  longest label). Set the token rather than a `width` on `.fdy-tabs__list`: the list is a flex item
+  at `flex:none`, so a width arriving from outside has no effect and no error to show for it.
+- **It does not collapse on a narrow screen**, and the breakpoint is yours because the kit cannot
+  know whether these tabs span the viewport or sit in a 20rem drawer. Going back to a strip takes
+  three declarations, not one, since the variant turns both boxes:
+
+  ```css
+  @media (max-width: 63.9375rem) {
+    .settings-tabs.fdy-tabs--vertical { display: block; }
+    .settings-tabs .fdy-tabs__list { flex-direction: row; width: auto; overflow-x: auto; }
+    .settings-tabs .fdy-tabs__panel { padding: var(--space-4) 0 0; }
+  }
+  ```
+
+  The keyboard stays on Up and Down across that switch, because `aria-orientation` is an attribute
+  and a media query cannot reach it. A list of sections is still a list of sections at 320px, which
+  is why the axis is read from the attribute and never from the painted layout.
+- Measured in `browser/tabs-vertical.mjs`, which also holds the line that a strip with no
+  `aria-orientation` behaves and paints exactly as it did before the variant existed.
 
 ---
 
