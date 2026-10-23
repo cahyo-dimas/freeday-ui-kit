@@ -1189,7 +1189,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bold); letter-spacing: var(--tracking-tighter); line-height: var(--leading-snug); margin: 0; }
-a { color: var(--color-primary); }
+a { color: var(--color-primary-strong); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
 /* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still
@@ -2111,7 +2111,7 @@ a { color: var(--color-primary); }
    its own label stopped matching the one that was selected. The `/ ""` is alt text: the glyph is
    painted, the accessibility tree gets nothing. Same reasoning as .fdy-label--required (1.29.0).
    The empty box still reserves its width, so labels stay aligned whether selected or not. */
-.fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary);}
+.fdy-combo__check{display:inline-flex;justify-content:center;width:var(--space-4);flex:none;font-weight:var(--weight-bold);color:var(--color-primary-strong);}
 .fdy-combo__option[aria-selected="true"] .fdy-combo__check::after{content:"✓" / "";}
 @media (prefers-reduced-motion:no-preference){.fdy-combo__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 @keyframes fdy-combo-in{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
@@ -2397,7 +2397,7 @@ a { color: var(--color-primary); }
 .fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
 .fdy-dropzone[aria-disabled="true"],.fdy-dropzone.is-disabled{opacity:.55;cursor:not-allowed;pointer-events:none;}
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
-.fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary);}
+.fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary-strong);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
 .fdy-dropzone__hint{font-size:var(--text-xs);}
@@ -2904,8 +2904,8 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Expandable detail row (FdyTable row-detail slot): a muted panel under its row, no hover tint. */
 .fdy-table__detailrow>td,.fdy-table__detailrow:hover>td{background:var(--color-surface-2);}
 .fdy-table th[aria-sort]{cursor:pointer;}
-.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
-.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary-strong);}
+.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary-strong);}
 
 /* Sortable header button (accessible click target inside th) */
 .fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}

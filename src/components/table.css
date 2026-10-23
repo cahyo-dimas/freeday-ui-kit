@@ -46,8 +46,8 @@
 /* Expandable detail row (FdyTable row-detail slot): a muted panel under its row, no hover tint. */
 .fdy-table__detailrow>td,.fdy-table__detailrow:hover>td{background:var(--color-surface-2);}
 .fdy-table th[aria-sort]{cursor:pointer;}
-.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary);}
-.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary);}
+.fdy-table th[aria-sort="ascending"]::after{content:" ↑";color:var(--color-primary-strong);}
+.fdy-table th[aria-sort="descending"]::after{content:" ↓";color:var(--color-primary-strong);}
 
 /* Sortable header button (accessible click target inside th) */
 .fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}
