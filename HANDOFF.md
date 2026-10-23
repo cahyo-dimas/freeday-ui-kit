@@ -11,32 +11,28 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.6.0`, dan itu yang terbit** (2026-10-22). Diperiksa, bukan diingat — ketiga perintah yang
-berkas ini resepkan benar-benar dijalankan:
+**`3.7.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
+sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah.
 
-```
-npm view @cahyo-dimas/freeday version   -> 3.6.0   (dist-tags latest = 3.6.0)
-git rev-list --left-right --count origin/main...main -> 0  0
-curl -L .../freeday-ui-kit/docs/        -> v3.6.0
-```
+Isi 3.7.0 dalam satu kalimat: **kit ini tidak bisa dipakai di Safari 15, dan yang menemukannya
+adalah sebuah iPhone 7** (`#072`, `#073`). `color-mix()` dipakai 94 kali tanpa cadangan, dan
+cadangan memang tidak mungkin: deklarasi yang memuat `var()` sah saat parse lalu gagal saat
+computed-value, sehingga propertinya jatuh ke nilai initial dan bukan ke baris sebelumnya. Untuk
+`border-color` nilai itu `currentColor`. Jadi `color-mix()`-nya dibuang, diganti 43 token terhitung,
+dan `tokens/build.mjs` kini memipihkan campuran sekali per tema. Ikut tertutup: lima tempat yang
+mencetak teks dengan `--color-primary`, peran yang kontraknya hanya pernah dijanjikan pada ambang
+3:1. Tiga penjaga baru membuat ketiganya tidak bisa kembali diam-diam. Detail di CHANGELOG.
 
-Isi tarball diperiksa dari registry (`npm pack @cahyo-dimas/freeday@3.6.0`), bukan dari `npm pack`
-lokal: `dist/freeday-confirm.js`, `-copy.js` dan `-search.js` ada; `freeday.css` memuat
-`--hover-actionable`, `__columns`, `--grid` dan `__head`; `freeday-form.js` memuat `reveal()`;
-`freeday.d.ts` mengetik `confirm()`. Docs live memuat keempat demo baru.
+Yang belum dikerjakan dan sudah berbentuk: empat butir dari catatan app yang sama, semuanya
+penambahan dan bukan cacat. Popover yang mengabaikan `fdy-menu--end`, `FdyTableFooter` yang
+teksnya tertanam tanpa prop label, tab tegak, dan pemilih bulan. Mereka milik 3.8.0.
 
-**Rilisnya lewat tag, bukan `npm publish` lokal.** `publish.yml` memicu pada tag `v*`, memanggil
-`ci.yml` lebih dulu (jadi tag yang gerbangnya merah tak pernah sampai ke npm), lalu publish dengan
-**OIDC trusted publishing** — tanpa token tersimpan, provenance otomatis. `npm publish` dari mesin
-dev bukan cuma tak perlu, ia **melewati gerbang itu**, dan tetap akan berhenti di `EOTP` karena 2FA.
-Perintahnya: `git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags`.
+Tiga utang yang dibawa rilis ini: floor dukungan di README diaudit dari fitur yang dipakai dan
+belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah di bawah
+`--test-concurrency=3` pada `bottom-nav`, `search` dan `over-dialog`, sudah ada sebelum pekerjaan
+ini; dan `examples/blazor-faktur/wwwroot/freeday/freeday.bundle.css` masih memuat 86 `color-mix()`
+sebab ia salinan vendored yang tidak dilacak git.
 
-Isi 3.6.0 dalam satu kalimat: **tiga belas hal yang sebuah app back-office bangun sendiri karena kit
-belum punya** (`#059`–`#071`). App asalnya tidak memakai Freeday, jadi yang diangkat polanya, dan
-hanya yang generik. Satu cacat kit ikut tertutup: submit yang ditolak kini membuka `<details>`, tab,
-atau step yang menyembunyikan field-nya sebelum memfokusnya. Hover baris tabel yang hanya untuk
-baris yang bisa diklik dikirim sebagai opt-in (`--hover-actionable`) karena mengubah tampilan setiap
-tabel; jadi default di 4.0 (NEXT-UP #16). Detail di CHANGELOG.
 
 Gerbang untuk 3.6.0, lokal: `node --test` **122/122**, `npm run test:browser` **147/147**,
 `npm run typecheck:react` bersih, `npm run test:blazor` **28/28**. Setiap perilaku baru diverifikasi

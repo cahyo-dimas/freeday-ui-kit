@@ -9,6 +9,52 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.7.0] - 2026-10-23
+
+**Kit ini tidak bisa dipakai di Safari 15, dan yang menemukannya adalah sebuah HP.** Pemilik sebuah
+app ronda membuka aplikasinya di iPhone 7 dan menulis tiga kata: tampilannya ancur banget. Sebabnya
+`color-mix()`, 94 kemunculan tanpa satu pun cadangan, dipakai untuk `box-shadow` (26),
+`border-color` (17), `color` (11) dan `background` (5). Safari baru mendukungnya di 16.2; iPhone 7
+mentok di iOS 15.
+
+Perbaikan pertama yang dicoba justru membuktikan sebabnya. Pola cadangan yang biasa dipakai orang,
+nilai statis dulu lalu `color-mix()` sesudahnya, tidak bekerja ketika deklarasinya memuat `var()`:
+deklarasi itu sah saat parse dan baru gagal saat computed-value, dan di jalur itu properti jatuh ke
+nilai initial, bukan ke baris sebelumnya. Untuk `border-color` nilai initial itu `currentColor`,
+yaitu hitam. Keluhan tentang garis hitam tebal di mana-mana itulah bukti mekanismenya. Jadi
+`color-mix()`-nya yang dibuang.
+
+### Fixed
+- **Nol `color-mix()` di seluruh CSS yang dikirim** (`#072`). `rgba(var(--x-rgb), .p)` identik
+  dengan `color-mix(in srgb, X p%, transparent)` menurut definisi, jadi 10 token semantik baru
+  menutup 84 dari 94 kemunculan; `--color-primary-rgb` sendirian menutup 45. Sisanya yang mencampur
+  terhadap permukaan dipipihkan di `tokens/build.mjs`, yang kini menghitung nilai bertulis
+  `color-mix(in srgb, {a} p%, {b})` sekali per tema sambil menelusuri rantai `$dark ?? $value`,
+  sehingga nilai gelapnya diturunkan alih-alih diketik dua kali.
+- **Modifier tone bekerja di Safari 15** (`#072`). Delapan tone kali latar, tinta dan dua garis kini
+  33 token terhitung, dan properti privat `--_fdy-{avatar,badge,chip}-tone` hilang seluruhnya.
+  Tampilan di peramban modern terbukti tidak berubah: byte yang benar-benar dicat dibandingkan lewat
+  tangkapan layar satu piksel, nol selisih di 48 warna kali dua tema.
+- **Lima tempat yang mencetak teks dengan `--color-primary` pindah ke `--color-primary-strong`**
+  (`#073`). Kontrak kontras hanya pernah menjanjikan peran itu terhadap permukaan pada ambang 3:1,
+  yakni ambang WCAG untuk komponen UI, bukan untuk teks. Jadi suite-nya lulus sambil kit mencetak
+  tinta di bawah AA pada teal 3.74, cyan 3.68, emerald 3.77 dan lime 3.09. Azure lulus di 6.56, dan
+  itu sebabnya tidak ada yang menyadarinya. Yang pindah: tautan, centang combo, ikon dropzone saat
+  seret, dan dua panah urut tabel. Sembilan belas tempat lain yang polanya ikut tertangkap sengaja
+  tidak disentuh, sebab semuanya batas kontrol dan objek grafis yang memang sah di 3:1.
+
+### Added
+- **Penjaga yang membuat ketiganya tidak bisa kembali diam-diam.** Satu uji menegaskan nol
+  `color-mix()` di CSS yang dikirim. Satu lagi menegaskan nol properti `color` yang menyebut
+  `--color-primary` gundul, membaca nama properti alih-alih substring supaya kesembilan belas isian
+  tetap sah. Dan kontrak kontras kini mengukur `--color-primary-strong` terhadap permukaan pada
+  ambang teks untuk setiap palet, bukan hanya azure.
+
+### Catatan dukungan peramban
+Floor-nya kini Chrome 105, Safari 15.4 dan Firefox 121, ditentukan `:has()`. Angka itu diaudit dari
+fitur yang dipakai, bukan dari sesi di perangkat sungguhan. Belum ada yang menjalankan kit ini di
+Safari 15.4 nyata.
+
 ## [3.6.0] - 2026-10-22
 
 **Tiga belas hal yang dibangun ulang sebuah app back-office karena kit belum punya.** App-nya tidak
