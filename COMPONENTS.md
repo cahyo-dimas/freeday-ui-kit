@@ -1235,7 +1235,16 @@ over the connector line, so omitting `__btn` cannot make the connector draw thro
 ## Table — `.fdy-table`
 Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-table-scroll`
 (horizontal scroll). Always a `<caption>` (use `.fdy-visually-hidden` if it shouldn't show) and
-`<th scope="col">`. Numeric cells get `.fdy-table__num` (right-aligned, tabular).
+`<th scope="col">`. Numeric body cells get `.fdy-table__num` (right-aligned, tabular figures, data
+font).
+
+**`.fdy-table__num` aligns a `<td>`, not a `<th>`.** The class is specificity `(0,1,0)` and
+`.fdy-table th` is `(0,2,0)`, so on a header cell the data font and the tabular figures arrive but
+`text-align:left` from the header rule wins: the label stays left while the numbers under it go
+right. Put the class on the header anyway for the font, then add `style="text-align:right"` to move
+the label with them. That inline value is exactly what the typed `FdyTable` writes for a column with
+`align: 'right'`, and it is the only thing no ancestor rule can outrank. The class is deliberately
+left at its own weight: raising it would shift every numeric heading already shipped.
 
 **`--striped`** zebras the even body rows. The tint is deliberately *half* a surface step, not the
 full one hover uses, so hover still reads on a striped row instead of matching it — and stripe,
@@ -1256,7 +1265,7 @@ for 4.0.
 <div class="fdy-table-wrap">
   <table class="fdy-table">
     <caption>Recent invoices</caption>
-    <thead><tr><th scope="col">Invoice</th><th scope="col" class="fdy-table__num">Amount</th></tr></thead>
+    <thead><tr><th scope="col">Invoice</th><th scope="col" class="fdy-table__num" style="text-align:right">Amount</th></tr></thead>
     <tbody>
       <tr><td>INV-1042</td><td class="fdy-table__num">1,240,000</td></tr>
     </tbody>
@@ -1288,7 +1297,7 @@ sum, so measure them once after render (and on resize) and set the variable.
     <caption class="fdy-visually-hidden">Exchange rates, August 2026</caption>
     <thead><tr>
       <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge">Date</th>
-      <th scope="col" class="fdy-table__num">USD</th>
+      <th scope="col" class="fdy-table__num" style="text-align:right">USD</th>
     </tr></thead>
     <tbody>
       <tr>

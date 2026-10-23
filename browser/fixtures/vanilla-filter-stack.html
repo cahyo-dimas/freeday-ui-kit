@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>fixture: column filter panel on the degraded path, inside a sticky header's stacking context</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<!-- The DEGRADED path, forced before a single enhancer has run. `freeday-popover.js` reads
+     `HTMLElement.prototype.showPopover` once, at load, into a module-scope `supported`, so this is
+     the only moment the arrangement can be made: an inline script in <head> runs while the document
+     is still parsing, and the bundle below is `defer`, so it runs after. Delete the method any later
+     and the IIFE has already made up its mind.
+
+     This is the path Chrome 105..113, Safari 15.4 and 16, and Firefox 121..124 take. All of them sit
+     inside the floor the README promises (Chrome 105, Safari 15.4, Firefox 121) and all of them sit
+     below the Popover API (Chrome 114, Safari 17, Firefox 125), so nothing here is hypothetical.
+
+     `hidePopover` and `togglePopover` go with it so no enhancer on the page can take a half
+     supported route. `supported` itself is asserted false in the spec rather than assumed. -->
+<script>
+  delete HTMLElement.prototype.showPopover;
+  delete HTMLElement.prototype.hidePopover;
+  delete HTMLElement.prototype.togglePopover;
+</script>
+<script src="../../dist/freeday.js" defer></script>
+<style>
+  /* Fixture scaffolding only: a height for the scrollport, column widths wide enough that the panel
+     spans several header cells, and vertical room so the table is not at the top of the page. No
+     colour, no z-index, no position, nothing that could decide the measurement. */
+  #scroll-sticky,#scroll-plain{--fdy-table-frozen-h:14rem}
+  #scroll-sticky th,#scroll-sticky td,#scroll-plain th,#scroll-plain td{min-width:5.5rem}
+  .spacer{height:360px}
+</style>
+</head>
+<body>
+<div class="fdy-app fdy-app--has-bottomnav">
+  <div class="fdy-app__content">
+    <header class="fdy-app__topbar"><h1 class="fdy-app__title">Stacking probe</h1></header>
+    <main class="fdy-app__main">
+      <div class="spacer"></div>
+
+      <!-- Table A: the frozen-axes arrangement straight out of COMPONENTS.md. `--sticky-head` is
+           what puts `z-index:2` on every header cell, and a positioned box carrying a z-index is a
+           STACKING CONTEXT, so a filter panel rendered inside one of those cells has its own 130
+           sorted inside that 2 instead of against the page. Column 0 is frozen (its header cell
+           gets z-index:3), the funnel is on column 1, and the enum values are long enough to make
+           the panel tall enough to reach the bottom bar on a phone. -->
+      <div class="fdy-datatable" id="tbl-sticky" data-fdy-table>
+        <div class="fdy-table-scroll fdy-table-scroll--frozen" id="scroll-sticky">
+          <table class="fdy-table fdy-table--sticky fdy-table--sticky-head">
+            <caption class="fdy-visually-hidden">Stock by branch, frozen head</caption>
+            <thead><tr>
+              <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge">Branch</th>
+              <th scope="col" data-fdy-filter="enum">Status</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Region</th>
+              <th scope="col">Channel</th>
+              <th scope="col" class="fdy-table__num">Qty</th>
+            </tr></thead>
+            <tbody>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Jakarta</th><td>Open</td><td>Rini</td><td>West</td><td>Retail</td><td class="fdy-table__num">120</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Bandung</th><td>Held</td><td>Dimas</td><td>West</td><td>Retail</td><td class="fdy-table__num">98</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Surabaya</th><td>Closed</td><td>Sari</td><td>East</td><td>Online</td><td class="fdy-table__num">76</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Medan</th><td>Open</td><td>Yoga</td><td>North</td><td>Online</td><td class="fdy-table__num">61</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Makassar</th><td>Draft</td><td>Putri</td><td>East</td><td>Partner</td><td class="fdy-table__num">44</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Semarang</th><td>Review</td><td>Agus</td><td>Central</td><td>Partner</td><td class="fdy-table__num">39</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Denpasar</th><td>Void</td><td>Nita</td><td>East</td><td>Retail</td><td class="fdy-table__num">21</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <!-- Table B: the CONTROL, identical markup minus `--sticky-head`. Its header cells are
+           `position:static; z-index:auto`, so they create no stacking context, which is also the
+           state every typed `FdyTable` header cell is in: neither adapter renders `--sticky` or
+           `--sticky-head` and neither lets a caller put a class on the <table>. So this table is
+           what answers "does the typed FdyTableFilter carry the same fault", and the only thing that
+           differs between A and B is the modifier. -->
+      <div class="fdy-datatable" id="tbl-plain" data-fdy-table>
+        <div class="fdy-table-scroll fdy-table-scroll--frozen" id="scroll-plain">
+          <table class="fdy-table fdy-table--sticky">
+            <caption class="fdy-visually-hidden">Stock by branch, control</caption>
+            <thead><tr>
+              <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge">Branch</th>
+              <th scope="col" data-fdy-filter="enum">Status</th>
+              <th scope="col">Owner</th>
+              <th scope="col">Region</th>
+              <th scope="col">Channel</th>
+              <th scope="col" class="fdy-table__num">Qty</th>
+            </tr></thead>
+            <tbody>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Jakarta</th><td>Open</td><td>Rini</td><td>West</td><td>Retail</td><td class="fdy-table__num">120</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Bandung</th><td>Held</td><td>Dimas</td><td>West</td><td>Retail</td><td class="fdy-table__num">98</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Surabaya</th><td>Closed</td><td>Sari</td><td>East</td><td>Online</td><td class="fdy-table__num">76</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Medan</th><td>Open</td><td>Yoga</td><td>North</td><td>Online</td><td class="fdy-table__num">61</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Makassar</th><td>Draft</td><td>Putri</td><td>East</td><td>Partner</td><td class="fdy-table__num">44</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Semarang</th><td>Review</td><td>Agus</td><td>Central</td><td>Partner</td><td class="fdy-table__num">39</td></tr>
+              <tr><th scope="row" class="fdy-table__freeze fdy-table__freeze--edge">Denpasar</th><td>Void</td><td>Nita</td><td>East</td><td>Retail</td><td class="fdy-table__num">21</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+    </main>
+  </div>
+</div>
+
+<!-- The kit's own bottom bar: `position:fixed`, `z-index:50`, phone widths only. A sibling of the
+     shell, which is how COMPONENTS.md documents it. -->
+<nav class="fdy-bottomnav" aria-label="Main">
+  <a class="fdy-bottomnav__item" href="#one" aria-current="page"><span class="fdy-bottomnav__label">Home</span></a>
+  <a class="fdy-bottomnav__item" href="#two"><span class="fdy-bottomnav__label">Data</span></a>
+  <a class="fdy-bottomnav__item" href="#three"><span class="fdy-bottomnav__label">More</span></a>
+</nav>
+
+<!-- Table C, inside a modal. The fault butir 3 fixed, re-asked on the degraded path: everything
+     outside an open dialog's subtree is INERT, so wherever the panel is parked it has to stay
+     inside the dialog or it paints a form that refuses focus and clicks. Any change that moves the
+     panel out of the <th> has to answer this at the same time. -->
+<dialog class="fdy-modal fdy-modal--lg" id="dlg">
+  <div class="fdy-modal__body">
+    <div class="fdy-datatable" id="tbl-modal" data-fdy-table>
+      <table class="fdy-table">
+        <caption class="fdy-visually-hidden">Pick a branch</caption>
+        <thead><tr>
+          <th scope="col" data-fdy-filter="text">Branch</th>
+          <th scope="col">Owner</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>Jakarta</td><td>Rini</td></tr>
+          <tr><td>Bandung</td><td>Dimas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  var nameOf = function (el) {
+    if (el === null) return null;
+    if (el === document.documentElement) return 'HTML';
+    return el.tagName + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().replace(/\s+/g, '.') : '');
+  };
+  var box = function (el) {
+    var r = el.getBoundingClientRect();
+    return { top: Math.round(r.top), right: Math.round(r.right), bottom: Math.round(r.bottom), left: Math.round(r.left),
+             width: Math.round(r.width), height: Math.round(r.height) };
+  };
+  var intersect = function (a, b) {
+    var top = Math.max(a.top, b.top), bottom = Math.min(a.bottom, b.bottom);
+    var left = Math.max(a.left, b.left), right = Math.min(a.right, b.right);
+    return { top: top, bottom: bottom, left: left, right: right,
+             width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
+  };
+  var panelOf = function (which) { return document.querySelector('#tbl-' + which + ' .fdy-filter'); };
+  var funnelThOf = function (which) { return document.querySelector('#tbl-' + which + ' thead th[data-fdy-filter]'); };
+
+  /* WHO IS ON TOP, asked of the engine instead of of the stylesheet.
+   *
+   * `elementsFromPoint` returns the hit-test stack at a point, topmost first, and on this page that
+   * IS paint order: the Popover API is gone, so nothing is in the top layer, and the two tables
+   * under test are not inside a dialog, so there is no inert subtree to make the answer lie. That
+   * lie is the only reason `over-dialog.mjs` and `overlay-stack.mjs` reach for pixels instead, and
+   * it does not apply here. It also reports more than a pixel can: the whole stack, by name, so a
+   * failure says WHAT covered the panel rather than only that something did.
+   *
+   * Reported as INDICES. A smaller index is nearer the viewer, so "the panel is covered" reduces to
+   * `other < panel`, two numbers. */
+  window.__coverage = function (which, otherSel) {
+    var panel = panelOf(which);
+    if (panel === null) return { missing: 'panel' };
+    var other = document.querySelector(otherSel);
+    if (other === null) return { missing: otherSel };
+    var pb = box(panel), ob = box(other), ov = intersect(pb, ob);
+    if (ov.width <= 0 || ov.height <= 0) return { overlaps: false, panel: pb, other: ob, overlap: ov };
+    var x = Math.round(ov.left + ov.width / 2), y = Math.round(ov.top + ov.height / 2);
+    var stack = document.elementsFromPoint(x, y);
+    var panelAt = -1, otherAt = -1;
+    for (var i = 0; i < stack.length; i++) {
+      if (panelAt < 0 && (stack[i] === panel || panel.contains(stack[i]))) panelAt = i;
+      if (otherAt < 0 && (stack[i] === other || other.contains(stack[i]))) otherAt = i;
+    }
+    return {
+      overlaps: true, panel: pb, other: ob, overlap: ov, at: [x, y],
+      panelAt: panelAt, otherAt: otherAt,
+      covered: otherAt >= 0 && (panelAt < 0 || otherAt < panelAt),
+      stack: stack.map(nameOf),
+    };
+  };
+
+  /* The premise: this really is the degraded path, the cell really is a cage, and the panel is read
+   * off the live elements rather than off the stylesheet. Deliberately parent-agnostic, because
+   * where the enhancer parks the panel is the thing under test: the funnel's own <th> is found
+   * through the table, not through the panel. */
+  window.__premise = function (which) {
+    var panel = panelOf(which);
+    if (panel === null) return { missing: true };
+    var th = funnelThOf(which);
+    var pcs = getComputedStyle(panel), tcs = getComputedStyle(th);
+    return {
+      supported: window.FreedayPopover.supported,
+      showPopoverType: typeof HTMLElement.prototype.showPopover,
+      popoverAttr: panel.getAttribute('popover'),
+      panelPosition: pcs.position,
+      panelZIndex: pcs.zIndex,
+      hostPosition: tcs.position,
+      hostZIndex: tcs.zIndex,
+      /* A positioned box whose z-index is not `auto` creates a stacking context. Both halves are
+         read, because neither one alone is the condition. */
+      hostIsStackingContext: tcs.position !== 'static' && tcs.zIndex !== 'auto',
+      insideHost: th.contains(panel),
+      parent: nameOf(panel.parentElement),
+      panel: box(panel), host: box(th), trigger: box(th.querySelector('.fdy-table__filterbtn')),
+      vw: document.documentElement.clientWidth, vh: document.documentElement.clientHeight,
+    };
+  };
+
+  /* Does `position:fixed` change the answer? Two questions about one declaration, measured apart.
+   * CONTAINMENT: a fixed box resolves against the viewport, so an ancestor's overflow clip has
+   * nothing to clip, and the panel is readable past the bottom of its own scrollport. ORDER: a
+   * fixed box is still sorted inside every stacking context it is a descendant of. The first is why
+   * `.fdy-filter` is fixed at all; the second is why being fixed does not get it out of the cell. */
+  window.__clip = function (which) {
+    var panel = panelOf(which);
+    if (panel === null) return { missing: true };
+    var port = document.getElementById('scroll-' + which);
+    var pb = box(panel), sb = box(port);
+    var below = pb.bottom - sb.bottom; // how far the panel reaches past the scrollport's own edge
+    var probe = { x: Math.round(pb.left + pb.width / 2), y: Math.round(sb.bottom + Math.min(12, Math.max(1, below / 2))) };
+    var stack = below > 0 ? document.elementsFromPoint(probe.x, probe.y).map(nameOf) : [];
+    return {
+      position: getComputedStyle(panel).position,
+      panel: pb, port: sb, reachesPastPort: below, probe: probe, stackPastPort: stack,
+      /* The panel's own ink at a point outside the scrollport. Read off the topmost hit, so it is
+         "painted and reachable there", not merely "has a rect there". */
+      visiblePastPort: stack.length > 0 && stack[0].indexOf('fdy-filter') >= 0,
+    };
+  };
+
+  /* THE CAGE, measured on its own, without the enhancer in the room.
+   *
+   * A real `.fdy-filter` box, pinned to one set of viewport coordinates over the bottom bar, read
+   * twice: once as a child of a `--sticky-head` header cell, once as a child of the datatable
+   * wrapper. Same element, same class, same `z-index:130`, same pixels. Only the parent differs.
+   * This is the measurement that says why raising the number cannot work, and it keeps saying it
+   * whatever the enhancer later decides to do with its own panel. */
+  window.__cageProbe = function () {
+    var nav = document.querySelector('.fdy-bottomnav');
+    var nb = box(nav);
+    var probe = document.createElement('div');
+    probe.className = 'fdy-filter';
+    probe.id = 'cage-probe';
+    probe.innerHTML = '<div class="fdy-filter__foot"><button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm">Reset</button></div>';
+    /* Pinned ON the bar, so the overlap is guaranteed and identical for both readings. */
+    probe.style.top = (nb.top + 8) + 'px';
+    probe.style.left = '40px';
+
+    var read = function (parent) {
+      parent.appendChild(probe);
+      var pbx = box(probe), ov = intersect(pbx, nb);
+      var x = Math.round(ov.left + ov.width / 2), y = Math.round(ov.top + ov.height / 2);
+      var stack = document.elementsFromPoint(x, y);
+      var probeAt = -1, navAt = -1;
+      for (var i = 0; i < stack.length; i++) {
+        if (probeAt < 0 && (stack[i] === probe || probe.contains(stack[i]))) probeAt = i;
+        if (navAt < 0 && (stack[i] === nav || nav.contains(stack[i]))) navAt = i;
+      }
+      var ccs = getComputedStyle(parent);
+      return {
+        parent: nameOf(parent),
+        parentPosition: ccs.position, parentZIndex: ccs.zIndex,
+        parentIsStackingContext: ccs.position !== 'static' && ccs.zIndex !== 'auto',
+        probeZIndex: getComputedStyle(probe).zIndex,
+        navZIndex: getComputedStyle(nav).zIndex,
+        box: pbx, overlap: ov, at: [x, y],
+        covered: navAt >= 0 && (probeAt < 0 || navAt < probeAt),
+        stack: stack.map(nameOf),
+      };
+    };
+
+    var inside = read(funnelThOf('sticky'));
+    var outside = read(document.getElementById('tbl-sticky'));
+    probe.remove();
+    return { inside: inside, outside: outside };
+  };
+
+  /* Every overlay the kit itself paints above 2, swept in one pass, so "is anything really on top of
+   * it" is answered with a list rather than a hunch. The ones that cannot overlap a panel which
+   * only ever opens DOWNWARD report their zero overlap rather than being left out: no overlap is a
+   * measurement too, and it is what keeps the answer honest. */
+  window.__sweep = function (which) {
+    var out = {};
+    var targets = {
+      'th sibling, z-index 2, later in tree order': '#tbl-' + which + ' thead th:nth-child(3)',
+      'th frozen, z-index 3': '#tbl-' + which + ' thead th:nth-child(1)',
+      'td body cell, z-index auto': '#tbl-' + which + ' tbody tr:nth-child(2) td:nth-child(3)',
+      'th frozen body cell, z-index 1': '#tbl-' + which + ' tbody tr:nth-child(2) th:nth-child(1)',
+      '.fdy-app__topbar, z-index 20': '.fdy-app__topbar',
+      '.fdy-bottomnav, z-index 50': '.fdy-bottomnav',
+    };
+    for (var k in targets) if (Object.prototype.hasOwnProperty.call(targets, k)) {
+      var r = window.__coverage(which, targets[k]);
+      out[k] = r.missing ? { missing: r.missing }
+        : { overlap: r.overlap.width + 'x' + r.overlap.height,
+            covered: r.overlaps ? r.covered : null,
+            topmost: r.overlaps ? r.stack[0] : null };
+    }
+    return out;
+  };
+
+  /* WHERE `.fdy-table__num` actually aligns its text (note 2026-10-23 §5, part B).
+   *
+   * Both tables above ship the class exactly as COMPONENTS.md writes it: on the `Qty` header and on
+   * the `Qty` body cells, with no inline style anywhere. The ink is located with a Range rather than
+   * with the element box, because a table cell fills its column whichever way its text is aligned,
+   * so only where the INK sits can tell left from right.
+   *
+   * Reported as the INSET into the SLACK, the room the alignment has to move the ink in. Half the
+   * slack is dead centre, so one number separates left from centre from right whatever font the
+   * machine resolves, and it does not care that a Range rect rounds to fractions. */
+  window.__numInk = function () {
+    var read = function (cell) {
+      var cs = getComputedStyle(cell);
+      var cr = cell.getBoundingClientRect();
+      var range = document.createRange();
+      range.selectNodeContents(cell);
+      var ir = range.getBoundingClientRect();
+      var contentLeft = cr.left + parseFloat(cs.paddingLeft);
+      var contentWidth = cr.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return {
+        textAlign: cs.textAlign,
+        fontFamily: cs.fontFamily,
+        fontVariantNumeric: cs.fontVariantNumeric,
+        slack: contentWidth - ir.width,
+        inset: ir.left - contentLeft,
+      };
+    };
+    var th = document.querySelector('#tbl-plain thead th.fdy-table__num');
+    var td = document.querySelector('#tbl-plain tbody td.fdy-table__num');
+    var inlined = th.cloneNode(true);
+    /* The documented way to move a numeric HEADING, and the one the typed FdyTable writes for a
+       column with `align:'right'`. Measured on a clone in the same row, under the same cascade, so
+       the reading is of the declaration and not of a different layout. */
+    inlined.style.textAlign = 'right';
+    th.parentNode.appendChild(inlined);
+    var withInline = read(inlined);
+    inlined.remove();
+    return { th: read(th), td: read(td), thWithInlineStyle: withInline };
+  };
+
+  window.__openModal = function () { document.getElementById('dlg').showModal(); return true; };
+
+  /* Who holds focus and what a click lands on, inside the modal, on the degraded path. The enhancer
+   * focuses the first control itself, so the first reading is the kit's own behaviour; the second
+   * asks again through a direct focus() call, because a silent no-op is exactly what inert content
+   * gives you. Lifted from `vanilla-filter-modal.html`, which asks the same thing of the top layer. */
+  window.__modalPanel = function () {
+    var panel = panelOf('modal');
+    if (panel === null) return { missing: true };
+    var input = panel.querySelector('input');
+    var afterEnhancer = panel.contains(document.activeElement);
+    input.focus();
+    var pbx = box(panel);
+    var hit = document.elementFromPoint(Math.round(pbx.left + pbx.width / 2), Math.round(pbx.top + pbx.height / 2));
+    return {
+      missing: false,
+      insideDialog: document.getElementById('dlg').contains(panel),
+      parent: nameOf(panel.parentElement),
+      focusedByEnhancer: afterEnhancer,
+      focusableByHand: document.activeElement === input,
+      activeElement: nameOf(document.activeElement),
+      hitAtCentre: nameOf(hit),
+      box: pbx,
+    };
+  };
+</script>
+</body>
+</html>
