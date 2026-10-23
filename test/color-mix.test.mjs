@@ -17,16 +17,22 @@
  * So "static value first, color-mix() second" is DEAD CODE for any mix that mentions a token, and
  * 92 of the kit's 94 mixes mentioned one. The fix was to stop needing a fallback: every alpha is
  * now stated as `rgba(var(--color-<role>-rgb), .26)`, which is the same colour and parses
- * everywhere. Four rules cannot be answered statically (the tone modifiers inject their colour per
- * element, and .fdy-file--error blends two tokens), so those keep color-mix() and carry a real
- * @supports counterpart.
+ * everywhere.
+ *
+ * v3.7.0 finished the job. Ten mixes survived the first pass because a triple can only put an alpha
+ * on ONE role, and they tinted one role over another: the categorical tone modifiers (18% of a tone
+ * over the surface, 50% toward the text, 30% over the border, 26% over transparent) and
+ * .fdy-file--error (40% of danger over the border). Those are now computed at BUILD time, per theme,
+ * by tokens/build.mjs, and the components read flat tokens — so the @supports counterparts that used
+ * to stand in for them are gone too, along with the private per-element custom properties that made
+ * the mix unanswerable in the first place. The kit ships zero color-mix().
  *
  * What this file asserts, so the next color-mix() somebody writes cannot be silent:
  *   1. the token layer carries NONE. A custom property is the one place with no remedy at all:
  *      whoever reads it has var() in their declaration, so they take the computed-value-time path.
- *   2. every color-mix() in a component either sits under `@supports not (color: color-mix(...))`,
- *      or is answered by a counterpart rule in one — and a var()-free mix may instead be answered
- *      by a preceding declaration, which is the only case where that actually works.
+ *   2. no component declares one either — not even with a fallback above it, and not even under an
+ *      @supports. The pattern is banned outright rather than policed, because every form of it that
+ *      works depends on somebody noticing which form they wrote.
  *   3. every --*-rgb a component reads exists.
  *   4. every --X-rgb is still the channels of --X, in EVERY scope: root, both themes, all 18
  *      palettes. A triple that drifts from its role is a wrong colour that nothing else would see.
@@ -91,43 +97,31 @@ test('the token layer carries no color-mix() at all', () => {
   }
 });
 
-test('every color-mix() in a component is answered', () => {
+test('no component declares color-mix(), in any form', () => {
+  /* Banned outright, not policed into a safe shape. The safe shape exists — a var()-free mix with a
+     static declaration above it really does fall back — but it is one word away from the shape that
+     silently drops the property, and telling them apart means reading the whole declaration for a
+     var() that may be three tokens deep. Every mix the kit needed is computed by tokens/build.mjs
+     now, so there is nothing left to allow.
+
+     The @supports counterparts are gone with them, and that is asserted too: a guard block for a
+     function nobody calls is dead CSS that reads like a live safety net. */
   const all = ruleSets(components);
-
-  // selector -> the properties its @supports counterpart actually restates.
-  const answered = new Map();
+  let checked = 0;
   for (const rule of all) {
-    if (!rule.at.some(a => GUARD.test(a))) continue;
-    const props = answered.get(rule.selector) ?? new Set();
-    for (const { prop } of declarations(rule.body)) props.add(prop);
-    answered.set(rule.selector, props);
+    const where = [...rule.at, rule.selector].join(' ');
+    for (const { prop, value } of declarations(rule.body)) {
+      checked++;
+      assert.equal(value.includes('color-mix('), false,
+        `${where} declares ${prop} with color-mix(); compute it in tokens/build.mjs instead — on ` +
+        `Safari <= 16.1 a mix carrying var() drops ${prop} to its INITIAL value, and no fallback ` +
+        `declaration above it is ever consulted`);
+    }
+    assert.equal(rule.at.some(a => GUARD.test(a)), false,
+      `${where} sits under an \`@supports not (color: color-mix(…))\`, but the kit no longer uses ` +
+      `color-mix(); a fallback for a function nobody calls reads like a live safety net`);
   }
-
-  let mixes = 0;
-  for (const rule of all) {
-    if (rule.at.some(a => GUARD.test(a))) continue; // this IS a fallback
-    const decls = declarations(rule.body);
-    decls.forEach(({ prop, value }, i) => {
-      if (!value.includes('color-mix(')) return;
-      mixes++;
-      if (value.includes('var(')) {
-        /* Carries a token, so it fails at computed-value time and no preceding line can catch it.
-           @supports is the only mechanism left. */
-        const props = answered.get(rule.selector);
-        assert.ok(props !== undefined,
-          `${rule.selector} mixes a token into ${prop} with no @supports counterpart; on Safari <= 16.1 ` +
-          `${prop} drops to its initial value, and a fallback declaration above it would never run`);
-        assert.ok(props.has(prop),
-          `${rule.selector} has an @supports counterpart but it does not restate ${prop}`);
-      } else {
-        /* No token in the mix, so the declaration is rejected at parse time and the pattern works. */
-        const earlier = decls.slice(0, i).some(d => d.prop === prop && !d.value.includes('color-mix('));
-        assert.ok(earlier,
-          `${rule.selector} needs a static ${prop} declared BEFORE its color-mix() one`);
-      }
-    });
-  }
-  assert.ok(mixes > 0, 'found no color-mix() to check, so this test is proving nothing');
+  assert.ok(checked > 1000, `only ${checked} declarations scanned; the stylesheet shape changed`);
 });
 
 // --- the channel triples --------------------------------------------------

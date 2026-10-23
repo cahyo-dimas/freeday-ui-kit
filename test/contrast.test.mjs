@@ -127,20 +127,39 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 
 // Categorical tones: the text-leaning foreground on the tinted background must keep AA text
 // contrast. ONE test for three components: .fdy-avatar--tone-*, .fdy-chip--tone-* and
-// .fdy-badge--tone-* all use the identical mix (bg 18%, fg 50% toward --color-text over
-// --color-surface), so they pass or fail together. Keep the ratios here in sync with all three;
-// the css guard below asserts they stay identical.
+// .fdy-badge--tone-* all read the identical --tone-N-bg / --tone-N-ink pair, so they pass or fail
+// together; the css guard asserts they stay identical.
+//
+// These assert the SHIPPED TOKENS, not the formula they came from. Until v3.7.0 the mix was written
+// in each component and this test re-derived it from --chart-N, which measured the arithmetic rather
+// than the colour: the tint is computed at build time and ROUNDED to 8 bits now, so re-deriving it
+// would clear AA on a value no browser ever paints. The rounding moves a ratio by <0.01, well inside
+// the headroom every tone has, but the point is that the gate reads what ships.
 for (const [themeName, theme] of Object.entries(THEMES)) {
   test(`WCAG contrast, categorical tones: ${themeName}`, () => {
     for (let i = 1; i <= 8; i++) {
-      const c = `var(--chart-${i})`;
-      const bg = parse(`color-mix(in srgb, ${c} 18%, var(--color-surface))`, theme);
-      const fg = parse(`color-mix(in srgb, ${c} 50%, var(--color-text))`, theme);
+      const bg = parse(theme[`--tone-${i}-bg`], theme);
+      const fg = parse(theme[`--tone-${i}-ink`], theme);
       const r = ratio(fg, bg);
       assert.ok(r >= AA_TEXT, `${themeName}: tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
     }
   });
 }
+
+test('the tone tokens the contrast gate reads are really there', () => {
+  /* A missing token would make `parse(undefined)` throw rather than pass, but a token that resolved
+     to the LIGHT value under a dark label would not — the same trap the dark scope itself fell into
+     for nine versions. Asserted directly. */
+  for (let i = 1; i <= 8; i++) {
+    for (const part of ['bg', 'ink', 'border', 'border-soft']) {
+      assert.ok(base[`--tone-${i}-${part}`] !== undefined, `--tone-${i}-${part} is not in :root`);
+    }
+    assert.notEqual(dark[`--tone-${i}-bg`], base[`--tone-${i}-bg`],
+      `dark --tone-${i}-bg must not resolve to the light tint; it is mixed over a different surface`);
+    assert.notEqual(dark[`--tone-${i}-ink`], base[`--tone-${i}-ink`],
+      `dark --tone-${i}-ink must not resolve to the light ink; it is mixed toward a different text colour`);
+  }
+});
 
 /* --- the primary palette axis ------------------------------------------------------------------
  *

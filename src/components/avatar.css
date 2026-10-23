@@ -17,23 +17,18 @@
  * text-leaning foreground so initials keep WCAG AA (verified >=4.5:1 in light & dark by
  * test/contrast.test.mjs). Use to disambiguate same-initial avatars (e.g. many "PT …" names):
  * hash a stable 1..8 index off the FULL name in your app, then apply .fdy-avatar--tone-<n>. */
-.fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:color-mix(in srgb,var(--_fdy-avatar-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-avatar-tone) 50%,var(--color-text));}
-/* The tone is injected per element through a private custom property, so unlike every other mix in
- * the kit this one has no value that can be worked out in advance: there is no single colour to
- * precompute, and the ink half (50% of the tone mixed with --color-text) has no static equivalent
- * at all — a translucent stand-in would composite against whatever sits behind the element and
- * could fall under 4.5:1. @supports is the only tool that reaches this case, and it is used ONLY
- * here, for the four rules that cannot be answered statically. Browsers that know color-mix() never
- * see this block; Safari <= 16.1 gets the component's own neutral colours, which is the modifier
- * going quiet rather than the black currentColor border it used to draw. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:var(--color-surface-3);color:var(--color-text);}
-}
-.fdy-avatar--tone-1{--_fdy-avatar-tone:var(--tone-1);}
-.fdy-avatar--tone-2{--_fdy-avatar-tone:var(--tone-2);}
-.fdy-avatar--tone-3{--_fdy-avatar-tone:var(--tone-3);}
-.fdy-avatar--tone-4{--_fdy-avatar-tone:var(--tone-4);}
-.fdy-avatar--tone-5{--_fdy-avatar-tone:var(--tone-5);}
-.fdy-avatar--tone-6{--_fdy-avatar-tone:var(--tone-6);}
-.fdy-avatar--tone-7{--_fdy-avatar-tone:var(--tone-7);}
-.fdy-avatar--tone-8{--_fdy-avatar-tone:var(--tone-8);}
+/* One flat token per half, computed in advance by tokens/build.mjs: --tone-N-bg is 18% of the
+ * tone over --color-surface, --tone-N-ink is 50% of it toward --color-text, both per theme.
+ * They USED to be mixed here, with the hue injected per element through a private custom
+ * property — which put var() inside color-mix(), the one shape that cannot be rescued: valid at
+ * parse time, invalid at computed-value time, and there `background` and `color` drop to their
+ * INITIAL values, not to any fallback. @supports answered it for exactly as long as somebody
+ * remembered to write the counterpart; a precomputed token removes the question. */
+.fdy-avatar--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);}
+.fdy-avatar--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);}
+.fdy-avatar--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);}
+.fdy-avatar--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);}
+.fdy-avatar--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);}
+.fdy-avatar--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);}
+.fdy-avatar--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);}
+.fdy-avatar--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);}

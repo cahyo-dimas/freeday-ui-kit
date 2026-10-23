@@ -282,26 +282,21 @@ a { color: var(--color-primary); }
  * text-leaning foreground so initials keep WCAG AA (verified >=4.5:1 in light & dark by
  * test/contrast.test.mjs). Use to disambiguate same-initial avatars (e.g. many "PT …" names):
  * hash a stable 1..8 index off the FULL name in your app, then apply .fdy-avatar--tone-<n>. */
-.fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:color-mix(in srgb,var(--_fdy-avatar-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-avatar-tone) 50%,var(--color-text));}
-/* The tone is injected per element through a private custom property, so unlike every other mix in
- * the kit this one has no value that can be worked out in advance: there is no single colour to
- * precompute, and the ink half (50% of the tone mixed with --color-text) has no static equivalent
- * at all — a translucent stand-in would composite against whatever sits behind the element and
- * could fall under 4.5:1. @supports is the only tool that reaches this case, and it is used ONLY
- * here, for the four rules that cannot be answered statically. Browsers that know color-mix() never
- * see this block; Safari <= 16.1 gets the component's own neutral colours, which is the modifier
- * going quiet rather than the black currentColor border it used to draw. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-avatar--tone-1,.fdy-avatar--tone-2,.fdy-avatar--tone-3,.fdy-avatar--tone-4,.fdy-avatar--tone-5,.fdy-avatar--tone-6,.fdy-avatar--tone-7,.fdy-avatar--tone-8{background:var(--color-surface-3);color:var(--color-text);}
-}
-.fdy-avatar--tone-1{--_fdy-avatar-tone:var(--tone-1);}
-.fdy-avatar--tone-2{--_fdy-avatar-tone:var(--tone-2);}
-.fdy-avatar--tone-3{--_fdy-avatar-tone:var(--tone-3);}
-.fdy-avatar--tone-4{--_fdy-avatar-tone:var(--tone-4);}
-.fdy-avatar--tone-5{--_fdy-avatar-tone:var(--tone-5);}
-.fdy-avatar--tone-6{--_fdy-avatar-tone:var(--tone-6);}
-.fdy-avatar--tone-7{--_fdy-avatar-tone:var(--tone-7);}
-.fdy-avatar--tone-8{--_fdy-avatar-tone:var(--tone-8);}
+/* One flat token per half, computed in advance by tokens/build.mjs: --tone-N-bg is 18% of the
+ * tone over --color-surface, --tone-N-ink is 50% of it toward --color-text, both per theme.
+ * They USED to be mixed here, with the hue injected per element through a private custom
+ * property — which put var() inside color-mix(), the one shape that cannot be rescued: valid at
+ * parse time, invalid at computed-value time, and there `background` and `color` drop to their
+ * INITIAL values, not to any fallback. @supports answered it for exactly as long as somebody
+ * remembered to write the counterpart; a precomputed token removes the question. */
+.fdy-avatar--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);}
+.fdy-avatar--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);}
+.fdy-avatar--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);}
+.fdy-avatar--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);}
+.fdy-avatar--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);}
+.fdy-avatar--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);}
+.fdy-avatar--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);}
+.fdy-avatar--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);}
 
 /* Freeday. Badge */
 .fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid rgba(var(--color-primary-rgb),.22);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
@@ -320,20 +315,19 @@ a { color: var(--color-primary); }
  * cannot. A back-office document list carrying Draft, Submitted, Approved, Completed, Settled,
  * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
  * which is the report this shipped for. */
-.fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:color-mix(in srgb,var(--_fdy-badge-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-badge-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-badge-tone) 26%,transparent);}
-/* No precomputable value: the tone arrives per element. See avatar.css for the whole reason, and
- * tokens/build.mjs for why color-mix() is otherwise banned from this kit. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:var(--color-surface-2);color:var(--color-text);border-color:var(--color-border);}
-}
-.fdy-badge--tone-1{--_fdy-badge-tone:var(--tone-1);}
-.fdy-badge--tone-2{--_fdy-badge-tone:var(--tone-2);}
-.fdy-badge--tone-3{--_fdy-badge-tone:var(--tone-3);}
-.fdy-badge--tone-4{--_fdy-badge-tone:var(--tone-4);}
-.fdy-badge--tone-5{--_fdy-badge-tone:var(--tone-5);}
-.fdy-badge--tone-6{--_fdy-badge-tone:var(--tone-6);}
-.fdy-badge--tone-7{--_fdy-badge-tone:var(--tone-7);}
-.fdy-badge--tone-8{--_fdy-badge-tone:var(--tone-8);}
+/* Precomputed tone tokens, the same --tone-N-bg / --tone-N-ink the avatar and the chip read, so
+ * one contrast assertion still covers all three. --tone-N-border-soft is the badge's own edge:
+ * 26% of the tone over transparent, which is a translucent colour and therefore stays rgba()
+ * rather than flattening to a hex. See avatar.css for why none of this is mixed in the
+ * component any more, and tokens/build.mjs for where the mixing moved to. */
+.fdy-badge--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);border-color:var(--tone-1-border-soft);}
+.fdy-badge--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);border-color:var(--tone-2-border-soft);}
+.fdy-badge--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);border-color:var(--tone-3-border-soft);}
+.fdy-badge--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);border-color:var(--tone-4-border-soft);}
+.fdy-badge--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);border-color:var(--tone-5-border-soft);}
+.fdy-badge--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);border-color:var(--tone-6-border-soft);}
+.fdy-badge--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);border-color:var(--tone-7-border-soft);}
+.fdy-badge--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);border-color:var(--tone-8-border-soft);}
 
 /* Overlay badge, anchors a small count/dot/icon badge to a corner of any element
  * (icon, button, text). Wrap the content in .fdy-badge-wrap; add .fdy-badge-ov as a
@@ -862,26 +856,35 @@ a { color: var(--color-primary); }
 /* Categorical tone chips, non-semantic category tags / legend swatches, from the general
  * --tone-1..8 palette. Same validated AA formula as .fdy-avatar--tone-* (text >=4.5:1 both themes,
  * gated by test/contrast.test.mjs). */
-.fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:color-mix(in srgb,var(--_fdy-chip-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-chip-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-chip-tone) 30%,var(--color-border));}
-/* No precomputable value: the tone arrives per element. See avatar.css for the whole reason. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:var(--color-surface-3);color:var(--color-text);border-color:var(--color-border);}
-}
-.fdy-chip--tone-1{--_fdy-chip-tone:var(--tone-1);}
-.fdy-chip--tone-2{--_fdy-chip-tone:var(--tone-2);}
-.fdy-chip--tone-3{--_fdy-chip-tone:var(--tone-3);}
-.fdy-chip--tone-4{--_fdy-chip-tone:var(--tone-4);}
-.fdy-chip--tone-5{--_fdy-chip-tone:var(--tone-5);}
-.fdy-chip--tone-6{--_fdy-chip-tone:var(--tone-6);}
-.fdy-chip--tone-7{--_fdy-chip-tone:var(--tone-7);}
-.fdy-chip--tone-8{--_fdy-chip-tone:var(--tone-8);}
-.fdy-chip__remove{display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
-/* The ONE place in the kit where the two-line fallback pattern actually works. The mix is of
- * currentColor, which no static token can stand in for; but it carries no var(), so a browser that
- * does not know color-mix() rejects the declaration at PARSE time and the line above it wins. Every
- * other mix in the kit referenced a token, and a declaration containing var() is assumed valid at
- * parse time, so the same two lines would have been dead code there. */
-.fdy-chip__remove:hover{opacity:1;background:var(--color-surface-3);background:color-mix(in srgb,currentColor 16%,transparent);}
+/* Precomputed tone tokens, the same --tone-N-bg / --tone-N-ink the avatar and the badge read.
+ * --tone-N-border is the chip's edge: 30% of the tone over --color-border, opaque, which is a
+ * different edge from the badge's translucent one and so a different token. See avatar.css for
+ * why the mix left the component, and tokens/build.mjs for where it went. */
+.fdy-chip--tone-1{background:var(--tone-1-bg);color:var(--tone-1-ink);border-color:var(--tone-1-border);}
+.fdy-chip--tone-2{background:var(--tone-2-bg);color:var(--tone-2-ink);border-color:var(--tone-2-border);}
+.fdy-chip--tone-3{background:var(--tone-3-bg);color:var(--tone-3-ink);border-color:var(--tone-3-border);}
+.fdy-chip--tone-4{background:var(--tone-4-bg);color:var(--tone-4-ink);border-color:var(--tone-4-border);}
+.fdy-chip--tone-5{background:var(--tone-5-bg);color:var(--tone-5-ink);border-color:var(--tone-5-border);}
+.fdy-chip--tone-6{background:var(--tone-6-bg);color:var(--tone-6-ink);border-color:var(--tone-6-border);}
+.fdy-chip--tone-7{background:var(--tone-7-bg);color:var(--tone-7-ink);border-color:var(--tone-7-border);}
+.fdy-chip--tone-8{background:var(--tone-8-bg);color:var(--tone-8-ink);border-color:var(--tone-8-border);}
+.fdy-chip__remove{position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
+/* The hover wash is 16% of the chip's OWN ink, and the chip's ink is whatever the variant set:
+ * --color-text, --color-primary-strong, --tone-N-ink. So no token can stand in for it, which is why
+ * this was the last color-mix() in the kit — and the only one whose two-line fallback actually
+ * worked, the mix carrying no var() and therefore being rejected at parse time.
+ *
+ * It is a VEIL now, the same trick the button gradients use (button.css): currentColor at .16 over
+ * the chip, which is algebraically the colour the mix produced — `F·.16 + (1-.16)·ground` either
+ * way, including at the glyph's antialiased edges, where the veil's colour equals the glyph's and so
+ * composites back to itself. No @supports, no fallback line, and nothing newer than Safari 4.
+ *
+ * Absolutely positioned, so it paints above the × as well as the background; `border-radius:inherit`
+ * keeps it inside the pill. No transition: the mix had none, and a veil that fades is a different
+ * component. */
+.fdy-chip__remove::before{content:"";position:absolute;inset:0;border-radius:inherit;background:currentColor;opacity:0;}
+.fdy-chip__remove:hover{opacity:1;}
+.fdy-chip__remove:hover::before{opacity:.16;}
 .fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 /* Group wrapper for a row of chips (choice / filter). */
 .fdy-chips{display:flex;flex-wrap:wrap;gap:var(--space-2);}
@@ -1246,14 +1249,12 @@ a { color: var(--color-primary); }
 .fdy-file__remove:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-file--success .fdy-file__icon{color:var(--color-success);}
-.fdy-file--error{border-color:color-mix(in srgb,var(--color-danger) 40%,var(--color-border));}
-/* The only non-tone mix with no static answer: it blends --color-danger into --color-border, so the
- * result depends on both, and a translucent stand-in would composite against the row instead. Same
- * escape hatch as the tone modifiers in avatar.css, same reason it is an @supports and not a line
- * of fallback — a declaration carrying var() never falls back. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-file--error{border-color:var(--color-danger);}
-}
+/* 40% of --color-danger over --color-border, as a token rather than as a mix written here: it blends
+ * two ROLES, so no channel triple can state it, and mixing it in the component carried var() into
+ * color-mix() — the shape that goes invalid at computed-value time and drops border-color to its
+ * initial currentColor, which is the black box an iPhone 7 drew around a failed upload. The blend is
+ * now computed per theme by tokens/build.mjs. */
+.fdy-file--error{border-color:var(--color-danger-border);}
 .fdy-file--error .fdy-file__icon{color:var(--color-danger);}
 .fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}
 

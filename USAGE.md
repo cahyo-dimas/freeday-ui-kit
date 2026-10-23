@@ -130,6 +130,25 @@ so they follow a re-brand on their own. The ones that ship: `--color-primary-rgb
 `--color-warning-rgb`, `--color-info-rgb`, `--color-surface-rgb` and `--color-inverse-text-rgb`.
 If you need one the kit does not publish, ask for it rather than hard-coding channels.
 
+### Tinting one role over another: the colour is already a token
+
+A triple puts an alpha on **one** role. It cannot say "18% of this tone over the surface", because
+the result depends on two roles and on the theme. Those blends are computed when the kit is built
+and published as flat tokens, so you never write the mix at all:
+
+```css
+background: var(--tone-3-bg);      /* 18% of --tone-3 over --color-surface  */
+color: var(--tone-3-ink);          /* 50% of --tone-3 toward --color-text    */
+border-color: var(--tone-3-border);/* 30% of --tone-3 over --color-border    */
+```
+
+`--tone-N-bg` / `-ink` / `-border` / `-border-soft` exist for all eight tones in both themes, and are
+exactly what `.fdy-avatar--tone-N`, `.fdy-badge--tone-N` and `.fdy-chip--tone-N` paint — the
+`-ink` on the `-bg` is the pair the WCAG gate measures, so a custom element built from the same two
+tokens inherits that guarantee. `--color-danger-border` (40% of danger over the border) is the same
+idea for a row that failed. If you need a blend the kit does not publish, ask for it: it belongs in
+`tokens/tokens.json`, where the build can resolve it down both themes, not in a component.
+
 ## 5b. Theme: global by default, per-subtree when a region is inverted
 
 `data-theme="light|dark"` redefines the semantic tokens. Set it on `<html>` and it themes the app;

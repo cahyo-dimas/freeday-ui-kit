@@ -35,13 +35,11 @@
 .fdy-file__remove:hover{background:var(--color-surface-2);color:var(--color-text);}
 .fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-file--success .fdy-file__icon{color:var(--color-success);}
-.fdy-file--error{border-color:color-mix(in srgb,var(--color-danger) 40%,var(--color-border));}
-/* The only non-tone mix with no static answer: it blends --color-danger into --color-border, so the
- * result depends on both, and a translucent stand-in would composite against the row instead. Same
- * escape hatch as the tone modifiers in avatar.css, same reason it is an @supports and not a line
- * of fallback — a declaration carrying var() never falls back. */
-@supports not (color: color-mix(in srgb, red 50%, blue)) {
-  .fdy-file--error{border-color:var(--color-danger);}
-}
+/* 40% of --color-danger over --color-border, as a token rather than as a mix written here: it blends
+ * two ROLES, so no channel triple can state it, and mixing it in the component carried var() into
+ * color-mix() — the shape that goes invalid at computed-value time and drops border-color to its
+ * initial currentColor, which is the black box an iPhone 7 drew around a failed upload. The blend is
+ * now computed per theme by tokens/build.mjs. */
+.fdy-file--error{border-color:var(--color-danger-border);}
 .fdy-file--error .fdy-file__icon{color:var(--color-danger);}
 .fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}

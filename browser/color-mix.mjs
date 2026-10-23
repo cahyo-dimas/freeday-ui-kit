@@ -14,6 +14,16 @@
  * itself even if the identity were wrong. This asserts it in a real engine instead — the kit's
  * static form against the color-mix() it replaced, resolved by the browser, in both themes and
  * across palettes, so a triple that drifts from its role is caught by something that is not us.
+ *
+ * v3.7.0 removed the LAST ten mixes, the ones a channel triple could not express because they tint
+ * one role over another: the categorical tone modifiers and .fdy-file--error. Those are computed by
+ * tokens/build.mjs now, and the two tests at the bottom of this file are what makes that safe —
+ * the first asserts the kit ships none at all, so the ban is a fact about the build output rather
+ * than a convention; the second compares every computed token against the mix it replaced by the
+ * PIXEL Chrome actually painted, which is the only instrument that settles it. A build-time mix is
+ * rounded to 8 bits and the mix it replaces is not, so their computed VALUES differ by up to
+ * 0.5/255 by construction; what the two of them put in the framebuffer is identical, and that is
+ * the claim worth asserting.
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -143,6 +153,154 @@ test('the flattened stripe is the blend it replaced, to the byte', { skip }, asy
           `${theme}: --color-surface-stripe is ${ours}, but 55% of --color-surface-2 over --color-surface is ${ref}`);
       }
       assert.equal(x[3], 1, `${theme}: the stripe must be opaque, a frozen column paints it`);
+    }
+  });
+});
+
+// --- nothing left to mix ---------------------------------------------------
+
+test('the shipped stylesheets declare no color-mix() at all', () => {
+  /* The ban has to be a fact about the OUTPUT, not about the sources: dist/freeday.bundle.css is
+     the file most apps actually load and no node test reads it, so a mix that reached it through a
+     stale build would have shipped unseen. Comments are stripped first — the three sheets carry
+     several paragraphs explaining why the function is banned, and a guard that cannot tell prose
+     from a declaration would force those paragraphs to be deleted to stay green. */
+  for (const name of ['freeday.bundle.css', 'freeday.css', 'freeday.tokens.css']) {
+    const css = readFileSync(join(REPO, 'dist', name), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    const found = [...css.matchAll(/[^;{}]*color-mix\([^;}]*/g)].map(m => m[0].trim());
+    assert.deepEqual(found, [],
+      `dist/${name} still declares color-mix(); it is computed in tokens/build.mjs now, because a ` +
+      `mix carrying var() drops its property to the INITIAL value on Safari <= 16.1`);
+    assert.equal(/@supports\s+not\s*\(\s*color\s*:\s*color-mix\(/.test(css), false,
+      `dist/${name} still guards for color-mix() with @supports; nothing calls it, so the block is ` +
+      `dead CSS that reads like a live safety net`);
+  }
+});
+
+/* Each precomputed token beside the mix it replaced. Read off the token sheet rather than listed,
+   so a tone that gains a part is covered the moment it is built. */
+const TONE_PARTS = [
+  ['bg', 18, 'var(--color-surface)'],
+  ['ink', 50, 'var(--color-text)'],
+  ['border', 30, 'var(--color-border)'],
+  ['border-soft', 26, 'transparent'],
+];
+const PRECOMPUTED = [
+  ...TONE_PARTS.flatMap(([part, pct, over]) =>
+    [...new Set([...tokens.matchAll(new RegExp(`--tone-(\\d+)-${part}\\s*:`, 'g'))].map(m => m[1]))]
+      .map(n => [`--tone-${n}-${part}`, `color-mix(in srgb,var(--tone-${n}) ${pct}%,${over})`])),
+  ['--color-danger-border', 'color-mix(in srgb,var(--color-danger) 40%,var(--color-border))'],
+];
+
+test('every precomputed colour paints the byte its color-mix() painted', { skip }, async () => {
+  assert.ok(PRECOMPUTED.length >= 33,
+    `found only ${PRECOMPUTED.length} precomputed colours; the token sheet shape changed`);
+
+  await withPage(fixture('color-mix-identity.html'), async (p) => {
+    await ready(p);
+    for (const theme of ['light', 'dark']) {
+      /* Laid out as a grid of fixed 8px swatches so every probe is inside the viewport: pixelAt
+         screenshots a point, and a probe below the fold reads back as the page ground — which
+         compares equal to its neighbour and passes while proving nothing. The magenta ground is
+         there to catch exactly that. */
+      const placed = await p.evalJS(`(() => {
+        document.documentElement.setAttribute('data-theme', ${JSON.stringify(theme)});
+        document.documentElement.style.background = '#f0f';
+        const pairs = ${JSON.stringify(PRECOMPUTED)};
+        const host = document.getElementById('probes');
+        host.textContent = '';
+        const out = [];
+        pairs.forEach(([token, mix], i) => {
+          const x = (i % 8) * 20, y = Math.floor(i / 8) * 10;
+          const put = (value, left) => {
+            /* A swatch inside an OPAQUE grey ground, so a translucent edge is compared as it is
+               actually seen. Two stacked elements rather than one with a two-stop gradient:
+               Chrome dithers gradients, and a dithered byte is a flaky byte. */
+            const ground = document.createElement('i');
+            ground.style.cssText = 'position:fixed;width:8px;height:8px;background:#808080;top:' + y + 'px;left:' + left + 'px';
+            const el = document.createElement('i');
+            el.style.cssText = 'display:block;width:8px;height:8px';
+            el.style.background = value;
+            ground.append(el);
+            host.append(ground);
+          };
+          put('var(' + token + ')', x);
+          put(mix, x + 10);
+          out.push([token, mix, x, y]);
+        });
+        return out;
+      })()`);
+      assert.equal(placed.length, PRECOMPUTED.length, 'the probes did not all get placed');
+
+      for (const [token, mix, x, y] of placed) {
+        const ours = await p.pixelAt(x + 4, y + 4);
+        const ref = await p.pixelAt(x + 14, y + 4);
+        const show = (c) => `${c.r},${c.g},${c.b}`;
+        assert.notDeepEqual(ref, { r: 255, g: 0, b: 255 },
+          `${theme}: the color-mix() reference for ${token} was never painted (the ground is showing)`);
+        assert.deepEqual(ours, ref,
+          `${theme}: ${token} paints ${show(ours)}, but \`${mix}\` — the mix it replaced — paints ${show(ref)}`);
+      }
+    }
+  });
+});
+
+test('the chip remove veil is the currentColor mix it replaced', { skip }, async () => {
+  /* The last mix to go was `.fdy-chip__remove:hover { background: color-mix(in srgb, currentColor
+     16%, transparent) }`, and it was the one mix no token could answer: currentColor there is
+     whatever the chip variant set, --color-text or --color-primary-strong or --tone-N-ink. It is an
+     absolutely-positioned ::before at `opacity:.16` now, which is the same colour by algebra —
+     `F·.16 + .84·ground` whether the .16 arrives as an alpha or as an opacity, including over the
+     × glyph, where F equals the glyph's own colour and composites back to it.
+     Algebra is the argument; this is the measurement, at the ink of each chip variant. */
+  await withPage(fixture('color-mix-identity.html'), async (p) => {
+    await ready(p);
+    const INKS = ['var(--color-text)', 'var(--color-primary-strong)', 'var(--tone-5-ink)'];
+    for (const theme of ['light', 'dark']) {
+      const placed = await p.evalJS(`(() => {
+        document.documentElement.setAttribute('data-theme', ${JSON.stringify(theme)});
+        document.documentElement.style.background = '#f0f';
+        const host = document.getElementById('probes');
+        host.textContent = '';
+        const out = [];
+        ${JSON.stringify(INKS)}.forEach((ink, i) => {
+          const y = i * 12;
+          /* Both over the chip's own fill, and both carrying the GLYPH as well as the wash, so the
+             comparison covers the antialiased edges the algebra is least obvious about. */
+          const put = (left, veiled) => {
+            const btn = document.createElement('span');
+            btn.style.cssText = 'position:fixed;top:' + y + 'px;left:' + left + 'px;width:10px;height:10px;'
+              + 'background:var(--color-surface-3);color:' + ink + ';font:10px/10px monospace';
+            btn.textContent = '×';
+            const veil = document.createElement('span');
+            veil.style.cssText = 'position:absolute;inset:0;background:'
+              + (veiled ? 'currentColor;opacity:.16' : 'color-mix(in srgb,currentColor 16%,transparent)');
+            btn.append(veil);
+            host.append(btn);
+          };
+          put(0, true);
+          put(14, false);
+          out.push([ink, y]);
+        });
+        return out;
+      })()`);
+      assert.equal(placed.length, INKS.length, 'the veil probes did not all get placed');
+
+      for (const [ink, y] of placed) {
+        /* Two points, deliberately: x+2 lands on the × stroke and x+5 on the bare wash beside it
+           (measured — 66,70,80 against 203,206,211 in light), so the comparison covers the
+           antialiased ink as well as the flat tint. Either one alone would prove half of it. */
+        for (const dx of [2, 5]) {
+          const ours = await p.pixelAt(dx, y + 5);
+          const ref = await p.pixelAt(14 + dx, y + 5);
+          const show = (c) => `${c.r},${c.g},${c.b}`;
+          assert.notDeepEqual(ref, { r: 255, g: 0, b: 255 },
+            `${theme}: the currentColor mix over ${ink} was never painted (the ground is showing)`);
+          assert.deepEqual(ours, ref,
+            `${theme}: at x+${dx} the opacity veil over ${ink} paints ${show(ours)}, the mix it ` +
+            `replaced paints ${show(ref)}`);
+        }
+      }
     }
   });
 });
