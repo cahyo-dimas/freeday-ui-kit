@@ -455,6 +455,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-popover-align.tsx'),
       join(HERE, 'entries', 'vue-table-loading-text.js'),
       join(HERE, 'entries', 'react-table-loading-text.tsx'),
+      join(HERE, 'entries', 'vue-monthpicker.js'),
+      join(HERE, 'entries', 'react-monthpicker.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

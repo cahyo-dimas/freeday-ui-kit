@@ -30,6 +30,10 @@ export interface FdyTableChangeDetail { page: number; sort: string | null; query
 export { usePopover, type FdyPopoverAlign } from './usePopover';
 export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/FdyCombo';
 export { FdyDatepicker, type FdyDatepickerProps, type FdyDatepickerMode } from './components/FdyDatepicker';
+/** A picker that answers with a whole month, `YYYY-MM`. Replaces `FdyDatepicker`'s deprecated
+ *  `mode="month"`, where one prop carried two formats and another prop chose between them. */
+export { FdyMonthpicker, type FdyMonthpickerProps } from './components/FdyMonthpicker';
+export type { FdyMonth } from '../core/month-grid';
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';

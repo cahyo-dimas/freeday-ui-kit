@@ -39,6 +39,10 @@ export declare function usePopover(
 
 export { default as FdyCombo } from './components/FdyCombo.vue';
 export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
+/** A picker that answers with a whole month, `YYYY-MM`. Replaces `FdyDatepicker`'s deprecated
+ *  `mode="month"`, where one prop carried two formats and another prop chose between them. */
+export { default as FdyMonthpicker } from './components/FdyMonthpicker.vue';
+export type { FdyMonth } from '../core/month-grid';
 export { default as FdyDateRange } from './components/FdyDateRange.vue';
 export type { DateRangeValue } from './components/FdyDateRange.vue';
 export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';

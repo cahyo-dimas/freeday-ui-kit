@@ -1,0 +1,29 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyMonthpicker>
+
+@* Seed-based wrapper over freeday-datepicker.js in its month mode: the enhancer builds the
+   input-styled trigger + calendar popover from this empty div, opens on the month grid, and emits
+   fdy-datepicker-change. The enhancer owns that DOM, so we render the seed once
+   (ShouldRender => false) and read the picked month back through @bind-Value.
+
+   data-mode="month" is written here rather than taken as a parameter. That is the difference
+   between this component and FdyDatepicker: Value has one format, yyyy-MM, because nothing the
+   caller passes can change it. *@
+<div @ref="Root" data-fdy-datepicker
+     data-mode="month"
+     data-value="@Value"
+     data-label="@Label"
+     data-placeholder="@Placeholder"
+     data-min="@Min"
+     data-max="@Max"
+     data-id="@Id"
+     data-describedby="@Describedby"
+     data-disabled="@(Disabled ? "true" : null)"
+     data-readonly="@(Readonly ? "true" : null)"
+     data-invalid="@(Invalid ? "true" : null)"
+     data-fdy-text-prev-year="@PrevYearLabel"
+     data-fdy-text-next-year="@NextYearLabel"
+     data-fdy-text-prev-years="@PrevYearsLabel"
+     data-fdy-text-next-years="@NextYearsLabel"
+     data-fdy-text-choose-year="@ChooseYearLabel"
+     data-fdy-text-back-to-months="@BackToMonthsLabel"></div>

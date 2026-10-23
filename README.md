@@ -44,8 +44,9 @@ enhancer:
 | **Blazor (net8.0)** | `Freeday.Blazor` RCL | `@bind-Value` |
 | Static HTML · Svelte · server-rendered templates | *(no wrapper)* raw markup + enhancers, below | `fdy-*` events |
 
-The eleven: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
-`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`. Hand-writing the raw
+The twelve: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyAutocomplete` ·
+`FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`.
+Hand-writing the raw
 markup for these inside Vue/React/Blazor *looks* fine at first, because the first render is correct.
 Then it breaks quietly:
 DOM the framework renders later is never hydrated, and the widget's state ends up in the DOM instead

@@ -34,9 +34,9 @@ live docs.
    invalid state does not belong to the control itself.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
-7. **On Vue, React or Blazor, eleven components have a typed wrapper. Use it.** `FdyCombo` ·
-   `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` ·
-   `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
+7. **On Vue, React or Blazor, twelve components have a typed wrapper. Use it.** `FdyCombo` ·
+   `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` ·
+   `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
    `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
    those stacks *looks* right at first, because the enhancer initialises once and the first render is
     correct. Then
@@ -955,7 +955,7 @@ a new class.
 |---|---|---|
 | `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `YYYY-MM` under `mode="month"`. `''`/`null` for empty. |
 | `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
-| `mode?` | `'day' \| 'month'` | `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`; the raw path takes `data-mode="month"`. |
+| `mode?` | `'day' \| 'month'` | **Deprecated, use `<FdyMonthpicker>`.** `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`. Still works, unchanged; removed in 4.0. See below for why, and for the raw path, which keeps `data-mode="month"`. |
 | `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. Month mode also accepts `YYYY-MM`, and a bound inside a month leaves that month pickable. |
 | `locale?` | `string` | BCP-47 tag deciding month and weekday names. Defaults to the page's `<html lang>`, then `en`. |
 | `placeholder?` | `string` | |
@@ -980,6 +980,33 @@ invalid })`.
 Blazor carries the same surface bar four: `locale` (the enhancer formats through `Intl` from the
 page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear button), and
 `ariaLabelledby` (the trigger it builds is named by `Label`).
+
+### Props — `<FdyMonthpicker>`
+
+> Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). It renders the same trigger
+> and panel as the date picker, over the same classes, and shares its month and year grids.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string \| null` | The chosen month, ISO `YYYY-MM`. `''`/`null` for empty. One format, always: nothing on this component can change it. |
+| `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
+| `min?` · `max?` | `string` | ISO `YYYY-MM` bounds (a full `YYYY-MM-DD` is read too, as its own month). A bound that falls inside a month leaves that month pickable. |
+| `locale?` | `string` | BCP-47 tag deciding the month names. Defaults to the page's `<html lang>`, then `en`. |
+| `placeholder?` | `string` | Shown while nothing is picked. Default `Select month`. |
+| `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its month, but it cannot be opened, cleared or changed. |
+| `clearable?` | `boolean` | Show a × in the trigger once a month is set, so an optional month can be unset. Sends `''`. Off by default. |
+| `clearLabel?` | `string` | Accessible name for that ×. Default `Clear month`. |
+| `prevYearLabel?` · `nextYearLabel?` | `string` | The arrows beside the month grid, which step a year. Defaults `Previous year` / `Next year`. |
+| `chooseYearLabel?` | `string` | The title button that drills into the year grid. Default `Choose year`. |
+| `prevYearsLabel?` · `nextYearsLabel?` | `string` | Page arrows, shown in the year grid. Defaults `Previous years` / `Next years`. |
+
+There is no `prevMonthLabel` or `nextMonthLabel` here. The arrows sit beside a month grid, so they
+step a year, and the day grid they would have belonged to does not exist on this component. Blazor
+carries the same surface bar three: `locale` (the enhancer formats through `Intl` from the page's
+`<html lang>`), `clearable` and `clearLabel` (that path builds no clear button) and
+`ariaLabelledby` (the trigger it builds is named by `Label`). It adds `BackToMonthsLabel`, the year
+grid's own title.
 
 ### Props — `<FdyDateRange>`
 
@@ -1025,23 +1052,36 @@ months, `Home`/`End` January/December, `PageUp`/`PageDown` a year, `Enter`/`Spac
 year grid likewise: arrows ±1/±3 years, `Home`/`End` the ends of the page, `PageUp`/`PageDown` a
 page of twelve.
 
-**Picking a month, not a day.** `mode="month"` (`data-mode="month"` on the raw path,
-`Mode="FdyDatepickerMode.Month"` in Blazor) makes the month grid the destination instead of a
-waypoint: the panel opens on it, a click or `Enter` commits from it, the day grid is never built,
-and the value is `YYYY-MM`. The title still steps up to the year grid and back, because that is
-navigation and not an answer.
+**Picking a month, not a day.** `<FdyMonthpicker>` answers with `YYYY-MM`. The panel opens on the
+12-cell month grid, a click or `Enter` commits from it, and there is no day grid to fall into. The
+title still steps up to the year grid and back down, because a year is navigation and never an
+answer. On the raw path the same thing is `data-mode="month"` on a `data-fdy-datepicker` div.
 
 This exists because `<input type="month">` names the month in the **browser's** language, which an
 Indonesian page read on an English phone cannot override. The month cells, the cell's accessible
 name and the value in the trigger all go through `Intl` with the page's `<html lang>`, the same
 route the day grid's month names have always taken, so `lang="id"` reads `Oktober 2026` with nothing
-configured. Keyboard in the month grid is unchanged: arrows move one and three months, `Home`/`End`
-jump to January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` now answers
-rather than drilling. The cell keeps its name when it becomes selected and carries the state in
-`aria-selected`, as the day cells do.
+configured. Keyboard in the month grid: arrows move one and three months, `Home`/`End` jump to
+January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` commits. The cell keeps
+its name when it becomes selected and carries the state in `aria-selected`, as the day cells do.
 
-Nothing changes without the prop. A picker with no `mode` is the day picker it has always been,
-down to the `YYYY-MM-DD` it reports.
+**`mode="month"` on `<FdyDatepicker>` is deprecated, and still works.** It shipped in 3.8.0 and
+behaves exactly as it did, so nothing has to move today; it goes in 4.0. The type was the defect.
+That prop left `modelValue` / `value`, `min` and `max` each carrying `YYYY-MM-DD` or `YYYY-MM` while
+a *different* prop decided which, and a union discriminated by a sibling prop is a shape neither
+`defineProps<{...}>` nor an exported `FdyDatepickerProps` can hold. A separate component states it
+in one line per prop. A consumer's editor says so as well: `mode` is marked `@deprecated` in both
+adapters, and `Mode` together with `FdyDatepickerMode.Month` carries `[Obsolete]` in Blazor, each
+naming `FdyMonthpicker`.
+
+**The raw path keeps `data-mode="month"`, and it is not deprecated.** `data-mode` is a string
+attribute with no type to be wrong about: a reader of the markup sees `data-mode` and `data-value`
+side by side and can tell what the value holds. The typed signatures were what could not say it, so
+the retirement is theirs. Shipping a second attribute would leave two spellings of one feature on
+the one path that never had the problem.
+
+Nothing changes without either of them. A picker with no `mode` and no `data-mode` is the day picker
+it has always been, down to the `YYYY-MM-DD` it reports.
 
 - Attributes: `data-value="YYYY-MM-DD"`, `data-mode="month"`, `data-placeholder`, `data-label`,
   `data-fdy-no-icon`
@@ -1054,6 +1094,7 @@ down to the `YYYY-MM-DD` it reports.
 
 <div class="fdy-field">
   <span class="fdy-label">Reporting month</span>
+  <!-- Typed stacks: <FdyMonthpicker>, see its props above. -->
   <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
 </div>
 
