@@ -11,31 +11,50 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.7.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
-sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah.
+**`3.8.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
+sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah. 3.7.0 sudah
+terbit dan registry mengkonfirmasinya.
 
-Isi 3.7.0 dalam satu kalimat: **kit ini tidak bisa dipakai di Safari 15, dan yang menemukannya
-adalah sebuah iPhone 7** (`#072`, `#073`). `color-mix()` dipakai 94 kali tanpa cadangan, dan
-cadangan memang tidak mungkin: deklarasi yang memuat `var()` sah saat parse lalu gagal saat
-computed-value, sehingga propertinya jatuh ke nilai initial dan bukan ke baris sebelumnya. Untuk
-`border-color` nilai itu `currentColor`. Jadi `color-mix()`-nya dibuang, diganti 43 token terhitung,
-dan `tokens/build.mjs` kini memipihkan campuran sekali per tema. Ikut tertutup: lima tempat yang
-mencetak teks dengan `--color-primary`, peran yang kontraknya hanya pernah dijanjikan pada ambang
-3:1. Tiga penjaga baru membuat ketiganya tidak bisa kembali diam-diam. Detail di CHANGELOG.
+Isi 3.8.0 dalam satu kalimat: **empat penambahan dari catatan app yang sama, dan tiga di antaranya
+ternyata sudah separuh ada di kit** (`#074`–`#078`). `.fdy-menu--end` sudah ada sejak lama, tetapi
+jalur popover menulis `inset:auto` yang menetralkan `right:0` lalu memasang `left` sendiri. Jalan
+keluar teks pita kaki sudah ada, tetapi cuma di jalur mentah, jadi app bertipe yang tidak berbahasa
+Inggris menulis ulang markupnya; satu app mengirim 81 baris untuk mengganti lima kata. Grid bulan
+sudah dipasang 1.32.0, tetapi tak pernah bisa jadi tujuan. Yang keempat, tab tegak, kurang dua
+literal di `switch` papan tombol `freeday-tabs.js`.
 
-Yang belum dikerjakan dan sudah berbentuk: empat butir dari catatan app yang sama, semuanya
-penambahan dan bukan cacat. Popover yang mengabaikan `fdy-menu--end`, `FdyTableFooter` yang
-teksnya tertanam tanpa prop label, tab tegak, dan pemilih bulan. Mereka milik 3.8.0.
+Pekerjaan keempat itu membuka satu cacat yang catatannya gambarkan tanpa pelapornya tahu: Vue dan
+React menyerahkan `props.locale` yang `undefined` langsung ke `Intl`, yang berarti bahasa peramban,
+sementara dokumen menjanjikan `<html lang>` sejak lama dan cuma enhancer vanilla yang betul
+melakukannya. Itu satu-satunya perubahan perilaku di rilis ini, dan ia kena mode hari juga. Detail
+di CHANGELOG.
 
-Tiga utang yang dibawa rilis ini: floor dukungan di README diaudit dari fitur yang dipakai dan
-belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah di bawah
-`--test-concurrency=3` pada `bottom-nav`, `search` dan `over-dialog`, sudah ada sebelum pekerjaan
-ini; dan `examples/blazor-faktur/wwwroot/freeday/freeday.bundle.css` masih memuat 86 `color-mix()`
-sebab ia salinan vendored yang tidak dilacak git.
+Utang yang dibawa rilis ini, tiga lama dan lima baru. Yang lama: floor dukungan di README diaudit
+dari fitur yang dipakai dan belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah
+di bawah `--test-concurrency=3` pada `bottom-nav`, `search`, `over-dialog` dan `cfl-multi`; dan
+`examples/blazor-faktur/wwwroot/freeday/freeday.bundle.css` masih memuat 86 `color-mix()` sebab ia
+salinan vendored yang tidak dilacak git.
+
+Yang baru, semuanya dari 3.8.0 dan semuanya pintu separuh:
+
+- `FdyTable` merender pita kakinya sendiri tanpa meneruskan keenam prop teks, jadi tabel yang
+  memakai pita kaki bawaan tetap Inggris. Jalan keluarnya `pager={false}` plus `<FdyTableFooter>`
+  sendiri, dan itu terdokumentasi, tapi ia akan memanggil laporan berikutnya.
+- `usePopover` Vue dan React masih rata-kiri saja. Benar hari ini sebab tak ada `FdyMenu` bertipe,
+  tetapi `FdyTableFilter` memasang panel corong di header kolom paling kanan dan gejalanya sama
+  dengan `#074`.
+- `YYYY-MM` duduk di prop bertipe `string` yang juga membawa `YYYY-MM-DD`, dan yang memilih format
+  adalah prop lain. Union terdiskriminasi memecah bentuk `defineProps` yang dibaca penjaga prop,
+  jadi alternatif sungguhannya `FdyMonthpicker` tersendiri.
+- Tab tegak terpilih memakai `--color-primary-soft` di atas apa pun yang ada di belakangnya, dan
+  di tema gelap token itu primer tembus. Gerbang kontras menutup pasangan tokennya, bukan komposit
+  ini. Empat komponen lain memakai pasangan yang sama, jadi risikonya tidak baru, cuma tidak diukur.
+- Bawaan `.fdy-badge` yang berwarna primer menunggu 4.0, sebab mengubahnya mengubah tampilan setiap
+  lencana yang sudah terkirim. `fdy-badge--neutral` sebagai opt-in bisa lebih awal.
 
 
-Gerbang untuk 3.6.0, lokal: `node --test` **122/122**, `npm run test:browser` **147/147**,
-`npm run typecheck:react` bersih, `npm run test:blazor` **28/28**. Setiap perilaku baru diverifikasi
+Gerbang untuk 3.8.0, lokal: `node --test` **128/128**, `npm run test:browser` **171/171**,
+`npm run typecheck:react` bersih, `npm run test:blazor` **33/33**. Setiap perilaku baru diverifikasi
 dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
 membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang
 dipulihkan harus disentuh (`touch`) sebelum build berikutnya.

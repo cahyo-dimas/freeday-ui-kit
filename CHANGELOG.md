@@ -9,6 +9,78 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.8.0] - 2026-10-23
+
+**Empat penambahan dari catatan yang sama, dan tiga di antaranya ternyata sudah separuh ada di
+kit.** App ronda yang menemukan Safari 15 di 3.7.0 menulis delapan butir; dua di antaranya cacat,
+dan keduanya sudah terbit. Empat dari yang tersisa penambahan, dan keempatnya lebih murah daripada
+tampaknya: satu kelas yang sudah ada sejak lama tetapi kehilangan pengaruhnya, satu jalan keluar
+teks yang cuma dipasang di satu jalur, satu grid yang terpasang sejak 1.32.0 tanpa pernah bisa jadi
+tujuan, dan satu varian sumbu yang papan tombolnya kurang dua literal.
+
+Yang terakhir membuka cacat yang digambarkan catatan itu tanpa pelapornya tahu ia sedang
+menggambarkan kit. Ia menulis bahwa `<input type="month">` menamai bulan menurut bahasa peramban,
+bukan `<html lang>`. Kalimat itu berlaku kata per kata untuk `FdyDatepicker` Vue dan React: dokumen
+sudah menjanjikan `<html lang>` sejak lama, cuma enhancer vanilla yang betul melakukannya, dan
+kedua adapter menyerahkan `props.locale` yang `undefined` langsung ke `Intl`.
+
+### Added
+- **`align` di popover, dibacakan dari `.fdy-menu--end`** (`#074`). Kelasnya sudah ada sejak lama
+  dan stylesheet selalu menghormatinya lewat `left:auto;right:0`. Jalur popover menggantinya dengan
+  koordinat `fixed` inline, jadi kelas itu kehilangan pengaruh persis pada saat menu masuk top
+  layer: menu akun di talang kanan melewati avatarnya dan berhenti 4px dari tepi layar. Nol kelas
+  baru. `freeday-menu.js` yang membaca kelasnya, sebab popover dipakai enam enhancer dan tidak
+  boleh tahu nama kelas satu pun. Jepitan viewport sekarang dua sisi: lantai `GAP` yang lama duduk
+  di dalam cabang jepitan kanan dan tak pernah berjalan untuk panel rata-kanan, jadi rata-kanan di
+  layar sempit cuma akan menukar luber kanan dengan luber kiri.
+- **Enam prop teks di `FdyTableFooter`** (`#075`), di ketiga adapter. `data-fdy-text-<key>` sudah
+  lama membuka jalur mentah dan jalur bertipe tidak punya padanannya, jadi app yang tidak berbahasa
+  Inggris hanya bisa menulis ulang seluruh pita kakinya. Satu app mengirim 81 baris markup sendiri
+  untuk mengganti lima kata. Namanya mengikuti kunci `TEXT` enhancer di mana kuncinya ada (`info`,
+  `prev`, `next`), supaya satu teks tidak punya dua nama di dua jalur; tiga sisanya tanpa kembaran
+  sebab di jalur mentah markup itu milik app sendiri. Bawaan tetap Inggris di setiap jalur.
+  `FdyTable` masih merender pita kakinya sendiri tanpa meneruskan keenamnya; jalan keluarnya
+  `pager={false}` lalu render `<FdyTableFooter>` sendiri, dan COMPONENTS.md menuliskannya.
+- **`mode="month"` di `FdyDatepicker`** (`#076`), di ketiga adapter dan jalur mentah. Grid bulannya
+  sudah dipasang 1.32.0, hanya tak pernah bisa jadi tujuan. Menjawab `YYYY-MM`, menerima `min` dan
+  `max` dalam bentuk yang sama, dan berhenti di grid itu alih-alih turun ke hari. Nama acara dan
+  `detail.date` tidak berubah.
+- **`.fdy-tabs--vertical`, dan sumbu papan tombol dari `aria-orientation`** (`#077`). Kelasnya
+  memutuskan tampilan, atributnya memutuskan panah, dan satu penanda cukup: enhancer mengisi
+  atribut dari kelas kalau markup belum menulisnya, sementara atribut yang sudah ditulis selalu
+  menang. Panah kiri dan kanan tidak dipetakan di tegak, mengikuti APG satu sumbu per tablist, dan
+  tombol di luar sumbu jatuh tanpa `preventDefault` sehingga tetap milik halaman. Lebar kolom lewat
+  `--fdy-tabs-list-w`, bawaan `auto`. Tabs tidak punya wrapper bertipe di stack mana pun, jadi tidak
+  ada prop `orientation` yang bisa ditambahkan dan tidak ada wrapper baru yang dibuat demi punya
+  tempat menaruhnya.
+
+### Changed
+- **`FdyDatepicker` Vue dan React membaca `<html lang>` kalau `locale` tidak dikirim** (`#078`).
+  Ini satu-satunya perubahan perilaku di rilis ini, dan ia kena mode hari juga, bukan cuma mode
+  bulan. Sebelumnya `undefined` sampai ke `Intl` apa adanya, yang berarti bahasa peramban: halaman
+  Indonesia yang dibuka di peramban Inggris menulis nama bulan Inggris, dan halaman Inggris di
+  peramban Indonesia menulis nama bulan Indonesia. Kontrak yang tertulis selalu `<html lang>`, dan
+  aturan "Inggris di semua jalur" tidak bisa ditegakkan oleh nilai yang datang dari preferensi
+  pembaca. App yang memang menginginkan bahasa peramban mengirim `locale` sendiri. Halaman tanpa
+  `lang` jatuh ke `en`, dan `lang=""` ikut ke sana sebab `Intl` melempar `RangeError` atas string
+  kosong.
+
+### Catatan dukungan peramban
+Floor-nya tetap Chrome 105, Safari 15.4 dan Firefox 121. Tab tegak sengaja tidak memakai `:has()`
+walau itu akan memendekkan CSS-nya, sebab `:has()` baru ada di Safari 15.4 sementara lantai yang
+pernah dilaporkan dari perangkat nyata adalah iOS 15.0.
+
+### Yang perlu dibuang app saat upgrade
+- Tambalan `translate` apa pun yang menggeser menu rata-kanan ke dalam talangnya. Menu itu sekarang
+  diposisikan benar, jadi tambalannya menggeser sejauh satu talang ke arah yang salah.
+- Markup pita kaki tabel yang ditulis tangan cuma karena teksnya tak bisa diganti, berikut CSS
+  lokal yang menemaninya.
+
+### Belum masuk
+Butir keempat catatan itu, bawaan `.fdy-badge` yang berwarna primer sehingga status netral terbaca
+seperti aksi, menunggu 4.0: mengubah bawaannya mengubah tampilan setiap lencana yang sudah terkirim.
+Pilihan yang tidak mematahkan apa pun, `fdy-badge--neutral` sebagai opt-in, masih terbuka lebih awal.
+
 ## [3.7.0] - 2026-10-23
 
 **Kit ini tidak bisa dipakai di Safari 15, dan yang menemukannya adalah sebuah HP.** Pemilik sebuah
