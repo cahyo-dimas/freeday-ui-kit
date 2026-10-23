@@ -8,7 +8,7 @@
 /* Focus is not hover. The enhancer moves real DOM focus (freeday-menu.js `.focus()`), so this is
    the only thing a keyboard user has to go on, with the hover fill alone, arrowing through the
    menu is invisible. Same ring as .fdy-nav__item, which got this right. Reported twice. */
-.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+.fdy-menu__item:focus-visible{outline:none;background:var(--color-surface-3);box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 .fdy-menu__item:disabled{opacity:.5;cursor:not-allowed;background:transparent;}
 .fdy-menu__item--danger{color:var(--color-danger-strong);}
 .fdy-menu__item svg{display:block;width:1rem;height:1rem;flex:none;}
@@ -25,7 +25,7 @@
 .fdy-btn-split__toggle{padding:0 var(--space-2);margin-left:calc(var(--bw) * -1);border-top-left-radius:0;border-bottom-left-radius:0;}
 /* Hairline divider between the halves (outranks the segment rule above). */
 .fdy-btn-split > .fdy-btn-split__toggle{box-shadow:inset 0 1px 0 rgba(255,255,255,.26),inset 1px 0 0 rgba(0,0,0,.16);}
-.fdy-btn-split:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px color-mix(in srgb,var(--color-primary) 55%,transparent);}
-.fdy-btn-split:active{transform:translateY(1px);box-shadow:0 1px 4px -1px color-mix(in srgb,var(--color-primary) 46%,transparent);}
+.fdy-btn-split:hover{transform:translateY(-1px);box-shadow:0 6px 18px -2px rgba(var(--color-primary-rgb),.55);}
+.fdy-btn-split:active{transform:translateY(1px);box-shadow:0 1px 4px -1px rgba(var(--color-primary-rgb),.46);}
 .fdy-btn-split__toggle:hover,.fdy-btn-split__toggle:focus-visible{z-index:1;}
 .fdy-btn-split__toggle svg{display:block;width:1rem;height:1rem;}

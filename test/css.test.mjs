@@ -606,7 +606,13 @@ test('the stripe is not the colour hover paints', () => {
   assert.match(hover.body, /var\(--color-surface-2\)/);
   assert.doesNotMatch(stripe.body, /background:\s*var\(--color-surface-2\)\s*;?$/,
     'a stripe painted in the hover colour makes hover invisible on every second row');
-  assert.match(stripe.body, /color-mix/, 'the stripe is a fraction of a surface step, composed from tokens');
+  /* It was a color-mix() of the two surfaces until v3.7.0. It cannot be: this is a CUSTOM
+     PROPERTY, and the `background` that reads it carries var(), so on Safari <= 16.1 the
+     declaration failed at computed-value time and the stripe vanished — with no preceding line to
+     catch it, because that path never consults one. The fraction now lives in the token, measured
+     against the mix it replaces (see tokens/tokens.json and test/color-mix.test.mjs). */
+  assert.match(stripe.body, /var\(--color-surface-stripe\)/,
+    'the stripe is a fraction of a surface step, carried by its own semantic token');
   // Tier-3 override reaches it through the var() FALLBACK, never as a declaration of its own —
   // a custom property set on the element would outrank a host's :root override.
   assert.match(stripe.body, /var\(--fdy-table-stripe,/, 'the stripe must be overridable through its component token');

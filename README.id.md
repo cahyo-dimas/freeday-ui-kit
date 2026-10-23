@@ -255,11 +255,24 @@ terlihat, HTML native dulu sebelum ARIA, komponen interaktif ikut pola WAI-ARIA 
 `docs/index.html`.
 
 ## Dukungan browser
-Butuh browser evergreen, kira-kira 2023+: **Chrome 111 · Safari 16.4 · Firefox 113** (floor
-ditentukan `color-mix()`). Fitur lain: native `<dialog>`/`::backdrop`, `accent-color`, `100dvh`,
-`conic-gradient`, `scroll-snap`, semuanya ≥ Safari 15.4. Blur backdrop pakai
-`-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya tanpa blur). Belum ada
-CSS build/autoprefixer, jadi dukungan browser lama jadi tanggung jawab konsumen.
+**Chrome 105 · Safari 15.4 · Firefox 121.** Floor-nya ditentukan `:has()`, dan oleh generasi Safari
+15.4 untuk native `<dialog>`/`::backdrop`, `accent-color`, dan `100dvh`. `conic-gradient` dan
+`scroll-snap` lebih tua lagi.
+
+Dulu floor itu ditentukan `color-mix()` di Safari 16.4, dan sekarang tidak lagi. Harganya memang tak
+pernah pantas: deklarasi yang mencampur sebuah token membawa `var()`, jadi ia dianggap sah saat
+parse dan baru gagal saat computed-value, dan di jalur itu properti jatuh ke nilai *initial*-nya,
+bukan ke baris cadangan di atasnya. Di iPhone yang mentok di iOS 15, 17 deklarasi `border-color`
+berubah jadi `currentColor`, yaitu garis hitam tebal di hampir segalanya. Semua alpha di kit ini
+sekarang ditulis `rgba(var(--color-primary-rgb), .26)`, warnanya sama dan sudah bisa diparse sejak
+Safari 9; empat aturan yang memang tak bisa dijawab secara statis membawa pasangan `@supports` yang
+sungguhan. `test/color-mix.test.mjs` menjaga agar yang berikutnya tetap jujur.
+
+Yang paling baru dipakai kit ini (`@container`, `@starting-style`, `text-wrap`) sifatnya peningkatan:
+browser yang belum punya akan melewati bloknya dan tetap memakai aturan tanpa syarat di bawahnya.
+Blur backdrop pakai `-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya
+tanpa blur). Belum ada CSS build/autoprefixer, jadi dukungan di bawah floor itu jadi tanggung jawab
+konsumen.
 
 ## Lisensi
 [MIT](LICENSE) © 2026 Cahyo D. Kurnianto. Bebas dipakai, diubah, dan didistribusikan asal

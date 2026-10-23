@@ -2,7 +2,7 @@
  * Enhanced by freeday-upload.js; states: idle · drag-over · uploading · done · error. */
 .fdy-dropzone{display:flex;flex-direction:column;align-items:center;gap:var(--space-2);padding:var(--space-6);text-align:center;border:2px dashed var(--color-control-border);border-radius:var(--radius-lg);background:var(--color-surface-2);color:var(--color-text-muted);cursor:pointer;transition:border-color var(--dur-fast) var(--ease-standard),background var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-dropzone:hover{border-color:var(--color-text-muted);}
-.fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-dropzone:focus-visible{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-dropzone.is-dragover{border-color:var(--color-primary);background:var(--color-primary-soft);color:var(--color-primary-strong);}
 .fdy-dropzone[aria-disabled="true"],.fdy-dropzone.is-disabled{opacity:.55;cursor:not-allowed;pointer-events:none;}
 .fdy-dropzone__icon{color:var(--color-text-subtle);}
@@ -33,8 +33,15 @@
 .fdy-file__progress{margin-top:var(--space-2);}
 .fdy-file__remove{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.75rem;height:1.75rem;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-muted);font-size:var(--text-lg);line-height:1;cursor:pointer;}
 .fdy-file__remove:hover{background:var(--color-surface-2);color:var(--color-text);}
-.fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-file__remove:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-file--success .fdy-file__icon{color:var(--color-success);}
 .fdy-file--error{border-color:color-mix(in srgb,var(--color-danger) 40%,var(--color-border));}
+/* The only non-tone mix with no static answer: it blends --color-danger into --color-border, so the
+ * result depends on both, and a translucent stand-in would composite against the row instead. Same
+ * escape hatch as the tone modifiers in avatar.css, same reason it is an @supports and not a line
+ * of fallback — a declaration carrying var() never falls back. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .fdy-file--error{border-color:var(--color-danger);}
+}
 .fdy-file--error .fdy-file__icon{color:var(--color-danger);}
 .fdy-file--error .fdy-file__sub{color:var(--color-danger-strong);}

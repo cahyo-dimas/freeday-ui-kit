@@ -14,10 +14,15 @@
    invisible on every second row. The tint is HALF a surface step rather than --color-surface-2
    itself, for the same reason: hover paints the full step, so the two must not be the same colour.
    Exposed as a Tier-3 token through the var() FALLBACK, never as a declaration — a custom property
-   set here would outrank a host's own :root override. */
+   set here would outrank a host's own :root override.
+   The tint arrives as --color-surface-stripe, already flattened, rather than as a color-mix() of
+   two surfaces. A custom property cannot carry color-mix(): the `background` that finally reads it
+   contains var(), so on Safari <= 16.1 it failed at computed-value time and the stripe vanished,
+   and a preceding declaration is never consulted in that path. The token is also OPAQUE on
+   purpose, which the frozen column below depends on. */
 /* The resting colour is also published as --_fdy-row-rest, so a row that must not answer the
    pointer can hover back to exactly what it was (see --hover-actionable). */
-.fdy-table--striped tbody tr:nth-child(even){--_fdy-row-rest:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));background:var(--_fdy-row-rest);}
+.fdy-table--striped tbody tr:nth-child(even){--_fdy-row-rest:var(--fdy-table-stripe,var(--color-surface-stripe));background:var(--_fdy-row-rest);}
 .fdy-table tbody tr:hover{background:var(--_fdy-row-hover,var(--color-surface-2));}
 /* Opt-in (#064): only a row that DOES something answers the pointer. A tint on a row with no click
    handler promises a target that is not there: people click the row, nothing happens, and the
@@ -47,7 +52,7 @@
 /* Sortable header button (accessible click target inside th) */
 .fdy-table__sortbtn{appearance:none;border:0;background:transparent;font:inherit;color:inherit;text-transform:inherit;letter-spacing:inherit;font-weight:inherit;cursor:pointer;padding:0;}
 .fdy-table__sortbtn:hover{color:var(--color-text);}
-.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table__sortbtn:focus-visible{outline:none;border-radius:var(--radius-sm);box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 
 /* Selection column + selected row */
 .fdy-table__selcol{width:1px;white-space:nowrap;}
@@ -94,7 +99,7 @@
    stripe — and deliberately WITHOUT `.fdy-table--sticky` in the selector, which would push this to
    (0,4,3) and beat the hover rule below. At (0,3,3) it ties, and the later rule wins, so a hovered
    row still bands unbroken across the freeze line. */
-.fdy-table--striped tbody tr:nth-child(even) td.fdy-table__freeze{background:var(--fdy-table-stripe,color-mix(in srgb,var(--color-surface-2) 55%,var(--color-surface)));}
+.fdy-table--striped tbody tr:nth-child(even) td.fdy-table__freeze{background:var(--fdy-table-stripe,var(--color-surface-stripe));}
 .fdy-table--sticky tbody tr:hover td.fdy-table__freeze{background:var(--_fdy-row-hover,var(--color-surface-2));}
 /* A frozen header cell is stuck on both axes wherever the head is frozen too, so
    it has to outrank both. */
@@ -131,7 +136,7 @@
 .fdy-table__filterwrap{display:inline-flex;align-items:center;vertical-align:middle;}
 .fdy-table__filterbtn{appearance:none;display:inline-flex;align-items:center;justify-content:center;width:1.5rem;height:1.5rem;margin-left:var(--space-1);padding:0;vertical-align:middle;border:0;border-radius:var(--radius-sm);background:transparent;color:var(--color-text-subtle);cursor:pointer;}
 .fdy-table__filterbtn:hover{background:var(--color-surface-3);color:var(--color-text);}
-.fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 26%,transparent);}
+.fdy-table__filterbtn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-table__filterbtn.is-active{color:var(--color-primary-strong);}
 .fdy-table__filterbtn svg{width:.85rem;height:.85rem;}
 

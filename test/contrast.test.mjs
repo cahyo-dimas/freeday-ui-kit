@@ -49,6 +49,19 @@ function parse(v, theme, depth = 0) {
   }
   m = v.match(/^#([0-9a-f]{6})$/i); if (m) { const n = parseInt(m[1], 16); return { r: n >> 16 & 255, g: n >> 8 & 255, b: n & 255, a: 1 }; }
   m = v.match(/^#([0-9a-f]{3})$/i); if (m) { const h = m[1]; return { r: parseInt(h[0] + h[0], 16), g: parseInt(h[1] + h[1], 16), b: parseInt(h[2] + h[2], 16), a: 1 }; }
+  /* A var() that is only PART of a value. The kit puts an alpha on a role with
+     `rgba(var(--primary-600-rgb), .2)` now, because color-mix() does not survive Safari <= 16.1 and
+     a declaration carrying var() never falls back to a preceding line (tokens/build.mjs explains
+     the mechanism). So the channels arrive as a nested reference, and the rgba branch below would
+     read them as NaN — which is a silently PASSING contrast test, since NaN comparisons are false
+     in whichever direction the assertion happens to point. Substituted here instead. */
+  if (v.includes('var(')) {
+    return parse(v.replace(/var\((--[\w-]+)\)/g, (_, name) => {
+      const inner = theme[name];
+      if (inner === undefined) throw new Error('undefined token: ' + name);
+      return inner;
+    }), theme, depth + 1);
+  }
   m = v.match(/^rgba?\(([^)]+)\)$/); if (m) { const p = m[1].split(',').map(s => s.trim()); return { r: +p[0], g: +p[1], b: +p[2], a: p[3] == null ? 1 : +p[3] }; }
   throw new Error('unparseable color: ' + v);
 }

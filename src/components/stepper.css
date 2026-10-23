@@ -31,7 +31,7 @@
 .fdy-stepper[aria-busy="true"]{opacity:.72;}
 .fdy-step.is-active .fdy-step__label{color:var(--color-text);font-weight:var(--weight-semibold);}
 .fdy-step__btn:focus-visible{outline:none;}
-.fdy-step__btn:focus-visible .fdy-step__marker{box-shadow:0 0 0 3px color-mix(in srgb,var(--color-primary) 30%,transparent);}
+.fdy-step__btn:focus-visible .fdy-step__marker{box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.3);}
 
 .fdy-step-panels{margin-top:var(--space-5);}
 .fdy-step-nav{display:flex;justify-content:space-between;gap:var(--space-2);margin-top:var(--space-5);}

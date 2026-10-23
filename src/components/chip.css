@@ -1,10 +1,14 @@
 /* Freeday. Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}
-.fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 22%,transparent);}
+.fdy-chip--primary{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:rgba(var(--color-primary-rgb),.22);}
 /* Categorical tone chips, non-semantic category tags / legend swatches, from the general
  * --tone-1..8 palette. Same validated AA formula as .fdy-avatar--tone-* (text >=4.5:1 both themes,
  * gated by test/contrast.test.mjs). */
 .fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:color-mix(in srgb,var(--_fdy-chip-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-chip-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-chip-tone) 30%,var(--color-border));}
+/* No precomputable value: the tone arrives per element. See avatar.css for the whole reason. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .fdy-chip--tone-1,.fdy-chip--tone-2,.fdy-chip--tone-3,.fdy-chip--tone-4,.fdy-chip--tone-5,.fdy-chip--tone-6,.fdy-chip--tone-7,.fdy-chip--tone-8{background:var(--color-surface-3);color:var(--color-text);border-color:var(--color-border);}
+}
 .fdy-chip--tone-1{--_fdy-chip-tone:var(--tone-1);}
 .fdy-chip--tone-2{--_fdy-chip-tone:var(--tone-2);}
 .fdy-chip--tone-3{--_fdy-chip-tone:var(--tone-3);}
@@ -14,16 +18,21 @@
 .fdy-chip--tone-7{--_fdy-chip-tone:var(--tone-7);}
 .fdy-chip--tone-8{--_fdy-chip-tone:var(--tone-8);}
 .fdy-chip__remove{display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-right:calc(var(--space-1)*-1);border:0;padding:0;border-radius:var(--radius-full);background:transparent;color:currentColor;opacity:.6;cursor:pointer;font-size:var(--text-sm);line-height:1;}
-.fdy-chip__remove:hover{opacity:1;background:color-mix(in srgb,currentColor 16%,transparent);}
-.fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
+/* The ONE place in the kit where the two-line fallback pattern actually works. The mix is of
+ * currentColor, which no static token can stand in for; but it carries no var(), so a browser that
+ * does not know color-mix() rejects the declaration at PARSE time and the line above it wins. Every
+ * other mix in the kit referenced a token, and a declaration containing var() is assumed valid at
+ * parse time, so the same two lines would have been dead code there. */
+.fdy-chip__remove:hover{opacity:1;background:var(--color-surface-3);background:color-mix(in srgb,currentColor 16%,transparent);}
+.fdy-chip__remove:focus-visible{outline:none;opacity:1;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
 /* Group wrapper for a row of chips (choice / filter). */
 .fdy-chips{display:flex;flex-wrap:wrap;gap:var(--space-2);}
 /* Interactive chips: choice (toggle) + filter (toggle with a check when on).
  * Rendered as <button aria-pressed> and enhanced by freeday-chip.js. */
 .fdy-chip--choice,.fdy-chip--filter{cursor:pointer;font-family:inherit;background:var(--color-surface);border-color:var(--color-border);transition:background var(--dur-fast) var(--ease-standard),border-color var(--dur-fast) var(--ease-standard),color var(--dur-fast) var(--ease-standard);}
 .fdy-chip--choice:hover,.fdy-chip--filter:hover{background:var(--color-surface-3);border-color:var(--color-text-subtle);}
-.fdy-chip--choice:focus-visible,.fdy-chip--filter:focus-visible{outline:none;box-shadow:0 0 0 2px color-mix(in srgb,var(--color-primary) 45%,transparent);}
-.fdy-chip--choice[aria-pressed="true"],.fdy-chip--filter[aria-pressed="true"]{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:color-mix(in srgb,var(--color-primary) 40%,transparent);}
+.fdy-chip--choice:focus-visible,.fdy-chip--filter:focus-visible{outline:none;box-shadow:0 0 0 2px rgba(var(--color-primary-rgb),.45);}
+.fdy-chip--choice[aria-pressed="true"],.fdy-chip--filter[aria-pressed="true"]{color:var(--color-primary-strong);background:var(--color-primary-soft);border-color:rgba(var(--color-primary-rgb),.4);}
 .fdy-chip--choice:disabled,.fdy-chip--filter:disabled,.fdy-chip--choice[aria-disabled="true"],.fdy-chip--filter[aria-disabled="true"]{opacity:.5;cursor:not-allowed;}
 .fdy-chip__check{display:none;flex:none;width:.85rem;height:.85rem;margin-left:calc(var(--space-1)*-1);}
 .fdy-chip__check svg{display:block;width:100%;height:100%;}

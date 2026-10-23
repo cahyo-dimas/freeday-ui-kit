@@ -1,9 +1,9 @@
 /* Freeday. Badge */
-.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid color-mix(in srgb,var(--color-primary) 22%,transparent);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
-.fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:color-mix(in srgb,var(--color-success) 26%,transparent);}
-.fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:color-mix(in srgb,var(--color-warning) 26%,transparent);}
-.fdy-badge--danger{color:var(--color-danger-strong);background:var(--color-danger-soft);border-color:color-mix(in srgb,var(--color-danger) 26%,transparent);}
-.fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:color-mix(in srgb,var(--color-info) 26%,transparent);}
+.fdy-badge{display:inline-flex;align-items:center;gap:var(--space-1);font-family:var(--font-body);font-size:var(--text-xs);font-weight:var(--weight-semibold);line-height:1;white-space:nowrap;padding:.35em .7em;border-radius:var(--radius-full);color:var(--color-primary-strong);background:var(--color-primary-soft);border:var(--bw) solid rgba(var(--color-primary-rgb),.22);box-shadow:0 1px 1.5px rgba(16,14,30,.05);}
+.fdy-badge--success{color:var(--color-success-strong);background:var(--color-success-soft);border-color:rgba(var(--color-success-rgb),.26);}
+.fdy-badge--warning{color:var(--color-warning-strong);background:var(--color-warning-soft);border-color:rgba(var(--color-warning-rgb),.26);}
+.fdy-badge--danger{color:var(--color-danger-strong);background:var(--color-danger-soft);border-color:rgba(var(--color-danger-rgb),.26);}
+.fdy-badge--info{color:var(--color-info-strong);background:var(--color-info-soft);border-color:rgba(var(--color-info-rgb),.26);}
 .fdy-badge--outline{background:transparent;border-color:var(--color-border-strong);color:var(--color-text-muted);box-shadow:none;}
 
 /* Categorical tone badges, a status vocabulary larger than the semantic palette, from the
@@ -16,6 +16,11 @@
  * Closed, Transferred, InDeclaration, Open and Rejected in ONE column collapsed to three colours,
  * which is the report this shipped for. */
 .fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:color-mix(in srgb,var(--_fdy-badge-tone) 18%,var(--color-surface));color:color-mix(in srgb,var(--_fdy-badge-tone) 50%,var(--color-text));border-color:color-mix(in srgb,var(--_fdy-badge-tone) 26%,transparent);}
+/* No precomputable value: the tone arrives per element. See avatar.css for the whole reason, and
+ * tokens/build.mjs for why color-mix() is otherwise banned from this kit. */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  .fdy-badge--tone-1,.fdy-badge--tone-2,.fdy-badge--tone-3,.fdy-badge--tone-4,.fdy-badge--tone-5,.fdy-badge--tone-6,.fdy-badge--tone-7,.fdy-badge--tone-8{background:var(--color-surface-2);color:var(--color-text);border-color:var(--color-border);}
+}
 .fdy-badge--tone-1{--_fdy-badge-tone:var(--tone-1);}
 .fdy-badge--tone-2{--_fdy-badge-tone:var(--tone-2);}
 .fdy-badge--tone-3{--_fdy-badge-tone:var(--tone-3);}

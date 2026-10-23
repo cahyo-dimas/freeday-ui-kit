@@ -40,9 +40,94 @@ export function flatten(tokens, prefix = []) {
 
 const decl = (name, raw) => `  --${name}: ${resolveValue(raw)};`;
 
+/* ---------------------------------------------------------------------------
+ * CHANNEL TRIPLES: `{slate.0.rgb}` -> var(--slate-0-rgb), with `--slate-0-rgb: 255,255,255`
+ * emitted here for every name a token actually asks for.
+ *
+ * They exist because `color-mix()` is NOT a safe way to put an alpha on a var() colour. A
+ * declaration that contains var() is assumed valid at PARSE time and only re-parsed at
+ * computed-value time; if `color-mix()` is unknown there (Safari <= 16.1, so every iPhone that
+ * stopped at iOS 15) the declaration is invalid at computed-value time, and that does not fall
+ * back to the preceding declaration — the property drops to its INITIAL value. For border-color
+ * the initial value is currentColor, which is the thick black outline an iPhone 7 reported.
+ * Measured, not assumed: see test/color-mix.test.mjs.
+ *
+ * `rgba(var(--x-rgb), .26)` is the same colour by construction, is plain var substitution, and
+ * needs nothing newer than Safari 9 — so the kit states its alphas that way instead, and every
+ * triple is asserted against the hex of the token it belongs to in test/color-mix.test.mjs.
+ * ------------------------------------------------------------------------- */
+const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+export function hexToTriple(hex) {
+  const h = hex.length === 4 ? `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}` : hex;
+  const n = parseInt(h.slice(1), 16);
+  return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+}
+
+/* Follow a value down its reference chain to the hex it ends at. Deliberately strict: a token
+   whose value is an expression has no single set of channels, so asking for its triple is a
+   mistake the build should name rather than paper over. */
+export function hexOfValue(raw, index, depth = 0) {
+  if (depth > 20) throw new Error(`reference cycle resolving the rgb channels of \`${raw}\``);
+  const v = String(raw).trim();
+  if (HEX.test(v)) return v;
+  const ref = v.match(/^\{([^}]+)\}$/);
+  if (ref === null) throw new Error(`cannot take the rgb channels of \`${v}\`: not a hex and not a single reference`);
+  const key = ref[1].replace(/\./g, '-');
+  const target = index.get(key);
+  if (target === undefined) throw new Error(`cannot take the rgb channels of {${ref[1]}}: no token named --${key}`);
+  return hexOfValue(target, index, depth + 1);
+}
+
+/** name -> light value, for every leaf token (what a reference chain walks). */
+export function valueIndex(flat) {
+  return new Map(flat.map(t => [t.name, t.value]));
+}
+
+/** Every `{a.b.rgb}` a value asks for, as a dash-joined token name. */
+export function rgbRefsIn(values) {
+  const out = new Set();
+  for (const v of values) {
+    for (const m of String(v ?? '').matchAll(/\{([^}]+)\.rgb\}/g)) out.add(m[1].replace(/\./g, '-'));
+  }
+  return out;
+}
+
+export function hexOfName(name, index) {
+  const raw = index.get(name);
+  if (raw === undefined) throw new Error(`{…rgb} asked for --${name}, which is not a token`);
+  return hexOfValue(raw, index);
+}
+
+/* The label ink of each primary palette. `$primaries` states it per palette rather than through a
+   token, so the triples it needs are collected from there by hand — otherwise a palette whose ink
+   is slate.950 would reference a --slate-950-rgb that nothing emitted. */
+export function primaryInkRefs(tokens) {
+  const spec = tokens.$primaries;
+  if (spec === undefined) return [];
+  return Object.entries(spec)
+    .filter(([name]) => !name.startsWith('_'))
+    .flatMap(([, p]) => [p.on, p.onDark])
+    .filter(v => typeof v === 'string')
+    .map(v => v.replace(/\}$/, '.rgb}'));
+}
+
+/** `--<name>-rgb: r,g,b` for each requested name, sorted so the output is stable. */
+export function tripleDecls(names, index) {
+  return [...names].sort().map(n => decl(`${n}-rgb`, hexToTriple(hexOfName(n, index))));
+}
+
 export function buildTokensCss(tokens) {
   const flat = flatten(tokens);
-  const root = flat.map(t => decl(t.name, t.value)).join('\n');
+  const index = valueIndex(flat);
+  /* Resolved to literals HERE, in :root only. The one family that moves with an axis is the
+     primary ramp, and buildPrimariesCss re-states those triples beside the shades they belong
+     to — the same place, and the same condition, as the shades themselves. */
+  const wanted = rgbRefsIn([
+    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.glass, t.glassDark]),
+    ...primaryInkRefs(tokens),
+  ]);
+  const root = [...flat.map(t => decl(t.name, t.value)), ...tripleDecls(wanted, index)].join('\n');
   const darkTokens = flat.filter(t => t.dark !== undefined);
   const dark = darkTokens.map(t => decl(t.name, t.dark)).join('\n');
   const lightReassert = darkTokens.map(t => decl(t.name, t.value)).join('\n');
@@ -144,6 +229,14 @@ export function buildPrimariesCss(tokens) {
   /* One step lighter, for a hue whose 500 sits where neither white nor ink clears 4.5:1 on it. */
   const SHIFT = { 500: '400', 400: '300', 300: '200' };
   const out = [];
+  const flat = flatten(tokens);
+  const index = valueIndex(flat);
+  /* Which shades need a channel triple is read off the tokens, not listed here: a semantic that
+     starts asking for {primary.300.rgb} gains its triple in all 18 palettes without this function
+     being touched, and one that stops asking loses it. */
+  const asked = rgbRefsIn(flat.flatMap(t => [t.value, t.dark, t.compact, t.glass, t.glassDark]));
+  const rgbShades = SHADES.filter(s => asked.has(`primary-${s}`));
+  const triple = (ref) => hexToTriple(hexOfValue(ref, index));
 
   for (const [name, p] of Object.entries(spec)) {
     if (name.startsWith('_')) continue;
@@ -155,19 +248,23 @@ export function buildPrimariesCss(tokens) {
     const sel = `[data-primary="${name}"]`;
     const lightDecls = [
       ...SHADES.map(s => decl(`primary-${s}`, light[s])),
+      ...rgbShades.map(s => decl(`primary-${s}-rgb`, triple(light[s]))),
       decl('color-on-primary', p.on),
+      decl('color-on-primary-rgb', p.on.replace(/\}$/, '.rgb}')),
     ].join('\n');
     out.push(`${sel} {\n${lightDecls}\n}`);
 
     // Only what dark actually changes.
     const darkDecls = [
       ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, dark[s]))),
-      ...(p.onDark !== p.on ? [decl('color-on-primary', p.onDark)] : []),
+      ...(dark === null ? [] : rgbShades.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}-rgb`, triple(dark[s])))),
+      ...(p.onDark !== p.on ? [decl('color-on-primary', p.onDark), decl('color-on-primary-rgb', p.onDark.replace(/\}$/, '.rgb}'))] : []),
     ];
     if (darkDecls.length === 0) continue;
     const backLight = [
       ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, light[s]))),
-      ...(p.onDark !== p.on ? [decl('color-on-primary', p.on)] : []),
+      ...(dark === null ? [] : rgbShades.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}-rgb`, triple(light[s])))),
+      ...(p.onDark !== p.on ? [decl('color-on-primary', p.on), decl('color-on-primary-rgb', p.on.replace(/\}$/, '.rgb}'))] : []),
     ].join('\n');
     out.push(
       `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"])${sel} {\n${darkDecls.join('\n')}\n  }\n}`,
