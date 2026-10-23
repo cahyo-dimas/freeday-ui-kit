@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+<head><meta charset="utf-8"><title>Freeday — month mode</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script></head>
+<body style="padding:2rem">
+  <!-- lang="id" with an en-US browser: Indonesian month names can ONLY come from the page. -->
+  <div data-fdy-datepicker data-mode="month" data-value="2026-10" id="mp"></div>
+
+  <!-- The control. Same page, no data-mode, so "nothing changes without the mode" is measured
+       rather than assumed. -->
+  <div data-fdy-datepicker data-value="2026-10-21" id="dp"></div>
+
+  <!-- A bounded month picker: min inside a month must leave that month pickable. -->
+  <div data-fdy-datepicker data-mode="month" data-value="2026-10" data-min="2026-03" data-max="2026-10" id="mp-bound"></div>
+
+<script>
+  window.__changes = [];
+  document.addEventListener('fdy-datepicker-change', (e) => {
+    window.__changes.push({ id: e.target.id, value: e.detail.value });
+  });
+  window.monthCells = (sel) => [...document.querySelectorAll(sel + ' .fdy-cal__month')]
+    .map((b) => ({ text: b.textContent, aria: b.getAttribute('aria-label'), disabled: b.disabled,
+                   selected: b.getAttribute('aria-selected'), tabindex: b.getAttribute('tabindex') }));
+  window.valueOf_ = (sel) => document.querySelector(sel + ' .fdy-datepicker__value').textContent.trim();
+</script>
+</body></html>

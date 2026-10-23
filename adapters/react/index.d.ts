@@ -29,7 +29,7 @@ export interface FdyTableChangeDetail { page: number; sort: string | null; query
 // Re-exports of React components and hooks
 export { usePopover } from './usePopover';
 export { FdyCombo, type FdyComboProps, type FdyComboOption } from './components/FdyCombo';
-export { FdyDatepicker, type FdyDatepickerProps } from './components/FdyDatepicker';
+export { FdyDatepicker, type FdyDatepickerProps, type FdyDatepickerMode } from './components/FdyDatepicker';
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';

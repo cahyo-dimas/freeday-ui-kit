@@ -510,8 +510,10 @@ WAI-ARIA APG menu-button. Keyboard ↑/↓/Home/End/Esc handled by the enhancer.
 
 - Wrapper: `.fdy-menu-wrap` (or `.fdy-btn-split` for a split button, with
   `.fdy-btn-split__toggle` as the second button) + `data-fdy-menu`
-- List: `.fdy-menu` (`--end` aligns right), items `.fdy-menu__item` (`--danger`), separator
-  `<hr class="fdy-menu__sep">`
+- List: `.fdy-menu` (`--end` puts the panel's **right edge on the trigger's right edge**, which is
+  what a control parked in a page gutter needs; on a screen too narrow for that the panel slides
+  back inside the viewport instead of hanging off the left edge), items `.fdy-menu__item`
+  (`--danger`), separator `<hr class="fdy-menu__sep">`
 - A11y: trigger gets `aria-haspopup="menu"` + `aria-expanded="false"`; `<ul role="menu" hidden>`;
   each `<li role="none">` wraps a `<button role="menuitem">`.
 
@@ -525,6 +527,15 @@ WAI-ARIA APG menu-button. Keyboard ↑/↓/Home/End/Esc handled by the enhancer.
   </ul>
 </div>
 ```
+
+`.fdy-menu--end` is honoured on both of the paths an open menu can take. The stylesheet handles the
+one where the panel stays in the flow, and the enhancer handles the other: it lifts the panel into
+the top layer so it escapes any ancestor overflow clip, and positions it there with coordinates of
+its own, so the modifier has to be read by `freeday-popover.js` too. An app reported what happens
+when it is not. An account menu beside its avatar in a 24px gutter opened 20px further right than
+the avatar and stopped 4px off the screen edge, and the app's own `translate` patch for it was keyed
+to a constant inside the kit. For a control the kit does not ship, the same option is
+`FreedayPopover.attach(panel, trigger, { align: 'end' })`.
 
 ---
 
@@ -942,9 +953,10 @@ a new class.
 
 | Prop | Type | What it does |
 |---|---|---|
-| `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `''`/`null` for empty. |
+| `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `YYYY-MM` under `mode="month"`. `''`/`null` for empty. |
 | `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
-| `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. |
+| `mode?` | `'day' \| 'month'` | `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`; the raw path takes `data-mode="month"`. |
+| `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. Month mode also accepts `YYYY-MM`, and a bound inside a month leaves that month pickable. |
 | `locale?` | `string` | BCP-47 tag deciding month and weekday names. Defaults to the page's `<html lang>`, then `en`. |
 | `placeholder?` | `string` | |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
@@ -1013,12 +1025,36 @@ months, `Home`/`End` January/December, `PageUp`/`PageDown` a year, `Enter`/`Spac
 year grid likewise: arrows ±1/±3 years, `Home`/`End` the ends of the page, `PageUp`/`PageDown` a
 page of twelve.
 
-- Attributes: `data-value="YYYY-MM-DD"`, `data-placeholder`, `data-label`, `data-fdy-no-icon`
+**Picking a month, not a day.** `mode="month"` (`data-mode="month"` on the raw path,
+`Mode="FdyDatepickerMode.Month"` in Blazor) makes the month grid the destination instead of a
+waypoint: the panel opens on it, a click or `Enter` commits from it, the day grid is never built,
+and the value is `YYYY-MM`. The title still steps up to the year grid and back, because that is
+navigation and not an answer.
+
+This exists because `<input type="month">` names the month in the **browser's** language, which an
+Indonesian page read on an English phone cannot override. The month cells, the cell's accessible
+name and the value in the trigger all go through `Intl` with the page's `<html lang>`, the same
+route the day grid's month names have always taken, so `lang="id"` reads `Oktober 2026` with nothing
+configured. Keyboard in the month grid is unchanged: arrows move one and three months, `Home`/`End`
+jump to January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` now answers
+rather than drilling. The cell keeps its name when it becomes selected and carries the state in
+`aria-selected`, as the day cells do.
+
+Nothing changes without the prop. A picker with no `mode` is the day picker it has always been,
+down to the `YYYY-MM-DD` it reports.
+
+- Attributes: `data-value="YYYY-MM-DD"`, `data-mode="month"`, `data-placeholder`, `data-label`,
+  `data-fdy-no-icon`
 
 ```html
 <div class="fdy-field">
   <span class="fdy-label">Invoice date</span>
   <div data-fdy-datepicker data-value="2026-07-21" data-label="Invoice date"></div>
+</div>
+
+<div class="fdy-field">
+  <span class="fdy-label">Reporting month</span>
+  <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
 </div>
 
 <div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Reporting period">
@@ -1440,6 +1476,28 @@ render it once, outside both, with `pager={false}` on the table.
 | `page` | `FdyPageState` = `{ index, size, total }` | The page being shown. `size` drives both the range text and the rows-per-page control's value. |
 | `onPageChange?` | `(page: FdyPageState) => void` | React. A page click or a size change. Vue emits `update:page`; Blazor `PageChanged`. |
 | `pageSizes?` | `readonly number[]` | Offer a rows-per-page control. Omit it and the footer is range + pager only. Picking a size reports the new `size` together with the index that still holds the row the reader was looking at. |
+| `infoText?` | `string` | The range line, with `{from}`, `{to}` and `{total}` substituted. Default `Showing {from}–{to} of {total}`, the enhancer's `info` string. |
+| `pageSizeLabel?` | `string` | The word beside the rows-per-page control, which also names that control for a screen reader. Default `Rows`. |
+| `paginationLabel?` | `string` | Accessible name of the pager landmark. Default `Pagination`. |
+| `prevLabel?` | `string` | Accessible name of the previous-page arrow. Default `Previous page`. |
+| `nextLabel?` | `string` | Accessible name of the next-page arrow. Default `Next page`. |
+| `pageLabel?` | `string` | Accessible name of a numbered page button, with `{n}` substituted. Default `Go to page {n}`. |
+
+**Saying it in another language.** The raw path has had `data-fdy-text-<key>` since 1.39.0 and this
+one had nothing, so a Vue, React or Blazor app that does not speak English could only rewrite the
+band by hand. One did: eighty one lines of its own markup, to change five words. The six string
+props above are the hatch that was missing. Where the enhancer already keys a string the prop
+carries that key's name, `infoText` for `info`, `prevLabel` for `prev`, `nextLabel` for `next`,
+and the same `{from}` `{to}` `{total}` `{n}` substitution, every occurrence replaced, so an app on
+both paths writes one wording once. The other three have no enhancer twin because on the raw path
+that markup is the app's own: the word beside the rows-per-page control, the pager landmark's name,
+and the name of a numbered page button. It is `pageSizeLabel` and not `rows`, since the enhancer's
+`rows` key is the table's `{n} rows` count, a different string.
+
+Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` draws its
+own footer and does not pass these through, so a table that owns its footer still reads English; a
+screen that needs its own wording takes the footer over with `pager={false}` and renders
+`<FdyTableFooter>` beside it, which is the same route a responsive list already takes.
 
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:
@@ -1832,9 +1890,14 @@ record. A crumb for a menu group that has no page of its own is plain text in th
 to nowhere.
 
 ## Tabs — `.fdy-tabs`
-APG tabs: ←/→, Home/End, roving tabindex. Needs `freeday-tabs.js`.
+APG tabs: arrows, Home/End, roving tabindex. Needs `freeday-tabs.js`.
 `.fdy-tabs__tab` marks its active state from **`aria-selected="true"` or `aria-current="page"`**,
 so the same look serves routed sub-navigation built from plain links. See the note under Nav.
+
+**Which arrows move the selection** comes from the tablist's `aria-orientation`: Left and Right by
+default, Up and Down when it says `vertical`. One axis per tablist, the way APG maps it. The other
+pair stays unmapped, so Left and Right over a column of tabs still reach whatever else on the page
+wants them. Home and End answer either way.
 
 > **The strip's line is an inset `box-shadow`, not a `border-bottom`** (`#052`; through 3.1.0 it
 > was a border, so an app upgrading past that release changes the override with it). To
@@ -1856,6 +1919,56 @@ so the same look serves routed sub-navigation built from plain links. See the no
   <div class="fdy-tabs__panel" role="tabpanel" id="p-2" aria-labelledby="t-2" tabindex="0" hidden>…</div>
 </div>
 ```
+
+### Vertical — `.fdy-tabs--vertical`
+
+The same tabs turned down the page: the list on the leading side, the panel beside it. For a
+settings screen whose sections are a list, not a strip.
+
+```html
+<div class="fdy-tabs fdy-tabs--vertical" data-fdy-tabs style="--fdy-tabs-list-w:16rem">
+  <div class="fdy-tabs__list" role="tablist" aria-orientation="vertical" aria-label="Settings">
+    <button class="fdy-tabs__tab" role="tab" id="s-1" aria-controls="sp-1" aria-selected="true">Identity</button>
+    <button class="fdy-tabs__tab" role="tab" id="s-2" aria-controls="sp-2" aria-selected="false" tabindex="-1">Posts</button>
+  </div>
+  <div class="fdy-tabs__panel" role="tabpanel" id="sp-1" aria-labelledby="s-1" tabindex="0">…</div>
+  <div class="fdy-tabs__panel" role="tabpanel" id="sp-2" aria-labelledby="s-2" tabindex="0" hidden>…</div>
+</div>
+```
+
+- **Two markers, and they are not the same marker.** `.fdy-tabs--vertical` decides the look,
+  because the two-column box belongs to `.fdy-tabs` and a stylesheet cannot reach a parent from a
+  child. `aria-orientation="vertical"` on the tablist decides the keyboard, because that is what an
+  assistive technology announces and APG asks for it on a vertical tablist regardless. Write
+  **either** one: `freeday-tabs.js` fills in the attribute when it finds the class without it, so
+  the ARIA can never drift from the layout. An `aria-orientation` you wrote always wins, including
+  when you write `horizontal` on a widget that carries the class.
+- **Selection is a soft fill.** A bar down the leading edge would be the wrong translation:
+  sideways the marker is an underline beneath the tab it belongs to, and turned ninety degrees that
+  line lands between two tabs and points at the wrong one. So the vertical variant spends
+  `--color-primary-soft` behind `--color-primary-strong`, the same pair
+  `.fdy-nav__item[aria-current="page"]` and the picker options already use for “this is where you
+  are” in a vertical list. The strip's own line (`box-shadow`) is dropped with the underline.
+- **Column width:** `--fdy-tabs-list-w` on `.fdy-tabs` (default `auto`, so the column hugs the
+  longest label). Set the token rather than a `width` on `.fdy-tabs__list`: the list is a flex item
+  at `flex:none`, so a width arriving from outside has no effect and no error to show for it.
+- **It does not collapse on a narrow screen**, and the breakpoint is yours because the kit cannot
+  know whether these tabs span the viewport or sit in a 20rem drawer. Going back to a strip takes
+  three declarations, not one, since the variant turns both boxes:
+
+  ```css
+  @media (max-width: 63.9375rem) {
+    .settings-tabs.fdy-tabs--vertical { display: block; }
+    .settings-tabs .fdy-tabs__list { flex-direction: row; width: auto; overflow-x: auto; }
+    .settings-tabs .fdy-tabs__panel { padding: var(--space-4) 0 0; }
+  }
+  ```
+
+  The keyboard stays on Up and Down across that switch, because `aria-orientation` is an attribute
+  and a media query cannot reach it. A list of sections is still a list of sections at 320px, which
+  is why the axis is read from the attribute and never from the painted layout.
+- Measured in `browser/tabs-vertical.mjs`, which also holds the line that a strip with no
+  `aria-orientation` behaves and paints exactly as it did before the variant existed.
 
 ---
 

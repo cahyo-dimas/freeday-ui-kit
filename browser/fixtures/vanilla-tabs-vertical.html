@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — a tablist that runs down the page</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>
+  /* A fixed outer width so every coordinate assertion is the same on any runner window. */
+  .case{width:760px;margin:0 0 32px;}
+  /* The list column, set the documented way: the component token, not a width on the flex item. */
+  #vert{--fdy-tabs-list-w:12rem;}
+</style>
+</head>
+<body style="margin:0;padding:24px;background:var(--color-surface)">
+
+  <!-- The variant under test: the class for the look, aria-orientation for the keyboard. -->
+  <div class="fdy-tabs fdy-tabs--vertical case" id="vert" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-orientation="vertical" aria-label="Settings sections">
+      <button class="fdy-tabs__tab" role="tab" id="v-1" aria-controls="vp-1" aria-selected="true">Identity</button>
+      <button class="fdy-tabs__tab" role="tab" id="v-2" aria-controls="vp-2" aria-selected="false" tabindex="-1">Posts</button>
+      <button class="fdy-tabs__tab" role="tab" id="v-3" aria-controls="vp-3" aria-selected="false" tabindex="-1">Access</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="vp-1" aria-labelledby="v-1" tabindex="0">Identity panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="vp-2" aria-labelledby="v-2" tabindex="0" hidden>Posts panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="vp-3" aria-labelledby="v-3" tabindex="0" hidden>Access panel</div>
+  </div>
+
+  <!-- The control. No modifier, no aria-orientation: this is every tab strip already shipped, and
+       it has to behave and paint exactly as it did before the variant existed. -->
+  <div class="fdy-tabs case" id="horiz" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-label="Invoice detail">
+      <button class="fdy-tabs__tab" role="tab" id="h-1" aria-controls="hp-1" aria-selected="true">Document</button>
+      <button class="fdy-tabs__tab" role="tab" id="h-2" aria-controls="hp-2" aria-selected="false" tabindex="-1">Timeline</button>
+      <button class="fdy-tabs__tab" role="tab" id="h-3" aria-controls="hp-3" aria-selected="false" tabindex="-1">SAP</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="hp-1" aria-labelledby="h-1" tabindex="0">Document panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="hp-2" aria-labelledby="h-2" tabindex="0" hidden>Timeline panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="hp-3" aria-labelledby="h-3" tabindex="0" hidden>SAP panel</div>
+  </div>
+
+  <!-- The class alone. The tablist says nothing about its axis, so the enhancer has to write it:
+       otherwise this widget looks vertical and answers to the horizontal arrows. -->
+  <div class="fdy-tabs fdy-tabs--vertical case" id="derived" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-label="Derived axis">
+      <button class="fdy-tabs__tab" role="tab" id="d-1" aria-controls="dp-1" aria-selected="true">One</button>
+      <button class="fdy-tabs__tab" role="tab" id="d-2" aria-controls="dp-2" aria-selected="false" tabindex="-1">Two</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="dp-1" aria-labelledby="d-1" tabindex="0">One panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="dp-2" aria-labelledby="d-2" tabindex="0" hidden>Two panel</div>
+  </div>
+
+  <!-- Both written, and they disagree. The attribute is what a screen reader announces, so the
+       attribute decides the keyboard and the class is left to decide only the look. -->
+  <div class="fdy-tabs fdy-tabs--vertical case" id="forced" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-orientation="horizontal" aria-label="Attribute wins">
+      <button class="fdy-tabs__tab" role="tab" id="f-1" aria-controls="fp-1" aria-selected="true">One</button>
+      <button class="fdy-tabs__tab" role="tab" id="f-2" aria-controls="fp-2" aria-selected="false" tabindex="-1">Two</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="fp-1" aria-labelledby="f-1" tabindex="0">One panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="fp-2" aria-labelledby="f-2" tabindex="0" hidden>Two panel</div>
+  </div>
+
+<script>
+/* Resolve a token to the rgb the compositor will paint, so a pixel is compared against the theme
+   rather than a hex literal copied out of tokens.json. */
+window.tone = function (token) {
+  var probe = document.createElement('span');
+  probe.style.color = 'var(' + token + ')';
+  probe.style.position = 'absolute';
+  document.body.appendChild(probe);
+  var rgb = getComputedStyle(probe).color;
+  probe.remove();
+  var m = rgb.match(/\d+/g);
+  return { r: Number(m[0]), g: Number(m[1]), b: Number(m[2]) };
+};
+
+var box = function (el) {
+  var r = el.getBoundingClientRect();
+  return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height),
+           right: Math.round(r.right), bottom: Math.round(r.bottom) };
+};
+
+/* Everything a spec needs about one widget, read from the engine: who is selected, who owns the
+   one tab stop, where each box actually landed, and what the attribute says after enhancement. */
+window.widget = function (id) {
+  var root = document.getElementById(id);
+  var list = root.querySelector('[role="tablist"]');
+  var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+  var shown = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'))
+    .filter(function (p) { return !p.hidden; });
+  return {
+    orientation: list.getAttribute('aria-orientation'),
+    ready: root.getAttribute('data-fdy-tabs-ready'),
+    selected: tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })
+      .map(function (t) { return t.id; }),
+    focused: document.activeElement ? document.activeElement.id : null,
+    tabStops: tabs.map(function (t) { return { id: t.id, tabIndex: t.tabIndex }; }),
+    shownPanels: shown.map(function (p) { return p.id; }),
+    list: box(list),
+    listDirection: getComputedStyle(list).flexDirection,
+    tabs: tabs.map(function (t) {
+      var cs = getComputedStyle(t);
+      return { id: t.id, box: box(t), textAlign: cs.textAlign,
+               borderBottomWidth: cs.borderBottomWidth, background: cs.backgroundColor };
+    }),
+    panel: shown.length === 1 ? box(shown[0]) : null
+  };
+};
+
+window.ready = true;
+</script>
+</body>
+</html>

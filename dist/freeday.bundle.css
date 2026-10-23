@@ -3056,6 +3056,37 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Reveal the newly-shown panel on tab switch (fade + rise), reduced-motion gated. */
 @media (prefers-reduced-motion:no-preference){.fdy-tabs__panel:not([hidden]){animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
+/* VERTICAL VARIANT: the same tabs turned down the page, list on the leading side, panel beside it.
+ *
+ * Two markers, one each, and they are not interchangeable. The CLASS decides the look, because a
+ * stylesheet cannot reach a parent from a child and the two-column box belongs to `.fdy-tabs`
+ * itself. The ATTRIBUTE `aria-orientation="vertical"` on the tablist decides the keyboard, because
+ * that is the thing an assistive technology announces and APG requires it on a vertical tablist
+ * anyway. `freeday-tabs.js` writes the attribute when only the class is present, so an app states
+ * the axis once and the two can never disagree.
+ *
+ * Selection is a SOFT FILL here, not a leading edge bar. Sideways, the marker is an underline under
+ * the tab it belongs to; turned 90 degrees that line lands between two tabs and points at the wrong
+ * one. The kit already has an answer for "one item in a vertical list is where you are" and spends
+ * it in four places (`.fdy-nav__item[aria-current]`, the combo, cascade and autocomplete options):
+ * `--color-primary-soft` behind `--color-primary-strong`. Both are precomputed tone tokens, so this
+ * needs no color-mix() and no alpha of its own.
+ *
+ * What it deliberately does NOT do: pick a column width (set `--fdy-tabs-list-w`, default `auto`),
+ * and collapse to one column on a narrow screen. Whether these tabs are a whole page, a card or a
+ * drawer is the page's knowledge, not the component's, so the breakpoint is the page's to write. */
+.fdy-tabs--vertical{display:flex;align-items:flex-start;gap:var(--space-5);}
+/* `overflow:visible` on both axes, because the base strip scrolls sideways: a scroll container
+   clips to its padding box, and a column has no sideways overflow to scroll, only a focus ring to
+   lose. `box-shadow:none` drops the strip's own bottom line with it. */
+.fdy-tabs--vertical .fdy-tabs__list{flex:none;flex-direction:column;width:var(--fdy-tabs-list-w,auto);overflow:visible;box-shadow:none;}
+/* `white-space:normal` and `text-align:start` are corrections, not taste: a tab in a column of
+   fixed width that may not wrap will overflow it, and a button centres its label by default. */
+.fdy-tabs--vertical .fdy-tabs__tab{border-bottom:0;border-radius:var(--radius-md);text-align:start;white-space:normal;}
+.fdy-tabs--vertical .fdy-tabs__tab:focus-visible{border-radius:var(--radius-md);}
+.fdy-tabs--vertical .fdy-tabs__tab[aria-selected="true"],.fdy-tabs--vertical .fdy-tabs__tab[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
+.fdy-tabs--vertical .fdy-tabs__panel{flex:1;min-width:0;padding:0;}
+
 /* Freeday. Timeline (vertical event feed: dot markers on a connector line). Pure CSS. */
 .fdy-timeline{list-style:none;margin:0;padding:0;}
 .fdy-timeline__item{position:relative;padding:0 0 var(--space-5) var(--space-6);border-left:2px solid var(--color-border);}

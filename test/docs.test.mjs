@@ -539,6 +539,8 @@ test('the enhancers ship exactly these strings (#006)', () => {
     'freeday-datepicker.js': {
       label: 'Date',
       placeholder: 'Choose a date',
+      labelMonth: 'Month',
+      placeholderMonth: 'Choose a month',
       prevMonth: 'Previous month',
       nextMonth: 'Next month',
       prevYear: 'Previous year',

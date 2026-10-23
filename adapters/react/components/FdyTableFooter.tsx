@@ -25,6 +25,28 @@ export interface FdyTableFooterProps {
    * the row you were looking at.
    */
   pageSizes?: readonly number[];
+  /* The strings, six of them, one per thing this band says. The raw path has had a hatch since
+   * 1.39.0 (`data-fdy-text-<key>` read through `textOf()`) and this path had none, so an app that
+   * does not speak English could only rewrite the whole band by hand; one shipped eighty one lines
+   * of its own markup to change five words. Names follow the enhancer's `TEXT` keys where a key
+   * exists, `info`, `prev`, `next`, so one string is not two names across the two paths. The other
+   * three have no twin because on the raw path that markup is the app's own. Defaults stay English
+   * on every path, which COMPONENTS.md promises and the suite enforces. */
+  /**
+   * The range line. `{from}`, `{to}` and `{total}` are substituted, every occurrence, as `textOf()`
+   * does. Default `Showing {from}–{to} of {total}`, the enhancer's `info`.
+   */
+  infoText?: string;
+  /** The visible word beside the rows-per-page control, which also names it. Default `Rows`. */
+  pageSizeLabel?: string;
+  /** Accessible name of the pager landmark. Default `Pagination`. */
+  paginationLabel?: string;
+  /** Accessible name of the previous-page arrow. Default `Previous page`. */
+  prevLabel?: string;
+  /** Accessible name of the next-page arrow. Default `Next page`. */
+  nextLabel?: string;
+  /** Accessible name of a numbered page button. `{n}` substituted. Default `Go to page {n}`. */
+  pageLabel?: string;
 }
 
 export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
@@ -38,6 +60,15 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
   const rangeFrom: number = total === 0 ? 0 : index * size + 1;
   const rangeTo: number = Math.min(total, (index + 1) * size);
   const pages: Array<number | 'ellipsis'> = pageWindow(currentPage1, totalPages);
+
+  /* Regex with /g, not String.replace on a string pattern, which stops at the first hit and would
+   * drop a second `{total}` a translator wrote. This is what `textOf()` does on the raw path. */
+  const infoLine: string = (props.infoText ?? 'Showing {from}–{to} of {total}')
+    .replace(/\{from\}/g, String(rangeFrom))
+    .replace(/\{to\}/g, String(rangeTo))
+    .replace(/\{total\}/g, String(total));
+  const pageAriaLabel = (page1: number): string =>
+    (props.pageLabel ?? 'Go to page {n}').replace(/\{n\}/g, String(page1));
 
   const hasPager: boolean = size > 0 && totalPages > 1;
   const sizes: readonly number[] = props.pageSizes ?? [];
@@ -58,11 +89,11 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
 
   return (
     <div className="fdy-table-footer">
-      <span className="fdy-table-footer__info">Showing {rangeFrom}–{rangeTo} of {total}</span>
+      <span className="fdy-table-footer__info">{infoLine}</span>
 
       {sizes.length > 0 && (
         <div className="fdy-table-footer__size">
-          <span id={sizeLabelId}>Rows</span>
+          <span id={sizeLabelId}>{props.pageSizeLabel ?? 'Rows'}</span>
           {/* The kit's own listbox, not a native <select>: an OS menu is unthemeable, and on macOS
               it drops a dark panel into a light page. FdyCombo's own header says exactly that. */}
           <FdyCombo
@@ -75,10 +106,10 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
       )}
 
       {hasPager && (
-        <nav className="fdy-pagination" aria-label="Pagination">
+        <nav className="fdy-pagination" aria-label={props.paginationLabel ?? 'Pagination'}>
           <ul className="fdy-pagination__list">
             <li>
-              <button type="button" className="fdy-pagination__link" aria-label="Previous page" disabled={currentPage1 === 1} onClick={(): void => goTo(currentPage1 - 1)}>‹</button>
+              <button type="button" className="fdy-pagination__link" aria-label={props.prevLabel ?? 'Previous page'} disabled={currentPage1 === 1} onClick={(): void => goTo(currentPage1 - 1)}>‹</button>
             </li>
             {pages.map((p: number | 'ellipsis', i: number): JSX.Element => (
               <li key={typeof p === 'number' ? `p-${p}` : `gap-${i}`}>
@@ -87,12 +118,12 @@ export function FdyTableFooter(props: FdyTableFooterProps): JSX.Element | null {
                 ) : p === currentPage1 ? (
                   <span className="fdy-pagination__link" aria-current="page">{p}</span>
                 ) : (
-                  <button type="button" className="fdy-pagination__link" aria-label={`Go to page ${p}`} onClick={(): void => goTo(p)}>{p}</button>
+                  <button type="button" className="fdy-pagination__link" aria-label={pageAriaLabel(p)} onClick={(): void => goTo(p)}>{p}</button>
                 )}
               </li>
             ))}
             <li>
-              <button type="button" className="fdy-pagination__link" aria-label="Next page" disabled={currentPage1 === totalPages} onClick={(): void => goTo(currentPage1 + 1)}>›</button>
+              <button type="button" className="fdy-pagination__link" aria-label={props.nextLabel ?? 'Next page'} disabled={currentPage1 === totalPages} onClick={(): void => goTo(currentPage1 + 1)}>›</button>
             </li>
           </ul>
         </nav>
