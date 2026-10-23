@@ -25,7 +25,12 @@ const supported: boolean =
   typeof HTMLElement !== 'undefined'
   && typeof (HTMLElement.prototype as Partial<PopoverElement>).showPopover === 'function';
 
-function place(panel: HTMLElement, trigger: HTMLElement, align: FdyPopoverAlign | undefined): void {
+function place(
+  panel: HTMLElement,
+  trigger: HTMLElement,
+  align: FdyPopoverAlign | undefined,
+  matchWidth: boolean | undefined,
+): void {
   /* Take the panel out of the flow BEFORE measuring anything. Until this runs the panel is still
    * `position:absolute` with `top:calc(100% + …)` from its component's stylesheet, an author rule
    * outranks the popover UA style, and in the top layer that `100%` resolves against the viewport.
@@ -39,7 +44,15 @@ function place(panel: HTMLElement, trigger: HTMLElement, align: FdyPopoverAlign 
   panel.style.margin = '0';
   panel.style.inset = 'auto';
   const r: DOMRect = trigger.getBoundingClientRect();
-  panel.style.minWidth = `${r.width}px`;
+  /* The trigger's width as a FLOOR, and `matchWidth !== false` rather than a truthiness test, the
+     same spelling the raw `place()` uses. It is what keeps the four input-shaped panels looking
+     like one control with its list hanging off it, and it is not cosmetic: `.fdy-combo__listbox`,
+     `.fdy-autocomplete__listbox` and `.fdy-cascade__panel` are `min-width:100%`, and once the panel
+     is `fixed` in the top layer that 100% is the VIEWPORT, so without this line a 220px combo opens
+     a 1000px listbox. A panel whose stylesheet asks for a width of its own opts out instead:
+     `.fdy-filter` wants `min-width:14rem` and hangs off a 24px funnel, and an inline floor of 24px
+     outranks the rule, which left the typed filter panel 206px wide against the 224 it asked for. */
+  if (matchWidth !== false) panel.style.minWidth = `${r.width}px`;
   const ph: number = panel.offsetHeight;
   const pw: number = panel.offsetWidth;
   const vw: number = document.documentElement.clientWidth;
@@ -60,14 +73,16 @@ function place(panel: HTMLElement, trigger: HTMLElement, align: FdyPopoverAlign 
 
 /**
  * Anchor a dropdown `panelRef` to `triggerRef` in the top layer while `open` is true. The panel
- * element must carry `popover="manual"`. `align` is a plain value, not an options object, so the
- * effect below can depend on it without a caller having to memoise anything.
+ * element must carry `popover="manual"`. `align` and `matchWidth` are plain values, not an options
+ * object, so the effect below can list them in its dependencies without a caller having to
+ * memoise anything. Omitting them means `'start'` and `true`.
  */
 export function usePopover(
   panelRef: RefObject<HTMLElement | null>,
   triggerRef: RefObject<HTMLElement | null>,
   open: boolean,
   align?: FdyPopoverAlign,
+  matchWidth?: boolean,
 ): void {
   useEffect((): void | (() => void) => {
     const panel: PopoverElement | null = panelRef.current as PopoverElement | null;
@@ -75,12 +90,12 @@ export function usePopover(
     if (!supported || panel === null || trigger === null) return;
 
     function reposition(): void {
-      if (panel !== null && trigger !== null && panel.matches(':popover-open')) place(panel, trigger, align);
+      if (panel !== null && trigger !== null && panel.matches(':popover-open')) place(panel, trigger, align, matchWidth);
     }
 
     if (open) {
       if (!panel.matches(':popover-open')) panel.showPopover();
-      place(panel, trigger, align);
+      place(panel, trigger, align, matchWidth);
       window.addEventListener('scroll', reposition, true);
       window.addEventListener('resize', reposition);
       return (): void => {
@@ -90,5 +105,5 @@ export function usePopover(
       };
     }
     return;
-  }, [open, panelRef, triggerRef, align]);
+  }, [open, panelRef, triggerRef, align, matchWidth]);
 }

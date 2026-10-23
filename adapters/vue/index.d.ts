@@ -34,6 +34,7 @@ export declare function usePopover(
   triggerRef: Ref<HTMLElement | null>,
   open: Ref<boolean>,
   align?: FdyPopoverAlign,
+  matchWidth?: boolean,
 ): void;
 
 export { default as FdyCombo } from './components/FdyCombo.vue';

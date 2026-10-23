@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>fixture: vanilla column filter inside a modal dialog</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- A data table inside a modal, which is an ordinary screen (pick a row, then confirm) and the
+       one place where WHERE the panel lives decides whether it works at all. `showModal()` makes
+       everything outside the dialog's subtree inert, and inert content cannot be clicked or
+       focused, so a filter panel parked on <body> opens, paints and then refuses every keystroke.
+       The dialog is big enough that the panel lands well inside it. -->
+  <dialog class="fdy-modal" id="dlg" style="width:900px;height:800px;max-height:none">
+    <div class="fdy-modal__body">
+      <div class="fdy-datatable" id="tbl" data-fdy-table>
+        <table class="fdy-table">
+          <thead><tr>
+            <th scope="col" data-fdy-filter="text">Name</th>
+            <th scope="col" data-fdy-filter="text">City</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Alpha</td><td>Jakarta</td></tr>
+            <tr><td>Beta</td><td>Bandung</td></tr>
+          </tbody>
+        </table>
+        <div class="fdy-table-footer"><span data-fdy-table-info></span></div>
+      </div>
+    </div>
+  </dialog>
+
+<script>
+  window.addEventListener('load', function () { document.getElementById('dlg').showModal(); });
+
+  /* Who holds focus once the panel is open, and whether the panel's own input will take it. The
+     enhancer focuses the first control itself, so the first number is the kit's own behaviour; the
+     second asks the same question again through a direct focus() call, because a silent no-op is
+     exactly what inert content gives you. */
+  window.__panelFocus = function () {
+    var panel = document.querySelector('.fdy-filter');
+    if (panel === null) return { missing: true };
+    var input = panel.querySelector('input');
+    var afterEnhancer = panel.contains(document.activeElement);
+    input.focus();
+    return {
+      missing: false,
+      topLayer: panel.matches(':popover-open'),
+      insideDialog: document.getElementById('dlg').contains(panel),
+      focusedByEnhancer: afterEnhancer,
+      focusableByHand: document.activeElement === input,
+      activeElement: document.activeElement === null ? null
+        : document.activeElement.tagName + '.' + (document.activeElement.className || ''),
+    };
+  };
+</script>
+</body>
+</html>

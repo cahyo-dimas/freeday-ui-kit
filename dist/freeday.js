@@ -4208,7 +4208,10 @@
  *
  * Column filters: mark a header `<th data-fdy-filter="text|enum|number">` and a funnel
  * button is injected; text filters by contains, enum by a value checklist, number by a
- * min/max range. All active column filters AND the global search must pass (logical AND).
+ * min/max range. All active column filters AND the global search must pass (logical AND). The
+ * panel is anchored to its funnel by freeday-popover.js, as in every other enhancer with a
+ * dropdown, so load that file too (dist/freeday.js already has it); without it the panel still
+ * opens, at whatever position its stylesheet leaves it.
  *
  * Bulk actions: an optional `[data-fdy-table-bulk]` bar (hidden by default) with a
  * `[data-fdy-table-bulk-count]` label and a `[data-fdy-table-bulk-clear]` button shows
@@ -4438,6 +4441,8 @@
     function closePopover(returnFocus) {
       if (!openPopover) return;
       var btn = openPopover._trigger;
+      // Out of the top layer first, which also drops the reposition listeners attach() added.
+      if (openPopover._pop) openPopover._pop.hide();
       openPopover.remove();
       openPopover = null;
       window.removeEventListener('scroll', closeOnScroll, true);
@@ -4559,11 +4564,29 @@
       foot.appendChild(reset); foot.appendChild(done);
       pop.appendChild(foot);
 
-      document.body.appendChild(pop);
+      /* Positioned by freeday-popover.js, like every other enhancer with a dropdown. This used to
+       * be a fourth copy of that arithmetic, and the copies had drifted: it kept an 8px margin
+       * where the kit's gap is 4, measured against window.innerWidth (which counts a classic
+       * scrollbar the layout no longer has, so the clamp parked the panel under it), aligned the
+       * left edges only, and never reached the top layer. The typed FdyTableFilter asks for
+       * `align:'end'`, so a funnel in the rightmost column opened differently depending on which
+       * path rendered the table, and the two paths are supposed to be interchangeable.
+       *   align 'end': the funnel is a 24px button in a column header and the panel is 14rem, so
+       * lining up their LEFT edges aims the panel at nothing anybody can see, and in the rightmost
+       * column it ran past the page. place() still clamps both sides, so the first column is safe.
+       *   matchWidth false: `.fdy-filter` asks the stylesheet for min-width:14rem, and a floor
+       * taken from a 24px funnel is an inline style that outranks it.
+       * The panel is a child of the <th>, where FdyTableFilter renders it, rather than of <body>.
+       * The top layer is what escapes an ancestor's overflow clip now, so the <body> trick has
+       * nothing left to do, and it cost something real: everything outside an open modal <dialog>
+       * is inert, so a filter panel on <body> painted a form that refused focus and every click
+       * for any table inside a modal. */
+      btn.parentNode.appendChild(pop);
       pop._trigger = btn;
-      var rect = btn.getBoundingClientRect();
-      pop.style.top = (rect.bottom + 4) + 'px';
-      pop.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - pop.offsetWidth - 8)) + 'px';
+      pop._pop = window.FreedayPopover
+        ? window.FreedayPopover.attach(pop, btn, { matchWidth: false, align: 'end' })
+        : null;
+      if (pop._pop) pop._pop.show();
       openPopover = pop;
       window.addEventListener('scroll', closeOnScroll, true);
       window.addEventListener('resize', closeOnScroll);

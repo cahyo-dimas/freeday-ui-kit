@@ -1446,6 +1446,21 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   labels, the timepicker's, the cascade's two defaults, the table's `Min`/`Maks` filter
   placeholders and the chart's `Seri 1` all sat outside it.
 
+**Where a filter panel opens, on both paths.** `.fdy-filter` is lifted into the top layer and
+anchored to its funnel by `freeday-popover.js` on the raw path and by `usePopover` on the typed one,
+so the raw path needs that file loaded beside `freeday-table.js` (`dist/freeday.js` has both). Four
+things follow, and the raw path moved to meet the typed one in 3.9.0 rather than the other way
+round. The panel's RIGHT edge lines up with the funnel's, because a 24px icon in a column header is
+no guide to where a 14rem form should hang, and the rightmost column is where that used to push the
+panel off the page; it is clamped to stay on screen either way, so the leftmost column slides right
+instead of hanging off. It sits 4px below the funnel, the kit's one gap, where the raw path used to
+keep 4px below and 8px from the viewport edge. It flips above the funnel when there is no room
+below, which the raw path never did. And it keeps the `min-width:14rem` the stylesheet asks for,
+which the typed path used to lose to an inline floor taken from the funnel's own 24px. The panel is
+a child of its own `<th>` on both paths: the top layer is what escapes a card's `overflow:hidden`
+now, and a panel parked on `<body>` is outside any open modal `<dialog>`, which makes it inert, so a
+filter in a table inside a modal painted a form that refused every click.
+
 **Testing note:** a column's filter button and the dialog it opens deliberately share one
 accessible name (`Filter <column>`), since a dialog named after its trigger is the normal pattern. In a
 Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
