@@ -1,4 +1,5 @@
-/* Browser regression specs: the typed footer's strings come from the app.
+/* Browser regression specs: the typed footer's strings come from the app, whether the app hands
+ * them to the footer or to the table that draws one.
  * Run via `npm run test:browser`; auto-skips without Chrome.
  *
  * The raw path has read `data-fdy-text-<key>` through `textOf()` since 1.39.0 and the typed path
@@ -85,4 +86,52 @@ test('Vue FdyTableFooter: the app gives it its strings, and English without them
 
 test('React FdyTableFooter: the app gives it its strings, and English without them', { skip }, async () => {
   await assertFooterStrings('react-table-footer-text.html');
+});
+
+/* The same six strings, asked of the table rather than of the footer. 3.8.0 gave `FdyTableFooter`
+ * the props and left the three tables rendering their own footer with none of them forwarded, so
+ * the hatch existed everywhere except on the component almost every screen actually uses. The
+ * fixtures mount a table, never a bare footer, so a prop declared on the table and forwarded
+ * nowhere passes typechecking and fails here. Same two halves: the given wording has to win, and a
+ * table given no strings has to still read English. */
+test('Vue FdyTable: its own footer says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertFooterStrings('vue-table-forward-text.html');
+});
+
+test('React FdyTable: its own footer says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertFooterStrings('react-table-forward-text.html');
+});
+
+/* The loading row, in the same file and for the same reason.
+ *
+ * It is not part of the footer band, so this file's name undersells what it now holds. Both halves
+ * assert one claim: a typed table's strings are reachable from the app, and still English when the
+ * app reaches none of them. The fixtures, the harness and the Chrome lookup are already here, and a
+ * spec of its own would also have to be named in `test:browser`, which lists its files one by one.
+ *
+ * Blazor has carried `LoadingText` all along, so a Blazor page in Indonesian translated its loading
+ * row while a Vue or React page beside it could not: the word sat in the template with no prop in
+ * front of it, and the table that could translate "No data" could not translate the row right
+ * beside it. Asserted in a browser, as above, because the claim is about the rendered cell; a prop
+ * that is declared and then forwarded nowhere passes typechecking and fails here.
+ */
+async function assertLoadingText(fixtureName) {
+  await withPage(fixture(fixtureName), async (p) => {
+    const mounted = await p.waitFor(`document.querySelectorAll('.fdy-table__state').length === 2`);
+    assert.ok(mounted, 'both loading tables must mount, otherwise the rest reads a missing element');
+
+    const read = async (scope) => await p.evalJS(
+      `document.querySelector('#${scope} tbody tr > td[role="status"]').textContent.trim()`);
+
+    assert.equal(await read('given'), 'Memuat…', "the app's own wording never reached the loading row");
+    assert.equal(await read('bare'), 'Loading…', 'a table given no loadingText lost its documented English');
+  });
+}
+
+test('Vue FdyTable: the loading row says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertLoadingText('vue-table-loading-text.html');
+});
+
+test('React FdyTable: the loading row says what the app told the table, and English otherwise', { skip }, async () => {
+  await assertLoadingText('react-table-loading-text.html');
 });

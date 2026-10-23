@@ -83,6 +83,13 @@ export interface FdyTableProps<Row extends object> {
    *  reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
   onPageIndexChange?: (index: number) => void;
   loading?: boolean;
+  /** The loading row's text, rendered by this table rather than by the footer. Default `Loading…`.
+   *  Blazor has carried `LoadingText` all along while the two script adapters wrote the word into
+   *  the template, so a table in any other language could translate its empty row and not the row
+   *  right beside it. Defaulted here, like `emptyText` and the four selection strings, and
+   *  unlike the six footer strings further down, which the footer defaults because the footer is
+   *  what renders them. */
+  loadingText?: string;
   emptyText?: string;
   ariaLabel?: string;
   /** Custom cell renderer; return undefined for a column to use the default text. */
@@ -128,6 +135,23 @@ export interface FdyTableProps<Row extends object> {
   bulkLabel?: string;
   /** Bulk-bar actions (React equivalent of Vue's `bulk-actions` slot). */
   bulkActions?: ReactNode;
+  /* The footer's six strings, forwarded to the `FdyTableFooter` this table draws itself. 3.8.0 gave
+   * the footer those props and this table passed none of them on, so the hatch reached every footer
+   * except the one almost every screen uses, and the documented way out was to switch the footer off
+   * and render it yourself: a door that opens only if you stop using the table. Flat props, with the
+   * footer's own names, so moving between the two routes moves a prop rather than reshaping it. */
+  /** Footer range line, `{from}` `{to}` `{total}` substituted. Default `Showing {from}–{to} of {total}`. */
+  infoText?: string;
+  /** Footer: the visible word beside the rows-per-page control, which also names it. Default `Rows`. */
+  pageSizeLabel?: string;
+  /** Footer: accessible name of the pager landmark. Default `Pagination`. */
+  paginationLabel?: string;
+  /** Footer: accessible name of the previous-page arrow. Default `Previous page`. */
+  prevLabel?: string;
+  /** Footer: accessible name of the next-page arrow. Default `Next page`. */
+  nextLabel?: string;
+  /** Footer: accessible name of a numbered page button. `{n}` substituted. Default `Go to page {n}`. */
+  pageLabel?: string;
 }
 
 export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Element {
@@ -419,7 +443,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
           <tbody>
             {props.loading ? (
               <tr>
-                <td colSpan={colCount} className="fdy-table__state" role="status">Loading…</td>
+                <td colSpan={colCount} className="fdy-table__state" role="status">{props.loadingText ?? 'Loading…'}</td>
               </tr>
             ) : displayRows.length === 0 ? (
               <tr>
@@ -469,8 +493,20 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
         </table>
       </div>
 
+      {/* The six strings are passed as given, `undefined` included: every default lives in the
+          footer, so an omitted prop here is the footer's English and not a second copy of it. */}
       {props.pager !== false && (
-        <FdyTableFooter page={footerPage} pageSizes={props.pageSizes} onPageChange={onFooterPage} />
+        <FdyTableFooter
+          page={footerPage}
+          pageSizes={props.pageSizes}
+          infoText={props.infoText}
+          pageSizeLabel={props.pageSizeLabel}
+          paginationLabel={props.paginationLabel}
+          prevLabel={props.prevLabel}
+          nextLabel={props.nextLabel}
+          pageLabel={props.pageLabel}
+          onPageChange={onFooterPage}
+        />
       )}
     </div>
   );

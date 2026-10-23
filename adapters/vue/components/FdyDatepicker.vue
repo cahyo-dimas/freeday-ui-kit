@@ -1,6 +1,31 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, type ComputedRef, type Ref } from 'vue';
 import { usePopover } from '../usePopover';
+/* The month and year grids, which `FdyMonthpicker` reads from the same module. They were written
+   here and moved out when the month picker arrived: a second copy of the bounds rule is a second
+   place to fix it, and this release spent three items on exactly that failure in the panel-position
+   logic (#079). What the two components do differently with the grid stays in each of them, which
+   is one branch: whether choosing a month commits or walks down into its days. */
+import {
+  YEARS_PER_PAGE,
+  addMonths,
+  monthCells as buildMonthCells,
+  monthDisabled,
+  monthFormatters,
+  monthKeyIntent,
+  pageLocale,
+  parseISOMonth,
+  startOfDay,
+  startOfMonth,
+  toISOMonth,
+  yearCells as buildYearCells,
+  yearKeyIntent,
+  yearPageStart,
+  yearRangeLabel,
+  type FdyMonthCell,
+  type FdyMonthFormatters,
+  type FdyYearCell,
+} from '../../core/month-grid.js';
 
 // A Vue-native binding over freeday's `.fdy-datepicker` / `.fdy-cal__*` classes
 // (see src/components/datepicker.css). freeday ships the styled trigger+popover
@@ -33,7 +58,15 @@ interface DayCell {
 const props = defineProps<{
   /** ISO `YYYY-MM-DD`, or `YYYY-MM` when `mode` is `'month'`. `''`/`null` for empty. */
   modelValue: string | null;
-  /** `'day'` (default) answers with a date. `'month'` opens on the month grid, stops there, and answers with `YYYY-MM`. */
+  /**
+   * `'day'` (default) answers with a date. `'month'` opens on the month grid, stops there, and
+   * answers with `YYYY-MM`.
+   *
+   * @deprecated Use `FdyMonthpicker` for a month. This prop makes `modelValue`, `min` and `max`
+   * carry two different formats while a *different* prop decides which, so the type cannot state
+   * what to store in them. `FdyMonthpicker` has one format per prop and no mode to read. Still
+   * works, unchanged, and removed in 4.0.
+   */
   mode?: FdyDatepickerMode;
   min?: string;
   max?: string;
@@ -77,9 +110,6 @@ function pad(n: number): string {
 function toISO(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
-function toISOMonth(d: Date): string {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-}
 function parseISO(s: string | null | undefined): Date | null {
   if (s === null || s === undefined || s === '') return null;
   const parts: string[] = s.split('-');
@@ -90,46 +120,12 @@ function parseISO(s: string | null | undefined): Date | null {
   const d: Date = new Date(y, m - 1, day);
   return Number.isNaN(d.getTime()) ? null : d;
 }
-/** Month mode reads BOTH shapes, and the dropped day is the point: a bound of `2026-03` lands on
- *  March 1st, which `isMonthDisabled` then compares a whole month against correctly at either end,
- *  so an app can pass the strings it already stores. A full date still works. */
-function parseISOMonth(s: string | null | undefined): Date | null {
-  if (s === null || s === undefined || s === '') return null;
-  const parts: string[] = s.split('-');
-  if (parts.length < 2) return null;
-  const y: number = Number(parts[0]);
-  const m: number = Number(parts[1]);
-  const day: number = parts.length > 2 ? Number(parts[2]) : 1;
-  const d: Date = new Date(y, m - 1, day);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-/* The page's own `lang`, which is what COMPONENTS.md has promised all along and what the vanilla
-   enhancer has always done. Handing `undefined` to Intl instead falls back to the BROWSER's
-   language, so an Indonesian reader saw Indonesian month names inside a kit that is English on
-   every other path, and an Indonesian PAGE read by an English browser got English ones. That is
-   the symptom this month mode was asked for, so the fallback has to be the page. */
-function pageLocale(): string {
-  if (typeof document === 'undefined') return 'en';
-  // `||`, not `??`: an empty `lang=""` is not null and Intl throws RangeError on it.
-  return document.documentElement.getAttribute('lang') || 'en';
-}
-function startOfDay(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function startOfMonth(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
 function sameDay(a: Date | null, b: Date | null): boolean {
   return a !== null && b !== null && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 function addDays(d: Date, n: number): Date {
   const x: Date = new Date(d);
   x.setDate(x.getDate() + n);
-  return x;
-}
-function addMonths(d: Date, n: number): Date {
-  const x: Date = new Date(d);
-  x.setMonth(x.getMonth() + n);
   return x;
 }
 
@@ -204,95 +200,30 @@ const level: Ref<CalendarLevel> = ref(startLevel());
 const focusMonth: Ref<number> = ref(0);
 const focusYear: Ref<number> = ref(0);
 
-/* A page of twelve years, ALIGNED so pages tile: 2016-2027, 2028-2039. Anchoring the page on the
-   year in view would make the arrows land on overlapping windows, and the same year would sit at a
-   different spot every time you stepped. */
-const YEARS_PER_PAGE = 12;
-const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
-
-const monthCellFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'short' }),
-);
-const monthNameFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'long', year: 'numeric' }),
+const formatters: ComputedRef<FdyMonthFormatters> = computed(
+  (): FdyMonthFormatters => monthFormatters(activeLocale.value),
 );
 
-interface MonthCell {
-  index: number;
-  label: string;
-  ariaLabel: string;
-  selected: boolean;
-  today: boolean;
-  disabled: boolean;
-  focusable: boolean;
-}
-
-/** A month is only unreachable when the WHOLE month falls outside min/max. Checked against the
- *  bounds directly, not by testing both ends with isDayDisabled: a range that sits INSIDE one month
- *  disables both ends while the middle is perfectly selectable. */
-function isMonthDisabled(year: number, month: number): boolean {
-  const first: Date = new Date(year, month, 1);
-  const last: Date = new Date(year, month + 1, 0);
-  if (minDate.value !== null && startOfDay(last).getTime() < startOfDay(minDate.value).getTime()) return true;
-  if (maxDate.value !== null && startOfDay(first).getTime() > startOfDay(maxDate.value).getTime()) return true;
-  return false;
-}
-
-const monthCells: ComputedRef<MonthCell[]> = computed((): MonthCell[] => {
-  const year: number = view.value.getFullYear();
-  const today: Date = new Date();
-  const sel: Date | null = selectedDate.value;
-  return Array.from({ length: 12 }, (_unused: unknown, index: number): MonthCell => {
-    const cellDate: Date = new Date(year, index, 1);
-    return {
-      index,
-      label: monthCellFmt.value.format(cellDate),
-      ariaLabel: monthNameFmt.value.format(cellDate),
-      selected: sel !== null && sel.getFullYear() === year && sel.getMonth() === index,
-      today: today.getFullYear() === year && today.getMonth() === index,
-      disabled: isMonthDisabled(year, index),
-      focusable: index === focusMonth.value,
-    };
-  });
-});
-
-interface YearCell {
-  year: number;
-  selected: boolean;
-  today: boolean;
-  disabled: boolean;
-  focusable: boolean;
-}
-
-/** A year is unreachable only when EVERY month in it falls outside min/max, the same rule
- *  isMonthDisabled applies one level down, and for the same reason. */
-function isYearDisabled(year: number): boolean {
-  if (minDate.value !== null && startOfDay(new Date(year, 11, 31)).getTime() < startOfDay(minDate.value).getTime()) return true;
-  if (maxDate.value !== null && startOfDay(new Date(year, 0, 1)).getTime() > startOfDay(maxDate.value).getTime()) return true;
-  return false;
-}
+const monthCells: ComputedRef<FdyMonthCell[]> = computed((): FdyMonthCell[] => buildMonthCells({
+  year: view.value.getFullYear(),
+  selected: selectedDate.value,
+  min: minDate.value,
+  max: maxDate.value,
+  focusMonth: focusMonth.value,
+  formatters: formatters.value,
+}));
 
 const yearPage: ComputedRef<number> = computed((): number => yearPageStart(focusYear.value));
 
-const yearCells: ComputedRef<YearCell[]> = computed((): YearCell[] => {
-  const start: number = yearPage.value;
-  const thisYear: number = new Date().getFullYear();
-  const sel: Date | null = selectedDate.value;
-  return Array.from({ length: YEARS_PER_PAGE }, (_unused: unknown, index: number): YearCell => {
-    const year: number = start + index;
-    return {
-      year,
-      selected: sel !== null && sel.getFullYear() === year,
-      today: thisYear === year,
-      disabled: isYearDisabled(year),
-      focusable: year === focusYear.value,
-    };
-  });
-});
+const yearCells: ComputedRef<FdyYearCell[]> = computed((): FdyYearCell[] => buildYearCells({
+  pageStart: yearPage.value,
+  selected: selectedDate.value,
+  min: minDate.value,
+  max: maxDate.value,
+  focusYear: focusYear.value,
+}));
 
-const yearRangeLabel: ComputedRef<string> = computed(
-  (): string => `${yearPage.value} – ${yearPage.value + YEARS_PER_PAGE - 1}`,
-);
+const yearRangeText: ComputedRef<string> = computed((): string => yearRangeLabel(yearPage.value));
 
 const monthFmt: ComputedRef<Intl.DateTimeFormat> = computed(
   (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'long', year: 'numeric' }),
@@ -312,7 +243,7 @@ const dowFmt: ComputedRef<Intl.DateTimeFormat> = computed(
    browser's language, this names it in the page's. */
 const displayValue: ComputedRef<string> = computed((): string => {
   if (selectedDate.value === null) return displayPlaceholder.value;
-  const fmt: Intl.DateTimeFormat = isMonthMode.value ? monthNameFmt.value : valueFmt.value;
+  const fmt: Intl.DateTimeFormat = isMonthMode.value ? formatters.value.name : valueFmt.value;
   return fmt.format(selectedDate.value);
 });
 
@@ -385,7 +316,7 @@ function chooseMonth(index: number): void {
 
 function pickMonth(index: number): void {
   const year: number = view.value.getFullYear();
-  if (isMonthDisabled(year, index)) return;
+  if (monthDisabled(year, index, minDate.value, maxDate.value)) return;
   const first: Date = new Date(year, index, 1);
   focusMonth.value = index;
   focusDate.value = first;
@@ -434,47 +365,29 @@ function moveYearFocus(year: number): void {
 }
 
 function onYearKeydown(e: KeyboardEvent): void {
-  let handled: boolean = true;
-  switch (e.key) {
-    case 'ArrowLeft': moveYearFocus(focusYear.value - 1); break;
-    case 'ArrowRight': moveYearFocus(focusYear.value + 1); break;
-    case 'ArrowUp': moveYearFocus(focusYear.value - 3); break;
-    case 'ArrowDown': moveYearFocus(focusYear.value + 3); break;
-    case 'Home': moveYearFocus(yearPageStart(focusYear.value)); break;
-    case 'End': moveYearFocus(yearPageStart(focusYear.value) + YEARS_PER_PAGE - 1); break;
-    case 'PageUp': moveYearFocus(focusYear.value - YEARS_PER_PAGE); break;
-    case 'PageDown': moveYearFocus(focusYear.value + YEARS_PER_PAGE); break;
-    case 'Enter':
-    case ' ': openYear(focusYear.value); break;
-    case 'Escape': closePanel(true); break;
-    default: handled = false;
-  }
-  if (handled) { e.preventDefault(); e.stopPropagation(); }
+  const intent = yearKeyIntent(e.key, focusYear.value);
+  if (intent.action === 'none') return;
+  e.preventDefault();
+  e.stopPropagation();
+  if (intent.action === 'focus') moveYearFocus(intent.year);
+  else if (intent.action === 'choose') openYear(intent.year);
+  else closePanel(true);
 }
 
+/** `index` is already 0-11: the wrap lives in `monthKeyIntent`, so it is applied in one place. */
 function moveMonthFocus(index: number, yearDelta: number): void {
   if (yearDelta !== 0) view.value = addMonths(view.value, yearDelta * 12);
-  focusMonth.value = (index + 12) % 12;
+  focusMonth.value = index;
   void nextTick((): void => focusMonthCell());
 }
 
 function onMonthKeydown(e: KeyboardEvent): void {
-  let handled: boolean = true;
-  switch (e.key) {
-    case 'ArrowLeft': moveMonthFocus(focusMonth.value - 1, 0); break;
-    case 'ArrowRight': moveMonthFocus(focusMonth.value + 1, 0); break;
-    case 'ArrowUp': moveMonthFocus(focusMonth.value - 3, 0); break;
-    case 'ArrowDown': moveMonthFocus(focusMonth.value + 3, 0); break;
-    case 'Home': moveMonthFocus(0, 0); break;
-    case 'End': moveMonthFocus(11, 0); break;
-    case 'PageUp': moveMonthFocus(focusMonth.value, -1); break;
-    case 'PageDown': moveMonthFocus(focusMonth.value, 1); break;
-    case 'Enter':
-    case ' ': chooseMonth(focusMonth.value); break;
-    case 'Escape': closePanel(true); break;
-    default: handled = false;
-  }
-  if (handled) e.preventDefault();
+  const intent = monthKeyIntent(e.key, focusMonth.value);
+  if (intent.action === 'none') return;
+  e.preventDefault();
+  if (intent.action === 'focus') moveMonthFocus(intent.index, intent.yearDelta);
+  else if (intent.action === 'choose') chooseMonth(intent.index);
+  else closePanel(true);
 }
 
 function pick(d: Date): void {
@@ -651,7 +564,7 @@ onBeforeUnmount((): void => {
           :aria-label="level === 'years' ? prevYearsLabelText : level === 'months' ? prevYearLabelText : prevMonthLabelText"
           @click="
             level === 'years'
-              ? moveYearFocus(focusYear - 12)
+              ? moveYearFocus(focusYear - YEARS_PER_PAGE)
               : level === 'months'
                 ? moveMonthFocus(focusMonth, -1)
                 : (view = addMonths(view, -1))
@@ -663,14 +576,14 @@ onBeforeUnmount((): void => {
           class="fdy-cal__title"
           :aria-label="level === 'years' ? undefined : level === 'months' ? chooseYearLabelText : chooseMonthLabelText"
           @click="level === 'months' ? openYearGrid() : openMonthGrid()"
-        >{{ level === 'years' ? yearRangeLabel : level === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
+        >{{ level === 'years' ? yearRangeText : level === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
         <button
           type="button"
           class="fdy-cal__nav"
           :aria-label="level === 'years' ? nextYearsLabelText : level === 'months' ? nextYearLabelText : nextMonthLabelText"
           @click="
             level === 'years'
-              ? moveYearFocus(focusYear + 12)
+              ? moveYearFocus(focusYear + YEARS_PER_PAGE)
               : level === 'months'
                 ? moveMonthFocus(focusMonth, 1)
                 : (view = addMonths(view, 1))

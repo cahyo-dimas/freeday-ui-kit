@@ -2,6 +2,7 @@ export { useFreeday } from './useFreeday.js';
 export { usePopover } from './usePopover.ts';
 export { default as FdyCombo } from './components/FdyCombo.vue';
 export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
+export { default as FdyMonthpicker } from './components/FdyMonthpicker.vue';
 export { default as FdyDateRange } from './components/FdyDateRange.vue';
 export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';
 export { default as FdyCascade } from './components/FdyCascade.vue';

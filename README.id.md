@@ -44,9 +44,9 @@ enhancer:
 | **Blazor (net8.0)** | RCL `Freeday.Blazor` | `@bind-Value` |
 | HTML statis · Svelte · template server-rendered | *(tanpa wrapper)* markup mentah + enhancer, di bawah | event `fdy-*` |
 
-Kesebelasnya: `FdyCombo` · `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` ·
-`FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`. Menulis markup mentah
-untuk kesebelas ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja pada mulanya, karena render
+Kedua belasnya: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` ·
+`FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` ·
+`FdyAppShell`. Menulis markup mentah untuk kedua belas ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja pada mulanya, karena render
 pertamanya memang benar. Setelah itu ia rusak diam-diam: DOM yang di-render framework belakangan tak pernah ter-hydrate, dan state widget
 berakhir di DOM alih-alih di state framework-mu. Selebihnya (button, card, badge, alert, markup
 tabel, layout, dan komponen interaktif yang tak punya wrapper) sama persis di semua stack. Untuk

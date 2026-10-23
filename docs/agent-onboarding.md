@@ -33,9 +33,9 @@ and the code looks correct and fails later.**
 | Blazor (net8.0) | `@using Freeday.Blazor` (RCL) | `@bind-Value` |
 | Static HTML, Svelte, server-rendered templates… | no wrapper: raw markup + the enhancer script | `fdy-*` DOM events |
 
-The eleven: **FdyCombo · FdyDatepicker · FdyDateRange · FdyAutocomplete · FdyCascade · FdyCfl ·
-FdyChart · FdyTable · FdyModal · FdyDrawer · FdyAppShell**. In Vue/React/Blazor, **never hand-write the raw
-markup + enhancer for these eleven.** The raw path *appears* to work: the enhancer auto-initialises
+The twelve: **FdyCombo · FdyDatepicker · FdyMonthpicker · FdyDateRange · FdyAutocomplete ·
+FdyCascade · FdyCfl · FdyChart · FdyTable · FdyModal · FdyDrawer · FdyAppShell**. In
+Vue/React/Blazor, **never hand-write the raw markup + enhancer for these twelve.** The raw path *appears* to work: the enhancer auto-initialises
 once on `DOMContentLoaded` and the first render is correct. Then it fails quietly: DOM your framework
 renders later is never hydrated, and the widget's state lives in the DOM instead of in your
 framework's state.

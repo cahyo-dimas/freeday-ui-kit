@@ -153,8 +153,9 @@ function Panel(): JSX.Element {
 }
 ```
 > **Controlled alternative (parity with Vue's `v-model`):** `@cahyo-dimas/freeday/react` also exports
-> the typed components `FdyCombo` / `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` /
-> `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer` / `FdyAppShell`, with plain
+> the typed components `FdyCombo` / `FdyDatepicker` / `FdyMonthpicker` / `FdyDateRange` /
+> `FdyAutocomplete` / `FdyCascade` / `FdyCfl` / `FdyChart` / `FdyTable` / `FdyModal` / `FdyDrawer` /
+> `FdyAppShell`, with plain
 > `value`/`onChange` (props in, events out), no `data-fdy-*` + manual event listener:
 > ```tsx
 > import { FdyCombo } from '@cahyo-dimas/freeday/react';
@@ -199,8 +200,8 @@ document.addEventListener('fdy-form-invalid', (e) =>
 
 > **Native components (parity with Vue's `v-model` / React's `value`/`onChange`):** the
 > **`Freeday.Blazor`** RCL (net8.0, `adapters/blazor/`) ships the typed components `FdyCombo<TValue>` /
-> `FdyDatepicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` / `FdyCfl<TRow>` / `FdyChart` /
-> `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` / `FdyAppShell` with `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
+> `FdyDatepicker` / `FdyMonthpicker` / `FdyDateRange` / `FdyAutocomplete` / `FdyCascade` /
+> `FdyCfl<TRow>` / `FdyChart` / `FdyTable<TRow>` / `FdyModal` / `FdyDrawer` / `FdyAppShell` with `@bind`, no `@ref` / manual `initAll` / `[JSInvokable]`:
 > ```razor
 > @using Freeday.Blazor
 > <FdyCombo TValue="string" @bind-Value="_status" Options="_statusOptions" AriaLabelledby="lbl-status" />
@@ -327,9 +328,26 @@ Use the `app-` prefix for its classes, and reuse the kit's plumbing rather than 
 ```ts
 import { usePopover } from '@cahyo-dimas/freeday/vue';   // or '/react'
 usePopover(panelRef, triggerRef, open);                  // panel needs popover="manual"
+usePopover(panelRef, triggerRef, open, 'end');           // right edges together, for a panel
+                                                         // wider than a trigger in a gutter
+usePopover(panelRef, triggerRef, open, 'end', false);    // and let the panel keep its own width
 ```
 
 This is what every kit dropdown uses to escape an ancestor's overflow clip, because `.fdy-card` is
 `overflow:hidden`, so a panel positioned inside one is otherwise cut at the card's edge. It is
 exported so a control you build behaves like one the kit ships, and improves when the kit's
 positioning does.
+
+The fourth argument is the alignment, `'start'` (the default, left edges together) or `'end'`
+(right edges together). Reach for `'end'` when the panel is much wider than its trigger and the
+trigger sits near the right of something, an icon in a page gutter or a funnel in a table
+header. The panel is kept inside the viewport on both sides either way, so `'end'` beside the
+left edge slides right rather than off the screen.
+
+The fifth is `matchWidth`, and it defaults to `true`: the panel is floored to its trigger's width,
+which is what makes a listbox look like part of the control it drops out of. Pass `false` when your
+panel has a width of its own in CSS, because the floor is written as an inline style and an inline
+style outranks your rule. The kit's own funnel panel is the case that needs it, a 14rem form hanging
+off a 24px icon; `FdyTableFilter` passes `false` and the nine other typed dropdowns pass nothing.
+Both arguments are plain values rather than an options object, so the React port can list them among
+an effect's dependencies and you never have to memoise anything.

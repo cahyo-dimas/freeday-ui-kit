@@ -34,9 +34,9 @@ live docs.
    invalid state does not belong to the control itself.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
-7. **On Vue, React or Blazor, eleven components have a typed wrapper. Use it.** `FdyCombo` ·
-   `FdyDatepicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` ·
-   `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
+7. **On Vue, React or Blazor, twelve components have a typed wrapper. Use it.** `FdyCombo` ·
+   `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` ·
+   `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
    `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
    those stacks *looks* right at first, because the enhancer initialises once and the first render is
     correct. Then
@@ -955,7 +955,7 @@ a new class.
 |---|---|---|
 | `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `YYYY-MM` under `mode="month"`. `''`/`null` for empty. |
 | `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
-| `mode?` | `'day' \| 'month'` | `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`; the raw path takes `data-mode="month"`. |
+| `mode?` | `'day' \| 'month'` | **Deprecated, use `<FdyMonthpicker>`.** `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`. Still works, unchanged; removed in 4.0. See below for why, and for the raw path, which keeps `data-mode="month"`. |
 | `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. Month mode also accepts `YYYY-MM`, and a bound inside a month leaves that month pickable. |
 | `locale?` | `string` | BCP-47 tag deciding month and weekday names. Defaults to the page's `<html lang>`, then `en`. |
 | `placeholder?` | `string` | |
@@ -980,6 +980,33 @@ invalid })`.
 Blazor carries the same surface bar four: `locale` (the enhancer formats through `Intl` from the
 page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear button), and
 `ariaLabelledby` (the trigger it builds is named by `Label`).
+
+### Props — `<FdyMonthpicker>`
+
+> Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). It renders the same trigger
+> and panel as the date picker, over the same classes, and shares its month and year grids.
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string \| null` | The chosen month, ISO `YYYY-MM`. `''`/`null` for empty. One format, always: nothing on this component can change it. |
+| `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
+| `min?` · `max?` | `string` | ISO `YYYY-MM` bounds (a full `YYYY-MM-DD` is read too, as its own month). A bound that falls inside a month leaves that month pickable. |
+| `locale?` | `string` | BCP-47 tag deciding the month names. Defaults to the page's `<html lang>`, then `en`. |
+| `placeholder?` | `string` | Shown while nothing is picked. Default `Select month`. |
+| `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its month, but it cannot be opened, cleared or changed. |
+| `clearable?` | `boolean` | Show a × in the trigger once a month is set, so an optional month can be unset. Sends `''`. Off by default. |
+| `clearLabel?` | `string` | Accessible name for that ×. Default `Clear month`. |
+| `prevYearLabel?` · `nextYearLabel?` | `string` | The arrows beside the month grid, which step a year. Defaults `Previous year` / `Next year`. |
+| `chooseYearLabel?` | `string` | The title button that drills into the year grid. Default `Choose year`. |
+| `prevYearsLabel?` · `nextYearsLabel?` | `string` | Page arrows, shown in the year grid. Defaults `Previous years` / `Next years`. |
+
+There is no `prevMonthLabel` or `nextMonthLabel` here. The arrows sit beside a month grid, so they
+step a year, and the day grid they would have belonged to does not exist on this component. Blazor
+carries the same surface bar three: `locale` (the enhancer formats through `Intl` from the page's
+`<html lang>`), `clearable` and `clearLabel` (that path builds no clear button) and
+`ariaLabelledby` (the trigger it builds is named by `Label`). It adds `BackToMonthsLabel`, the year
+grid's own title.
 
 ### Props — `<FdyDateRange>`
 
@@ -1025,23 +1052,36 @@ months, `Home`/`End` January/December, `PageUp`/`PageDown` a year, `Enter`/`Spac
 year grid likewise: arrows ±1/±3 years, `Home`/`End` the ends of the page, `PageUp`/`PageDown` a
 page of twelve.
 
-**Picking a month, not a day.** `mode="month"` (`data-mode="month"` on the raw path,
-`Mode="FdyDatepickerMode.Month"` in Blazor) makes the month grid the destination instead of a
-waypoint: the panel opens on it, a click or `Enter` commits from it, the day grid is never built,
-and the value is `YYYY-MM`. The title still steps up to the year grid and back, because that is
-navigation and not an answer.
+**Picking a month, not a day.** `<FdyMonthpicker>` answers with `YYYY-MM`. The panel opens on the
+12-cell month grid, a click or `Enter` commits from it, and there is no day grid to fall into. The
+title still steps up to the year grid and back down, because a year is navigation and never an
+answer. On the raw path the same thing is `data-mode="month"` on a `data-fdy-datepicker` div.
 
 This exists because `<input type="month">` names the month in the **browser's** language, which an
 Indonesian page read on an English phone cannot override. The month cells, the cell's accessible
 name and the value in the trigger all go through `Intl` with the page's `<html lang>`, the same
 route the day grid's month names have always taken, so `lang="id"` reads `Oktober 2026` with nothing
-configured. Keyboard in the month grid is unchanged: arrows move one and three months, `Home`/`End`
-jump to January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` now answers
-rather than drilling. The cell keeps its name when it becomes selected and carries the state in
-`aria-selected`, as the day cells do.
+configured. Keyboard in the month grid: arrows move one and three months, `Home`/`End` jump to
+January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` commits. The cell keeps
+its name when it becomes selected and carries the state in `aria-selected`, as the day cells do.
 
-Nothing changes without the prop. A picker with no `mode` is the day picker it has always been,
-down to the `YYYY-MM-DD` it reports.
+**`mode="month"` on `<FdyDatepicker>` is deprecated, and still works.** It shipped in 3.8.0 and
+behaves exactly as it did, so nothing has to move today; it goes in 4.0. The type was the defect.
+That prop left `modelValue` / `value`, `min` and `max` each carrying `YYYY-MM-DD` or `YYYY-MM` while
+a *different* prop decided which, and a union discriminated by a sibling prop is a shape neither
+`defineProps<{...}>` nor an exported `FdyDatepickerProps` can hold. A separate component states it
+in one line per prop. A consumer's editor says so as well: `mode` is marked `@deprecated` in both
+adapters, and `Mode` together with `FdyDatepickerMode.Month` carries `[Obsolete]` in Blazor, each
+naming `FdyMonthpicker`.
+
+**The raw path keeps `data-mode="month"`, and it is not deprecated.** `data-mode` is a string
+attribute with no type to be wrong about: a reader of the markup sees `data-mode` and `data-value`
+side by side and can tell what the value holds. The typed signatures were what could not say it, so
+the retirement is theirs. Shipping a second attribute would leave two spellings of one feature on
+the one path that never had the problem.
+
+Nothing changes without either of them. A picker with no `mode` and no `data-mode` is the day picker
+it has always been, down to the `YYYY-MM-DD` it reports.
 
 - Attributes: `data-value="YYYY-MM-DD"`, `data-mode="month"`, `data-placeholder`, `data-label`,
   `data-fdy-no-icon`
@@ -1054,6 +1094,7 @@ down to the `YYYY-MM-DD` it reports.
 
 <div class="fdy-field">
   <span class="fdy-label">Reporting month</span>
+  <!-- Typed stacks: <FdyMonthpicker>, see its props above. -->
   <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
 </div>
 
@@ -1235,7 +1276,16 @@ over the connector line, so omitting `__btn` cannot make the connector draw thro
 ## Table — `.fdy-table`
 Semantic static table. Wrap in `.fdy-table-wrap` (bordered surface) or `.fdy-table-scroll`
 (horizontal scroll). Always a `<caption>` (use `.fdy-visually-hidden` if it shouldn't show) and
-`<th scope="col">`. Numeric cells get `.fdy-table__num` (right-aligned, tabular).
+`<th scope="col">`. Numeric body cells get `.fdy-table__num` (right-aligned, tabular figures, data
+font).
+
+**`.fdy-table__num` aligns a `<td>`, not a `<th>`.** The class is specificity `(0,1,0)` and
+`.fdy-table th` is `(0,2,0)`, so on a header cell the data font and the tabular figures arrive but
+`text-align:left` from the header rule wins: the label stays left while the numbers under it go
+right. Put the class on the header anyway for the font, then add `style="text-align:right"` to move
+the label with them. That inline value is exactly what the typed `FdyTable` writes for a column with
+`align: 'right'`, and it is the only thing no ancestor rule can outrank. The class is deliberately
+left at its own weight: raising it would shift every numeric heading already shipped.
 
 **`--striped`** zebras the even body rows. The tint is deliberately *half* a surface step, not the
 full one hover uses, so hover still reads on a striped row instead of matching it — and stripe,
@@ -1256,7 +1306,7 @@ for 4.0.
 <div class="fdy-table-wrap">
   <table class="fdy-table">
     <caption>Recent invoices</caption>
-    <thead><tr><th scope="col">Invoice</th><th scope="col" class="fdy-table__num">Amount</th></tr></thead>
+    <thead><tr><th scope="col">Invoice</th><th scope="col" class="fdy-table__num" style="text-align:right">Amount</th></tr></thead>
     <tbody>
       <tr><td>INV-1042</td><td class="fdy-table__num">1,240,000</td></tr>
     </tbody>
@@ -1288,7 +1338,7 @@ sum, so measure them once after render (and on resize) and set the variable.
     <caption class="fdy-visually-hidden">Exchange rates, August 2026</caption>
     <thead><tr>
       <th scope="col" class="fdy-table__freeze fdy-table__freeze--edge">Date</th>
-      <th scope="col" class="fdy-table__num">USD</th>
+      <th scope="col" class="fdy-table__num" style="text-align:right">USD</th>
     </tr></thead>
     <tbody>
       <tr>
@@ -1317,7 +1367,7 @@ the two ever disagree.
 | `label` | `string` | Header label. |
 | `labelHidden` | `boolean` | Render the label for assistive tech only; the header cell looks empty. |
 | `sortable` | `boolean` | Show a sort toggle in the header. |
-| `filter` | `'text' \| 'enum' \| 'number' \| 'date'` | Offer a column filter of this type (the funnel popover). |
+| `filter` | `'text' \| 'enum' \| 'number' \| 'date'` | Offer a column filter of this type (the funnel popover). The panel is several times wider than the funnel, so it hangs from the funnel's RIGHT edge and the rightmost column keeps the page's gutter; near the left edge of a narrow screen it slides right instead of off it. |
 | `align` | `'left' \| 'right' \| 'center'` | Cell alignment. Default `left`. |
 | `mono` | `boolean` | Render cells in the monospace data font (`.fdy-mono`). |
 | `sortType` | `'text' \| 'number' \| 'date'` | Override the comparator; defaults to one derived from `filter`, else `text`. |
@@ -1358,7 +1408,7 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `pageIndex?` · `onPageIndexChange?` | `number` · `(index) => void` | Client mode: own the 0-based index while the table keeps filtering, sorting and paginating — this is what lets one external pager drive both a table and a card list. |
 | `pageSizes?` · `onPageSizeChange?` | `readonly number[]` · `(size) => void` | Offer a rows-per-page control. Server mode reports the pick through the page event (read its `size`); client mode applies it itself and reports it too, so it works with nothing wired. |
 | `pager?` | `boolean` | Default true. Turn it off to withhold the table's own footer when the screen renders one. |
-| `loading?` | `boolean` | Show the in-table loading state. |
+| `loading?` · `loadingText?` | `boolean` · `string` | Show the in-table loading row, and the word in it. Default `Loading…`, the same name and the same default as Blazor's `LoadingText`, so a screen in another language translates the loading row the way it already translates the empty one instead of finding that only one of the two neighbouring states has a prop. |
 | `emptyText?` · `empty?` | `string` · `ReactNode \| (ctx) => ReactNode` | The empty state as text, or as markup (React `empty`, Vue's `empty` slot). As a React function or through the Vue slot's props it receives `{ filtered, clearFilters }`: whether an active column filter is what emptied the table, and how to clear every filter (through `onFiltersChange` / `update:filters` when they are controlled). "No rows match" wants a Clear button, "nothing here yet" a Create one. |
 | `ariaLabel?` | `string` | Names the table for assistive tech. |
 | `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
@@ -1371,14 +1421,16 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `bulkActions?` | `ReactNode` | React. Content in the bulk bar beside the count; Vue uses the `bulk-actions` slot (scoped: `keys`, `clear`), Blazor `BulkContent`. |
 | `selectedText?` · `clearSelectionText?` | `string` | Bulk-bar copy. Defaults `{n} selected` (with `{n}` substituted) and `Clear`. |
 | `selectAllLabel?` · `selectRowLabel?` · `bulkLabel?` | `string` | Accessible names for the header checkbox, each row checkbox, and the bulk-bar region. Defaults `Select all rows on this page`, `Select row`, `Bulk actions`. |
+| `infoText?` · `pageSizeLabel?` | `string` | The footer this table draws itself: its range line (`{from}`, `{to}`, `{total}` substituted, every occurrence) and the visible word beside its rows-per-page control. Same names, same substitution and the same English defaults as `<FdyTableFooter>` below, `Showing {from}–{to} of {total}` and `Rows`, so a screen that moves between the table's footer and its own moves a prop instead of rewriting it. |
+| `paginationLabel?` · `prevLabel?` · `nextLabel?` · `pageLabel?` | `string` | The accessible names inside that footer: the pager landmark, both arrows, and a numbered page button (`{n}` substituted). Defaults `Pagination`, `Previous page`, `Next page`, `Go to page {n}`. |
 | `renderCell?` | `(column, row, value) => ReactNode` | React. Custom cell rendering; Vue uses the `cell` slot. |
 | `toolbar?` | `ReactNode` | React. Content above the table; Vue uses the `toolbar` slot. |
 | `onProcess?` | `(result: { rows, total }) => void` | React. The processed page after filter/sort/paginate, in **both** modes. Vue emits `process`, Blazor calls it `Process`. Render the same set elsewhere — a card list, a summary, a CSV export — without re-deriving the pipeline. |
 
-Blazor matches this surface (`LoadingText` and `EmptyContent` in place of `emptyText`/`empty`,
-`Toolbar` and `RowDetail` as `RenderFragment`s) and is the one adapter that also exposes
-`FiltersChanged`. Its filter-aware empty state is `EmptyTemplate`, a
-`RenderFragment<FdyTableEmptyContext>` (`Filtered`, `ClearFilters`) that wins over `EmptyContent`.
+Blazor matches this surface (`EmptyContent` in place of `empty`, `Toolbar` and `RowDetail` as
+`RenderFragment`s) and is the one adapter that also exposes `FiltersChanged`. Its filter-aware
+empty state is `EmptyTemplate`, a `RenderFragment<FdyTableEmptyContext>` (`Filtered`,
+`ClearFilters`) that wins over `EmptyContent`.
 
 **Select-all ticks the current page, not the whole result set.** A header checkbox that silently
 selects rows the reader cannot see is how a bulk delete goes wrong, so it acts on the rows on
@@ -1444,6 +1496,21 @@ pagination. Needs `freeday-table.js`. Wrap the whole thing in `.fdy-datatable` +
   labels, the timepicker's, the cascade's two defaults, the table's `Min`/`Maks` filter
   placeholders and the chart's `Seri 1` all sat outside it.
 
+**Where a filter panel opens, on both paths.** `.fdy-filter` is lifted into the top layer and
+anchored to its funnel by `freeday-popover.js` on the raw path and by `usePopover` on the typed one,
+so the raw path needs that file loaded beside `freeday-table.js` (`dist/freeday.js` has both). Four
+things follow, and the raw path moved to meet the typed one in 3.9.0 rather than the other way
+round. The panel's RIGHT edge lines up with the funnel's, because a 24px icon in a column header is
+no guide to where a 14rem form should hang, and the rightmost column is where that used to push the
+panel off the page; it is clamped to stay on screen either way, so the leftmost column slides right
+instead of hanging off. It sits 4px below the funnel, the kit's one gap, where the raw path used to
+keep 4px below and 8px from the viewport edge. It flips above the funnel when there is no room
+below, which the raw path never did. And it keeps the `min-width:14rem` the stylesheet asks for,
+which the typed path used to lose to an inline floor taken from the funnel's own 24px. The panel is
+a child of its own `<th>` on both paths: the top layer is what escapes a card's `overflow:hidden`
+now, and a panel parked on `<body>` is outside any open modal `<dialog>`, which makes it inert, so a
+filter in a table inside a modal painted a form that refused every click.
+
 **Testing note:** a column's filter button and the dialog it opens deliberately share one
 accessible name (`Filter <column>`), since a dialog named after its trigger is the normal pattern. In a
 Playwright/Testing-Library suite that means `getByLabel('Filter Name')` resolves to two elements;
@@ -1494,10 +1561,14 @@ that markup is the app's own: the word beside the rows-per-page control, the pag
 and the name of a numbered page button. It is `pageSizeLabel` and not `rows`, since the enhancer's
 `rows` key is the table's `{n} rows` count, a different string.
 
-Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` draws its
-own footer and does not pass these through, so a table that owns its footer still reads English; a
-screen that needs its own wording takes the footer over with `pager={false}` and renders
-`<FdyTableFooter>` beside it, which is the same route a responsive list already takes.
+Omit a prop and you get the English above, so nothing already shipped moves. `FdyTable` takes all
+six under the same names and hands them to the footer it draws itself, so a table keeps its own
+footer and still speaks the app's language. For one version it did not, and the only way out was to
+switch the footer off: a hatch that opened only if you stopped using the table.
+
+`pager={false}` plus your own `<FdyTableFooter>` is still the route for a **responsive** list, where
+one band has to serve a table at `lg` and a card list below it, and that is now the only reason to
+reach for it. Wording alone is not one.
 
 **Who draws the pager.** The table renders its own footer (range + pager) whenever there is more
 than one page. Two ways to take it over:
@@ -2156,6 +2227,18 @@ Inline status pill: `--success` `--warning` `--danger` `--info` `--outline`. Nev
 the rest, so two states a workflow distinguishes never share a look. Map each status to a FIXED
 tone, never to a hash of the string: a status is a closed set, and a hash reassigns colours the
 moment the set grows.
+
+**Neutral status takes `--outline`.** A badge with no modifier is the page's accent: primary ink
+on a primary tint, the same pair the primary button wears, so a status that means nothing in
+particular ("Not scheduled", "Holiday", "Read 0 of 3") ends up looking like something to click.
+`--outline` is the neutral one: no fill, a `--color-border-strong` edge, and `--color-text-muted`
+ink at 7.46:1 on the light surface, 7.28:1 on the dark one.
+
+There is no filled neutral on purpose. The only neutral fill the token set offers is one surface
+step, `--color-surface-2`, and a status pill sits either on `--color-surface` or on the app ground,
+which is `--color-surface-2` itself, so the pill's body would land between 1.00:1 and 1.10:1
+against what is behind it: a badge whose shape you cannot see. The semantic fills live at 1.03:1 to
+1.44:1 and read clearly anyway because they carry hue, and a neutral has no hue to carry.
 
 **Notification badge is the overlay variant**, not a separate component: wrap anything in
 `.fdy-badge-wrap` and add `.fdy-badge-ov` (`--primary` `--danger` `--accent` `--info` `--success`

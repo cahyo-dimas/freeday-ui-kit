@@ -28,7 +28,19 @@ const triggerEl: Ref<HTMLButtonElement | null> = ref(null);
 const panelEl: Ref<HTMLDivElement | null> = ref(null);
 const open: Ref<boolean> = ref(false);
 
-usePopover(panelEl, triggerEl, open);
+/* Always end-aligned, and not an option the parent can set: the funnel is a 24px button in a
+   column header while the panel runs past 200px, so lining up their LEFT edges aligns the panel
+   with nothing anybody can see. In the rightmost column, the one this was reported from, the panel
+   ran past the page and the viewport clamp parked it 4px off the screen edge. A prop no caller
+   would ever set to 'start' is a prop that should not exist. The clamp still catches the leftmost
+   column, where an end-aligned panel would hang off the other edge.
+   `matchWidth:false` for the other half of the same thought. Every other typed dropdown wants a
+   panel at least as wide as the control it hangs off; this one hangs off a 24px icon, and that
+   floor is written inline, where it outranks the `min-width:14rem` `.fdy-filter` asks for: the
+   panel measured 224px on the raw path and 206 here, and an enum column with short labels would
+   have gone narrower still. The choice sits in this component rather than in the hook, because a
+   hook that guessed it from the trigger's size would be guessing for the other nine callers too. */
+usePopover(panelEl, triggerEl, open, 'end', false);
 
 const active: ComputedRef<boolean> = computed((): boolean => isFilterActive(props.filter));
 

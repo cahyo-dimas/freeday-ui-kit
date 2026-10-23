@@ -14,7 +14,10 @@
  *
  * Column filters: mark a header `<th data-fdy-filter="text|enum|number">` and a funnel
  * button is injected; text filters by contains, enum by a value checklist, number by a
- * min/max range. All active column filters AND the global search must pass (logical AND).
+ * min/max range. All active column filters AND the global search must pass (logical AND). The
+ * panel is anchored to its funnel by freeday-popover.js, as in every other enhancer with a
+ * dropdown, so load that file too (dist/freeday.js already has it); without it the panel still
+ * opens, at whatever position its stylesheet leaves it.
  *
  * Bulk actions: an optional `[data-fdy-table-bulk]` bar (hidden by default) with a
  * `[data-fdy-table-bulk-count]` label and a `[data-fdy-table-bulk-clear]` button shows
@@ -244,6 +247,8 @@
     function closePopover(returnFocus) {
       if (!openPopover) return;
       var btn = openPopover._trigger;
+      // Out of the top layer first, which also drops the reposition listeners attach() added.
+      if (openPopover._pop) openPopover._pop.hide();
       openPopover.remove();
       openPopover = null;
       window.removeEventListener('scroll', closeOnScroll, true);
@@ -365,11 +370,65 @@
       foot.appendChild(reset); foot.appendChild(done);
       pop.appendChild(foot);
 
-      document.body.appendChild(pop);
+      /* Positioned by freeday-popover.js, like every other enhancer with a dropdown. This used to
+       * be a fourth copy of that arithmetic, and the copies had drifted: it kept an 8px margin
+       * where the kit's gap is 4, measured against window.innerWidth (which counts a classic
+       * scrollbar the layout no longer has, so the clamp parked the panel under it), aligned the
+       * left edges only, and never reached the top layer. The typed FdyTableFilter asks for
+       * `align:'end'`, so a funnel in the rightmost column opened differently depending on which
+       * path rendered the table, and the two paths are supposed to be interchangeable.
+       *   align 'end': the funnel is a 24px button in a column header and the panel is 14rem, so
+       * lining up their LEFT edges aims the panel at nothing anybody can see, and in the rightmost
+       * column it ran past the page. place() still clamps both sides, so the first column is safe.
+       *   matchWidth false: `.fdy-filter` asks the stylesheet for min-width:14rem, and a floor
+       * taken from a 24px funnel is an inline style that outranks it.
+       * In the top layer the panel is a child of the <th>, where FdyTableFilter renders it, rather
+       * than of <body>. The top layer is what escapes an ancestor's overflow clip now, so the
+       * <body> trick has nothing left to do, and it cost something real: everything outside an open
+       * modal <dialog> is inert, so a filter panel on <body> painted a form that refused focus and
+       * every click for any table inside a modal. */
+      /* WHERE it comes to rest depends on whether the top layer is available, and the degraded path
+       * is not an edge case: `supported` is read once when freeday-popover.js loads, the Popover API
+       * landed in Chrome 114 / Safari 17 / Firefox 125, and the README promises Chrome 105 /
+       * Safari 15.4 / Firefox 121. Chrome 105..113, Safari 15.4 and 16, and Firefox 121..124 are all
+       * inside what the kit supports and all of them come through here.
+       *
+       * In the top layer the parent decides nothing about paint order, so the panel stays in the
+       * <th> and the modal fix above holds. Without it the <th> is a CAGE:
+       * `.fdy-table--sticky-head thead th` is `position:sticky; z-index:2`, and a positioned box
+       * with a z-index is a stacking context, so the panel's own 130 is sorted inside that 2 and
+       * every page overlay from 3 up paints over it. Measured on a phone: 224x49px of the panel,
+       * its Reset and Close buttons, under `.fdy-bottomnav`'s z-index 50, and the hit test at that
+       * point returned the bar. Raising the 130 cannot reach it, a number raised inside a stacking
+       * context never leaves that context; and the context has to exist, the 2 is what keeps a
+       * sticky header above the z-index:1 frozen body cells scrolling under it. So the panel is what
+       * moves.
+       *
+       * It moves to `root`, the element that carries `data-fdy-table`, and not to <body>. `root` is
+       * documented as `.fdy-datatable`: no position, no z-index, no transform, so no stacking
+       * context and no containing block for a fixed box, which is all the panel needs. And it is
+       * INSIDE whatever dialog the table is in, so the inert fault that sent the panel here in the
+       * first place cannot come back, with no `closest('dialog')` special case to get wrong.
+       *
+       * Re-parenting alone would trade one fault for another, so it comes with place(). A fixed box
+       * with auto offsets takes its STATIC position, and in a sticky cell inside a scrolled
+       * scrollport that spot is nowhere in particular: measured 99px below the funnel it belongs to,
+       * with the panel's foot 12px off the bottom of a 740px screen, and at the end of the datatable
+       * once it is parented to `root`. place() is the kit's one copy of that arithmetic and it needs
+       * nothing from the Popover API, it only writes inline coordinates. The panel closes on any
+       * scroll (closeOnScroll, below), so a fixed panel that does not follow the page is not a
+       * second fault.
+       *
+       * Where the helper is absent ENTIRELY nothing moves: there would be nothing to place the panel
+       * with, and the static position inside the <th> at least lands near its own funnel. */
+      var popover = window.FreedayPopover || null;
+      var degraded = popover !== null && popover.supported !== true;
+      var opts = { matchWidth: false, align: 'end' };
+      (degraded ? root : btn.parentNode).appendChild(pop);
       pop._trigger = btn;
-      var rect = btn.getBoundingClientRect();
-      pop.style.top = (rect.bottom + 4) + 'px';
-      pop.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - pop.offsetWidth - 8)) + 'px';
+      pop._pop = popover === null ? null : popover.attach(pop, btn, opts);
+      if (pop._pop) pop._pop.show();
+      if (degraded) popover.place(pop, btn, opts);
       openPopover = pop;
       window.addEventListener('scroll', closeOnScroll, true);
       window.addEventListener('resize', closeOnScroll);

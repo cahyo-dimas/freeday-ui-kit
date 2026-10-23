@@ -21,9 +21,9 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    the enhancer owns the widget's DOM. You **listen for `fdy-*` events** (all bubbling
    `CustomEvent`s, data in `event.detail`) → store them in your framework state. Event/API contract
    table: [`integrations.md` §Event & API contract](integrations.md).
-   **On Vue, React or Blazor this is not the path to take for eleven of the components.** `FdyCombo`,
-   `FdyDatepicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`, `FdyChart`,
-   `FdyTable`, `FdyModal`, `FdyDrawer`, `FdyAppShell` ship typed wrappers that own the state properly (Vue and
+   **On Vue, React or Blazor this is not the path to take for twelve of the components.** `FdyCombo`,
+   `FdyDatepicker`, `FdyMonthpicker`, `FdyDateRange`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`,
+   `FdyChart`, `FdyTable`, `FdyModal`, `FdyDrawer`, `FdyAppShell` ship typed wrappers that own the state properly (Vue and
    React re-implement the interaction natively; Blazor wraps the enhancer over interop). Use them;
    the raw path is for the components without a wrapper, and for stacks without an adapter.
 3. **Hydrate dynamic DOM.** Enhancers auto-init once on `DOMContentLoaded`. DOM an SPA renders
@@ -444,9 +444,9 @@ kit's CSS/enhancers), then bind:
 <FdyChart Type="donut" Values="_byCity" Labels="_cityLabels" AriaLabel="Revenue by city" />
 <FdyDrawer @bind-Open="_drawerOpen" Title="Detail" Side="right">…</FdyDrawer>
 ```
-Eleven components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
+Twelve components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
 `Title`, `Size`/`Side`, `Dismissible`) · **`FdyCombo<TValue>`** · **`FdyDatepicker`** ·
-**`FdyAutocomplete`** · **`FdyCascade`** · **`FdyDateRange`** (`@bind-From`/`@bind-To`) ·
+**`FdyMonthpicker`** (`@bind-Value` as `yyyy-MM`) · **`FdyAutocomplete`** · **`FdyCascade`** · **`FdyDateRange`** (`@bind-From`/`@bind-To`) ·
 **`FdyCfl<TRow>`** (async `LoadPage`) · **`FdyChart`** · **`FdyTable<TRow>`** (client sort/filter/page,
 or controlled `Sort`/`Filters`/`Page` for a server-paged table; `RowActivatable`, `RowDetail`) ·
 **`FdyAppShell`** (`@bind-NavOpen`). Each

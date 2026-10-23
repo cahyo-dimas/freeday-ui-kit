@@ -1821,8 +1821,25 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-table__filterbtn.is-active{color:var(--color-primary-strong);}
 .fdy-table__filterbtn svg{width:.85rem;height:.85rem;}
 
-/* Filter popover (position:fixed, appended to <body> so overflow can't clip it) */
-.fdy-filter{position:fixed;z-index:130;min-width:14rem;max-width:18rem;padding:var(--space-3);background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);text-transform:none;letter-spacing:normal;font-weight:var(--weight-regular);color:var(--color-text);}
+/* Filter popover. `position:fixed` because the panel is positioned by freeday-popover.js (and by
+   usePopover on the typed path) with inline viewport coordinates, in the top layer, which is what
+   escapes a card's or a scroll container's clip; the panel itself is a child of its own <th> on
+   both paths, so an open modal <dialog> does not make it inert. It is the one kit panel that is
+   fixed rather than absolute, and that is load-bearing: #079 cannot reach a panel which never
+   resolves a `top:calc(100% + …)` against the viewport, which browser/filter-parity.mjs measures.
+   `min-width` is the panel's own, so neither path may floor it to the width of a 24px funnel.
+
+   The typography block is a RESET of what the panel inherits from that <th>, and it has to name
+   every inherited property the header rule sets, not the ones that looked worst. A header is
+   uppercase, tracked, semibold, muted, 12px and `white-space:nowrap`; a numeric column adds mono
+   and, on the typed path, an inline `text-align:right` that no ancestor rule could outrank anyway.
+   None of that belongs on a panel of labels and inputs, and the four it reset from the start were
+   the four that SHOWED: an 18rem cap hides a nowrap panel's damage, because the box stays 18rem
+   wide while the text runs out of the list, which then scrolls sideways to reach a value nobody
+   can read. `font-size` and `font-family` reach only the text that declares neither, the range
+   separator and the title, which is exactly why they went unnoticed. Measured as geometry in
+   browser/filter-wrap.mjs rather than asserted as declarations. */
+.fdy-filter{position:fixed;z-index:130;min-width:14rem;max-width:18rem;padding:var(--space-3);background:var(--color-surface);border:var(--bw) solid var(--color-border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-3);text-align:left;white-space:normal;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-regular);text-transform:none;letter-spacing:normal;color:var(--color-text);}
 .fdy-filter__title{font-size:var(--text-xs);font-weight:var(--weight-semibold);color:var(--color-text-muted);text-transform:uppercase;letter-spacing:var(--tracking-wide);margin-bottom:var(--space-2);}
 .fdy-filter__list{display:flex;flex-direction:column;gap:var(--space-1);max-height:12rem;overflow:auto;}
 .fdy-filter__check{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;}

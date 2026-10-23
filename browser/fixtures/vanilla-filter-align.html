@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>fixture: vanilla column filter, measured against its funnel</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<link rel="stylesheet" href="popover-probe.css">
+<script src="popover-probe.js"></script>
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- The same shape the typed fixtures pose, so browser/filter-parity.mjs can compare the two
+       paths on numbers rather than on a description: a table in a 24px page gutter whose last
+       column is right-aligned (an amount column, the usual one), so its funnel sits against the
+       table's right edge and a 224px panel cannot fit to the right of it.
+
+       The card is `overflow:hidden`, which is the kit's reason for the top layer in the first
+       place, and the scroller gives the panel a second clipping ancestor to escape. -->
+  <div class="page">
+    <div class="fdy-card" id="card" style="overflow:hidden">
+      <div id="scroller" style="max-height:160px;overflow:auto">
+        <div class="fdy-datatable" id="tbl" data-fdy-table>
+          <table class="fdy-table">
+            <thead><tr>
+              <th scope="col" data-fdy-filter="text">Name</th>
+              <th scope="col">City</th>
+              <th scope="col" style="text-align:right" data-fdy-filter="text">Amount</th>
+            </tr></thead>
+            <tbody>
+              <tr><td>Alpha</td><td>Jakarta</td><td style="text-align:right">1200</td></tr>
+              <tr><td>Beta</td><td>Bandung</td><td style="text-align:right">980</td></tr>
+            </tbody>
+          </table>
+          <div class="fdy-table-footer"><span data-fdy-table-info></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* Is the open panel really visible where its box says it is. getBoundingClientRect reports a box
+     an ancestor's `overflow:hidden` has clipped away entirely, so the rect alone cannot answer the
+     question the card poses; a hit test can, and with no modal dialog on this page it is honest. */
+  window.__clip = function () {
+    var panel = document.querySelector('.fdy-filter');
+    var card = document.getElementById('card');
+    var pr = panel.getBoundingClientRect();
+    var cr = card.getBoundingClientRect();
+    var x = Math.round(pr.left + pr.width / 2);
+    var y = Math.round(cr.bottom + (pr.bottom - cr.bottom) / 2); // inside the panel, below the card
+    var hit = document.elementFromPoint(x, y);
+    return {
+      pastCardBottom: Math.round(pr.bottom - cr.bottom),
+      hitBelowCardIsPanel: hit !== null && (hit === panel || panel.contains(hit)),
+      hitBelowCard: hit === null ? null : hit.tagName + '.' + (hit.className || ''),
+      parent: panel.parentElement.tagName + '.' + (panel.parentElement.className || ''),
+    };
+  };
+
+  /* The state the positioning helper is handed, which is the premise #079 turns on, measured on
+     the raw path. The enhancer builds its panel and positions it inside one synchronous turn, so
+     the only way to read that state is to put an identical panel in the same parent and show it in
+     the top layer with nothing allowed to position it: a clone of the real panel, in the real
+     <th>, under the real stylesheet. Call it with the panel already open; the clone is removed
+     again before it returns. */
+  window.__beforePlaceClone = function () {
+    var panel = document.querySelector('.fdy-filter');
+    var trigger = panel._trigger;
+    var clone = panel.cloneNode(true);
+    clone.removeAttribute('style');
+    clone.removeAttribute('popover');
+    clone.hidden = false;
+    panel.parentElement.appendChild(clone);
+    var out = {
+      scrollHeightAtRest: document.documentElement.scrollHeight,
+      clientWidthAtRest: document.documentElement.clientWidth,
+      triggerLeftAtRest: trigger.getBoundingClientRect().left,
+    };
+    clone.setAttribute('popover', 'manual');
+    clone.showPopover();
+    out.position = getComputedStyle(clone).position;
+    out.panelTop = clone.getBoundingClientRect().top;
+    out.viewportHeight = document.documentElement.clientHeight;
+    out.scrollHeightShown = document.documentElement.scrollHeight;
+    out.clientWidthShown = document.documentElement.clientWidth;
+    out.triggerLeftShown = trigger.getBoundingClientRect().left;
+    clone.hidePopover();
+    clone.remove();
+    return out;
+  };
+</script>
+</body>
+</html>

@@ -1,6 +1,12 @@
 using Bunit;
 using Xunit;
 
+/* `Mode` and `FdyDatepickerMode.Month` are deprecated as of 3.9.0, replaced by FdyMonthpicker. This
+   file is the test that proves the deprecated path still behaves, so it has to keep writing them,
+   and a warning here would be the build complaining about the one use that is deliberate. Scoped to
+   this file, so a real caller still gets told. */
+#pragma warning disable CS0618
+
 namespace Freeday.Blazor.Tests;
 
 /// <summary>

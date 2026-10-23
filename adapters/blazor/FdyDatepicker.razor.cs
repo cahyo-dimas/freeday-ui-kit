@@ -14,12 +14,21 @@ public partial class FdyDatepicker
     /// <summary>What the picker answers with. <see cref="FdyDatepickerMode.Day"/> (default) is the
     /// calendar as it always was. <see cref="FdyDatepickerMode.Month"/> opens on the month grid,
     /// stops there, and reports <c>yyyy-MM</c>.</summary>
+    [Obsolete("Use FdyMonthpicker for a month. This parameter makes Value, Min and Max carry " +
+              "yyyy-MM-dd or yyyy-MM while a different parameter decides which, so the binding " +
+              "cannot state what to store in it. Still works, unchanged, and removed in 4.0.")]
     [Parameter] public FdyDatepickerMode Mode { get; set; } = FdyDatepickerMode.Day;
 
     /* null rather than "day" for the default: an attribute the enhancer does not need is an
        attribute no reader of the seed has to interpret, and the enhancer's own check is
-       `=== 'month'`, so the day path is the absence of this. */
+       `=== 'month'`, so the day path is the absence of this.
+
+       The pragma is the kit reading its OWN deprecated member, which is the one place that has to
+       keep doing so: the promise is that `Mode` keeps working until 4.0, and it cannot work if the
+       seed stops looking at it. Scoped to these two lines so every other use still warns. */
+#pragma warning disable CS0618
     private string? ModeAttribute => Mode == FdyDatepickerMode.Month ? "month" : null;
+#pragma warning restore CS0618
 
     /// <summary>Accessible label for the trigger.</summary>
     [Parameter] public string? Label { get; set; }
@@ -96,11 +105,16 @@ public partial class FdyDatepicker
 }
 
 /// <summary>What <see cref="FdyDatepicker"/> answers with.</summary>
+/// <remarks>The enum goes with <see cref="FdyDatepicker.Mode"/> in 4.0, so only
+/// <see cref="Day"/> is left unmarked: it names the behaviour a picker with no
+/// <c>Mode</c> already has, and writing it changes nothing.</remarks>
 public enum FdyDatepickerMode
 {
     /// <summary>A single day, reported as <c>yyyy-MM-dd</c>.</summary>
     Day,
 
     /// <summary>A whole month, reported as <c>yyyy-MM</c>.</summary>
+    [Obsolete("Use FdyMonthpicker, whose Value is yyyy-MM and has no Mode to read. " +
+              "Still works, unchanged, and removed in 4.0.")]
     Month,
 }

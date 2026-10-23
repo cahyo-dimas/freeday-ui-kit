@@ -1,6 +1,31 @@
 import type { JSX } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { usePopover } from '../usePopover';
+/* The month and year grids, which `FdyMonthpicker` reads from the same module. They were written
+   here and moved out when the month picker arrived: a second copy of the bounds rule is a second
+   place to fix it, and this release spent three items on exactly that failure in the panel-position
+   logic (#079). What the two components do differently with the grid stays in each of them, which
+   is one branch: whether choosing a month commits or walks down into its days. */
+import {
+  YEARS_PER_PAGE,
+  addMonths,
+  monthCells as buildMonthCells,
+  monthDisabled,
+  monthFormatters,
+  monthKeyIntent,
+  pageLocale,
+  parseISOMonth,
+  startOfDay,
+  startOfMonth,
+  toISOMonth,
+  yearCells as buildYearCells,
+  yearKeyIntent,
+  yearPageStart,
+  yearRangeLabel,
+  type FdyMonthCell,
+  type FdyMonthFormatters,
+  type FdyYearCell,
+} from '../../core/month-grid.js';
 
 // React port of adapters/vue/components/FdyDatepicker.vue over freeday's `.fdy-datepicker` /
 // `.fdy-cal__*` classes (see src/components/datepicker.css). Re-implements the single-date
@@ -27,29 +52,19 @@ interface DayCell {
   focusable: boolean;
 }
 
-interface YearCell {
-  year: number;
-  selected: boolean;
-  today: boolean;
-  disabled: boolean;
-  focusable: boolean;
-}
-
-interface MonthCell {
-  index: number;
-  label: string;
-  ariaLabel: string;
-  selected: boolean;
-  today: boolean;
-  disabled: boolean;
-  focusable: boolean;
-}
-
 export interface FdyDatepickerProps {
   /** ISO `YYYY-MM-DD`, or `YYYY-MM` when `mode` is `'month'`. `''`/`null` for empty. */
   value: string | null;
   onChange: (value: string) => void;
-  /** `'day'` (default) answers with a date. `'month'` opens on the month grid, stops there, and answers with `YYYY-MM`. */
+  /**
+   * `'day'` (default) answers with a date. `'month'` opens on the month grid, stops there, and
+   * answers with `YYYY-MM`.
+   *
+   * @deprecated Use `FdyMonthpicker` for a month. This prop makes `value`, `min` and `max` carry
+   * two different formats while a *different* prop decides which, so the type cannot state what to
+   * store in them. `FdyMonthpicker` has one format per prop and no mode to read. Still works,
+   * unchanged, and removed in 4.0.
+   */
   mode?: FdyDatepickerMode;
   min?: string;
   max?: string;
@@ -88,32 +103,6 @@ function pad(n: number): string {
 function toISO(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
-function toISOMonth(d: Date): string {
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
-}
-/** Month mode reads BOTH shapes, and the dropped day is the point: a bound of `2026-03` lands on
- *  March 1st, which `isMonthDisabled` then compares a whole month against correctly at either end,
- *  so an app can pass the strings it already stores. A full date still works. */
-function parseISOMonth(s: string | null | undefined): Date | null {
-  if (s === null || s === undefined || s === '') return null;
-  const parts: string[] = s.split('-');
-  if (parts.length < 2) return null;
-  const y: number = Number(parts[0]);
-  const m: number = Number(parts[1]);
-  const day: number = parts.length > 2 ? Number(parts[2]) : 1;
-  const d: Date = new Date(y, m - 1, day);
-  return Number.isNaN(d.getTime()) ? null : d;
-}
-/* The page's own `lang`, which is what COMPONENTS.md has promised all along and what the vanilla
-   enhancer has always done. Handing `undefined` to Intl instead falls back to the BROWSER's
-   language, so an Indonesian reader saw Indonesian month names inside a kit that is English on
-   every other path, and an Indonesian PAGE read by an English browser got English ones. That is
-   the symptom this month mode was asked for, so the fallback has to be the page. */
-function pageLocale(): string {
-  if (typeof document === 'undefined') return 'en';
-  // `||`, not `??`: an empty `lang=""` is not null and Intl throws RangeError on it.
-  return document.documentElement.getAttribute('lang') || 'en';
-}
 function parseISO(s: string | null | undefined): Date | null {
   if (s === null || s === undefined || s === '') return null;
   const parts: string[] = s.split('-');
@@ -124,23 +113,12 @@ function parseISO(s: string | null | undefined): Date | null {
   const d: Date = new Date(y, m - 1, day);
   return Number.isNaN(d.getTime()) ? null : d;
 }
-function startOfDay(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-function startOfMonth(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), 1);
-}
 function sameDay(a: Date | null, b: Date | null): boolean {
   return a !== null && b !== null && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 function addDays(d: Date, n: number): Date {
   const x: Date = new Date(d);
   x.setDate(x.getDate() + n);
-  return x;
-}
-function addMonths(d: Date, n: number): Date {
-  const x: Date = new Date(d);
-  x.setMonth(x.getMonth() + n);
   return x;
 }
 
@@ -183,11 +161,6 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const [focusMonth, setFocusMonth] = useState<number>(0);
   const [focusYear, setFocusYear] = useState<number>(0);
 
-  /* A page of twelve years, ALIGNED so pages tile: 2016-2027, 2028-2039. Anchoring on the year in
-     view would make the arrows land on overlapping windows, and the same year would sit somewhere
-     different every step. */
-  const YEARS_PER_PAGE = 12;
-  const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
   const monthRefs = useRef<Record<number, HTMLButtonElement | null>>({});
   const pendingMonthFocusRef = useRef<number | null>(null);
   const yearRefs = useRef<Record<number, HTMLButtonElement | null>>({});
@@ -216,12 +189,8 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const chooseYearLabelText: string = props.chooseYearLabel ?? 'Choose year';
   const prevYearsLabelText: string = props.prevYearsLabel ?? 'Previous years';
   const nextYearsLabelText: string = props.nextYearsLabel ?? 'Next years';
-  const monthCellFmt: Intl.DateTimeFormat = useMemo(
-    (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale, { month: 'short' }),
-    [activeLocale],
-  );
-  const monthNameFmt: Intl.DateTimeFormat = useMemo(
-    (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale, { month: 'long', year: 'numeric' }),
+  const formatters: FdyMonthFormatters = useMemo(
+    (): FdyMonthFormatters => monthFormatters(activeLocale),
     [activeLocale],
   );
   const prevMonthLabelText: string = props.prevMonthLabel ?? 'Previous month';
@@ -261,7 +230,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
      browser's language, this names it in the page's. */
   const displayValue: string = selectedDate === null
     ? displayPlaceholder
-    : (isMonthMode ? monthNameFmt : valueFmt).format(selectedDate);
+    : (isMonthMode ? formatters.name : valueFmt).format(selectedDate);
 
   const weekdayHeaders: string[] = useMemo((): string[] => {
     const monday: Date = new Date(2024, 0, 1); // a known Monday
@@ -274,34 +243,16 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     return false;
   }
 
-  /** A month is only unreachable when the WHOLE month falls outside min/max, a range that sits
-   *  inside one month disables both ends while the middle is perfectly selectable. */
-  function isMonthDisabled(year: number, month: number): boolean {
-    const first: Date = new Date(year, month, 1);
-    const last: Date = new Date(year, month + 1, 0);
-    if (minDate !== null && startOfDay(last).getTime() < startOfDay(minDate).getTime()) return true;
-    if (maxDate !== null && startOfDay(first).getTime() > startOfDay(maxDate).getTime()) return true;
-    return false;
-  }
-
-  const monthCells: MonthCell[] = useMemo((): MonthCell[] => {
-    const year: number = viewMonth.getFullYear();
-    const today: Date = new Date();
-    const sel: Date | null = parseValue(props.value);
-    return Array.from({ length: 12 }, (_unused: unknown, index: number): MonthCell => {
-      const cellDate: Date = new Date(year, index, 1);
-      return {
-        index,
-        label: monthCellFmt.format(cellDate),
-        ariaLabel: monthNameFmt.format(cellDate),
-        selected: sel !== null && sel.getFullYear() === year && sel.getMonth() === index,
-        today: today.getFullYear() === year && today.getMonth() === index,
-        disabled: isMonthDisabled(year, index),
-        focusable: index === focusMonth,
-      };
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewMonth, props.value, focusMonth, monthCellFmt, monthNameFmt, minDate, maxDate]);
+  const monthCells: FdyMonthCell[] = useMemo((): FdyMonthCell[] => buildMonthCells({
+    year: viewMonth.getFullYear(),
+    selected: parseValue(props.value),
+    min: minDate,
+    max: maxDate,
+    focusMonth,
+    formatters,
+  }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [viewMonth, props.value, focusMonth, formatters, minDate, maxDate]);
 
   const gridCells: DayCell[] = useMemo((): DayCell[] => {
     /* Month mode never mounts this grid, and useMemo runs whether or not its result is read, so
@@ -372,7 +323,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
 
   function pickMonth(index: number): void {
     const year: number = viewMonth.getFullYear();
-    if (isMonthDisabled(year, index)) return;
+    if (monthDisabled(year, index, minDate, maxDate)) return;
     const first: Date = new Date(year, index, 1);
     setFocusMonth(index);
     setFocusDate(first);
@@ -392,39 +343,25 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     pendingFocusRef.current = toISO(next);
   }
 
+  /** `index` is already 0-11: the wrap lives in `monthKeyIntent`, so it is applied in one place. */
   function moveMonthFocus(index: number, yearDelta: number): void {
     if (yearDelta !== 0) setViewMonth(addMonths(viewMonth, yearDelta * 12));
-    const next: number = (index + 12) % 12;
-    setFocusMonth(next);
-    pendingMonthFocusRef.current = next;
-  }
-
-  /** A year is unreachable only when EVERY month in it falls outside min/max. */
-  function isYearDisabled(year: number): boolean {
-    if (minDate !== null && startOfDay(new Date(year, 11, 31)).getTime() < startOfDay(minDate).getTime()) return true;
-    if (maxDate !== null && startOfDay(new Date(year, 0, 1)).getTime() > startOfDay(maxDate).getTime()) return true;
-    return false;
+    setFocusMonth(index);
+    pendingMonthFocusRef.current = index;
   }
 
   const yearPage: number = yearPageStart(focusYear);
-  const yearRangeLabel: string = `${yearPage} – ${yearPage + YEARS_PER_PAGE - 1}`;
+  const yearRangeText: string = yearRangeLabel(yearPage);
 
-  const yearCells: YearCell[] = useMemo((): YearCell[] => {
-    const start: number = yearPageStart(focusYear);
-    const thisYear: number = new Date().getFullYear();
-    const sel: Date | null = parseValue(props.value);
-    return Array.from({ length: YEARS_PER_PAGE }, (_unused: unknown, index: number): YearCell => {
-      const year: number = start + index;
-      return {
-        year,
-        selected: sel !== null && sel.getFullYear() === year,
-        today: thisYear === year,
-        disabled: isYearDisabled(year),
-        focusable: year === focusYear,
-      };
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusYear, props.value, minDate, maxDate]);
+  const yearCells: FdyYearCell[] = useMemo((): FdyYearCell[] => buildYearCells({
+    pageStart: yearPageStart(focusYear),
+    selected: parseValue(props.value),
+    min: minDate,
+    max: maxDate,
+    focusYear,
+  }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [focusYear, props.value, minDate, maxDate]);
 
   function openYearGrid(): void {
     setFocusYear(viewMonth.getFullYear());
@@ -448,41 +385,22 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   }
 
   function onYearKeydown(e: React.KeyboardEvent): void {
-    let handled: boolean = true;
-    switch (e.key) {
-      case 'ArrowLeft': moveYearFocus(focusYear - 1); break;
-      case 'ArrowRight': moveYearFocus(focusYear + 1); break;
-      case 'ArrowUp': moveYearFocus(focusYear - 3); break;
-      case 'ArrowDown': moveYearFocus(focusYear + 3); break;
-      case 'Home': moveYearFocus(yearPageStart(focusYear)); break;
-      case 'End': moveYearFocus(yearPageStart(focusYear) + YEARS_PER_PAGE - 1); break;
-      case 'PageUp': moveYearFocus(focusYear - YEARS_PER_PAGE); break;
-      case 'PageDown': moveYearFocus(focusYear + YEARS_PER_PAGE); break;
-      case 'Enter':
-      case ' ': openYear(focusYear); break;
-      case 'Escape': closePanel(true); break;
-      default: handled = false;
-    }
-    if (handled) { e.preventDefault(); e.stopPropagation(); }
+    const intent = yearKeyIntent(e.key, focusYear);
+    if (intent.action === 'none') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (intent.action === 'focus') moveYearFocus(intent.year);
+    else if (intent.action === 'choose') openYear(intent.year);
+    else closePanel(true);
   }
 
   function onMonthKeydown(e: React.KeyboardEvent): void {
-    let handled: boolean = true;
-    switch (e.key) {
-      case 'ArrowLeft': moveMonthFocus(focusMonth - 1, 0); break;
-      case 'ArrowRight': moveMonthFocus(focusMonth + 1, 0); break;
-      case 'ArrowUp': moveMonthFocus(focusMonth - 3, 0); break;
-      case 'ArrowDown': moveMonthFocus(focusMonth + 3, 0); break;
-      case 'Home': moveMonthFocus(0, 0); break;
-      case 'End': moveMonthFocus(11, 0); break;
-      case 'PageUp': moveMonthFocus(focusMonth, -1); break;
-      case 'PageDown': moveMonthFocus(focusMonth, 1); break;
-      case 'Enter':
-      case ' ': chooseMonth(focusMonth); break;
-      case 'Escape': closePanel(true); break;
-      default: handled = false;
-    }
-    if (handled) e.preventDefault();
+    const intent = monthKeyIntent(e.key, focusMonth);
+    if (intent.action === 'none') return;
+    e.preventDefault();
+    if (intent.action === 'focus') moveMonthFocus(intent.index, intent.yearDelta);
+    else if (intent.action === 'choose') chooseMonth(intent.index);
+    else closePanel(true);
   }
 
   function moveFocus(next: Date): void {
@@ -671,7 +589,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
             aria-label={level === 'years' ? undefined : level === 'months' ? chooseYearLabelText : chooseMonthLabelText}
             onClick={(): void => { if (level === 'months') openYearGrid(); else openMonthGrid(); }}
           >
-            {level === 'years' ? yearRangeLabel : level === 'months' ? String(viewMonth.getFullYear()) : monthFmt.format(viewMonth)}
+            {level === 'years' ? yearRangeText : level === 'months' ? String(viewMonth.getFullYear()) : monthFmt.format(viewMonth)}
           </button>
           <button
             type="button"
@@ -688,7 +606,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         </div>
         {level === 'years' ? (
           <div className="fdy-cal__grid fdy-cal__grid--years" role="grid" aria-labelledby={titleId} onKeyDown={onYearKeydown}>
-            {yearCells.map((cell: YearCell) => (
+            {yearCells.map((cell: FdyYearCell): JSX.Element => (
               <button
                 key={cell.year}
                 ref={(el: HTMLButtonElement | null): void => { yearRefs.current[cell.year] = el; }}
@@ -707,7 +625,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
           </div>
         ) : level === 'months' ? (
           <div className="fdy-cal__grid fdy-cal__grid--months" role="grid" aria-labelledby={titleId} onKeyDown={onMonthKeydown}>
-            {monthCells.map((cell: MonthCell) => (
+            {monthCells.map((cell: FdyMonthCell): JSX.Element => (
               <button
                 key={cell.index}
                 ref={(el: HTMLButtonElement | null): void => { monthRefs.current[cell.index] = el; }}

@@ -146,6 +146,11 @@
 
     @if (Pager)
     {
-        <FdyTableFooter Page="FooterPage" PageSizes="PageSizes" PageChanged="OnFooterPage" />
+        @* The six strings go through as given, null included: every default lives in the footer, so
+           a parameter left unset here is the footer's English and not a second copy of it. *@
+        <FdyTableFooter Page="FooterPage" PageSizes="PageSizes" PageChanged="OnFooterPage"
+                        InfoText="@InfoText" PageSizeLabel="@PageSizeLabel"
+                        PaginationLabel="@PaginationLabel" PrevLabel="@PrevLabel"
+                        NextLabel="@NextLabel" PageLabel="@PageLabel" />
     }
 </div>

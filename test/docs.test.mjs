@@ -721,3 +721,99 @@ test('a CFL can be opened by something other than its own field (#054)', () => {
   assert.deepEqual(missing, [],
     'a capability the raw path has and a typed stack does not:\n' + missing.join('\n'));
 });
+
+
+/* How this kit says "deprecated" (#076, retired by #080).
+ *
+ * Nothing in the repo had ever been deprecated before, so this test is the precedent as much as the
+ * guard. The mechanism is the TYPE, in one place per stack: `@deprecated` in the JSDoc on the prop
+ * for Vue and React, `[Obsolete]` on the member for Blazor. A consumer's editor strikes the prop
+ * through and shows the replacement on hover, which is a sentence they cannot miss; a line in
+ * COMPONENTS.md is one they have to go and read. The marker has to NAME the replacement, or it tells
+ * someone to stop without telling them where to go.
+ *
+ * `mode` itself stays and keeps working until 4.0. That promise lives in browser/monthpicker.mjs,
+ * which drives the deprecated prop beside its replacement; this test only holds the sign up.
+ */
+test('the deprecated `mode` prop says so in the type, on every stack (#080)', () => {
+  const missing = [];
+  /* The JSDoc block immediately above the declaration, which is the one an editor shows. Anchored
+     on the prop so a `@deprecated` written anywhere else in the file cannot satisfy this. */
+  const markedAbove = (src, declaration) => {
+    const at = src.indexOf(declaration);
+    if (at === -1) return null;
+    const before = src.slice(0, at);
+    const block = before.match(/\/\*\*([\s\S]*?)\*\/\s*$/);
+    return block === null ? null : block[1];
+  };
+
+  const vue = markedAbove(read('adapters/vue/components/FdyDatepicker.vue'), '\n  mode?:');
+  if (vue === null) missing.push('Vue: no JSDoc block sits on `mode`, an editor has nothing to show');
+  else if (!/@deprecated/.test(vue)) missing.push('Vue: `mode` carries no @deprecated tag');
+  else if (!/FdyMonthpicker/.test(vue)) missing.push('Vue: the @deprecated tag on `mode` names no replacement');
+
+  const react = markedAbove(read('adapters/react/components/FdyDatepicker.tsx'), '\n  mode?:');
+  if (react === null) missing.push('React: no JSDoc block sits on `mode`');
+  else if (!/@deprecated/.test(react)) missing.push('React: `mode` carries no @deprecated tag');
+  else if (!/FdyMonthpicker/.test(react)) missing.push('React: the @deprecated tag on `mode` names no replacement');
+
+  /* Blazor has two surfaces to mark, the parameter and the enum member the caller writes, and
+     marking only one leaves the other spelling silent. */
+  const blazor = read('adapters/blazor/FdyDatepicker.razor.cs');
+  for (const [what, decl] of [['the `Mode` parameter', 'public FdyDatepickerMode Mode'], ['the `Month` enum member', 'Month,']]) {
+    const at = blazor.indexOf(decl);
+    if (at === -1) { missing.push(`Blazor: ${what} is gone, this guard reads nothing`); continue; }
+    const attr = blazor.slice(0, at).match(/\[Obsolete\(([\s\S]*?)\)\]\s*(?:\[Parameter\]\s*)?$/);
+    if (attr === null) missing.push(`Blazor: ${what} carries no [Obsolete]`);
+    else if (!/FdyMonthpicker/.test(attr[1])) missing.push(`Blazor: [Obsolete] on ${what} names no replacement`);
+  }
+
+  /* And the replacement has to exist on all three, or every marker above points at nothing. */
+  for (const f of ['adapters/vue/components/FdyMonthpicker.vue', 'adapters/react/components/FdyMonthpicker.tsx',
+                   'adapters/blazor/FdyMonthpicker.razor', 'adapters/blazor/FdyMonthpicker.razor.cs']) {
+    try { read(f); } catch { missing.push(`${f} is missing, so the deprecation points nowhere`); }
+  }
+
+  assert.deepEqual(missing, [],
+    'a deprecation a consumer cannot see in their editor is a deprecation nobody acts on:\n' + missing.join('\n'));
+});
+
+/* The month grid is written ONCE for the typed stacks (#080).
+ *
+ * This release spent three items paying for four copies of the panel-position logic: #079 was fixed
+ * in one of them and shipped broken in the other three. `FdyMonthpicker` would have been the fifth
+ * copy of the month grid, so the grid, the bounds rule, the year paging and the keyboard map moved
+ * to adapters/core/month-grid.js and all four typed components read them from there.
+ *
+ * Checked by absence: a local `function isMonthDisabled` or a second `YEARS_PER_PAGE` in a component
+ * is the copy coming back, and it would come back the way the position logic did, as a fix applied
+ * to one file. The vanilla enhancer is exempt on purpose and for the same reason
+ * adapters/core/app-shell.js records: dist/freeday.js is an IIFE concatenation with no module
+ * system, so the raw path is the second implementation the kit accepts and browser/monthpicker.mjs
+ * plus browser/month-mode.mjs hold the two to the same behaviour.
+ */
+test('the month grid rule lives in adapters/core, not once per component (#080)', () => {
+  const offenders = [];
+  const core = read('adapters/core/month-grid.js');
+  for (const name of ['monthDisabled', 'yearDisabled', 'monthCells', 'yearCells', 'monthKeyIntent', 'yearKeyIntent']) {
+    if (!new RegExp(`export function ${name}\\b`).test(core)) offenders.push(`adapters/core/month-grid.js exports no \`${name}\``);
+  }
+
+  const components = ['adapters/vue/components/FdyDatepicker.vue', 'adapters/vue/components/FdyMonthpicker.vue',
+                      'adapters/react/components/FdyDatepicker.tsx', 'adapters/react/components/FdyMonthpicker.tsx'];
+  for (const file of components) {
+    const src = read(file);
+    if (!/from '(?:\.\.\/)+\.\.\/core\/month-grid(?:\.js)?'/.test(src)) {
+      offenders.push(`${file} does not import adapters/core/month-grid.js`);
+    }
+    for (const copy of [/function (isMonthDisabled|monthDisabled)\b/, /function (isYearDisabled|yearDisabled)\b/,
+                        /\bYEARS_PER_PAGE\s*=/, /function parseISOMonth\b/, /function toISOMonth\b/,
+                        /function pageLocale\b/]) {
+      const hit = src.match(copy);
+      if (hit !== null) offenders.push(`${file} declares \`${hit[0]}\` locally, the core module owns that`);
+    }
+  }
+
+  assert.deepEqual(offenders, [],
+    'a rule with two homes gets fixed in one of them:\n' + offenders.join('\n'));
+});
