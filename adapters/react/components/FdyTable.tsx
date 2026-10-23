@@ -83,6 +83,13 @@ export interface FdyTableProps<Row extends object> {
    *  reset to 0 after sort/filter, or a clamp when filtering shrank the set). */
   onPageIndexChange?: (index: number) => void;
   loading?: boolean;
+  /** The loading row's text, rendered by this table rather than by the footer. Default `Loading…`.
+   *  Blazor has carried `LoadingText` all along while the two script adapters wrote the word into
+   *  the template, so a table in any other language could translate its empty row and not the row
+   *  right beside it. Defaulted here, like `emptyText` and the four selection strings, and
+   *  unlike the six footer strings further down, which the footer defaults because the footer is
+   *  what renders them. */
+  loadingText?: string;
   emptyText?: string;
   ariaLabel?: string;
   /** Custom cell renderer; return undefined for a column to use the default text. */
@@ -436,7 +443,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
           <tbody>
             {props.loading ? (
               <tr>
-                <td colSpan={colCount} className="fdy-table__state" role="status">Loading…</td>
+                <td colSpan={colCount} className="fdy-table__state" role="status">{props.loadingText ?? 'Loading…'}</td>
               </tr>
             ) : displayRows.length === 0 ? (
               <tr>

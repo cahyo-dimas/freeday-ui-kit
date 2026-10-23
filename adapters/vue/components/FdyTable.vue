@@ -69,6 +69,13 @@ const props = withDefaults(defineProps<{
   pageSizes?: readonly number[];
   pageIndex?: number;
   loading?: boolean;
+  /** The loading row's text, rendered by this table rather than by the footer. Default `Loading…`.
+   *  Blazor has carried `LoadingText` all along while the two script adapters wrote the word into
+   *  the template, so a table in any other language could translate its empty row and not the row
+   *  right beside it. Defaulted here, like `emptyText` and the four selection strings, and
+   *  unlike the six footer strings further down, which the footer defaults because the footer is
+   *  what renders them. */
+  loadingText?: string;
   emptyText?: string;
   ariaLabel?: string;
   /** Opt in to row activation: rows become focusable and emit `row-activate` on click/Enter/Space. */
@@ -435,7 +442,7 @@ const colSpan: ComputedRef<number> = computed((): number =>
         </thead>
         <tbody>
           <tr v-if="loading">
-            <td :colspan="colSpan" class="fdy-table__state" role="status">Loading…</td>
+            <td :colspan="colSpan" class="fdy-table__state" role="status">{{ loadingText ?? 'Loading…' }}</td>
           </tr>
           <tr v-else-if="displayRows.length === 0">
             <td :colspan="colSpan" class="fdy-table__state">

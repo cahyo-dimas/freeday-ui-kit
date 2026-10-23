@@ -1367,7 +1367,7 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `pageIndex?` · `onPageIndexChange?` | `number` · `(index) => void` | Client mode: own the 0-based index while the table keeps filtering, sorting and paginating — this is what lets one external pager drive both a table and a card list. |
 | `pageSizes?` · `onPageSizeChange?` | `readonly number[]` · `(size) => void` | Offer a rows-per-page control. Server mode reports the pick through the page event (read its `size`); client mode applies it itself and reports it too, so it works with nothing wired. |
 | `pager?` | `boolean` | Default true. Turn it off to withhold the table's own footer when the screen renders one. |
-| `loading?` | `boolean` | Show the in-table loading state. |
+| `loading?` · `loadingText?` | `boolean` · `string` | Show the in-table loading row, and the word in it. Default `Loading…`, the same name and the same default as Blazor's `LoadingText`, so a screen in another language translates the loading row the way it already translates the empty one instead of finding that only one of the two neighbouring states has a prop. |
 | `emptyText?` · `empty?` | `string` · `ReactNode \| (ctx) => ReactNode` | The empty state as text, or as markup (React `empty`, Vue's `empty` slot). As a React function or through the Vue slot's props it receives `{ filtered, clearFilters }`: whether an active column filter is what emptied the table, and how to clear every filter (through `onFiltersChange` / `update:filters` when they are controlled). "No rows match" wants a Clear button, "nothing here yet" a Create one. |
 | `ariaLabel?` | `string` | Names the table for assistive tech. |
 | `rowActivatable?` · `onRowActivate?` | `boolean` · `(row) => void` | Rows become focusable and activate on click, Enter or Space. |
@@ -1386,10 +1386,10 @@ provide the state prop for a concern and you own that concern instead. React nam
 | `toolbar?` | `ReactNode` | React. Content above the table; Vue uses the `toolbar` slot. |
 | `onProcess?` | `(result: { rows, total }) => void` | React. The processed page after filter/sort/paginate, in **both** modes. Vue emits `process`, Blazor calls it `Process`. Render the same set elsewhere — a card list, a summary, a CSV export — without re-deriving the pipeline. |
 
-Blazor matches this surface (`LoadingText` and `EmptyContent` in place of `emptyText`/`empty`,
-`Toolbar` and `RowDetail` as `RenderFragment`s) and is the one adapter that also exposes
-`FiltersChanged`. Its filter-aware empty state is `EmptyTemplate`, a
-`RenderFragment<FdyTableEmptyContext>` (`Filtered`, `ClearFilters`) that wins over `EmptyContent`.
+Blazor matches this surface (`EmptyContent` in place of `empty`, `Toolbar` and `RowDetail` as
+`RenderFragment`s) and is the one adapter that also exposes `FiltersChanged`. Its filter-aware
+empty state is `EmptyTemplate`, a `RenderFragment<FdyTableEmptyContext>` (`Filtered`,
+`ClearFilters`) that wins over `EmptyContent`.
 
 **Select-all ticks the current page, not the whole result set.** A header checkbox that silently
 selects rows the reader cannot see is how a bulk delete goes wrong, so it acts on the rows on

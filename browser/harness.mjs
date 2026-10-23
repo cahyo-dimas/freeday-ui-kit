@@ -453,6 +453,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-table-forward-text.tsx'),
       join(HERE, 'entries', 'vue-popover-align.js'),
       join(HERE, 'entries', 'react-popover-align.tsx'),
+      join(HERE, 'entries', 'vue-table-loading-text.js'),
+      join(HERE, 'entries', 'react-table-loading-text.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,
