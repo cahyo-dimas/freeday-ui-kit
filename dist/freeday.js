@@ -3295,7 +3295,21 @@
       its[(index + its.length) % its.length].focus();
     }
     var _pop = null;
-    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(menu, trigger, { matchWidth: false }); return _pop; }
+    /* `.fdy-menu--end` is the kit's existing spelling for "align this menu to the right", and the
+       stylesheet has always honoured it (left:auto;right:0). The popover path replaces that with
+       inline `fixed` coordinates, so without this line the class was silently dropped the moment
+       the menu went into the top layer: an account menu in a page gutter overshot its avatar and
+       ran to 4px off the screen edge. Reported from an app that patched it with a `translate`
+       hack keyed to the kit's own GAP. */
+    function popCtl() {
+      if (_pop === null && window.FreedayPopover) {
+        _pop = window.FreedayPopover.attach(menu, trigger, {
+          matchWidth: false,
+          align: menu.classList.contains('fdy-menu--end') ? 'end' : 'start'
+        });
+      }
+      return _pop;
+    }
     function open(index) {
       var p = popCtl(); if (p) p.show(); else menu.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
@@ -3469,7 +3483,8 @@
  * Used by the select/combo, datepicker, timepicker, cascade, autocomplete and menu enhancers;
  * the freeday/vue adapter ships an equivalent `usePopover` composable.
  *
- * attach(panel, trigger) -> { show(), hide() }. show()/hide() also toggle the panel's [hidden]
+ * attach(panel, trigger, opts) -> { show(), hide() }, where opts is { matchWidth, align } and
+ * both are described on place() below. show()/hide() also toggle the panel's [hidden]
  * attribute so callers keep using `!panel.hidden` for open-state and the `:not([hidden])`
  * entrance animation still fires. On browsers without the Popover API it degrades to that
  * [hidden] toggle over the panel's existing absolute-positioned CSS (clipped, but functional).
@@ -3482,35 +3497,46 @@
     && typeof HTMLElement.prototype.showPopover === 'function';
 
   // Position `panel` (already shown, so it has a measurable box) against `trigger`'s rect.
-  // matchWidth (default true) floors the panel to the trigger width, right for input-shaped
-  // dropdowns (combo/cascade/date/time), skipped for menus that keep their own min-width.
-  function place(panel, trigger, matchWidth) {
+  // opts is the object attach() takes, and both keys are optional:
+  //   matchWidth  (default true) floors the panel to the trigger width, right for input-shaped
+  //               dropdowns (combo/cascade/date/time), skipped for menus that keep their own min-width.
+  //   align       'start' (default) lines the panel's LEFT edge up with the trigger's left edge;
+  //               'end' lines its RIGHT edge up with the trigger's right edge, which is what a
+  //               control parked in a right-hand gutter needs. The panel is kept inside the
+  //               viewport either way, so 'end' near the left edge slides right instead of
+  //               hanging off it. freeday-menu.js reads it off `.fdy-menu--end`.
+  function place(panel, trigger, opts) {
+    var o = opts || {};
     var r = trigger.getBoundingClientRect();
     panel.style.position = 'fixed';
     panel.style.margin = '0';
     panel.style.inset = 'auto';                 // clear the UA popover centering
-    if (matchWidth !== false) panel.style.minWidth = r.width + 'px'; // at least as wide as the trigger
+    if (o.matchWidth !== false) panel.style.minWidth = r.width + 'px'; // at least as wide as the trigger
     var ph = panel.offsetHeight, pw = panel.offsetWidth;
     var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
     var below = vh - r.bottom - GAP, above = r.top - GAP;
     // Prefer below; flip above only when it doesn't fit below and above has more room.
     var top = (ph <= below || below >= above) ? (r.bottom + GAP) : Math.max(GAP, r.top - GAP - ph);
-    var left = r.left;
-    if (left + pw > vw - GAP) left = Math.max(GAP, vw - GAP - pw); // keep within the viewport
+    var left = (o.align === 'end') ? (r.right - pw) : r.left;
+    /* Clamped on BOTH sides, and that is not belt-and-braces: the first line is what keeps a
+       start-aligned panel on screen, the second is what keeps an end-aligned one on screen when
+       the panel is wider than the room to the left of its trigger. Keeping only one of them
+       trades an overflow on one edge for an overflow on the other. */
+    if (left + pw > vw - GAP) left = vw - GAP - pw;
+    if (left < GAP) left = GAP;
     panel.style.top = Math.round(top) + 'px';
     panel.style.left = Math.round(left) + 'px';
   }
 
   function attach(panel, trigger, opts) {
-    var matchWidth = !(opts && opts.matchWidth === false);
     if (supported) panel.setAttribute('popover', 'manual');
-    function reposition() { if (supported && panel.matches(':popover-open')) place(panel, trigger, matchWidth); }
+    function reposition() { if (supported && panel.matches(':popover-open')) place(panel, trigger, opts); }
     return {
       show: function () {
         panel.hidden = false;
         if (supported) {
           if (!panel.matches(':popover-open')) panel.showPopover();
-          place(panel, trigger, matchWidth);
+          place(panel, trigger, opts);
           window.addEventListener('scroll', reposition, true); // capture: any scrolling ancestor
           window.addEventListener('resize', reposition);
         }

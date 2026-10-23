@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday: a menu marked .fdy-menu--end aligns to its trigger's right edge</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>
+  /* The app shape the fault was reported from: a bar with a gutter, and the account control
+     parked against its right edge. The gutter is what tells the two alignments apart: a
+     left-aligned panel runs past the avatar and stops 4px off the screen, 20px further right
+     than the avatar's own edge. */
+  body { margin: 0; }
+  .bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; }
+  .edge { padding: 40px 0 0 8px; }      /* a trigger hard against the left edge, for the narrow case */
+  .avatar { width: 36px; height: 36px; }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <!-- Control: no modifier, so the panel's LEFT edge must stay on the trigger's left edge. -->
+    <div class="fdy-menu-wrap" id="wStart" data-fdy-menu>
+      <button class="fdy-btn fdy-btn--ghost" id="tStart" type="button" aria-haspopup="menu" aria-expanded="false">Actions</button>
+      <ul class="fdy-menu" role="menu" hidden>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Edit this record</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Duplicate this record</button></li>
+      </ul>
+    </div>
+
+    <!-- The reported case: the account menu in the right-hand gutter. -->
+    <div class="fdy-menu-wrap" id="wEnd" data-fdy-menu>
+      <button class="fdy-btn fdy-btn--ghost avatar" id="tEnd" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account">AB</button>
+      <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Account profile</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Switch workplace</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Sign out</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Same modifier, trigger against the LEFT edge: aligning the panel's right edge to this
+       trigger's right edge puts its left edge off-screen, so the viewport clamp has to catch it.
+       Right-aligning by overflowing the other way is one fault traded for another. -->
+  <div class="edge">
+    <div class="fdy-menu-wrap" id="wEdge" data-fdy-menu>
+      <button class="fdy-btn fdy-btn--ghost avatar" id="tEdge" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account, narrow">CD</button>
+      <ul class="fdy-menu fdy-menu--end" role="menu" hidden>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Account profile</button></li>
+        <li role="none"><button class="fdy-menu__item" role="menuitem">Sign out</button></li>
+      </ul>
+    </div>
+  </div>
+
+<script>
+  /* One reading, taken together: both rects plus the facts that say WHICH code path produced
+     them. `.fdy-menu--end` is also a stylesheet rule (left:auto;right:0), so a right edge that
+     lines up proves nothing on its own. The panel has to be in the top layer, positioned by
+     the enhancer's inline coordinates, for the measurement to be about freeday-popover.js. */
+  window.menuBox = (wrapId) => {
+    const wrap = document.getElementById(wrapId);
+    const trigger = wrap.querySelector('[aria-haspopup="menu"]');
+    const panel = wrap.querySelector('.fdy-menu');
+    const t = trigger.getBoundingClientRect();
+    const p = panel.getBoundingClientRect();
+    return {
+      trigger: { left: t.left, right: t.right, width: t.width },
+      panel: { left: p.left, right: p.right, width: p.width },
+      popoverOpen: panel.matches(':popover-open'),
+      inlineLeft: panel.style.left,
+      position: getComputedStyle(panel).position,
+      vw: document.documentElement.clientWidth,
+    };
+  };
+</script>
+</body>
+</html>

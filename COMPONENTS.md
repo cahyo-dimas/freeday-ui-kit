@@ -510,8 +510,10 @@ WAI-ARIA APG menu-button. Keyboard ↑/↓/Home/End/Esc handled by the enhancer.
 
 - Wrapper: `.fdy-menu-wrap` (or `.fdy-btn-split` for a split button, with
   `.fdy-btn-split__toggle` as the second button) + `data-fdy-menu`
-- List: `.fdy-menu` (`--end` aligns right), items `.fdy-menu__item` (`--danger`), separator
-  `<hr class="fdy-menu__sep">`
+- List: `.fdy-menu` (`--end` puts the panel's **right edge on the trigger's right edge**, which is
+  what a control parked in a page gutter needs; on a screen too narrow for that the panel slides
+  back inside the viewport instead of hanging off the left edge), items `.fdy-menu__item`
+  (`--danger`), separator `<hr class="fdy-menu__sep">`
 - A11y: trigger gets `aria-haspopup="menu"` + `aria-expanded="false"`; `<ul role="menu" hidden>`;
   each `<li role="none">` wraps a `<button role="menuitem">`.
 
@@ -525,6 +527,15 @@ WAI-ARIA APG menu-button. Keyboard ↑/↓/Home/End/Esc handled by the enhancer.
   </ul>
 </div>
 ```
+
+`.fdy-menu--end` is honoured on both of the paths an open menu can take. The stylesheet handles the
+one where the panel stays in the flow, and the enhancer handles the other: it lifts the panel into
+the top layer so it escapes any ancestor overflow clip, and positions it there with coordinates of
+its own, so the modifier has to be read by `freeday-popover.js` too. An app reported what happens
+when it is not. An account menu beside its avatar in a 24px gutter opened 20px further right than
+the avatar and stopped 4px off the screen edge, and the app's own `translate` patch for it was keyed
+to a constant inside the kit. For a control the kit does not ship, the same option is
+`FreedayPopover.attach(panel, trigger, { align: 'end' })`.
 
 ---
 

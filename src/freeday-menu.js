@@ -36,7 +36,21 @@
       its[(index + its.length) % its.length].focus();
     }
     var _pop = null;
-    function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(menu, trigger, { matchWidth: false }); return _pop; }
+    /* `.fdy-menu--end` is the kit's existing spelling for "align this menu to the right", and the
+       stylesheet has always honoured it (left:auto;right:0). The popover path replaces that with
+       inline `fixed` coordinates, so without this line the class was silently dropped the moment
+       the menu went into the top layer: an account menu in a page gutter overshot its avatar and
+       ran to 4px off the screen edge. Reported from an app that patched it with a `translate`
+       hack keyed to the kit's own GAP. */
+    function popCtl() {
+      if (_pop === null && window.FreedayPopover) {
+        _pop = window.FreedayPopover.attach(menu, trigger, {
+          matchWidth: false,
+          align: menu.classList.contains('fdy-menu--end') ? 'end' : 'start'
+        });
+      }
+      return _pop;
+    }
     function open(index) {
       var p = popCtl(); if (p) p.show(); else menu.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
