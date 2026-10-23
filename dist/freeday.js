@@ -2098,6 +2098,8 @@
  *               <div data-fdy-datepicker data-role="to" data-placeholder="To"></div>
  *             </div>
  *    The range links the two: the end can never precede the start (out-of-range days disable).
+ *  - Month:  <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
+ *    The calendar opens ON the month grid and stops there; the value is "YYYY-MM".
  *
  * Emits a bubbling "fdy-datepicker-change" CustomEvent on the wrapper: detail {value, date}.
  * Keyboard in the grid: ←/→ ±1 day, ↑/↓ ±1 week, Home/End week edge, PageUp/Down ±month,
@@ -2126,6 +2128,11 @@
   var TEXT = {
     label: 'Date',
     placeholder: 'Choose a date',
+    /* The month mode's own pair. Reusing `label` and `placeholder` would name a month field "Date"
+       and ask the reader to "Choose a date" on a control that cannot express a day, so every caller
+       would have to pass both attributes to undo a default that was simply wrong for the mode. */
+    labelMonth: 'Month',
+    placeholderMonth: 'Choose a month',
     prevMonth: 'Previous month',
     nextMonth: 'Next month',
     prevYear: 'Previous year',
@@ -2156,11 +2163,23 @@
   function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function toISO(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function toISOMonth(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
   function parseISO(s) {
     if (!s) return null;
     var p = String(s).split('-');
     if (p.length !== 3) return null;
     var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  /* Month mode reads BOTH shapes, and the day it drops is the point: a bound of "2026-03" lands on
+     March 1st, and monthDisabled then compares a whole month against it correctly at either end,
+     so an app can pass the same strings it stores. A full date still works for a host that keeps
+     its bounds in one format across a form. */
+  function parseISOMonth(s) {
+    if (!s) return null;
+    var p = String(s).split('-');
+    if (p.length < 2) return null;
+    var d = new Date(Number(p[0]), Number(p[1]) - 1, p.length > 2 ? Number(p[2]) : 1);
     return isNaN(d.getTime()) ? null : d;
   }
   function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
@@ -2189,11 +2208,16 @@
     wrap.dataset.fdyDpReady = '1';
     wrap.classList.add('fdy-datepicker');
 
-    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, 'placeholder');
-    var label = wrap.getAttribute('data-label') || textOf(wrap, 'label');
-    var selected = parseISO(wrap.getAttribute('data-value'));
-    var minDate = parseISO(wrap.getAttribute('data-min'));
-    var maxDate = parseISO(wrap.getAttribute('data-max'));
+    /* `data-mode="month"` makes the month grid the DESTINATION rather than a waypoint: the panel
+       opens on it, Enter and a click commit from it, the day grid is never built, and the value is
+       "YYYY-MM". Anything else, including the attribute's absence, is the day picker unchanged. */
+    var monthOnly = wrap.getAttribute('data-mode') === 'month';
+    var parseVal = monthOnly ? parseISOMonth : parseISO;
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, monthOnly ? 'placeholderMonth' : 'placeholder');
+    var label = wrap.getAttribute('data-label') || textOf(wrap, monthOnly ? 'labelMonth' : 'label');
+    var selected = parseVal(wrap.getAttribute('data-value'));
+    var minDate = parseVal(wrap.getAttribute('data-min'));
+    var maxDate = parseVal(wrap.getAttribute('data-max'));
     var rangeStart = null, rangeEnd = null; // for in-range shading
     var view = startOfDay(selected || new Date());
     view = new Date(view.getFullYear(), view.getMonth(), 1);
@@ -2203,7 +2227,7 @@
        August 2026 to March 2022 is fifty-three of them. Shift+PageUp already jumped a year, but a
        shortcut nobody can see is not an affordance, the repo's own test helper clicked "previous
        month" twenty-four times to reach a date two years back. */
-    var mode = 'days';
+    var mode = monthOnly ? 'months' : 'days';
     var focusMonth = null;
     var focusYear = null;
 
@@ -2239,7 +2263,10 @@
 
     function updateDisplay() {
       if (selected) {
-        valueSpan.textContent = valueFmt.format(selected);
+        /* Through the same `Intl` formatter the month CELLS and the day grid's title already use,
+           which is the whole reason this mode exists: <input type="month"> names the month in the
+           browser's language, this names it in the page's. */
+        valueSpan.textContent = (monthOnly ? monthNameFmt : valueFmt).format(selected);
         valueSpan.classList.remove('fdy-datepicker__value--placeholder');
       } else {
         valueSpan.textContent = placeholder;
@@ -2283,6 +2310,10 @@
     }
 
     function render() {
+      /* The floor of the drill, stated once here rather than at every caller that could lower it:
+         in month mode there is no level below months, so the day grid is unreachable by
+         construction instead of by every path remembering not to ask for it. */
+      if (monthOnly && mode === 'days') mode = 'months';
       if (mode === 'years') { renderYears(); return; }
       if (mode === 'months') { renderMonths(); return; }
       panel.innerHTML = '';
@@ -2387,7 +2418,7 @@
         }
         if (monthDisabled(year, m)) btn.disabled = true;
         btn.tabIndex = m === focusMonth ? 0 : -1;
-        btn.addEventListener('click', (function (mm) { return function () { openMonth(mm); }; })(m));
+        btn.addEventListener('click', (function (mm) { return function () { chooseMonth(mm); }; })(m));
         grid.appendChild(btn);
       }
       grid.addEventListener('keydown', onMonthKey);
@@ -2501,6 +2532,28 @@
       if (cell) cell.focus();
     }
 
+    /* What a month cell DOES, decided in one place for the click handler and the Enter key alike.
+       In day mode a month is a step on the way down; in month mode it is the answer. */
+    function chooseMonth(m) {
+      if (monthOnly) pickMonth(m);
+      else openMonth(m);
+    }
+
+    function pickMonth(m) {
+      var year = view.getFullYear();
+      if (monthDisabled(year, m)) return;
+      selected = new Date(year, m, 1);
+      focusMonth = m;
+      focusDate = selected;
+      updateDisplay();
+      /* The same event name, so a host already listening keeps listening, and `date` is still a
+         real Date (the first of the month) rather than a second shape to parse. */
+      wrap.dispatchEvent(new CustomEvent('fdy-datepicker-change', {
+        bubbles: true, detail: { value: toISOMonth(selected), date: new Date(selected) }
+      }));
+      close(true);
+    }
+
     /* Picking a month is navigation, not selection: it drops back to the day grid with the roving
        cell clamped into the new month, so nothing is committed until a DAY is chosen. */
     function openMonth(m) {
@@ -2532,7 +2585,7 @@
         case 'PageUp': moveMonthFocus(focusMonth, -1); break;
         case 'PageDown': moveMonthFocus(focusMonth, 1); break;
         case 'Enter':
-        case ' ': openMonth(focusMonth); break;
+        case ' ': chooseMonth(focusMonth); break;
         case 'Escape': close(true); break;
         default: handled = false;
       }
@@ -2626,14 +2679,15 @@
     function open() {
       if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
-      mode = 'days';
+      mode = monthOnly ? 'months' : 'days';
       focusDate = selected || focusDate || new Date();
       view = new Date(focusDate.getFullYear(), focusDate.getMonth(), 1);
+      if (monthOnly) focusMonth = view.getMonth();
       var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
       trigger.classList.add('is-open');
       render();
-      focusFocusDate();
+      if (monthOnly) focusMonthCell(); else focusFocusDate();
       document.addEventListener('click', onDocClick, true);
     }
 
@@ -2659,10 +2713,10 @@
     var api = {
       wrap: wrap,
       setState: setState,
-      getValue: function () { return selected ? toISO(selected) : ''; },
+      getValue: function () { return selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : ''; },
       clear: function () { selected = null; updateDisplay(); if (!panel.hidden) render(); },
-      setMin: function (iso) { minDate = parseISO(iso); if (!panel.hidden) render(); },
-      setMax: function (iso) { maxDate = parseISO(iso); if (!panel.hidden) render(); },
+      setMin: function (iso) { minDate = parseVal(iso); if (!panel.hidden) render(); },
+      setMax: function (iso) { maxDate = parseVal(iso); if (!panel.hidden) render(); },
       setRange: function (fromIso, toIso) {
         rangeStart = parseISO(fromIso);
         rangeEnd = parseISO(toIso);

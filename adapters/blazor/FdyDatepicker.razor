@@ -4,8 +4,10 @@
 @* Seed-based wrapper over freeday-datepicker.js: the enhancer builds the input-styled
    trigger + calendar popover from this empty div and emits fdy-datepicker-change. The
    enhancer owns that DOM, so we render the seed once (ShouldRender => false) and read the
-   picked value back through @bind-Value. Value is an ISO date string ("yyyy-MM-dd") or "". *@
+   picked value back through @bind-Value. Value is an ISO date string ("yyyy-MM-dd") or "",
+   and "yyyy-MM" when Mode is FdyDatepickerMode.Month. *@
 <div @ref="Root" data-fdy-datepicker
+     data-mode="@ModeAttribute"
      data-value="@Value"
      data-label="@Label"
      data-placeholder="@Placeholder"

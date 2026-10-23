@@ -5,10 +5,21 @@ namespace Freeday.Blazor;
 
 public partial class FdyDatepicker
 {
-    /// <summary>Selected date as an ISO string (<c>yyyy-MM-dd</c>), or "" when unset.
+    /// <summary>Selected date as an ISO string (<c>yyyy-MM-dd</c>), or <c>yyyy-MM</c> when
+    /// <see cref="Mode"/> is <see cref="FdyDatepickerMode.Month"/>, or "" when unset.
     /// Two-way bindable via <c>@bind-Value</c>.</summary>
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+
+    /// <summary>What the picker answers with. <see cref="FdyDatepickerMode.Day"/> (default) is the
+    /// calendar as it always was. <see cref="FdyDatepickerMode.Month"/> opens on the month grid,
+    /// stops there, and reports <c>yyyy-MM</c>.</summary>
+    [Parameter] public FdyDatepickerMode Mode { get; set; } = FdyDatepickerMode.Day;
+
+    /* null rather than "day" for the default: an attribute the enhancer does not need is an
+       attribute no reader of the seed has to interpret, and the enhancer's own check is
+       `=== 'month'`, so the day path is the absence of this. */
+    private string? ModeAttribute => Mode == FdyDatepickerMode.Month ? "month" : null;
 
     /// <summary>Accessible label for the trigger.</summary>
     [Parameter] public string? Label { get; set; }
@@ -82,4 +93,14 @@ public partial class FdyDatepicker
 
     /// <summary>The detail shape of the enhancer's <c>fdy-datepicker-change</c> event.</summary>
     public sealed record ChangeDetail(string? Value, string? Date);
+}
+
+/// <summary>What <see cref="FdyDatepicker"/> answers with.</summary>
+public enum FdyDatepickerMode
+{
+    /// <summary>A single day, reported as <c>yyyy-MM-dd</c>.</summary>
+    Day,
+
+    /// <summary>A whole month, reported as <c>yyyy-MM</c>.</summary>
+    Month,
 }

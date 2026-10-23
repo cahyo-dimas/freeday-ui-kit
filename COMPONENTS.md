@@ -953,9 +953,10 @@ a new class.
 
 | Prop | Type | What it does |
 |---|---|---|
-| `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `''`/`null` for empty. |
+| `modelValue` · `value` | `string \| null` | ISO `YYYY-MM-DD`, or `YYYY-MM` under `mode="month"`. `''`/`null` for empty. |
 | `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`. Clearing sends `''`. |
-| `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. |
+| `mode?` | `'day' \| 'month'` | `day` is the calendar as it always was. `month` opens on the month grid, stops there, and answers with `YYYY-MM`. Blazor takes the enum `FdyDatepickerMode`; the raw path takes `data-mode="month"`. |
+| `min?` · `max?` | `string` | ISO bounds; days outside them cannot be picked. Month mode also accepts `YYYY-MM`, and a bound inside a month leaves that month pickable. |
 | `locale?` | `string` | BCP-47 tag deciding month and weekday names. Defaults to the page's `<html lang>`, then `en`. |
 | `placeholder?` | `string` | |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
@@ -1024,12 +1025,36 @@ months, `Home`/`End` January/December, `PageUp`/`PageDown` a year, `Enter`/`Spac
 year grid likewise: arrows ±1/±3 years, `Home`/`End` the ends of the page, `PageUp`/`PageDown` a
 page of twelve.
 
-- Attributes: `data-value="YYYY-MM-DD"`, `data-placeholder`, `data-label`, `data-fdy-no-icon`
+**Picking a month, not a day.** `mode="month"` (`data-mode="month"` on the raw path,
+`Mode="FdyDatepickerMode.Month"` in Blazor) makes the month grid the destination instead of a
+waypoint: the panel opens on it, a click or `Enter` commits from it, the day grid is never built,
+and the value is `YYYY-MM`. The title still steps up to the year grid and back, because that is
+navigation and not an answer.
+
+This exists because `<input type="month">` names the month in the **browser's** language, which an
+Indonesian page read on an English phone cannot override. The month cells, the cell's accessible
+name and the value in the trigger all go through `Intl` with the page's `<html lang>`, the same
+route the day grid's month names have always taken, so `lang="id"` reads `Oktober 2026` with nothing
+configured. Keyboard in the month grid is unchanged: arrows move one and three months, `Home`/`End`
+jump to January and December, `PageUp`/`PageDown` step a year, and `Enter`/`Space` now answers
+rather than drilling. The cell keeps its name when it becomes selected and carries the state in
+`aria-selected`, as the day cells do.
+
+Nothing changes without the prop. A picker with no `mode` is the day picker it has always been,
+down to the `YYYY-MM-DD` it reports.
+
+- Attributes: `data-value="YYYY-MM-DD"`, `data-mode="month"`, `data-placeholder`, `data-label`,
+  `data-fdy-no-icon`
 
 ```html
 <div class="fdy-field">
   <span class="fdy-label">Invoice date</span>
   <div data-fdy-datepicker data-value="2026-07-21" data-label="Invoice date"></div>
+</div>
+
+<div class="fdy-field">
+  <span class="fdy-label">Reporting month</span>
+  <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
 </div>
 
 <div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Reporting period">

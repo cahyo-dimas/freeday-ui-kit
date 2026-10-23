@@ -12,6 +12,12 @@ import { usePopover } from '../usePopover';
 // over the same kit classes. Open/close (outside-click + focusout) mirrors the
 // already-approved FdyCombo.vue pattern. Range mode is out of scope (v1 = single date).
 
+/** Which grid is on screen. The drill goes days -> months -> years and back down. */
+type CalendarLevel = 'days' | 'months' | 'years';
+
+/** What the picker answers with: a day (`YYYY-MM-DD`) or a whole month (`YYYY-MM`). */
+type FdyDatepickerMode = 'day' | 'month';
+
 interface DayCell {
   date: Date;
   iso: string;
@@ -25,7 +31,10 @@ interface DayCell {
 }
 
 const props = defineProps<{
+  /** ISO `YYYY-MM-DD`, or `YYYY-MM` when `mode` is `'month'`. `''`/`null` for empty. */
   modelValue: string | null;
+  /** `'day'` (default) answers with a date. `'month'` opens on the month grid, stops there, and answers with `YYYY-MM`. */
+  mode?: FdyDatepickerMode;
   min?: string;
   max?: string;
   locale?: string;
@@ -68,6 +77,9 @@ function pad(n: number): string {
 function toISO(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+function toISOMonth(d: Date): string {
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
+}
 function parseISO(s: string | null | undefined): Date | null {
   if (s === null || s === undefined || s === '') return null;
   const parts: string[] = s.split('-');
@@ -77,6 +89,29 @@ function parseISO(s: string | null | undefined): Date | null {
   const day: number = Number(parts[2]);
   const d: Date = new Date(y, m - 1, day);
   return Number.isNaN(d.getTime()) ? null : d;
+}
+/** Month mode reads BOTH shapes, and the dropped day is the point: a bound of `2026-03` lands on
+ *  March 1st, which `isMonthDisabled` then compares a whole month against correctly at either end,
+ *  so an app can pass the strings it already stores. A full date still works. */
+function parseISOMonth(s: string | null | undefined): Date | null {
+  if (s === null || s === undefined || s === '') return null;
+  const parts: string[] = s.split('-');
+  if (parts.length < 2) return null;
+  const y: number = Number(parts[0]);
+  const m: number = Number(parts[1]);
+  const day: number = parts.length > 2 ? Number(parts[2]) : 1;
+  const d: Date = new Date(y, m - 1, day);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+/* The page's own `lang`, which is what COMPONENTS.md has promised all along and what the vanilla
+   enhancer has always done. Handing `undefined` to Intl instead falls back to the BROWSER's
+   language, so an Indonesian reader saw Indonesian month names inside a kit that is English on
+   every other path, and an Indonesian PAGE read by an English browser got English ones. That is
+   the symptom this month mode was asked for, so the fallback has to be the page. */
+function pageLocale(): string {
+  if (typeof document === 'undefined') return 'en';
+  // `||`, not `??`: an empty `lang=""` is not null and Intl throws RangeError on it.
+  return document.documentElement.getAttribute('lang') || 'en';
 }
 function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -113,13 +148,22 @@ const open: Ref<boolean> = ref(false);
 // scroll container; positions against the trigger.
 usePopover(panelEl, triggerEl, open);
 
-const selectedDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.modelValue));
-const minDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.min));
-const maxDate: ComputedRef<Date | null> = computed((): Date | null => parseISO(props.max));
+const isMonthMode: ComputedRef<boolean> = computed((): boolean => props.mode === 'month');
+/** Resolved once here so every formatter below reads the same tag. */
+const activeLocale: ComputedRef<string> = computed((): string => props.locale ?? pageLocale());
+/** Reading `props.mode` inside the computeds below is what keeps them in step with it. */
+function parseValue(s: string | null | undefined): Date | null {
+  return props.mode === 'month' ? parseISOMonth(s) : parseISO(s);
+}
+const selectedDate: ComputedRef<Date | null> = computed((): Date | null => parseValue(props.modelValue));
+const minDate: ComputedRef<Date | null> = computed((): Date | null => parseValue(props.min));
+const maxDate: ComputedRef<Date | null> = computed((): Date | null => parseValue(props.max));
 const isDisabled: ComputedRef<boolean> = computed((): boolean => props.disabled === true);
 const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly === true);
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
-const displayPlaceholder: ComputedRef<string> = computed((): string => props.placeholder ?? 'Select date');
+const displayPlaceholder: ComputedRef<string> = computed(
+  (): string => props.placeholder ?? (isMonthMode.value ? 'Select month' : 'Select date'),
+);
 const showClear: ComputedRef<boolean> = computed(
   (): boolean => props.clearable === true && selectedDate.value !== null && isDisabled.value === false && isReadonly.value === false,
 );
@@ -145,10 +189,18 @@ const effectiveFocusDate: ComputedRef<Date> = computed((): Date => {
   return new Date(view.value.getFullYear(), view.value.getMonth(), Math.min(f.getDate(), daysInMonth));
 });
 
-/* 'days' | 'months', the calendar drills one level up instead of growing furniture beside the title.
-   Before this the only pointer route to another month was one click per month: August 2026 to March
-   2022 is fifty-three of them, and the Shift+PageUp jump had no affordance at all. */
-const mode: Ref<'days' | 'months' | 'years'> = ref('days');
+/* Which grid is showing, and the calendar drills one level up instead of growing furniture beside
+   the title. Before this the only pointer route to another month was one click per month: August
+   2026 to March 2022 is fifty-three of them, and the Shift+PageUp jump had no affordance at all.
+   Named `level`, not `mode`: `mode` is the PROP that decides what the picker answers with, and one
+   name for both would read as the same thing in a template that mentions them together.
+
+   Month mode has no level below months, so the day grid is unreachable by construction rather
+   than by every path remembering not to ask for it. */
+function startLevel(): CalendarLevel {
+  return props.mode === 'month' ? 'months' : 'days';
+}
+const level: Ref<CalendarLevel> = ref(startLevel());
 const focusMonth: Ref<number> = ref(0);
 const focusYear: Ref<number> = ref(0);
 
@@ -159,10 +211,10 @@ const YEARS_PER_PAGE = 12;
 const yearPageStart = (year: number): number => Math.floor(year / YEARS_PER_PAGE) * YEARS_PER_PAGE;
 
 const monthCellFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'short' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'short' }),
 );
 const monthNameFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'long', year: 'numeric' }),
 );
 
 interface MonthCell {
@@ -243,21 +295,26 @@ const yearRangeLabel: ComputedRef<string> = computed(
 );
 
 const monthFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { month: 'long', year: 'numeric' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { month: 'long', year: 'numeric' }),
 );
 const valueFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { day: '2-digit', month: 'short', year: 'numeric' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { day: '2-digit', month: 'short', year: 'numeric' }),
 );
 const dayLabelFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
 );
 const dowFmt: ComputedRef<Intl.DateTimeFormat> = computed(
-  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(props.locale, { weekday: 'short' }),
+  (): Intl.DateTimeFormat => new Intl.DateTimeFormat(activeLocale.value, { weekday: 'short' }),
 );
 
-const displayValue: ComputedRef<string> = computed((): string =>
-  selectedDate.value !== null ? valueFmt.value.format(selectedDate.value) : displayPlaceholder.value,
-);
+/* Month mode shows the month through the SAME formatter the month cells and the day grid's title
+   already use, which is the whole point of the mode: <input type="month"> names the month in the
+   browser's language, this names it in the page's. */
+const displayValue: ComputedRef<string> = computed((): string => {
+  if (selectedDate.value === null) return displayPlaceholder.value;
+  const fmt: Intl.DateTimeFormat = isMonthMode.value ? monthNameFmt.value : valueFmt.value;
+  return fmt.format(selectedDate.value);
+});
 
 const weekdayHeaders: ComputedRef<string[]> = computed((): string[] => {
   const monday: Date = new Date(2024, 0, 1); // a known Monday
@@ -310,13 +367,32 @@ function moveFocus(next: Date): void {
 
 function openMonthGrid(): void {
   focusMonth.value = view.value.getMonth();
-  mode.value = 'months';
+  level.value = 'months';
   void nextTick((): void => focusMonthCell());
 }
 
 function focusMonthCell(): void {
   const cell: HTMLElement | null = panelEl.value?.querySelector('.fdy-cal__month[tabindex="0"]') ?? null;
   cell?.focus();
+}
+
+/* What a month cell DOES, decided in one place for the click handler and the Enter key alike. In
+   day mode a month is a step on the way down; in month mode it is the answer. */
+function chooseMonth(index: number): void {
+  if (isMonthMode.value) pickMonth(index);
+  else openMonth(index);
+}
+
+function pickMonth(index: number): void {
+  const year: number = view.value.getFullYear();
+  if (isMonthDisabled(year, index)) return;
+  const first: Date = new Date(year, index, 1);
+  focusMonth.value = index;
+  focusDate.value = first;
+  const iso: string = toISOMonth(first);
+  emit('update:modelValue', iso);
+  emit('change', iso);
+  closePanel(true);
 }
 
 /* Picking a month is NAVIGATION, not selection: it drops back to the day grid with the roving cell
@@ -327,13 +403,13 @@ function openMonth(index: number): void {
   const day: number = Math.min(focusDate.value.getDate(), daysInMonth);
   view.value = new Date(year, index, 1);
   focusDate.value = new Date(year, index, day);
-  mode.value = 'days';
+  level.value = 'days';
   void nextTick((): void => focusCell());
 }
 
 function openYearGrid(): void {
   focusYear.value = view.value.getFullYear();
-  mode.value = 'years';
+  level.value = 'years';
   void nextTick((): void => focusYearCell());
 }
 
@@ -347,7 +423,7 @@ function focusYearCell(): void {
 function openYear(year: number): void {
   view.value = new Date(year, view.value.getMonth(), 1);
   focusMonth.value = view.value.getMonth();
-  mode.value = 'months';
+  level.value = 'months';
   void nextTick((): void => focusMonthCell());
 }
 
@@ -394,7 +470,7 @@ function onMonthKeydown(e: KeyboardEvent): void {
     case 'PageUp': moveMonthFocus(focusMonth.value, -1); break;
     case 'PageDown': moveMonthFocus(focusMonth.value, 1); break;
     case 'Enter':
-    case ' ': openMonth(focusMonth.value); break;
+    case ' ': chooseMonth(focusMonth.value); break;
     case 'Escape': closePanel(true); break;
     default: handled = false;
   }
@@ -423,7 +499,16 @@ function openPanel(): void {
   if (isDisabled.value || isReadonly.value || open.value) return;
   focusDate.value = selectedDate.value ?? focusDate.value ?? new Date();
   view.value = new Date(focusDate.value.getFullYear(), focusDate.value.getMonth(), 1);
+  /* Reopening starts at the mode's own floor. Without this a month picker that drilled to the year
+     grid and was dismissed would open on years the next time, and a keyboard user would land on a
+     grid that cannot answer. */
+  level.value = startLevel();
   open.value = true;
+  if (isMonthMode.value) {
+    focusMonth.value = view.value.getMonth();
+    void nextTick((): void => focusMonthCell());
+    return;
+  }
   void nextTick((): void => focusCell());
 }
 
@@ -563,11 +648,11 @@ onBeforeUnmount((): void => {
         <button
           type="button"
           class="fdy-cal__nav"
-          :aria-label="mode === 'years' ? prevYearsLabelText : mode === 'months' ? prevYearLabelText : prevMonthLabelText"
+          :aria-label="level === 'years' ? prevYearsLabelText : level === 'months' ? prevYearLabelText : prevMonthLabelText"
           @click="
-            mode === 'years'
+            level === 'years'
               ? moveYearFocus(focusYear - 12)
-              : mode === 'months'
+              : level === 'months'
                 ? moveMonthFocus(focusMonth, -1)
                 : (view = addMonths(view, -1))
           "
@@ -576,23 +661,23 @@ onBeforeUnmount((): void => {
           :id="titleId"
           type="button"
           class="fdy-cal__title"
-          :aria-label="mode === 'years' ? undefined : mode === 'months' ? chooseYearLabelText : chooseMonthLabelText"
-          @click="mode === 'months' ? openYearGrid() : openMonthGrid()"
-        >{{ mode === 'years' ? yearRangeLabel : mode === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
+          :aria-label="level === 'years' ? undefined : level === 'months' ? chooseYearLabelText : chooseMonthLabelText"
+          @click="level === 'months' ? openYearGrid() : openMonthGrid()"
+        >{{ level === 'years' ? yearRangeLabel : level === 'months' ? String(view.getFullYear()) : monthFmt.format(view) }}</button>
         <button
           type="button"
           class="fdy-cal__nav"
-          :aria-label="mode === 'years' ? nextYearsLabelText : mode === 'months' ? nextYearLabelText : nextMonthLabelText"
+          :aria-label="level === 'years' ? nextYearsLabelText : level === 'months' ? nextYearLabelText : nextMonthLabelText"
           @click="
-            mode === 'years'
+            level === 'years'
               ? moveYearFocus(focusYear + 12)
-              : mode === 'months'
+              : level === 'months'
                 ? moveMonthFocus(focusMonth, 1)
                 : (view = addMonths(view, 1))
           "
         >›</button>
       </div>
-      <div v-if="mode === 'years'" class="fdy-cal__grid fdy-cal__grid--years" role="grid" :aria-labelledby="titleId" @keydown="onYearKeydown">
+      <div v-if="level === 'years'" class="fdy-cal__grid fdy-cal__grid--years" role="grid" :aria-labelledby="titleId" @keydown="onYearKeydown">
         <button
           v-for="cell in yearCells"
           :key="cell.year"
@@ -607,7 +692,7 @@ onBeforeUnmount((): void => {
           @click="openYear(cell.year)"
         >{{ cell.year }}</button>
       </div>
-      <div v-else-if="mode === 'months'" class="fdy-cal__grid fdy-cal__grid--months" role="grid" :aria-labelledby="titleId" @keydown="onMonthKeydown">
+      <div v-else-if="level === 'months'" class="fdy-cal__grid fdy-cal__grid--months" role="grid" :aria-labelledby="titleId" @keydown="onMonthKeydown">
         <button
           v-for="cell in monthCells"
           :key="cell.index"
@@ -619,7 +704,7 @@ onBeforeUnmount((): void => {
           :aria-selected="cell.selected ? 'true' : undefined"
           :disabled="cell.disabled"
           :tabindex="cell.focusable ? 0 : -1"
-          @click="openMonth(cell.index)"
+          @click="chooseMonth(cell.index)"
         >{{ cell.label }}</button>
       </div>
       <div v-else class="fdy-cal__grid" role="grid" :aria-labelledby="titleId" @keydown="onGridKeydown">
