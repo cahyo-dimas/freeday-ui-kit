@@ -26,8 +26,19 @@ literal di `switch` papan tombol `freeday-tabs.js`.
 Pekerjaan keempat itu membuka satu cacat yang catatannya gambarkan tanpa pelapornya tahu: Vue dan
 React menyerahkan `props.locale` yang `undefined` langsung ke `Intl`, yang berarti bahasa peramban,
 sementara dokumen menjanjikan `<html lang>` sejak lama dan cuma enhancer vanilla yang betul
-melakukannya. Itu satu-satunya perubahan perilaku di rilis ini, dan ia kena mode hari juga. Detail
-di CHANGELOG.
+melakukannya. Itu satu-satunya perubahan perilaku di rilis ini, dan ia kena mode hari juga.
+
+Dan uji perataan `#074` menangkap cacat yang jauh lebih tua daripada rilis ini (`#079`). `place()`
+membaca rect pemicu sebagai hal pertama, padahal panel yang baru di-`show()` masih memakai
+`position:absolute` dengan `top:calc(100% + …)` dari stylesheet komponennya, dan di top layer
+`100%` itu tinggi viewport. Panel terjun satu viewport, dokumen mendapat scrollbar sesaat,
+halaman relayout lebih sempit, dan rect yang terukur milik tata letak yang tiga baris berikutnya
+batalkan. Ada sejak 1.4.1, kena keenam enhancer yang memakai `attach()`, dan tak terlihat di macOS
+sebab scrollbar overlay tidak memakan ruang tata letak. Yang melihatnya runner Linux di CI, sesudah
+tag `v3.8.0` pertama ditolak gerbang dan dihapus kembali. Reproduksinya kini ada di suite dan
+berjalan di macOS juga.
+
+Detail di CHANGELOG.
 
 Utang yang dibawa rilis ini, tiga lama dan lima baru. Yang lama: floor dukungan di README diaudit
 dari fitur yang dipakai dan belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah
@@ -53,7 +64,7 @@ Yang baru, semuanya dari 3.8.0 dan semuanya pintu separuh:
   lencana yang sudah terkirim. `fdy-badge--neutral` sebagai opt-in bisa lebih awal.
 
 
-Gerbang untuk 3.8.0, lokal: `node --test` **128/128**, `npm run test:browser` **171/171**,
+Gerbang untuk 3.8.0, lokal: `node --test` **128/128**, `npm run test:browser` **172/172**,
 `npm run typecheck:react` bersih, `npm run test:blazor` **33/33**. Setiap perilaku baru diverifikasi
 dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
 membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang

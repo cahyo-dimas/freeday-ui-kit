@@ -24,6 +24,27 @@ bukan `<html lang>`. Kalimat itu berlaku kata per kata untuk `FdyDatepicker` Vue
 sudah menjanjikan `<html lang>` sejak lama, cuma enhancer vanilla yang betul melakukannya, dan
 kedua adapter menyerahkan `props.locale` yang `undefined` langsung ke `Intl`.
 
+### Fixed
+- **Popover memposisikan panelnya dari tata letak yang ia batalkan tiga baris kemudian** (`#079`),
+  ada sejak 1.4.1 dan kena keenam enhancer yang memakai `attach()`: autocomplete, cascade, combo,
+  datepicker, menu dan timepicker. Keenam panel itu `position:absolute` dengan
+  `top:calc(100% + var(--space-1))` di stylesheet komponennya, dan aturan author mengalahkan gaya
+  UA popover, jadi panel yang baru di-`show()` sudah di top layer sambil masih memakai aturan itu.
+  Di top layer `100%` adalah tinggi viewport. Selama satu fungsi sinkron panelnya duduk satu
+  viewport di bawah halaman dan overflow dokumen tumbuh mengikutinya, terukur `scrollHeight` 1023
+  lawan viewport 900. Di tempat scrollbar memakan ruang tata letak, yakni setiap peramban Windows
+  dan Linux, dokumen mendapat scrollbar untuk sesaat, `clientWidth` menyusut selebar scrollbar itu,
+  halaman relayout, dan pemicunya bergeser bersamanya. `place()` membaca rect pemicu sebagai hal
+  pertama yang ia lakukan, jadi yang ia ukur adalah tata letak sementara itu. Pengukurannya
+  sekarang terjadi sesudah panel keluar dari flow.
+
+  macOS memakai scrollbar overlay yang tidak memakan ruang, jadi mesin tempat kit ini ditulis
+  secara struktural tidak bisa melihat cacat ini, dan 1.4.1 sampai 3.7.0 mengirimnya tanpa ada yang
+  tahu. Yang melihatnya runner Linux di CI, lewat uji perataan `#074` yang kebetulan mengukur
+  koordinat di sisi kanan layar. Reproduksinya sekarang ada di suite dan berjalan di macOS juga,
+  dengan menata `::-webkit-scrollbar` ke lebar tetap, plus assertion yang menolak lulus kalau
+  enginenya ternyata tidak memberi scrollbar ruang tata letak.
+
 ### Added
 - **`align` di popover, dibacakan dari `.fdy-menu--end`** (`#074`). Kelasnya sudah ada sejak lama
   dan stylesheet selalu menghormatinya lewat `left:auto;right:0`. Jalur popover menggantinya dengan

@@ -32,10 +32,20 @@
   //               hanging off it. freeday-menu.js reads it off `.fdy-menu--end`.
   function place(panel, trigger, opts) {
     var o = opts || {};
-    var r = trigger.getBoundingClientRect();
+    /* Take the panel out of the flow BEFORE measuring anything, because until this runs the panel
+     * is still `position:absolute` with `top:calc(100% + …)` from its component's stylesheet. An
+     * author rule outranks the popover UA style, and in the top layer that `100%` resolves against
+     * the viewport, so a panel that has just been shown sits one viewport height down the page and
+     * drags the document's scrollable overflow with it. Where scrollbars take layout space (every
+     * Windows and Linux browser; macOS overlay scrollbars hide it completely) the document gains a
+     * classic scrollbar for the duration, documentElement.clientWidth drops by its width, and the
+     * page relays out 15px narrower. A trigger rect read in that instant is a rect from a layout
+     * that is about to be undone by the next three lines: measured 961 instead of 976 for an avatar
+     * in a 24px gutter, so the menu landed a scrollbar's width to the left of it. */
     panel.style.position = 'fixed';
     panel.style.margin = '0';
     panel.style.inset = 'auto';                 // clear the UA popover centering
+    var r = trigger.getBoundingClientRect();
     if (o.matchWidth !== false) panel.style.minWidth = r.width + 'px'; // at least as wide as the trigger
     var ph = panel.offsetHeight, pw = panel.offsetWidth;
     var vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;

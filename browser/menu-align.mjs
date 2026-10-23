@@ -97,3 +97,53 @@ test('right-aligning never pushes a menu off the left edge (note 2026-10-23 §2)
       `and inside the right edge, got right ${edge.panel.right} in a viewport of ${edge.vw}`);
   });
 });
+
+/* The third test is the one the Linux runner wrote. The two above pass on macOS and the first of
+ * them failed in CI by exactly 15px, which is Chrome's classic scrollbar.
+ *
+ * The cause is an ordering fault in place(), and it is nothing to do with alignment. A panel that
+ * has just been shown is in the top layer while still carrying its component's `position:absolute`
+ * and `top:calc(100% + …)`, because an author rule outranks the popover UA style, and in the top
+ * layer that `100%` is the viewport's height. So for the length of one synchronous function the
+ * panel sits a whole viewport down the page and the document's scrollable overflow grows to match:
+ * measured here, scrollHeight 1023 against a 900px viewport. Where scrollbars take layout space the
+ * document therefore gains one, documentElement.clientWidth drops from 1000 to 985, and the topbar
+ * relays out 15px narrower, taking the avatar with it. place() read the trigger rect in that
+ * instant and then undid the layout it had measured against.
+ *
+ * macOS overlay scrollbars take no space, so the author's machine could not see any of it. Styling
+ * the webkit scrollbar to a fixed width makes one engine behave like both, which is what this
+ * reproduces, and the spec re-measures the width rather than trusting the stylesheet.
+ */
+test('a menu lands on its trigger where scrollbars take layout space (CI, Linux)', { skip }, async () => {
+  await withPage(fixture('vanilla-menu-align.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete" && window.FreedayMenu && window.useClassicScrollbars');
+
+    const cond = JSON.parse(await p.evalJS('JSON.stringify(window.useClassicScrollbars())'));
+    /* The premise, measured. Without this the spec would pass on an engine with overlay scrollbars
+       while proving nothing, which is the state the kit was already in. */
+    assert.ok(cond.scrollbarWidth > 0,
+      'this engine must give scrollbars layout width, or the condition under test is absent');
+    /* And the fault has to be the TRANSIENT one. A page with a permanent scrollbar is a different
+       case and was always placed correctly: the trigger and the viewport agree with each other at
+       every instant, so there is nothing stale to read. */
+    assert.equal(cond.clientWidth, cond.innerWidth,
+      'the page must have no scrollbar at rest, or the measurement below is not the reported fault');
+
+    const end = await openAndMeasure(p, 'wEnd', '#tEnd');
+    assert.ok(Math.abs(end.panel.right - end.trigger.right) <= 1,
+      `the panel must land on the trigger's right edge with a ${cond.scrollbarWidth}px scrollbar in play, `
+        + `got ${end.panel.right} against ${end.trigger.right}. a gap of about ${cond.scrollbarWidth}px `
+        + 'means the trigger was measured while the panel was still dragging the document');
+
+    /* The start-aligned control, under the same condition. It is the widget six enhancers use, and
+       the same stale rect feeds `left = r.left`, so this is the assertion that says the fix is in
+       the measurement and not in the alignment branch. */
+    const start = await openAndMeasure(p, 'wStart', '#tStart');
+    assert.ok(Math.abs(start.panel.left - start.trigger.left) <= 1,
+      `an unmodified menu must still open on its trigger's left edge, got ${start.panel.left} against ${start.trigger.left}`);
+    /* The vertical axis comes off the same rect, and it drifted by a pixel here before the fix. */
+    assert.ok(Math.abs(start.panel.top - (start.trigger.bottom + GAP)) <= 1,
+      `and ${GAP}px below it, got top ${start.panel.top} against a trigger bottom of ${start.trigger.bottom}`);
+  });
+});

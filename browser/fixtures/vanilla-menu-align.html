@@ -14,6 +14,23 @@
   .bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; }
   .edge { padding: 40px 0 0 8px; }      /* a trigger hard against the left edge, for the narrow case */
   .avatar { width: 36px; height: 36px; }
+
+  /* Scrollbars that take layout space, switched on by the spec that needs them.
+     Every Windows and Linux browser is like this; macOS overlay scrollbars take none, which is why
+     the fault this reproduces was invisible on the author's machine and red on the Linux runner.
+     Styling the webkit scrollbar at a fixed width is what makes a macOS Chrome behave like a Linux
+     one, so one engine can test both. 15px is Chrome's own classic width, measured, and the spec
+     re-measures it rather than trusting this number. */
+  /* Both selectors, and the second is not decoration: the first styles the DOCUMENT's own
+     scrollbar, which is the condition under test, while the descendant one reaches the probe
+     div that measures it. Without the descendant rule the probe keeps its default overlay
+     scrollbar and reports 0, so the spec cannot tell a reproduced condition from an absent one. */
+  html.classic-scrollbars::-webkit-scrollbar,
+  html.classic-scrollbars ::-webkit-scrollbar { width: 15px; height: 15px; }
+  html.classic-scrollbars::-webkit-scrollbar-thumb { background: #888; }
+  html.classic-scrollbars::-webkit-scrollbar-track { background: #eee; }
+  .sb-probe { width: 50px; height: 50px; overflow: scroll; position: absolute; left: -200px; visibility: hidden; }
+  .sb-probe > div { width: 200px; height: 200px; }
 </style>
 </head>
 <body>
@@ -56,6 +73,23 @@
      them. `.fdy-menu--end` is also a stylesheet rule (left:auto;right:0), so a right edge that
      lines up proves nothing on its own. The panel has to be in the top layer, positioned by
      the enhancer's inline coordinates, for the measurement to be about freeday-popover.js. */
+  /* Turn the condition on, and report what the engine actually gives us: a spec that assumes
+     scrollbars take space would pass for the wrong reason on a machine where they do not. */
+  window.useClassicScrollbars = () => {
+    document.documentElement.classList.add('classic-scrollbars');
+    const probe = document.createElement('div');
+    probe.className = 'sb-probe';
+    probe.appendChild(document.createElement('div'));
+    document.body.appendChild(probe);
+    const width = probe.offsetWidth - probe.clientWidth;
+    probe.remove();
+    return {
+      scrollbarWidth: width,
+      clientWidth: document.documentElement.clientWidth,
+      innerWidth: window.innerWidth,
+    };
+  };
+
   window.menuBox = (wrapId) => {
     const wrap = document.getElementById(wrapId);
     const trigger = wrap.querySelector('[aria-haspopup="menu"]');
@@ -63,8 +97,8 @@
     const t = trigger.getBoundingClientRect();
     const p = panel.getBoundingClientRect();
     return {
-      trigger: { left: t.left, right: t.right, width: t.width },
-      panel: { left: p.left, right: p.right, width: p.width },
+      trigger: { left: t.left, right: t.right, width: t.width, bottom: t.bottom },
+      panel: { left: p.left, right: p.right, width: p.width, top: p.top },
       popoverOpen: panel.matches(':popover-open'),
       inlineLeft: panel.style.left,
       position: getComputedStyle(panel).position,
