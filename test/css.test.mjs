@@ -721,3 +721,24 @@ test('the shell column can contain a scrolling child (#055 §2)', () => {
   assert.ok(sidebar && /width:\s*var\(--fdy-app-sidebar-w,\s*15\.5rem\)/.test(sidebar.body),
     '.fdy-app__sidebar width must be settable, or every app overrides the rule that transitions it');
 });
+
+/* `visibility` tidak boleh ditransisikan sebagai properti beranimasi, di mana pun.
+ *
+ * Mentransisikannya membuat Safari kadang tidak pernah menjalankan fade `opacity` yang menyertainya
+ * pada arah visible -> hidden. Elemen yang seharusnya menghilang TINGGAL TERCAT: diukur di iPhone 7
+ * pada `.fdy-app__backdrop`, yang melaporkan `opacity=1 visibility=visible` padahal `--nav-open`
+ * sudah lepas dan `pointer-events` sudah `none`. Layarnya gelap sampai halaman dimuat ulang.
+ *
+ * Penjaga ini statis dan bukan uji peramban, dan itu disengaja: Chromium menjalankan transisi itu
+ * dengan benar, jadi tak satu pun dari 206 uji peramban kit ini akan pernah melihatnya. Pola yang
+ * sah adalah JEDA, `visibility 0s linear <durasi>`, yang mengganti nilainya secara diskret. */
+test('no shipped rule transitions visibility as an animatable property', () => {
+  const berdurasi = /visibility\s+(?!0s\b)(var\(--dur[^)]*\)|[\d.]+m?s)/g;
+  for (const berkas of ['dist/freeday.css', 'dist/freeday.bundle.css']) {
+    const css = readFileSync(new URL(`../${berkas}`, import.meta.url), 'utf8');
+    const temuan = [...css.matchAll(berdurasi)].map((m) => m[0]);
+    assert.deepEqual(temuan, [],
+      `${berkas}: visibility harus dijeda (visibility 0s linear <durasi>), bukan ditransisikan. `
+        + `Safari membiarkan elemennya tercat saat visible -> hidden.`);
+  }
+});
