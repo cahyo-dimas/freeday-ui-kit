@@ -130,7 +130,11 @@ const FEATURES = [
   { name: 'text-wrap', used: true, probe: /text-wrap\s*:/g, since: { chrome: '114', safari: '17.5', firefox: '121' } },
   { name: '@starting-style', used: true, probe: /@starting-style/g, since: { chrome: '117', safari: '17.5', firefox: '129' } },
   { name: 'transition-behavior (allow-discrete)', used: true, probe: /allow-discrete/g, since: { chrome: '117', safari: '17.4', firefox: '129' } },
-  { name: 'scrollbar-width', used: true, probe: /scrollbar-width\s*:/g, since: { chrome: '121', safari: '18.2', firefox: '64' } },
+  /* Safari 26.2, diverifikasi 2026-10-26 lewat dokumentasi scrollbar styling Chrome, bukan dari
+     ingatan. Angka pertama yang dicatat di sini 18.2 dan ia keliru; hasil gerbang hari ini tidak
+     berubah karena keduanya jauh di atas lantai, tetapi angka yang salah berakibat begitu lantainya
+     naik: dicatat 18.2, gerbang berhenti menandainya di lantai 19 padahal ia masih melanggar. */
+  { name: 'scrollbar-width', used: true, probe: /scrollbar-width\s*:/g, since: { chrome: '121', safari: '26.2', firefox: '64' } },
   { name: 'dvh / svh / lvh', used: true, probe: /\d(dvh|dvw|svh|svw|lvh|lvw)\b/g, since: { chrome: '108', safari: '15.4', firefox: '101' } },
   { name: 'backdrop-filter', used: true, probe: /(?<!-)backdrop-filter\s*:/g, twin: '-webkit-backdrop-filter', since: { chrome: '76', safari: '18.0', firefox: '103' } },
   { name: 'user-select', used: true, probe: /(?<!-)user-select\s*:/g, twin: '-webkit-user-select', since: { chrome: '54', safari: '17.0', firefox: '69' } },
