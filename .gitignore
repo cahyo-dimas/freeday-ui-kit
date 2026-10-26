@@ -29,3 +29,11 @@ obj/
 
 # NOTE: dist/ is intentionally committed so projects can import
 # freeday.tokens.css / freeday.css directly without running a build.
+
+# Local project/client notes. IGNORED since 2026-10-26: 26 files accumulated and every
+# `git status` carried an `?? improvement-notes/` line. They stay on disk and stay readable by
+# path, so an agent can still open them; what they lose is `git status` noise and some tooling
+# that honours this file. Whether a note was acted on is recorded in NEXT-UP.md, which is tracked;
+# the folder itself was never the record. The pre-commit hook still blocks them as a second line
+# of defence, because this repo is PUBLIC and the notes carry client identifiers.
+improvement-notes/

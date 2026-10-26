@@ -52,6 +52,47 @@ post-mortem item lama (2026-07-27) dan snapshot kondisi v1.7.0 dibuang di v1.20.
 tercatat di **[`CHANGELOG.md`](CHANGELOG.md)**, dan snapshot yang basi lebih berbahaya daripada
 tidak ada. Kondisi terkini: **[`HANDOFF.md`](HANDOFF.md)**.
 
+## Catatan masuk: sudah dikerjakan atau belum
+
+`improvement-notes/` **gitignored sejak 2026-10-26**, sesudah 26 berkas menumpuk dan setiap
+`git status` membawa satu baris `?? improvement-notes/`. Berkasnya tetap ada di disk dan tetap
+terbaca lewat path, jadi `grep`, `ls` dan `cat` melihatnya persis seperti sebelumnya; yang hilang
+cuma kebisingan `git status` dan alat apa pun yang menghormati `.gitignore`. Hook pre-commit tetap
+memblokirnya, sebab repo ini publik dan nama berkasnya memuat kode klien.
+
+Folder itu **tidak pernah** jadi catatan status. Yang jadi catatan status ini:
+
+**Catatan bernomor dijawab `CHANGELOG.md`.** Setiap butir yang terkirim mengutip nomor catatannya,
+jadi pertanyaan "sudah dikerjakan belum" dijawab satu perintah, bukan ingatan:
+
+```bash
+awk '/^## \[/{v=$2} match($0,/#0[0-9][0-9]/){print substr($0,RSTART,4)" -> "v}' CHANGELOG.md | sort -u
+```
+
+Per 3.9.0 itu mencetak `#005` sampai `#086`. Keduapuluh tiga berkas bernomor yang ada di folder
+(`46` sampai `71`) semuanya muncul di sana, jadi semuanya sudah dikerjakan. Nomor yang tidak muncul
+dan tidak punya berkas tidak pernah ada.
+
+**Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15):
+
+| § | pokok | status |
+|---|---|---|
+| 1 | `FdyTableFooter` berteks Inggris tanpa cara menggantinya | terkirim 3.8.0 `#075`, diperluas ke `FdyTable` 3.9.0 `#080` |
+| 2 | popover mengabaikan `fdy-menu--end` | terkirim 3.8.0 `#074`, jalur bertipe 3.9.0 `#081` |
+| 3 | `.fdy-pagination` didokumentasikan tetapi tak ada di bundle | ditutup tanpa kode; kelasnya ada di bundle, dan dokumen menyebutnya hook struktural |
+| 4 | `.fdy-badge` tanpa modifier netral | separuh dijawab 3.9.0 `#083` dengan mendokumentasikan `--outline` (7.46:1 terang, 7.28:1 gelap); separuh "netral jadi BAWAAN" menunggu 4.0 |
+| 5 | ritme `.fdy-card__body > * + *` mengenai kolom grid | ditutup tanpa kode; aturan itu sudah tidak ada |
+| 6 | preset `teal` terlalu terang di tema terang | terkirim 3.7.0 `#073` |
+| 7 | tidak ada varian tab tegak | terkirim 3.8.0 `#077` |
+| 8 | tidak ada pemilih bulan | terkirim 3.8.0 `#076`, dibentuk ulang jadi `FdyMonthpicker` 3.9.0 `#086` |
+
+**Aturannya untuk agen berikutnya:** kalau kamu mengerjakan sebuah catatan, nomornya masuk entri
+CHANGELOG seperti biasa. Kalau catatannya tak bernomor, atau kamu memutuskan **tidak**
+mengerjakannya, barisnya masuk ke tabel di atas beserta alasannya. Keputusan "tidak dikerjakan"
+adalah yang paling mudah hilang dan paling mahal diulang: `#083` ada karena seseorang hampir
+membangun kelas yang sudah ada.
+
 ## Sengaja ditunda (YAGNI, hanya kalau ada project nyata yang butuh)
 
 - **Data grid virtualisasi**, spec §7

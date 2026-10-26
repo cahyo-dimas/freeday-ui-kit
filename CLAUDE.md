@@ -91,6 +91,24 @@ reference/                             material input, TAK PERNAH di-ship
 `files` di package.json memuat jalur ter-ship **satu per satu** (bukan direktori), dan `src/*.js` sengaja
 tak dikirim karena byte-identik dengan `dist/*.js` dan tak ada jalur `exports` yang menyentuhnya.
 
+## Catatan dari app konsumen: `improvement-notes/`
+
+**Gitignored, dan tetap ada di disk.** Buka lewat path seperti berkas lain; `grep`, `ls` dan `cat`
+melihatnya persis seperti sebelum di-ignore, sebab `.gitignore` cuma dibaca git dan alat yang
+memilih menghormatinya. Yang hilang satu baris `?? improvement-notes/` di setiap `git status`, dan
+itu alasan ia di-ignore.
+
+Hook pre-commit (`.git/hooks/pre-commit`) memblokir commit apa pun dari folder itu, bahkan di bawah
+`git add .`. **Jangan dilepas.** Repo ini publik lewat GitHub Pages, dan nama berkas catatan memuat
+kode klien.
+
+**Status "sudah dikerjakan atau belum" TIDAK ada di folder itu.** Ia ada di bagian
+"Catatan masuk: sudah dikerjakan atau belum" di [`NEXT-UP.md`](NEXT-UP.md): catatan bernomor
+dijawab satu perintah `awk` atas `CHANGELOG.md`, catatan tak bernomor dan keputusan "sengaja tidak
+dikerjakan" dicatat sebagai tabel di sana. Kalau kamu bertindak atas sebuah catatan, perbarui yang
+mana pun yang berlaku. Keputusan tidak-dikerjakan yang tak dicatat akan dibangun ulang oleh orang
+berikutnya.
+
 ## Status: **feature-complete**, demand-driven
 Kit ini sudah lewat fase roadmap: 48 stylesheet di `src/components/` + 30 enhancer di
 `src/freeday-*.js` (keduanya angka terhitung, bukan hafalan), paritas 11/11 komponen typed di
