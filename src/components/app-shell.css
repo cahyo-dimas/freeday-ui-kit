@@ -152,4 +152,12 @@
   .fdy-app__main{padding:var(--space-5);}
   .fdy-app__topbar{padding:0 var(--space-4);}
 }
-@media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}}
+/* Backdrop ikut dinetralkan, dan ini BUKAN soal selera gerak. WebKit memaksa durasi transisi ke
+ * 0.000001s saat Reduce Motion menyala, dan pada durasi itu transisinya tidak pernah berjalan:
+ * propertinya tersangkut di nilai AWAL selamanya. Diukur di iPhone 7 dengan setelan itu menyala,
+ * tiga detik sesudah drawer terbuka, dengan kelas `--nav-open` SUDAH terpasang di setiap sampel:
+ * `opacity` diam di 0 dan `visibility` diam di `hidden`, sementara `pointer-events` sudah `auto`.
+ * Scrim yang tak terlihat tetapi menangkap tap, jadi ketukan pertama pengguna hilang dan ketukan
+ * kedua yang bekerja. Setelan yang sama dimatikan, deret yang sama berjalan 0.87 lalu 1.00.
+ * Sidebar sudah dinetralkan sejak lama; backdrop terlewat, dan ia yang menggerbangi interaksi. */
+@media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}.fdy-app__backdrop{transition:none;}}

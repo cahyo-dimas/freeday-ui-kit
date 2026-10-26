@@ -53,3 +53,9 @@
 .fdy-chart-xy__dot{stroke:var(--color-surface);stroke-width:1;}
 .fdy-chart-xy__bar{transition:opacity var(--dur-fast) var(--ease-standard);}
 .fdy-chart-xy__band{fill:transparent;cursor:pointer;}
+
+/* Sama sebabnya dengan `.fdy-app__backdrop`: transisi yang juga menggerbangi `pointer-events` dapat
+ * tersangkut di nilai awal ketika WebKit memaksa durasinya ke nol di bawah Reduce Motion, dan yang
+ * tersisa adalah elemen tak terlihat yang tetap menangkap tap. Tooltip sudah dinetralkan sejak lama
+ * untuk alasan yang sama; tip chart terlewat. */
+@media (prefers-reduced-motion:reduce){.fdy-chart__tip{transition:none;}}

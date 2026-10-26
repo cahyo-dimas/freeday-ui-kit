@@ -231,7 +231,15 @@ a { color: var(--color-primary-strong); }
   .fdy-app__main{padding:var(--space-5);}
   .fdy-app__topbar{padding:0 var(--space-4);}
 }
-@media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}}
+/* Backdrop ikut dinetralkan, dan ini BUKAN soal selera gerak. WebKit memaksa durasi transisi ke
+ * 0.000001s saat Reduce Motion menyala, dan pada durasi itu transisinya tidak pernah berjalan:
+ * propertinya tersangkut di nilai AWAL selamanya. Diukur di iPhone 7 dengan setelan itu menyala,
+ * tiga detik sesudah drawer terbuka, dengan kelas `--nav-open` SUDAH terpasang di setiap sampel:
+ * `opacity` diam di 0 dan `visibility` diam di `hidden`, sementara `pointer-events` sudah `auto`.
+ * Scrim yang tak terlihat tetapi menangkap tap, jadi ketukan pertama pengguna hilang dan ketukan
+ * kedua yang bekerja. Setelan yang sama dimatikan, deret yang sama berjalan 0.87 lalu 1.00.
+ * Sidebar sudah dinetralkan sejak lama; backdrop terlewat, dan ia yang menggerbangi interaksi. */
+@media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}.fdy-app__backdrop{transition:none;}}
 
 /* Freeday. App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;
@@ -857,6 +865,12 @@ a { color: var(--color-primary-strong); }
 .fdy-chart-xy__dot{stroke:var(--color-surface);stroke-width:1;}
 .fdy-chart-xy__bar{transition:opacity var(--dur-fast) var(--ease-standard);}
 .fdy-chart-xy__band{fill:transparent;cursor:pointer;}
+
+/* Sama sebabnya dengan `.fdy-app__backdrop`: transisi yang juga menggerbangi `pointer-events` dapat
+ * tersangkut di nilai awal ketika WebKit memaksa durasinya ke nol di bawah Reduce Motion, dan yang
+ * tersisa adalah elemen tak terlihat yang tetap menangkap tap. Tooltip sudah dinetralkan sejak lama
+ * untuk alasan yang sama; tip chart terlewat. */
+@media (prefers-reduced-motion:reduce){.fdy-chart__tip{transition:none;}}
 
 /* Freeday. Chip (tag / removable filter) */
 .fdy-chip{display:inline-flex;align-items:center;gap:var(--space-2);height:1.75rem;padding:0 var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:var(--weight-medium);color:var(--color-text);background:var(--color-surface-3);border:var(--bw) solid var(--color-border);}

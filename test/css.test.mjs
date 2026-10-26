@@ -742,3 +742,50 @@ test('no shipped rule transitions visibility as an animatable property', () => {
         + `Safari membiarkan elemennya tercat saat visible -> hidden.`);
   }
 });
+
+/* Setiap transisi yang juga menggerbangi `pointer-events` wajib dinetralkan di bawah
+ * `prefers-reduced-motion: reduce`.
+ *
+ * Bukan soal selera gerak. WebKit memaksa durasi transisi ke 0.000001s ketika Reduce Motion
+ * menyala, dan pada durasi itu transisinya tidak pernah berjalan: propertinya tersangkut di nilai
+ * AWAL. Diukur di iPhone 7 pada `.fdy-app__backdrop`, tiga detik sesudah drawer terbuka dengan
+ * kelas `--nav-open` sudah terpasang di setiap sampel: `opacity` diam di 0 dan `visibility` diam
+ * di `hidden`, sementara `pointer-events` sudah `auto`. Yang tersisa adalah scrim tak terlihat yang
+ * tetap menangkap tap, jadi ketukan pertama pengguna hilang. Setelan itu dimatikan, deret yang sama
+ * berjalan 0.87 lalu 1.00.
+ *
+ * Aturan yang hanya memindahkan warna atau bayangan boleh tersangkut tanpa akibat. Yang
+ * menggerbangi `pointer-events` tidak: ia menentukan apakah jari pengguna sampai ke tujuannya. */
+test('a transition that gates pointer-events is neutralised under reduced motion', () => {
+  const css = readFileSync(new URL('../dist/freeday.bundle.css', import.meta.url), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '');
+
+  /* Selektor yang membawa transisi DAN pointer-events di badan yang sama. */
+  const gerbang = new Set();
+  for (const m of css.matchAll(/([^{}]*)\{([^}]*)\}/g)) {
+    const body = m[2];
+    if (!body.includes('transition') || !body.includes('pointer-events')) continue;
+    for (const sel of m[1].split(',')) {
+      const dasar = sel.trim().split(/\s+/).pop();           // elemen yang ditransisikan
+      if (dasar.startsWith('.fdy-')) gerbang.add(dasar.replace(/[:.][^.]*$/, (x) => x.startsWith('.') ? x : ''));
+    }
+  }
+
+  /* Apa yang dinetralkan di dalam blok reduced-motion. */
+  const netral = new Set();
+  for (const m of css.matchAll(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{/g)) {
+    let i = m.index + m[0].length, d = 1, j = i;
+    while (d > 0 && j < css.length) { if (css[j] === '{') d += 1; else if (css[j] === '}') d -= 1; j += 1; }
+    const blok = css.slice(i, j - 1);
+    for (const r of blok.matchAll(/([^{}]*)\{([^}]*)\}/g)) {
+      if (!/transition\s*:\s*none/.test(r[2])) continue;
+      for (const sel of r[1].split(',')) netral.add(sel.trim().split(/\s+/).pop());
+    }
+  }
+
+  const bolong = [...gerbang].filter((s) => !netral.has(s));
+  assert.deepEqual(bolong, [],
+    `aturan ini mentransisikan properti sambil menggerbangi pointer-events dan tidak dinetralkan `
+      + `di bawah prefers-reduced-motion: ${bolong.join(', ')}. WebKit memaksa durasinya ke nol di `
+      + `sana dan propertinya tersangkut, menyisakan elemen tak terlihat yang menangkap tap.`);
+});
