@@ -239,7 +239,19 @@ a { color: var(--color-primary-strong); }
  * Scrim yang tak terlihat tetapi menangkap tap, jadi ketukan pertama pengguna hilang dan ketukan
  * kedua yang bekerja. Setelan yang sama dimatikan, deret yang sama berjalan 0.87 lalu 1.00.
  * Sidebar sudah dinetralkan sejak lama; backdrop terlewat, dan ia yang menggerbangi interaksi. */
-@media (prefers-reduced-motion:reduce){.fdy-app__sidebar{transition:none;}.fdy-app__backdrop{transition:none;}}
+@media (prefers-reduced-motion:reduce){
+  .fdy-app__sidebar{transition:none;}
+  /* KEEMPAT selektor yang mendeklarasikan transisi backdrop, bukan hanya yang paling lemah.
+     `.fdy-app__backdrop` sendirian berspesifisitas (0,1,0) dan kalah dari keadaan terbukanya,
+     `.fdy-app--nav-open .fdy-app__backdrop` (0,2,0), sehingga penetralan ini diam-diam tidak
+     berlaku justru pada saat drawer terbuka, yaitu satu-satunya saat ia penting. Diukur dengan
+     reduced motion diemulasi: tertutup melaporkan `none`, terbuka melaporkan
+     `opacity 1e-06s, visibility 1e-06s`. */
+  .fdy-app__backdrop,
+  .fdy-app--nav-open .fdy-app__backdrop,
+  .fdy-app--nav-overlay .fdy-app__backdrop,
+  .fdy-app--nav-overlay.fdy-app--nav-open .fdy-app__backdrop{transition:none;}
+}
 
 /* Freeday. App bar (standalone top bar: brand · actions · spacer).
  * Distinct from .fdy-app__topbar (which is bound to the shell grid). Use anywhere;

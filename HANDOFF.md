@@ -11,8 +11,19 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.9.2`, disiapkan dan menunggu tag** (2026-10-26). 3.9.1 sudah terbit. Belum terbit saat baris ini ditulis; yang
+**`3.9.3`, disiapkan dan menunggu tag** (2026-10-26). 3.9.2 sudah terbit, dan perbaikannya tidak bekerja. Belum terbit saat baris ini ditulis; yang
 sudah ada di `main` adalah commit versinya. 3.9.0 sudah terbit, 2026-10-26T02:42:52Z.
+
+Isi 3.9.3 dalam satu kalimat: **perbaikan 3.9.2 kalah spesifisitas dan penjaganya hijau untuknya**
+(`#089`). Penetralan reduced-motion memakai `.fdy-app__backdrop` (0,1,0) sementara keadaan
+terbukanya (0,2,0) juga mendeklarasikan transisi, jadi ia menang saat tertutup dan kalah saat
+terbuka. Keempat selektor kini dinetralkan, dan penjaganya menuntut selektor yang SAMA PERSIS
+sehingga spesifisitasnya terjaga oleh konstruksi.
+
+**Pelajaran yang mahal:** kelas bug ini ternyata dapat direproduksi di laptop. Chrome ikut menjepit
+durasi ke 1e-06s di bawah `emulateMedia({ reducedMotion: 'reduce' })`. Sepanjang penyelidikan ini
+dicatat sebaliknya, dan andai emulasinya dicoba lebih awal, dua rilis yang gagal tidak perlu
+terjadi.
 
 Isi 3.9.2 dalam satu kalimat: **satu setelan aksesibilitas, dan sebuah scrim yang tak terlihat
 tetapi tetap menangkap tap** (`#088`). WebKit memaksa durasi transisi ke satu mikrodetik di bawah

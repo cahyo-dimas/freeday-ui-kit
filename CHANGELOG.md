@@ -9,6 +9,35 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.9.3] - 2026-10-26
+
+**Perbaikan 3.9.2 tidak pernah bisa bekerja, dan penjaganya hijau untuknya.** Penetralan
+`prefers-reduced-motion` yang dikirim kemarin memakai `.fdy-app__backdrop`, spesifisitas `(0,1,0)`,
+sementara keadaan terbukanya `.fdy-app--nav-open .fdy-app__backdrop` adalah `(0,2,0)` dan juga
+mendeklarasikan transisi. Jadi penetralannya menang saat drawer tertutup dan kalah saat drawer
+terbuka, yaitu satu-satunya saat ia penting. Yang menanam bomnya 3.9.1 sendiri: ia yang menambahkan
+`transition` ke aturan keadaan terbuka.
+
+Diukur dengan reduced motion diemulasi, bukan disimpulkan: tertutup melaporkan `none`, terbuka
+melaporkan `opacity 1e-06s cubic-bezier(0.2, 0, 0, 1), visibility 1e-06s linear`.
+
+### Fixed
+- **Keempat selektor yang mendeklarasikan transisi backdrop dinetralkan, bukan yang paling lemah**
+  (`#089`). `.fdy-app__backdrop`, keadaan terbukanya, dan kedua padanannya di mode overlay.
+- **Penjaganya menuntut selektor yang SAMA PERSIS**, bukan nama elemennya. Versi pertama hanya
+  memeriksa apakah nama itu muncul di suatu tempat di dalam blok reduced-motion, dan itulah
+  sebabnya ia hijau untuk perbaikan yang mati. Sekarang spesifisitasnya terjaga oleh konstruksi,
+  dan merahnya dibuktikan dengan mengembalikan bentuk 3.9.2: ia menyebut ketiga selektor yang
+  hilang dengan nama.
+
+### Catatan: kelas bug ini dapat direproduksi di laptop
+Sepanjang penyelidikan ini dicatat bahwa hanya perangkat sungguhan yang dapat menemukannya. Untuk
+yang satu ini itu tidak benar. Chrome ikut menjepit durasi transisi ke `1e-06s` di bawah
+`emulateMedia({ reducedMotion: 'reduce' })`, jadi cacat spesifisitasnya terukur di mesin mana pun.
+Yang tetap tidak dapat direproduksi di Chromium adalah akibatnya, yakni properti yang tersangkut di
+nilai awal; tetapi kontrak yang mencegahnya, `transition` wajib `none` di kedua keadaan, dapat
+diperiksa di mana saja.
+
 ## [3.9.2] - 2026-10-26
 
 **Satu setelan aksesibilitas, dan sebuah scrim yang tak terlihat tetapi tetap menangkap tap.**
