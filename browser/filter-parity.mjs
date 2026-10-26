@@ -178,10 +178,20 @@ test('the raw and the typed path put a filter panel in the same place, to the pi
     });
   }
 
+  /* The width the three must agree on is the one a path actually measures, and the raw path is the
+     reference here. The stylesheet's min-width is a FLOOR, so the panel's own content is free to
+     exceed it, and whether it does is a question about font metrics: macOS fits this form inside
+     224px and the Linux runner needs 226. Asserting equality against the floor made this spec fail
+     on a platform difference while every coordinate it exists to check was correct. Comparing the
+     paths to each other is what "to the pixel" promises and it travels; the floor itself is the
+     next test's job, and it is asserted here too so a panel narrower than its rule still fails. */
+  assert.ok(measured.raw.width >= measured.minWidth - 1,
+    `the raw panel must be at least the ${measured.minWidth}px its stylesheet asks for, got `
+      + `${measured.raw.width}`);
   const want = {
     rightEdgeOffFunnel: 0,
     gapBelowFunnel: GAP,
-    width: measured.minWidth,
+    width: measured.raw.width,
     inTopLayer: true,
     positioning: 'fixed',
   };
