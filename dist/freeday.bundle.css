@@ -1213,9 +1213,6 @@ a { color: var(--color-primary-strong); }
  * framework with its preflight OFF (the recommended pairing), a semantic <ul>/<ol> keeps native
  * bullets + a 40px indent; add this class (or a Freeday list component) to normalise it. */
 .fdy-list-reset { list-style: none; margin: 0; padding: 0; }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
-}
 
 /* ===========================================================================
  * Reduce Motion: SETIAP transisi dinetralkan, bukan daftar yang dipelihara tangan.

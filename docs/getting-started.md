@@ -156,6 +156,13 @@ cp -r node_modules/@cahyo-dimas/freeday/dist ./assets/freeday   # copy into your
 ```
 > Two-file alternative: `freeday.tokens.css` (tokens) + `freeday.css` (components).
 
+> **The viewport meta is required, not decoration.** Without it a mobile engine lays the page out at
+> a default width near 980px, so `(max-width: 720px)` never matches and the kit's entire responsive
+> layer is absent: the app shell stands in its desktop form on a phone, sidebar visible and bottom
+> nav gone. That is not a hypothetical. It is what a fixture without the tag did on the first run of
+> the WebKit suite, reporting `window.innerWidth` 981 on an iPhone 7 descriptor, and it is the same
+> shape as the report that started that suite.
+
 ### 3. Load the enhancers before `</body>`
 ```html
   <script src="assets/freeday/freeday.js" defer></script>

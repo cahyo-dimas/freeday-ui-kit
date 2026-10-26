@@ -817,7 +817,14 @@ test('reduced motion neutralises every transition, not a hand-kept list', () => 
     assert.ok(menyeluruh.test(css),
       `${berkas}: aturan menyeluruh hilang. Tanpa ia, setiap transisi baru adalah ranjau: WebKit `
         + 'menjepit durasinya ke nol di bawah Reduce Motion dan propertinya tersangkut di nilai awal.');
-    assert.ok(!/@media\s*\(prefers-reduced-motion:\s*reduce\)[^@]*transition-duration\s*:\s*0\.0*1m?s/.test(css),
-      `${berkas}: durasi mungil di bawah reduced motion adalah bentuk yang menyangkut, bukan obatnya.`);
+    /* `0?\.0*1` dan BUKAN `0\.0*1`: berkas ini sendiri pernah membawa `.001ms` tanpa nol di depan,
+       dan versi pertama penjaga ini melewatkannya persis karena itu. Blok lamanya juga memuat
+       `animation-duration`, yang `!important`-nya mengalahkan `animation-duration:2s` milik
+       `.fdy-spinner` dan `animation:none` milik `.fdy-skeleton` dan `.fdy-progress`, sehingga
+       ketiga perlakuan bernuansa kit tidak pernah bekerja. Jadi keduanya diperiksa. */
+    const mungil = /@media\s*\(prefers-reduced-motion:\s*reduce\)[^@]*(transition|animation)-duration\s*:\s*0?\.0*[1-9]\d*m?s/;
+    assert.ok(!mungil.test(css),
+      `${berkas}: durasi mungil di bawah reduced motion adalah bentuk yang menyangkut, bukan obatnya, `
+        + 'dan sebagai `!important` pada `*` ia juga mengalahkan perlakuan bernuansa kit sendiri.');
   }
 });
