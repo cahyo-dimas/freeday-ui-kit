@@ -87,6 +87,12 @@ dan tidak punya berkas tidak pernah ada.
 | 7 | tidak ada varian tab tegak | terkirim 3.8.0 `#077` |
 | 8 | tidak ada pemilih bulan | terkirim 3.8.0 `#076`, dibentuk ulang jadi `FdyMonthpicker` 3.9.0 `#086` |
 
+**Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
+
+| pokok | status |
+|---|---|
+| `@container fdy-cfl` di `src/components/cfl.css:68` tidak dipagari | **terbuka.** Container query butuh Safari 16, sementara README menyatakan lantai Safari 15.4. Di 15.4 sampai 15.8 seluruh blok itu dibuang, jadi tata letak bertumpuk CFL di wadah sempit tidak pernah berlaku; `.fdy-cfl__results` punya `overflow:auto` sehingga ia merosot jadi tabel yang digulir, bukan rusak. Polanya sudah ada di repo ini: `src/components/composition.css:62` memagari `container-type` dengan `@supports (container-type:inline-size)`. Perbaikan yang sepadan menambahkan cadangan `@media` untuk viewport sempit di dalam `@supports not (container-type:inline-size)`, sehingga peramban modern tak tersentuh dan Safari 15 tetap menumpuk ketika viewport-nya memang sempit. |
+
 **Aturannya untuk agen berikutnya:** kalau kamu mengerjakan sebuah catatan, nomornya masuk entri
 CHANGELOG seperti biasa. Kalau catatannya tak bernomor, atau kamu memutuskan **tidak**
 mengerjakannya, barisnya masuk ke tabel di atas beserta alasannya. Keputusan "tidak dikerjakan"
