@@ -234,5 +234,9 @@ jobs:
         with:
           name: webkit-report
           path: webkit/.report/
+          # `.report` diawali titik, dan upload-artifact v4 melewati berkas tersembunyi secara
+          # bawaan. Jalanan merah pertama suite ini mengunggah NOL berkas karena itu, yaitu
+          # kehilangan jejak justru pada satu-satunya saat jejaknya dibutuhkan.
+          include-hidden-files: true
           retention-days: 7
           if-no-files-found: warn

@@ -33,15 +33,20 @@ test('the iPhone 7 descriptor reached the page', async ({ page }) => {
     width: window.innerWidth,
     height: window.innerHeight,
     touch: 'ontouchstart' in window,
-    points: navigator.maxTouchPoints,
   }));
   /* 375x667 is below the kit's 720px breakpoint, which is what puts the sidebar off canvas and
    * the bottom nav on screen. A desktop viewport here would leave two specs testing nothing. */
   expect(seen.width).toBe(375);
   expect(seen.height).toBe(667);
-  /* Touch, because `locator.tap()` throws without it and a thrown tap is not a tested tap. */
+  /* Touch, because `locator.tap()` throws without it and a thrown tap is not a tested tap.
+   *
+   * `navigator.maxTouchPoints` is NOT asserted, and that is a measurement rather than a shrug: the
+   * first CI run of this suite reported 0 for it on Playwright's Linux WebKit while
+   * `'ontouchstart' in window` was true and both specs in `tap-close.spec.mjs` tapped successfully
+   * in the same run. So the number is a reporting gap in that build, not a missing capability, and
+   * asserting it would fail the suite for something no spec depends on. What actually guarantees
+   * tap is this flag plus those two specs: remove touch from the descriptor and they throw. */
   expect(seen.touch).toBe(true);
-  expect(seen.points).toBeGreaterThan(0);
 });
 
 test('reducedMotion emulation flips the media query both ways', async ({ page }) => {
