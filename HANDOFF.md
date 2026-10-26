@@ -11,9 +11,22 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.9.0`, disiapkan dan menunggu tag** (2026-10-23). Belum terbit saat baris ini ditulis; yang
-sudah ada di `main` adalah commit versinya. Perintah penerbitannya tetap yang di bawah. 3.8.0 sudah
-terbit dan registry mengkonfirmasinya, pada 12:02:36Z hari yang sama.
+**`3.9.1`, disiapkan dan menunggu tag** (2026-10-26). Belum terbit saat baris ini ditulis; yang
+sudah ada di `main` adalah commit versinya. 3.9.0 sudah terbit, 2026-10-26T02:42:52Z.
+
+Isi 3.9.1 dalam satu kalimat: **satu properti yang tidak boleh ditransisikan, dan sebuah HP yang
+membuktikannya** (`#087`). Scrim drawer tinggal tercat di iPhone 7 sesudah drawer ditutup, sampai
+halaman dimuat ulang. Yang membuatnya terbaca bukan penalaran melainkan halaman diagnostik yang
+mencetak gaya terhitung di perangkat itu: `--nav-open` sudah lepas, sidebar sudah di luar layar,
+`pointer-events` sudah `none`, dan backdrop tetap `opacity=1 visibility=visible`. Sebabnya
+`visibility` ditransisikan sebagai properti beranimasi; Safari kadang tidak pernah menjalankan fade
+`opacity` yang menyertainya. Diganti pola jeda. Penjaganya statis, sebab mesin yang bisa melihat
+cacat ini bukan mesin yang menjalankan uji kit.
+
+**Pelajaran yang terulang:** ini bentuk cacat yang sama dengan `#057`, masuk lewat pintu yang sama,
+dan lolos karena alasan yang sama. Dua kali sekarang, dan dua-duanya ditemukan sebuah HP milik
+pemilik app, bukan suite. Uji peramban kit berjalan di Chromium saja; `playwright` dengan WebKit ada
+di CI app konsumen tetapi tidak di repo ini.
 
 Isi 3.9.0 dalam satu kalimat: **tiga penambahan dari ukuran universal, dan lima cacat yang ditemukan
 oleh penambahan itu** (`#080`–`#086`). Pemiliknya memutuskan batas kit lawan app ditentukan oleh
@@ -78,7 +91,7 @@ Yang baru:
   `.fdy-badge--outline` sudah menjawab gejala status netral, jadi yang tersisa cuma soal bawaan.
 
 
-Gerbang untuk 3.9.0, lokal: `node --test` **131/131**, `npm run test:browser` **206/206**,
+Gerbang untuk 3.9.1, lokal: `node --test` **132/132**, `npm run test:browser` **206/206**,
 `npm run typecheck:react` bersih, `npm run test:blazor` **39/39**. Setiap perilaku baru diverifikasi
 dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
 membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang

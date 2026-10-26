@@ -9,6 +9,28 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.9.1] - 2026-10-26
+
+**Satu properti yang tidak boleh ditransisikan, dan sebuah HP yang membuktikannya.** Sesudah drawer
+ditutup di iPhone 7, scrim-nya tinggal tercat di atas halaman sampai halaman dimuat ulang. Yang
+membuat ini terbaca bukan tebakan melainkan halaman diagnostik yang mencetak gaya terhitung di
+perangkat itu sendiri: `--nav-open` sudah lepas, sidebar sudah kembali ke luar layar,
+`pointer-events` sudah `none`, dan backdrop tetap melaporkan `opacity=1 visibility=visible`. Empat
+dari lima nilai berubah dengan benar, dan yang tertinggal hanya dua.
+
+### Fixed
+- **`visibility` dijeda, tidak ditransisikan, di `.fdy-app__backdrop`** (`#087`). Mentransisikannya
+  sebagai properti beranimasi berdampingan dengan `opacity` membuat Safari kadang tidak pernah
+  menjalankan fade yang menyertainya pada arah visible ke hidden, dan elemennya tinggal tercat.
+  Tidak selalu, dan ketidakkonsistenan itu yang menunjuk transisi alih-alih keadaan yang salah.
+  Polanya kini `visibility 0s linear <durasi>`, yang mengganti nilainya secara diskret: seketika
+  saat membuka, sesudah fade selesai saat menutup. Empat aturan, dua di jalur mobile dan dua di
+  mode overlay lebar.
+- **Penjaga yang menolak `visibility` berdurasi di mana pun di CSS yang dikirim.** Statis dan bukan
+  uji peramban, sebab mesin yang bisa melihat cacat ini bukan mesin yang menjalankan uji kit.
+  Chromium menjalankan transisi itu dengan benar, jadi keduaratus enam uji peramban kit tidak akan
+  pernah menangkapnya. Bentuk cacat yang sama dengan `#057`, dan ia masuk lewat pintu yang sama.
+
 ## [3.9.0] - 2026-10-23
 
 **Rilis ini dimulai sebagai tiga penambahan dan berakhir dengan lima cacat, dan yang menemukan
