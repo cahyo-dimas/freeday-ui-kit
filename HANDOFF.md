@@ -11,8 +11,20 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.9.1`, disiapkan dan menunggu tag** (2026-10-26). Belum terbit saat baris ini ditulis; yang
+**`3.9.2`, disiapkan dan menunggu tag** (2026-10-26). 3.9.1 sudah terbit. Belum terbit saat baris ini ditulis; yang
 sudah ada di `main` adalah commit versinya. 3.9.0 sudah terbit, 2026-10-26T02:42:52Z.
+
+Isi 3.9.2 dalam satu kalimat: **satu setelan aksesibilitas, dan sebuah scrim yang tak terlihat
+tetapi tetap menangkap tap** (`#088`). WebKit memaksa durasi transisi ke satu mikrodetik di bawah
+Reduce Motion, dan pada durasi itu transisinya tidak pernah berjalan: propertinya tersangkut di
+nilai awal. Backdrop mengatur `pointer-events` di aturan yang sama, jadi yang tersisa scrim tak
+terlihat yang menangkap tap. Layar yang tinggal redup dan navigasi yang butuh dua ketukan ternyata
+satu sebab. Sidebar sudah dinetralkan sejak lama; backdrop dan `.fdy-chart__tip` terlewat.
+
+**Yang perlu diingat dari cara ini ditemukan:** tiga hipotesis gugur karena diukur, bukan karena
+berubah pikiran, dan yang menyelesaikannya halaman diagnostik yang dideploy ke perangkat pemilik
+lalu dibaca lewat foto. Tak satu pun dari ini dapat ditemukan dari laptop, dan tak satu pun uji kit
+akan pernah menangkapnya tanpa setelan aksesibilitas itu menyala.
 
 Isi 3.9.1 dalam satu kalimat: **satu properti yang tidak boleh ditransisikan, dan sebuah HP yang
 membuktikannya** (`#087`). Scrim drawer tinggal tercat di iPhone 7 sesudah drawer ditutup, sampai
@@ -100,7 +112,7 @@ Yang baru:
   `.fdy-badge--outline` sudah menjawab gejala status netral, jadi yang tersisa cuma soal bawaan.
 
 
-Gerbang untuk 3.9.1, lokal: `node --test` **132/132**, `npm run test:browser` **206/206**,
+Gerbang untuk 3.9.2, lokal: `node --test` **133/133**, `npm run test:browser` **206/206**,
 `npm run typecheck:react` bersih, `npm run test:blazor` **39/39**. Setiap perilaku baru diverifikasi
 dengan mutasi. Satu pelajaran harness: mutasi pada file Blazor yang dipulihkan dengan mtime lamanya
 membuat MSBuild menganggap DLL mutan masih terbaru, jadi bUnit merah setelah pemulihan. File yang

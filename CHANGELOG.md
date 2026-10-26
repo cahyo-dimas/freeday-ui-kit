@@ -9,6 +9,35 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.9.2] - 2026-10-26
+
+**Satu setelan aksesibilitas, dan sebuah scrim yang tak terlihat tetapi tetap menangkap tap.**
+Pemilik app ronda melaporkan dua gejala di iPhone 7 yang tampak terpisah: layar tinggal redup
+sesudah drawer ditutup, dan setiap navigasi butuh dua ketukan. Keduanya satu sebab, dan yang
+memecahkannya dua foto dari perangkat yang sama, identik kecuali Reduce Motion.
+
+Dengan setelan itu menyala, transisi terhitung melaporkan `opacity 0.000001s` dan backdrop diam di
+`opacity 0` serta `visibility hidden` selama tiga detik, dengan kelas `--nav-open` hadir di setiap
+sampel. Dengan setelan itu mati, deret yang sama berjalan 0.87 lalu 1.00. WebKit memaksa durasi
+transisi ke satu mikrodetik di bawah Reduce Motion, dan pada durasi itu transisinya tidak pernah
+berjalan: propertinya tersangkut di nilai awal. Bukan lambat, tidak pernah mulai.
+
+### Fixed
+- **`.fdy-app__backdrop` dinetralkan di bawah `prefers-reduced-motion`** (`#088`). Aturan yang sama
+  mengatur `pointer-events` bersama `opacity`, jadi yang tersangkut bukan sekadar tampilan: foto
+  perangkat merekam `pointer-events: auto` berdampingan dengan `visibility: hidden`, yaitu scrim
+  tak terlihat yang tetap menangkap tap. Ketukan pertama pengguna hilang di sana dan ketukan kedua
+  yang bekerja. Sidebar sudah dinetralkan sejak lama; backdrop terlewat, dan backdrop yang
+  menggerbangi interaksi.
+- **`.fdy-chart__tip` ikut dinetralkan.** Bentuk cacat yang sama persis, ditemukan oleh audit yang
+  sama: transisi yang juga mengatur `pointer-events`, tanpa pagar reduced-motion. `.fdy-tooltip`
+  sudah aman sejak lama.
+- **Penjaga yang mengunci pelajarannya, bukan kasusnya.** Setiap aturan yang mentransisikan
+  properti sambil mengatur `pointer-events` wajib punya pasangannya di dalam blok
+  `prefers-reduced-motion: reduce`. Statis, seperti penjaga `visibility` di 3.9.1, dan karena
+  alasan yang sama: mesin yang bisa melihat cacat ini bukan mesin yang menjalankan uji kit, dan di
+  sini bahkan bukan mesin mana pun tanpa setelan aksesibilitas itu menyala.
+
 ## [3.9.1] - 2026-10-26
 
 **Satu properti yang tidak boleh ditransisikan, dan sebuah HP yang membuktikannya.** Sesudah drawer
