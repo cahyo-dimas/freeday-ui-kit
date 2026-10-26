@@ -9,6 +9,55 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.10.0] - 2026-10-26
+
+**Lima rilis dalam satu hari, empat di antaranya menambal satu kelas yang sama, dan pemiliknya
+menghentikan polanya.** Setiap cacat Safari hari ini ditemukan oleh sebuah iPhone 7 sesudah
+terkirim, satu per satu, karena suite kit berjalan di Chrome saja: `browser/harness.mjs` berbicara
+CDP ke `chrome-headless-shell` dan tak ada WebKit di ujung kabel itu. Lantai dukungan di README
+adalah prosa yang tak ada yang membacanya. Rilis ini memperbaiki keduanya.
+
+### Added
+- **Gerbang lantai fitur** (`#091`), `test/baseline.test.mjs`. Ia **membaca ketiga angka lantai
+  dari README** alih-alih mengetiknya ulang, mengenumerasi 41 fitur CSS di kedua stylesheet yang
+  dikirim, dan gagal ketika satu di antaranya menuntut rilis yang lantainya tak capai. Pengecualian
+  boleh ada tetapi wajib membawa alasan tertulis minimal 160 karakter, DAN fiturnya harus benar-benar
+  masih melampaui lantai; kalau tidak gerbangnya menyuruh menghapus entrinya. Daftar pemaafan yang
+  tumbuh tanpa alasan adalah penjaga yang berhenti menjaga, dan itu persis kegagalan yang sudah
+  terjadi dua kali di hari yang sama.
+- **Suite WebKit di gerbang** (`#092`), job CI tersendiri dengan Playwright, terpisah penuh dari
+  harness CDP yang menjalankan 206 uji dan tidak menyentuhnya. Sebelas uji menutup apa yang hanya
+  WebKit dapat perlihatkan: backdrop dan centang checkbox dan thumb switch harus MENCAPAI keadaan
+  akhirnya di bawah Reduce Motion, tap pada backdrop menutup drawer (sintesis klik `#057`), dan
+  asap tata letak telepon. Ia menolak lulus diam-diam lewat lima jalur yang semuanya diuji terhadap
+  laporan JSON nyata: laporan hilang, nol uji, ada yang dilewati, ada yang goyah, atau uji identitas
+  mesin hilang.
+
+### Fixed
+- **Tiga fitur melampaui lantai yang kit nyatakan sendiri** (`#091`). `@container` di CFL dipagari
+  `@supports` dengan cadangan `@media (max-width:32rem)`, dan angka itu diturunkan dari lebar
+  dialognya sendiri bukan dipilih; absennya bukan kosmetik, sebab di Safari 15.4 sampai 15.8 seluruh
+  bloknya dibuang dan dialog 372px memakai tabel tiga kolom yang digulir dua arah.
+  `overscroll-behavior` dan `text-wrap:balance` jadi pengecualian beralasan. **Lantainya tidak
+  dinaikkan:** iPhone 7 yang menemukan empat cacat hari ini berhenti di iOS 15.
+- **`user-select` dikirim tanpa pasangan `-webkit-`** di `.fdy-avatar` dan `.fdy-breadcrumb__sep`
+  (`#091`). WebKit menuntut prefiks itu sampai Safari 17.
+- **Blok durasi-mungil lama di `src/base.css` mengalahkan perlakuan reduced-motion kit sendiri**
+  (`#093`). `*,*::before,*::after{animation-duration:.001ms !important}` sebagai `!important` pada
+  `*` menang atas `.fdy-spinner{animation-duration:2s}`, `.fdy-skeleton{animation:none}` dan
+  `.fdy-progress{animation:none}`, jadi ketiga perlakuan yang ditulis khusus untuk setelan itu tidak
+  pernah bekerja. Ketiganya satu-satunya animasi di luar pagar `no-preference`, jadi membuang blok
+  lama memulihkan semuanya tanpa membuka apa pun. Penjaga 3.9.4 melewatkannya karena regexnya
+  menuntut `0.001ms` berawalan nol sementara berkasnya menulis `.001ms`; sekarang ia menerima
+  keduanya dan ikut memeriksa `animation-duration`.
+
+### Docs
+- **Meta viewport dinyatakan sebagai syarat**, bukan ditampilkan di contoh. Tanpanya mesin mobile
+  menata halaman di lebar bawaan sekitar 980px, `(max-width:720px)` tak pernah cocok, dan seluruh
+  lapisan responsif kit absen: shell berdiri dalam bentuk desktopnya di telepon. Itu bukan
+  hipotetis. Fixture tanpa tag itu melaporkan `window.innerWidth` 981 pada deskriptor iPhone 7 di
+  jalanan pertama suite WebKit, bentuk yang sama persis dengan laporan yang memulai suite itu.
+
 ## [3.9.4] - 2026-10-26
 
 **Sembilan dari lima puluh enam, dan empat puluh delapan sisanya ranjau.** Tiga rilis berturut-turut
