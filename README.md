@@ -266,8 +266,14 @@ the "Accessibility" section in `docs/index.html`.
 
 ## Browser support
 **Chrome 105 · Safari 15.4 · Firefox 121.** The floor is set by `:has()`, and by the Safari 15.4
-generation of native `<dialog>`/`::backdrop`, `accent-color` and `100dvh`. `conic-gradient` and
-`scroll-snap` are older still.
+generation of native `<dialog>`/`::backdrop` and `accent-color`. `conic-gradient` and `scroll-snap`
+are older still.
+
+`test/baseline.test.mjs` reads those three numbers out of the line above, enumerates the CSS
+features both shipped stylesheets use, and fails when one of them needs a release the floor does not
+reach. Until that test existed the floor was a sentence nobody could enforce, and the day it was
+written five releases had gone out in one day, four of them fixing Safari defects found on an
+iPhone 7 after shipping.
 
 `color-mix()` used to set that floor at Safari 16.4, and it no longer does. It was never worth it:
 a declaration that mixes a token carries `var()`, so it is assumed valid at parse time and only
@@ -278,11 +284,32 @@ written `rgba(var(--color-primary-rgb), .26)`, which is the same colour and pars
 the four rules that cannot be answered statically carry a real `@supports` counterpart.
 `test/color-mix.test.mjs` keeps the next one honest.
 
-The newest things the kit touches (`@container`, `@starting-style`, `text-wrap`) are enhancements: a
-browser without them skips the block and keeps the unconditional rule underneath. Backdrop blur uses
-`-webkit-backdrop-filter` + `backdrop-filter` (older Safari still works, just without the blur).
-There's no CSS build or autoprefixer step, so supporting anything below the floor is the consumer's
-responsibility.
+The newest things the kit touches reach past that floor on purpose, and each one is listed in
+`test/baseline.test.mjs` with what a browser below the floor loses:
+
+- `@container` in the choose-from-list dialog is fenced with `@supports`, and a viewport-width media
+  query stacks the rows underneath it. The case the fallback cannot see is a narrow dialog inside a
+  wide viewport, which is a docked panel on a desktop, and there the dialog keeps the scrolling
+  table it always had.
+- `@starting-style` and the `allow-discrete` transitions animate the modal and the drawer. Below the
+  floor the at-rule is skipped and the shorthand is dropped at parse time, so both open and close
+  with no animation, always at their end state and never halfway.
+- `text-wrap: balance` balances two heading classes. Without it a heading wraps where it used to.
+- `overscroll-behavior: contain` stops a scroll at the end of the nav and of the sticky page rails.
+  Without it that scroll carries on into the page behind, the way it did before the property
+  existed. There is no CSS substitute below Safari 16; the alternative is a scroll lock in JS, which
+  this shell deliberately does not do.
+- `scrollbar-width: none` hides the carousel scrollbar, with `::-webkit-scrollbar` beside it doing
+  the same job for every WebKit inside the floor.
+- `100dvh` caps the sticky rails on screens from 960px. Safari has had the unit since the floor
+  release itself, so the only engines inside the floor without it are the three Chrome releases
+  before it landed there, and on those the cap goes away and a long aside grows past the viewport
+  instead of scrolling inside itself.
+
+Backdrop blur uses `-webkit-backdrop-filter` + `backdrop-filter`, and `user-select` carries its
+`-webkit-` twin the same way. The same test asserts both pairings rule by rule, so the standard
+property never ships alone. There's no CSS build or autoprefixer step, so supporting anything below
+the floor is the consumer's responsibility.
 
 ## License
 [MIT](LICENSE) © 2026 Cahyo D. Kurnianto. Free to use, modify, and distribute, as long as the

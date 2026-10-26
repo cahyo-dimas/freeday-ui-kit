@@ -6,4 +6,4 @@
 .fdy-breadcrumb__link:hover{color:var(--color-primary-strong);text-decoration:underline;}
 .fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
-.fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}
+.fdy-breadcrumb__sep{color:var(--color-text-subtle);-webkit-user-select:none;user-select:none;}

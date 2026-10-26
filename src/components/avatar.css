@@ -1,5 +1,5 @@
 /* Freeday. Avatar */
-.fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;user-select:none;}
+.fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;-webkit-user-select:none;user-select:none;}
 .fdy-avatar img{width:100%;height:100%;object-fit:cover;}
 /* --xs exists for an avatar INSIDE a control: `.fdy-btn--sm` is exactly 2rem tall, which is also
    `--sm`'s size, so a small avatar in a small button fills it edge to edge and the ghost border

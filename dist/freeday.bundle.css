@@ -1495,7 +1495,7 @@ a { color: var(--color-primary-strong); }
 @media (prefers-reduced-motion:no-preference){.fdy-autocomplete__listbox:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
 /* Freeday. Avatar */
-.fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;user-select:none;}
+.fdy-avatar{display:inline-flex;align-items:center;justify-content:center;flex:none;width:2.5rem;height:2.5rem;border-radius:var(--radius-full);background:var(--color-primary-soft);color:var(--color-primary-strong);font-family:var(--font-body);font-weight:var(--weight-semibold);font-size:var(--text-sm);line-height:1;overflow:hidden;-webkit-user-select:none;user-select:none;}
 .fdy-avatar img{width:100%;height:100%;object-fit:cover;}
 /* --xs exists for an avatar INSIDE a control: `.fdy-btn--sm` is exactly 2rem tall, which is also
    `--sm`'s size, so a small avatar in a small button fills it edge to edge and the ghost border
@@ -1651,7 +1651,7 @@ a { color: var(--color-primary-strong); }
 .fdy-breadcrumb__link:hover{color:var(--color-primary-strong);text-decoration:underline;}
 .fdy-breadcrumb__link:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
 .fdy-breadcrumb__item[aria-current="page"]{color:var(--color-text);font-weight:var(--weight-medium);}
-.fdy-breadcrumb__sep{color:var(--color-text-subtle);user-select:none;}
+.fdy-breadcrumb__sep{color:var(--color-text-subtle);-webkit-user-select:none;user-select:none;}
 
 /* Freeday. Responsive display utilities (pairs with freeday-breakpoint.js).
  * Breakpoint scale (min-width, px): sm 600 · md 960 · lg 1280 · xl 1920.
@@ -1957,7 +1957,13 @@ a { color: var(--color-primary-strong); }
  * size, which is what made `.fdy-stats--inline` collapse to three zero tracks in 3.1.0. This box
  * takes its width from the dialog (`min(46rem, 100vw - …)`, an explicit width) and already scrolls
  * its own content, so it never sized to the table to begin with. */
-.fdy-cfl__results{container:fdy-cfl / inline-size;overflow:auto;max-height:min(24rem,50vh);}
+.fdy-cfl__results{overflow:auto;max-height:min(24rem,50vh);}
+/* Fenced the way composition.css:62 fences its own, so the declaration states the condition it
+   needs instead of relying on a browser to drop it. Safari 15.4 to 15.8 is inside the floor the
+   README states and has no container queries at all. */
+@supports (container-type:inline-size){
+  .fdy-cfl__results{container:fdy-cfl / inline-size;}
+}
 .fdy-cfl__results .fdy-table th{position:sticky;top:0;z-index:1;}
 
 .fdy-cfl__row{cursor:pointer;}
@@ -1999,30 +2005,71 @@ a { color: var(--color-primary-strong); }
  *
  * Column headers ARE a real loss here, and a deliberate one: `<thead>` is hidden, because a header
  * row that costs a third of the width buys nothing when each row is labelled by its own title. */
-@container fdy-cfl (max-width: 30rem){
-  .fdy-cfl__results .fdy-table,
-  .fdy-cfl__results .fdy-table tbody{display:block;width:100%;}
-  .fdy-cfl__results .fdy-table thead{display:none;}
-  .fdy-cfl__row{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);}
-  .fdy-cfl__results .fdy-table tbody tr:last-child{border-bottom:0;}
-  .fdy-cfl__row > td{display:block;padding:0;border:0;}
-  /* The title takes the whole first line, which is what pushes every remaining cell onto the second
-     one — no selector has to know how many columns there are, or which of them is last. */
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check),
-  .fdy-cfl__row > .fdy-cfl__check + td{font-weight:var(--weight-semibold);color:var(--color-text);}
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check){flex:0 0 100%;}
-  /* Multi-select: the checkbox shares line one with the title, so the title claims the rest of it. */
-  .fdy-cfl__row > .fdy-cfl__check + td{flex:1 0 calc(100% - var(--space-6));}
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td,
-  .fdy-cfl__row > .fdy-cfl__check + td ~ td{font-size:var(--text-xs);color:var(--color-text-muted);}
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td:empty,
-  .fdy-cfl__row > .fdy-cfl__check + td ~ td:empty{display:none;}
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td::before,
-  .fdy-cfl__row > .fdy-cfl__check + td ~ td::before{content:"·";margin-right:var(--space-2);color:var(--color-text-subtle);}
-  .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) + td::before,
-  .fdy-cfl__row > .fdy-cfl__check + td + td::before{content:none;}
-  /* The checkbox keeps its own line position beside the title rather than above it. */
-  .fdy-cfl__row > .fdy-cfl__check{flex:none;width:auto;align-self:center;}
+@supports (container-type:inline-size){
+  @container fdy-cfl (max-width: 30rem){
+    .fdy-cfl__results .fdy-table,
+    .fdy-cfl__results .fdy-table tbody{display:block;width:100%;}
+    .fdy-cfl__results .fdy-table thead{display:none;}
+    .fdy-cfl__row{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);}
+    .fdy-cfl__results .fdy-table tbody tr:last-child{border-bottom:0;}
+    .fdy-cfl__row > td{display:block;padding:0;border:0;}
+    /* The title takes the whole first line, which is what pushes every remaining cell onto the second
+       one — no selector has to know how many columns there are, or which of them is last. */
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check),
+    .fdy-cfl__row > .fdy-cfl__check + td{font-weight:var(--weight-semibold);color:var(--color-text);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check){flex:0 0 100%;}
+    /* Multi-select: the checkbox shares line one with the title, so the title claims the rest of it. */
+    .fdy-cfl__row > .fdy-cfl__check + td{flex:1 0 calc(100% - var(--space-6));}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td{font-size:var(--text-xs);color:var(--color-text-muted);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td:empty,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td:empty{display:none;}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td::before,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td::before{content:"·";margin-right:var(--space-2);color:var(--color-text-subtle);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) + td::before,
+    .fdy-cfl__row > .fdy-cfl__check + td + td::before{content:none;}
+    /* The checkbox keeps its own line position beside the title rather than above it. */
+    .fdy-cfl__row > .fdy-cfl__check{flex:none;width:auto;align-self:center;}
+  }
+}
+
+/* The same block for a browser that has no container queries, which is every Safari from 15.4 to
+ * 15.8 and inside the floor the README states. There the @supports above is false, the stacked
+ * layout never applied, and a 372px dialog kept a three-column master-data table that scrolls on
+ * both axes.
+ *
+ * The condition is a VIEWPORT width, the only width this path can read. 32rem is derived from the
+ * dialog rather than picked: the dialog is min(46rem, 100vw - var(--space-8)) with --space-8 at
+ * 2rem, and the results box takes that width, so it sits at or under 30rem exactly when the
+ * viewport sits at or under 32rem. What a media query cannot answer is the case the container
+ * query exists for, a narrow dialog inside a wide viewport, which is a docked panel on a desktop;
+ * on those browsers that one case keeps the scrolling table it has always had.
+ *
+ * The body is a copy of the body above, because CSS has no way to share one declaration block
+ * between two different conditions. test/baseline.test.mjs compares the two, so an edit that
+ * reaches one of them and misses the other fails there. */
+@supports not (container-type:inline-size){
+  @media (max-width:32rem){
+    .fdy-cfl__results .fdy-table,
+    .fdy-cfl__results .fdy-table tbody{display:block;width:100%;}
+    .fdy-cfl__results .fdy-table thead{display:none;}
+    .fdy-cfl__row{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--space-2);padding:var(--space-3) var(--space-4);border-bottom:var(--bw) solid var(--color-border-muted);}
+    .fdy-cfl__results .fdy-table tbody tr:last-child{border-bottom:0;}
+    .fdy-cfl__row > td{display:block;padding:0;border:0;}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check),
+    .fdy-cfl__row > .fdy-cfl__check + td{font-weight:var(--weight-semibold);color:var(--color-text);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check){flex:0 0 100%;}
+    .fdy-cfl__row > .fdy-cfl__check + td{flex:1 0 calc(100% - var(--space-6));}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td{font-size:var(--text-xs);color:var(--color-text-muted);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td:empty,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td:empty{display:none;}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) ~ td::before,
+    .fdy-cfl__row > .fdy-cfl__check + td ~ td::before{content:"·";margin-right:var(--space-2);color:var(--color-text-subtle);}
+    .fdy-cfl__row > td:first-child:not(.fdy-cfl__check) + td::before,
+    .fdy-cfl__row > .fdy-cfl__check + td + td::before{content:none;}
+    .fdy-cfl__row > .fdy-cfl__check{flex:none;width:auto;align-self:center;}
+  }
 }
 
 /* Freeday. Charts (zero-dependency CSS/SVG, rendered by freeday-chart.js).

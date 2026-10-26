@@ -256,8 +256,14 @@ terlihat, HTML native dulu sebelum ARIA, komponen interaktif ikut pola WAI-ARIA 
 
 ## Dukungan browser
 **Chrome 105 · Safari 15.4 · Firefox 121.** Floor-nya ditentukan `:has()`, dan oleh generasi Safari
-15.4 untuk native `<dialog>`/`::backdrop`, `accent-color`, dan `100dvh`. `conic-gradient` dan
-`scroll-snap` lebih tua lagi.
+15.4 untuk native `<dialog>`/`::backdrop` dan `accent-color`. `conic-gradient` dan `scroll-snap`
+lebih tua lagi.
+
+`test/baseline.test.mjs` membaca tiga angka itu dari baris di atas, mengenumerasi fitur CSS yang
+dipakai kedua stylesheet yang dikirim, dan gagal kalau salah satunya butuh rilis yang tak dijangkau
+floor itu. Sebelum uji itu ada, floor-nya cuma kalimat yang tak bisa ditegakkan siapa pun, dan di
+hari uji ini ditulis sudah ada lima rilis keluar dalam satu hari, empat di antaranya menambal cacat
+Safari yang ketemu di iPhone 7 sesudah terkirim.
 
 Dulu floor itu ditentukan `color-mix()` di Safari 16.4, dan sekarang tidak lagi. Harganya memang tak
 pernah pantas: deklarasi yang mencampur sebuah token membawa `var()`, jadi ia dianggap sah saat
@@ -268,11 +274,33 @@ sekarang ditulis `rgba(var(--color-primary-rgb), .26)`, warnanya sama dan sudah 
 Safari 9; empat aturan yang memang tak bisa dijawab secara statis membawa pasangan `@supports` yang
 sungguhan. `test/color-mix.test.mjs` menjaga agar yang berikutnya tetap jujur.
 
-Yang paling baru dipakai kit ini (`@container`, `@starting-style`, `text-wrap`) sifatnya peningkatan:
-browser yang belum punya akan melewati bloknya dan tetap memakai aturan tanpa syarat di bawahnya.
-Blur backdrop pakai `-webkit-backdrop-filter` + `backdrop-filter` (Safari lama tetap jalan, hanya
-tanpa blur). Belum ada CSS build/autoprefixer, jadi dukungan di bawah floor itu jadi tanggung jawab
-konsumen.
+Yang paling baru dipakai kit ini memang melewati floor itu, dengan sengaja, dan tiap satunya
+terdaftar di `test/baseline.test.mjs` beserta apa yang hilang di browser di bawah floor:
+
+- `@container` di dialog choose-from-list dipagari `@supports`, dan satu media query lebar viewport
+  menumpuk barisnya di bawahnya. Yang tak bisa dilihat cadangan itu adalah dialog sempit di dalam
+  viewport lebar, yaitu panel yang didok di desktop, dan di situ dialognya tetap memakai tabel yang
+  digulir seperti selama ini.
+- `@starting-style` dan transisi `allow-discrete` menganimasikan modal dan drawer. Di bawah floor
+  at-rule-nya dilewati dan shorthand-nya dibuang saat parse, jadi keduanya buka dan tutup tanpa
+  animasi, selalu di keadaan akhirnya dan tak pernah separuh jalan.
+- `text-wrap: balance` menyeimbangkan dua kelas judul. Tanpa itu judulnya patah di tempat ia patah
+  sebelumnya.
+- `overscroll-behavior: contain` menghentikan gulir di ujung nav dan di dua rail halaman yang
+  sticky. Tanpa itu gulirnya lanjut ke halaman di belakangnya, seperti sebelum properti ini ada.
+  Tidak ada gantinya di CSS di bawah Safari 16; pilihan lainnya scroll lock di JS, dan shell ini
+  sengaja tidak melakukannya.
+- `scrollbar-width: none` menyembunyikan scrollbar carousel, dengan `::-webkit-scrollbar` di
+  sebelahnya yang mengerjakan hal sama untuk setiap WebKit di dalam floor.
+- `100dvh` membatasi tinggi rail sticky di layar dari 960px. Safari sudah punya unit itu sejak rilis
+  floor-nya sendiri, jadi satu-satunya mesin di dalam floor yang belum punya adalah tiga rilis
+  Chrome sebelum unit itu mendarat di sana, dan di situ batasnya hilang dan aside yang panjang
+  tumbuh melewati viewport alih-alih digulir di dalam dirinya.
+
+Blur backdrop pakai `-webkit-backdrop-filter` + `backdrop-filter`, dan `user-select` membawa kembar
+`-webkit-`-nya dengan cara yang sama. Uji yang sama menegaskan kedua pasangan itu aturan per aturan,
+jadi properti standarnya tak pernah dikirim sendirian. Belum ada CSS build/autoprefixer, jadi
+dukungan di bawah floor itu jadi tanggung jawab konsumen.
 
 ## Lisensi
 [MIT](LICENSE) © 2026 Cahyo D. Kurnianto. Bebas dipakai, diubah, dan didistribusikan asal
