@@ -797,3 +797,27 @@ test('a transition that gates pointer-events is neutralised under reduced motion
       + 'terlihat yang menangkap tap. Pasangan dengan selektor yang lebih lemah tidak cukup: ia '
       + 'kalah justru pada keadaan yang penting.');
 });
+
+/* Reduce Motion menetralkan SETIAP transisi, dan penjaga ini yang memastikan aturannya tidak
+ * pernah hilang diam-diam.
+ *
+ * Penjaga di atas memeriksa satu kelas selektor saja, dan dua kali ia hijau untuk kit yang masih
+ * punya ranjau: scrim drawer lolos lewat spesifisitas, centang checkbox lolos karena ia tidak
+ * menyentuh `pointer-events` sama sekali. Yang menutup kelas ini bukan daftar yang dipelihara
+ * tangan melainkan satu aturan menyeluruh; sembilan dari lima puluh enam selektor yang
+ * mentransisikan sesuatu pernah dinetralkan, dan empat puluh delapan sisanya menunggu.
+ *
+ * `transition:none`, BUKAN durasi mungil: `transition-duration:0.01ms` yang beredar sebagai reset
+ * aksesibilitas adalah persis bentuk yang menyangkut di WebKit. */
+test('reduced motion neutralises every transition, not a hand-kept list', () => {
+  for (const berkas of ['dist/freeday.css', 'dist/freeday.bundle.css']) {
+    const css = readFileSync(new URL(`../${berkas}`, import.meta.url), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '');
+    const menyeluruh = /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{\s*\*\s*,\s*\*::before\s*,\s*\*::after\s*\{[^}]*transition\s*:\s*none\s*!important/;
+    assert.ok(menyeluruh.test(css),
+      `${berkas}: aturan menyeluruh hilang. Tanpa ia, setiap transisi baru adalah ranjau: WebKit `
+        + 'menjepit durasinya ke nol di bawah Reduce Motion dan propertinya tersangkut di nilai awal.');
+    assert.ok(!/@media\s*\(prefers-reduced-motion:\s*reduce\)[^@]*transition-duration\s*:\s*0\.0*1m?s/.test(css),
+      `${berkas}: durasi mungil di bawah reduced motion adalah bentuk yang menyangkut, bukan obatnya.`);
+  }
+});

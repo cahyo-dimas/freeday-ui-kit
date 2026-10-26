@@ -11,7 +11,7 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.9.3`, disiapkan dan menunggu tag** (2026-10-26). 3.9.2 sudah terbit, dan perbaikannya tidak bekerja. Belum terbit saat baris ini ditulis; yang
+**`3.9.4`, disiapkan dan menunggu tag** (2026-10-26). Isi 3.9.4: setiap transisi dinetralkan di bawah Reduce Motion lewat satu aturan di base.css, sesudah tiga rilis menambalnya satu per satu dan hitungan 9 dari 56 menghentikan polanya. Belum terbit saat baris ini ditulis; yang
 sudah ada di `main` adalah commit versinya. 3.9.0 sudah terbit, 2026-10-26T02:42:52Z.
 
 Isi 3.9.3 dalam satu kalimat: **perbaikan 3.9.2 kalah spesifisitas dan penjaganya hijau untuknya**

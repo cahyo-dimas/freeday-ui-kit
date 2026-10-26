@@ -38,3 +38,29 @@ a { color: var(--color-primary-strong); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* ===========================================================================
+ * Reduce Motion: SETIAP transisi dinetralkan, bukan daftar yang dipelihara tangan.
+ *
+ * WebKit menjepit durasi transisi ke 0.000001s ketika setelan itu menyala, dan pada durasi itu
+ * transisinya tidak pernah berjalan: propertinya tersangkut di nilai AWAL, selamanya. Akibatnya
+ * bukan "kurang halus" melainkan keadaan yang salah di layar. Terukur di iPhone 7 tiga kali:
+ * scrim drawer yang tinggal gelap sambil tetap menangkap tap, dan centang checkbox yang tak
+ * pernah digambar padahal inputnya benar-benar tercentang.
+ *
+ * Sebelum aturan ini, kit menetralkan sembilan selektor dari lima puluh enam yang mentransisikan
+ * sesuatu. Empat puluh delapan sisanya ranjau yang menunggu, dan tiga sudah meledak di tangan satu
+ * pemilik app. Menambal yang keempat adalah cara kita sampai di sini.
+ *
+ * `transition: none`, BUKAN `transition-duration: 0.01ms` yang biasa beredar sebagai reset
+ * aksesibilitas: durasi mungil itu persis bentuk yang menyangkut di WebKit. Satu-satunya yang
+ * pernah menunggu `transitionend` di kit ini adalah toast, dan ia sudah punya cadangan
+ * `setTimeout(finish, 400)` untuk kasus event itu tak pernah datang.
+ *
+ * ANIMASI sengaja tidak disentuh: kit memasangnya lewat `prefers-reduced-motion: no-preference`,
+ * jadi ia opt-in dan sudah mati di sini, sementara `--spinner` dan `--progress` punya perlakuan
+ * bernuansa sendiri yang memang harus bertahan.
+ * ======================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important;}
+}

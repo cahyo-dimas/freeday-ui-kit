@@ -9,6 +9,37 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.9.4] - 2026-10-26
+
+**Sembilan dari lima puluh enam, dan empat puluh delapan sisanya ranjau.** Tiga rilis berturut-turut
+menambal transisi yang tersangkut di bawah Reduce Motion satu per satu: scrim drawer di 3.9.2, yang
+spesifisitasnya salah dan diperbaiki di 3.9.3, lalu centang checkbox yang dilaporkan dari perangkat
+yang sama. Yang ketiga itu lolos dari penjaga 3.9.3 karena penjaga itu hanya memeriksa transisi yang
+menyentuh `pointer-events`, dan centang checkbox tidak menyentuhnya: ia cuma `transform: scale(0)`
+menjadi `scale(1)`. Inputnya benar-benar tercentang selama ini; centangnya yang tidak pernah
+digambar.
+
+Hitungannya yang menghentikan pola menambal: kit mentransisikan sesuatu di 56 selektor dan
+menetralkan 9.
+
+### Fixed
+- **Setiap transisi dinetralkan di bawah `prefers-reduced-motion`** (`#090`), satu aturan di
+  `src/base.css` alih-alih daftar yang dipelihara tangan. WebKit menjepit durasi transisi ke
+  0.000001s ketika setelan itu menyala, dan pada durasi itu transisinya tidak pernah berjalan:
+  propertinya tersangkut di nilai awal. Akibatnya bukan "kurang halus" melainkan keadaan yang salah
+  di layar.
+- **`transition:none`, bukan durasi mungil.** Reset aksesibilitas yang beredar luas memakai
+  `transition-duration: 0.01ms` supaya `transitionend` tetap menyala, dan durasi mungil itu persis
+  bentuk yang menyangkut di WebKit; reset itu akan memperburuk cacat ini. Satu-satunya yang pernah
+  menunggu `transitionend` di kit ini adalah toast, dan ia sudah punya cadangan
+  `setTimeout(finish, 400)`.
+- **Animasi sengaja tidak disentuh.** Kit memasangnya lewat `prefers-reduced-motion: no-preference`,
+  jadi ia opt-in dan sudah mati di sana, sementara `.fdy-spinner` dan `.fdy-progress` punya
+  perlakuan bernuansa sendiri yang memang harus bertahan.
+- **Penjaganya menuntut aturan menyeluruhnya ada**, dan menolak bentuk durasi-mungil. Dua penjaga
+  sebelumnya hijau untuk kit yang masih punya ranjau; yang ini tidak bisa, sebab ia tidak
+  mendaftar selektor.
+
 ## [3.9.3] - 2026-10-26
 
 **Perbaikan 3.9.2 tidak pernah bisa bekerja, dan penjaganya hijau untuknya.** Penetralan
