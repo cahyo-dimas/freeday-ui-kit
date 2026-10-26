@@ -319,11 +319,24 @@ export async function withPage(fileUrl, fn) {
        to it, so this is what makes a responsive contract testable at all, and the only way to
        exercise the moment a layout CROSSES a breakpoint, which is where an app shell can strand an
        `inert` attribute on content nobody can reach any more. */
+    /* Waits for the viewport to BE the size asked for, and then for a frame painted against it.
+       This used to be `sleep(120)`, and 120ms is enough on an idle laptop and not always enough on
+       a loaded CI runner: a measurement taken too early reads the OLD media query, so the failure
+       lands on whichever assertion happened to lose the race rather than on the resize. That made
+       `bottom-nav` look flaky for a long time, and it finally held up a release twice, failing a
+       different test each run. A deadline is not a condition; this waits for the condition. */
     const setViewport = async (width, height) => {
       await cmd('Emulation.setDeviceMetricsOverride', {
         width, height, deviceScaleFactor: 1, mobile: false,
       });
-      await sleep(120); // let the media query settle before anything is measured
+      const resized = await waitFor(`window.innerWidth === ${width} && window.innerHeight === ${height}`);
+      if (!resized) {
+        throw new Error(`viewport never reported ${width}x${height}, so every measurement after `
+          + 'this would have been taken against the previous one');
+      }
+      /* The right size is not yet a recalculated style on a painted frame. Two frames guarantee it:
+         the first callback runs before the next paint, the second only after that paint happened. */
+      await evalJS('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))');
     };
 
     /* Every AX node UNDER an element, ignored ones included, the only instrument that can tell

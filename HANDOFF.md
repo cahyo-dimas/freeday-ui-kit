@@ -65,10 +65,19 @@ keputusan bentuk prop datar lawan objek `filterText`; dan **`aria-label="Search 
 sesuatu.
 
 Utang yang dibawa rilis ini. Yang lama: floor dukungan di README diaudit dari fitur yang dipakai dan
-belum pernah dijalankan di Safari 15.4 sungguhan; suite peramban goyah di bawah
-`--test-concurrency=3` pada `bottom-nav`, `search`, `over-dialog` dan `cfl-multi`; dan
+belum pernah dijalankan di Safari 15.4 sungguhan; dan
 `examples/blazor-faktur/wwwroot/freeday/freeday.bundle.css` masih memuat 86 `color-mix()` sebab ia
 salinan vendored yang tidak dilacak git.
+
+**Utang yang lunas di 3.9.1:** suite peramban tidak lagi goyah. `setViewport` di
+`browser/harness.mjs` menunggu `sleep(120)` sesudah mengubah metrik perangkat, dan 120ms cukup di
+laptop menganggur tetapi tidak selalu cukup di runner CI. Pengukuran yang terlalu cepat membaca
+media query LAMA, jadi yang jatuh adalah assertion mana pun yang kebetulan kalah balapan, berbeda
+tiap jalanan. Itu menahan rilis 3.9.1 dua kali, dengan dua uji berbeda di berkas yang sama, sebelum
+sebabnya dicari alih-alih diulang. Sekarang ia menunggu `window.innerWidth` dan `innerHeight`
+benar-benar sama dengan yang diminta, lalu dua `requestAnimationFrame` supaya satu frame dicat
+terhadap gaya baru, dan melempar kalau ukurannya tak pernah datang. Sebelas berkas uji memakai
+`setViewport`, jadi keempat berkas yang dulu goyah ikut sembuh.
 
 Yang baru:
 
