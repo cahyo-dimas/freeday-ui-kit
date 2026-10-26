@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev. UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v3.10.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.10.0)
+[![Release](https://img.shields.io/badge/release-v3.11.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.11.0)
 
 UI KIT yang token-driven & framework-agnostic. Satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -44,9 +44,9 @@ enhancer:
 | **Blazor (net8.0)** | RCL `Freeday.Blazor` | `@bind-Value` |
 | HTML statis · Svelte · template server-rendered | *(tanpa wrapper)* markup mentah + enhancer, di bawah | event `fdy-*` |
 
-Kedua belasnya: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` ·
-`FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` ·
-`FdyAppShell`. Menulis markup mentah untuk kedua belas ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja pada mulanya, karena render
+Ketiga belasnya: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` ·
+`FdyTimepicker` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` ·
+`FdyAppShell`. Menulis markup mentah untuk ketiga belas ini di dalam Vue/React/Blazor *kelihatan* baik-baik saja pada mulanya, karena render
 pertamanya memang benar. Setelah itu ia rusak diam-diam: DOM yang di-render framework belakangan tak pernah ter-hydrate, dan state widget
 berakhir di DOM alih-alih di state framework-mu. Selebihnya (button, card, badge, alert, markup
 tabel, layout, dan komponen interaktif yang tak punya wrapper) sama persis di semua stack. Untuk

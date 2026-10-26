@@ -5,7 +5,7 @@
 > **More free days for devs. The UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v3.10.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.10.0)
+[![Release](https://img.shields.io/badge/release-v3.11.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.11.0)
 
 A token-driven, framework-agnostic UI kit. One source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -44,8 +44,8 @@ enhancer:
 | **Blazor (net8.0)** | `Freeday.Blazor` RCL | `@bind-Value` |
 | Static HTML · Svelte · server-rendered templates | *(no wrapper)* raw markup + enhancers, below | `fdy-*` events |
 
-The twelve: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyAutocomplete` ·
-`FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`.
+The thirteen: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyTimepicker` ·
+`FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`.
 Hand-writing the raw
 markup for these inside Vue/React/Blazor *looks* fine at first, because the first render is correct.
 Then it breaks quietly:

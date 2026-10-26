@@ -35,6 +35,7 @@ export { FdyDatepicker, type FdyDatepickerProps, type FdyDatepickerMode } from '
 export { FdyMonthpicker, type FdyMonthpickerProps } from './components/FdyMonthpicker';
 export type { FdyMonth } from '../core/month-grid';
 export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
+export { FdyTimepicker, type FdyTimepickerProps } from './components/FdyTimepicker';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';
 export { FdyCfl, type FdyCflProps, type FdyCflHandle, type CflColumn, type CflPage } from './components/FdyCfl';

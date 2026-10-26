@@ -1,0 +1,23 @@
+@namespace Freeday.Blazor
+@inherits FreedayComponentBase<FdyTimepicker>
+
+@* Seed-based wrapper over freeday-timepicker.js: the enhancer builds the input-styled trigger
+   + time listbox from this empty div and emits fdy-time-select. The enhancer owns that DOM, so
+   the seed renders once (ShouldRender => false) and the picked time is read back through
+   @bind-Value. Value is "HH:MM" (24-hour) or "".
+
+   This is what replaces <input type="time">, and not for theming alone: the native picker is
+   drawn by the OPERATING SYSTEM, so iOS shows a scroll wheel, Android a clock dial and desktop a
+   stepper, each with its own width and value format, and no CSS reaches any of them (#094). *@
+<div @ref="Root" data-fdy-timepicker
+     data-value="@Value"
+     data-label="@Label"
+     data-placeholder="@Placeholder"
+     data-step="@StepAttribute"
+     data-min="@Min"
+     data-max="@Max"
+     data-id="@Id"
+     data-describedby="@Describedby"
+     data-disabled="@(Disabled ? "true" : null)"
+     data-readonly="@(Readonly ? "true" : null)"
+     data-invalid="@(Invalid ? "true" : null)"></div>

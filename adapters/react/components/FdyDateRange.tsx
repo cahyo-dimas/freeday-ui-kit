@@ -29,6 +29,19 @@ export interface FdyDateRangeProps {
   endPlaceholder?: string;
   ariaLabel?: string;
   ariaLabelledby?: string;
+  /* Forwarded verbatim to BOTH pickers. Without these the range was the one picker in the kit
+     whose calendar nav could not be named in the page's own language: FdyDatepicker takes them,
+     FdyDateRange dropped them, so an Indonesian app got "Previous month" on the only date control
+     it could not reach. Flat `xxxLabel` props, not a `labels` object, because that is the shape
+     every other component in the kit already uses. Raised from keamanan-cluster (#095). */
+  prevMonthLabel?: string;
+  nextMonthLabel?: string;
+  prevYearLabel?: string;
+  nextYearLabel?: string;
+  prevYearsLabel?: string;
+  nextYearsLabel?: string;
+  chooseMonthLabel?: string;
+  chooseYearLabel?: string;
 }
 
 export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
@@ -57,6 +70,14 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         invalid={props.invalid}
         describedby={props.describedby}
         placeholder={props.startPlaceholder ?? 'Dari'}
+        prevMonthLabel={props.prevMonthLabel}
+        nextMonthLabel={props.nextMonthLabel}
+        prevYearLabel={props.prevYearLabel}
+        nextYearLabel={props.nextYearLabel}
+        prevYearsLabel={props.prevYearsLabel}
+        nextYearsLabel={props.nextYearsLabel}
+        chooseMonthLabel={props.chooseMonthLabel}
+        chooseYearLabel={props.chooseYearLabel}
       />
       <span className="fdy-daterange__sep" aria-hidden="true">–</span>
       <FdyDatepicker
@@ -70,6 +91,14 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         invalid={props.invalid}
         describedby={props.describedby}
         placeholder={props.endPlaceholder ?? 'Sampai'}
+        prevMonthLabel={props.prevMonthLabel}
+        nextMonthLabel={props.nextMonthLabel}
+        prevYearLabel={props.prevYearLabel}
+        nextYearLabel={props.nextYearLabel}
+        prevYearsLabel={props.prevYearsLabel}
+        nextYearsLabel={props.nextYearsLabel}
+        chooseMonthLabel={props.chooseMonthLabel}
+        chooseYearLabel={props.chooseYearLabel}
       />
     </div>
   );

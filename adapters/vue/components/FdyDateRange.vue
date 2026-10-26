@@ -29,6 +29,19 @@ const props = defineProps<{
   endPlaceholder?: string;
   ariaLabel?: string;
   ariaLabelledby?: string;
+  /* Forwarded verbatim to BOTH pickers. Without these the range was the one picker in the kit
+     whose calendar nav could not be named in the page's own language: FdyDatepicker takes them,
+     FdyDateRange dropped them, so an Indonesian app got "Previous month" on the only date control
+     it could not reach. Flat `xxxLabel` props, not a `labels` object, because that is the shape
+     every other component in the kit already uses. Raised from keamanan-cluster (#095). */
+  prevMonthLabel?: string;
+  nextMonthLabel?: string;
+  prevYearLabel?: string;
+  nextYearLabel?: string;
+  prevYearsLabel?: string;
+  nextYearsLabel?: string;
+  chooseMonthLabel?: string;
+  chooseYearLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -69,6 +82,14 @@ function setEnd(end: string): void {
       :invalid="invalid"
       :describedby="describedby"
       :placeholder="startPlaceholder ?? 'Dari'"
+      :prev-month-label="prevMonthLabel"
+      :next-month-label="nextMonthLabel"
+      :prev-year-label="prevYearLabel"
+      :next-year-label="nextYearLabel"
+      :prev-years-label="prevYearsLabel"
+      :next-years-label="nextYearsLabel"
+      :choose-month-label="chooseMonthLabel"
+      :choose-year-label="chooseYearLabel"
       @update:model-value="setStart"
     />
     <span class="fdy-daterange__sep" aria-hidden="true">–</span>
@@ -82,6 +103,14 @@ function setEnd(end: string): void {
       :invalid="invalid"
       :describedby="describedby"
       :placeholder="endPlaceholder ?? 'Sampai'"
+      :prev-month-label="prevMonthLabel"
+      :next-month-label="nextMonthLabel"
+      :prev-year-label="prevYearLabel"
+      :next-year-label="nextYearLabel"
+      :prev-years-label="prevYearsLabel"
+      :next-years-label="nextYearsLabel"
+      :choose-month-label="chooseMonthLabel"
+      :choose-year-label="chooseYearLabel"
       @update:model-value="setEnd"
     />
   </div>

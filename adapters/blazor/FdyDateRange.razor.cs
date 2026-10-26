@@ -23,6 +23,26 @@ public partial class FdyDateRange
     [Parameter] public string? Max { get; set; }
     [Parameter] public string Separator { get; set; } = "–";
 
+    /* The calendars' own navigation labels, forwarded verbatim to BOTH pickers. Month and weekday
+       NAMES follow the page's `lang` through Intl and need nothing here; these are the buttons
+       around them. Until now the range was the one picker in the kit whose nav could not be named
+       in the page's own language -- FdyDatepicker took these, FdyDateRange dropped them, so an
+       Indonesian app got "Previous month" on the only date control it could not reach. Raised
+       from keamanan-cluster (#095). */
+    [Parameter] public string? PrevMonthLabel { get; set; }
+    [Parameter] public string? NextMonthLabel { get; set; }
+    [Parameter] public string? PrevYearLabel { get; set; }
+    [Parameter] public string? NextYearLabel { get; set; }
+    [Parameter] public string? PrevYearsLabel { get; set; }
+    [Parameter] public string? NextYearsLabel { get; set; }
+    [Parameter] public string? ChooseMonthLabel { get; set; }
+    [Parameter] public string? ChooseYearLabel { get; set; }
+
+    /// <summary>The year grid's title, back to months. Blazor only, because the raw seed both
+    /// pickers are built from supports it and <see cref="FdyDatepicker"/> already exposes it;
+    /// the Vue and React adapters build no such button.</summary>
+    [Parameter] public string? BackToMonthsLabel { get; set; }
+
     private int _token;
 
     // initAll(Root) links the daterange (descendant) and inits both child pickers.

@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: raw timepicker seed, its ids and FreedayTimepicker.setState</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+<!-- An empty div: the enhancer builds the trigger and the list. data-id and data-describedby
+     were unreadable from the seed until 3.11.0, so a host could not name its own error text. -->
+<div id="seed" data-fdy-timepicker data-step="15" data-min="06:00" data-max="08:00"
+     data-value="07:00" data-label="Jam mulai" data-id="jam-mulai"
+     data-describedby="jam-mulai-bantu"></div>
+<span class="fdy-help" id="jam-mulai-bantu">Jam kerja saja.</span>
+<script src="../../dist/freeday.js"></script>

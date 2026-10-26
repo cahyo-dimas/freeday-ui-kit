@@ -4945,6 +4945,14 @@
     trigger.setAttribute('aria-haspopup', 'listbox');
     trigger.setAttribute('aria-expanded', 'false');
     trigger.setAttribute('aria-label', label);
+    /* The trigger is a <button>, which is NOT a labelable element, so a form's own `<label for>`
+       can never activate it -- but an id is still what `aria-describedby` targets and what a host
+       needs to point at this control. Both were unreadable from the seed until now, so a Blazor
+       host could not name its own error text. Mirrors the datepicker's seed. */
+    var seedId = wrap.getAttribute('data-id');
+    if (seedId) trigger.id = seedId;
+    var describedby = wrap.getAttribute('data-describedby');
+    if (describedby) trigger.setAttribute('aria-describedby', describedby);
     var valueSpan = document.createElement('span');
     valueSpan.className = 'fdy-timepicker__value';
     trigger.appendChild(valueSpan);
@@ -4982,6 +4990,30 @@
     wrap.appendChild(panel);
 
     var active = -1;
+    /* A host that renders its seed ONCE and then never re-renders it (Blazor: ShouldRender is
+       false after hydration) still has to be able to disable, lock or invalidate the field
+       afterwards. Without this the parameter was there and nothing read it. Mirrors
+       FreedayDatepicker.setState so the two controls of one family answer the same call. */
+    var stateDisabled = wrap.hasAttribute('data-disabled');
+    var stateReadonly = wrap.hasAttribute('data-readonly');
+    var stateInvalid = wrap.hasAttribute('data-invalid');
+
+    function applyState() {
+      trigger.disabled = stateDisabled;
+      if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
+      else trigger.removeAttribute('aria-readonly');
+      if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
+      else trigger.removeAttribute('aria-invalid');
+      wrap.classList.toggle('fdy-timepicker--error', stateInvalid);
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    function setState(next) {
+      if (!next) return;
+      if (next.disabled != null) stateDisabled = !!next.disabled;
+      if (next.readonly != null) stateReadonly = !!next.readonly;
+      if (next.invalid != null) stateInvalid = !!next.invalid;
+      applyState();
+    }
 
     function updateDisplay() {
       if (value) {
@@ -5010,6 +5042,7 @@
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(panel, trigger); return _pop; }
     function open() {
+      if (stateDisabled || stateReadonly) return;
       if (!panel.hidden) return;
       var p = popCtl(); if (p) p.show(); else panel.hidden = false;
       trigger.setAttribute('aria-expanded', 'true');
@@ -5060,10 +5093,12 @@
     });
 
     updateDisplay();
+    applyState();
 
     var api = {
       wrap: wrap,
       getValue: function () { return value; },
+      setState: setState,
       clear: function () { value = ''; for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', 'false'); updateDisplay(); }
     };
     wrap._fdyTp = api;
@@ -5083,7 +5118,15 @@
     initAll();
   }
 
-  window.FreedayTimepicker = { init: initTime, initAll: initAll };
+  window.FreedayTimepicker = {
+    init: initTime,
+    initAll: initAll,
+    /* See api.setState above: the one call a render-once host needs. */
+    setState: function (root, state) {
+      var api = root && root._fdyTp ? root._fdyTp : null;
+      if (api && api.setState) api.setState(state);
+    }
+  };
 })();
 
 /* Freeday, toast API (optional, zero-dependency).

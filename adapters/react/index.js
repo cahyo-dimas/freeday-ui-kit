@@ -4,6 +4,7 @@ export { FdyCombo } from './components/FdyCombo.tsx';
 export { FdyDatepicker } from './components/FdyDatepicker.tsx';
 export { FdyMonthpicker } from './components/FdyMonthpicker.tsx';
 export { FdyDateRange } from './components/FdyDateRange.tsx';
+export { FdyTimepicker } from './components/FdyTimepicker.tsx';
 export { FdyAutocomplete } from './components/FdyAutocomplete.tsx';
 export { FdyCascade } from './components/FdyCascade.tsx';
 export { FdyCfl } from './components/FdyCfl.tsx';

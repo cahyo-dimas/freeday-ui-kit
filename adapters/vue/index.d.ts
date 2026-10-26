@@ -44,6 +44,7 @@ export { default as FdyDatepicker } from './components/FdyDatepicker.vue';
 export { default as FdyMonthpicker } from './components/FdyMonthpicker.vue';
 export type { FdyMonth } from '../core/month-grid';
 export { default as FdyDateRange } from './components/FdyDateRange.vue';
+export { default as FdyTimepicker } from './components/FdyTimepicker.vue';
 export type { DateRangeValue } from './components/FdyDateRange.vue';
 export { default as FdyAutocomplete } from './components/FdyAutocomplete.vue';
 export { default as FdyCascade } from './components/FdyCascade.vue';

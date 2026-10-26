@@ -34,8 +34,9 @@ live docs.
    invalid state does not belong to the control itself.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
-7. **On Vue, React or Blazor, twelve components have a typed wrapper. Use it.** `FdyCombo` ·
-   `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyAutocomplete` · `FdyCascade` · `FdyCfl` ·
+7. **On Vue, React or Blazor, thirteen components have a typed wrapper. Use it.** `FdyCombo` ·
+   `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyTimepicker` · `FdyAutocomplete` ·
+   `FdyCascade` · `FdyCfl` ·
    `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
    `Freeday.Blazor` RCL. Each is flagged at its own section below. Hand-writing their raw markup in
    those stacks *looks* right at first, because the enhancer initialises once and the first render is
@@ -1020,6 +1021,7 @@ grid's own title.
 | `startPlaceholder?` · `endPlaceholder?` | `string` | One per field. |
 | `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the group (`role="group"`), or points at the text that does. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | Applied to both pickers together. |
+| `prevMonthLabel?` · `nextMonthLabel?` · `prevYearLabel?` · `nextYearLabel?` · `prevYearsLabel?` · `nextYearsLabel?` · `chooseMonthLabel?` · `chooseYearLabel?` | `string` | Forwarded verbatim to **both** pickers. Until 3.11.0 this was the one picker in the kit whose calendar nav could not be named in the page's own language: the single picker took these, the range dropped them. Blazor adds `BackToMonthsLabel`, since the raw seed both pickers are built from has that button. |
 
 Blazor splits the value into two scalars, `From` / `FromChanged` and `To` / `ToChanged`, because a
 C# binding cannot express one object bound in two places, and it adds `Separator`.
@@ -1106,9 +1108,51 @@ it has always been, down to the `YYYY-MM-DD` it reports.
 ```
 
 ## Time picker — `data-fdy-timepicker`
-24-hour `HH:MM` listbox. `data-step` (minutes, default 30), `data-min`, `data-max`. Needs
+> **Typed wrapper: `<FdyTimepicker>`**. Vue (`v-model`) · React (`value`/`onChange`) · Blazor (`@bind-Value`). In those stacks use the wrapper; the markup below is for stacks without an adapter (and is what the wrapper renders).
+
+24-hour `HH:MM` listbox. **Author an empty `<div>`** — the enhancer builds everything. Needs
 `freeday-timepicker.js`. Classes: `.fdy-timepicker` (+`--error`) · `__trigger` `__value`
 (+`--placeholder`) `__icon` `__panel` `__opt`.
+
+Seed attributes: `data-step` (minutes, default 30), `data-min` (default `00:00`), `data-max`
+(default `23:59`), `data-value`, `data-label`, `data-placeholder` (default `--:--`), `data-id`,
+`data-describedby`, `data-disabled`, `data-readonly`, `data-invalid`. Emits a bubbling
+`fdy-time-select` (`detail {value}`). `FreedayTimepicker.setState(root, { disabled, readonly,
+invalid })` changes the three states afterwards, which is what a host that renders its seed once
+and never again (Blazor) needs.
+
+**Use this instead of `<input type="time">`**, and not for theming alone: the native picker is
+drawn by the *operating system*, so iOS shows a scroll wheel, Android a clock dial and desktop a
+stepper, each with its own width and value format, and no CSS reaches any of them. A phone and a
+browser at the same width therefore disagree about a screen that is otherwise identical.
+
+```html
+<div data-fdy-timepicker data-step="15" data-min="06:00" data-max="22:00"
+     data-value="07:00" data-label="Jam mulai"></div>
+```
+
+### Props — `<FdyTimepicker>`
+
+| Prop | Type | What it does |
+|---|---|---|
+| `modelValue` · `value` | `string \| null` | `HH:MM`, 24-hour. `''`/`null` for empty. A loose `H:MM` is normalised for matching. Blazor: `Value` / `@bind-Value`. |
+| `onChange` | `(value: string) => void` | React. Vue emits `update:modelValue` and `change`, Blazor `ValueChanged`. |
+| `step?` | `number` | Minutes between options. Default 30. |
+| `min?` · `max?` | `string` | `HH:MM` bounds, inclusive. Default `00:00` to `23:59`. |
+| `placeholder?` | `string` | Shown when there is no value. Default `--:--`. |
+| `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the trigger, or points at the text that does. Blazor: `Label` / `Describedby`. |
+| `id?` | `string` | Id for the trigger. It is a `<button>`, which is **not** a labelable element, so a `<label for>` will not activate it — name it with `ariaLabel`/`ariaLabelledby`. |
+| `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps tab order and shows the time but will not open. |
+
+Keyboard: `ArrowDown`/`ArrowUp` move one option, `Home`/`End` jump to the ends, `Enter`/`Space`
+pick, `Escape` closes. The highlight is **clamped, not cyclic** — `ArrowUp` at `00:00` stays there,
+because wrapping to `23:30` reads as a glitch in a list this long — and it is scrolled into view,
+since the panel is `max-height:15rem` and a highlight nobody can see is no highlight.
+
+**Deliberate difference between the two paths.** The wrappers keep focus on the **trigger** with
+`aria-activedescendant` on it, which is what `FdyCombo`, `FdyDatepicker` and `FdyAutocomplete` do;
+the raw enhancer moves focus **into the panel**. Both are valid APG listbox patterns, and the Vue
+and React adapters follow their own family rather than the enhancer.
 
 ## Datetime picker — `data-fdy-datetimepicker`
 A **composition** of the two above, not a monolith: nest one datepicker and one timepicker inside
