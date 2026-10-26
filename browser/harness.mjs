@@ -174,11 +174,23 @@ export async function withPage(fileUrl, fn) {
       return r.result && r.result.result ? r.result.result.value : undefined;
     };
 
+    /* THROWS on timeout, and that is the whole point of the change. It used to return `false`, and
+       most of its 191 callers never read the result: a wait that gave up then measured whatever the
+       page happened to be and failed later on an assertion diff that named the wrong thing. CI
+       found `['Code','Name','Row actions','Sortable actions']` against `[]` and the real sentence
+       was "the Vue table never mounted inside four seconds on a loaded runner". A guard that can
+       quietly not guard is the failure this suite kept repeating.
+
+       No caller wants `false`: the few that read the result store it and assert it is truthy, and
+       every `=== false` in the specs is inside the EXPRESSION, waiting for something to become
+       false, not waiting for this function to give up. */
     const waitFor = async (expression, { timeout = 4000, interval = 50 } = {}) => {
       const deadline = Date.now() + timeout;
       for (;;) {
         if (await evalJS(`Boolean(${expression})`)) return true;
-        if (Date.now() > deadline) return false;
+        if (Date.now() > deadline) {
+          throw new Error(`waited ${timeout}ms and this never became true: ${expression}`);
+        }
         await sleep(interval);
       }
     };
