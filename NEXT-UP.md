@@ -107,6 +107,35 @@ kontrol di 9 berkas. Tiga `type="date"` dan empat `type="time"` ditutup oleh `Fd
 | sepuluh `.fdy-input[type="number"]` di satu app tanpa satu pun `[data-fdy-number]` | **ditutup tanpa kode, dicatat sebagai sinyal.** Kit menyembunyikan tombol putar bawaan peramban (tak dapat ditema) dan mengembalikan afordansinya lewat `[data-fdy-number]` yang **opt-in**. Jadi tak ada divergensi antar-mesin di sini: kesepuluhnya tampil sama di mana pun, cuma tanpa tombol. Yang layak dicatat bukan cacatnya melainkan angkanya — sepuluh berbanding nol berarti opt-in itu mudah terlewat. Kalau app berikutnya juga nol, pertimbangkan apakah afordansinya pantas jadi bawaan. |
 | tiga `type="search"` memakai tombol bersih (×) berwarna OS | **ditutup tanpa kode.** Ini keputusan kit yang sudah ada alasannya di `COMPONENTS.md`: tombol itu satu-satunya cara mengosongkan field, jadi menyembunyikannya lebih buruk daripada membiarkannya tak bertema. Yang ingin bertema sekaligus mencari ulang saat dibersihkan punya `[data-fdy-search]`. Jadi beda penampilan di iOS memang ada, dan memang dipilih. |
 
+**Celah yang audit 3.11.0 temukan dan TIDAK ditutup, dan ia yang paling mahal:**
+`data-fdy-validate` mewirekan **Native** Constraint Validation. Tiga belas wrapper bertipe kit
+merender `<button>` sebagai pemicunya, dan `<button>` tak punya `required`, tak punya
+`:invalid`, tak masuk `form.checkValidity()`. Jadi sebuah form yang memakai enhancer validasi
+**tidak dapat** menuntut salah satu kontrol bertipe kit terisi.
+
+Ini bukan teori. App ronda punya empat `<input type="time">` di dua formulir shift, keempatnya
+`required` dengan `data-fdy-msg-required`, di dalam form `data-fdy-validate` yang penyerahannya
+digerbangi `@fdy-form-valid`. Menukarnya ke `FdyTimepicker` 3.11.0 akan memperbaiki penampilan
+OS-nya **dan diam-diam membuang penegakan wajib-isinya** -- menukar satu ketidakcocokan kosmetik
+dengan satu lubang data. Jadi keempatnya sengaja dibiarkan native, dan itulah satu-satunya alasan
+audit 3.11.0 menutup 3 dari 7 pemilih, bukan 7 dari 7.
+
+Dua arah yang kelihatan, dua-duanya butuh dipikirkan sebelum dikode:
+
+1. **Enhancer belajar membaca kontrol kit.** `freeday-form.js` mencari `[data-fdy-required]` pada
+   akar kontrol bertipe selain `:invalid` native, lalu menaruh `aria-invalid` +
+   `.fdy-help--error` di tempat yang sama. Kelebihannya: satu tempat, dan jalur mentah ikut
+   kebagian. Kekurangannya: enhancer jadi tahu tentang setiap komponen, yang sejauh ini
+   dihindari.
+2. **Wrapper merender input bayangan.** Sebuah `<input>` yang `required` dan ter-sinkron tapi
+   tak terlihat. Kelebihannya: validasi native tetap yang bekerja, nol pengetahuan baru di
+   enhancer. Kekurangannya: input tak terlihat yang bisa difokuskan adalah hal yang pembaca layar
+   temukan, dan `type="hidden"` **dilarang dari validasi** jadi itu bukan jalan keluar; ia harus
+   `visually-hidden` sungguhan, dan fokusnya harus dialihkan ke pemicu.
+
+Jangan kirim sebelum satu dari dua ini diukur terhadap formulir shift yang sebenarnya. Mengirim
+tebakan di area ini adalah pola yang memakan empat rilis pada 2026-10-26.
+
 **Di mana floor-nya tinggal sekarang:** satu baris di `README.md` dan `README.id.md`
 (`**Chrome <versi> · Safari <versi> · Firefox <versi>.**`), dibaca `test/baseline.test.mjs`. Tabel
 fitur ke versi baseline, daftar `ALLOWED` beserta alasan tiap pengecualian, dan penjaga pasangan
