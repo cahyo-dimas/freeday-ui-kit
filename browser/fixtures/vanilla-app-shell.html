@@ -2,6 +2,12 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
+<!-- Without this line a mobile engine lays the page out at its DEFAULT layout width, 980px on
+     iOS Safari, so `(max-width:720px)` never matches and the shell renders in desktop mode on a
+     375px phone. Measured here: the WebKit suite read `window.innerWidth` as 981 on an iPhone 7
+     viewport until this tag existed. No effect on the CDP harness, which drives Chrome with
+     `mobile: false` and ignores the tag. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Freeday — app shell behaviour</title>
 <link rel="stylesheet" href="../../dist/freeday.bundle.css">
 </head>

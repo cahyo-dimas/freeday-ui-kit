@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<!-- Without this line a mobile engine lays the page out at its DEFAULT layout width, 980px on
+     iOS Safari, so `(max-width:720px)` never matches and the shell renders in desktop mode on a
+     375px phone. Measured here: the WebKit suite read `window.innerWidth` as 981 on an iPhone 7
+     viewport until this tag existed. No effect on the CDP harness, which drives Chrome with
+     `mobile: false` and ignores the tag. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freeday: selection controls under Reduce Motion</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- The three selection controls whose CHECKED look is drawn by a transform on a pseudo-element,
+       which is the shape that broke on a real iPhone 7 under Reduce Motion: WebKit clamps the
+       transition to 0.000001s, the transition then never runs, and the pseudo-element stays at
+       scale(0) while the input underneath reports checked. A tick that is never painted on a box
+       the user did tick.
+
+       No existing fixture covers this. vanilla-over-dialog.html has the same controls, but inside
+       a 960x860 showModal() dialog sized to test box sizing against long labels, which does not
+       fit a 375x667 phone viewport. This one is the controls and nothing else. -->
+  <main style="padding:1rem">
+    <label class="fdy-check"><input type="checkbox" id="c1"><span>Email me a copy</span></label>
+    <label class="fdy-radio"><input type="radio" name="r" id="r1"><span>Monthly</span></label>
+    <!-- Standalone box: the one every table row and filter popover puts on screen. -->
+    <label class="fdy-filter__check"><input class="fdy-checkbox" type="checkbox" id="c4"><span>Only overdue</span></label>
+    <!-- The switch thumb slides by translateX instead of scaling, so it is a separate shape of the
+         same failure and is asserted by its translation, not by a matrix read off this file. -->
+    <label class="fdy-switch"><input type="checkbox" id="s1"><span>Approval required</span></label>
+  </main>
+
+<script>
+  // Computed style of a pseudo-element, which is the only place the checked look exists.
+  window.pseudoTransform = function (id) {
+    return getComputedStyle(document.getElementById(id), '::before').transform;
+  };
+
+  window.checkedState = function (id) {
+    var el = document.getElementById(id);
+    return { checked: el.checked, before: window.pseudoTransform(id) };
+  };
+</script>
+</body>
+</html>

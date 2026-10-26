@@ -105,3 +105,134 @@ jobs:
             echo "::error::Browser suite reported no passing tests; the summary line was not found."
             exit 1
           fi
+
+  # WebKit, and it is the engine that matters here rather than a third viewport. The suite above is
+  # CDP, so it is Chromium by construction: `browser/harness.mjs` speaks the DevTools Protocol to
+  # `chrome-headless-shell` and there is no WebKit on the other end of that wire. Which means that
+  # until this job existed, no Safari defect in this kit could be caught by any test, however many
+  # tests there were.
+  #
+  # The bill for that is on record. One day shipped five releases and four of them patched the same
+  # class: #057, a tap on a <div> backdrop that iOS Safari never turned into a click, so the drawer
+  # could not be closed at all; #072, color-mix() with an unreachable fallback; #088, #089 and #090,
+  # transitions WebKit clamps to 0.000001s under Reduce Motion and then never runs, leaving the
+  # property at its START value. Every one of them was found by an app owner on an iPhone 7, after
+  # the release.
+  #
+  # A SEPARATE JOB, for two reasons. It runs beside the suite above instead of after it, so the
+  # existing gate keeps its wall-clock time and adding WebKit costs the pipeline only what the
+  # longer of the two takes. And `playwright install webkit` pulls a browser the other job has no
+  # use for.
+  #
+  # ubuntu-latest because the engine has to be a real one. Playwright's WebKit for mac14-arm64 is
+  # FROZEN ("does not receive updates anymore"), and every newPage() on it answers `Protocol error
+  # (Page.overrideSetting): Unknown setting: PushAPIEnabled`, so the developer machine this kit is
+  # written on cannot host this suite at all. The runner's WebKit is current. webkit/preflight.mjs
+  # refuses to start on the frozen one rather than timing out once per test.
+  webkit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # same line publish.yml runs on
+      - run: npm ci
+      - run: node tokens/build.mjs # the fixtures load dist/, so build before testing
+
+      # Same reasoning as "Chrome present" above, for the other engine: an absent browser must be
+      # louder than a passing one. `--with-deps` installs the system libraries WebKit needs on the
+      # runner, which are not the ones Chromium needs.
+      - name: WebKit present
+        run: |
+          npx playwright install --with-deps webkit
+          bin=$(node -e "process.stdout.write(require('playwright-core').webkit.executablePath())")
+          test -x "$bin" || {
+            echo "::error::No executable WebKit at $bin. The WebKit suite would have had nothing to run on."
+            exit 1
+          }
+          echo "webkit at $bin"
+          "$bin" --version || true
+
+      # The count is asserted, not read off a log. A Playwright run that matched no spec files at
+      # all still exits 0, and so does one that skipped everything, so "the job was green" and "the
+      # guards ran" are two different facts and only one of them is enforceable. The gate also
+      # demands that the engine self-check PASSED by name: if that one test is missing or red then
+      # the project was pointed at the wrong browser and the other ten tests are green about
+      # Chromium, which this job already has a suite for.
+      - name: WebKit suite
+        run: |
+          npm run test:webkit || echo "::warning::the WebKit suite exited non-zero; the gate below reports what failed"
+          cat > "$RUNNER_TEMP/webkit-gate.mjs" <<'GATE'
+          import { readFileSync } from 'node:fs';
+
+          const REPORT = 'webkit/.report/webkit.json';
+          const ENGINE_CHECK = 'the engine under test is WebKit';
+
+          let report;
+          try {
+            report = JSON.parse(readFileSync(REPORT, 'utf8'));
+          } catch (err) {
+            console.log(`::error::No WebKit JSON report at ${REPORT} (${err.code ?? err.message}). `
+              + 'The run died before reporting, so nothing was guarded. The Playwright error is above.');
+            process.exit(1);
+          }
+
+          // Every test in the report, flattened out of the suite/spec tree.
+          const specs = [];
+          const walk = (suite) => {
+            for (const spec of suite.specs ?? []) specs.push(spec);
+            for (const child of suite.suites ?? []) walk(child);
+          };
+          for (const suite of report.suites ?? []) walk(suite);
+
+          // Name what failed, and why, one annotation per line: a workflow command cannot carry a
+          // raw newline, and "Process completed with exit code 1" has cost this repo a cycle before.
+          for (const spec of specs) {
+            for (const run of spec.tests ?? []) {
+              if (run.status === 'expected') continue;
+              console.log(`::error::${spec.file} > ${spec.title} [${run.status}]`);
+              for (const result of run.results ?? []) {
+                const said = result.error?.message ?? result.errors?.[0]?.message ?? '';
+                for (const line of String(said).split('\n')) {
+                  const text = line.replace(/\u001b\[[0-9;]*m/g, '').trimEnd();
+                  if (text !== '') console.log(`::error::  ${text}`);
+                }
+              }
+            }
+          }
+
+          const stats = report.stats ?? {};
+          const problems = [];
+          if ((stats.expected ?? 0) < 1) problems.push('it reported no passing tests at all');
+          if ((stats.unexpected ?? 0) > 0) problems.push(`${stats.unexpected} test(s) failed`);
+          if ((stats.flaky ?? 0) > 0) problems.push(`${stats.flaky} test(s) were flaky, and this suite runs with retries: 0`);
+          if ((stats.skipped ?? 0) > 0) problems.push(`${stats.skipped} test(s) skipped, and a skipped guard is not a passing guard`);
+          for (const err of report.errors ?? []) problems.push(`the run itself errored: ${err.message ?? err}`);
+
+          const engine = specs.find((spec) => spec.title === ENGINE_CHECK);
+          if (engine === undefined) {
+            problems.push(`the engine self-check "${ENGINE_CHECK}" did not run, so nothing proved this was WebKit`);
+          } else if (!(engine.tests ?? []).every((run) => run.status === 'expected')) {
+            problems.push(`the engine self-check "${ENGINE_CHECK}" failed, so the rest of this suite ran on the wrong browser`);
+          }
+
+          console.log(`webkit suite: ${stats.expected ?? '?'} passed, ${stats.unexpected ?? '?'} failed, `
+            + `${stats.skipped ?? '?'} skipped, ${stats.flaky ?? '?'} flaky`);
+          if (problems.length > 0) {
+            for (const problem of problems) console.log(`::error::WebKit gate: ${problem}.`);
+            process.exit(1);
+          }
+          GATE
+          node "$RUNNER_TEMP/webkit-gate.mjs"
+
+      # The one suite nobody can reproduce on the machine it was written on, so a red run has to
+      # leave the trace and the screenshots behind. Without this, chasing a WebKit-only failure
+      # means pushing commits and guessing from test names.
+      - name: Keep the evidence from a red run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webkit-report
+          path: webkit/.report/
+          retention-days: 7
+          if-no-files-found: warn

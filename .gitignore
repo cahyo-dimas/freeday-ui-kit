@@ -10,6 +10,9 @@ yarn-error.log*
 # Browser-test build output (esbuild bundles the adapter mount entries here on demand)
 browser/.build/
 
+# WebKit suite output (Playwright JSON report, traces, screenshots of a red run)
+webkit/.report/
+
 # .NET build output (Blazor RCL + examples)
 bin/
 obj/
