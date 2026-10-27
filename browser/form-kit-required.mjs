@@ -120,11 +120,16 @@ for (const stack of ['vue', 'react']) {
       await until(p, 'window.__invalid === 1', 'the form to refuse');
       assert.equal(await p.evalJS('window.__valid'), 0);
       assert.equal(await p.evalJS(`document.querySelector(${JSON.stringify(TRIG)}).getAttribute('aria-invalid')`), 'true');
-      /* The form-level override, which is the one that reads the same in every stack. */
+      /* The two stacks are SUPPOSED to differ here, and that is the point of asserting it.
+         Vue forwards an unknown attribute to a single-root component's root, so the per-control
+         `data-fdy-msg-required` lands where the enhancer reads it and wins. React forwards
+         nothing it does not render, so the same attribute never reaches the DOM and the
+         form-level `data-fdy-text-required` is what is left. An app that needs per-field wording
+         in React has to put it on the form, and this is where that is written down. */
       assert.equal(
         await p.evalJS(`(() => { const e = document.querySelector('.fdy-field [data-fdy-error]');
           return e && !e.hidden ? e.textContent.trim() : ''; })()`),
-        'Wajib diisi.',
+        stack === 'vue' ? 'Jam mulai wajib diisi.' : 'Wajib diisi.',
       );
     });
   });

@@ -29,6 +29,10 @@ createApp({
           min: '06:00',
           max: '08:00',
           ariaLabel: 'Jam mulai',
+          /* Not a prop: an unknown attribute falls through to the component's single root, which
+             is exactly where the enhancer reads it. keamanan-cluster's shift form depends on this
+             for its per-field wording, so it is guarded rather than assumed. */
+          'data-fdy-msg-required': 'Jam mulai wajib diisi.',
           'onUpdate:modelValue': (v) => { jam.value = v; },
         }),
       ]),
