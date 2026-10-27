@@ -21,6 +21,22 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const fixture = (name) => 'file://' + join(HERE, 'fixtures', name);
 const skip = findChrome() === null ? 'no Chrome binary (set CHROME_BIN to run browser tests)' : false;
 
+/* Every assertion below that reads RENDERED state has to wait for it.
+ *
+ * A click on a row dispatches the event synchronously, but Vue and React flush asynchronously:
+ * measured right after the two clicks, both report `aria-selected` count 0 and a footer still
+ * reading "0 selected", and the real values land 1-2ms later. The reads here sit one CDP
+ * round-trip after the click, which is usually 1-5ms, so the test was passing on the margin
+ * between two latencies rather than on anything it asserts. That margin is what disappears under
+ * `--test-concurrency=3`: this file went red once in a full suite run on 2026-10-27 and green 3
+ * of 3 on its own.
+ *
+ * The earlier note in NEXT-UP.md guessed "a time-based wait" as the cause. Wrong kind: there is no
+ * timeout anywhere in this file. The fault is a wait that is MISSING. */
+const until = async (p, condition, what) => {
+  assert.ok(await p.waitFor(condition), `timed out waiting for ${what}, condition never became true: ${condition}`);
+};
+
 for (const stack of ['vue', 'react']) {
   test(`${stack}: FdyCfl multiple ticks rows and commits them together (#019)`, { skip }, async () => {
     await buildEntries();
@@ -53,13 +69,19 @@ for (const stack of ['vue', 'react']) {
       assert.equal(await p.evalJS('document.querySelector("dialog.fdy-modal--cfl").open'), true,
         `${stack}: the dialog must stay open while picking`);
 
+      await until(p, 'document.querySelectorAll(\'.fdy-cfl__row[aria-selected="true"]\').length === 2',
+        'both ticks to be rendered');
       const ticked = await p.evalJS('document.querySelectorAll(\'.fdy-cfl__row[aria-selected="true"]\').length');
       assert.equal(Number(ticked), 2, `${stack}: two rows ticked must be announced as selected`);
+      await until(p, '/2 selected/.test(document.querySelector(".fdy-cfl__count").textContent)',
+        'the footer count to catch up');
       assert.match(await p.evalJS('document.querySelector(".fdy-cfl__count").textContent'), /2 selected/,
         `${stack}: the footer must count the ticks`);
 
       /* Untick, the same click that ticked it. */
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[2].click()');
+      await until(p, 'document.querySelectorAll(\'.fdy-cfl__row[aria-selected="true"]\').length === 1',
+        'the untick to be rendered');
       assert.equal(Number(await p.evalJS('document.querySelectorAll(\'.fdy-cfl__row[aria-selected="true"]\').length')), 1,
         `${stack}: clicking a ticked row again must untick it`);
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[2].click()');
@@ -72,6 +94,8 @@ for (const stack of ['vue', 'react']) {
         `${stack}: Confirm closes the dialog`);
 
       /* The field states how many, because display() names one row and naming one of two would lie. */
+      await until(p, '/2 selected/.test(document.querySelector(".fdy-input-group .fdy-input").value)',
+        'the field to state the count');
       assert.match(await p.evalJS('document.querySelector(".fdy-input-group .fdy-input").value'), /2 selected/,
         `${stack}: the field must state the count, not one of the rows`);
     });
@@ -84,6 +108,10 @@ for (const stack of ['vue', 'react']) {
       await p.evalJS('document.querySelector(".fdy-input-group__btn").click()');
       await p.waitFor('document.querySelectorAll(".fdy-cfl__row").length === 3');
       await p.evalJS('document.querySelectorAll(".fdy-cfl__row")[1].click()');
+      /* Wait for the tick to actually RENDER. Without this the test can discard a tick that was
+         never shown and still assert zero afterwards, which is a pass that proves nothing. */
+      await until(p, 'document.querySelectorAll(\'.fdy-cfl__row[aria-selected="true"]\').length === 1',
+        'the tick to be rendered before it is discarded');
 
       await p.evalJS('[...document.querySelectorAll(".fdy-cfl__actions .fdy-btn")].find(b => /Close/.test(b.textContent)).click()');
       assert.equal(await p.evalJS('JSON.stringify(window.__val)'), 'null',

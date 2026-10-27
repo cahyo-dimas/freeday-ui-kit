@@ -197,6 +197,11 @@ async function assertMonthDrill(fixtureName) {
       'and replaces the day grid rather than stacking beside it');
 
     for (let i = 0; i < 4; i++) await p.clickCenter('.fdy-cal__nav');   // ‹ steps a YEAR here
+    /* The title is framework state. Read straight after the clicks it still shows the old year and
+       the new one lands a millisecond later, so this assertion was riding on a CDP round-trip
+       being slower than a Vue/React flush. */
+    assert.ok(await p.waitFor(`document.querySelector('.fdy-cal__title').textContent.trim() === '2022'`),
+      `the arrows must step years while the month grid is open, title stayed at ${await p.evalJS("document.querySelector('.fdy-cal__title').textContent.trim()")}`);
     assert.equal(await p.evalJS(`document.querySelector('.fdy-cal__title').textContent.trim()`), '2022',
       'the arrows step years while the month grid is open');
 

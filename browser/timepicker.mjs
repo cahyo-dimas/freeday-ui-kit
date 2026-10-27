@@ -41,8 +41,10 @@ const OPTS = '#bounded .fdy-timepicker__opt';
 const texts = (p, selector) =>
   p.evalJS(`Array.from(document.querySelectorAll(${JSON.stringify(selector)}), (e) => e.textContent.trim())`);
 
-const activeIndex = (p) =>
-  p.evalJS(`Array.from(document.querySelectorAll(${JSON.stringify(OPTS)})).findIndex((e) => e.classList.contains('is-active'))`);
+/* The highlighted index, as a condition `waitFor` can poll and as a value to read. One expression
+   so the two can never answer differently. */
+const ACTIVE = `Array.from(document.querySelectorAll(${JSON.stringify(OPTS)})).findIndex((e) => e.classList.contains('is-active'))`;
+const activeIndex = (p) => p.evalJS(ACTIVE);
 
 for (const stack of ['vue', 'react']) {
   test(`${stack}: the option list is generated from min, max and step`, { skip }, async () => {
@@ -74,15 +76,35 @@ for (const stack of ['vue', 'react']) {
       await until(p, `document.querySelector(${JSON.stringify(BOUNDED)}) !== null`, 'the trigger to render');
       await p.clickCenter(BOUNDED);
       await until(p, `document.querySelector(${JSON.stringify(BOUNDED)}).getAttribute('aria-expanded') === 'true'`, 'the panel to open');
-      /* No value, so the highlight opens on the first option. ArrowUp from there must STAY: in a
-         48-option list a wrap to the far end reads as a glitch, and `((i % n) + n) % n` would. */
-      assert.equal(await activeIndex(p), 0);
+      /* The clamp is asserted by a POSITIVE observation, not by "the index did not change".
+       *
+       * Both of those are traps here. The highlight is framework state, so Vue and React flush it
+       * asynchronously -- measured right after a keypress, both still report the OLD index, and the
+       * new one lands 1-2ms later. So `assert(index === 0)` after ArrowUp-at-the-top passes
+       * whether the clamp works or the render simply has not happened yet: a guard that cannot
+       * fail. And the reads that do expect a change were passing on the margin between a CDB
+       * round-trip and a framework flush, which is what goes red under `--test-concurrency=3`.
+       *
+       * So: step PAST the end several times, then take one step back and wait for the index that
+       * only clamping can produce. Cyclic wrapping lands somewhere else and the wait throws. */
+      await until(p, `${ACTIVE} === 0`, 'the highlight to open on the first option');
+
+      /* Bottom end: three presses past it, then one step down must be exactly 1. Wrapping would
+         have gone 8, 7, 6 and answered 7. */
       await p.pressKey('ArrowUp');
-      assert.equal(await activeIndex(p), 0);
-      await p.pressKey('End');
-      assert.equal(await activeIndex(p), 8);
+      await p.pressKey('ArrowUp');
+      await p.pressKey('ArrowUp');
       await p.pressKey('ArrowDown');
-      assert.equal(await activeIndex(p), 8);
+      await until(p, `${ACTIVE} === 1`, 'the bottom clamp to hold, so one step down is the second option');
+
+      /* Top end, the mirror image: End, then three presses past it, then one step up must be 7. */
+      await p.pressKey('End');
+      await until(p, `${ACTIVE} === 8`, 'End to reach the last option');
+      await p.pressKey('ArrowDown');
+      await p.pressKey('ArrowDown');
+      await p.pressKey('ArrowDown');
+      await p.pressKey('ArrowUp');
+      await until(p, `${ACTIVE} === 7`, 'the top clamp to hold, so one step up is the second-to-last option');
     });
   });
 
@@ -94,6 +116,13 @@ for (const stack of ['vue', 'react']) {
       /* readonly, not disabled: it keeps its tab stop, which is the whole difference. */
       assert.equal(await p.evalJS(`document.querySelector(${JSON.stringify(trigger)}).disabled`), false);
       await p.clickCenter(trigger);
+      /* "It is still closed" is the state it started in, so asserting it straight after the click
+         would pass even if the click had never been delivered. A LATER click on the unlocked
+         picker, waited for, proves the queue has drained past the first one -- then the locked
+         picker still being shut means something. */
+      await p.clickCenter(BOUNDED);
+      await until(p, `document.querySelector(${JSON.stringify(BOUNDED)}).getAttribute('aria-expanded') === 'true'`,
+        'the unlocked picker to open, which proves the earlier click was delivered');
       assert.equal(await p.evalJS(`document.querySelector(${JSON.stringify(trigger)}).getAttribute('aria-expanded')`), 'false');
     });
   });

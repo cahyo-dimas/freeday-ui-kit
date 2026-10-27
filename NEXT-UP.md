@@ -131,16 +131,39 @@ dalamnya. Jadi hari ini keduanya tak bisa dijadikan wajib di stack mana pun. Men
 aturan kit akan memberi satu field dua sumber kebenaran, jadi perbaikannya adalah meneruskan
 `required` ke input-nya (satu baris per stack) — dikerjakan saat ada yang membutuhkannya.
 
-**`browser/cfl-multi.mjs` goyah di bawah konkurensi, ditemukan 2026-10-27.** Uji
-"react: FdyCfl multiple ticks rows and commits them together (`#019`)" merah sekali dalam satu
-jalanan `npm run test:browser` penuh, lalu hijau 3 dari 3 saat dijalankan sendiri, dan hijau lagi
-di jalanan penuh berikutnya. Suite memakai `--test-concurrency=3`, jadi tersangkanya perebutan
-sumber daya antar-berkas, bukan uji itu sendiri. **Jangan abaikan.** Suite goyah di gerbang rilis
-sudah memakan dua rilis di repo ini pada 2026-10-26, dan keduanya berakar di penantian berbasis
-waktu, bukan berbasis kondisi (`sleep(120)` di `setViewport`, lalu `waitFor` yang menjawab `false`
-saat kehabisan waktu). Periksa `browser/cfl-multi.mjs` dan fixture-nya untuk penantian yang
-menganggap halaman sudah siap: itu pola yang sama, dan di bawah tiga proses paralel ia yang
-pertama patah.
+**Kegoyahan `browser/cfl-multi.mjs` DITUTUP 2026-10-27, dan tersangka yang saya catat pagi itu
+salah jenis.** Catatannya menebak "penantian berbasis waktu". Keliru: tak ada satu pun timeout di
+berkas itu. Yang salah adalah penantian yang **tidak ada**.
+
+Diukur, bukan ditebak: tepat sesudah dua klik baris, Vue dan React sama-sama melaporkan
+`aria-selected` nol dan footer masih "0 selected"; nilai benarnya mendarat 1-2ms kemudian. Uji itu
+membaca satu round-trip CDP sesudah klik, yaitu 1-5ms, jadi ia lolos karena satu latensi kebetulan
+lebih lama dari latensi lain -- bukan karena hal yang ia klaim. Margin itulah yang hilang di bawah
+`--test-concurrency=3`.
+
+Disisir ke seluruh suite, dan hasilnya memaksa dua koreksi lagi atas cara saya mencari:
+- Pemindaian pertama melaporkan 87 kandidat. Mayoritas positif palsu: enhancer vanilla memperbarui
+  DOM **sinkron** di dalam handler, jadi membaca langsung sesudah klik memang benar. Hanya fixture
+  bertipe (Vue/React) yang flush-nya asinkron.
+- Pemindaian kedua melaporkan 13. Lima di antaranya positif palsu karena regex saya peka huruf
+  besar dan melewatkan `shellUntil(`. Sisanya 4.
+
+Dari keempat itu, **dua** balapan nyata (`adapter.mjs` judul kalender sesudah empat klik navigasi;
+`cfl-multi.mjs` empat pembacaan keadaan terender) dan **dua** bukan balapan melainkan penjaga
+**hampa** -- `cfl-dialog-only.mjs` menuntut "nol dialog terbuka", dan `timepicker.mjs` menuntut
+"indeks tetap 0" dan "tetap tertutup", yang semuanya keadaan AWAL dan karenanya lolos walau
+kliknya tak pernah sampai. Dan `adapter.mjs:401/403` ternyata **tidak** goyah: `focused` dibaca
+dari `document.activeElement`, dan Tab asli memindahkan fokus sinkron.
+
+Keempatnya kini memakai bukti positif, bukan "tidak berubah": penjepitan timepicker melangkah
+MELEWATI ujungnya lalu satu langkah balik ke indeks yang hanya penjepitan dapat hasilkan, dan uji
+kontrol terkunci mengklik kontrol yang tidak terkunci sesudahnya untuk membuktikan antreannya
+terkuras. Diverifikasi bisa merah dengan mutasi ke siklik di kedua stack. Suite penuh hijau 3 dari
+3 jalanan sesudahnya.
+
+**Pola yang layak dibawa:** di suite ini, "nilainya tidak berubah" dan "belum ada apa-apa" hampir
+selalu penjaga yang tak bisa gagal, sebab keduanya juga keadaan sebelum kliknya diproses. Cari
+pengamatan positif yang hanya perilaku benar dapat menghasilkan.
 
 **Di mana floor-nya tinggal sekarang:** satu baris di `README.md` dan `README.id.md`
 (`**Chrome <versi> · Safari <versi> · Firefox <versi>.**`), dibaca `test/baseline.test.mjs`. Tabel

@@ -67,8 +67,16 @@ for (const stack of ['vue', 'react']) {
          `open()` itself. Without it, `disabled` would mean "greyed out" on one path and nothing at
          all on the other. */
       await p.evalJS('document.querySelector("#chip-locked").click()');
-      assert.equal(Number(await p.evalJS('[...document.querySelectorAll("dialog.fdy-modal--cfl")].filter(d => d.open).length')), 0,
-        `${stack}: open() on a disabled picker must do nothing`);
+
+      /* "No dialog is open" is the state the page started in, so asserting it here would pass even
+         if the click had never been delivered or the render had not happened yet. Clicking the
+         ENABLED chip and waiting for its dialog proves the queue has drained past the locked one;
+         only then does the locked picker still being shut mean anything. */
+      await p.evalJS('document.querySelector("#chip").click()');
+      assert.ok(await p.waitFor('[...document.querySelectorAll("dialog.fdy-modal--cfl")].filter(d => d.open).length === 1'),
+        `${stack}: the enabled picker must open, or this test proves nothing about the disabled one`);
+      assert.equal(Number(await p.evalJS('[...document.querySelectorAll("dialog.fdy-modal--cfl")].filter(d => d.open).length')), 1,
+        `${stack}: open() on a disabled picker must do nothing, so only the enabled one is open`);
     });
   });
 }
