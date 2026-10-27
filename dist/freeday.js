@@ -944,6 +944,11 @@
       if (!node) return;
       if (node.children) { drill(i); return; }
       selectedValue = node.value;
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', node.value);
       var labels = stack.map(function (n) { return n.label; }).concat([node.label]);
       valueSpan.textContent = labels.join(sep);
       valueSpan.classList.remove('fdy-cascade__value--placeholder');
@@ -2262,6 +2267,11 @@
     wrap.appendChild(panel);
 
     function updateDisplay() {
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : '');
       if (selected) {
         /* Through the same `Intl` formatter the month CELLS and the day grid's title already use,
            which is the whole reason this mode exists: <input type="month"> names the month in the
@@ -3011,6 +3021,36 @@
 
   function fieldOf(el) { return el.closest('.fdy-field') || el.parentElement; }
 
+  /* A kit control (combo, datepicker, monthpicker, timepicker, cascade) is NOT a form control.
+   * Its trigger is a <button>, so `willValidate` is false and `form.elements` never offers it --
+   * `required` on one meant nothing, and a form could not demand that it be filled (#096).
+   *
+   * Nothing here names a component. Two attributes carry it:
+   *   data-fdy-required  the app asking for it, on the control's ROOT
+   *   data-value         the live value, which every value-bearing kit control now mirrors
+   * and the element that takes aria-invalid and focus is found by `aria-haspopup`, which every
+   * popup-style kit trigger already sets. `FdyAutocomplete` and `FdyCfl` are absent on purpose:
+   * they render a real <input>, so the NATIVE `required` is what fits them, and routing them
+   * through here would give one field two sources of truth. No prop exposes that yet, which is a
+   * separate gap and is written down in NEXT-UP.md rather than half-closed here. */
+  function kitRoots(form) {
+    return Array.prototype.slice.call(form.querySelectorAll('[data-fdy-required]'));
+  }
+
+  /* The trigger, or the root itself if a control ever ships without one, so a missing trigger
+     degrades to a visible error rather than a thrown TypeError. */
+  function kitAria(root) {
+    return root.querySelector('[aria-haspopup]') || root;
+  }
+
+  function kitMessage(root) {
+    if ((root.getAttribute('data-value') || '') !== '') return '';
+    var form = root.closest('form');
+    return root.getAttribute('data-fdy-msg-required')
+      || root.getAttribute('data-fdy-msg')
+      || textOf(form, 'required');
+  }
+
   function ensureErrorEl(el) {
     var field = fieldOf(el);
     var errEl = field ? field.querySelector('[data-fdy-error]') : null;
@@ -3101,6 +3141,21 @@
     function controls() {
       return Array.prototype.filter.call(form.elements, isCandidate);
     }
+    function validateKit(root) {
+      var msg = kitMessage(root);
+      paint(kitAria(root), msg);
+      return !msg;
+    }
+    /* The value lives in an attribute, and each control changes it through its own event name
+       (fdy-change, fdy-datepicker-change, fdy-time-select, fdy-cascade-change). Observing the
+       attribute is what keeps this enhancer from having to know any of them. */
+    function kitLiveBind(root) {
+      if (root.dataset.fdyKitBound === '1') return;
+      root.dataset.fdyKitBound = '1';
+      new MutationObserver(function () {
+        if (submitted || eager) validateKit(root);
+      }).observe(root, { attributes: true, attributeFilter: ['data-value'] });
+    }
     function validateOne(el) {
       var msg = messageFor(el);
       paint(el, msg);
@@ -3115,6 +3170,7 @@
     }
 
     Array.prototype.forEach.call(controls(), liveBind);
+    kitRoots(form).forEach(kitLiveBind);
 
     form.addEventListener('submit', function (e) {
       submitted = true;
@@ -3122,6 +3178,18 @@
       Array.prototype.forEach.call(controls(), function (el) {
         liveBind(el);
         if (!validateOne(el)) invalid.push(el);
+      });
+      kitRoots(form).forEach(function (root) {
+        kitLiveBind(root);
+        if (!validateKit(root)) invalid.push(kitAria(root));
+      });
+      /* DOM order, not native-then-kit: `invalid[0]` is what gets revealed and focused, and a
+         reader sent to the second field while the first is also red learns the wrong thing. */
+      invalid.sort(function (a, b) {
+        var rel = a.compareDocumentPosition(b);
+        if (rel & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+        if (rel & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+        return 0;
       });
       if (invalid.length) {
         e.preventDefault();
@@ -3139,11 +3207,13 @@
         submitted = true;
         var invalid = [];
         Array.prototype.forEach.call(controls(), function (el) { if (!validateOne(el)) invalid.push(el); });
+        kitRoots(form).forEach(function (root) { if (!validateKit(root)) invalid.push(kitAria(root)); });
         return invalid;
       },
       reset: function () {
         submitted = false;
         Array.prototype.forEach.call(controls(), function (el) { paint(el, ''); });
+        kitRoots(form).forEach(function (root) { paint(kitAria(root), ''); });
       }
     };
     form._fdyForm = api;
@@ -5016,6 +5086,11 @@
     }
 
     function updateDisplay() {
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', value);
       if (value) {
         valueSpan.textContent = value;
         valueSpan.classList.remove('fdy-timepicker__value--placeholder');

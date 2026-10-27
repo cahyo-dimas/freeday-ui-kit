@@ -75,6 +75,14 @@ const props = defineProps<{
   disabled?: boolean;
   /** Locked/view mode: stays focusable and shows its date, but can't be opened, cleared, or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
+  /**
+   * Let a `data-fdy-validate` form demand this control be filled. It renders `data-fdy-required`
+   * on the root, and `freeday-form.js` refuses the submit, paints the message in the field and
+   * focuses the trigger. Needed because the trigger is a `<button>`: `willValidate` is false, so
+   * a plain `required` on it has never meant anything (#096). Override the message per control
+   * with `data-fdy-msg-required`, which falls through onto the root.
+   */
+  required?: boolean;
   invalid?: boolean;
   describedby?: string;
   id?: string;
@@ -516,7 +524,8 @@ onBeforeUnmount((): void => {
 </script>
 
 <template>
-  <div ref="rootEl" class="fdy-datepicker" :class="{ 'fdy-datepicker--error': isInvalid }" @focusout="onFocusout">
+  <div ref="rootEl" class="fdy-datepicker" :class="{ 'fdy-datepicker--error': isInvalid }"
+       :data-value="modelValue ?? ''" :data-fdy-required="required === true ? '' : undefined" @focusout="onFocusout">
     <button
       :id="triggerId"
       ref="triggerEl"

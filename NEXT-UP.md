@@ -107,34 +107,40 @@ kontrol di 9 berkas. Tiga `type="date"` dan empat `type="time"` ditutup oleh `Fd
 | sepuluh `.fdy-input[type="number"]` di satu app tanpa satu pun `[data-fdy-number]` | **ditutup tanpa kode, dicatat sebagai sinyal.** Kit menyembunyikan tombol putar bawaan peramban (tak dapat ditema) dan mengembalikan afordansinya lewat `[data-fdy-number]` yang **opt-in**. Jadi tak ada divergensi antar-mesin di sini: kesepuluhnya tampil sama di mana pun, cuma tanpa tombol. Yang layak dicatat bukan cacatnya melainkan angkanya — sepuluh berbanding nol berarti opt-in itu mudah terlewat. Kalau app berikutnya juga nol, pertimbangkan apakah afordansinya pantas jadi bawaan. |
 | tiga `type="search"` memakai tombol bersih (×) berwarna OS | **ditutup tanpa kode.** Ini keputusan kit yang sudah ada alasannya di `COMPONENTS.md`: tombol itu satu-satunya cara mengosongkan field, jadi menyembunyikannya lebih buruk daripada membiarkannya tak bertema. Yang ingin bertema sekaligus mencari ulang saat dibersihkan punya `[data-fdy-search]`. Jadi beda penampilan di iOS memang ada, dan memang dipilih. |
 
-**Celah yang audit 3.11.0 temukan dan TIDAK ditutup, dan ia yang paling mahal:**
-`data-fdy-validate` mewirekan **Native** Constraint Validation. Tiga belas wrapper bertipe kit
-merender `<button>` sebagai pemicunya, dan `<button>` tak punya `required`, tak punya
-`:invalid`, tak masuk `form.checkValidity()`. Jadi sebuah form yang memakai enhancer validasi
-**tidak dapat** menuntut salah satu kontrol bertipe kit terisi.
+**Celah validasi kontrol kit: DITUTUP di 3.12.0 (`#096`), dengan satu koreksi atas catatan ini
+sendiri.** Catatan versi sebelumnya menulis "tiga belas wrapper bertipe merender `<button>`". Itu
+salah, dan diukur salahnya: hanya lima yang berpemicu tombol (`FdyCombo`, `FdyDatepicker`,
+`FdyMonthpicker`, `FdyTimepicker`, `FdyCascade`). `FdyAutocomplete` dan `FdyCfl` merender `<input>`
+asli, dan tujuh sisanya bukan kontrol bernilai sama sekali. Angka yang dibesarkan membuat
+perbaikannya terdengar lebih mahal daripada yang sebenarnya.
 
-Ini bukan teori. App ronda punya empat `<input type="time">` di dua formulir shift, keempatnya
-`required` dengan `data-fdy-msg-required`, di dalam form `data-fdy-validate` yang penyerahannya
-digerbangi `@fdy-form-valid`. Menukarnya ke `FdyTimepicker` 3.11.0 akan memperbaiki penampilan
-OS-nya **dan diam-diam membuang penegakan wajib-isinya** -- menukar satu ketidakcocokan kosmetik
-dengan satu lubang data. Jadi keempatnya sengaja dibiarkan native, dan itulah satu-satunya alasan
-audit 3.11.0 menutup 3 dari 7 pemilih, bukan 7 dari 7.
+Yang dikirim: `data-fdy-required` pada akar kontrol membuat form `data-fdy-validate` menuntutnya,
+dan `data-value` di akar kini **cermin hidup** alih-alih seed (jalur mentah datepicker/timepicker/
+cascade sebelumnya hanya membacanya saat init; `freeday-select.js` sudah benar sejak lama). Aturan
+di enhancer tidak menyebut satu pun nama komponen: nilainya dari `data-value`, elemen yang menerima
+`aria-invalid` dan fokus ditemukan lewat `aria-haspopup`, dan re-validasinya memakai
+`MutationObserver` supaya tak perlu tahu lima nama event. Dijaga 8 uji browser, dan aturannya
+diverifikasi bisa merah dengan mutasi — termasuk satu uji yang semula LOLOS dengan aturan
+dimatikan, karena "galatnya hilang" hampa benar saat tak ada galat; uji itu sekarang menuntut
+galatnya tampak lebih dulu.
 
-Dua arah yang kelihatan, dua-duanya butuh dipikirkan sebelum dikode:
+**Sisa yang terbuka, kecil dan sengaja tak ditutup bersamanya:** `FdyAutocomplete` dan `FdyCfl`
+merender `<input>` asli, jadi `required` **native** yang cocok untuk keduanya — tetapi belum ada
+prop yang mengeksposnya, dan atribut tak dikenal jatuh ke AKAR wrapper, bukan ke input di
+dalamnya. Jadi hari ini keduanya tak bisa dijadikan wajib di stack mana pun. Mengalirkannya lewat
+aturan kit akan memberi satu field dua sumber kebenaran, jadi perbaikannya adalah meneruskan
+`required` ke input-nya (satu baris per stack) — dikerjakan saat ada yang membutuhkannya.
 
-1. **Enhancer belajar membaca kontrol kit.** `freeday-form.js` mencari `[data-fdy-required]` pada
-   akar kontrol bertipe selain `:invalid` native, lalu menaruh `aria-invalid` +
-   `.fdy-help--error` di tempat yang sama. Kelebihannya: satu tempat, dan jalur mentah ikut
-   kebagian. Kekurangannya: enhancer jadi tahu tentang setiap komponen, yang sejauh ini
-   dihindari.
-2. **Wrapper merender input bayangan.** Sebuah `<input>` yang `required` dan ter-sinkron tapi
-   tak terlihat. Kelebihannya: validasi native tetap yang bekerja, nol pengetahuan baru di
-   enhancer. Kekurangannya: input tak terlihat yang bisa difokuskan adalah hal yang pembaca layar
-   temukan, dan `type="hidden"` **dilarang dari validasi** jadi itu bukan jalan keluar; ia harus
-   `visually-hidden` sungguhan, dan fokusnya harus dialihkan ke pemicu.
-
-Jangan kirim sebelum satu dari dua ini diukur terhadap formulir shift yang sebenarnya. Mengirim
-tebakan di area ini adalah pola yang memakan empat rilis pada 2026-10-26.
+**`browser/cfl-multi.mjs` goyah di bawah konkurensi, ditemukan 2026-10-27.** Uji
+"react: FdyCfl multiple ticks rows and commits them together (`#019`)" merah sekali dalam satu
+jalanan `npm run test:browser` penuh, lalu hijau 3 dari 3 saat dijalankan sendiri, dan hijau lagi
+di jalanan penuh berikutnya. Suite memakai `--test-concurrency=3`, jadi tersangkanya perebutan
+sumber daya antar-berkas, bukan uji itu sendiri. **Jangan abaikan.** Suite goyah di gerbang rilis
+sudah memakan dua rilis di repo ini pada 2026-10-26, dan keduanya berakar di penantian berbasis
+waktu, bukan berbasis kondisi (`sleep(120)` di `setViewport`, lalu `waitFor` yang menjawab `false`
+saat kehabisan waktu). Periksa `browser/cfl-multi.mjs` dan fixture-nya untuk penantian yang
+menganggap halaman sudah siap: itu pola yang sama, dan di bawah tiga proses paralel ia yang
+pertama patah.
 
 **Di mana floor-nya tinggal sekarang:** satu baris di `README.md` dan `README.id.md`
 (`**Chrome <versi> · Safari <versi> · Firefox <versi>.**`), dibaca `test/baseline.test.mjs`. Tabel

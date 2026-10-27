@@ -46,6 +46,14 @@ const props = defineProps<{
   disabled?: boolean;
   /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
+  /**
+   * Let a `data-fdy-validate` form demand this control be filled. It renders `data-fdy-required`
+   * on the root, and `freeday-form.js` refuses the submit, paints the message in the field and
+   * focuses the trigger. Needed because the trigger is a `<button>`: `willValidate` is false, so
+   * a plain `required` on it has never meant anything (#096). Override the message per control
+   * with `data-fdy-msg-required`, which falls through onto the root.
+   */
+  required?: boolean;
   invalid?: boolean;
   describedby?: string;
 }>();
@@ -184,7 +192,8 @@ onBeforeUnmount((): void => {
 </script>
 
 <template>
-  <div ref="rootEl" :class="isInvalid ? 'fdy-cascade fdy-cascade--error' : 'fdy-cascade'">
+  <div ref="rootEl" :class="isInvalid ? 'fdy-cascade fdy-cascade--error' : 'fdy-cascade'"
+       :data-value="modelValue" :data-fdy-required="required === true ? '' : undefined">
     <button
       :id="triggerId"
       ref="triggerEl"

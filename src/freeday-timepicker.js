@@ -130,6 +130,11 @@
     }
 
     function updateDisplay() {
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', value);
       if (value) {
         valueSpan.textContent = value;
         valueSpan.classList.remove('fdy-timepicker__value--placeholder');

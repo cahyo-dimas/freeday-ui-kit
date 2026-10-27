@@ -198,6 +198,11 @@
       if (!node) return;
       if (node.children) { drill(i); return; }
       selectedValue = node.value;
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', node.value);
       var labels = stack.map(function (n) { return n.label; }).concat([node.label]);
       valueSpan.textContent = labels.join(sep);
       valueSpan.classList.remove('fdy-cascade__value--placeholder');

@@ -175,6 +175,11 @@
     wrap.appendChild(panel);
 
     function updateDisplay() {
+      /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
+         always done this, so this makes the family agree rather than inventing a second idea, and
+         it is what lets `freeday-form.js` require a kit control without knowing which control it
+         is: one attribute instead of five event names (#096). */
+      wrap.setAttribute('data-value', selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : '');
       if (selected) {
         /* Through the same `Intl` formatter the month CELLS and the day grid's title already use,
            which is the whole reason this mode exists: <input type="month"> names the month in the

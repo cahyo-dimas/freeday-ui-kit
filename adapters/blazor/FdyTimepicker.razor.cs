@@ -48,6 +48,13 @@ public partial class FdyTimepicker
     /// <summary>Marks the field invalid (<c>aria-invalid</c> + the error styling).</summary>
     [Parameter] public bool Invalid { get; set; }
 
+    /// <summary>Let a <c>data-fdy-validate</c> form demand this control be filled. Renders
+    /// <c>data-fdy-required</c> on the root, and <c>freeday-form.js</c> refuses the submit, paints
+    /// the message in the field and focuses the trigger. Needed because the trigger is a
+    /// <c>&lt;button&gt;</c>: <c>willValidate</c> is false, so a plain <c>required</c> on it has
+    /// never meant anything. Override the message with <c>data-fdy-msg-required</c> on the root.</summary>
+    [Parameter] public bool Required { get; set; }
+
     // The enhancer owns this control's DOM; init it directly (initAll would skip Root itself).
     protected override ValueTask HydrateAsync() => JS.InvokeVoidAsync("FreedayTimepicker.init", Root);
 

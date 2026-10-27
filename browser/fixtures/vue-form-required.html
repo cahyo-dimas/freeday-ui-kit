@@ -1,0 +1,10 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: vue required kit control inside data-fdy-validate</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+<div id="app"></div>
+<!-- The enhancer loads FIRST and finds nothing: the form does not exist yet. The entry hydrates
+     it after mount, which is what an SPA actually does. -->
+<script src="../../dist/freeday.js"></script>
+<script src="../.build/vue-form-required.js"></script>

@@ -6,7 +6,8 @@
    markup the freeday-select.js enhancer expects; the enhancer owns the open/keyboard/focus
    behaviour and emits fdy-change, which flows back to @bind-Value. An externally-changed Value
    is pushed onto the enhancer silently (no event echo). *@
-<div @ref="Root" class="@RootClass" data-fdy-combo data-value="@SelectedKey">
+<div @ref="Root" class="@RootClass" data-fdy-combo data-value="@SelectedKey"
+     data-fdy-required="@(Required ? "" : null)">
     <button id="@ButtonId" type="button" class="fdy-combo__button" role="combobox"
             aria-haspopup="listbox" aria-expanded="false"
             aria-labelledby="@AriaLabelledby"

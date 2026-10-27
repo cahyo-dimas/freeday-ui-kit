@@ -709,6 +709,7 @@ while each line referenced directly would be read even when hidden. Zero JS; wor
 | `ariaLabelledby?` | `string` | Id of the element that labels the combobox. |
 | `placeholder?` | `string` | Shown when no option matches the current value. |
 | `disabled?` | `boolean` | Greyed and out of the tab order, the native `disabled` semantics. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 | `readonly?` | `boolean` | Locked/view mode: keeps focus and tab order and shows its value, but cannot be opened or changed. Unlike `disabled` it is not greyed. |
 | `invalid?` | `boolean` | Sets `aria-invalid`; pair it with `describedby` pointing at the error text. |
 | `describedby?` | `string` | Id of the help or error text (`aria-describedby`). |
@@ -786,6 +787,7 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 | `placeholder?` | `string` | |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | As on `<FdyCombo>`. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 
 Raw path: `data-disabled` / `data-readonly` / `data-invalid`, `data-id`, `data-describedby`, and
 `FreedayCascade.setState(root, { disabled, readonly, invalid })` for a host that rendered once.
@@ -962,6 +964,7 @@ a new class.
 | `placeholder?` | `string` | |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its date, but it cannot be opened, cleared or changed. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 | `clearable?` | `boolean` | Show a × in the trigger once a date is set, so an optional date can be unset. Sends `''`. Off by default. |
 | `clearLabel?` | `string` | Accessible name for that ×. Default `Clear date`. |
 | `prevMonthLabel?` · `nextMonthLabel?` | `string` | The month arrows. Defaults `Previous month` / `Next month`. |
@@ -996,6 +999,7 @@ page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear b
 | `placeholder?` | `string` | Shown while nothing is picked. Default `Select month`. |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Trigger id; the element that labels it; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its month, but it cannot be opened, cleared or changed. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 | `clearable?` | `boolean` | Show a × in the trigger once a month is set, so an optional month can be unset. Sends `''`. Off by default. |
 | `clearLabel?` | `string` | Accessible name for that ×. Default `Clear month`. |
 | `prevYearLabel?` · `nextYearLabel?` | `string` | The arrows beside the month grid, which step a year. Defaults `Previous year` / `Next year`. |
@@ -1143,6 +1147,7 @@ browser at the same width therefore disagree about a screen that is otherwise id
 | `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the trigger, or points at the text that does. Blazor: `Label` / `Describedby`. |
 | `id?` | `string` | Id for the trigger. It is a `<button>`, which is **not** a labelable element, so a `<label for>` will not activate it — name it with `ariaLabel`/`ariaLabelledby`. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps tab order and shows the time but will not open. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 
 Keyboard: `ArrowDown`/`ArrowUp` move one option, `Home`/`End` jump to the ends, `Enter`/`Space`
 pick, `Escape` closes. The highlight is **clamped, not cyclic** — `ArrowUp` at `00:00` stays there,
@@ -1223,6 +1228,26 @@ blur/input. Needs `freeday-form.js`.
 - Per-control messages: `data-fdy-msg-required`, `-type`, `-minlength`, `-min`, `-mismatch`, …
 - Cross-field: `data-fdy-match="#otherFieldId"`
 - Emits `fdy-form-valid` / `fdy-form-invalid`.
+- **A kit control can be required too** — `data-fdy-required` on its root. Combo, datepicker,
+  monthpicker, timepicker and cascade build a `<button>` trigger, and a button's `willValidate` is
+  false, so `form.elements` never offered one and `required` on it meant nothing. The enhancer now
+  collects these roots alongside the native controls: empty `data-value` refuses the submit, the
+  message lands in the same `.fdy-field` slot, and the focus goes to the trigger. It names no
+  component — the value is read from `data-value` and the trigger is found by `aria-haspopup`. In
+  the typed stacks pass `required` / `Required` instead of writing the attribute.
+  **`FdyAutocomplete` and `FdyCfl` are outside this rule**: they render a real `<input>`, so the
+  native `required` is the mechanism that fits them — but no prop exposes it yet, and an unknown
+  attribute falls through to a wrapper's ROOT rather than to the input inside it, so today an app
+  cannot require either one. Tracked in `NEXT-UP.md`; the rule above deliberately does not cover
+  them, because painting a native input through the kit path would give it two sources of truth.
+  Re-validation watches the attribute with a `MutationObserver`, so no control has to announce
+  itself. The message override is per-control (`data-fdy-msg-required` on the root) wherever
+  attributes reach the root — the raw path, and Vue, where an unknown attribute falls through. In
+  React and Blazor they do not, so use the form-level `data-fdy-text-required`, which reads the
+  same in every stack.
+- **`data-value` on a control's root is the live value**, not just the seed it used to be on the
+  datepicker, timepicker and cascade (the combo always kept it current). That is what makes the
+  rule above possible, and it is also the handle a test or a CSS empty-state rule can read.
 - **A refused field is revealed before it is focused**, because `focus()` on a control that is not
   rendered does nothing. A closed `<details>` around it (accordion, tree, nav group) is opened, an
   unselected tab is selected by clicking it, and a `.fdy-step-panel` left behind is returned to by

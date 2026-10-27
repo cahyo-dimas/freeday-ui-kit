@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: data-fdy-validate can require a kit control, not just a native one</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+
+<!-- The kit control comes FIRST and the native input SECOND, so "which field is revealed and
+     focused" is a real question and not an accident of collection order. -->
+<form id="form" data-fdy-validate>
+  <div class="fdy-field">
+    <span class="fdy-label" id="jam-label">Jam mulai</span>
+    <div id="jam" data-fdy-timepicker data-fdy-required data-step="30" data-min="06:00" data-max="08:00"
+         data-label="Jam mulai" data-fdy-msg-required="Jam mulai wajib diisi."></div>
+  </div>
+  <div class="fdy-field">
+    <label class="fdy-label" for="nama">Nama</label>
+    <input id="nama" class="fdy-input" type="text" required>
+  </div>
+  <button id="kirim" type="submit" class="fdy-btn">Simpan</button>
+</form>
+
+<script src="../../dist/freeday.js"></script>
+<script>
+  window.__valid = 0;
+  window.__invalid = 0;
+  window.__firstFocused = '';
+  document.getElementById('form').addEventListener('fdy-form-valid', function () { window.__valid += 1; });
+  document.getElementById('form').addEventListener('fdy-form-invalid', function () {
+    window.__invalid += 1;
+    window.__firstFocused = (document.activeElement && document.activeElement.className) || '';
+  });
+  document.getElementById('form').addEventListener('submit', function (e) { e.preventDefault(); });
+</script>

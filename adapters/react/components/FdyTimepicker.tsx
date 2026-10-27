@@ -26,6 +26,14 @@ export interface FdyTimepickerProps {
   disabled?: boolean;
   /** Locked/view mode: stays focusable and shows its time, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
+  /**
+   * Let a `data-fdy-validate` form demand this control be filled. It renders `data-fdy-required`
+   * on the root, and `freeday-form.js` refuses the submit, paints the message in the field and
+   * focuses the trigger. Needed because the trigger is a `<button>`: `willValidate` is false, so
+   * a plain `required` on it has never meant anything (#096). Override the message per control
+   * with `data-fdy-msg-required` on the root.
+   */
+  required?: boolean;
   invalid?: boolean;
   describedby?: string;
 }
@@ -160,6 +168,7 @@ export function FdyTimepicker(props: FdyTimepickerProps): JSX.Element {
       ref={rootRef}
       className={isInvalid ? 'fdy-timepicker fdy-timepicker--error' : 'fdy-timepicker'}
       data-value={value}
+      data-fdy-required={props.required === true ? '' : undefined}
       onKeyDown={onKeyDown}
       onBlur={onFocusout}
     >

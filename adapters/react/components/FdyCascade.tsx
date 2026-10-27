@@ -33,6 +33,14 @@ export interface FdyCascadeProps {
   disabled?: boolean;
   /** Locked/view mode: stays focusable and shows its value, but can't be opened or changed. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
+  /**
+   * Let a `data-fdy-validate` form demand this control be filled. It renders `data-fdy-required`
+   * on the root, and `freeday-form.js` refuses the submit, paints the message in the field and
+   * focuses the trigger. Needed because the trigger is a `<button>`: `willValidate` is false, so
+   * a plain `required` on it has never meant anything (#096). Override the message per control
+   * with `data-fdy-msg-required` on the root.
+   */
+  required?: boolean;
   invalid?: boolean;
   describedby?: string;
 }
@@ -168,7 +176,8 @@ export function FdyCascade(props: FdyCascadeProps): JSX.Element {
   }, [active, open, stack]);
 
   return (
-    <div ref={rootRef} className={isInvalid ? 'fdy-cascade fdy-cascade--error' : 'fdy-cascade'}>
+    <div ref={rootRef} className={isInvalid ? 'fdy-cascade fdy-cascade--error' : 'fdy-cascade'}
+         data-value={props.value} data-fdy-required={props.required === true ? '' : undefined}>
       <button
         ref={triggerRef}
         id={triggerId}

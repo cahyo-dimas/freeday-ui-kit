@@ -9,6 +9,60 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.12.0] - 2026-10-27
+
+**Sebuah form kini dapat menuntut kontrol kit terisi.** `data-fdy-validate` mewirekan Constraint
+Validation **native**: `isCandidate` menuntut `willValidate` dan menolak `type === 'button'`, dan
+pemicu kontrol kit memang `<button>`. Jadi `form.elements` tak pernah menawarkannya, `required` di
+atasnya tak berarti apa pun, dan form tak bisa menuntut combo, datepicker, monthpicker, timepicker
+atau cascade diisi.
+
+Ini yang menahan audit 3.11.0 di 3 dari 7 pemilih. Empat `<input type="time">` di formulir shift
+keamanan-cluster tetap native **hanya** karena menukarnya ke `FdyTimepicker` akan memperbaiki
+penampilannya dan diam-diam membuang penegakan wajib-isinya.
+
+Koreksi atas catatan rilis sebelumnya, yang layak dibawa: ia menulis "tiga belas wrapper bertipe
+merender `<button>`". Salah. Hanya **lima** yang berpemicu tombol; `FdyAutocomplete` dan `FdyCfl`
+merender `<input>` asli, dan tujuh sisanya bukan kontrol bernilai. Angka yang dibesarkan membuat
+perbaikan ini terdengar jauh lebih mahal daripada yang ternyata.
+
+### Added
+- **`data-fdy-required` pada akar kontrol** (`#096`), dan prop `required` / `Required` di
+  `FdyCombo`, `FdyDatepicker`, `FdyMonthpicker`, `FdyTimepicker` dan `FdyCascade` di ketiga stack.
+  Submit ditolak, pesannya dilukis di slot `.fdy-field` yang sudah ada, dan fokusnya ke pemicu.
+  Aturannya **tidak menyebut satu pun nama komponen**: nilainya dibaca dari `data-value`, elemen
+  yang menerima `aria-invalid` dan fokus ditemukan lewat `aria-haspopup` yang sudah dipasang setiap
+  pemicu, dan re-validasinya memakai `MutationObserver` pada atribut itu — supaya enhancer tak
+  perlu mengenal lima nama event (`fdy-change`, `fdy-datepicker-change`, `fdy-time-select`,
+  `fdy-cascade-change`).
+- **Kontrol yang ditolak diurut menurut urutan DOM** (`#096`). Mengumpulkan kontrol native lebih
+  dulu lalu akar kit akan memfokuskan field KEDUA sementara yang pertama juga merah, dan pembaca
+  yang dikirim melewati field merah pertamanya belajar hal yang salah.
+
+### Changed
+- **`data-value` di akar kontrol kini cermin hidup, bukan seed.** Di jalur mentah, datepicker,
+  timepicker dan cascade hanya MEMBACANYA saat init; `freeday-select.js` sudah menulisnya kembali
+  sejak lama, jadi ini membuat keluarganya sepakat alih-alih memperkenalkan atribut kedua. Aditif:
+  tak ada yang membaca atribut itu sesudah init, sebab sebelum ini nilainya basi. Cerminnya
+  dipasang di `updateDisplay()`, satu titik sempit yang dilalui pick, clear, pilih-bulan dan
+  setRange, bukan di tiap tempat event dikirim.
+
+### Fixed
+- **`FdyDatepicker`, `FdyMonthpicker` dan `FdyCascade` tak pernah mencerminkan nilainya ke akar**
+  di adapter Vue dan React (`#096`), padahal `FdyCombo` dan `FdyTimepicker` melakukannya. Tanpa itu
+  aturan di atas mustahil, dan atributnya juga pegangan yang dapat dibaca uji atau aturan CSS
+  keadaan-kosong.
+
+### Catatan
+- `FdyAutocomplete` dan `FdyCfl` **di luar** aturan ini: keduanya merender `<input>` asli, jadi
+  `required` native yang cocok. Belum ada prop yang mengeksposnya, dan atribut tak dikenal jatuh ke
+  AKAR wrapper bukan ke input di dalamnya, jadi hari ini keduanya tak bisa dijadikan wajib di stack
+  mana pun. Dicatat terbuka di `NEXT-UP.md` alih-alih ditutup separuh: mengalirkannya lewat jalur
+  kit akan memberi satu field dua sumber kebenaran.
+- Penimpaan pesan per-kontrol (`data-fdy-msg-required` di akar) bekerja di mana atribut mencapai
+  akar: jalur mentah, dan Vue, yang meneruskan atribut tak dikenal. React dan Blazor tidak, jadi
+  jalur yang terbaca sama di semua stack adalah `data-fdy-text-required` di elemen `<form>`.
+
 ## [3.11.0] - 2026-10-26
 
 **Audit kontrol native di seluruh layar sebuah aplikasi konsumen, bukan di satu layar yang
