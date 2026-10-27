@@ -486,6 +486,7 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-timepicker.tsx'),
       join(HERE, 'entries', 'vue-form-required.js'),
       join(HERE, 'entries', 'react-form-required.tsx'),
+      join(HERE, 'entries', 'vue-picker-in-modal.js'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

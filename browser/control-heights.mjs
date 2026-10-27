@@ -30,6 +30,12 @@ test('an input group is exactly as tall as the controls beside it (#018)', { ski
       `an input group and a button must agree (dpr ${h.dpr}, border ${h.borderTop}): group ${h.group}px vs button ${h.btn}px`);
     assert.equal(h.group, h.plain, `an input group and a bare input must agree: ${h.group}px vs ${h.plain}px`);
     assert.equal(h.group, h.combo, `an input group and a combo must agree: ${h.group}px vs ${h.combo}px`);
+    /* The pickers belong to the same family and were missing from this comparison until an audit
+       swapped four native `<input type="time">` for them (#096). A trigger that is shorter than
+       the input beside it is a smaller touch target in exchange for a consistent one, which is
+       the opposite of the trade the swap is supposed to make. */
+    assert.equal(h.group, h.datepicker, `an input group and a datepicker trigger must agree: ${h.group}px vs ${h.datepicker}px`);
+    assert.equal(h.group, h.timepicker, `an input group and a timepicker trigger must agree: ${h.group}px vs ${h.timepicker}px`);
 
     /* Compact is where a compensation written against one --control-h silently stops matching. */
     assert.equal(h.compactGroup, h.compactBtn,

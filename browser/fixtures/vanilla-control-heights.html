@@ -11,6 +11,10 @@
     <span class="fdy-input-group" id="grp"><input class="fdy-input" id="inp"></span>
     <input class="fdy-input" id="plain">
     <span class="fdy-combo" id="cmb"><button class="fdy-combo__button" type="button">x</button></span>
+    <!-- The pickers were never in this comparison, and their own stylesheet claims the trigger
+         "mirrors the date picker for a consistent control family" -- a claim nothing checked. -->
+    <span class="fdy-datepicker" id="dpk"><button class="fdy-datepicker__trigger" type="button"><span class="fdy-datepicker__value">x</span></button></span>
+    <span class="fdy-timepicker" id="tpk"><button class="fdy-timepicker__trigger" type="button"><span class="fdy-timepicker__value">x</span></button></span>
   </div>
   <div data-density="compact" style="display:flex;gap:8px;align-items:flex-start;margin-top:8px">
     <button class="fdy-btn" id="cbtn">Button</button>
@@ -23,6 +27,7 @@
     return {
       dpr: window.devicePixelRatio,
       btn: h('btn'), group: h('grp'), plain: h('plain'), combo: h('cmb'),
+      datepicker: h('dpk'), timepicker: h('tpk'),
       compactBtn: h('cbtn'), compactGroup: h('cgrp'),
       borderTop: cs.borderTopWidth, boxSizing: cs.boxSizing
     };
