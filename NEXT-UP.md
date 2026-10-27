@@ -94,7 +94,7 @@ dan tidak punya berkas tidak pernah ada.
 | `@container fdy-cfl` di `src/components/cfl.css` tidak dipagari | **dikerjakan 2026-10-26.** `container-type` dan blok `@container`-nya sekarang di dalam `@supports (container-type:inline-size)`, dan di bawahnya ada `@supports not (...)` berisi `@media (max-width:32rem)` dengan badan aturan yang sama. 32rem itu diturunkan dari dialognya, bukan dipilih: lebarnya `min(46rem, 100vw - var(--space-8))` dengan `--space-8` 2rem, jadi kotak hasilnya ada di 30rem atau kurang tepat ketika viewport-nya 32rem atau kurang. Yang tetap tak terjawab cadangan itu adalah dialog sempit di viewport lebar (panel yang didok), dan di Safari 15 kasus itu tetap tabel yang digulir. Badan aturannya ada dua salinan karena CSS tak punya cara membagi satu blok ke dua kondisi; `test/baseline.test.mjs` membandingkan keduanya supaya suntingan yang cuma kena satu jadi merah. |
 | `overscroll-behavior:contain` butuh Safari 16, dan latar ikut tergulir di belakang drawer di HP | **terbuka, dan sengaja belum dikerjakan.** Tiga pemakaiannya cuma mematikan rantai gulir di ujung panel; latar yang tergulir saat scrim-nya yang ditarik terjadi di SEMUA browser, floor ke atas juga, karena scrim bukan kotak yang menggulir. Jadi properti itu sendiri tak pernah menjadi kunci gulir yang utuh, dan absennya di 15.4 sampai 15.8 bukan tata letak yang rusak melainkan gulir yang lanjut ke halaman di belakang. Dua kandidat perbaikan, dua-duanya butuh diukur di perangkat iOS 15 dulu: `touch-action:none` di `.fdy-app__backdrop` (menutup tarikan di scrim, di semua browser sekaligus, dan tap-untuk-tutup tetap jalan), atau `html:has(.fdy-app--nav-open){overflow:hidden}` di dalam `@supports not (overscroll-behavior:contain)` (`:has()` ada tepat di floor, tapi komponen kit tak pernah menata `html`, dan kunci gulir di iOS 15 terkenal setengah jalan). Mengirim salah satunya tanpa ukuran adalah pola yang memakan empat rilis di 2026-10-26. Alasan versi pendeknya ada di `ALLOWED` di `test/baseline.test.mjs`. |
 | `text-wrap:balance` butuh Safari 17.5 | **ditutup tanpa kode.** Nilainya keyword biasa, jadi browser yang tak mengenalnya menolak deklarasinya saat parse dan judulnya patah seperti sebelum properti ini ada: font, ukuran, dan kotaknya sama. Tak ada cara kedua menyeimbangkan judul di CSS, jadi `@supports` tak membeli apa pun, dan satu-satunya ganti di bawah floor adalah ganti baris yang ditaruh tangan di naskah konsumen. |
-| `allow-discrete` di empat shorthand `transition` butuh Safari 17.4 | **DIKERJAKAN 3.12.1 (`#097`).** Dipecah jadi longhand, jadi di bawah lantai yang hilang hanya `transition-behavior` dan paruh opacity/transform-nya bertahan: modal dan drawer kini beranimasi MASUK di iPhone 7. Keluarnya tetap seketika sebab `display` tak dapat ditransisikan di sana, sama seperti sebelumnya. Ekuivalensi di atas lantai diukur dengan membandingkan gaya terkomputasi, dan satu nilai `transition-duration` diukur tetap berlaku untuk setiap properti (280ms, easing per-indeks). Dijaga di `baseline.test.mjs`, dan penjaganya diverifikasi bisa merah -- percobaan pertama saya LOLOS karena saya menguji `dist/` yang belum dibangun ulang sesudah mutasi; gerbang itu membaca dist, bukan src. |
+| `allow-discrete` di empat shorthand `transition` butuh Safari 17.4 | **DIKERJAKAN 3.12.1 (`#097`).** Dipecah jadi longhand, jadi di bawah lantai yang hilang hanya `transition-behavior` dan paruh opacity/transform-nya bertahan: modal dan drawer kini beranimasi MASUK di iPhone 7. Keluarnya tetap seketika sebab `display` tak dapat ditransisikan di sana, sama seperti sebelumnya. Ekuivalensi di atas lantai diukur dengan membandingkan gaya terkomputasi, dan satu nilai `transition-duration` diukur tetap berlaku untuk setiap properti (280ms, easing per-indeks). Dijaga di `baseline.test.mjs`, dan penjaganya diverifikasi bisa merah. Percobaan pertama saya lolos karena saya menguji `dist/` yang belum dibangun ulang sesudah mutasi; gerbang itu membaca dist, bukan src. |
 | `100dvh` butuh Chrome 108, sementara floor-nya menyatakan Chrome 105 | **ditutup tanpa kode.** Safari punya unit itu sejak 15.4, Firefox sejak 101, jadi jendelanya cuma Chrome 105 sampai 107. Dua dari tiga pemakaiannya ada di sidebar off-canvas yang juga menyetel `top:0` dan `bottom:0`, jadi tingginya sudah ditentukan dan deklarasi yang dibuang tak mengubah apa pun. Yang ketiga membatasi rail sticky dari 960px, dan tanpa itu batasnya jadi `none`. Baris cadangan `vh` di atasnya akan jadi kode mati, dan repo ini sudah mengukurnya sekali: deklarasinya membawa `var()`, jadi ia ditahan sebagai token saat parse dan baru gagal saat computed-value, dan jalur itu menjatuhkan properti ke nilai INITIAL-nya, bukan ke baris di atasnya (`test/color-mix.test.mjs`). Yang bekerja hanya pagar `@supports`, dan dua blok `@supports` untuk tiga rilis Chrome dari 2022 di peramban yang memperbarui diri bukan tukar yang pantas. Tinjau ulang saat floor-nya bergerak. |
 
 **Audit kontrol native, 2026-10-26, seluruh layar app ronda (bukan satu yang mengeluh):** 20
@@ -138,7 +138,8 @@ berkas itu. Yang salah adalah penantian yang **tidak ada**.
 Diukur, bukan ditebak: tepat sesudah dua klik baris, Vue dan React sama-sama melaporkan
 `aria-selected` nol dan footer masih "0 selected"; nilai benarnya mendarat 1-2ms kemudian. Uji itu
 membaca satu round-trip CDP sesudah klik, yaitu 1-5ms, jadi ia lolos karena satu latensi kebetulan
-lebih lama dari latensi lain -- bukan karena hal yang ia klaim. Margin itulah yang hilang di bawah
+lebih lama dari latensi lain, sementara hal yang ia klaim tak ikut menentukan. Margin itulah yang
+hilang di bawah
 `--test-concurrency=3`.
 
 Disisir ke seluruh suite, dan hasilnya memaksa dua koreksi lagi atas cara saya mencari:
@@ -148,12 +149,12 @@ Disisir ke seluruh suite, dan hasilnya memaksa dua koreksi lagi atas cara saya m
 - Pemindaian kedua melaporkan 13. Lima di antaranya positif palsu karena regex saya peka huruf
   besar dan melewatkan `shellUntil(`. Sisanya 4.
 
-Dari keempat itu, **dua** balapan nyata (`adapter.mjs` judul kalender sesudah empat klik navigasi;
-`cfl-multi.mjs` empat pembacaan keadaan terender) dan **dua** bukan balapan melainkan penjaga
-**hampa** -- `cfl-dialog-only.mjs` menuntut "nol dialog terbuka", dan `timepicker.mjs` menuntut
-"indeks tetap 0" dan "tetap tertutup", yang semuanya keadaan AWAL dan karenanya lolos walau
-kliknya tak pernah sampai. Dan `adapter.mjs:401/403` ternyata **tidak** goyah: `focused` dibaca
-dari `document.activeElement`, dan Tab asli memindahkan fokus sinkron.
+Dari keempat itu, dua balapan nyata (`adapter.mjs` judul kalender sesudah empat klik navigasi;
+`cfl-multi.mjs` empat pembacaan keadaan terender). Dua lainnya penjaga hampa:
+`cfl-dialog-only.mjs` menuntut "nol dialog terbuka", dan `timepicker.mjs` menuntut "indeks tetap 0"
+dan "tetap tertutup". Ketiganya adalah keadaan awal, jadi ujinya lolos walau kliknya tak pernah
+sampai. Dan `adapter.mjs:401/403` ternyata tidak goyah sama sekali: `focused` dibaca dari
+`document.activeElement`, dan Tab asli memindahkan fokus sinkron.
 
 Keempatnya kini memakai bukti positif, bukan "tidak berubah": penjepitan timepicker melangkah
 MELEWATI ujungnya lalu satu langkah balik ke indeks yang hanya penjepitan dapat hasilkan, dan uji

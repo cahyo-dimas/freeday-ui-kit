@@ -15,13 +15,13 @@ sisi kit.
 
 ### Fixed
 - **Empat shorthand `transition` dipecah jadi longhand** (`#097`), di `modal.css` dan `drawer.css`.
-  Shorthand yang membawa satu keyword yang tak dikenal mesin **tidak sah saat parse**, jadi SELURUH
-  deklarasinya dibuang -- dan `allow-discrete` tak dikenal di bawah Safari 17.4, yang ada di bawah
+  Shorthand yang membawa satu keyword yang tak dikenal mesin **tidak sah saat parse**, jadi seluruh
+  deklarasinya dibuang, dan `allow-discrete` tak dikenal di bawah Safari 17.4, yang ada di bawah
   lantai dukungan kit. Akibatnya modal dan drawer buka-tutup tanpa animasi apa pun. Dipecah begini,
   yang hilang di bawah lantai hanya `transition-behavior`, dan paruh opacity/transform-nya bertahan.
   `overlay` dan `display` tetap terdaftar di `transition-property`, tempat nama yang tak cocok tetap
   sah secara sintaks dan sekadar tak pernah cocok, jadi tak ada lagi yang ikut jatuh. Keluarnya
-  tetap seketika di sana sebab `display` memang tak dapat ditransisikan di bawah lantai -- sama
+  tetap seketika di sana sebab `display` memang tak dapat ditransisikan di bawah lantai, sama
   seperti sebelumnya, jadi pemecahan ini tidak mengambil apa pun.
 
   Ekuivalensinya di atas lantai **diukur, bukan dinalar**: `transition-property`,
@@ -94,7 +94,7 @@ perbaikan ini terdengar jauh lebih mahal daripada yang ternyata.
 
 **Audit kontrol native di seluruh layar sebuah aplikasi konsumen, bukan di satu layar yang
 mengeluh.** Pemiliknya melaporkan tampilan HP aslinya tak cocok dengan peramban di lebar yang sama,
-dan dugaan pertama -- termasuk dugaan saya -- adalah CSS. Pengukuran menyangkalnya: dengan
+dan dugaan pertama, termasuk dugaan saya, adalah CSS. Pengukuran menyangkalnya: dengan
 stylesheet aplikasi yang sebenarnya, pada 375x667, Chromium dan WebKit menata `date`, `time`,
 `number`, `search` dan `text` **identik**, 293x44 keenamnya, selisih satu piksel pada `y` yang
 cuma pembulatan. Jadi yang berbeda bukan tata letaknya, melainkan **widget native-nya**: `date` dan
@@ -106,7 +106,7 @@ layar yang selebihnya sama.
 Kit sudah mengatakan ini di tabelnya sendiri ("Use `.fdy-datepicker` / `.fdy-timepicker` /
 `.fdy-datetimepicker` instead") dan sudah mengirim CSS plus enhancer-nya. Yang belum ada adalah
 wrapper bertipe untuk timepicker, jadi aplikasi Vue/React/Blazor harus merakit sendiri
-plumbing custom-event-nya -- dan merakit sendiri adalah yang membuat empat `<input type="time">`
+plumbing custom-event-nya, dan merakit sendiri adalah yang membuat empat `<input type="time">`
 bertahan di satu formulir shift.
 
 Catatan kejujuran: perbedaan iOS itu **tidak** direproduksi di sini. WebKit desktop bukan Mobile
@@ -116,8 +116,8 @@ lokal, dan kini diuji, adalah perilaku penggantinya.
 
 ### Added
 - **`FdyTimepicker`** (`#094`), wrapper bertipe di **ketiga** stack, menjadikannya tiga belas.
-  Vue dan React mengimplementasikan listbox-nya secara native sebab ia kontrol form -- alasan yang
-  sama dengan `FdyCombo`, dan alasan yang `FdyChart` nyatakan dari sisi sebaliknya: enhancer yang
+  Vue dan React mengimplementasikan listbox-nya secara native sebab ia kontrol form. Alasannya sama
+  dengan `FdyCombo`, dan `FdyChart` menyatakannya dari sisi sebaliknya: enhancer yang
   menguasai DOM berkelahi dengan render framework dan tak menyisakan `v-model`. Blazor
   menjembatani enhancer lewat seed, seperti `FdyDatepicker`. Sorotannya **dijepit, bukan
   berputar**: pada daftar 48 opsi, ArrowUp di `00:00` yang melompat ke `23:30` terbaca sebagai
@@ -126,7 +126,7 @@ lokal, dan kini diuji, adalah perilaku penggantinya.
 - **`data-id` dan `data-describedby` pada seed timepicker** (`#094`). Keduanya tak terbaca
   sebelumnya, jadi host yang menampilkan teks galat tak punya cara menautkannya. Pemicunya
   `<button>`, yang **bukan** elemen labelable, sehingga `<label for>` memang tak akan pernah
-  mengaktifkannya -- itu didokumentasikan sekarang, bukan dibiarkan jadi kejutan.
+  mengaktifkannya, dan itu kini didokumentasikan.
 - **`FreedayTimepicker.setState(root, { disabled, readonly, invalid })`** (`#094`), bentuknya sama
   dengan `FreedayDatepicker.setState`. Tanpa ini, host yang merender seed-nya sekali lalu tidak
   pernah lagi (Blazor, `ShouldRender => false`) memiliki tiga parameter keadaan yang tak ada yang
@@ -136,7 +136,7 @@ lokal, dan kini diuji, adalah perilaku penggantinya.
 - **`FdyDateRange` membuang kedelapan prop label navigasi kalender** (`#095`), di ketiga stack.
   `FdyDatepicker` menerimanya sejak 2.1.1; rentangnya tidak meneruskannya, sehingga rentang tanggal
   adalah **satu-satunya** kontrol tanggal di kit yang navigasinya tak bisa dinamai dalam bahasa
-  halamannya sendiri -- aplikasi berbahasa Indonesia mendapat "Previous month" tepat di tempat yang
+  halamannya sendiri: aplikasi berbahasa Indonesia mendapat "Previous month" tepat di tempat yang
   tak dapat ia jangkau. Diteruskan apa adanya ke kedua pemilih. Prop datar `xxxLabel`, bukan objek
   `labels`, sebab bentuk itulah yang sudah dipakai setiap komponen lain di kit. Blazor menambah
   `BackToMonthsLabel`, karena seed yang kedua pemilihnya dibangun dari situ punya tombol itu.
