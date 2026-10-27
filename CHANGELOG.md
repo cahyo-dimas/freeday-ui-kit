@@ -9,6 +9,33 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.12.1] - 2026-10-27
+
+**Modal dan drawer kembali beranimasi di bawah Safari 17.4, termasuk di iPhone 7 pemiliknya.**
+
+### Fixed
+- **Empat shorthand `transition` dipecah jadi longhand** (`#097`), di `modal.css` dan `drawer.css`.
+  Shorthand yang membawa satu keyword yang tak dikenal mesin **tidak sah saat parse**, jadi SELURUH
+  deklarasinya dibuang -- dan `allow-discrete` tak dikenal di bawah Safari 17.4, yang ada di bawah
+  lantai dukungan kit. Akibatnya modal dan drawer buka-tutup tanpa animasi apa pun. Dipecah begini,
+  yang hilang di bawah lantai hanya `transition-behavior`, dan paruh opacity/transform-nya bertahan.
+  `overlay` dan `display` tetap terdaftar di `transition-property`, tempat nama yang tak cocok tetap
+  sah secara sintaks dan sekadar tak pernah cocok, jadi tak ada lagi yang ikut jatuh. Keluarnya
+  tetap seketika di sana sebab `display` memang tak dapat ditransisikan di bawah lantai -- sama
+  seperti sebelumnya, jadi pemecahan ini tidak mengambil apa pun.
+
+  Ekuivalensinya di atas lantai **diukur, bukan dinalar**: `transition-property`,
+  `transition-timing-function` dan `transition-behavior` identik byte-per-byte sebelum dan sesudah,
+  dan satu-satunya beda adalah satu nilai `transition-duration` yang terserialisasi sebagai satu
+  nilai alih-alih tiga. Bahwa satu nilai itu tetap berlaku untuk SETIAP properti juga diukur: 280ms
+  masing-masing, dan easing tetap per-indeks.
+
+  Harganya empat deklarasi yang harus tetap sejalan, dan itu kini dijaga uji: `baseline.test.mjs`
+  menolak `allow-discrete` di dalam shorthand `transition` mana pun, dan menolak
+  `transition-behavior` yang berdiri tanpa ketiga longhand lainnya. Regresi yang paling mungkin
+  adalah seseorang merapikan empat longhand kembali menjadi satu shorthand, yang terbaca lebih
+  bersih dan diam-diam mengambil animasinya dari setiap peramban di bawah Safari 17.4.
+
 ## [3.12.0] - 2026-10-27
 
 **Sebuah form kini dapat menuntut kontrol kit terisi.** `data-fdy-validate` mewirekan Constraint

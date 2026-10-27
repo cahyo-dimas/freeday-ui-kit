@@ -216,9 +216,17 @@ const ALLOWED = new Map([
     modal and drawer open and close with no animation at all. That is the same outcome
     prefers-reduced-motion asks for and the kit already ships for it, and the end states are
     declared without the transition, so nothing is half-open.
-    Splitting the shorthand into longhands would keep the transform half alive below the floor, at
-    the price of four declarations that have to stay in step with each other. It is written down in
-    NEXT-UP.md instead of guessed at here.`],
+    Since #097 the four are LONGHANDS, so only \`transition-behavior\` is thrown away below the
+    floor and the opacity/transform half survives: the modal and the drawer now animate IN on an
+    iPhone 7. \`overlay\` and \`display\` stay listed in \`transition-property\`, where an
+    unmatched name is valid syntax and simply never matches, so nothing else drops. The exit is
+    still instant there, because \`display\` is not transitionable below the floor — the same as
+    before, so the split takes nothing away.
+    Equivalence above the floor was verified by comparing computed styles before and after, not
+    reasoned about: property, timing-function and behavior are byte-identical, and the only
+    difference is that one \`transition-duration\` value serializes as one value instead of three.
+    That it still applies to every property was measured too (280ms each, easing still per index).
+    The price is four declarations that have to stay in step, which is what the test below guards.`],
 
   ['scrollbar-width', `
     One rule hides the scrollbar of the carousel track. The rule below it does the same job through
@@ -351,6 +359,37 @@ test('a property the floor cannot reach ships beside its prefixed twin', () => {
   assert.deepEqual(unpaired, [],
     'The twin is what carries these back past the floor, so the standard property is never alone:\n'
     + unpaired.join('\n'));
+});
+
+/* The split that makes the `allow-discrete` exception safe, and the four declarations that have to
+   stay in step for it to keep working. Written as a test rather than a comment because the easy
+   regression is someone tidying four longhands back into one shorthand -- which reads cleaner and
+   silently takes the animation away from every browser below Safari 17.4. */
+test('no `transition` shorthand carries `allow-discrete`, and every longhand set is complete', () => {
+  const faults = [];
+  for (const file of SHEETS) {
+    const css = uncommented(read(file));
+    for (const rule of rules(css)) {
+      /* A shorthand with an unknown keyword is invalid at parse time, so the WHOLE declaration is
+         dropped and the properties beside it lose their transition too. */
+      for (const m of rule.body.matchAll(/transition\s*:[^;]*/g)) {
+        if (m[0].includes('allow-discrete')) {
+          faults.push(`${file}: \`${rule.selector}\` puts allow-discrete in the \`transition\` `
+            + `shorthand, so the whole declaration drops below Safari 17.4 and nothing animates.`);
+        }
+      }
+      if (!rule.body.includes('transition-behavior')) continue;
+      /* The lists align by index, so a set missing one of the four cannot be read. */
+      for (const needed of ['transition-property', 'transition-duration', 'transition-timing-function']) {
+        if (!rule.body.includes(needed)) {
+          faults.push(`${file}: \`${rule.selector}\` declares transition-behavior without ${needed}.`);
+        }
+      }
+    }
+  }
+  assert.deepEqual(faults, [],
+    'allow-discrete belongs in `transition-behavior`, alone, so only that one declaration is lost '
+    + 'below the floor:\n' + faults.join('\n'));
 });
 
 /* The one place in the kit where a declaration block is written twice, on purpose: CSS cannot share
