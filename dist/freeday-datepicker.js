@@ -118,6 +118,7 @@
 
   function initPicker(wrap) {
     if (wrap.dataset.fdyDpReady === '1') return wrap._fdyDp || null;
+    if (wrap.closest('[data-fdy-ignore]')) return null;
     wrap.dataset.fdyDpReady = '1';
     wrap.classList.add('fdy-datepicker');
 
@@ -647,6 +648,7 @@
 
   function initRange(root) {
     if (root.dataset.fdyDrReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyDrReady = '1';
     var fromEl = root.querySelector('[data-fdy-datepicker][data-role="from"]');
     var toEl = root.querySelector('[data-fdy-datepicker][data-role="to"]');

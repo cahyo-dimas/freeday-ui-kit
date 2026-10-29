@@ -49,6 +49,7 @@
 
   function initStepper(root) {
     if (root.dataset.fdyStepperReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyStepperReady = '1';
 
     var steps = Array.prototype.slice.call(root.querySelectorAll('.fdy-step'));

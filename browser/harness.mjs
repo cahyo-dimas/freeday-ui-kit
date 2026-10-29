@@ -210,6 +210,23 @@ export async function withPage(fileUrl, fn) {
       await sleep(60);
     };
 
+    /* A real pointer drag: press at one point, travel in steps, release at another. Pointer Events
+       fire from these exactly as from a hand on a mouse, which a synthetic dispatch would not prove.
+       `beforeRelease` runs with the button still held, to read the mid-drag state or press Escape. */
+    const dragFromTo = async (x1, y1, x2, y2, beforeRelease) => {
+      await cmd('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x1, y: y1 });
+      await cmd('Input.dispatchMouseEvent', { type: 'mousePressed', x: x1, y: y1, button: 'left', buttons: 1, clickCount: 1 });
+      const steps = 8;
+      for (let i = 1; i <= steps; i++) {
+        const x = Math.round(x1 + ((x2 - x1) * i) / steps), y = Math.round(y1 + ((y2 - y1) * i) / steps);
+        await cmd('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y, button: 'left', buttons: 1 });
+        await sleep(16);
+      }
+      if (beforeRelease) await beforeRelease();
+      await cmd('Input.dispatchMouseEvent', { type: 'mouseReleased', x: x2, y: y2, button: 'left', buttons: 1, clickCount: 1 });
+      await sleep(60);
+    };
+
     /* A click is aimed at coordinates, so the target must have stopped moving before they are
        measured. The combo listbox animates in from translateY(-4px), and a click measured mid-flight
        lands 4px off, usually still inside the option, occasionally in the padding between two of
@@ -411,7 +428,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport });
+    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport });
   } finally {
     if (ws !== null) {
       try {
@@ -487,6 +504,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-form-required.js'),
       join(HERE, 'entries', 'react-form-required.tsx'),
       join(HERE, 'entries', 'vue-picker-in-modal.js'),
+      join(HERE, 'entries', 'vue-page-scan.js'),
+      join(HERE, 'entries', 'vue-sortable.js'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

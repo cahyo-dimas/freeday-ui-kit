@@ -27,6 +27,7 @@
 
   function initNumber(root) {
     if (root.dataset.fdyNumberReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
 
     var input = root.querySelector('input[type="number"]');
     var buttons = Array.prototype.slice.call(root.querySelectorAll('[data-fdy-number-step]'));

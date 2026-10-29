@@ -84,6 +84,7 @@
 
   function initCascade(wrap) {
     if (wrap.dataset.fdyCascadeReady === '1') return;
+    if (wrap.closest('[data-fdy-ignore]')) return;
     wrap.dataset.fdyCascadeReady = '1';
     wrap.classList.add('fdy-cascade');
 

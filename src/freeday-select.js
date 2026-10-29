@@ -32,6 +32,7 @@
 
   function initCombo(root) {
     if (root.dataset.fdyComboReady === '1') return; // idempotent
+    if (root.closest('[data-fdy-ignore]')) return;
     var button = root.querySelector('.fdy-combo__button');
     var listbox = root.querySelector('.fdy-combo__listbox');
     var valueEl = root.querySelector('.fdy-combo__value');

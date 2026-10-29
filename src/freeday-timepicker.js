@@ -43,6 +43,7 @@
 
   function initTime(wrap) {
     if (wrap.dataset.fdyTpReady === '1') return;
+    if (wrap.closest('[data-fdy-ignore]')) return;
     wrap.dataset.fdyTpReady = '1';
     wrap.classList.add('fdy-timepicker');
 

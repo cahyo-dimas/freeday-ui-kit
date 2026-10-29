@@ -7,6 +7,9 @@ import { computed, onMounted, useId, watch, type ComputedRef, type Ref, ref } fr
 // dialogEl`, applied to a drawer that anchors left (default) or right. Native <dialog> supplies the
 // focus trap, focus restore, top-layer stacking and inert background; `dismissible` (default true)
 // gates Esc + backdrop dismissal.
+// `data-fdy-ignore` on the root: this component owns the behaviour, so a page-wide useFreeday() must
+// not hand `.fdy-drawer` to the enhancer as well. Its backdrop handler calls close() past
+// `dismissible` and leaves `open` true on a dialog that is already closed.
 
 // dismissible MUST go through withDefaults: Vue's boolean-cast gives an omitted Boolean prop
 // `false`, not `undefined`, so a bare `props.dismissible !== false` would make an un-annotated
@@ -53,6 +56,7 @@ function onClick(e: MouseEvent): void {
   <dialog
     ref="dialogEl"
     :class="drawerClass"
+    data-fdy-ignore
     :aria-labelledby="titleId"
     @cancel.prevent="onCancel"
     @click="onClick"

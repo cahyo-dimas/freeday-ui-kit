@@ -42,6 +42,7 @@ Every integration comes down to one of these:
 | `freeday-table` | `fdy-table-change` · `fdy-row-select` | `FreedayTable` |
 | `freeday-chip` | `fdy-chip-change` `{value,pressed,selected}` · `fdy-chip-remove` `{value}`, cancelable | `FreedayChip` |
 | `freeday-upload` | `fdy-upload-add` / `fdy-upload-remove` (cancelable) | `FreedayUpload` |
+| `freeday-sortable` | `fdy-sort-change` `{key,from,to,order}`, cancelable | `FreedaySortable` |
 | `freeday-stepper` | `fdy-step-change` | `FreedayStepper` |
 | `freeday-carousel` | `fdy-carousel-change` | `FreedayCarousel` |
 | `freeday-breakpoint` | `fdy-breakpoint-change` | `FreedayBreakpoint` |

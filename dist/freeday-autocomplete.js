@@ -18,6 +18,7 @@
 
   function initAutocomplete(root) {
     if (root.dataset.fdyAcReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyAcReady = '1';
 
     var input = root.querySelector('input[role="combobox"]') || root.querySelector('input');

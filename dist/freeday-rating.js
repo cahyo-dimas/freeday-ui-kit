@@ -8,6 +8,7 @@
 
   function initRating(root) {
     if (root.dataset.fdyRatingReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyRatingReady = '1';
 
     var stars = Array.prototype.slice.call(root.querySelectorAll('.fdy-rating__star'));

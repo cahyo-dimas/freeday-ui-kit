@@ -207,6 +207,7 @@
 
   function bindGroup(group) {
     if (group.dataset.fdyCflBound === '1') return;
+    if (group.closest('[data-fdy-ignore]')) return;
     var dialog = document.getElementById(group.getAttribute('data-fdy-cfl'));
     if (!dialog) return;
     initDialog(dialog);
@@ -218,6 +219,7 @@
 
   function bindOpener(opener) {
     if (opener.dataset.fdyCflBound === '1') return;
+    if (opener.closest('[data-fdy-ignore]')) return;
     var dialog = document.getElementById(opener.getAttribute('data-fdy-cfl-open'));
     if (!dialog) return;
     initDialog(dialog);

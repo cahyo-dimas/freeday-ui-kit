@@ -186,6 +186,7 @@
 
   function initForm(form) {
     if (form.dataset.fdyFormReady === '1') return;
+    if (form.closest('[data-fdy-ignore]')) return;
     form.dataset.fdyFormReady = '1';
     form.setAttribute('novalidate', '');
     var eager = form.hasAttribute('data-fdy-eager');

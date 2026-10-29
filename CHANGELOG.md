@@ -9,6 +9,69 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.14.0] - 2026-10-29
+
+**Daftar terurut lewat seret dan papan ketik, dan satu atribut untuk berkata "ini bukan urusan
+kit".** Dua butir dari `CATATAN-FREEDAY.md` app ronda (§14 dan §15). Mengaudit §14 menemukan satu
+cacat yang tak dilaporkan: `FdyDrawer` Vue dan React bisa ditutup lewat backdrop walau
+`dismissible=false`.
+
+### Added
+- **`data-fdy-sortable`, enhancer ke-32** (`#103`), `src/freeday-sortable.js` plus
+  `.fdy-sortable__handle`. Baris diseret lewat pegangannya, atau dipindah satu langkah dengan ↑ / ↓
+  saat pegangannya terfokus. Lima layar di app ronda menyuruh orang mengetik nomor urut di kotak
+  angka, dan app itu akhirnya menulis sendiri SortableJS plus jalur papan ketiknya. Selama diseret,
+  garis menunjukkan tempat baris akan mendarat dan tak ada elemen yang berpindah sebelum tombol
+  dilepas; Escape membatalkan. `fdy-sort-change` (`{key, from, to, order}`) dapat dibatalkan,
+  dengan pola yang sama seperti chip di 3.13.0: halaman statis membiarkannya dan kit memindah
+  elemennya, sedangkan framework membatalkannya lalu mengurutkan state-nya sendiri, sebab DOM-nya
+  milik framework. Sesudah langkah papan ketik, fokus kembali ke pegangan baris yang sama, dicari
+  lewat `data-key` supaya tetap ketemu walau render ulang mengganti elemennya. Perpindahan
+  diumumkan di live region. `data-fdy-sort-fixed` menandai baris yang tak bisa dilewati, dan
+  `data-disabled` mematikan pengurutan selama daftar dicari atau disaring. Yang sengaja tidak
+  dibuat: gulir otomatis saat seretan mendekati tepi halaman, dan memindah baris antar-daftar.
+- **`data-fdy-ignore`** (`#102`). Di elemen atau leluhur mana pun, setiap enhancer melewati
+  subtree itu, termasuk di bawah `initAll(document)` yang eksplisit, dan peringatan hook dari 3.13.0
+  ikut diam. Pesan peringatannya kini menyebut atribut ini sebagai jalan keluar yang sah. Pemicunya
+  matriks chip di layar Pola rotasi, yang perilakunya dikelola app sendiri, sehingga setiap klik di
+  situ mencetak peringatan untuk sesuatu yang memang disengaja. Nama yang diusulkan catatannya,
+  `data-fdy-raw`, tidak dipakai: di dokumen kit "raw" berarti jalur markup + enhancer, kebalikan
+  dari maksud atribut ini.
+
+### Fixed
+- **`FdyDrawer` Vue dan React tertutup lewat backdrop walau `dismissible=false`** (`#102`), begitu
+  `useFreeday()` dipasang di seluruh halaman. Wrapper itu merender `.fdy-drawer`, yang merupakan hook
+  enhancer drawer, sehingga enhancer memasang handler backdrop kedua yang memanggil `close()`
+  langsung. Dialognya tertutup, `open` di state app tetap `true`, dan tak ada event `close`. Di luar
+  cakupan pemindai, wrapper yang sama memicu peringatan 3.13.0 setiap kali diklik. Keduanya kini
+  membawa `data-fdy-ignore`. `FdyChart` juga merender hook, tetapi sejak awal sudah mencap penanda
+  siapnya sendiri; ia kini dijaga uji supaya tetap begitu.
+
+### Catatan
+- **Angka 9 menit di §14 bukan ongkos pemindaian.** Catatannya mengukur `useFreeday()` di seluruh
+  halaman pada 9 menit 6 detik untuk sepuluh uji e2e, dibanding 19,1 detik untuk cakupan modal saja,
+  dan mempersempit cakupannya karena itu. Pada bentuk matriks yang sama (38 baris × 4 shift, dua chip
+  per sel, 304 tombol), satu `rehydrate()` di seluruh halaman memakan 1,1 ms dan satu update reaktif
+  end-to-end 2,1 ms. Sekitar 55 detik per uji lebih mirip uji yang menunggu sampai timeout. Kalau
+  angka itu diambil sebelum 3.13.0, waktu itu kit masih menghapus chip yang diklik, dan itu cukup
+  menjelaskannya. Ini dugaan; pengukuran ulangnya ada di sisi app.
+
+### Gerbang
+- `docs.test.mjs`: setiap fungsi init yang mencap penanda hook wajib memeriksa `data-fdy-ignore`
+  sebelum mencap, dan setiap wrapper Vue/React yang merender hook enhancer wajib menandainya
+  `data-fdy-ignore` atau mencap penanda siapnya sendiri. Snapshot string enhancer mendapat dua
+  string sortable.
+- `browser/app-owned.mjs`: `useFreeday()` di seluruh halaman atas matriks itu, dengan ambang longgar
+  (25 ms per rehydrate, 50 ms per update) yang menangkap pemindaian yang meledak, bukan runner yang
+  lambat. Drawer `dismissible=false` bertahan dari klik backdrop, chart ter-render sekali, subtree
+  yang diabaikan tetap tak tersentuh, dan tak ada satu pun peringatan.
+- `browser/sortable.mjs`, dengan mouse dan papan ketik asli: tanda pendaratan di tengah seretan,
+  Escape, klik yang bukan seretan, baris tetap, keadaan nonaktif, perubahan yang dibatalkan tak
+  menyentuh DOM, dan list Vue ber-key yang mengurutkan state-nya sendiri.
+- `browser/harness.mjs` mendapat `dragFromTo` dan mengekspos `clickAt`.
+- Dua belas mutasi diverifikasi merah. Satu mutasi yang tetap hijau membuang ambang jarak seret dari
+  enhancer: tekanan yang tak meninggalkan barisnya sendiri sudah ditolak `allowed()`.
+
 ## [3.13.0] - 2026-10-29
 
 **Kit berhenti memutuskan hal yang bukan urusannya, dan markup yang tak pernah dihidrasi kini

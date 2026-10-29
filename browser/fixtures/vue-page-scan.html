@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: page-wide useFreeday over a rota matrix, a typed drawer and chart, an ignored subtree</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<div id="app"></div>
+<script src="../../dist/freeday.js"></script>
+<script>
+  window.warnings = [];
+  const realWarn = console.warn;
+  console.warn = function (msg, el) {
+    window.warnings.push({ msg: String(msg), cls: el && el.className ? String(el.className) : null });
+    return realWarn.apply(console, arguments);
+  };
+</script>
+<script src="../.build/vue-page-scan.js"></script>

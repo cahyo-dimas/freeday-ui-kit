@@ -2900,6 +2900,24 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-slider__value{font-family:var(--font-mono);font-size:var(--text-sm);font-weight:var(--weight-semibold);color:var(--color-primary-strong);font-variant-numeric:tabular-nums;}
 .fdy-slider__scale{display:flex;justify-content:space-between;font-size:var(--text-xs);color:var(--color-text-muted);font-variant-numeric:tabular-nums;}
 
+/* Freeday. Sortable list (freeday-sortable.js). The kit styles the handle and the drag states only;
+ * the list itself is whatever it already was: .fdy-list, a table body, plain rows.
+ *
+ * The handle is a control-height square so a thumb can hold it on a phone, and `touch-action:none`
+ * keeps that drag from scrolling the page. Its glyph is the only thing marking it as a control, so
+ * it takes --color-text-muted, not --color-text-subtle: a non-text control still owes 3:1. */
+.fdy-sortable__handle{display:inline-flex;flex:none;align-items:center;justify-content:center;width:var(--control-h);height:var(--control-h);padding:0;border:0;border-radius:var(--radius-md);background:transparent;color:var(--color-text-muted);cursor:grab;touch-action:none;}
+.fdy-sortable__handle:hover{background:var(--color-surface-2);color:var(--color-text);}
+.fdy-sortable__handle:active{cursor:grabbing;}
+.fdy-sortable__handle[aria-disabled="true"]{cursor:not-allowed;opacity:.4;}
+.fdy-sortable__handle[aria-disabled="true"]:hover{background:transparent;color:var(--color-text-muted);}
+.fdy-sortable.is-sorting{-webkit-user-select:none;user-select:none;}
+.fdy-sortable > .is-dragging{opacity:.45;}
+/* The landing line. On a table row it is drawn on the cells: a box-shadow on a <tr> is not painted
+ * by every engine the kit supports. */
+.fdy-sortable > :not(tr).is-drop-before,.fdy-sortable > tr.is-drop-before > *{box-shadow:inset 0 var(--focus-ring-width) 0 var(--color-primary);}
+.fdy-sortable > :not(tr).is-drop-after,.fdy-sortable > tr.is-drop-after > *{box-shadow:inset 0 calc(var(--focus-ring-width) * -1) 0 var(--color-primary);}
+
 /* Freeday. Spinner */
 .fdy-spinner{display:inline-block;width:1.5rem;height:1.5rem;border:2.5px solid var(--color-border-strong);border-top-color:var(--color-primary);border-radius:var(--radius-full);animation:fdy-spin .7s linear infinite;}
 .fdy-spinner--sm{width:1rem;height:1rem;border-width:2px;}

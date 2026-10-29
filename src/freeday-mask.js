@@ -79,6 +79,7 @@
 
   function initMask(el) {
     if (el.dataset.fdyMaskReady === '1') return;
+    if (el.closest('[data-fdy-ignore]')) return;
     el.dataset.fdyMaskReady = '1';
     var pattern = el.getAttribute('data-fdy-mask') || '';
     if (!pattern) return;
@@ -101,6 +102,7 @@
 
   function initReveal(input) {
     if (input.dataset.fdyPwReady === '1') return;
+    if (input.closest('[data-fdy-ignore]')) return;
     input.dataset.fdyPwReady = '1';
 
     var group = document.createElement('span');

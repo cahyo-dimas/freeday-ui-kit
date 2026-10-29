@@ -18,6 +18,7 @@
 
   function initRemove(btn) {
     if (btn.dataset.fdyChipRmReady === '1') return;
+    if (btn.closest('[data-fdy-ignore]')) return;
     btn.dataset.fdyChipRmReady = '1';
     btn.addEventListener('click', function () {
       var chip = btn.closest('.fdy-chip');
@@ -41,6 +42,7 @@
 
   function initGroup(group) {
     if (group.dataset.fdyChipsReady === '1') return;
+    if (group.closest('[data-fdy-ignore]')) return;
     group.dataset.fdyChipsReady = '1';
     var single = group.hasAttribute('data-single');
     if (!group.getAttribute('role')) group.setAttribute('role', 'group');

@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §13 menyusul 2026-10-29):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29):
 
 | § | pokok | status |
 |---|---|---|
@@ -91,6 +91,8 @@ dan tidak punya berkas tidak pernah ada.
 | 11 | `--danger` di tombol dan alert, `--error` di teks bantuan | terkirim 3.13.0 `#100`, alias untuk `.fdy-help` saja; kontrol form sengaja tidak, sebab `aria-invalid` yang menggerakkannya |
 | 12 | tak ada daftar berbutir sederhana | terkirim 3.13.0 `#101` sebagai janji tertulis plus uji; `.fdy-list-bullet` tidak dibuat |
 | 13 | `required` pada `FdyCombo` | sudah terkirim 3.12.0 `#096`, sebelum catatannya ditulis; sisanya adopsi di sisi app |
+| 14 | tak ada cara menyatakan markup sengaja mentah | terkirim 3.14.0 `#102` sebagai `data-fdy-ignore` (bukan `data-fdy-raw`, yang di kit berarti kebalikannya); auditnya menemukan `FdyDrawer` Vue/React yang tertutup lewat backdrop walau `dismissible=false`. Angka 9 menit di catatan itu bukan ongkos pemindaian (1,1 ms per rehydrate pada bentuk yang sama); **belum terverifikasi** dugaan bahwa itu uji yang menunggu sampai timeout sebelum 3.13.0 |
+| 15 | tak ada pengurutan daftar lewat seret | terkirim 3.14.0 `#103` sebagai `data-fdy-sortable`, dengan jalur papan ketik; gulir otomatis di tepi halaman dan pindah antar-daftar sengaja tidak dibuat, tunggu layar yang membutuhkannya |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

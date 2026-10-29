@@ -66,6 +66,7 @@
 
   function initTree(tree) {
     if (tree.dataset.fdyTreeReady === '1') return;
+    if (tree.closest('[data-fdy-ignore]')) return;
     tree.dataset.fdyTreeReady = '1';
     Array.prototype.forEach.call(tree.querySelectorAll('input[type="checkbox"]'), function (box) {
       // A branch checkbox lives inside <summary>; keep its click from toggling the branch.

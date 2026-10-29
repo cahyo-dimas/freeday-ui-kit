@@ -7,6 +7,9 @@ import { useEffect, useId, useRef } from 'react';
 // through app state, backdrop-click via `event.target === dialogEl`) applied to a drawer that anchors
 // left (default) or right. Native <dialog> supplies the focus trap, focus restore, top-layer stacking
 // and inert background; `dismissible` (default true) gates Esc + backdrop dismissal.
+// `data-fdy-ignore` on the root: this component owns the behaviour, so a page-wide useFreeday() must
+// not hand `.fdy-drawer` to the enhancer as well. Its backdrop handler calls close() past
+// `dismissible` and leaves `open` true on a dialog that is already closed.
 
 export interface FdyDrawerProps {
   open: boolean;
@@ -37,6 +40,7 @@ export function FdyDrawer(props: FdyDrawerProps): JSX.Element {
     <dialog
       ref={dialogRef}
       className={drawerClass}
+      data-fdy-ignore=""
       aria-labelledby={titleId}
       onCancel={(e): void => {
         e.preventDefault();

@@ -46,6 +46,7 @@
 
   function initShell(app) {
     if (app.dataset.fdyAppShellReady === '1') return;
+    if (app.closest('[data-fdy-ignore]')) return;
     app.dataset.fdyAppShellReady = '1';
 
     var toggle = app.querySelector('.fdy-app__navtoggle');

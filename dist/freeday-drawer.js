@@ -8,6 +8,7 @@
 
   function initDrawer(dialog) {
     if (dialog.dataset.fdyDrawerReady === '1') return;
+    if (dialog.closest('[data-fdy-ignore]')) return;
     dialog.dataset.fdyDrawerReady = '1';
     // Click on the backdrop (target is the dialog box itself) closes it.
     dialog.addEventListener('click', function (e) { if (e.target === dialog) dialog.close(); });
@@ -18,6 +19,7 @@
 
   function bindTrigger(btn) {
     if (btn.dataset.fdyDrawerBound === '1') return;
+    if (btn.closest('[data-fdy-ignore]')) return;
     var dialog = document.getElementById(btn.getAttribute('data-fdy-drawer'));
     if (!dialog) return;
     initDrawer(dialog);

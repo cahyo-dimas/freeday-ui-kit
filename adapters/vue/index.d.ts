@@ -93,5 +93,7 @@ export interface FdyMaskDetail { value: string; raw: string }
 export interface FdyFormInvalidDetail { invalid: HTMLElement[] }
 export interface FdyChipChangeDetail { value: string; pressed: boolean; selected: string[] }
 export interface FdyChipRemoveDetail { value: string }
+/** `fdy-sort-change`, cancelable: `order` is every item's `data-key` in the new order. */
+export interface FdySortChangeDetail { key: string; from: number; to: number; order: string[] }
 export interface FdyCflSelectDetail { row?: unknown; rows?: unknown[] }
 export interface FdyTableChangeDetail { page: number; sort: string | null; query: string }

@@ -575,6 +575,10 @@ test('the enhancers ship exactly these strings (#006)', () => {
       done: 'Done',
       next: 'Next',
     },
+    'freeday-sortable.js': {
+      handle: 'Move {label}. Drag, or press the up and down arrow keys.',
+      moved: '{label} moved to position {position} of {total}.',
+    },
     'freeday-table.js': {
       close: 'Close',
       filter: 'Filter column',
@@ -875,4 +879,49 @@ test('every enhancer that hydrates markup exposes initAll, the one name the stac
     if (!/\binitAll\s*:/.test(body)) offenders.push(`src/${file}: window.${exported[1] || exported[3]} has no initAll`);
   }
   assert.deepEqual(offenders, [], 'useFreeday() and FreedayBlazor.initAll skip these silently:\n' + offenders.join('\n'));
+});
+
+/* data-fdy-ignore is a promise that every enhancer leaves a subtree alone (CATATAN-FREEDAY §14), so
+ * one init that forgets the check breaks it for that hook only, silently. Read from the code: the
+ * check must sit between the "already ready" early return and the stamp, in every function that
+ * stamps a hook flag. */
+test('every hook init skips a data-fdy-ignore subtree before it stamps', () => {
+  const flags = new Set([...read('src/freeday-unhydrated.js').matchAll(/\['[^']+', '(fdy\w+)', 'Freeday\w+'\]/g)].map(m => m[1]));
+  const offenders = [];
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
+    const src = read(`src/${file}`);
+    for (const m of src.matchAll(/dataset\.(fdy\w+) = '1'/g)) {
+      if (!flags.has(m[1])) continue;
+      const fnStart = src.lastIndexOf('function ', m.index);
+      if (!src.slice(fnStart, m.index).includes(`.closest('[data-fdy-ignore]')`)) {
+        offenders.push(`src/${file}: ${m[1]} is stamped without checking data-fdy-ignore first`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], offenders.join('\n'));
+});
+
+/* A Vue/React wrapper is a native implementation, not a wrapper over the enhancer, so a hook it
+ * renders is a second owner waiting for a page-wide useFreeday(). FdyDrawer was one: the drawer
+ * enhancer's backdrop handler closed it past `dismissible=false` and left `open` true. Each such
+ * wrapper must either mark the element data-fdy-ignore or claim the ready flag itself, as FdyChart
+ * always has. Blazor is exempt on purpose: its wrappers ARE thin wrappers over the enhancers. */
+test('a Vue/React wrapper that renders an enhancer hook ignores it or claims it', () => {
+  const table = [...read('src/freeday-unhydrated.js').matchAll(/\['([^']+)', '(fdy\w+)', 'Freeday\w+'\]/g)]
+    .map(m => ({ selector: m[1], flag: m[2] }));
+  const offenders = [];
+  for (const dir of ['adapters/vue/components', 'adapters/react/components']) {
+    for (const file of readdirSync(join(root, dir))) {
+      const code = read(`${dir}/${file}`).split('\n').filter(l => !/^\s*(\/\/|\*|\/\*)/.test(l)).join('\n');
+      for (const { selector, flag } of table) {
+        const hit = selector.startsWith('[')
+          ? new RegExp(`[\\s:]${selector.slice(1, -1)}[=\\s>{]`).test(code)
+          : new RegExp(`['"\` ]${selector.slice(1)}['"\` ]`).test(code);
+        if (!hit) continue;
+        if (/data-fdy-ignore/.test(code) || code.includes(`dataset.${flag} = '1'`)) continue;
+        offenders.push(`${dir}/${file} renders ${selector} and neither marks it data-fdy-ignore nor claims ${flag}`);
+      }
+    }
+  }
+  assert.deepEqual(offenders, [], offenders.join('\n'));
 });

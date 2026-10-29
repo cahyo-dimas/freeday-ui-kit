@@ -17,6 +17,7 @@
 
   function initDatetime(wrap) {
     if (wrap.dataset.fdyDtReady === '1') return;
+    if (wrap.closest('[data-fdy-ignore]')) return;
     wrap.dataset.fdyDtReady = '1';
     wrap.classList.add('fdy-datetimepicker');
 

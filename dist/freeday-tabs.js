@@ -16,6 +16,7 @@
 
   function initTabs(root) {
     if (root.dataset.fdyTabsReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
     if (tabs.length === 0) return;
     root.dataset.fdyTabsReady = '1';

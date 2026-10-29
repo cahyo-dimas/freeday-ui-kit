@@ -77,6 +77,7 @@
 
   function initTable(root) {
     if (root.dataset.fdyTableReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     var table = root.querySelector('table.fdy-table');
     var tbody = table && table.querySelector('tbody');
     if (!table || !tbody) return;

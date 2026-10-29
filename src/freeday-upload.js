@@ -228,6 +228,7 @@
 
   function initDropzone(zone) {
     if (zone.dataset.fdyUploadReady === '1') return;
+    if (zone.closest('[data-fdy-ignore]')) return;
     zone.dataset.fdyUploadReady = '1';
 
     var input = zone.querySelector('input[type="file"]');

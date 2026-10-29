@@ -15,6 +15,11 @@
  * namespace that owns it. A hook whose enhancer is not loaded is skipped: that is a different
  * mistake, and this message would misname it. test/docs.test.mjs fails if an enhancer gains a
  * ready flag this table does not list.
+ *
+ * `data-fdy-ignore` on an element or any ancestor is the sanctioned way out: every enhancer skips
+ * that subtree, and this stays quiet about it. It is for markup whose behaviour something else
+ * owns: the kit's own Vue/React FdyDrawer, and kit classes an app uses for their look
+ * alone (CATATAN-FREEDAY §14: a chip matrix the app drives itself).
  */
 (function () {
   'use strict';
@@ -43,6 +48,7 @@
     ['[data-fdy-search]', 'fdySearchReady', 'FreedaySearch'],
     ['[data-fdy-combo]', 'fdyComboReady', 'FreedayCombo'],
     ['[data-fdy-slider]', 'fdySliderReady', 'FreedaySlider'],
+    ['[data-fdy-sortable]', 'fdySortableReady', 'FreedaySortable'],
     ['[data-fdy-stepper]', 'fdyStepperReady', 'FreedayStepper'],
     ['[data-fdy-table]', 'fdyTableReady', 'FreedayTable'],
     ['[data-fdy-tabs]', 'fdyTabsReady', 'FreedayTabs'],
@@ -59,12 +65,13 @@
       var hook = HOOKS[i];
       if (!window[hook[2]]) continue;
       var el = e.target.closest(hook[0]);
-      if (!el || el.dataset[hook[1]] === '1' || warned.has(el)) continue;
+      if (!el || el.dataset[hook[1]] === '1' || warned.has(el) || el.closest('[data-fdy-ignore]')) continue;
       warned.add(el);
       console.warn('Freeday: this ' + hook[0] + ' was never enhanced, so it does nothing. Either it is '
         + 'outside every initAll() scope (Vue/React: inside the element given to useFreeday(); Blazor: '
         + 'FreedayBlazor.initAll after render; anything else: ' + hook[2] + '.initAll(el) once it is in '
-        + 'the DOM), or its markup lacks a part the enhancer needs (see COMPONENTS.md).', el);
+        + 'the DOM), or its markup lacks a part the enhancer needs (see COMPONENTS.md). If the app '
+        + 'drives this element itself on purpose, mark it or an ancestor data-fdy-ignore.', el);
     }
   }
 

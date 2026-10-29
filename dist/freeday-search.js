@@ -24,6 +24,7 @@
 
   function initSearch(root) {
     if (root.dataset.fdySearchReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     var input = root.querySelector('input');
     if (!input) return;
     root.dataset.fdySearchReady = '1';

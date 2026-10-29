@@ -19,6 +19,7 @@
 
   function initMenu(wrap) {
     if (wrap.dataset.fdyMenuReady === '1') return;
+    if (wrap.closest('[data-fdy-ignore]')) return;
     wrap.dataset.fdyMenuReady = '1';
     var trigger = wrap.querySelector('[aria-haspopup="menu"]');
     var menu = wrap.querySelector('.fdy-menu, [role="menu"]');

@@ -12,6 +12,7 @@
 
   function initSlider(input) {
     if (input.dataset.fdySliderReady === '1') return;
+    if (input.closest('[data-fdy-ignore]')) return;
     input.dataset.fdySliderReady = '1';
     var out = input.id ? document.querySelector('output[for="' + input.id + '"]') : null;
     if (!out) return;

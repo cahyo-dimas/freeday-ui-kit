@@ -52,6 +52,11 @@ live docs.
    never enhanced logs one `console.warn` naming it, with the element attached. The usual cause is
    a `useFreeday()` ref on a wrapper that does not contain it. `freeday-unhydrated.js` does this,
    and it ships in the root import.
+   **`data-fdy-ignore` says "not yours".** On an element or any ancestor, every enhancer skips that
+   subtree, even under an explicit `initAll(document)`, and the warning above stays quiet. Use it
+   where the app drives kit-styled markup itself, such as a chip matrix with its own removal flow.
+   The Vue and React `FdyDrawer` carry it already, so a page-wide `useFreeday()` cannot hand the
+   drawer enhancer a second backdrop handler.
 
 ### Containment — why the kit's containers are `position:relative`
 
@@ -101,6 +106,7 @@ element is fine. Events are bubbling
 | `data-fdy-tree` | `freeday-tree.js` | `FreedayTree` | — |
 | `data-fdy-rating` | `freeday-rating.js` | `FreedayRating` | — (native `change`) |
 | `data-fdy-slider` | `freeday-slider.js` | `FreedaySlider` | — (native `input`) |
+| `data-fdy-sortable` | `freeday-sortable.js` | `FreedaySortable` | `fdy-sort-change` |
 | `data-fdy-number` | `freeday-number.js` | `FreedayNumber` | — (native `input`, `change`) |
 | `data-fdy-search` | `freeday-search.js` | `FreedaySearch` | `fdy-search` (+ native `input` on clear) |
 | `data-fdy-copy="value"` (delegated, no hydration) | `freeday-copy.js` | `FreedayCopy` | `fdy-copy` |
@@ -2366,6 +2372,45 @@ row.addEventListener('fdy-chip-remove', async (e) => {
 });
 ```
 `--tone-1`…`--tone-8` for non-semantic category colours.
+
+## Sortable list — `data-fdy-sortable`
+Reorder a list by dragging a handle, or by focusing the handle and pressing ↑ / ↓. Needs
+`freeday-sortable.js`. The kit draws the handle and the drag states; the list keeps whatever look it
+already had (`.fdy-list`, a table body, plain rows).
+
+- Container: `.fdy-sortable` + `data-fdy-sortable` on a `<ul>`/`<ol>`, a `<tbody>` or a `<div>`.
+  Its element children are the items.
+- Item: `data-key` (the id the event reports, **required** when a framework renders the list),
+  `data-label` (the name read out, the item's text otherwise), and `data-fdy-sort-fixed` for an item
+  that never moves and that nothing can pass, such as a system row pinned to one end.
+- Handle: `<button class="fdy-sortable__handle" type="button">` inside the item, icon inside. With no
+  `aria-label` of your own it gets *Move {label}. Drag, or press the up and down arrow keys.*
+- `data-disabled` on the container switches reordering off, and the handles follow through
+  `aria-disabled`. Set it while the list is searched or filtered, where a row's visible position is
+  not its stored one.
+- States, set by the enhancer: `is-sorting` on the container, `is-dragging` on the item, and
+  `is-drop-before` / `is-drop-after` on the item it will land against. Nothing moves until the
+  pointer is released, and Escape cancels.
+- Event: `fdy-sort-change` on the container, `detail {key, from, to, order}`, **cancelable**. Left
+  alone, the kit moves the element. Under Vue, React or Blazor, cancel it and reorder your state,
+  because the DOM is the framework's. Either way the kit announces *{label} moved to position {n} of
+  {total}.* in a polite live region, and after a keyboard step it puts focus back on the moved
+  item's handle, found by `data-key` so a re-render that replaced the element still gets it.
+- Strings: `data-fdy-text-handle`, `data-fdy-text-moved` on the container.
+- Not in the kit: scrolling the page while a drag nears its edge, and moving items between lists.
+  Keep a sortable list short enough to see whole, or paginate it.
+
+```vue
+<ul ref="list" class="fdy-list fdy-sortable" data-fdy-sortable
+    :data-disabled="filtered ? '' : undefined"
+    @fdy-sort-change.prevent="(e) => saveOrder(e.detail.order)">
+  <li v-for="r in rows" :key="r.id" class="fdy-list__row" :data-key="r.id" :data-label="r.name">
+    <button class="fdy-sortable__handle" type="button"><IconGrip class="fdy-icon" aria-hidden="true" /></button>
+    {{ r.name }}
+  </li>
+</ul>
+<!-- useFreeday(list) in <script setup> -->
+```
 
 ## Timeline — `.fdy-timeline`
 Vertical event feed, pure CSS. `<ol class="fdy-timeline">` of `.fdy-timeline__item` (`--muted`

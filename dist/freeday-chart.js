@@ -489,6 +489,7 @@
   // Auto-init renders once; explicit update() re-renders after data changes.
   function initChart(el) {
     if (el.dataset.fdyChartReady === '1') return;
+    if (el.closest('[data-fdy-ignore]')) return;
     el.dataset.fdyChartReady = '1';
     renderChart(el);
   }

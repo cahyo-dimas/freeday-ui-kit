@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — sortable list, raw path</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 24px; max-width: 28rem; }</style>
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- Nobody cancels: the kit moves the element. The last item is pinned. -->
+  <ul class="fdy-list fdy-sortable" id="list" data-fdy-sortable>
+    <li class="fdy-list__row" data-key="a" data-label="Alpha"><button class="fdy-sortable__handle" type="button" id="hA">≡</button> Alpha</li>
+    <li class="fdy-list__row" data-key="b" data-label="Bravo"><button class="fdy-sortable__handle" type="button" id="hB">≡</button> Bravo</li>
+    <li class="fdy-list__row" data-key="c" data-label="Charlie"><button class="fdy-sortable__handle" type="button" id="hC">≡</button> Charlie</li>
+    <li class="fdy-list__row" data-key="d" data-label="Delta"><button class="fdy-sortable__handle" type="button" id="hD">≡</button> Delta</li>
+    <li class="fdy-list__row" data-key="z" data-label="System" data-fdy-sort-fixed>System</li>
+  </ul>
+  <!-- The app cancels and changes nothing, as one whose server refused the move would. -->
+  <ul class="fdy-list fdy-sortable" id="refused" data-fdy-sortable>
+    <li class="fdy-list__row" data-key="x"><button class="fdy-sortable__handle" type="button" id="hX">≡</button> X-ray</li>
+    <li class="fdy-list__row" data-key="y"><button class="fdy-sortable__handle" type="button" id="hY">≡</button> Yankee</li>
+  </ul>
+<script>
+  window.refused = [];
+  document.getElementById('refused').addEventListener('fdy-sort-change', (e) => {
+    window.refused.push(e.detail.order.join(''));
+    e.preventDefault();
+  });
+  window.events = [];
+  document.getElementById('list').addEventListener('fdy-sort-change', (e) => {
+    window.events.push({ ...e.detail, cancelable: e.cancelable });
+  });
+  window.order = () => Array.from(document.querySelectorAll('#list > li')).map((li) => li.dataset.key).join('');
+  window.marks = () => Array.from(document.querySelectorAll('#list > li'))
+    .map((li) => li.dataset.key + (li.classList.contains('is-drop-before') ? '^' : '') + (li.classList.contains('is-drop-after') ? 'v' : '')
+      + (li.classList.contains('is-dragging') ? '*' : '')).join(' ');
+  window.live = () => { const r = document.querySelector('body > .fdy-visually-hidden[aria-live]'); return r ? r.textContent.trim() : ''; };
+</script>
+</body>
+</html>

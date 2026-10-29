@@ -46,6 +46,7 @@
 
   function initCarousel(root) {
     if (root.dataset.fdyCarouselReady === '1') return;
+    if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyCarouselReady = '1';
 
     var viewport = root.querySelector('.fdy-carousel__viewport');

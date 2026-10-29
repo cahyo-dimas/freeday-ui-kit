@@ -118,6 +118,8 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 
 | Reach for | Instead of |
 |---|---|
+| `data-fdy-sortable` + `.fdy-sortable__handle` | SortableJS plus a hand-written arrow-key path, or a number box for an `order` column |
+| `data-fdy-ignore` | narrowing `useFreeday()` to dodge kit markup the app drives itself, which leaves every form outside the scope dead |
 | `.fdy-btn--stretch` | a hand-rolled overlay to make a card or list row clickable |
 | `[data-fdy-number]` | a bare `<input type="number">` with the browser's own spin buttons |
 | `clearable` on `FdyCfl` / `FdyDatepicker` | a value that can be set but never unset |
