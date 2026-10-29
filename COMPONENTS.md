@@ -32,6 +32,10 @@ live docs.
    state *and* the screen-reader state. Pair it with `aria-describedby` → the `id` of a
    `.fdy-help.fdy-help--error`. The `--error` class modifiers exist only for the case where the
    invalid state does not belong to the control itself.
+   **`--error` names a field's validation state, `--danger` names a tone** (button, alert, badge,
+   toast, menu item). `.fdy-help` is the one block that takes both, `--danger` being the same
+   colour, because help text is where either reading is natural: a sentence that warns without
+   any field being invalid.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
 7. **On Vue, React or Blazor, thirteen components have a typed wrapper. Use it.** `FdyCombo` ·
@@ -44,6 +48,10 @@ live docs.
    breaks quietly: later-rendered DOM is never hydrated and the widget's state sits in the DOM
    instead of your framework's. Everything else is the same markup everywhere; hydrate the other
    interactive components with `useFreeday` (Vue/React) or `FreedayBlazor.initAll` (Blazor).
+   **Markup no `initAll` reached says so.** The first click, focus or submit inside a hook the kit
+   never enhanced logs one `console.warn` naming it, with the element attached. The usual cause is
+   a `useFreeday()` ref on a wrapper that does not contain it. `freeday-unhydrated.js` does this,
+   and it ships in the root import.
 
 ### Containment — why the kit's containers are `position:relative`
 
@@ -562,7 +570,7 @@ native control, otherwise a `<div>` + explicitly associated label.
   `.fdy-field--full` on the fields — **not** a `max-width` override on the container. Both of this
   kit's own consoles wrote that override, once per form, before this modifier reached outside the
   grid.
-- `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`)
+- `.fdy-label` (+`--required`) · `.fdy-input` (+`--error`) · `.fdy-textarea` · `.fdy-help` (+`--error`, or its alias `--danger`)
 
 **Grouped controls are a `<fieldset>`, not a new block.** Put `.fdy-field` on the fieldset and
 `.fdy-label` on the legend. The kit already resets the UA border/padding and supplies the spacing:
@@ -1214,6 +1222,9 @@ zone.addEventListener('fdy-upload-add', (e) => {
 zone.addEventListener('fdy-upload-remove', (e) => forget(e.detail.file));   // same element
 ```
 
+`fdy-upload-remove` is **cancelable** too: `preventDefault()` keeps the row, for a file the server
+already holds and the user should confirm losing. Remove it yourself afterwards with `row.el.remove()`.
+
 **Bring your own row:** omit the file list entirely (no `data-filelist`, and no `.fdy-filelist`
 sibling) and the enhancer renders nothing while still dispatching `fdy-upload-add`, where `detail.row`
 still works, its element simply isn't attached. Note the fallback when `data-filelist` is absent is
@@ -1757,6 +1768,10 @@ responsive `.fdy-datatable` should become below `md`, rather than a stack of `.f
   control in the kit. Do not hand-roll it: an undimmed row that still lights up under the pointer
   reads as clickable while it is refusing input.
 - Not `.fdy-list-reset`, which only strips UA bullets/indent from a semantic list.
+- Not for three bullet points in a dialog either. **A plain bulleted list is a plain `<ul>`/`<ol>`,
+  no class**, and that is supported: `base.css` deliberately leaves lists alone, so native bullets
+  and indent survive (a test keeps it that way). The exception is a utility framework run with its
+  preflight on, which strips them.
 
 ```html
 <ul class="fdy-list">
@@ -2335,6 +2350,21 @@ Three roles inside a `.fdy-chips` row:
 
 Interactive chips are managed by `freeday-chip.js`: wrap the row in `data-fdy-chips` (+
 `data-single` for pick-one, `data-label` for the group name), give each `data-value`.
+
+**Removal is cancelable.** Pressing `.fdy-chip__remove` fires `fdy-chip-remove` (`detail.value`) on
+the chip, then removes the chip only if no listener called `preventDefault()`. Cancel it whenever
+the removal is the app's call: a confirm step, or chips rendered from framework state, which
+should leave the DOM when the state changes and not before. Without that, Cancel in your own
+confirm dialog leaves the data intact and the chip gone.
+
+```js
+row.addEventListener('fdy-chip-remove', async (e) => {
+  e.preventDefault();                                   // the kit leaves the chip alone
+  if (await Freeday.confirm({ title: `Remove ${e.detail.value}?`, tone: 'danger' })) {
+    removeFromState(e.detail.value);                    // your render takes it out
+  }
+});
+```
 `--tone-1`…`--tone-8` for non-semantic category colours.
 
 ## Timeline — `.fdy-timeline`

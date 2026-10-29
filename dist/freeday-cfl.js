@@ -240,5 +240,7 @@
     initTriggers();
   }
 
-  window.FreedayCfl = { init: initTriggers };
+  /* initAll is what every stack helper looks for (useFreeday in Vue and React, FreedayBlazor.initAll):
+     without it they skipped this enhancer, and raw CFL markup rendered by a framework never opened. */
+  window.FreedayCfl = { init: initTriggers, initAll: initTriggers };
 })();

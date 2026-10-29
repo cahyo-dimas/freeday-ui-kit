@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — the app owns removal, and un-hydrated hooks say so</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<script src="../../adapters/blazor/freeday-blazor.js" defer></script>
+</head>
+<body>
+  <!-- A: a chip whose removal the app wants to confirm first (CATATAN-FREEDAY §9). -->
+  <div class="fdy-chips" id="chipsA">
+    <span class="fdy-chip" data-value="ani">Ani
+      <button class="fdy-chip__remove" id="rmA" type="button" aria-label="Remove Ani">&times;</button></span>
+  </div>
+  <!-- B: nobody cancels, so the kit still removes it, as it always has. -->
+  <div class="fdy-chips" id="chipsB">
+    <span class="fdy-chip" data-value="budi">Budi
+      <button class="fdy-chip__remove" id="rmB" type="button" aria-label="Remove Budi">&times;</button></span>
+  </div>
+
+  <!-- C: an upload row whose removal the app cancels. -->
+  <div class="fdy-dropzone" id="dz" data-fdy-dropzone role="button" tabindex="0" data-filelist="#dz-list"
+       aria-label="Upload">
+    <span class="fdy-dropzone__title">Drop</span>
+    <input type="file" hidden>
+  </div>
+  <div class="fdy-filelist" id="dz-list"></div>
+
+  <!-- D: late-mounted markup, never handed to initAll (CATATAN-FREEDAY §10). -->
+  <div id="late"></div>
+
+<script>
+  window.events = [];
+  window.warnings = [];
+  const realWarn = console.warn;
+  console.warn = function (msg, el) {
+    window.warnings.push({ msg: String(msg), id: el && el.id ? el.id : null });
+    return realWarn.apply(console, arguments);
+  };
+
+  document.getElementById('chipsA').addEventListener('fdy-chip-remove', (e) => {
+    window.events.push({ kind: 'chip', value: e.detail.value, cancelable: e.cancelable });
+    e.preventDefault();
+  });
+  document.getElementById('chipsB').addEventListener('fdy-chip-remove', (e) => {
+    window.events.push({ kind: 'chip', value: e.detail.value, cancelable: e.cancelable });
+  });
+  document.getElementById('dz').addEventListener('fdy-upload-remove', (e) => {
+    window.events.push({ kind: 'upload', name: e.detail.file.name, cancelable: e.cancelable });
+    e.preventDefault();
+  });
+
+  window.dropOn = (zoneId, name, bytes) => {
+    const dt = new DataTransfer();
+    dt.items.add(new File([new Uint8Array(bytes)], name, { type: 'text/plain' }));
+    document.getElementById(zoneId).dispatchEvent(
+      new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true }));
+    return true;
+  };
+
+  /* Two forms mounted after load. Only `hydrated` is handed to initAll, which is exactly what a
+     useFreeday() ref on the wrong wrapper does to the other one. */
+  window.mountForms = () => {
+    document.getElementById('late').innerHTML =
+        '<form id="orphan" data-fdy-validate><div class="fdy-field">'
+      + '<input class="fdy-input" id="orphanIn" required aria-label="Name"></div>'
+      + '<button class="fdy-btn" id="orphanBtn" type="submit">Save</button></form>'
+      + '<form id="hydrated" data-fdy-validate><div class="fdy-field">'
+      + '<input class="fdy-input" id="hydratedIn" required aria-label="Name"></div>'
+      + '<button class="fdy-btn" id="hydratedBtn" type="submit">Save</button></form>';
+    window.FreedayForm.initAll(document.getElementById('hydrated'));
+    return true;
+  };
+
+  /* Raw CFL markup and a breakpoint label mounted after load, hydrated the way Blazor (and, by the
+     same discovery rule, useFreeday in Vue and React) hydrates: every namespace with an initAll. */
+  window.mountViaStackHelper = () => {
+    const host = document.createElement('div');
+    host.id = 'stack';
+    host.innerHTML =
+        '<div class="fdy-input-group" id="cflField" data-fdy-cfl="dlg-late" data-fdy-cfl-display="code">'
+      + '<input class="fdy-input" aria-label="Customer" readonly>'
+      + '<button class="fdy-input-group__btn" id="cflBtn" type="button" aria-haspopup="dialog" aria-label="Pick">+</button></div>'
+      + '<dialog class="fdy-modal fdy-modal--cfl" id="dlg-late" aria-label="Pick a customer">'
+      + '<div class="fdy-modal__body"><table class="fdy-table"><tbody>'
+      + '<tr class="fdy-cfl__row" data-code="C1" tabindex="0"><td>C1</td></tr>'
+      + '</tbody></table></div></dialog>'
+      + '<span id="bpLabel" data-fdy-breakpoint-label></span>';
+    document.body.appendChild(host);
+    window.FreedayBlazor.initAll(host);
+    return true;
+  };
+</script>
+</body>
+</html>

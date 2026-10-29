@@ -1,8 +1,10 @@
 /* Freeday, chip enhancer (optional, zero-dependency).
  * Two behaviours, both progressive enhancement:
  *
- * 1. Removable chips, any .fdy-chip__remove button removes its chip and emits a
- *    bubbling "fdy-chip-remove" (detail {value}).
+ * 1. Removable chips, any .fdy-chip__remove button emits a bubbling, CANCELABLE
+ *    "fdy-chip-remove" (detail {value}) and then removes its chip, unless a listener called
+ *    preventDefault(). Cancel it whenever the app owns the removal: a confirm step, or a chip
+ *    rendered from framework state, which should leave the DOM when the state does.
  * 2. Choice / filter groups, a [data-fdy-chips] container of interactive chips
  *    (.fdy-chip--choice / .fdy-chip--filter, each a <button>) toggles aria-pressed
  *    on click. Add data-single for one-at-a-time (radio-like) selection; filter
@@ -28,8 +30,12 @@
         if (rm) rm.remove();
         value = (clone.textContent || '').trim();
       }
-      chip.dispatchEvent(new CustomEvent('fdy-chip-remove', { bubbles: true, detail: { value: value } }));
-      chip.remove();
+      /* Cancelable, because the kit cannot know whether this removal needs asking first. Removing
+         unconditionally made a chip vanish while the app's own confirm dialog was still open, and
+         stay gone after Cancel, with the data intact and the screen wrong (CATATAN-FREEDAY §9). */
+      var ev = new CustomEvent('fdy-chip-remove', { bubbles: true, cancelable: true, detail: { value: value } });
+      chip.dispatchEvent(ev);
+      if (!ev.defaultPrevented) chip.remove();
     });
   }
 

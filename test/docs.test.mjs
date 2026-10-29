@@ -205,6 +205,7 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
     if (/^[a-z][a-z0-9-]*(\s*,\s*[a-z][a-z0-9-]*)+$/.test(v)) return false; // selector lists
     if (/^\d/.test(v)) return false;
     if (/^[a-z]+([A-Z][a-z0-9]*)+$/.test(v)) return false; // camelCase identifiers
+    if (/^[A-Z][a-z0-9]+([A-Z][a-z0-9]*)+$/.test(v)) return false; // PascalCase: window.Freeday* namespaces
     if (/^[a-z]{2}(-[A-Z]{2})?$/.test(v)) return false;  // locale tags
     if (/^[\w.]+[.#][\w.-]+$/.test(v)) return false;     // 'table.fdy-table'
     if (v === 'use strict') return false;
@@ -222,7 +223,10 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
     }
     /* Comments are stripped whole, not by line shape: an apostrophe inside prose ("the owner's
        business") opens a string literal for any line-based matcher. */
-    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+    /* console.warn text goes to a developer's devtools, never into the DOM, so no reader of the
+       page could be handed it to translate. Stripped like comments; `\);\s*$` ends the call. */
+    const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
+      .replace(/console\.warn\([\s\S]*?\);[ \t]*$/gm, '');
     let offset = 0;
     for (const line of code.split('\n')) {
       const at = offset;
@@ -816,4 +820,59 @@ test('the month grid rule lives in adapters/core, not once per component (#080)'
 
   assert.deepEqual(offenders, [],
     'a rule with two homes gets fixed in one of them:\n' + offenders.join('\n'));
+});
+
+/* Hydration that never happened is the one failure every stack shares, and it is silent: the markup
+ * renders, carries its hook, and does nothing (CATATAN-FREEDAY §10). Two things keep it findable.
+ *
+ * 1. src/freeday-unhydrated.js warns on the first interaction with a hook that has no ready flag.
+ *    Its table is hand-written, so an enhancer that gains a hook would be silently left out. This
+ *    reads every flag the enhancers stamp and holds the table to them, flag by flag, including
+ *    that the flag is stamped in the file of the namespace the table names, and that the file
+ *    actually queries the selector the table pairs it with.
+ * 2. The stack helpers (useFreeday in Vue and React, FreedayBlazor.initAll) find enhancers by one
+ *    test only, `typeof api.initAll === 'function'`. FreedayCfl exposed `init` alone, so raw CFL
+ *    markup inside a framework subtree was skipped by all three and never opened. */
+test('every hook flag an enhancer stamps is in the un-hydrated warning table (CATATAN §10)', () => {
+  /* Stamped on a PART reached through another hook, never a hook of their own. */
+  const PARTS = new Map([
+    ['fdyCflReady', 'the CFL <dialog>, initialised only through a [data-fdy-cfl] / [data-fdy-cfl-open] trigger'],
+    ['fdyKitBound', 'a [data-fdy-required] root inside a [data-fdy-validate] form, bound by the form'],
+    ['fdyFieldBound', 'a native control inside a [data-fdy-validate] form, bound by the form'],
+  ]);
+  const table = [...read('src/freeday-unhydrated.js').matchAll(/\['([^']+)', '(fdy\w+)', '(Freeday\w+)'\]/g)]
+    .map(m => ({ selector: m[1], flag: m[2], ns: m[3] }));
+  const offenders = [];
+  const stamped = new Set();
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f) && f !== 'freeday-unhydrated.js')) {
+    const src = read(`src/${file}`);
+    const ns = (src.match(/window\.(Freeday\w+) = \{/) || [])[1];
+    for (const m of src.matchAll(/dataset\.(fdy\w+) = '1'/g)) {
+      const flag = m[1];
+      stamped.add(flag);
+      if (PARTS.has(flag)) continue;
+      const rows = table.filter(r => r.flag === flag);
+      if (rows.length === 0) { offenders.push(`src/${file} stamps ${flag}, which the table does not list`); continue; }
+      for (const r of rows) {
+        if (r.ns !== ns) offenders.push(`${flag} is stamped in src/${file} (${ns}), the table says ${r.ns}`);
+        if (!src.includes(`'${r.selector}'`)) offenders.push(`src/${file} never queries '${r.selector}', the table pairs it with ${flag}`);
+      }
+    }
+  }
+  for (const r of table) if (!stamped.has(r.flag)) offenders.push(`the table lists ${r.flag}, which no enhancer stamps`);
+  assert.ok(table.length > 20, `parsed only ${table.length} table rows; the matcher no longer fits the file`);
+  assert.deepEqual(offenders, [], offenders.join('\n'));
+});
+
+test('every enhancer that hydrates markup exposes initAll, the one name the stack helpers look for', () => {
+  const offenders = [];
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
+    const src = read(`src/${file}`);
+    const exported = src.match(/window\.(Freeday\w+) = \{([\s\S]*?)\n  \};|window\.(Freeday\w+) = \{([^\n]*)\};/);
+    if (exported === null) continue;                        // window.Freeday (toast/confirm/busy): no markup to hydrate
+    if (!/querySelectorAll\('[^']*(data-fdy-|\.fdy-)/.test(src)) continue;   // no hook of its own (popover)
+    const body = exported[2] || exported[4];
+    if (!/\binitAll\s*:/.test(body)) offenders.push(`src/${file}: window.${exported[1] || exported[3]} has no initAll`);
+  }
+  assert.deepEqual(offenders, [], 'useFreeday() and FreedayBlazor.initAll skip these silently:\n' + offenders.join('\n'));
 });

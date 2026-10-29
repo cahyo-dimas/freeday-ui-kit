@@ -409,10 +409,19 @@
     if (bp === last) return;
     last = bp;
     root.setAttribute('data-breakpoint', bp);
-    Array.prototype.forEach.call(document.querySelectorAll('[data-fdy-breakpoint-label]'), function (el) {
+    fillLabels(document);
+    root.dispatchEvent(new CustomEvent('fdy-breakpoint-change', { bubbles: true, detail: { breakpoint: bp } }));
+  }
+
+  /* Also run over late-mounted markup by the stack helpers, which find it through initAll: a label
+     rendered after load otherwise stayed empty until the next breakpoint change. */
+  function fillLabels(context) {
+    var ctx = context || document;
+    var bp = last || current();
+    if (ctx.matches && ctx.matches('[data-fdy-breakpoint-label]')) ctx.textContent = bp;
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-breakpoint-label]'), function (el) {
       el.textContent = bp;
     });
-    root.dispatchEvent(new CustomEvent('fdy-breakpoint-change', { bubbles: true, detail: { breakpoint: bp } }));
   }
 
   window.addEventListener('resize', update, { passive: true });
@@ -423,6 +432,7 @@
   }
 
   window.FreedayBreakpoint = {
+    initAll: fillLabels,
     get: function () { return last || current(); },
     current: current,
     // true if the current breakpoint is `name` or wider (e.g. is('md') → md, lg, or xl)
@@ -1328,7 +1338,9 @@
     initTriggers();
   }
 
-  window.FreedayCfl = { init: initTriggers };
+  /* initAll is what every stack helper looks for (useFreeday in Vue and React, FreedayBlazor.initAll):
+     without it they skipped this enhancer, and raw CFL markup rendered by a framework never opened. */
+  window.FreedayCfl = { init: initTriggers, initAll: initTriggers };
 })();
 
 /* Freeday, chart renderer (optional, zero-dependency, no external chart lib).
@@ -1845,8 +1857,10 @@
 /* Freeday, chip enhancer (optional, zero-dependency).
  * Two behaviours, both progressive enhancement:
  *
- * 1. Removable chips, any .fdy-chip__remove button removes its chip and emits a
- *    bubbling "fdy-chip-remove" (detail {value}).
+ * 1. Removable chips, any .fdy-chip__remove button emits a bubbling, CANCELABLE
+ *    "fdy-chip-remove" (detail {value}) and then removes its chip, unless a listener called
+ *    preventDefault(). Cancel it whenever the app owns the removal: a confirm step, or a chip
+ *    rendered from framework state, which should leave the DOM when the state does.
  * 2. Choice / filter groups, a [data-fdy-chips] container of interactive chips
  *    (.fdy-chip--choice / .fdy-chip--filter, each a <button>) toggles aria-pressed
  *    on click. Add data-single for one-at-a-time (radio-like) selection; filter
@@ -1872,8 +1886,12 @@
         if (rm) rm.remove();
         value = (clone.textContent || '').trim();
       }
-      chip.dispatchEvent(new CustomEvent('fdy-chip-remove', { bubbles: true, detail: { value: value } }));
-      chip.remove();
+      /* Cancelable, because the kit cannot know whether this removal needs asking first. Removing
+         unconditionally made a chip vanish while the app's own confirm dialog was still open, and
+         stay gone after Cancel, with the data intact and the screen wrong (CATATAN-FREEDAY §9). */
+      var ev = new CustomEvent('fdy-chip-remove', { bubbles: true, cancelable: true, detail: { value: value } });
+      chip.dispatchEvent(ev);
+      if (!ev.defaultPrevented) chip.remove();
     });
   }
 
@@ -5465,6 +5483,83 @@
   window.FreedayTree = { init: initTree, initAll: initAll };
 })();
 
+/* Freeday, un-hydrated hook warning (optional, zero-dependency, no markup of its own).
+ * Every enhancer marks the element it took over (`data-fdy-*-ready`). Markup that no initAll()
+ * ever reached carries the hook and not the mark, and it fails in the worst way available: it
+ * renders, looks finished, and does nothing, with no error anywhere. A `data-fdy-validate` form
+ * outside the subtree handed to useFreeday() neither paints a message nor fires fdy-form-valid,
+ * so its save button reads as dead (CATATAN-FREEDAY §10). The enhancer knows the attribute is
+ * there; the person who wrote it does not.
+ *
+ * So on the first click, focus or submit inside such an element this logs ONE console.warn per
+ * element, naming the hook, with the element itself as the second argument so devtools links it.
+ * Interaction, not load, is the trigger on purpose: a framework mounts and hydrates in between,
+ * and only once a person is touching the widget is "not enhanced yet" the same as "never".
+ *
+ * HOOKS pairs each hook selector with the ready flag its enhancer stamps on THAT element and the
+ * namespace that owns it. A hook whose enhancer is not loaded is skipped: that is a different
+ * mistake, and this message would misname it. test/docs.test.mjs fails if an enhancer gains a
+ * ready flag this table does not list.
+ */
+(function () {
+  'use strict';
+
+  var HOOKS = [
+    ['[data-fdy-app]', 'fdyAppShellReady', 'FreedayAppShell'],
+    ['[data-fdy-autocomplete]', 'fdyAcReady', 'FreedayAutocomplete'],
+    ['[data-fdy-carousel]', 'fdyCarouselReady', 'FreedayCarousel'],
+    ['[data-fdy-cascade]', 'fdyCascadeReady', 'FreedayCascade'],
+    ['[data-fdy-cfl]', 'fdyCflBound', 'FreedayCfl'],
+    ['[data-fdy-cfl-open]', 'fdyCflBound', 'FreedayCfl'],
+    ['[data-fdy-chart]', 'fdyChartReady', 'FreedayChart'],
+    ['[data-fdy-chips]', 'fdyChipsReady', 'FreedayChip'],
+    ['.fdy-chip__remove', 'fdyChipRmReady', 'FreedayChip'],
+    ['[data-fdy-datepicker]', 'fdyDpReady', 'FreedayDatepicker'],
+    ['[data-fdy-daterange]', 'fdyDrReady', 'FreedayDatepicker'],
+    ['[data-fdy-datetimepicker]', 'fdyDtReady', 'FreedayDatetime'],
+    ['[data-fdy-drawer]', 'fdyDrawerBound', 'FreedayDrawer'],
+    ['.fdy-drawer', 'fdyDrawerReady', 'FreedayDrawer'],
+    ['[data-fdy-validate]', 'fdyFormReady', 'FreedayForm'],
+    ['[data-fdy-mask]', 'fdyMaskReady', 'FreedayMask'],
+    ['[data-fdy-password]', 'fdyPwReady', 'FreedayMask'],
+    ['[data-fdy-menu]', 'fdyMenuReady', 'FreedayMenu'],
+    ['[data-fdy-number]', 'fdyNumberReady', 'FreedayNumber'],
+    ['[data-fdy-rating]', 'fdyRatingReady', 'FreedayRating'],
+    ['[data-fdy-search]', 'fdySearchReady', 'FreedaySearch'],
+    ['[data-fdy-combo]', 'fdyComboReady', 'FreedayCombo'],
+    ['[data-fdy-slider]', 'fdySliderReady', 'FreedaySlider'],
+    ['[data-fdy-stepper]', 'fdyStepperReady', 'FreedayStepper'],
+    ['[data-fdy-table]', 'fdyTableReady', 'FreedayTable'],
+    ['[data-fdy-tabs]', 'fdyTabsReady', 'FreedayTabs'],
+    ['[data-fdy-timepicker]', 'fdyTpReady', 'FreedayTimepicker'],
+    ['[data-fdy-tree]', 'fdyTreeReady', 'FreedayTree'],
+    ['[data-fdy-dropzone]', 'fdyUploadReady', 'FreedayUpload']
+  ];
+
+  var warned = typeof WeakSet === 'function' ? new WeakSet() : null;
+
+  function check(e) {
+    if (!warned || !e.target || !e.target.closest) return;
+    for (var i = 0; i < HOOKS.length; i++) {
+      var hook = HOOKS[i];
+      if (!window[hook[2]]) continue;
+      var el = e.target.closest(hook[0]);
+      if (!el || el.dataset[hook[1]] === '1' || warned.has(el)) continue;
+      warned.add(el);
+      console.warn('Freeday: this ' + hook[0] + ' was never enhanced, so it does nothing. Either it is '
+        + 'outside every initAll() scope (Vue/React: inside the element given to useFreeday(); Blazor: '
+        + 'FreedayBlazor.initAll after render; anything else: ' + hook[2] + '.initAll(el) once it is in '
+        + 'the DOM), or its markup lacks a part the enhancer needs (see COMPONENTS.md).', el);
+    }
+  }
+
+  ['click', 'focusin', 'submit'].forEach(function (type) {
+    document.addEventListener(type, check, true);
+  });
+
+  window.FreedayUnhydrated = { hooks: HOOKS };
+})();
+
 /* Freeday, file-upload enhancer (optional, zero-dependency).
  * A drop target that also opens the file dialog on click / Enter / Space, validates each file
  * (accept + max size), and renders a per-file row with explicit state. Actual upload is the
@@ -5485,7 +5580,8 @@
  * Emits bubbling CustomEvents. BOTH on the dropzone element, which is the one target a consumer
  * needs to listen on:
  *   "fdy-upload-add"    {file, rejected, reason, row}
- *   "fdy-upload-remove" {file}
+ *   "fdy-upload-remove" {file}, cancelable: preventDefault() keeps the row (e.g. to confirm
+ *                       removing a file the server already holds, then call row.el.remove())
  * `row` is the state machine over the rendered .fdy-file:
  *   .ready() (rest, where a dropped file starts) / .uploading() / .setProgress(pct) /
  *   .waiting(label) (sent, awaiting the server) / .done() / .fail(msg) / .el
@@ -5578,8 +5674,9 @@
          Firing on both would look safer, but it makes the pair asymmetric, one `add` and, for
          anyone delegating on a common ancestor, two `remove`s, which is its own silent bug. It
          also fixes the listless case: a row that was never attached bubbles to nothing at all. */
-      zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
-      el.remove();
+      var ev = new CustomEvent('fdy-upload-remove', { bubbles: true, cancelable: true, detail: { file: file } });
+      zone.dispatchEvent(ev);
+      if (!ev.defaultPrevented) el.remove();
     });
     el.appendChild(icon);
     el.appendChild(meta);

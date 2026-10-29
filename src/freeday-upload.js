@@ -18,7 +18,8 @@
  * Emits bubbling CustomEvents. BOTH on the dropzone element, which is the one target a consumer
  * needs to listen on:
  *   "fdy-upload-add"    {file, rejected, reason, row}
- *   "fdy-upload-remove" {file}
+ *   "fdy-upload-remove" {file}, cancelable: preventDefault() keeps the row (e.g. to confirm
+ *                       removing a file the server already holds, then call row.el.remove())
  * `row` is the state machine over the rendered .fdy-file:
  *   .ready() (rest, where a dropped file starts) / .uploading() / .setProgress(pct) /
  *   .waiting(label) (sent, awaiting the server) / .done() / .fail(msg) / .el
@@ -111,8 +112,9 @@
          Firing on both would look safer, but it makes the pair asymmetric, one `add` and, for
          anyone delegating on a common ancestor, two `remove`s, which is its own silent bug. It
          also fixes the listless case: a row that was never attached bubbles to nothing at all. */
-      zone.dispatchEvent(new CustomEvent('fdy-upload-remove', { bubbles: true, detail: { file: file } }));
-      el.remove();
+      var ev = new CustomEvent('fdy-upload-remove', { bubbles: true, cancelable: true, detail: { file: file } });
+      zone.dispatchEvent(ev);
+      if (!ev.defaultPrevented) el.remove();
     });
     el.appendChild(icon);
     el.appendChild(meta);

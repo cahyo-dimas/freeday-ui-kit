@@ -229,4 +229,5 @@ Order of work that avoids a half-migrated mess:
 - Keyboard: Tab reaches every control, focus is always visible, Esc closes overlays.
 - Form errors carry `aria-invalid` + a linked message; icon-only buttons have `aria-label`.
 - The interactive components on the screen have their enhancer loaded, and SPA-rendered DOM is
-  re-hydrated.
+  re-hydrated. Click each one once with devtools open: a `Freeday: this [data-fdy-…] was never
+  enhanced` warning means it sits outside every `initAll()` scope.

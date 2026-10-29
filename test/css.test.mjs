@@ -828,3 +828,30 @@ test('reduced motion neutralises every transition, not a hand-kept list', () => 
         + 'dan sebagai `!important` pada `*` ia juga mengalahkan perlakuan bernuansa kit sendiri.');
   }
 });
+
+/* `--danger` is the tone word across the kit (btn, alert, badge, toast); `--error` the field state.
+ * Help text is where an author reaches for either, and a guessed `fdy-help--danger` that matched
+ * nothing rendered a warning in plain grey, silently (CATATAN-FREEDAY §11). The alias must be the
+ * SAME rule, or one of the two drifts the day someone retunes the other. */
+test('fdy-help--danger is the same rule as fdy-help--error', () => {
+  const rule = [...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^}]*)\}/g)].find(m => m[1].split(',').map(s => s.trim()).includes('.fdy-help--error'));
+  assert.ok(rule, 'no rule selects .fdy-help--error');
+  assert.ok(rule[1].split(',').map(s => s.trim()).includes('.fdy-help--danger'),
+    `.fdy-help--danger is not in the .fdy-help--error rule: "${rule[1].trim()}"`);
+});
+
+/* COMPONENTS.md promises that a plain <ul>/<ol> keeps native bullets and indent, which holds only
+ * because nothing in the kit resets a list it does not own (CATATAN-FREEDAY §12). A global reset
+ * would break every app relying on that promise without one failing test anywhere, so this is it. */
+test('no unscoped rule resets ul / ol / li', () => {
+  const bare = /^(?::where\(|:is\()?\s*(ul|ol|li|menu)\b/;
+  const offenders = [];
+  for (const [label, src] of [['base.css', base], ['freeday.css', css]]) {
+    const flat = src.replace(/\/\*[\s\S]*?\*\//g, '');
+    for (const m of flat.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+      if (!/list-style|padding|margin/.test(m[2])) continue;
+      for (const sel of m[1].split(',').map(s => s.trim())) if (bare.test(sel)) offenders.push(`${label}: ${sel}`);
+    }
+  }
+  assert.deepEqual(offenders, [], 'these strip lists the app wrote:\n' + offenders.join('\n'));
+});

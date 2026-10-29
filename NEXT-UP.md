@@ -66,15 +66,15 @@ Folder itu **tidak pernah** jadi catatan status. Yang jadi catatan status ini:
 jadi pertanyaan "sudah dikerjakan belum" dijawab satu perintah, bukan ingatan:
 
 ```bash
-awk '/^## \[/{v=$2} match($0,/#0[0-9][0-9]/){print substr($0,RSTART,4)" -> "v}' CHANGELOG.md | sort -u
+awk '/^## \[/{v=$2} match($0,/#[01][0-9][0-9]([^0-9a-fA-F]|$)/){print substr($0,RSTART,4)" -> "v}' CHANGELOG.md | sort -u
 ```
 
-Per 3.9.0 itu mencetak `#005` sampai `#086`. Keduapuluh tiga berkas bernomor yang ada di folder
+Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga digit sampai `#199` dan menolak warna hex: pola lama berhenti di `#099`, dan membaca `#0078d4` serta `#06233f` sebagai catatan `#007` dan `#062`. Keduapuluh tiga berkas bernomor yang ada di folder
 (`46` sampai `71`) semuanya muncul di sana, jadi semuanya sudah dikerjakan. Nomor yang tidak muncul
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §13 menyusul 2026-10-29):
 
 | § | pokok | status |
 |---|---|---|
@@ -86,6 +86,11 @@ dan tidak punya berkas tidak pernah ada.
 | 6 | preset `teal` terlalu terang di tema terang | terkirim 3.7.0 `#073` |
 | 7 | tidak ada varian tab tegak | terkirim 3.8.0 `#077` |
 | 8 | tidak ada pemilih bulan | terkirim 3.8.0 `#076`, dibentuk ulang jadi `FdyMonthpicker` 3.9.0 `#086` |
+| 9 | enhancer chip menghapus chip-nya sendiri, padahal app punya alur konfirmasi | terkirim 3.13.0 `#098`; `fdy-upload-remove` ikut dapat dibatalkan |
+| 10 | `useFreeday()` yang salah cakupan gagal tanpa suara | terkirim 3.13.0 `#099` untuk SETIAP hook, bukan hanya form; audit kelasnya menemukan `FreedayCfl` dan `FreedayBreakpoint` tanpa `initAll` |
+| 11 | `--danger` di tombol dan alert, `--error` di teks bantuan | terkirim 3.13.0 `#100`, alias untuk `.fdy-help` saja; kontrol form sengaja tidak, sebab `aria-invalid` yang menggerakkannya |
+| 12 | tak ada daftar berbutir sederhana | terkirim 3.13.0 `#101` sebagai janji tertulis plus uji; `.fdy-list-bullet` tidak dibuat |
+| 13 | `required` pada `FdyCombo` | sudah terkirim 3.12.0 `#096`, sebelum catatannya ditulis; sisanya adopsi di sisi app |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

@@ -26,10 +26,19 @@
     if (bp === last) return;
     last = bp;
     root.setAttribute('data-breakpoint', bp);
-    Array.prototype.forEach.call(document.querySelectorAll('[data-fdy-breakpoint-label]'), function (el) {
+    fillLabels(document);
+    root.dispatchEvent(new CustomEvent('fdy-breakpoint-change', { bubbles: true, detail: { breakpoint: bp } }));
+  }
+
+  /* Also run over late-mounted markup by the stack helpers, which find it through initAll: a label
+     rendered after load otherwise stayed empty until the next breakpoint change. */
+  function fillLabels(context) {
+    var ctx = context || document;
+    var bp = last || current();
+    if (ctx.matches && ctx.matches('[data-fdy-breakpoint-label]')) ctx.textContent = bp;
+    Array.prototype.forEach.call(ctx.querySelectorAll('[data-fdy-breakpoint-label]'), function (el) {
       el.textContent = bp;
     });
-    root.dispatchEvent(new CustomEvent('fdy-breakpoint-change', { bubbles: true, detail: { breakpoint: bp } }));
   }
 
   window.addEventListener('resize', update, { passive: true });
@@ -40,6 +49,7 @@
   }
 
   window.FreedayBreakpoint = {
+    initAll: fillLabels,
     get: function () { return last || current(); },
     current: current,
     // true if the current breakpoint is `name` or wider (e.g. is('md') → md, lg, or xl)

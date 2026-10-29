@@ -9,6 +9,67 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.13.0] - 2026-10-29
+
+**Kit berhenti memutuskan hal yang bukan urusannya, dan markup yang tak pernah dihidrasi kini
+bersuara.** Lima butir dari `CATATAN-FREEDAY.md` app ronda (§9 sampai §13), dikerjakan dalam satu
+rilis. Tiga di antaranya gagal tanpa galat apa pun: chip yang hilang sesudah Batal, tombol simpan
+yang mati, dan kelas yang tak cocok dengan aturan mana pun.
+
+### Changed
+- **`fdy-chip-remove` dan `fdy-upload-remove` kini dapat dibatalkan** (`#098`). Begitu
+  `.fdy-chip__remove` ditekan, enhancer chip langsung menghapus chip-nya, padahal kit tak tahu
+  apakah penghapusan itu perlu ditanyakan dulu. Matriks pola rotasi di app ronda memakai chip
+  sebagai tampilan dan punya dialog konfirmasi sendiri. Chip-nya hilang ketika dialog masih
+  terbuka, dan tetap hilang sesudah **Batal** ditekan. Datanya utuh, layarnya yang salah. Sekarang
+  event-nya `cancelable`, dan elemennya baru dihapus kalau tak ada listener yang memanggil
+  `preventDefault()`. Perubahan ini aditif: app yang tidak membatalkan mendapat perilaku yang persis
+  sama. Baris upload ikut diubah karena bentuknya sama, dan berkas yang sudah dipegang server
+  memang layak ditanyakan dulu sebelum dibuang.
+
+### Added
+- **Peringatan konsol untuk hook yang tak pernah dihidrasi** (`#099`): `src/freeday-unhydrated.js`,
+  sudah termasuk di import akar. Klik, fokus atau submit pertama di dalam elemen ber-hook yang tak
+  punya penanda siap mencetak satu `console.warn` per elemen. Pesannya menyebut hook-nya, dan
+  elemennya ikut sebagai argumen kedua supaya devtools menautkannya. Pemicunya §10: `useFreeday()`
+  yang dipasang di pembungkus yang salah membuat `data-fdy-validate` di luar pembungkus itu diam
+  total, tanpa kalimat validasi dan tanpa `fdy-form-valid`. Yang memberi tahu cuma dua uji e2e yang
+  merah. Catatannya meminta peringatan ini untuk form, tetapi kegagalannya berlaku untuk setiap
+  hook, jadi tabelnya memuat 29 hook dari 24 enhancer. Peringatan dipicu interaksi, bukan saat
+  halaman dimuat, karena framework me-mount dan menghidrasi di antara keduanya.
+- **`fdy-help--danger`** (`#100`), alias `fdy-help--error` di dalam aturan yang sama. Kit memakai
+  `--danger` sebagai kata nada di mana-mana (tombol, alert, lencana, toast), sehingga app menebak
+  `fdy-help--danger`. Kelas itu tak cocok dengan aturan apa pun, dan kalimat peringatannya tampil
+  abu-abu. Kontrol form sengaja tidak diberi alias. Keadaannya digerakkan `aria-invalid`, jadi
+  `--error` di sana jarang ditulis tangan. Aturan penamaannya kini tertulis di COMPONENTS.md.
+
+### Fixed
+- **`FreedayCfl` dan `FreedayBreakpoint` tak punya `initAll`** (`#099`), padahal hanya nama itu
+  yang dicari ketiga helper stack (`useFreeday` di Vue dan React, `FreedayBlazor.initAll`). Markup
+  CFL mentah di dalam subtree framework dilewati ketiganya dan dialognya tak pernah terbuka. Label
+  breakpoint yang di-mount belakangan tetap kosong sampai breakpoint berganti. Tak ada yang
+  melaporkan ini; keduanya ketemu saat mengaudit kelas cacat §10.
+
+### Docs
+- **`<ul>` polos adalah daftar berbutir yang didukung** (`#101`). `base.css` memang tak pernah
+  mereset daftar. Sekarang COMPONENTS.md menjanjikannya, dan sebuah uji menjaga janji itu.
+- §13 (`required` di `FdyCombo`) sudah terkirim di 3.12.0 (`#096`). Tak ada kode baru; app tinggal
+  memakainya.
+
+### Gerbang
+- `docs.test.mjs`: setiap penanda siap yang dicap enhancer wajib ada di tabel peringatan, dicap di
+  berkas milik namespace yang disebut tabel, dan berkas itu wajib benar-benar meng-query selektor
+  pasangannya. Setiap enhancer yang menghidrasi markup wajib mengekspos `initAll`. Penjaga string
+  kini melewati teks `console.warn` (untuk devtools, tak pernah masuk DOM) dan identifier
+  PascalCase.
+- `css.test.mjs`: `fdy-help--danger` harus satu aturan dengan `--error`, dan tak boleh ada aturan
+  tanpa cakupan yang mereset `ul`/`ol`/`li`.
+- `browser/app-owned.mjs`, dengan mouse asli: chip dan baris upload yang dibatalkan tetap di
+  tempatnya, form yatim memperingatkan sekali sementara form yang terhidrasi diam, dan CFL serta
+  label breakpoint yang di-mount belakangan terhidrasi lewat `FreedayBlazor.initAll`.
+- Tiga belas mutasi diverifikasi merah sebelum dipulihkan: enam pada perilaku, lima pada tabel dan
+  ekspor, dua pada CSS.
+
 ## [3.12.1] - 2026-10-27
 
 **Modal dan drawer kembali beranimasi di bawah Safari 17.4, termasuk di iPhone 7 pemiliknya.**

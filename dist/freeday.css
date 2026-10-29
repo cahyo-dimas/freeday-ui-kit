@@ -1519,7 +1519,8 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    remember to mark aria-hidden, and it cannot be forgotten. */
 .fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
-.fdy-help--error{color:var(--color-danger);}
+/* --danger is the tone word everywhere else in the kit; help text takes either (CATATAN-FREEDAY §11). */
+.fdy-help--error,.fdy-help--danger{color:var(--color-danger);}
 
 /* Freeday. Keyboard key */
 .fdy-kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.5rem;padding:0 var(--space-2);font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-text);background:var(--color-surface-2);border:var(--bw) solid var(--color-border-strong);border-bottom-width:2px;border-radius:var(--radius-sm);}

@@ -56,4 +56,5 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    remember to mark aria-hidden, and it cannot be forgotten. */
 .fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}
 .fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
-.fdy-help--error{color:var(--color-danger);}
+/* --danger is the tone word everywhere else in the kit; help text takes either (CATATAN-FREEDAY §11). */
+.fdy-help--error,.fdy-help--danger{color:var(--color-danger);}
