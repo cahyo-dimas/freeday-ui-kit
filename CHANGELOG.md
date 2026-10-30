@@ -9,6 +9,31 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.14.2] - 2026-10-30
+
+**`useFreeday(ref)` dengan ref yang masih kosong kini bersuara.** Ref yang lupa dipasang di template
+membuat adapter memindai seluruh dokumen tanpa tanda apa pun. Hasilnya bekerja, hanya lebih luas
+dari yang diminta, dan markup lain di halaman diam-diam ikut bergantung padanya sampai hari ref itu
+dipasang (`CATATAN-FREEDAY.md` §17). Kebalikan dari cakupan yang terlalu sempit di 3.13.0 `#099`.
+
+### Added
+- **Vue dan React: satu `console.warn` per komponen ketika ref yang diberikan ke `useFreeday` masih
+  `null` saat mount** (`#105`). Di Vue diperiksa di `onMounted`, di React sesudah commit pertama;
+  pembaruan sesudahnya tidak mengulangnya. Pesannya menyebut dua penyebab (ref tak terpasang, atau
+  terpasang di elemen di balik `v-if`/kondisi) dan dua jalan keluarnya (pasang di elemen yang selalu
+  dirender, atau `useFreeday()` tanpa argumen bila seluruh dokumen memang yang dimaksud).
+
+### Catatan
+- **Yang dipindai tidak berubah.** Ref kosong tetap jatuh ke seluruh dokumen. Adapter tidak dapat
+  membedakan ref yang lupa dari ref yang sekadar terlambat, dan mempersempitnya sekarang akan
+  mematikan dengan diam markup yang hari ini hanya hidup karena pemindaian itu, persis kelas cacat
+  `#099`. Peringatan ini memberi aplikasi waktu untuk membereskannya lebih dulu.
+- Peringatan dinyalakan di setiap build, bukan hanya mode dev, sama seperti
+  `freeday-unhydrated.js`: kit tidak punya bendera build, dan peringatan ini hanya muncul pada kode
+  yang memang keliru.
+- Blazor tidak dicakup: `ElementReference` adalah struct, bukan ref yang dapat `null`, dan apa yang
+  sampai ke `FreedayBlazor.initAll` dari `@ref` yang lupa ditangkap belum diukur.
+
 ## [3.14.1] - 2026-10-30
 
 **Badan `FdyModal` kembali setinggi isinya di iPhone.** Di iPhone 7 sungguhan (iOS 15), setiap modal

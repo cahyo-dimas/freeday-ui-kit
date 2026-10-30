@@ -14,10 +14,16 @@
  * well as descendants, so both shapes work. (Before 1.23.0 only the wrapping shape did, and
  * the other failed silently: querySelectorAll never matches its root.)
  *
+ * A ref that is still null after the first commit is a mistake, and an unusually quiet one: the
+ * call falls back to the whole document, so everything works, only wider than asked, and other code
+ * on the page can come to depend on that scan without knowing it. It warns once, after the first
+ * commit. Pass no argument, useFreeday(), when the whole document is what you mean; and put the ref
+ * on an element that is always rendered, not one behind a condition.
+ *
  * Events are native bubbling CustomEvents, add listeners on the root (they
  * bubble) and read event.detail. See index.d.ts for the detail types.
  */
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 
 // Discover Freeday enhancer namespaces once (all registered by the time an app
 // mounts, since `import 'freeday'` runs first). Each exposes initAll(el?).
@@ -36,7 +42,13 @@ function freedayApis() {
   return _apis;
 }
 
+var EMPTY_REF = 'Freeday: useFreeday(ref) got a ref that is still null after the first commit, so it hydrated '
+  + 'the whole document instead of one subtree. Either ref={...} is missing from the JSX, or it sits on an '
+  + 'element that is not rendered yet (a condition). Put the ref on an element that is always rendered, or '
+  + 'call useFreeday() with no argument if the whole document is what you mean.';
+
 export function useFreeday(rootRef) {
+  var checked = useRef(false);
   var rehydrate = useCallback(function () {
     var el = rootRef && rootRef.current ? rootRef.current : undefined;
     var apis = freedayApis();
@@ -44,6 +56,12 @@ export function useFreeday(rootRef) {
   }, [rootRef]);
   // No dependency array: runs after every commit (mount + updates), mirroring
   // the Vue adapter's onMounted + onUpdated.
-  useEffect(rehydrate);
+  useEffect(function () {
+    if (!checked.current) {
+      checked.current = true;
+      if (rootRef && !rootRef.current) console.warn(EMPTY_REF);
+    }
+    rehydrate();
+  });
   return { rehydrate: rehydrate };
 }

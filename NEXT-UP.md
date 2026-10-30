@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 2026-10-30):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30):
 
 | § | pokok | status |
 |---|---|---|
@@ -94,6 +94,7 @@ dan tidak punya berkas tidak pernah ada.
 | 14 | tak ada cara menyatakan markup sengaja mentah | terkirim 3.14.0 `#102` sebagai `data-fdy-ignore` (bukan `data-fdy-raw`, yang di kit berarti kebalikannya); auditnya menemukan `FdyDrawer` Vue/React yang tertutup lewat backdrop walau `dismissible=false`. Angka 9 menit di catatan itu bukan ongkos pemindaian (1,1 ms per rehydrate pada bentuk yang sama); **belum terverifikasi** dugaan bahwa itu uji yang menunggu sampai timeout sebelum 3.13.0 |
 | 15 | tak ada pengurutan daftar lewat seret | terkirim 3.14.0 `#103` sebagai `data-fdy-sortable`, dengan jalur papan ketik; gulir otomatis di tepi halaman dan pindah antar-daftar sengaja tidak dibuat, tunggu layar yang membutuhkannya |
 | 16 | badan `FdyModal` selarik di Safari iOS, semua modal | terkirim 3.14.1 `#104`: basis `flex:1` (0%) di kontainer bertinggi tak tentu, dibaca 0 oleh WebKit lama, diganti `1 1 auto`; ditambah `100dvh` di tiga tempat. Mekanismenya direproduksi di Chrome dengan basis `0px`; **belum terverifikasi di perangkat** bahwa Safari 15 membaca 0% sebagai 0. Konfirmasinya dari iPhone 7 pemilik sesudah app naik versi |
+| 17 | `useFreeday(ref)` dengan ref kosong memindai seluruh dokumen tanpa suara | terkirim 3.14.2 `#105` sebagai peringatan sekali per komponen di Vue dan React; yang dipindai sengaja tidak diubah, sebab mempersempitnya mematikan markup yang hari ini bergantung pada pemindaian itu. Penyempitan baru layak dibahas di rilis minor sesudah konsumen membereskan peringatannya |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

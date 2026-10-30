@@ -52,6 +52,11 @@ live docs.
    never enhanced logs one `console.warn` naming it, with the element attached. The usual cause is
    a `useFreeday()` ref on a wrapper that does not contain it. `freeday-unhydrated.js` does this,
    and it ships in the root import.
+   **A `useFreeday(ref)` whose ref is still null at mount says so too.** That is a ref left off the
+   template, or one on an element behind `v-if` / a condition, and the call falls back to the whole
+   document: everything works, wider than asked, and other markup on the page can come to rely on
+   that scan unnoticed. It logs one `console.warn` per component. Put the ref on an element that is
+   always rendered, or write `useFreeday()` with no argument when the document is what you mean.
    **`data-fdy-ignore` says "not yours".** On an element or any ancestor, every enhancer skips that
    subtree, even under an explicit `initAll(document)`, and the warning above stays quiet. Use it
    where the app drives kit-styled markup itself, such as a chip matrix with its own removal flow.

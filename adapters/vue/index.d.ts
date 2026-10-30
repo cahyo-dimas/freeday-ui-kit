@@ -8,7 +8,8 @@ export interface UseFreedayReturn {
 /**
  * Auto-initialise Freeday enhancers over a component's subtree on mount and
  * after every update. Pass a template ref to scope the work; omit it to scan
- * the whole document.
+ * the whole document. A ref that is still null at mount also scans the whole
+ * document, and warns once: bind it to an always-rendered element, or omit it.
  */
 export declare function useFreeday(rootRef?: Ref<HTMLElement | null>): UseFreedayReturn;
 

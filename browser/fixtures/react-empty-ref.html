@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: react useFreeday with a bound ref, a ref never bound, and no argument</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js"></script>
+<script>
+  window.warnings = [];
+  const realWarn = console.warn;
+  console.warn = function (msg) {
+    if (String(msg).indexOf('useFreeday') !== -1) window.warnings.push(String(msg));
+    return realWarn.apply(console, arguments);
+  };
+</script>
+<script src="../.build/react-empty-ref.js"></script>
