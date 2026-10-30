@@ -855,3 +855,48 @@ test('no unscoped rule resets ul / ol / li', () => {
   }
   assert.deepEqual(offenders, [], 'these strip lists the app wrote:\n' + offenders.join('\n'));
 });
+
+/* A scrolling flex item with a zero or percentage basis collapses wherever that basis is read as 0.
+ * `flex:1` is `1 1 0%`; inside a column container that has only a max-height, the percentage
+ * resolves against an indefinite height, which current engines read as `content` and older WebKit
+ * read as 0. Every FdyModal on an iPhone 7 showed a 40px body with its form overflowing inside it
+ * (CATATAN-FREEDAY §16). So a rule that makes a scroll region (min-height:0 + overflow) out of a
+ * flex item must use an `auto` basis, unless its container has a definite height, listed here. */
+test('a scrolling flex item never takes a zero or percentage basis it could collapse on', () => {
+  const DEFINITE = new Map([
+    ['.fdy-drawer__body', '.fdy-drawer has height:100vh/100dvh, so its basis resolves against a definite height'],
+    ['.fdy-nav', 'lives in .fdy-app__sidebar (height:100vh/100dvh) or a drawer, both definite'],
+  ]);
+  const flat = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const offenders = [];
+  for (const m of flat.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    const body = m[2];
+    if (!/min-height:0\b/.test(body) || !/overflow(-y)?:(auto|scroll)/.test(body)) continue;
+    const flex = (body.match(/(?:^|;)flex:([^;]+)/) || [])[1];
+    const basis = (body.match(/flex-basis:([^;]+)/) || [])[1];
+    const zeroish = (flex !== undefined && /^\s*\d+(\s+\d+)?\s*$/.test(flex)) || (flex !== undefined && /\s(0|0%|[\d.]+%)\s*$/.test(flex))
+      || (basis !== undefined && /^(0|[\d.]+%)/.test(basis.trim()));
+    if (!zeroish) continue;
+    for (const sel of m[1].split(',').map(s => s.trim())) if (!DEFINITE.has(sel)) offenders.push(`${sel} { flex:${flex ?? ''} flex-basis:${basis ?? ''} }`);
+  }
+  assert.deepEqual(offenders, [], 'give these an auto basis (`flex:1 1 auto`), or list the definite container:\n' + offenders.join('\n'));
+});
+
+/* 100vh on iOS Safari is the large viewport, measured as if the toolbar were gone, so a dialog or a
+ * panel sized by it runs under the toolbar. Each height-bearing 100vh is followed by a 100dvh in the
+ * same rule; an engine without dvh keeps the first. Exempt: a page minimum, where dvh would make the
+ * page jump every time the toolbar collapses. */
+test('every 100vh that sizes a box has a 100dvh after it', () => {
+  const EXEMPT = new Map([['.fdy-app', 'min-height of the page itself; dvh would resize the page as the toolbar moves']]);
+  const flat = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  const offenders = [];
+  for (const m of flat.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    for (const d of m[2].matchAll(/((?:max-|min-)?height):([^;]*100vh[^;]*)/g)) {
+      const prop = d[1];
+      const partner = new RegExp(`${prop}:[^;]*100dvh`).test(m[2].slice(d.index));
+      const sel = m[1].trim();
+      if (!partner && !EXEMPT.has(sel)) offenders.push(`${sel} { ${prop}:${d[2]} }`);
+    }
+  }
+  assert.deepEqual(offenders, [], offenders.join('\n'));
+});

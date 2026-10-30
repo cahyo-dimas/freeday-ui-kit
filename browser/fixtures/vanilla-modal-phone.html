@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freeday — modal body on a phone (CATATAN-FREEDAY §16)</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <!-- The "Tambah security" shape: a validated form, three fields and a closing help line. -->
+  <dialog class="fdy-modal" id="short" aria-labelledby="short-t">
+    <div class="fdy-modal__header"><h3 class="fdy-modal__title" id="short-t">Tambah security</h3>
+      <button class="fdy-modal__close" type="button" aria-label="Tutup" data-close>&times;</button></div>
+    <div class="fdy-modal__body">
+      <form data-fdy-validate style="display:flex;flex-direction:column;gap:var(--space-4)">
+        <div class="fdy-field"><label class="fdy-label" for="s1">Nama</label><input class="fdy-input" id="s1" required></div>
+        <div class="fdy-field"><label class="fdy-label" for="s2">Kode</label><input class="fdy-input" id="s2"></div>
+        <div class="fdy-field"><label class="fdy-label" for="s3">Nomor HP</label><input class="fdy-input" id="s3"></div>
+        <p class="fdy-help" id="short-last">Menjadi username-nya: sec-&lt;kode&gt;. PIN dibuat otomatis dan tampil sekali.</p>
+      </form>
+    </div>
+    <div class="fdy-modal__footer"><button class="fdy-btn fdy-btn--ghost" type="button">Batal</button><button class="fdy-btn" type="button">Simpan</button></div>
+  </dialog>
+
+  <!-- Taller than an iPhone 7: the dialog must stop at its max-height and the body must scroll. -->
+  <dialog class="fdy-modal" id="long" aria-labelledby="long-t">
+    <div class="fdy-modal__header"><h3 class="fdy-modal__title" id="long-t">Catat pembayaran</h3>
+      <button class="fdy-modal__close" type="button" aria-label="Tutup" data-close>&times;</button></div>
+    <div class="fdy-modal__body">
+      <div class="fdy-field"><label class="fdy-label" for="f1">Kolom 1</label><input class="fdy-input" id="f1"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f2">Kolom 2</label><input class="fdy-input" id="f2"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f3">Kolom 3</label><input class="fdy-input" id="f3"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f4">Kolom 4</label><input class="fdy-input" id="f4"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f5">Kolom 5</label><input class="fdy-input" id="f5"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f6">Kolom 6</label><input class="fdy-input" id="f6"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f7">Kolom 7</label><input class="fdy-input" id="f7"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f8">Kolom 8</label><input class="fdy-input" id="f8"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f9">Kolom 9</label><input class="fdy-input" id="f9"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f10">Kolom 10</label><input class="fdy-input" id="f10"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f11">Kolom 11</label><input class="fdy-input" id="f11"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f12">Kolom 12</label><input class="fdy-input" id="f12"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f13">Kolom 13</label><input class="fdy-input" id="f13"></div>
+      <div class="fdy-field"><label class="fdy-label" for="f14">Kolom 14</label><input class="fdy-input" id="f14"></div>
+    </div>
+    <div class="fdy-modal__footer"><button class="fdy-btn" type="button">Simpan</button></div>
+  </dialog>
+<script>
+  /* One number per part, read the same way by the Chrome spec and the WebKit one. */
+  window.measureModal = (id) => {
+    const d = document.getElementById(id);
+    if (!d.open) d.showModal();
+    const r = (el) => el.getBoundingClientRect();
+    const body = d.querySelector('.fdy-modal__body');
+    const footer = d.querySelector('.fdy-modal__footer');
+    return {
+      dialogTop: r(d).top, dialogBottom: r(d).bottom, dialogHeight: r(d).height,
+      bodyClient: body.clientHeight, bodyScroll: body.scrollHeight,
+      footerBottom: r(footer).bottom, viewport: window.innerHeight,
+      basis: getComputedStyle(body).flexBasis,
+    };
+  };
+</script>
+</body>
+</html>

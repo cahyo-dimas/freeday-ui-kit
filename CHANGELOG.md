@@ -9,6 +9,47 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.14.1] - 2026-10-30
+
+**Badan `FdyModal` kembali setinggi isinya di iPhone.** Di iPhone 7 sungguhan (iOS 15), setiap modal
+menampilkan kepala dan kaki dengan badan tinggal selarik, tergulir sampai dasar, dan formulirnya
+tak terlihat. "Tambah security" dan "Tulis info" di app ronda tak dapat dipakai sama sekali dari HP
+(`CATATAN-FREEDAY.md` §16).
+
+### Fixed
+- **`.fdy-modal__body` memakai `flex:1 1 auto`, bukan `flex:1`** (`#104`). Basis shorthand itu 0%,
+  dan `.fdy-modal` hanya punya `max-height`, sehingga persentasenya diresolusikan terhadap tinggi
+  yang tak tentu. Mesin terkini membacanya sebagai `content`, sedangkan WebKit lama membacanya
+  sebagai 0: dialog setinggi kepala ditambah kaki, dan badan tinggal padding 40px dengan
+  formulirnya meluap di dalamnya. Basis `0px` mereproduksinya di Chrome sampai ke pikselnya (badan
+  39,7px untuk isi 358px), dan `auto` menghasilkan tata letak yang identik dengan sebelumnya di mesin
+  terkini (dialog 498,7px, badan 355,7px, di kedua bacaan). Mekanismenya terukur. Bahwa Safari 15
+  memang membaca 0% sebagai 0 disimpulkan dari gejalanya dan belum diukur di perangkat, sebab tak
+  ada WebKit setua itu yang dapat dijalankan di sini.
+- **`100vh` diikuti `100dvh`** di `max-height` modal, tinggi drawer, dan tinggi sidebar sticky
+  (`#104`). Di Safari iOS `100vh` adalah viewport besar, seolah bilah alat tak ada, jadi kotak yang
+  diukur dengannya berjalan ke bawah bilah itu. Sidebar overlay sudah memakai `100dvh` sejak lama;
+  tiga tempat ini tertinggal. Mesin tanpa `dvh` memakai nilai pertama.
+
+### Catatan
+- Dugaan di catatan app, bahwa `100vh` penyebab utamanya, tidak cocok dengan gejalanya: `100vh` yang
+  kebesaran membuat dialog terlalu tinggi, bukan badannya terlalu pendek. Tetap diperbaiki karena
+  ia cacat tersendiri.
+- Drawer dan nav sidebar memakai pola `flex:1` yang sama tetapi tidak terkena, sebab kontainernya
+  punya tinggi pasti.
+
+### Gerbang
+- `css.test.mjs`: item flex yang menjadi wilayah gulir (`min-height:0` + `overflow`) tak boleh
+  memakai basis nol atau persen, kecuali kontainernya bertinggi pasti dan tercatat. Setiap `100vh`
+  yang mengukur kotak wajib diikuti `100dvh`, kecuali tinggi minimum halaman.
+- `browser/modal-phone.mjs` di 375×667: badan modal pendek setinggi isinya, modal panjang berhenti
+  di `max-height` dengan kaki tetap di layar, dan basis terkomputasi `auto`. Dengan basis `0px`
+  uji ini merah dengan "40px shown of 358px", angka yang sama dengan di iPhone.
+- `webkit/modal-phone.spec.mjs`: tata letak yang sama di WebKit dengan deskriptor iPhone 7 di CI. WebKit
+  Playwright adalah mesin terkini yang membaca 0% dengan benar, jadi berkas ini menjaga hasilnya,
+  bukan penyebabnya; penyebabnya dijaga dua gerbang di atas.
+- Empat mutasi diverifikasi merah.
+
 ## [3.14.0] - 2026-10-29
 
 **Daftar terurut lewat seret dan papan ketik, dan satu atribut untuk berkata "ini bukan urusan

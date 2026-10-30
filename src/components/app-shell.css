@@ -6,7 +6,8 @@
  * > (.fdy-app__topbar, .fdy-app__main)). The __content wrapper gives the sticky
  * topbar a tall containing block so it can travel, a bare grid cell can't. */
 .fdy-app{display:flex;align-items:stretch;min-height:100vh;background:var(--color-surface-2);}
-.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;overflow:hidden;flex:none;width:var(--fdy-app-sidebar-w,15.5rem);box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
+/* 100vh then 100dvh: on iOS Safari 100vh is the LARGE viewport, as if the toolbar were gone, so a box sized by it runs under the toolbar. An engine without dvh keeps the first value. */
+.fdy-app__sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;height:100dvh;overflow:hidden;flex:none;width:var(--fdy-app-sidebar-w,15.5rem);box-sizing:border-box;background:var(--color-surface-raised);backdrop-filter:var(--surface-filter);-webkit-backdrop-filter:var(--surface-filter);border-right:var(--bw) solid var(--color-border);display:flex;flex-direction:column;transition:width var(--dur-slow) var(--ease-standard),border-right-width var(--dur-slow) var(--ease-standard);}
 /* `min-height:0` is the height-axis twin of `min-width:0`, and its absence was invisible for as long
  * as the shell scrolled the PAGE (#055 §2). A consumer that pins the shell to the viewport and
  * scrolls .fdy-app__main instead hits it immediately: a column flex item's automatic minimum size is
