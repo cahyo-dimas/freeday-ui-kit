@@ -35,7 +35,8 @@
     "docs/getting-started.md",
     "docs/integrations.md",
     "docs/agent-onboarding.md",
-    "docs/reference-screen.html"
+    "docs/reference-screen.html",
+    "docs/screen-states.md"
   ],
   "exports": {
     ".": {

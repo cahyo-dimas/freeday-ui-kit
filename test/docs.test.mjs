@@ -60,6 +60,7 @@ const DOCS = [
   ['COMPONENTS.md', classesInMarkdown],
   ['USAGE.md', classesInMarkdown],
   ['docs/agent-onboarding.md', classesInMarkdown],
+  ['docs/screen-states.md', classesInMarkdown],
   ['reference/README.md', classesInMarkdown],
   ['docs/reference-screen.html', classesInHtml],
 ];

@@ -58,6 +58,9 @@ wrapper, use the raw markup and hydrate it:
 - `node_modules/@cahyo-dimas/freeday/USAGE.md` is the doctrine: which token/role/shadow to use when.
 - `node_modules/@cahyo-dimas/freeday/docs/reference-screen.html` is one complete screen, assembled
   the intended way. Copy this structure for a new screen.
+- `node_modules/@cahyo-dimas/freeday/docs/screen-states.md` lists the screens and states an app
+  needs beyond its ideal screens: 404/403/session expired, the three kinds of empty, loading, load
+  error, action feedback, account flows. **Starting a new app, build these with the first screens.**
 
 **Non-negotiables:**
 1. No raw hex or px in app CSS. Use tokens: `var(--color-primary)`, `var(--space-4)` (4px scale),

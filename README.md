@@ -236,6 +236,7 @@ USAGE.md               the usage doctrine (which token/role when)
 docs/index.html        living reference / demo site
 docs/reference-screen.html  one complete screen, assembled
 docs/agent-onboarding.md    onboarding for AI coding agents
+docs/screen-states.md       the screens and states every app needs (404, empty, loading…)
 reference/             input material, never shipped (port source + layout archetypes)
 ```
 

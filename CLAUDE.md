@@ -64,7 +64,7 @@ Setiap prosa yang ditulis atau diubah di repo ini dijalankan lewat skill `/human
 sebelum commit. Cakupannya semua yang dibaca orang:
 - **docs live (GitHub Pages):** `docs/index.html` (teks deskripsi section, label demo),
   `docs/getting-started.md`, `docs/integrations.md`, `docs/agent-onboarding.md`,
-  `docs/reference-screen.html`
+  `docs/reference-screen.html`, `docs/screen-states.md`
 - **docs repo / npm:** `README.md`, `README.id.md`, `COMPONENTS.md`, `USAGE.md`, `CHANGELOG.md`,
   `HANDOFF.md`, `NEXT-UP.md`, `improvement-notes/`
 - **copy UI:** string default di tabel `TEXT` enhancer dan copy di markup contoh
@@ -86,6 +86,7 @@ COMPONENTS.md                          seluruh class publik + skeleton markup + 
 USAGE.md                               doktrin pemakaian (token/role mana, kapan)
 docs/index.html                        referensi hidup · reference-screen.html (1 layar utuh)
 docs/agent-onboarding.md               onboarding untuk AI agent di project konsumen
+docs/screen-states.md                  daftar layar & state yang wajib ada di setiap app (404, kosong, loading…)
 reference/                             material input, TAK PERNAH di-ship
 ```
 `files` di package.json memuat jalur ter-ship **satu per satu** (bukan direktori), dan `src/*.js` sengaja
