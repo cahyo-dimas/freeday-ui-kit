@@ -92,6 +92,16 @@
 .fdy-btn-group .fdy-btn:hover,.fdy-btn-group .fdy-btn:focus-visible{z-index:1;}
 .fdy-btn-group .fdy-btn:first-child{border-top-left-radius:var(--radius-md);border-bottom-left-radius:var(--radius-md);}
 .fdy-btn-group .fdy-btn:last-child{border-top-right-radius:var(--radius-md);border-bottom-right-radius:var(--radius-md);}
+/* Stacked: the same joined group turned on its side, every button as wide as the group, for picking
+   one of a few with a thumb on a phone. In a row, three names on a 375px screen become three
+   clipped columns. The column's stretch is what makes each button full width. Labels start-align because a column of names is read down its left edge.
+   Each corner rule sets all four corners, so the row's corners never leak in. */
+.fdy-btn-group--stack{display:flex;flex-direction:column;}
+.fdy-btn-group--stack .fdy-btn{justify-content:flex-start;text-align:start;}
+.fdy-btn-group--stack .fdy-btn:not(:first-child){margin-left:0;margin-top:calc(var(--bw) * -1);}
+.fdy-btn-group--stack .fdy-btn:first-child{border-radius:var(--radius-md) var(--radius-md) 0 0;}
+.fdy-btn-group--stack .fdy-btn:last-child{border-radius:0 0 var(--radius-md) var(--radius-md);}
+.fdy-btn-group--stack .fdy-btn:only-child{border-radius:var(--radius-md);}
 
 /* FAB, circular elevated action button (icon), optional extended pill with label */
 .fdy-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-2);width:3.5rem;height:3.5rem;padding:0;border:var(--bw) solid transparent;border-radius:var(--radius-full);cursor:pointer;color:var(--color-on-primary);background:var(--color-primary) linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.1));box-shadow:var(--shadow-3);transition:transform var(--dur-fast) var(--ease-standard),box-shadow var(--dur-fast) var(--ease-standard);}

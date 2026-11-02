@@ -174,3 +174,11 @@
   .fdy-app--nav-overlay .fdy-app__backdrop,
   .fdy-app--nav-overlay.fdy-app--nav-open .fdy-app__backdrop{transition:none;}
 }
+
+/* Standalone: the frame for a screen outside the app shell, such as sign in, sign up, a password
+ * reset, maintenance, or a 404 for someone not signed in. One panel, centred, on the shell's ground.
+ * MIN-height, never height: a panel taller than the screen (a phone with its keyboard up) makes the
+ * frame grow and the page scroll. A fixed height would centre it into negative space and put its
+ * first field above the top edge, out of reach of any scroll. */
+.fdy-standalone{display:flex;flex-direction:column;box-sizing:border-box;min-height:100vh;min-height:100dvh;padding:var(--space-8) var(--space-4);background:var(--color-surface-2);}
+.fdy-standalone__panel{box-sizing:border-box;width:100%;max-width:26rem;margin:auto;}

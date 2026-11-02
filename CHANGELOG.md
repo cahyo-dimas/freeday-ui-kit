@@ -9,6 +9,41 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.15.0] - 2026-11-02
+
+**Layar-layar yang tidak pernah punya tiket.** Daftar halaman sistem dan state yang dibutuhkan
+setiap app, dari 404 sampai sesi habis, kini ikut di paket. Ada juga bingkai untuk layar di luar
+shell, dan grup tombol bertumpuk untuk memilih satu dengan ibu jari (`CATATAN-FREEDAY.md` §18).
+
+### Added
+- **`docs/screen-states.md`** (`#106`). Ada 27 layar dan state dalam lima kelompok:
+  - halaman sistem (404, 403, sesi habis, 500, perawatan, offline, tautan kedaluwarsa, 429);
+  - lima state layar data, dengan tiga jenis kosong dibedakan;
+  - umpan balik aksi;
+  - alur akun;
+  - state elemen.
+
+  Tiap butir menyebut apa yang harus diberitahukan ke pengguna dan bagian kit mana yang
+  membangunnya. Tempat yang tak punya bagian kit disebut terang-terangan, supaya tidak ada agen yang
+  mengarang kelas. `agent-onboarding.md` menyuruh agen membangun layar-layar itu bersama layar
+  pertama app baru, dan uji kelas tertutup ikut menjaga berkas ini.
+- **`.fdy-btn-group--stack`** (`#107`). Grup yang sama, dibalik menjadi kolom selebar wadahnya
+  dengan border tetap menyambung. Hanya kedua ujungnya yang membulat, dan grup berisi satu tombol
+  membulat di keempat sudut. Label rata kiri. Dipasangkan dengan `--lg` dan `aria-pressed`, ia
+  mengisi celah antara grup mendatar yang terpotong di 375px, `.fdy-chip--choice` yang terlalu
+  kecil untuk ditekan sambil berdiri, dan combo yang butuh dua ketukan untuk tiga pilihan.
+- **`.fdy-standalone` + `__panel`** (`#108`). Bingkai untuk layar di luar shell: masuk, daftar,
+  reset sandi, perawatan, atau 404 untuk yang belum masuk. Isinya satu panel di tengah, paling
+  lebar `26rem`, dengan gutter halaman di HP. Tingginya `min-height` `100vh` lalu `100dvh`, jadi
+  panel yang lebih tinggi dari layar (HP dengan papan ketik terbuka) membuat bingkai memanjang dan
+  halaman bergulir. Bidang pertamanya tidak pernah terdorong ke luar tepi atas.
+
+### Catatan
+- Deteksi offline dan penjaga "perubahan belum disimpan" sengaja tidak dijadikan API. Keduanya
+  cukup beberapa baris di atas event bawaan peramban dan `Freeday.toast` / `Freeday.confirm` yang
+  sudah ada. Resepnya ditulis di `screen-states.md`.
+- Ketiga tambahan ini aditif. Tidak ada kelas atau perilaku yang berubah.
+
 ## [3.14.2] - 2026-10-30
 
 **`useFreeday(ref)` dengan ref yang masih kosong kini bersuara.** Ref yang lupa dipasang di template

@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fixture: the standalone frame, a short panel and one taller than the screen</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { margin: 0; }</style>
+<main class="fdy-standalone">
+  <div class="fdy-standalone__panel" id="panel">
+    <div class="fdy-card"><div class="fdy-card__body" id="body">
+      <div class="fdy-field"><label class="fdy-label" for="u">Username</label><input class="fdy-input" id="u"></div>
+    </div></div>
+  </div>
+</main>
+<script>
+  window.makeTall = () => { document.getElementById('body').style.height = '1200px'; return true; };
+  window.measure = () => {
+    const panel = document.getElementById('panel').getBoundingClientRect();
+    const frame = document.querySelector('.fdy-standalone').getBoundingClientRect();
+    return { top: panel.top + scrollY, bottom: innerHeight - panel.bottom, left: panel.left,
+      right: innerWidth - panel.right, width: panel.width, frameHeight: frame.height,
+      vh: innerHeight, scrollHeight: document.documentElement.scrollHeight };
+  };
+</script>

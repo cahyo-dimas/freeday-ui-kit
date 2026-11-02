@@ -15,9 +15,9 @@ loading, partial, error), and the ideal one is the only one a design usually sho
 
 ## A. System pages
 
-A system page replaces the whole screen body. Build it as one `.fdy-page` holding one `.fdy-state`,
-inside the app's normal frame when the user is signed in (so the navigation still works) and
-without it when they are not. Every system page answers three questions: **what happened, whose
+A system page replaces the whole screen body. Build it as one `.fdy-page` holding one `.fdy-state`
+inside the app's normal frame when the user is signed in, so the navigation still works. When they
+are not signed in, put the `.fdy-state` in a `.fdy-standalone__panel` instead. Every system page answers three questions: **what happened, whose
 fault it is, and what to do now.** "Error" answers none of them.
 
 ```html
@@ -58,10 +58,16 @@ Notes:
   403, where nothing broke.
 - A system page inside the app frame keeps the frame's one primary button rule: the page's own
   action is the primary, and the frame has none.
-- **Kit gap:** the kit has no offline detection. Listen to the browser's `online` / `offline`
-  events in the app. For a short drop, a `Freeday.toast({ variant: 'warning', timeout: 0, key:
-  'offline' })` that `Freeday.dismiss('offline')` removes on reconnect is often enough; use the
-  full page only when nothing on the screen can work.
+- Offline needs no kit API. The browser's own events and a sticky toast cover a short drop, and
+  the full page is for when nothing on the screen can work:
+
+  ```js
+  addEventListener('offline', () => Freeday.toast({ variant: 'warning', key: 'offline', timeout: 0,
+    title: 'You are offline', message: 'Changes are kept and sent when the connection returns.' }))
+  addEventListener('online', () => Freeday.dismiss('offline'))
+  ```
+
+  Only write "changes are kept" if the app really queues them.
 
 
 ## B. States inside a data screen
@@ -133,7 +139,7 @@ tells the user there is nothing to do, which is the opposite of what happened.
 |---|---|---|---|
 | 15 | **Success** | `Freeday.toast({ variant: 'success' })` | Name the thing ("INV-1042 saved"), not just "Saved". For an action that ends a flow (a payment), use a confirmation page or `.fdy-state` instead, because a toast is gone before it is read. |
 | 16 | **Destructive confirm** | `Freeday.confirm({ tone: 'danger', details })` | Put the consequence in numbers ("3 schedules are deleted with it"), not "Are you sure?". Name the button for the action ("Delete order"), not "OK". |
-| 17 | **Unsaved changes** | `Freeday.confirm` in the router's leave hook | `return isDirty() ? Freeday.confirm({ … }) : true`. Also handle the tab closing (`beforeunload`). |
+| 17 | **Unsaved changes** | `Freeday.confirm` in the router's leave hook, `beforeunload` for the tab | In the router: `return isDirty() ? Freeday.confirm({ … }) : true`. For a closed tab or a reload: `addEventListener('beforeunload', e => { if (isDirty()) { e.preventDefault(); e.returnValue = '' } })`; the `returnValue` line is for older engines. The browser shows its own wording there and ignores a custom message. |
 | 18 | **Form validation** | `data-fdy-validate`, `.fdy-help--error` | The message sits under the field it belongs to, not in one alert at the top. Say how to fix it ("At least 8 characters"), not only that it is wrong. |
 | 19 | **Submitting** | Disabled button with `.fdy-spinner--sm`, or `Freeday.busy()` | The second click must do nothing. A double-submitted payment is the expensive version of this bug. |
 
@@ -144,9 +150,9 @@ tells the user there is nothing to do, which is the opposite of what happened.
 
 ## D. Account flows
 
-The kit has **no ready-made sign-in screen or auth layout**, by design, because every app's identity
-model differs. Build these from `.fdy-card`, `.fdy-field` and `data-fdy-validate`, centred by your
-own layout.
+The kit ships the frame, `.fdy-standalone`, and no ready-made screens, because every app's identity
+model differs. Build each one as a `.fdy-card` in a `.fdy-standalone__panel`, with `.fdy-field` and
+`data-fdy-validate`.
 
 | # | Screen | What it must get right |
 |---|---|---|
@@ -154,7 +160,7 @@ own layout.
 | 21 | **Sign up** | Ask only for what is needed now. Show password rules **before** the user types, not after a failure. |
 | 22 | **Forgot / reset password** | The request page says "If that account exists, a link is on its way", whether or not it exists. The reset link expires; its expired page is item 7. |
 | 23 | **Verify email or OTP** | Say where the code went (a masked address or number). Offer resend with a visible countdown, and accept a pasted code. |
-| 24 | **Onboarding / first run** | Short, skippable, and it ends in the first-use empty state (11) with its create action. `.fdy-stepper` for a multi-step setup. |
+| 24 | **Onboarding / first run** | Short, skippable, and it ends in the first-use empty state (11) with its create action. `.fdy-stepper` for a multi-step setup; a step that picks one of a few options can use `.fdy-btn-group--stack`. |
 | 25 | **Profile and settings** | Each change saves visibly (a toast, or a saved state on the section). Changing the email or password asks for the current password. |
 | 26 | **Sign out** | Lands on the sign-in page with "You have signed out", so a shared device is visibly signed out. |
 

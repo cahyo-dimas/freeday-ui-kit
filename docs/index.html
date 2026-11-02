@@ -333,7 +333,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v3.14.2</p>
+          <p class="doc-eyebrow">Design System · v3.15.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday adalah sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -600,12 +600,17 @@
         <button class="fdy-btn fdy-btn--icon" aria-label="Tambah"><span class="fdy-btn__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></span></button>
       </div>
 
-      <p class="doc-desc" style="margin-top:var(--space-4)">Button group (segmented) &amp; FAB (bulat · kecil · extended).</p>
+      <p class="doc-desc" style="margin-top:var(--space-4)">Button group (segmented, mendatar atau <code>--stack</code> bertumpuk untuk memilih satu dengan ibu jari) &amp; FAB (bulat · kecil · extended).</p>
       <div class="doc-demo" style="align-items:center;gap:var(--space-6)">
         <div class="fdy-btn-group" role="group" aria-label="Perataan teks">
           <button class="fdy-btn fdy-btn--ghost">Kiri</button>
           <button class="fdy-btn fdy-btn--ghost">Tengah</button>
           <button class="fdy-btn fdy-btn--ghost">Kanan</button>
+        </div>
+        <div class="fdy-btn-group fdy-btn-group--stack" role="group" aria-label="Cara bayar" style="width:16rem">
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="true">Transfer bank</button>
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="false">Tunai</button>
+          <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="false">QRIS</button>
         </div>
         <button class="fdy-fab" aria-label="Tambah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg></button>
         <button class="fdy-fab fdy-fab--sm fdy-fab--accent" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
@@ -2200,7 +2205,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.14.2 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.15.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>
@@ -2348,7 +2353,7 @@
 
   // Secondary/tertiary section descriptions (the extra .doc-desc paragraphs).
   const SEC2 = {
-    'sec-tombol': ['Text + icon · text-only (low emphasis) · icon-only (needs <code>aria-label</code>).', 'Button group (segmented) &amp; FAB (round · small · extended).'],
+    'sec-tombol': ['Text + icon · text-only (low emphasis) · icon-only (needs <code>aria-label</code>).', 'Button group (segmented, in a row or <code>--stack</code>ed for picking one with a thumb) &amp; FAB (round · small · extended).'],
     'sec-cfl': ['Single-select commits on row click (no "OK"). Keyboard: type to search, <kbd class="fdy-kbd">↓</kbd> enters the list, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> navigate, <kbd class="fdy-kbd">Enter</kbd> pick, <kbd class="fdy-kbd">Esc</kbd> close. Multi-select uses checkboxes + an "Apply" footer.'],
     'sec-datepicker': ['Icon variants (kit convention): <strong>default</strong> (calendar), <strong>none</strong> via <code>data-fdy-no-icon</code>, or a <strong>custom icon</strong> with <code>&lt;template data-fdy-icon&gt;</code> inside.'],
     'sec-timepicker': ['Icon variants (kit convention): <strong>default</strong> (clock), <strong>none</strong> via <code>data-fdy-no-icon</code>, or a <strong>custom icon</strong> with <code>&lt;template data-fdy-icon&gt;</code>.'],
@@ -2363,7 +2368,7 @@
     'Pelanggan': 'Customer', 'Nama pelanggan': 'Customer name', 'Nominal (error)': 'Amount (error)', 'Kode pelanggan': 'Customer code', 'Tanggal faktur': 'Invoice date', 'Periode laporan': 'Report period', 'Tanpa ikon': 'No icon', 'Ikon custom': 'Custom icon', 'Jam mulai': 'Start time', 'Tiap 15 menit, 08:00–17:00': 'Every 15 min, 08:00–17:00', 'Jadwal kirim faktur': 'Invoice send schedule', 'Item pertama': 'First item', 'Diskon': 'Discount', 'Anggaran': 'Budget', 'Kata sandi': 'Password', 'Ulangi kata sandi': 'Repeat password', 'Nomor kartu': 'Card number', 'Tanggal (HH/BB/TTTT)': 'Date (DD/MM/YYYY)', 'Status faktur (default)': 'Invoice status (default)',
     'cth. PT Sumber Makmur': 'e.g. PT Sumber Makmur', 'Cari…': 'Search…', 'Pilih pelanggan…': 'Pick a customer…', 'Pilih item…': 'Pick an item…', 'Cari kode / nama…': 'Search code / name…', 'Dari': 'From', 'Sampai': 'To', 'Pilih jam': 'Pick a time', 'Kode / nama item': 'Item code / name', 'Ketik nama…': 'Type a name…', 'Pilih kategori': 'Pick a category', 'Cari faktur / pelanggan…': 'Search invoices / customers…',
     'Tanggal mulai': 'Start date', 'Tanggal akhir': 'End date', 'Tanggal default': 'Default date', 'Tanggal tanpa ikon': 'Date without icon', 'Tanggal ikon custom': 'Date custom icon', 'Jam rapat': 'Meeting time', 'Waktu default': 'Default time', 'Waktu tanpa ikon': 'Time without icon', 'Waktu ikon custom': 'Time custom icon', 'Jadwal kirim': 'Send schedule', 'Tanggal kirim': 'Send date', 'Jam kirim': 'Send time', 'Jadwal tanpa ikon': 'Schedule without icon', 'Tanggal': 'Date', 'Jam': 'Time', 'Kategori produk': 'Product category', 'Rentang waktu': 'Time range', 'Filter status': 'Status filter',
-    'Simpan': 'Save', 'Batal': 'Cancel', 'Unduh': 'Download', 'Ubah': 'Edit', 'Tambah baris': 'Add row', 'Kiri': 'Left', 'Tengah': 'Center', 'Kanan': 'Right', 'Tindakan': 'Actions', '+ Baru': '+ New', 'Tutup': 'Close', 'Pilih': 'Select', 'Kembali': 'Back', 'Lanjut': 'Next', 'Toast sukses': 'Toast success', 'Arahkan / fokus': 'Hover / focus', 'Ekspor': 'Export', 'Hapus': 'Delete', 'Bersihkan': 'Clear', 'Buat faktur': 'Create invoice', 'Coba lagi': 'Try again', 'Bayar': 'Pay', 'Buka drawer kiri': 'Open left drawer', 'Buka drawer kanan': 'Open right drawer', 'Terapkan': 'Apply', 'Buka modal': 'Open modal', '+ Faktur baru': '+ New invoice',
+    'Simpan': 'Save', 'Batal': 'Cancel', 'Unduh': 'Download', 'Ubah': 'Edit', 'Tambah baris': 'Add row', 'Kiri': 'Left', 'Tengah': 'Center', 'Kanan': 'Right', 'Transfer bank': 'Bank transfer', 'Tunai': 'Cash', 'Tindakan': 'Actions', '+ Baru': '+ New', 'Tutup': 'Close', 'Pilih': 'Select', 'Kembali': 'Back', 'Lanjut': 'Next', 'Toast sukses': 'Toast success', 'Arahkan / fokus': 'Hover / focus', 'Ekspor': 'Export', 'Hapus': 'Delete', 'Bersihkan': 'Clear', 'Buat faktur': 'Create invoice', 'Coba lagi': 'Try again', 'Bayar': 'Pay', 'Buka drawer kiri': 'Open left drawer', 'Buka drawer kanan': 'Open right drawer', 'Terapkan': 'Apply', 'Buka modal': 'Open modal', '+ Faktur baru': '+ New invoice',
     'Simpan & baru': 'Save & new', 'Simpan sebagai draf': 'Save as draft', 'Simpan & kirim': 'Save & send',
     'Belum ada faktur': 'No invoices yet', 'Faktur yang kamu buat akan muncul di sini.': 'Invoices you create will appear here.', 'Gagal memuat': 'Failed to load', 'Tidak bisa mengambil data dari server.': "Couldn't fetch data from the server.",
     'Faktur': 'Invoice', 'Produk': 'Products', 'Gudang': 'Warehouse', 'Pajak': 'Tax', 'Laporan': 'Reports', 'Penjualan': 'Sales', 'Neraca': 'Balance sheet', 'baru': 'new',

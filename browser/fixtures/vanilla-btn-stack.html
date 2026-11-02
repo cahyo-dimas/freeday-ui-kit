@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fixture: a stacked button group, three options and one</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { margin: 0; padding: 16px; } .host { width: 343px; margin-bottom: 24px; }</style>
+<div class="host">
+  <div class="fdy-btn-group fdy-btn-group--stack" role="group" aria-label="Item" id="three">
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="true">Water gallon</button>
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="false">Gas cylinder</button>
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="false">Pool water</button>
+  </div>
+</div>
+<div class="host">
+  <div class="fdy-btn-group fdy-btn-group--stack" role="group" aria-label="Single" id="one">
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="true">Only option</button>
+  </div>
+</div>
+<script>
+  window.measureGroup = (id) => {
+    const group = document.getElementById(id);
+    const g = group.getBoundingClientRect();
+    return Array.from(group.children).map((b) => {
+      const r = b.getBoundingClientRect();
+      const cs = getComputedStyle(b);
+      const range = document.createRange();
+      range.selectNodeContents(b);
+      return { top: r.top, bottom: r.bottom, left: r.left - g.left, width: r.width, groupWidth: g.width,
+        textLeft: range.getBoundingClientRect().left - r.left, padLeft: parseFloat(cs.paddingLeft),
+        bw: parseFloat(cs.borderTopWidth),
+        corners: [cs.borderTopLeftRadius, cs.borderTopRightRadius, cs.borderBottomRightRadius, cs.borderBottomLeftRadius]
+          .map((v) => parseFloat(v) > 0 ? 1 : 0).join('') };
+    });
+  };
+</script>

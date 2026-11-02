@@ -25,7 +25,7 @@ live docs.
    `var(--space-4)`, `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`. Spacing is a 4px scale
    (`--space-0`…`--space-24`); a loose value breaks density switching.
 4. **Freeday owns components + tokens, not layout.** The only layout it ships is the shell
-   (`.fdy-app`), the composition primitives below, and `.fdy-hidden`/`.fdy-visually-hidden`.
+   (`.fdy-app`, and `.fdy-standalone` for screens outside it), the composition primitives below, and `.fdy-hidden`/`.fdy-visually-hidden`.
    Grids, stacks and one-off gaps come from your own layout layer (a utility framework run
    **utilities-only, preflight off**, with its theme defined in terms of `var(--space-N)`).
 5. **`aria-invalid="true"` is the canonical error state** on form controls. It drives the visual
@@ -250,6 +250,31 @@ tall containing block. The brand goes in the **sidebar** (sized to match the top
   <div class="fdy-app__backdrop"></div>
 </div>
 ```
+
+## Standalone frame — `.fdy-standalone`
+The frame for a screen that lives outside the app shell: sign in, sign up, a password reset or its
+expired link, maintenance, a 404 for someone not signed in. One `.fdy-standalone__panel`, centred on
+the shell's ground, at most `26rem` wide, with the page gutter around it on a phone.
+
+```html
+<main class="fdy-standalone">
+  <div class="fdy-standalone__panel">
+    <form class="fdy-card" data-fdy-validate>
+      <div class="fdy-card__body">…</div>
+    </form>
+  </div>
+</main>
+```
+
+- The panel holds whatever the screen is: a `.fdy-card` with a form, or a `.fdy-state` for an error
+  page. Brand marks above it are yours.
+- A panel taller than the screen makes the frame grow, so the panel starts at the top and the page
+  scrolls. A phone with its keyboard up needs exactly that. A frame with a fixed height would
+  centre the panel past the top edge, where no scroll can reach its first field.
+- Its height is `100dvh` after a `100vh` fallback, so the iOS toolbar does not cover the bottom and
+  an engine without `dvh` still gets a full-height frame.
+- [`docs/screen-states.md`](docs/screen-states.md) lists which screens need it and what each one
+  must tell the user.
 
 ## Page composition — `.fdy-page`
 Vertical section rhythm (`--space-8` between children). Assemble every screen from these; they
@@ -502,6 +527,11 @@ a compact root with one region opted back out (shared chrome that must match a s
 - Modifiers: `--ghost` `--danger` `--text` `--icon` (square, icon-only) `--sm` `--lg`
 - Parts: `.fdy-btn__icon` (wraps the `<svg>`) · `.fdy-btn-group` (segmented row, `role="group"` +
   `aria-label`)
+- **Stacked group:** `.fdy-btn-group--stack` turns the group into a full-width column with the same
+  joined borders. Use it for picking one of a few options with a thumb on a phone (a payment method,
+  which item was delivered), where a row of three names clips at 375px, a `.fdy-chip--choice` is too
+  small to hit standing up, and a combo costs two taps for three options. Pair it with `--lg`
+  buttons and `aria-pressed`, and keep exactly one pressed; the app owns which one.
 - **Toggle / segmented:** `aria-pressed="true"` gives a real pressed state (soft primary fill on
   `--ghost`/`--text`, an inset-sunk gradient on the solid button). No extra class: `aria-pressed`
   is already the right attribute, and it is what turns `.fdy-btn-group` from a joined row into a
@@ -514,6 +544,11 @@ a compact root with one region opted back out (shared chrome that must match a s
 <button class="fdy-btn fdy-btn--ghost fdy-btn--icon" type="button" aria-label="Settings">
   <span class="fdy-btn__icon"><!--svg--></span>
 </button>
+
+<div class="fdy-btn-group fdy-btn-group--stack" role="group" aria-label="Payment method">
+  <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="true">Bank transfer</button>
+  <button class="fdy-btn fdy-btn--ghost fdy-btn--lg" type="button" aria-pressed="false">Cash</button>
+</div>
 ```
 
 **Quiet destructive:** combine `--danger` with `--ghost` or `--text`. The ground stays quiet and only
