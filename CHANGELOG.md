@@ -9,6 +9,31 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.15.2] - 2026-11-04
+
+**Atribut `hidden` kini menyembunyikan elemen kit.** Peramban menyembunyikan `[hidden]` lewat
+`display:none` bawaannya, dan `display` apa pun dari kelas mengalahkannya. Jadi
+`<button class="fdy-btn" hidden>` tetap tampil. Diukur di Chrome: **167 dari 495 kelas** kit
+mengabaikan atribut itu, di antaranya `.fdy-btn`, `.fdy-alert`, `.fdy-badge`,
+`.fdy-app__sidebar`, `.fdy-card__footer`, dan `.fdy-checkbox`. Ditemukan sambil menulis uji untuk
+3.15.1.
+
+### Fixed
+- **`[hidden]:not([hidden="until-found" i]) { display:none !important }` di base layer** (`#110`).
+  `!important` dibutuhkan karena sebagian aturan kit menang tanpanya.
+  `.fdy-app--nav-overlay .fdy-app__backdrop{display:block}` mengalahkan atribut lewat
+  spesifisitas dan urutan sumber. `hidden="until-found"` dibiarkan ke peramban, yang
+  menyembunyikannya lewat `content-visibility` supaya pencarian halaman tetap bisa membukanya.
+
+### Catatan
+- Uji baru `browser/hidden-attr.mjs` memasang `hidden` ke setiap kelas yang disebut bundle, dan ke
+  setiap rantai kelas yang menetapkan `display`, lalu menuntut semuanya `display:none`. Mutasi
+  tanpa aturan, tanpa `!important`, dan tanpa pengecualian `until-found` masing-masing merah.
+- Perilaku yang berubah hanya ini: elemen kit yang diberi `hidden` sekarang benar-benar hilang.
+  Markup yang memasang `hidden` sambil mengandalkan elemennya tetap tampil akan berubah. Seluruh
+  suite browser kit (249 uji) tetap hijau, jadi kit sendiri tidak bergantung padanya.
+- Komponen yang disembunyikan dengan `v-show` (gaya inline `display:none`) tidak terpengaruh.
+
 ## [3.15.1] - 2026-11-04
 
 **`.fdy-btn--stretch` yang lepas dari kartunya kini bersuara.** Di luar `.fdy-card` atau

@@ -14,6 +14,14 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: var(--weight-bol
 a { color: var(--color-primary-strong); }
 :focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-width); border-radius: var(--radius-xs); }
 :where(button, input, select, textarea) { font: inherit; }
+/* The browser hides [hidden] with a user-agent display:none, and any author `display` beats it, so
+ * before this `<button class="fdy-btn" hidden>` rendered: 167 of the kit's 495 classes ignored the
+ * attribute (browser/hidden-attr.mjs). `!important` because some of what it must beat outranks it:
+ * `.fdy-app--nav-overlay .fdy-app__backdrop{display:block}` wins on specificity plus source order
+ * without it. And hidden is a statement about the element, not a style to weigh.
+ * "until-found" is left to the browser: it hides with content-visibility so find-in-page can still
+ * reveal it, and display:none would remove exactly that. */
+[hidden]:not([hidden="until-found" i]) { display: none !important; }
 /* Hidden from sight, kept for assistive tech. `clip` hides PAINTING, not LAYOUT: the box still
  * has a position, and because it is position:absolute its containing block is the nearest
  * POSITIONED ancestor, and with none, the initial containing block (the document itself).

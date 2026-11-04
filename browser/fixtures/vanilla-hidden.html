@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — the hidden attribute on kit classes</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <div id="root"></div>
+<script>
+  /* Every kit class on an element that carries `hidden`, and which of them still render. */
+  window.shownDespiteHidden = (classes, value) => {
+    const root = document.getElementById('root');
+    const shown = [];
+    for (const cls of classes) {
+      const el = document.createElement('div');
+      el.className = cls;
+      el.setAttribute('hidden', value);
+      root.appendChild(el);
+      const display = getComputedStyle(el).display;
+      if (display !== 'none') shown.push(cls + ' → ' + display);
+      el.remove();
+    }
+    return shown;
+  };
+  /* The same for rules that set display through a chain of classes (`.a .b`, `.a > .b.c`): each
+     chain is built as nested elements, and `hidden` goes on the innermost, the one the rule styles. */
+  window.chainsShownDespiteHidden = (chains) => {
+    const root = document.getElementById('root');
+    const shown = [];
+    for (const chain of chains) {
+      let parent = root, el = null;
+      for (const classes of chain) {
+        el = document.createElement('div');
+        el.className = classes;
+        parent.appendChild(el);
+        parent = el;
+      }
+      el.setAttribute('hidden', '');
+      const display = getComputedStyle(el).display;
+      if (display !== 'none') shown.push(chain.join(' ') + ' → ' + display);
+      root.firstElementChild.remove();
+    }
+    return shown;
+  };
+  window.untilFound = () => {
+    const el = document.createElement('div');
+    el.className = 'fdy-card';
+    el.setAttribute('hidden', 'until-found');
+    document.getElementById('root').appendChild(el);
+    const s = getComputedStyle(el);
+    return { display: s.display, contentVisibility: s.contentVisibility };
+  };
+</script>
+</body>
+</html>

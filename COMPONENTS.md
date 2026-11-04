@@ -434,6 +434,11 @@ One role per level of hierarchy. Never re-use a card title for a page title.
 bullets/indent from a semantic list, needed when your utility framework's preflight is off) ·
 `.fdy-divider` (+`--vertical`) · `.fdy-kbd`.
 
+**The `hidden` attribute hides any kit element**, including a `.fdy-btn`, an alert or a flex row.
+The browser's own `display:none` for `[hidden]` loses to any class that sets `display`, so the base
+layer restates it with `!important`. `hidden="until-found"` is left to the browser, which keeps it
+findable with find-in-page.
+
 Responsive display: `.fdy-hide-below-sm|md|lg` · `.fdy-hide-above-sm|md|lg`.
 Breakpoints (min-width): `sm` 600 · `md` 960 · `lg` 1280 · `xl` 1920, importable as
 `import { breakpoints } from '@cahyo-dimas/freeday/breakpoints'`.
