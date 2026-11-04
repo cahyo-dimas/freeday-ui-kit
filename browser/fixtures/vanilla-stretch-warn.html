@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — a stretched target outside its host</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>
+  .box{position:relative;padding:1rem;}
+</style>
+</head>
+<body style="padding:2rem">
+  <!-- ?case= picks one layout per load: a misplaced overlay covers everything after it in paint
+       order, so two cases on one page would test each other instead of the kit. -->
+  <div id="root"></div>
+
+<template id="ok">
+  <article class="fdy-card" style="max-width:22rem">
+    <div class="fdy-card__body"><h3 class="fdy-card__title" id="title">Workspace Alpha</h3></div>
+    <div class="fdy-card__footer"><button class="fdy-btn fdy-btn--stretch" type="button" id="ok">Open</button></div>
+  </article>
+  <!-- Its own positioned container, the documented way out for anything that is not a card or row.
+       The hidden second target paints nothing, so it overlaps nothing. -->
+  <div class="box" id="own">
+    <span id="ownText">Custom tile</span>
+    <button class="fdy-btn fdy-btn--stretch" type="button" id="own1">Open tile</button>
+    <button class="fdy-btn fdy-btn--stretch" type="button" id="ownHidden" style="display:none">Hidden</button>
+  </div>
+</template>
+
+<!-- CATATAN-FREEDAY §19: the stretched button is a sibling of the links, not inside a card. -->
+<template id="loose">
+  <div>
+    <nav><a href="#profil" id="profil">Profil</a></nav>
+    <button class="fdy-btn fdy-btn--stretch" type="button" id="loose">Keluar</button>
+  </div>
+</template>
+
+<template id="shared">
+  <div class="box" id="host">
+    <p><span id="s1label">One</span> <button class="fdy-btn fdy-btn--stretch" type="button" id="s1">Open one</button></p>
+    <p><span id="s2label">Two</span> <button class="fdy-btn fdy-btn--stretch" type="button" id="s2">Open two</button></p>
+  </div>
+</template>
+
+<script>
+  const kase = new URLSearchParams(location.search).get('case') || 'ok';
+  if (kase === 'body') document.body.style.position = 'relative';
+  document.getElementById('root').appendChild(document.getElementById(kase === 'body' ? 'loose' : kase).content.cloneNode(true));
+
+  window.warnings = [];
+  const realWarn = console.warn;
+  console.warn = function (msg, el, host) {
+    if (String(msg).indexOf('fdy-btn--stretch') !== -1) {
+      window.warnings.push({ msg: String(msg), id: el && el.id ? el.id : null, host: host && host.id ? host.id : null });
+    }
+    return realWarn.apply(console, arguments);
+  };
+  window.hitAt = (selector) => {
+    const r = document.querySelector(selector).getBoundingClientRect();
+    const el = document.elementFromPoint(Math.round(r.x + r.width / 2), Math.round(r.y + r.height / 2));
+    return el ? el.id : null;
+  };
+</script>
+</body>
+</html>

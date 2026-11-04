@@ -20,6 +20,15 @@
  * that subtree, and this stays quiet about it. It is for markup whose behaviour something else
  * owns: the kit's own Vue/React FdyDrawer, and kit classes an app uses for their look
  * alone (CATATAN-FREEDAY §14: a chip matrix the app drives itself).
+ *
+ * The same click also checks `.fdy-btn--stretch`, the other kit piece whose misuse renders fine and
+ * fails silently. Its overlay covers the nearest ancestor that is a containing block. With none but
+ * <body>/<html>, it covers the whole page: every tap anywhere lands on that one button, and nothing
+ * looks wrong (CATATAN-FREEDAY §19: a sign-out button that took every tap on a settings screen).
+ * A second stretched target inside the area one covers overlaps it the same way, and the last one
+ * in the DOM takes every tap meant for the other. A misplaced overlay makes itself the click target of
+ * whatever is tapped, so the first tap anywhere on the page is enough to report it. Hit-testing
+ * clicks in e2e tests reach it too.
  */
 (function () {
   'use strict';
@@ -75,9 +84,50 @@
     }
   }
 
+  /* What an absolutely positioned box resolves against: the nearest ancestor that is positioned or
+     that a transform, filter, perspective, containment or will-change of those turns into a
+     containing block. null means the initial containing block, i.e. the viewport. */
+  function anchorOf(el) {
+    for (var n = el.parentElement; n; n = n.parentElement) {
+      var s = getComputedStyle(n);
+      if (s.position !== 'static' || s.transform !== 'none' || s.filter !== 'none' || s.perspective !== 'none'
+        || (s.backdropFilter && s.backdropFilter !== 'none')
+        || /layout|paint|strict|content/.test(s.contain || '')
+        || (s.containerType && s.containerType !== 'normal')
+        || /transform|filter|perspective/.test(s.willChange || '')) return n;
+    }
+    return null;
+  }
+
+  function checkStretch(e) {
+    var btn = warned && e.target && e.target.closest ? e.target.closest('.fdy-btn--stretch') : null;
+    if (!btn || warned.has(btn)) return;
+    var host = anchorOf(btn);
+    if (host === null || host === document.body || host === document.documentElement) {
+      warned.add(btn);
+      console.warn('Freeday: this .fdy-btn--stretch has no containing block below <body>, so its hit '
+        + 'area covers the whole page and a tap anywhere lands on it. Put it in a .fdy-card or '
+        + '.fdy-list__row, make the element it should cover position:relative, or drop the modifier '
+        + 'if the button is not meant to cover anything.', btn);
+      return;
+    }
+    /* Any other rendered target in the covered area counts, even one inside a card of its own: this
+       overlay paints over that card as well. */
+    var rivals = Array.prototype.filter.call(host.querySelectorAll('.fdy-btn--stretch'), function (o) {
+      return o !== btn && o.getClientRects().length > 0;
+    });
+    if (rivals.length === 0) return;
+    warned.add(btn);
+    console.warn('Freeday: this .fdy-btn--stretch shares its covered area with ' + rivals.length + ' other '
+      + 'stretched target(s), so the last one in the DOM takes every tap in it, including taps meant '
+      + 'for the others. Give each one its own .fdy-card / .fdy-list__row, or make each one\'s own '
+      + 'container position:relative.', btn, host);
+  }
+
   ['click', 'focusin', 'submit'].forEach(function (type) {
     document.addEventListener(type, check, true);
   });
+  document.addEventListener('click', checkStretch, true);
 
   window.FreedayUnhydrated = { hooks: HOOKS };
 })();

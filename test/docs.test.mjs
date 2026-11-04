@@ -871,7 +871,8 @@ test('every hook flag an enhancer stamps is in the un-hydrated warning table (CA
 
 test('every enhancer that hydrates markup exposes initAll, the one name the stack helpers look for', () => {
   const offenders = [];
-  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f))) {
+  /* freeday-unhydrated.js queries kit markup to CHECK it, never to enhance it. */
+  for (const file of readdirSync(join(root, 'src')).filter(f => /^freeday-.*\.js$/.test(f) && f !== 'freeday-unhydrated.js')) {
     const src = read(`src/${file}`);
     const exported = src.match(/window\.(Freeday\w+) = \{([\s\S]*?)\n  \};|window\.(Freeday\w+) = \{([^\n]*)\};/);
     if (exported === null) continue;                        // window.Freeday (toast/confirm/busy): no markup to hydrate

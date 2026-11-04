@@ -57,6 +57,11 @@ live docs.
    document: everything works, wider than asked, and other markup on the page can come to rely on
    that scan unnoticed. It logs one `console.warn` per component. Put the ref on an element that is
    always rendered, or write `useFreeday()` with no argument when the document is what you mean.
+   **A `.fdy-btn--stretch` whose overlay escaped its host says so too.** On the first click it
+   receives, it logs one `console.warn` if the overlay covers the whole page (no positioned
+   ancestor below `<body>`), or if another stretched target sits inside the area it covers. Both
+   render correctly and take taps meant for something else, so the press that lands on the wrong
+   button is the one that reports it.
    **`data-fdy-ignore` says "not yours".** On an element or any ancestor, every enhancer skips that
    subtree, even under an explicit `initAll(document)`, and the warning above stays quiet. Use it
    where the app drives kit-styled markup itself, such as a chip matrix with its own removal flow.
@@ -2343,6 +2348,9 @@ while it stays a real `<button>`/`<a>` with real keyboard semantics.
   make the element `position:relative` yourself, or the overlay resolves against whatever is
   positioned further up (in a list that used to be `.fdy-list` itself, so every row's target covered
   the whole list and the last one in the DOM won, so a click on row one opened row two).
+  Outside a card or row with no positioned ancestor at all, the overlay covers the **whole page**:
+  every tap on every link lands on this one button, and nothing looks wrong. The first click it
+  receives logs a warning (hard rule 7), as does an overlay with a second stretched target inside it.
   A row whose *whole* surface is one control is still better as `.fdy-list__row--button`.
 - `.fdy-btn` nudges itself on `:hover`/`:active`, and a transformed element becomes the containing
   block for its own absolutely positioned descendants, so a hand-rolled `::after{inset:0}` overlay

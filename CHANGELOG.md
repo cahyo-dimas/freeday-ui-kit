@@ -9,6 +9,38 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.15.1] - 2026-11-04
+
+**`.fdy-btn--stretch` yang lepas dari kartunya kini bersuara.** Di luar `.fdy-card` atau
+`.fdy-list__row`, tanpa leluhur ber-`position`, lapisannya menutup seluruh halaman. Semua tautan
+tampak normal, tetapi setiap tap jatuh ke tombol itu. Tidak ada gejala visual, uji klik tetap
+lolos, dan konsol diam (`CATATAN-FREEDAY.md` §19: tombol Keluar yang merampas sembilan tautan di
+layar setelan).
+
+### Added
+- **Satu `console.warn` per tombol pada klik pertama yang diterimanya** (`#109`), di
+  `freeday-unhydrated.js`, yang sudah ikut di impor akar. Ada dua bentuk:
+  - lapisannya tidak punya containing block di bawah `<body>`, jadi menutup seluruh halaman;
+  - ada target stretch lain yang dirender di area yang ditutupnya, jadi yang terakhir di DOM
+    merebut tap untuk yang lain (bentuk lama `.fdy-list` sebelum baris punya jangkar).
+
+  Containing block dihitung seperti peramban menghitungnya: `position`, `transform`, `filter`,
+  `perspective`, `backdrop-filter`, `contain`, `container-type`, dan `will-change` atas properti
+  itu. Pemicunya klik, bukan init, dengan alasan yang sama seperti peringatan hook. Lapisan yang
+  salah tempat menjadikan dirinya target dari apa pun yang ditap, jadi tap pertama di mana saja
+  sudah cukup. Klik e2e yang menembak koordinat juga memicunya.
+
+### Catatan
+- Pemeriksaannya membaca containing block, bukan `closest('.fdy-card, .fdy-list__row')`. Wadah
+  sendiri yang dibuat `position:relative` adalah jalan keluar yang terdokumentasi dan tidak boleh
+  ikut diperingatkan. `offsetParent`, usulan di catatan, tidak dipakai. Ia bernilai `null` untuk
+  elemen yang tersembunyi, dan mengembalikan `td`/`th`/`table` yang tidak berposisi, padahal
+  ketiganya bukan jangkar lapisan.
+- Audit kelasnya: semua lapisan `absolute` + `inset` lain di kit (chip, donut) berjangkar ke
+  elemennya sendiri, dan backdrop memakai `fixed` dengan sengaja. Hanya `--stretch` yang menempel
+  ke apa pun yang kebetulan ada di atasnya.
+- Tidak ada perilaku yang berubah. Tombol yang sudah di tempatnya tidak memicu apa pun.
+
 ## [3.15.0] - 2026-11-02
 
 **Layar-layar yang tidak pernah punya tiket.** Daftar halaman sistem dan state yang dibutuhkan
