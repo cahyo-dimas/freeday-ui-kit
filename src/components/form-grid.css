@@ -6,3 +6,9 @@
 .fdy-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:var(--space-4) var(--space-5);}
 .fdy-form-grid>.fdy-field{max-width:none;}
 .fdy-form-grid>.fdy-field--full{grid-column:1/-1;}
+/* Anything that is not a field is a row (CATATAN-FREEDAY §22). auto-fit makes every child a track, so
+ * a heading, a help line, an app's own row or a card footer stood as a narrow column beside the
+ * fields: a footer at 49% of its card, a row of controls at 31%, and nothing in the markup to say so.
+ * A cell that is meant to sit in a column but is not an input (a lone checkbox) goes in a
+ * `<div class="fdy-field">`, which keeps it one. */
+.fdy-form-grid>:not(.fdy-field){grid-column:1/-1;}

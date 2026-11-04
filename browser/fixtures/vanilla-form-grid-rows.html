@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday — what is a column in a form grid</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  /* Wide enough for three 14rem tracks, so a stray child has room to become a column. */
+  .frame{width:60rem;}
+</style>
+</head>
+<body style="padding:2rem">
+  <!-- CATATAN-FREEDAY §22: every non-field child below used to become a column of its own. -->
+  <form class="fdy-form-grid frame" id="grid">
+    <h3 class="fdy-title-card" id="heading">Patroli</h3>
+    <label class="fdy-field" id="f1"><span class="fdy-label">Nama</span><input class="fdy-input"></label>
+    <label class="fdy-field" id="f2"><span class="fdy-label">Kode</span><input class="fdy-input"></label>
+    <p class="fdy-help" id="help">Kode dipakai di laporan.</p>
+    <!-- The escape hatch: a cell that is not an input still sits in a column inside .fdy-field. -->
+    <div class="fdy-field" id="cell"><label class="fdy-check"><input type="checkbox"> Aktif</label></div>
+    <div id="approw" style="display:flex;gap:var(--space-2)"><span>A</span><span>B</span></div>
+    <label class="fdy-field fdy-field--full" id="full"><span class="fdy-label">Catatan</span><input class="fdy-input"></label>
+    <div class="fdy-card__footer" id="footer"><button class="fdy-btn" type="submit">Simpan</button></div>
+  </form>
+
+<script>
+  window.boxes = () => {
+    const grid = document.getElementById('grid').getBoundingClientRect();
+    const out = { grid: Math.round(grid.width) };
+    for (const id of ['heading', 'f1', 'f2', 'help', 'cell', 'approw', 'full', 'footer']) {
+      const r = document.getElementById(id).getBoundingClientRect();
+      out[id] = { share: Math.round(r.width / grid.width * 100), top: Math.round(r.top) };
+    }
+    return out;
+  };
+</script>
+</body>
+</html>

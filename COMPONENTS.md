@@ -1333,6 +1333,23 @@ Responsive two-column document header. Children are `.fdy-field`; `.fdy-field--f
 columns. For a form that must stay **one** column, do not reach for this grid — it pairs fields up
 as soon as the container is wide enough. Use a flex column and mark the fields `--full`.
 
+**Only a `.fdy-field` is a column.** Every other direct child (a heading, a `.fdy-help` line, a
+toolbar, your own row of controls, a `.fdy-card__footer`) spans the whole row. A cell that should
+sit in a column without being an input, such as a lone `.fdy-check`, goes in a
+`<div class="fdy-field">`. Put the grid **inside** `.fdy-card__body`, not on the card: on a
+`<form class="fdy-form-grid fdy-card">` the body and the footer are the grid's children, and the
+fields inside the body are no longer in it.
+
+```html
+<div class="fdy-form-grid">
+  <h3 class="fdy-title-card">Customer</h3>                       <!-- spans the row -->
+  <label class="fdy-field"><span class="fdy-label">Name</span><input class="fdy-input"></label>
+  <label class="fdy-field"><span class="fdy-label">Code</span><input class="fdy-input"></label>
+  <div class="fdy-field"><label class="fdy-check"><input type="checkbox"> Active</label></div>
+  <div class="fdy-help">The code appears on every invoice.</div> <!-- spans the row -->
+</div>
+```
+
 ## Filter bar — `.fdy-filterbar`
 A consistent filter row of `.fdy-field`s with a width rhythm (`--w-sm` · default · `--w-lg` ·
 `--w-xl` · `--w-2xl`), one `--w-grow` field (usually search) absorbing the slack, and

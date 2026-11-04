@@ -9,6 +9,35 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.16.0] - 2026-11-04
+
+**Di `.fdy-form-grid`, yang bukan isian adalah baris.** Grid itu `auto-fit`, jadi setiap anak yang
+tidak diaturnya menjadi kolom sendiri. Judul, baris bantuan, toolbar, wadah baris milik app, dan
+`.fdy-card__footer` berdiri sebagai kolom sempit di samping isian. Footer yang punya latar sendiri
+tampil sebagai blok abu-abu tegak di kanan kartu, dan pemilik app menyangkanya keputusan desain
+(`CATATAN-FREEDAY.md` §22: 58 anak bukan-isian di 22 berkas satu app, tiga gejala terlihat dalam
+sehari).
+
+### Changed
+- **Setiap anak langsung `.fdy-form-grid` yang bukan `.fdy-field` kini merentang satu baris penuh**
+  (`#111`). Isian tetap berpasangan seperti sebelumnya. Yang berubah adalah markup yang menaruh
+  non-isian langsung di grid: ia pindah dari kolom ke baris sendiri. Kalau sebuah sel memang harus
+  tetap sekolom, misalnya `.fdy-check` tunggal di samping isian, bungkus dengan
+  `<div class="fdy-field">`. Tidak ada kelas baru.
+
+### Catatan
+- Markup kit sendiri, yaitu kedua contoh di dokumentasi, hanya menaruh `.fdy-field` di grid, jadi
+  tidak ada yang bergeser. Komponen bertipe (`FdyCombo`, `FdyDatepicker`, dan lainnya) dirender
+  sebagai kontrol di dalam `.fdy-field`, bukan sebagai anak grid, dan tidak terpengaruh.
+- `COMPONENTS.md` kini menyebut `<form class="fdy-form-grid fdy-card">` sebagai salah pakai.
+  Grid-nya ada di dalam `.fdy-card__body`.
+- Grid `auto-fit` lain di kit (`.fdy-stats`, `.fdy-filelist--grid`, `.fdy-dl--grid`) berisi item
+  yang seragam dan tidak diubah. Hanya grid form yang lazim diselingi judul, teks bantuan, dan aksi.
+- Uji baru `browser/form-grid-rows.mjs` mengukur lebar tiap anak terhadap grid. Terhadap CSS lama,
+  judulnya mendapat 23%. Mutasi yang merentang semua anak (`>*`) juga merah, karena isian ikut
+  kehilangan kolomnya.
+- App yang sudah memasang aturan yang sama di lapisan tata letaknya boleh mencabutnya.
+
 ## [3.15.2] - 2026-11-04
 
 **Atribut `hidden` kini menyembunyikan elemen kit.** Peramban menyembunyikan `[hidden]` lewat
