@@ -38,6 +38,6 @@
 /* Row internals: a title/meta stack that truncates, and a trailing slot pinned right. */
 .fdy-list__main{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1;}
 .fdy-list__title{font-family:var(--font-body);font-size:var(--text-base);font-weight:var(--weight-medium);letter-spacing:normal;color:var(--color-text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.fdy-list__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
+.fdy-list__meta{margin:0;font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
 .fdy-list__aside{flex:none;display:flex;align-items:center;gap:var(--space-2);}
 /* Density: rows tighten with the rest of the kit (--space-* mid-range steps under compact). */

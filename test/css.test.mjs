@@ -285,19 +285,28 @@ test('a class the kit puts on a <p> zeroes the UA margin (#010)', () => {
    * consuming app as two separate spacing complaints; they were one missing declaration.
    *
    * The list comes from the DOCS, the classes the kit itself demonstrates on a paragraph, so a new
-   * one is covered by documenting it, which is the step nobody skips. */
-  const docs =
-    readFileSync(join(root, 'COMPONENTS.md'), 'utf8') +
-    readFileSync(join(root, 'docs', 'reference-screen.html'), 'utf8');
-  const onParagraphs = [...new Set([...docs.matchAll(/<p class="([^"]*)"/g)]
-    .flatMap(m => m[1].split(/\s+/))
-    .filter(c => c.startsWith('fdy-')))];
-  assert.ok(onParagraphs.length >= 3, `expected the docs to show several <p> classes, found ${onParagraphs.length}`);
+   * one is covered by documenting it, which is the step nobody skips. Every doc that ships counts:
+   * reading only two of them let `<p class="fdy-state__text">` in screen-states.md keep 14px of
+   * margin on each side. A paragraph's classes are judged together, since any one of them may be
+   * the one that clears it, and a class with no rule of its own counts as not clearing it rather
+   * than being skipped.
+   *
+   * TEXT_SLOTS are component text parts an app writes as a `<p>` even where the docs show a span or
+   * a div: a help line, an alert's sentence, a list row's meta line. */
+  const TEXT_SLOTS = ['fdy-help', 'fdy-state__text', 'fdy-alert__text', 'fdy-list__meta',
+    'fdy-stat__label', 'fdy-stat__meta', 'fdy-dropzone__hint'];
+  const docs = ['COMPONENTS.md', 'USAGE.md', 'docs/reference-screen.html', 'docs/screen-states.md', 'docs/index.html']
+    .map(f => readFileSync(join(root, f), 'utf8')).join('\n');
+  const groups = [...new Set([...docs.matchAll(/<p class="([^"]*)"/g)].map(m => m[1]))]
+    .map(attr => attr.split(/\s+/).filter(c => c.startsWith('fdy-')))
+    .filter(g => g.length > 0)
+    .concat(TEXT_SLOTS.map(c => [c]));
+  assert.ok(groups.length >= 10, `expected the docs to show several <p> classes, found ${groups.length}`);
 
-  const missing = onParagraphs.filter(cls => {
-    const rule = rules(css).find(r => r.selector === `.${cls}`);
-    return rule !== undefined && !/(^|;)\s*margin[:-]/.test(rule.body);
-  });
+  const all = rules(css);
+  const clears = (cls) => all.some(r => r.selector.split(',').map(s => s.trim()).includes(`.${cls}`)
+    && /(^|;)\s*margin[:-]/.test(r.body));
+  const missing = [...new Set(groups.filter(g => !g.some(clears)).map(g => g.join(' ')))];
   assert.deepEqual(missing, [], `these are documented on a <p> and never clear its UA margin: ${missing.join(', ')}`);
 });
 

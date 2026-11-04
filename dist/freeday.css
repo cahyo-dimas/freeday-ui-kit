@@ -95,7 +95,7 @@ a { color: var(--color-primary-strong); }
 .fdy-alert__icon svg{width:100%;height:100%;}
 .fdy-alert__body{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-1);}
 .fdy-alert__title{font-size:inherit;font-weight:var(--weight-semibold);color:var(--color-text);margin:0;}
-.fdy-alert__text{color:var(--color-text);line-height:var(--leading-normal);}
+.fdy-alert__text{margin:0;color:var(--color-text);line-height:var(--leading-normal);}
 .fdy-alert__close{flex:none;align-self:flex-start;border:0;background:transparent;color:var(--color-text-muted);cursor:pointer;font-size:var(--text-lg);line-height:1;padding:0 var(--space-1);border-radius:var(--radius-sm);}
 .fdy-alert__close:hover{color:var(--color-text);}
 .fdy-alert__close:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
@@ -1119,10 +1119,10 @@ a { color: var(--color-primary-strong); }
 /* --color-text-muted, not -subtle: this is a LABEL, i.e. text, and -subtle is deliberately gated at
    3.0 (placeholders, dividers, decorative glyphs). On surface-2 -subtle measures 4.41, under AA
    for text, and a stat label is often the only thing naming the number above it. */
-.fdy-stat__label{font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
+.fdy-stat__label{margin:0;font-size:var(--text-xs);font-weight:var(--weight-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--color-text-muted);}
 .fdy-stat__value{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:var(--weight-bold);letter-spacing:var(--tracking-tighter);line-height:1;color:var(--color-text);font-variant-numeric:tabular-nums;}
 .fdy-stat__value small{font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text-muted);}
-.fdy-stat__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
+.fdy-stat__meta{margin:0;font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);}
 /* A stat value is display type sized for a COUNT, "1,284", and a back office puts money in it.
    "IDR 300,000.00" needs 224px at --text-3xl and the grid's own track is 11rem, so it wrapped
    between the currency and the number: two lines of 31px where the design says one. Measured, not
@@ -1355,7 +1355,7 @@ a { color: var(--color-primary-strong); }
 .fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary-strong);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
-.fdy-dropzone__hint{font-size:var(--text-xs);}
+.fdy-dropzone__hint{margin:0;font-size:var(--text-xs);}
 /* Wide (horizontal) layout, icon beside the copy instead of stacked, for full-width
  * sections. Wrap the title + hint in .fdy-dropzone__text. */
 .fdy-dropzone--row{flex-direction:row;align-items:center;justify-content:center;text-align:left;gap:var(--space-4);}
@@ -1552,7 +1552,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
    screen reader does not read "star" after every label. That is stricter than a <span> an app has to
    remember to mark aria-hidden, and it cannot be forgotten. */
 .fdy-label--required::after{content:"*" / "";margin-left:var(--space-1);color:var(--color-danger);}
-.fdy-help{font-size:var(--text-xs);color:var(--color-text-muted);}
+.fdy-help{margin:0;font-size:var(--text-xs);color:var(--color-text-muted);}
 /* --danger is the tone word everywhere else in the kit; help text takes either (CATATAN-FREEDAY §11). */
 .fdy-help--error,.fdy-help--danger{color:var(--color-danger);}
 
@@ -1599,7 +1599,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* Row internals: a title/meta stack that truncates, and a trailing slot pinned right. */
 .fdy-list__main{display:flex;flex-direction:column;gap:var(--space-1);min-width:0;flex:1;}
 .fdy-list__title{font-family:var(--font-body);font-size:var(--text-base);font-weight:var(--weight-medium);letter-spacing:normal;color:var(--color-text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.fdy-list__meta{font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
+.fdy-list__meta{margin:0;font-size:var(--text-sm);color:var(--color-text-muted);display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;}
 .fdy-list__aside{flex:none;display:flex;align-items:center;gap:var(--space-2);}
 /* Density: rows tighten with the rest of the kit (--space-* mid-range steps under compact). */
 
@@ -1796,7 +1796,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 .fdy-state__icon{display:inline-flex;align-items:center;justify-content:center;width:2.5rem;height:2.5rem;color:var(--color-text-subtle);}
 .fdy-state__icon svg{width:100%;height:100%;}
 .fdy-state__title{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);color:var(--color-text);margin:0;}
-.fdy-state__text{font-size:var(--text-sm);color:var(--color-text-muted);max-width:24rem;line-height:var(--leading-normal);}
+.fdy-state__text{margin:0;font-size:var(--text-sm);color:var(--color-text-muted);max-width:24rem;line-height:var(--leading-normal);}
 .fdy-state__actions{margin-top:var(--space-2);display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center;}
 .fdy-state--danger .fdy-state__icon{color:var(--color-danger-strong);}
 /* Compact (#069): the same state inside a small card, one line of icon and text instead of a

@@ -9,6 +9,33 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.16.1] - 2026-11-04
+
+**Slot teks kit di atas `<p>` tidak lagi membawa margin bawaan peramban.** `<p>` punya margin 1em
+dari peramban, dan kelas yang tidak menolkannya mewarisi jarak yang tidak pernah ditulis siapa pun.
+Ini kelas cacat yang sama dengan `.fdy-eyebrow` di `#010`. Kali ini terbuka saat menulis contoh
+untuk 3.16.0: `p.fdy-help` yang dipakai app (`CATATAN-FREEDAY.md` §22) membawa 12px di atas dan di
+bawah.
+
+### Fixed
+- **`margin:0` pada tujuh slot teks** (`#112`): `.fdy-help`, `.fdy-state__text`, `.fdy-alert__text`,
+  `.fdy-list__meta`, `.fdy-stat__label`, `.fdy-stat__meta`, dan `.fdy-dropzone__hint`. Diukur di
+  Chrome sebelum perbaikan: 12px sampai 16px di tiap sisi. Jarak di antara bagian komponen sudah
+  diatur `gap` milik komponennya.
+- **`docs/screen-states.md` sendiri mencontohkan `<p class="fdy-state__text">`** sejak 3.15.0, dan
+  kelas itu membawa 14px di tiap sisi. Contoh `docs/index.html` yang memasang `.fdy-state` di
+  `<p>` diganti `<div>`, karena state adalah wadah, bukan paragraf.
+
+### Catatan
+- Gate `#010` di `test/css.test.mjs` sebelumnya buta di dua tempat. Ia hanya membaca dua dokumen,
+  jadi `screen-states.md` dan `docs/index.html` lolos. Kelas tanpa aturan sendiri juga dilewati,
+  bukan dihitung gagal. Kini ia membaca setiap dokumen yang dikirim, menilai kelas-kelas satu
+  paragraf bersama-sama, dan menjaga ketujuh slot di atas walaupun dokumennya mencontohkan span.
+  Mencabut `margin:0` dari salah satunya membuat gate merah.
+- Yang berubah di layar: paragraf dengan kelas-kelas itu kehilangan jarak 12–16px yang tidak
+  disengaja. Kelas utilitas warna (`.fdy-text-muted` dan kawan-kawan) sengaja tidak disentuh,
+  karena paragraf biasa yang hanya diwarnai tetap butuh jarak paragrafnya.
+
 ## [3.16.0] - 2026-11-04
 
 **Di `.fdy-form-grid`, yang bukan isian adalah baris.** Grid itu `auto-fit`, jadi setiap anak yang

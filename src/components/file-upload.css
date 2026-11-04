@@ -9,7 +9,7 @@
 .fdy-dropzone.is-dragover .fdy-dropzone__icon{color:var(--color-primary-strong);}
 .fdy-dropzone__icon svg{display:block;width:2rem;height:2rem;}
 .fdy-dropzone__title{font-size:inherit;font-weight:var(--weight-medium);color:var(--color-text);margin:0;}
-.fdy-dropzone__hint{font-size:var(--text-xs);}
+.fdy-dropzone__hint{margin:0;font-size:var(--text-xs);}
 /* Wide (horizontal) layout, icon beside the copy instead of stacked, for full-width
  * sections. Wrap the title + hint in .fdy-dropzone__text. */
 .fdy-dropzone--row{flex-direction:row;align-items:center;justify-content:center;text-align:left;gap:var(--space-4);}
