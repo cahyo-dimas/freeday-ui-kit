@@ -198,7 +198,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.16.1"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.17.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)
@@ -424,8 +424,9 @@ public partial class Panel : ComponentBase, IAsyncDisposable
   <div data-fdy-datepicker></div>
 </div>
 ```
-Extras: `FreedayBlazor.toast(new { variant, title, message })` for toasts; `FreedayBlazor.toggleTheme()`
-to flip the theme. Event DTOs are deserialized case-insensitively by Blazor.
+Extras: `FreedayBlazor.toast(new { variant, title, message })` for toasts; `FreedayBlazor.toggleTheme()`,
+`setTheme("light" | "dark" | "system")`, `getTheme()` and `getResolvedTheme()` for the stored theme
+preference (COMPONENTS.md, "Theme preference"). Event DTOs are deserialized case-insensitively by Blazor.
 
 ### 4. Recommended: native typed components (`Freeday.Blazor` RCL)
 

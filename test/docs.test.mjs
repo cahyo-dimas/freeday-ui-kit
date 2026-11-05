@@ -224,10 +224,12 @@ test('an enhancer string is overridable, not hard-coded (#016)', () => {
     }
     /* Comments are stripped whole, not by line shape: an apostrophe inside prose ("the owner's
        business") opens a string literal for any line-based matcher. */
-    /* console.warn text goes to a developer's devtools, never into the DOM, so no reader of the
-       page could be handed it to translate. Stripped like comments; `\);\s*$` ends the call. */
+    /* console.warn text, and the message of a thrown Error, go to a developer's devtools, never
+       into the DOM, so no reader of the page could be handed them to translate. Stripped like
+       comments; `\);\s*$` ends the call. */
     const code = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '')
-      .replace(/console\.warn\([\s\S]*?\);[ \t]*$/gm, '');
+      .replace(/console\.warn\([\s\S]*?\);[ \t]*$/gm, '')
+      .replace(/throw new \w*Error\([\s\S]*?\);[ \t]*$/gm, '');
     let offset = 0;
     for (const line of code.split('\n')) {
       const at = offset;
@@ -926,4 +928,19 @@ test('a Vue/React wrapper that renders an enhancer hook ignores it or claims it'
     }
   }
   assert.deepEqual(offenders, [], offenders.join('\n'));
+});
+
+test('the <head> theme snippet in COMPONENTS.md reads the key the theme core writes (#113)', () => {
+  /* The snippet runs before the kit loads, so nothing at runtime can notice it reading the wrong
+   * key: the page would just flash the default theme on every load, forever. The browser spec runs
+   * the fixture's copy; this holds that copy to the documented one, and both to the core. */
+  const snippet = /<script>try\{var t=localStorage\.getItem\('([^']+)'\)[^<]*<\/script>/;
+  const documented = read('COMPONENTS.md').match(snippet);
+  assert.ok(documented !== null, 'COMPONENTS.md lost the <head> theme snippet');
+  const fixture = read('browser/fixtures/vanilla-theme-pref.html').match(snippet);
+  assert.ok(fixture !== null, 'the theme fixture lost its <head> snippet');
+  assert.equal(fixture[0], documented[0], 'the fixture must run exactly the snippet the docs hand out');
+  const key = read('src/freeday-theme.js').match(/var KEY = '([^']+)'/);
+  assert.ok(key !== null, 'src/freeday-theme.js no longer declares its storage KEY');
+  assert.equal(documented[1], key[1], 'the snippet reads a different key than the core writes');
 });

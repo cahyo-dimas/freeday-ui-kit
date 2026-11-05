@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue';
-import { useFreeday, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl } from '@cahyo-dimas/freeday/vue';
+import { useFreeday, useTheme, FdyCombo, FdyDatepicker, FdyDateRange, FdyAutocomplete, FdyCascade, FdyCfl } from '@cahyo-dimas/freeday/vue';
 import type {
   CascadeNode,
   FdyCascadeChangeDetail,
@@ -177,10 +177,7 @@ const onValid = (): void => {
     });
 };
 
-const toggleTheme = (): void => {
-  const el = document.documentElement;
-  el.setAttribute('data-theme', el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-};
+const { resolved, toggleTheme } = useTheme();
 </script>
 
 <template>
@@ -198,7 +195,7 @@ const toggleTheme = (): void => {
     <div class="fdy-app__content">
       <header class="fdy-app__topbar">
         <h1 style="font-size:var(--text-lg);font-weight:var(--weight-semibold);margin:0">Faktur baru</h1>
-        <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" @click="toggleTheme">Tema</button>
+        <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" type="button" @click="toggleTheme">{{ resolved === 'dark' ? 'Tema terang' : 'Tema gelap' }}</button>
       </header>
 
       <main class="fdy-app__main" style="display:flex;flex-direction:column;gap:var(--space-6);max-width:56rem">

@@ -175,14 +175,23 @@
     if (element) element.indeterminate = !!value;
   }
 
-  // Flip the document theme (data-theme on <html>), for the demo toggle.
-  function toggleTheme() {
-    var e = document.documentElement;
-    e.setAttribute('data-theme', e.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  // The device's theme preference, through the same core Vue and React use (freeday-theme.js, in
+  // freeday.js): stored per device, 'system' follows the OS, and every toggle on the page agrees.
+  function themeCore() {
+    if (!window.FreedayTheme) {
+      throw new Error('FreedayBlazor: window.FreedayTheme is missing. Load freeday.js (which includes '
+        + 'freeday-theme.js) before freeday-blazor.js.');
+    }
+    return window.FreedayTheme;
   }
+  function toggleTheme() { themeCore().toggle(); }
+  function setTheme(theme) { themeCore().set(theme); }
+  function getTheme() { return themeCore().get(); }
+  function getResolvedTheme() { return themeCore().resolved(); }
 
   window.FreedayBlazor = {
     initAll: initAll, on: on, off: off, onOutside: onOutside, toast: toast, toggleTheme: toggleTheme,
+    setTheme: setTheme, getTheme: getTheme, getResolvedTheme: getResolvedTheme,
     comboSetValue: comboSetValue, dateRangeOn: dateRangeOn, chartUpdate: chartUpdate,
     setIndeterminate: setIndeterminate,
     dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,

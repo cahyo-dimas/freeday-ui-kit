@@ -368,6 +368,18 @@ export async function withPage(fileUrl, fn) {
       await evalJS('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))');
     };
 
+    /* The OS light/dark setting, as a page sees it. Waits until matchMedia agrees, for the same
+       reason setViewport waits for its size: a read before the switch lands reports the old one. */
+    const setColorScheme = async (scheme) => {
+      await cmd('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] });
+      const switched = await waitFor(`matchMedia('(prefers-color-scheme: ${scheme})').matches`);
+      if (!switched) throw new Error(`prefers-color-scheme never reported ${scheme}`);
+      /* `matches` flips at once, but the MediaQueryList change event is dispatched in the rendering
+         step, and polling over CDP never runs one: a listener stays silent until a frame is drawn.
+         Measured: no event after 4s of polling, one event after two animation frames. */
+      await evalJS('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))');
+    };
+
     /* Every AX node UNDER an element, ignored ones included, the only instrument that can tell
        "the spec says this subtree is presentational" apart from "the browser actually prunes it".
        role="img" is Children Presentational per ARIA, but a UA is free to keep the nodes and leave
@@ -428,7 +440,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport });
+    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
   } finally {
     if (ws !== null) {
       try {
@@ -508,6 +520,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-sortable.js'),
       join(HERE, 'entries', 'vue-empty-ref.js'),
       join(HERE, 'entries', 'react-empty-ref.tsx'),
+      join(HERE, 'entries', 'vue-theme.js'),
+      join(HERE, 'entries', 'react-theme.tsx'),
     ],
     outdir: join(HERE, '.build'),
     bundle: true,

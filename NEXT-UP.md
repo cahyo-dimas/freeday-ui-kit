@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04; §20 dan §21 tidak ada di berkasnya):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05; §20 dan §21 tidak ada di berkasnya):
 
 | § | pokok | status |
 |---|---|---|
@@ -98,6 +98,7 @@ dan tidak punya berkas tidak pernah ada.
 | 18 | tak ada pilihan bertumpuk bertarget ibu jari | terkirim 3.15.0 `#107` sebagai `.fdy-btn-group--stack`, nama yang memang ditulis app lebih dulu dan tidak ada; semantiknya tetap `aria-pressed` yang dikelola app |
 | 19 | `.fdy-btn--stretch` di luar kartu menutup seluruh halaman tanpa suara | terkirim 3.15.1 `#109` sebagai peringatan sekali per tombol pada klik pertama, ditambah bentuk dua target yang bertumpuk; dibaca dari containing block, sehingga wadah `position:relative` milik app tetap sah |
 | 22 | `fdy-form-grid` menjadikan setiap anak bukan-isian sebuah kolom | terkirim 3.16.0 `#111`, usul 1 catatan: anak bukan-`.fdy-field` merentang baris penuh; sel non-isian yang harus sekolom dibungkus `div.fdy-field` |
+| 23 | pengalih tema hanya ada untuk Blazor | terkirim 3.17.0 `#113` sebagai `FreedayTheme` + `useTheme()` Vue/React + Blazor yang disambungkan ke inti yang sama; catatan keliru soal Blazor, yang punya hanya pembantu demo tanpa penyimpanan. `'system'` mencabut atribut, bukan menghitungnya. Sinkron antar-tab sengaja tidak dibuat |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

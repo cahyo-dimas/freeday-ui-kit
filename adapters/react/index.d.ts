@@ -13,6 +13,32 @@ export interface UseFreedayReturn {
  */
 export declare function useFreeday(rootRef?: RefObject<HTMLElement | null>): UseFreedayReturn;
 
+/** A theme preference. `'system'` removes `data-theme`, so the tokens follow the OS, live. */
+export type FdyTheme = 'light' | 'dark' | 'system';
+/** What is actually on screen once `'system'` is resolved against the OS. */
+export type FdyResolvedTheme = 'light' | 'dark';
+/** `event.detail` of `fdy-theme-change`, fired on `document`. */
+export interface FdyThemeChangeDetail { theme: FdyTheme; resolved: FdyResolvedTheme }
+
+export interface UseThemeReturn {
+  /** The stored preference, per device; `'system'` until one is chosen. */
+  theme: FdyTheme;
+  /** The theme on screen. Use it for the toggle's icon and label, not `theme`. */
+  resolved: FdyResolvedTheme;
+  /** Store and apply a preference. Throws a TypeError for any other value. */
+  setTheme: (theme: FdyTheme) => void;
+  /** Switch to the opposite of what is on screen, so the first press always changes it. */
+  toggleTheme: () => void;
+}
+
+/**
+ * The device's light/dark preference, applied to `<html>`, kept in `localStorage` and shared by
+ * every caller on the page. Pass a ref to also apply it to that element, for a region whose markup
+ * fixes its own `data-theme`. Loads the theme core itself: no `import '@cahyo-dimas/freeday'`
+ * needed. Apply the stored value before first paint with the `<head>` snippet in COMPONENTS.md.
+ */
+export declare function useTheme(rootRef?: RefObject<HTMLElement | null>): UseThemeReturn;
+
 /** `event.detail` shapes for the bubbling `fdy-*` CustomEvents. */
 export interface FdyChangeDetail { value: string }
 export interface FdyAutocompleteSelectDetail { value: string }

@@ -126,6 +126,7 @@ element is fine. Events are bubbling
 | — (imperative, returns `Promise<boolean>`) | `freeday-confirm.js` | `Freeday.confirm()` | — |
 | — (stamps `<html data-breakpoint>`) | `freeday-breakpoint.js` | `FreedayBreakpoint` | `fdy-breakpoint-change` |
 | — (internal positioning) | `freeday-popover.js` | `FreedayPopover` | — |
+| — (theme preference, see below) | `freeday-theme.js` | `FreedayTheme` | `fdy-theme-change` (on `document`) |
 
 **Shared conventions across the select-type widgets** (combo, cascade, datepicker, daterange,
 timepicker, autocomplete, cfl): `data-value` seeds the value, `data-placeholder` the empty text,
@@ -496,6 +497,33 @@ white) rather than against the kit's own page colour, which is close enough to t
 lightness that a panel four times more transparent still passed. So glass here is a **subtle** frost:
 the effect people actually see comes from the blur, not from the alpha. Put a photo or a gradient
 behind a panel and the promise still holds; that is what "over any ground" buys.
+
+**Theme preference: `FreedayTheme` / `useTheme()`.** The light/dark switch, ready made. One choice
+per device, `'light'`, `'dark'` or `'system'`, stored in `localStorage` and applied to `<html>`.
+`'system'` removes `data-theme`, so the tokens follow the OS and an OS switch repaints the page
+without a reload.
+
+| | Vue / React | Blazor | Anything else |
+|---|---|---|---|
+| read | `useTheme()` → `theme`, `resolved` | `FreedayBlazor.getTheme()`, `getResolvedTheme()` | `FreedayTheme.get()`, `.resolved()` |
+| change | `setTheme(t)`, `toggleTheme()` | `FreedayBlazor.setTheme(t)`, `toggleTheme()` | `FreedayTheme.set(t)`, `.toggle()` |
+
+- **Label the button from `resolved`, not `theme`.** `resolved` is what is on screen; `theme` is
+  `'system'` until someone chooses. `toggle` flips what is on screen, so the first press always
+  changes it.
+- **Every caller shares one preference.** Two toggles in two shells stay in step, through
+  `fdy-theme-change` (detail `{ theme, resolved }`).
+- **A region with its own `data-theme` in markup keeps it**, because a subtree's attribute beats the
+  document's. To hand it to the preference, pass its ref (`useTheme(regionRef)`) or call
+  `FreedayTheme.attach(el)`, which returns a detacher. Under `'system'` that removes the fixed value.
+- `useTheme()` loads the core itself; no `import '@cahyo-dimas/freeday'` is needed for it.
+- **Apply the stored choice before first paint** with this line as the first script in `<head>`.
+  Without it the kit still applies the choice once it loads, but the page shows the default for a
+  moment first:
+
+```html
+<script>try{var t=localStorage.getItem('fdy-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+```
 
 **Primary palette: `data-primary`.** 18 options — `azure` (the default, and what you get with no
 attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`

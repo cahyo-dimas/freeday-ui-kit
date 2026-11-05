@@ -9,6 +9,61 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.17.0] - 2026-11-05
+
+**Pengalih tema terang/gelap, siap pakai di semua stack.** Setiap app sebelumnya menulis sendiri
+penyimpanan pilihan, pembacaan `prefers-color-scheme`, dan pemasangan `data-theme`, sambil menebak
+kontrak kit dari dokumen (`CATATAN-FREEDAY.md` §23). Catatan itu menyebut Blazor sudah punya.
+Sebenarnya `FreedayBlazor.toggleTheme()` hanya pembantu demo: ia membalik atribut di `<html>`,
+tidak menyimpan apa pun, dan tidak bisa kembali ke "ikuti sistem". Jadi tidak ada satu stack pun
+yang punya.
+
+### Added
+- **`freeday-theme.js` → `window.FreedayTheme`** (`#113`), ikut di `freeday.js`:
+  - `get()`, `resolved()`, `set(theme)`, `toggle()`, `attach(el)`, dan event `fdy-theme-change`
+    di `document` dengan detail `{ theme, resolved }`.
+  - Satu pilihan per perangkat: `'light'`, `'dark'`, atau `'system'`, disimpan di `localStorage`
+    dan diterapkan ke `<html>`. Nilai lain ditolak dengan `TypeError`.
+  - `'system'` **mencabut** `data-theme`, tidak menghitung nilainya. Token sudah mengikuti OS
+    selama tidak ada `data-theme`, jadi pergantian OS langsung terlihat tanpa listener yang
+    memutuskan apa pun. Event tetap dikirim supaya ikon tombol ikut berganti.
+  - `toggle()` membalik yang **tampil** di layar, bukan pilihannya. Di OS gelap dengan pilihan
+    `'system'`, tekan pertama menuju terang.
+  - `attach(el)` menyerahkan wilayah yang `data-theme`-nya ditulis tetap di markup kepada pilihan
+    pengguna, dan mengembalikan fungsi pelepas. Tanpa itu, atribut subtree selalu menang atas
+    atribut dokumen.
+  - Pilihan yang tersimpan diterapkan saat dimuat. Kalau tidak ada yang tersimpan, tidak ada yang
+    disentuh, jadi markup yang membawa `data-theme` sendiri tetap utuh.
+- **`useTheme(rootRef?)` di Vue dan React**, mengembalikan `theme`, `resolved`, `setTheme`, dan
+  `toggleTheme`. Kedua adapter memuat inti yang sama sendiri, jadi tidak perlu impor akar, dan
+  inti hanya terdaftar sekali walaupun dimuat dari dua jalur. Semua pemanggil di satu halaman
+  tetap sinkron. Ref yang diberikan di-`attach` saat mount dan dilepas saat unmount.
+- **Blazor:** `FreedayBlazor.setTheme`, `getTheme`, dan `getResolvedTheme`. `toggleTheme()` kini
+  memakai inti yang sama, jadi ikut menyimpan dan mengenal `'system'`.
+- **Cuplikan satu baris untuk `<head>`** di `COMPONENTS.md`, untuk menerapkan pilihan sebelum paint
+  pertama. Gate baru di `test/docs.test.mjs` memastikan cuplikan itu membaca kunci yang ditulis inti,
+  dan fixture uji menjalankan cuplikan yang persis sama.
+
+### Changed
+- `FreedayBlazor.toggleTheme()` kini **menyimpan** pilihannya di `localStorage` dan membutuhkan
+  `freeday.js` sudah dimuat. Tanpa itu ia melempar `Error` yang menyebut berkas yang kurang.
+  Sebelumnya ia hanya membalik atribut di `<html>`.
+
+### Catatan
+- Uji baru `browser/theme-pref.mjs` (6 uji) memeriksa atribut, nilai tersimpan, dan **warna kartu
+  yang benar-benar dicat**, dicocokkan dengan kartu acuan terang dan gelap. Pengaturan OS diemulasi
+  sebagai fitur media sungguhan lewat CDP, bukan `matchMedia` palsu. Sembilan mutasi (system
+  menghitung nilai, tanpa listener OS, toggle membalik pilihan, tanpa penerapan saat dimuat, root
+  diabaikan, tanpa validasi, dan dua adapter tanpa pelepas atau tanpa listener) semuanya merah.
+- Harness mendapat `setColorScheme()`. Event `change` dari `MediaQueryList` dikirim pada langkah
+  rendering, dan polling lewat CDP tidak pernah menjalankan langkah itu. Tanpa menunggu dua frame,
+  listener tetap diam: terukur tanpa event selama 4 detik polling, lalu satu event sesudah dua
+  frame.
+- Gate string `#016` kini juga melewati pesan `throw new …Error(…)`, dengan alasan yang sama seperti
+  `console.warn`: teks itu untuk devtools pengembang, tidak pernah masuk DOM.
+- `examples/vue-faktur` berhenti menulis pengalih temanya sendiri dan memakai `useTheme()`.
+- Sinkronisasi antar-tab sengaja tidak dibuat. Tab lain mengikuti pilihan baru saat dimuat ulang.
+
 ## [3.16.1] - 2026-11-04
 
 **Slot teks kit di atas `<p>` tidak lagi membawa margin bawaan peramban.** `<p>` punya margin 1em

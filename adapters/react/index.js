@@ -1,4 +1,5 @@
 export { useFreeday } from './useFreeday.js';
+export { useTheme } from './useTheme.js';
 export { usePopover } from './usePopover.ts';
 export { FdyCombo } from './components/FdyCombo.tsx';
 export { FdyDatepicker } from './components/FdyDatepicker.tsx';

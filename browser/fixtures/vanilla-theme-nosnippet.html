@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Freeday — theme preference, no head snippet</title>
+<!-- Deliberately WITHOUT the <head> snippet: the kit itself must catch up on load. -->
+<script>window.beforeKit = document.documentElement.getAttribute('data-theme');</script>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js"></script>
+</head>
+<body>
+  <div class="fdy-card" id="pageCard">Page</div>
+  <!-- A region whose markup fixes its own theme, the case attach() exists for. -->
+  <section data-theme="dark" id="kiosk"><div class="fdy-card" id="kioskCard">Kiosk</div></section>
+  <!-- References: what a card looks like in each theme, whatever the page is doing. -->
+  <div data-theme="light"><div class="fdy-card" id="lightRef">L</div></div>
+  <div data-theme="dark"><div class="fdy-card" id="darkRef">D</div></div>
+<script>
+  window.events = [];
+  document.addEventListener('fdy-theme-change', (e) => window.events.push(e.detail));
+  const bg = (id) => getComputedStyle(document.getElementById(id)).backgroundColor;
+  /* Which theme a card is painted in, by matching it against the two references. */
+  window.painted = (id) => bg(id) === bg('darkRef') ? 'dark' : bg(id) === bg('lightRef') ? 'light' : 'other:' + bg(id);
+  window.state = () => {
+    let stored;
+    try { stored = localStorage.getItem('fdy-theme'); } catch (e) { stored = 'unreadable'; }
+    return {
+      html: document.documentElement.getAttribute('data-theme'),
+      kiosk: document.getElementById('kiosk').getAttribute('data-theme'),
+      stored, theme: FreedayTheme.get(), resolved: FreedayTheme.resolved(),
+      page: window.painted('pageCard'), kioskPainted: window.painted('kioskCard'),
+    };
+  };
+</script>
+</body>
+</html>
