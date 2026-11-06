@@ -22,6 +22,7 @@
     root.dataset.fdyAcReady = '1';
 
     var input = root.querySelector('input[role="combobox"]') || root.querySelector('input');
+    root._fdyInvalid = !!input && input.getAttribute('aria-invalid') === 'true';
     var listbox = root.querySelector('[role="listbox"]');
     if (!input || !listbox) return;
     var options = Array.prototype.slice.call(listbox.querySelectorAll('[role="option"]'));
@@ -145,10 +146,14 @@
     if (!input || !state) return;
     if (state.disabled != null) input.disabled = !!state.disabled;
     if (state.readonly != null) input.readOnly = !!state.readonly;
-    if (state.invalid != null) {
+    /* Only when the HOST changes it: an unchanged push must not erase what freeday-form.js painted (#114). */
+    if (state.invalid != null && !!state.invalid !== root._fdyInvalid) {
+      root._fdyInvalid = !!state.invalid;
       if (state.invalid) input.setAttribute('aria-invalid', 'true');
       else input.removeAttribute('aria-invalid');
     }
+    /* Native `required` on the input itself: it is editable, so constraint validation applies (#114). */
+    if (state.required != null) input.required = !!state.required;
   }
 
   window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState };

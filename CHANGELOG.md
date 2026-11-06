@@ -9,6 +9,64 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.18.0] - 2026-11-07
+
+**Setiap kontrol bernilai kini dapat dijadikan wajib, di ketiga stack.** 3.12.0 (`#096`) memberi
+`required` ke lima kontrol berpemicu tombol dan meninggalkan tiga (`CATATAN-FREEDAY.md` §24).
+Akibatnya, menukar isian wajib ke `FdyAutocomplete` **membuang validasinya tanpa suara**: tidak ada
+galat dan tidak ada peringatan. Formulirnya hanya berhenti menuntut isian itu. Audit kelasnya
+menemukan dua kontrol lain dengan celah yang sama, dua cacat di aturan validasinya sendiri, dan
+satu cacat di semua jembatan Blazor.
+
+### Added
+- **`required` di `FdyAutocomplete`** (`#114`), Vue · React · Blazor (`Required`). Ini `required`
+  **native**, dipasang di input-nya. Input itu dapat disunting, jadi validasi bawaan peramban
+  sudah berlaku seperti pada `<input>` lain.
+- **`required` di `FdyCfl`** (`#114`), ketiga stack. Ia merender `data-fdy-required` di grup
+  isiannya, dan grup itu kini mencerminkan kunci baris terpilih (`rowKey`, dipisah koma bila
+  `multiple`) di `data-value`. Penolakan menandai dan memfokuskan tombol pembuka.
+- **`required` di `FdyDateRange`** (`#114`), ketiga stack, diteruskan ke **kedua** ujung. Prop ini
+  tidak ada di daftar §24. Masing-masing datepicker sudah punya `required`, tetapi tidak ada prop
+  rentang yang meneruskannya.
+- **Jalur mentah `freeday-cfl.js` mencerminkan `data-value`** di grup isiannya setiap kali baris
+  dipilih. Nilainya `data-value` baris itu, atau kunci tampilannya bila baris tidak punya. Dengan
+  begitu `data-fdy-required` di grup bekerja tanpa pembungkus.
+- **`setState(root, { required })`** di kelima enhancer yang punya `setState` (combo, datepicker
+  termasuk mode bulan, timepicker, cascade, autocomplete).
+
+### Fixed
+- **Dua kontrol dalam satu `.fdy-field` saling menghapus pesan** (`#114`). Slot pesan dicari per
+  field, jadi mengisi ujung "dari" pada rentang menghapus pesan yang masih dibutuhkan ujung
+  "sampai". Akibatnya ujung itu tetap merah tanpa keterangan. Cacat yang sama mengenai dua input
+  native yang berdampingan. Kini slotnya tetap tampil selama masih ada kontrol yang merujuknya dan
+  masih invalid.
+- **`Required` di Blazor hanya terbaca saat render pertama** (`#114`), di kelima kontrol 3.12.0.
+  Sesudah hidrasi komponennya berhenti merender, dan `setState` tidak membawa `required`. Isian
+  yang wajib secara bersyarat (`Required="@isPerusahaan"`) tidak pernah ikut berubah. Kini
+  `Required` ikut didorong bersama tiga state lainnya.
+- **Mencabut syarat wajib tidak menghapus galat yang sedang tampil.** `MutationObserver` aturan
+  form kini juga mengamati `data-fdy-required`, dan akar yang tak lagi wajib tidak pernah ditolak.
+- **Dorongan `setState` yang tidak mengubah apa pun menghapus tanda merah dari form** (`#114`).
+  Blazor mendorong semua state setiap kali induknya merender ulang. Menulis ulang `invalid: false`
+  yang tidak berubah mencabut `aria-invalid` yang dipasang `freeday-form.js`, sehingga pesannya
+  tertinggal di bawah isian yang tidak lagi merah. Kelima enhancer kini menulis `aria-invalid`
+  hanya bila `invalid` dari host benar-benar berubah. Vue dan React tidak terkena: keduanya hanya
+  menambal atribut yang ikatannya berubah.
+- **Tombol pembuka `FdyCfl` di Blazor tidak punya `aria-haspopup="dialog"`**, padahal Vue dan
+  React memilikinya. Aturan form mencari elemen yang ditandai lewat atribut itu.
+
+### Catatan
+- **Koreksi atas 3.12.0.** Catatan rilis itu menulis bahwa `FdyAutocomplete` dan `FdyCfl`
+  "merender `<input>` asli, jadi `required` native yang cocok". Untuk Cfl itu keliru. Input-nya
+  `readonly`, dan input readonly dikecualikan dari validasi bawaan peramban (`willValidate`
+  bernilai `false`), jadi `required` di sana tidak pernah menolak apa pun. Usulan §24 menyalin
+  kekeliruan itu. Seandainya diterapkan apa adanya, Cfl akan tampak wajib tanpa pernah menolak.
+  Ujinya kini menegaskan `willValidate === false` di fixture, supaya tidak ada yang mengembalikan
+  Cfl ke jalur native.
+- Penimpaan pesan per-kontrol (`data-fdy-msg-required`) pada `FdyDateRange` Vue jatuh ke akar
+  `.fdy-daterange`, bukan ke kedua datepicker yang membacanya. Pakai `data-fdy-text-required` di
+  `<form>`, seperti di React dan Blazor.
+
 ## [3.17.0] - 2026-11-05
 
 **Pengalih tema terang/gelap, siap pakai di semua stack.** Setiap app sebelumnya menulis sendiri

@@ -1,0 +1,96 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: the controls a data-fdy-validate form could not require before #114</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; } form { margin-bottom: 40px; }</style>
+
+<!-- A choose-from-list: its input is readonly, so a native `required` on it would be ignored. -->
+<form id="f-cfl" data-fdy-validate>
+  <div class="fdy-field">
+    <span class="fdy-label" id="cust-l">Pelanggan</span>
+    <div id="cust" class="fdy-input-group" data-fdy-cfl="dlg-cust" data-fdy-cfl-display="code" data-fdy-required>
+      <input id="cust-input" class="fdy-input" aria-labelledby="cust-l" readonly required>
+      <button id="cust-open" class="fdy-input-group__btn" type="button" aria-haspopup="dialog" aria-label="Pilih pelanggan">…</button>
+    </div>
+  </div>
+  <button id="cfl-kirim" type="submit" class="fdy-btn">Simpan</button>
+</form>
+<dialog class="fdy-modal fdy-modal--cfl" id="dlg-cust" aria-label="Pilih pelanggan">
+  <div class="fdy-modal__body">
+    <div class="fdy-cfl__search"><input class="fdy-input" type="search" aria-label="Cari" data-fdy-cfl-search></div>
+    <div class="fdy-cfl__results">
+      <table class="fdy-table">
+        <thead><tr><th scope="col">Kode</th></tr></thead>
+        <tbody><tr id="row-1" class="fdy-cfl__row" data-value="7" data-code="C-1001"><td>C-1001</td></tr></tbody>
+      </table>
+      <p class="fdy-cfl__empty" data-fdy-cfl-empty hidden>Tidak ada.</p>
+    </div>
+  </div>
+</dialog>
+
+<!-- A range: both ends required and sharing ONE field, so one message slot. -->
+<form id="f-range" data-fdy-validate>
+  <div class="fdy-field">
+    <span class="fdy-label">Periode</span>
+    <div class="fdy-daterange" data-fdy-daterange role="group" aria-label="Periode" id="range">
+      <div data-fdy-datepicker data-role="from" data-label="Dari" data-fdy-required></div>
+      <span class="fdy-daterange__sep" aria-hidden="true">–</span>
+      <div data-fdy-datepicker data-role="to" data-label="Sampai" data-fdy-required></div>
+    </div>
+  </div>
+  <button id="range-kirim" type="submit" class="fdy-btn">Simpan</button>
+</form>
+
+<!-- `required` changed AFTER init, the way a render-once host (Blazor) has to: through setState. -->
+<form id="f-state" data-fdy-validate>
+  <div class="fdy-field">
+    <span class="fdy-label">Jam</span>
+    <div id="jam" data-fdy-timepicker data-step="30" data-min="06:00" data-max="08:00" data-label="Jam"></div>
+  </div>
+  <div class="fdy-field">
+    <label class="fdy-label" for="satuan">Satuan</label>
+    <div id="satuan-root" class="fdy-autocomplete" data-fdy-autocomplete>
+      <input id="satuan" class="fdy-input" type="text" role="combobox" aria-expanded="false"
+             aria-autocomplete="list" aria-controls="satuan-list" autocomplete="off">
+      <ul id="satuan-list" class="fdy-autocomplete__listbox" role="listbox" hidden>
+        <li class="fdy-autocomplete__option" role="option">pcs</li>
+        <li class="fdy-autocomplete__empty" hidden>Tidak ada</li>
+      </ul>
+    </div>
+  </div>
+  <button id="state-kirim" type="submit" class="fdy-btn">Simpan</button>
+</form>
+
+<!-- One of each remaining render-once control, for the setState({ required }) sweep. -->
+<div id="sweep">
+  <div class="fdy-combo" data-fdy-combo data-value="" id="sw-combo">
+    <button class="fdy-combo__button" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="fdy-combo__value">—</span></button>
+    <ul class="fdy-combo__listbox" role="listbox" hidden>
+      <li class="fdy-combo__option" role="option" data-value="a" aria-selected="false"><span class="fdy-combo__check"></span>A</li>
+    </ul>
+  </div>
+  <div id="sw-date" data-fdy-datepicker data-label="Tanggal"></div>
+  <div id="sw-month" data-fdy-datepicker data-mode="month" data-label="Bulan"></div>
+  <div id="sw-cascade" data-fdy-cascade data-label="Kategori"><ul><li data-value="x">X</li></ul></div>
+</div>
+
+<script src="../../dist/freeday.js"></script>
+<script>
+  window.counts = {};
+  ['f-cfl', 'f-range', 'f-state'].forEach(function (id) {
+    var form = document.getElementById(id);
+    var c = window.counts[id] = { valid: 0, invalid: 0, focused: '' };
+    form.addEventListener('submit', function (e) { e.preventDefault(); });
+    form.addEventListener('fdy-form-valid', function () { c.valid += 1; });
+    form.addEventListener('fdy-form-invalid', function () {
+      c.invalid += 1;
+      c.focused = (document.activeElement && document.activeElement.id) || '';
+      c.focusedEl = document.activeElement;
+    });
+  });
+  /* The message a field shows, read the way a reader would: present and not hidden. */
+  window.shown = function (formId) {
+    var e = document.querySelector('#' + formId + ' .fdy-field [data-fdy-error]');
+    return e && !e.hidden ? e.textContent.trim() : '';
+  };
+</script>

@@ -117,16 +117,26 @@
       trigger.disabled = stateDisabled;
       if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
       else trigger.removeAttribute('aria-readonly');
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    function applyInvalid() {
       if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
       else trigger.removeAttribute('aria-invalid');
       wrap.classList.toggle('fdy-timepicker--error', stateInvalid);
-      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
     }
     function setState(next) {
       if (!next) return;
       if (next.disabled != null) stateDisabled = !!next.disabled;
       if (next.readonly != null) stateReadonly = !!next.readonly;
-      if (next.invalid != null) stateInvalid = !!next.invalid;
+      if (next.invalid != null && !!next.invalid !== stateInvalid) {
+        stateInvalid = !!next.invalid;
+        applyInvalid();
+      }
+      /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+      if (next.required != null) wrap.toggleAttribute('data-fdy-required', !!next.required);
       applyState();
     }
 
@@ -214,6 +224,7 @@
 
     updateDisplay();
     applyState();
+    applyInvalid();
 
     var api = {
       wrap: wrap,

@@ -99,15 +99,26 @@
       countEl.textContent = textOf(dialog, 'selected', { n: n });
     }
 
+    /* The row's `data-value`, else the text the field shows: what the group mirrors as its live
+       value, so `freeday-form.js` can require a choose-from-list. Its input is readonly, which
+       bars it from constraint validation, so a native `required` on it never refuses (#114). */
+    function rowValue(row, key) {
+      if (row.value != null && row.value !== '') return String(row.value);
+      return row[key] != null ? String(row[key]) : '';
+    }
+
     function fillGroup(detail) {
       if (!activeGroup) return;
+      var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';
+      activeGroup.setAttribute('data-value', detail.rows
+        ? detail.rows.map(function (r) { return rowValue(r, key); }).join(',')
+        : rowValue(detail.row, key));
       var input = activeGroup.querySelector('.fdy-input');
       if (input) {
         if (detail.rows) {
           var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} selected';
           input.value = detail.rows.length ? tpl.replace('{n}', String(detail.rows.length)) : '';
         } else {
-          var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';
           input.value = detail.row[key] != null ? detail.row[key] : (detail.row.value || '');
         }
       }

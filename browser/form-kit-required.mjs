@@ -8,9 +8,8 @@
  * keamanan-cluster: four `<input type="time">` stayed native in a shift form purely because
  * swapping them to `FdyTimepicker` would have silently dropped the required check (#096).
  *
- * `FdyAutocomplete` and `FdyCfl` are deliberately not part of this: they render a real `<input>`,
- * so the native `required` is what fits them. No prop exposes it yet — a separate gap, recorded in
- * NEXT-UP.md, not half-closed here.
+ * The three controls this left out (autocomplete, choose-from-list, date range) are covered by
+ * form-required-rest.mjs (#114).
  *
  * Asserted in a browser because every claim is about what the DOM did: whether a submit was
  * refused, which field was focused, and whether a MutationObserver fired. None of it can be read

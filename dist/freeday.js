@@ -251,6 +251,7 @@
     root.dataset.fdyAcReady = '1';
 
     var input = root.querySelector('input[role="combobox"]') || root.querySelector('input');
+    root._fdyInvalid = !!input && input.getAttribute('aria-invalid') === 'true';
     var listbox = root.querySelector('[role="listbox"]');
     if (!input || !listbox) return;
     var options = Array.prototype.slice.call(listbox.querySelectorAll('[role="option"]'));
@@ -374,10 +375,14 @@
     if (!input || !state) return;
     if (state.disabled != null) input.disabled = !!state.disabled;
     if (state.readonly != null) input.readOnly = !!state.readonly;
-    if (state.invalid != null) {
+    /* Only when the HOST changes it: an unchanged push must not erase what freeday-form.js painted (#114). */
+    if (state.invalid != null && !!state.invalid !== root._fdyInvalid) {
+      root._fdyInvalid = !!state.invalid;
       if (state.invalid) input.setAttribute('aria-invalid', 'true');
       else input.removeAttribute('aria-invalid');
     }
+    /* Native `required` on the input itself: it is editable, so constraint validation applies (#114). */
+    if (state.required != null) input.required = !!state.required;
   }
 
   window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState };
@@ -995,16 +1000,26 @@
       trigger.disabled = stateDisabled;
       if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
       else trigger.removeAttribute('aria-readonly');
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    function applyInvalid() {
       if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
       else trigger.removeAttribute('aria-invalid');
       wrap.classList.toggle('fdy-cascade--error', stateInvalid);
-      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
     }
     function setState(next) {
       if (!next) return;
       if (next.disabled != null) stateDisabled = !!next.disabled;
       if (next.readonly != null) stateReadonly = !!next.readonly;
-      if (next.invalid != null) stateInvalid = !!next.invalid;
+      if (next.invalid != null && !!next.invalid !== stateInvalid) {
+        stateInvalid = !!next.invalid;
+        applyInvalid();
+      }
+      /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+      if (next.required != null) wrap.toggleAttribute('data-fdy-required', !!next.required);
       applyState();
     }
 
@@ -1065,6 +1080,7 @@
     }
 
     applyState();
+    applyInvalid();
 
     var api = {
       wrap: wrap,
@@ -1201,15 +1217,26 @@
       countEl.textContent = textOf(dialog, 'selected', { n: n });
     }
 
+    /* The row's `data-value`, else the text the field shows: what the group mirrors as its live
+       value, so `freeday-form.js` can require a choose-from-list. Its input is readonly, which
+       bars it from constraint validation, so a native `required` on it never refuses (#114). */
+    function rowValue(row, key) {
+      if (row.value != null && row.value !== '') return String(row.value);
+      return row[key] != null ? String(row[key]) : '';
+    }
+
     function fillGroup(detail) {
       if (!activeGroup) return;
+      var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';
+      activeGroup.setAttribute('data-value', detail.rows
+        ? detail.rows.map(function (r) { return rowValue(r, key); }).join(',')
+        : rowValue(detail.row, key));
       var input = activeGroup.querySelector('.fdy-input');
       if (input) {
         if (detail.rows) {
           var tpl = activeGroup.getAttribute('data-fdy-cfl-summary') || '{n} selected';
           input.value = detail.rows.length ? tpl.replace('{n}', String(detail.rows.length)) : '';
         } else {
-          var key = activeGroup.getAttribute('data-fdy-cfl-display') || 'value';
           input.value = detail.row[key] != null ? detail.row[key] : (detail.row.value || '');
         }
       }
@@ -2701,16 +2728,26 @@
       trigger.disabled = stateDisabled;
       if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
       else trigger.removeAttribute('aria-readonly');
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    function applyInvalid() {
       if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
       else trigger.removeAttribute('aria-invalid');
       wrap.classList.toggle('fdy-datepicker--error', stateInvalid);
-      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
     }
     function setState(next) {
       if (!next) return;
       if (next.disabled != null) stateDisabled = !!next.disabled;
       if (next.readonly != null) stateReadonly = !!next.readonly;
-      if (next.invalid != null) stateInvalid = !!next.invalid;
+      if (next.invalid != null && !!next.invalid !== stateInvalid) {
+        stateInvalid = !!next.invalid;
+        applyInvalid();
+      }
+      /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+      if (next.required != null) wrap.toggleAttribute('data-fdy-required', !!next.required);
       applyState();
     }
 
@@ -2747,6 +2784,7 @@
     updateDisplay();
 
     applyState();
+    applyInvalid();
 
     var api = {
       wrap: wrap,
@@ -3061,10 +3099,11 @@
    *   data-fdy-required  the app asking for it, on the control's ROOT
    *   data-value         the live value, which every value-bearing kit control now mirrors
    * and the element that takes aria-invalid and focus is found by `aria-haspopup`, which every
-   * popup-style kit trigger already sets. `FdyAutocomplete` and `FdyCfl` are absent on purpose:
-   * they render a real <input>, so the NATIVE `required` is what fits them, and routing them
-   * through here would give one field two sources of truth. No prop exposes that yet, which is a
-   * separate gap and is written down in NEXT-UP.md rather than half-closed here. */
+   * popup-style kit trigger already sets. A choose-from-list belongs here too: its <input> is
+   * `readonly`, and a readonly input is barred from constraint validation, so a native `required`
+   * on it never refuses anything; its open button carries `aria-haspopup="dialog"`. An
+   * autocomplete does NOT: its input is editable, so the native `required` is the one that fits,
+   * and routing it through here would give one field two sources of truth (#114). */
   function kitRoots(form) {
     return Array.prototype.slice.call(form.querySelectorAll('[data-fdy-required]'));
   }
@@ -3076,6 +3115,9 @@
   }
 
   function kitMessage(root) {
+    /* Read again on every pass, not only when the root was collected: a field required only under
+       a condition loses the attribute while its error is still painted (#114). */
+    if (!root.hasAttribute('data-fdy-required')) return '';
     if ((root.getAttribute('data-value') || '') !== '') return '';
     var form = root.closest('form');
     return root.getAttribute('data-fdy-msg-required')
@@ -3122,6 +3164,17 @@
     return custom || el.getAttribute('data-fdy-msg') || (alias && textOf(form, alias)) || el.validationMessage || textOf(form, 'invalid');
   }
 
+  /* Two controls can share one `.fdy-field` and so one message slot: a date range's two ends, or two
+     native inputs side by side. The slot is found per FIELD, so clearing the end that was filled
+     used to erase the message the other end still needed, leaving it red with nothing to say why
+     (#114). The slot is kept while any other control that points at it is still invalid. */
+  function stillClaimed(errEl, except) {
+    var scope = except.closest('form') || document;
+    return Array.prototype.some.call(scope.querySelectorAll('[aria-invalid="true"]'), function (other) {
+      return other !== except && (other.getAttribute('aria-describedby') || '').split(/\s+/).indexOf(errEl.id) !== -1;
+    });
+  }
+
   function paint(el, message) {
     var errEl = ensureErrorEl(el);
     if (message) {
@@ -3130,6 +3183,7 @@
       errEl.hidden = false;
     } else {
       el.removeAttribute('aria-invalid');
+      if (stillClaimed(errEl, el)) return;
       errEl.textContent = '';
       errEl.hidden = true;
     }
@@ -3187,7 +3241,7 @@
       root.dataset.fdyKitBound = '1';
       new MutationObserver(function () {
         if (submitted || eager) validateKit(root);
-      }).observe(root, { attributes: true, attributeFilter: ['data-value'] });
+      }).observe(root, { attributes: true, attributeFilter: ['data-value', 'data-fdy-required'] });
     }
     function validateOne(el) {
       var msg = messageFor(el);
@@ -3901,6 +3955,7 @@
     var options = Array.prototype.slice.call(root.querySelectorAll('.fdy-combo__option'));
     if (!button || !listbox || !valueEl || options.length === 0) return;
     root.dataset.fdyComboReady = '1';
+    root._fdyInvalid = button.getAttribute('aria-invalid') === 'true';
 
     seq += 1;
     if (!listbox.id) listbox.id = 'fdy-combo-list-' + seq;
@@ -4084,10 +4139,16 @@
       if (state.readonly) button.setAttribute('aria-readonly', 'true');
       else button.removeAttribute('aria-readonly');
     }
-    if (state.invalid != null) {
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    if (state.invalid != null && !!state.invalid !== root._fdyInvalid) {
+      root._fdyInvalid = !!state.invalid;
       if (state.invalid) button.setAttribute('aria-invalid', 'true');
       else button.removeAttribute('aria-invalid');
     }
+    /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+    if (state.required != null) root.toggleAttribute('data-fdy-required', !!state.required);
   }
 
   window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue, setState: setState };
@@ -5456,16 +5517,26 @@
       trigger.disabled = stateDisabled;
       if (stateReadonly) trigger.setAttribute('aria-readonly', 'true');
       else trigger.removeAttribute('aria-readonly');
+      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
+    }
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    function applyInvalid() {
       if (stateInvalid) trigger.setAttribute('aria-invalid', 'true');
       else trigger.removeAttribute('aria-invalid');
       wrap.classList.toggle('fdy-timepicker--error', stateInvalid);
-      if ((stateDisabled || stateReadonly) && !panel.hidden) close(false);
     }
     function setState(next) {
       if (!next) return;
       if (next.disabled != null) stateDisabled = !!next.disabled;
       if (next.readonly != null) stateReadonly = !!next.readonly;
-      if (next.invalid != null) stateInvalid = !!next.invalid;
+      if (next.invalid != null && !!next.invalid !== stateInvalid) {
+        stateInvalid = !!next.invalid;
+        applyInvalid();
+      }
+      /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+      if (next.required != null) wrap.toggleAttribute('data-fdy-required', !!next.required);
       applyState();
     }
 
@@ -5553,6 +5624,7 @@
 
     updateDisplay();
     applyState();
+    applyInvalid();
 
     var api = {
       wrap: wrap,

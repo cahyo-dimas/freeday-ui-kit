@@ -24,6 +24,9 @@ export interface FdyDateRangeProps {
   /** Locked/view mode for both pickers, focusable, values shown, but can't be opened or changed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Both ends must be filled for a `data-fdy-validate` form to submit. Forwarded to BOTH pickers,
+   *  each refusing on its own; the two share the field's one message slot (#114). */
+  required?: boolean;
   describedby?: string;
   startPlaceholder?: string;
   endPlaceholder?: string;
@@ -68,6 +71,7 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         disabled={props.disabled}
         readonly={props.readonly}
         invalid={props.invalid}
+        required={props.required}
         describedby={props.describedby}
         placeholder={props.startPlaceholder ?? 'Dari'}
         prevMonthLabel={props.prevMonthLabel}
@@ -89,6 +93,7 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
         disabled={props.disabled}
         readonly={props.readonly}
         invalid={props.invalid}
+        required={props.required}
         describedby={props.describedby}
         placeholder={props.endPlaceholder ?? 'Sampai'}
         prevMonthLabel={props.prevMonthLabel}

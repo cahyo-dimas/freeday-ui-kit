@@ -21,6 +21,10 @@ const props = defineProps<{
   /** Locked/view mode: the input is not editable and the list won't open, but it stays focusable and shows its value. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** The native `required`, on the input itself: it is editable, so constraint validation (and so a
+   *  `data-fdy-validate` form) applies to it as to any input. Not `data-fdy-required`, which is for
+   *  controls whose trigger is a button (#114). */
+  required?: boolean;
   describedby?: string;
 }>();
 
@@ -148,6 +152,7 @@ watch(active, async (i: number): Promise<void> => {
       :placeholder="placeholder"
       :disabled="isDisabled"
       :readonly="isReadonly"
+      :required="required === true"
       :value="modelValue"
       @input="onInput"
       @focus="openList"

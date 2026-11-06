@@ -93,7 +93,7 @@ public partial class FdyMonthpicker
     {
         if (!Hydrated) return;
         await JS.InvokeVoidAsync("FreedayDatepicker.setState", Root,
-            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
 
     /// <summary>Invoked by the bridge when the user picks (or clears) a month.</summary>

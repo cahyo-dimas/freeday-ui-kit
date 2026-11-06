@@ -84,7 +84,7 @@ public partial class FdyCombo<TValue>
         if (_ready)
         {
             await JS.InvokeVoidAsync("FreedayCombo.setState", Root,
-                new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+                new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
         }
     }
 

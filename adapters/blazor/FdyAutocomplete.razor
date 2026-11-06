@@ -10,7 +10,7 @@
            aria-controls="@_listId" autocomplete="off" value="@Value"
            placeholder="@Placeholder" aria-label="@AriaLabel"
            id="@Id" aria-labelledby="@AriaLabelledby" aria-describedby="@Describedby"
-           disabled="@Disabled" readonly="@Readonly"
+           disabled="@Disabled" readonly="@Readonly" required="@Required"
            aria-invalid="@(Invalid ? "true" : null)" />
     <ul class="fdy-autocomplete__listbox" id="@_listId" role="listbox" hidden>
         @foreach (string item in Options)

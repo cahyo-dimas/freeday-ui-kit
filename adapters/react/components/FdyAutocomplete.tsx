@@ -24,6 +24,10 @@ export interface FdyAutocompleteProps {
   /** Locked/view mode: the input is not editable and the list won't open, but it stays focusable and shows its value. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** The native `required`, on the input itself: it is editable, so constraint validation (and so a
+   *  `data-fdy-validate` form) applies to it as to any input. Not `data-fdy-required`, which is for
+   *  controls whose trigger is a button (#114). */
+  required?: boolean;
   describedby?: string;
 }
 
@@ -132,6 +136,7 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
         placeholder={props.placeholder}
         disabled={isDisabled}
         readOnly={isReadonly}
+        required={props.required === true}
         value={props.value}
         onChange={(e: React.ChangeEvent<HTMLInputElement>): void => { props.onChange(e.target.value); setActive(-1); openList(); }}
         onFocus={openList}

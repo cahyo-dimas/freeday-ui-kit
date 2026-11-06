@@ -63,6 +63,13 @@ export interface FdyCflProps<Row extends Record<string, unknown>> {
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Let a `data-fdy-validate` form demand a row be picked. It renders `data-fdy-required` on the
+   *  field group, which mirrors the picked keys in `data-value`; `freeday-form.js` refuses the
+   *  submit, paints the message in the field and focuses the open button. Not the native
+   *  `required`: the field's input is readonly, and a readonly input is barred from constraint
+   *  validation, so `required` on it never refused anything (#114). Ignored with `dialogOnly`,
+   *  which has no field to paint. */
+  required?: boolean;
   /** Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset. Without it
    *  `value` accepts `Row | null` but the component can only ever produce a `Row`. */
   clearable?: boolean;
@@ -142,6 +149,8 @@ function FdyCflInner<Row extends Record<string, unknown>>(
     : props.value !== null
       ? [props.value as Row]
       : [];
+  /* The live value on the root, as every value-bearing kit control mirrors it: the picked keys. */
+  const valueAttr: string = currentRows.map((r: Row): string => props.rowKey(r)).join(',');
   const selectedTextFor = (n: number): string => (props.selectedText ?? '{n} selected').replace('{n}', String(n));
   const isMultiple: boolean = props.multiple === true;
   const showClear: boolean =
@@ -352,7 +361,8 @@ function FdyCflInner<Row extends Record<string, unknown>>(
   }, []);
 
   return (
-    <div className={props.dialogOnly === true ? 'fdy-cfl__host' : 'fdy-input-group'}>
+    <div className={props.dialogOnly === true ? 'fdy-cfl__host' : 'fdy-input-group'} data-value={valueAttr}
+         data-fdy-required={props.required === true && props.dialogOnly !== true ? '' : undefined}>
       {props.dialogOnly === true ? null : (
         <>
           <input

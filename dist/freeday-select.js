@@ -39,6 +39,7 @@
     var options = Array.prototype.slice.call(root.querySelectorAll('.fdy-combo__option'));
     if (!button || !listbox || !valueEl || options.length === 0) return;
     root.dataset.fdyComboReady = '1';
+    root._fdyInvalid = button.getAttribute('aria-invalid') === 'true';
 
     seq += 1;
     if (!listbox.id) listbox.id = 'fdy-combo-list-' + seq;
@@ -222,10 +223,16 @@
       if (state.readonly) button.setAttribute('aria-readonly', 'true');
       else button.removeAttribute('aria-readonly');
     }
-    if (state.invalid != null) {
+    /* `invalid` is written only when the HOST changes it. A render-once host (Blazor) pushes every
+       state on every parent re-render, and rewriting an unchanged `false` erased the mark
+       freeday-form.js had painted, leaving its message under a field no longer red (#114). */
+    if (state.invalid != null && !!state.invalid !== root._fdyInvalid) {
+      root._fdyInvalid = !!state.invalid;
       if (state.invalid) button.setAttribute('aria-invalid', 'true');
       else button.removeAttribute('aria-invalid');
     }
+    /* `required` too: a render-once host (Blazor) has no other way to change it later (#114). */
+    if (state.required != null) root.toggleAttribute('data-fdy-required', !!state.required);
   }
 
   window.FreedayCombo = { init: initCombo, initAll: initAll, setValue: setValue, setState: setState };

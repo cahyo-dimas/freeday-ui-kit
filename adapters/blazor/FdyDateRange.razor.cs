@@ -43,7 +43,14 @@ public partial class FdyDateRange
     /// the Vue and React adapters build no such button.</summary>
     [Parameter] public string? BackToMonthsLabel { get; set; }
 
+    /// <summary>Both ends must be filled for a <c>data-fdy-validate</c> form to submit. Rendered
+    /// as <c>data-fdy-required</c> on BOTH pickers, each refusing on its own, and pushed to them
+    /// afterwards, so a range required only under a condition follows it (#114).</summary>
+    [Parameter] public bool Required { get; set; }
+
     private int _token;
+    private ElementReference _fromEl;
+    private ElementReference _toEl;
 
     // initAll(Root) links the daterange (descendant) and inits both child pickers.
     protected override ValueTask HydrateAsync() => JS.InvokeVoidAsync("FreedayDatepicker.initAll", Root);
@@ -52,6 +59,13 @@ public partial class FdyDateRange
         => _token = await JS.InvokeAsync<int>("FreedayBlazor.dateRangeOn", Root, Self, nameof(OnChange));
 
     protected override bool ShouldRender() => !Hydrated;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Hydrated) return;
+        await JS.InvokeVoidAsync("FreedayDatepicker.setState", _fromEl, new { required = Required });
+        await JS.InvokeVoidAsync("FreedayDatepicker.setState", _toEl, new { required = Required });
+    }
 
     /// <summary>Invoked by the bridge for either child's change; routes by data-role.</summary>
     [JSInvokable]

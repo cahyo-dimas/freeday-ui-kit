@@ -60,6 +60,15 @@ public partial class FdyCfl<TRow>
     /// <summary>Locked/view mode: shows the value but the search dialog can't be opened.</summary>
     [Parameter] public bool Readonly { get; set; }
     [Parameter] public bool Invalid { get; set; }
+
+    /// <summary>Let a <c>data-fdy-validate</c> form demand a row be picked. Renders
+    /// <c>data-fdy-required</c> on the field group, which mirrors the picked keys in
+    /// <c>data-value</c>; <c>freeday-form.js</c> refuses the submit, paints the message in the field
+    /// and focuses the open button. Not the native <c>required</c>: the field's input is readonly,
+    /// and a readonly input is barred from constraint validation (#114). Ignored with
+    /// <see cref="DialogOnly"/>, which has no field.</summary>
+    [Parameter] public bool Required { get; set; }
+
     /// <summary>Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset.
     /// <c>Value</c> is already <c>TRow?</c>; without this the component can never produce null.</summary>
     [Parameter] public bool Clearable { get; set; }
@@ -90,6 +99,10 @@ public partial class FdyCfl<TRow>
     private int _debounceSeq; // supersedes stale debounced searches
 
     private string DisplayValue => Value is null ? string.Empty : Display(Value);
+    /* The live value on the group, as every value-bearing kit control mirrors it: the picked keys. */
+    private string ValueAttr => Multiple
+        ? string.Join(",", (Values ?? Array.Empty<TRow>()).Select(RowKey))
+        : Value is null ? string.Empty : RowKey(Value);
     private string FieldGroupClass => Invalid ? "fdy-input-group fdy-input-group--error" : "fdy-input-group";
     private bool IsInitialLoading => _loading && _rows.Count == 0;
     private bool IsBlockingError => _error is not null && _rows.Count == 0;

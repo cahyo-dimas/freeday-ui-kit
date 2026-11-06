@@ -807,8 +807,11 @@ while each line referenced directly would be read even when hidden. Zero JS; wor
 | `describedby?` | `string` | Id of the help or error text (`aria-describedby`). |
 
 Blazor: the same names in `PascalCase`, bound with `@bind-Value` (`Value` / `ValueChanged`).
-`FreedayCombo.setState(root, { disabled, readonly, invalid })` pushes a state change onto a combo
-whose host has stopped re-rendering.
+`FreedayCombo.setState(root, { disabled, readonly, invalid, required })` pushes a state change onto
+a combo whose host has stopped re-rendering. `invalid` is written only when it changes, so a host
+that pushes every state on every re-render does not erase the mark a
+[`data-fdy-validate`](#form-validation--data-fdy-validate) form painted; the same holds for every
+`setState` below.
 
 Fully styleable dropdown, APG combobox+listbox. Needs `freeday-select.js`.
 
@@ -851,9 +854,10 @@ keeps matching after selection. Do not put a glyph in that span.
 | `placeholder?` | `string` | |
 | `id?` · `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Input id; its accessible name as text or as a reference; the help/error text it points at. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps focus and tab order and shows its value, but the input is not editable and the list will not open. Unlike `disabled` it is not greyed. |
+| `required?` | `boolean` | The native `required`, on the input itself. The input is editable, so constraint validation applies to it as to any `<input>`, and a [`data-fdy-validate`](#form-validation--data-fdy-validate) form refuses it empty. Free text counts as filled: the list suggests, it does not constrain. Blazor: `Required`. |
 
 Blazor carries all of these. The states live on the input natively, and
-`FreedayAutocomplete.setState(root, { disabled, readonly, invalid })` changes them after the first
+`FreedayAutocomplete.setState(root, { disabled, readonly, invalid, required })` changes them after the first
 render. A `readonly` input no longer opens its suggestion list, which it used to do over a field
 nobody could edit.
 
@@ -882,7 +886,7 @@ Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
 | `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand this control be filled. Renders `data-fdy-required` on the root. Needed because the trigger is a `<button>`, whose `willValidate` is false, so a plain `required` on it has never meant anything. Blazor: `Required`. |
 
 Raw path: `data-disabled` / `data-readonly` / `data-invalid`, `data-id`, `data-describedby`, and
-`FreedayCascade.setState(root, { disabled, readonly, invalid })` for a host that rendered once.
+`FreedayCascade.setState(root, { disabled, readonly, invalid, required })` for a host that rendered once.
 Blazor calls the tree `Nodes`, adds `SubmenuLabel`, and carries everything else except
 `ariaLabelledby` — the trigger it builds is named by `Label`.
 
@@ -940,6 +944,7 @@ Four of these are required and carry the whole component: `fetchPage`, `columns`
 | `clearable?` | `boolean` | A clear button, so an **optional** foreign key can be unset. Without it the value type admits a `null` the component can never produce. |
 | `clearLabel?` | `string` | Accessible name for that button. Default `Clear selection`. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | `readonly` keeps the picked value visible, focusable and copyable, but the dialog cannot be opened. |
+| `required?` | `boolean` | Lets a [`data-fdy-validate`](#form-validation--data-fdy-validate) form demand a row be picked. Renders `data-fdy-required` on the field group, which mirrors the picked keys (`rowKey`, comma-joined under `multiple`) in `data-value`; the refusal marks and focuses the open button. **Not** a native `required`: the field's input is readonly, and a readonly input is barred from constraint validation, so `required` on it never refuses anything. Ignored with `dialogOnly`. Blazor: `Required`. |
 | `id?` · `ariaLabelledby?` · `describedby?` | `string` | Field id; the element that labels it; the help/error text it points at. |
 | `dialogOnly?` | `boolean` | Render the **dialog and no field**, for a caller whose trigger is already its own. See below. |
 
@@ -976,7 +981,10 @@ A read-only field backed by master data: the button opens a searchable dialog, t
 the field. The value is always **chosen, never typed**. Needs `freeday-cfl.js`.
 
 - Field: `.fdy-input-group` + `data-fdy-cfl="<dialog id>"`, `data-fdy-cfl-display="code"`,
-  `data-fdy-cfl-summary="{n} selected"` (multi)
+  `data-fdy-cfl-summary="{n} selected"` (multi). On pick the group mirrors the row's `data-value`
+  (else its display key; comma-joined in multi) into its own `data-value`, so `data-fdy-required`
+  on the group lets a `data-fdy-validate` form require it. Give the trigger `aria-haspopup="dialog"`:
+  that is the element the refusal marks and focuses.
 - Dialog: `<dialog class="fdy-modal fdy-modal--cfl">` + `data-fdy-cfl-multiple` for multi-select
 - Inside: `.fdy-cfl__search` `__results` `__row` `__check` `__empty` `__count` `__actions`
 - Hooks: `data-fdy-cfl-search` (the search input), `data-fdy-cfl-empty`, `data-fdy-cfl-count`,
@@ -1070,8 +1078,8 @@ them do not: without these, a Spanish calendar would be navigated by English arr
 On the **raw path** these all have hooks now: `data-disabled` / `data-readonly` / `data-invalid`,
 `data-id`, `data-describedby`, and one `data-fdy-text-<key>` per label above
 (`data-fdy-text-prev-month`, …). A host that renders its markup once and cannot re-render it can
-change the three states afterwards with `FreedayDatepicker.setState(root, { disabled, readonly,
-invalid })`.
+change the states afterwards with `FreedayDatepicker.setState(root, { disabled, readonly,
+invalid, required })`.
 
 Blazor carries the same surface bar four: `locale` (the enhancer formats through `Intl` from the
 page's `<html lang>`), `clearable` and `clearLabel` (this path builds no clear button), and
@@ -1117,6 +1125,7 @@ grid's own title.
 | `startPlaceholder?` · `endPlaceholder?` | `string` | One per field. |
 | `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the group (`role="group"`), or points at the text that does. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | Applied to both pickers together. |
+| `required?` | `boolean` | Both ends must be filled for a [`data-fdy-validate`](#form-validation--data-fdy-validate) form to submit. Each picker refuses on its own, and the two share the field's one message slot, which stays up while either end is still empty. Blazor: `Required`. |
 | `prevMonthLabel?` · `nextMonthLabel?` · `prevYearLabel?` · `nextYearLabel?` · `prevYearsLabel?` · `nextYearsLabel?` · `chooseMonthLabel?` · `chooseYearLabel?` | `string` | Forwarded verbatim to **both** pickers. Until 3.11.0 this was the one picker in the kit whose calendar nav could not be named in the page's own language: the single picker took these, the range dropped them. Blazor adds `BackToMonthsLabel`, since the raw seed both pickers are built from has that button. |
 
 Blazor splits the value into two scalars, `From` / `FromChanged` and `To` / `ToChanged`, because a
@@ -1214,7 +1223,7 @@ Seed attributes: `data-step` (minutes, default 30), `data-min` (default `00:00`)
 (default `23:59`), `data-value`, `data-label`, `data-placeholder` (default `--:--`), `data-id`,
 `data-describedby`, `data-disabled`, `data-readonly`, `data-invalid`. Emits a bubbling
 `fdy-time-select` (`detail {value}`). `FreedayTimepicker.setState(root, { disabled, readonly,
-invalid })` changes the three states afterwards, which is what a host that renders its seed once
+invalid, required })` changes the states afterwards, which is what a host that renders its seed once
 and never again (Blazor) needs.
 
 **Use this instead of `<input type="time">`**, and not for theming alone: the native picker is
@@ -1325,18 +1334,21 @@ blur/input. Needs `freeday-form.js`.
 - Emits `fdy-form-valid` / `fdy-form-invalid`.
 - **A kit control can be required too** — `data-fdy-required` on its root. Combo, datepicker,
   monthpicker, timepicker and cascade build a `<button>` trigger, and a button's `willValidate` is
-  false, so `form.elements` never offered one and `required` on it meant nothing. The enhancer now
-  collects these roots alongside the native controls: empty `data-value` refuses the submit, the
-  message lands in the same `.fdy-field` slot, and the focus goes to the trigger. It names no
-  component — the value is read from `data-value` and the trigger is found by `aria-haspopup`. In
-  the typed stacks pass `required` / `Required` instead of writing the attribute.
-  **`FdyAutocomplete` and `FdyCfl` are outside this rule**: they render a real `<input>`, so the
-  native `required` is the mechanism that fits them — but no prop exposes it yet, and an unknown
-  attribute falls through to a wrapper's ROOT rather than to the input inside it, so today an app
-  cannot require either one. Tracked in `NEXT-UP.md`; the rule above deliberately does not cover
-  them, because painting a native input through the kit path would give it two sources of truth.
-  Re-validation watches the attribute with a `MutationObserver`, so no control has to announce
-  itself. The message override is per-control (`data-fdy-msg-required` on the root) wherever
+  false, so `form.elements` never offered one and `required` on it meant nothing. A
+  choose-from-list is in the same position for a different reason: its `<input>` is `readonly`,
+  and a readonly input is barred from constraint validation. The enhancer collects these roots
+  alongside the native controls: empty `data-value` refuses the submit, the message lands in the
+  same `.fdy-field` slot, and the focus goes to the trigger. It names no component — the value is
+  read from `data-value` and the trigger is found by `aria-haspopup`. In the typed stacks pass
+  `required` / `Required` instead of writing the attribute; every value-bearing wrapper has it.
+  **An autocomplete is the one that takes the native `required`**, on its input: the input is
+  editable, so constraint validation already covers it, and routing it through the kit path would
+  give one field two sources of truth.
+  Re-validation watches `data-value` and `data-fdy-required` with a `MutationObserver`, so no
+  control has to announce itself, and lifting the requirement clears an error already on screen.
+- **Two controls in one `.fdy-field` share its message slot** — a date range's two ends, or two
+  native inputs side by side. The message stays up while any control pointing at it is still
+  invalid, so filling one end does not erase the message the other end still needs. The message override is per-control (`data-fdy-msg-required` on the root) wherever
   attributes reach the root — the raw path, and Vue, where an unknown attribute falls through. In
   React and Blazor they do not, so use the form-level `data-fdy-text-required`, which reads the
   same in every stack.

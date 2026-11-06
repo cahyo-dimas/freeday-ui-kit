@@ -24,6 +24,9 @@ const props = defineProps<{
   /** Locked/view mode for both pickers, focusable, values shown, but can't be opened or changed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Both ends must be filled for a `data-fdy-validate` form to submit. Forwarded to BOTH pickers,
+   *  each refusing on its own; the two share the field's one message slot (#114). */
+  required?: boolean;
   describedby?: string;
   startPlaceholder?: string;
   endPlaceholder?: string;
@@ -80,6 +83,7 @@ function setEnd(end: string): void {
       :disabled="disabled"
       :readonly="readonly"
       :invalid="invalid"
+      :required="required"
       :describedby="describedby"
       :placeholder="startPlaceholder ?? 'Dari'"
       :prev-month-label="prevMonthLabel"
@@ -101,6 +105,7 @@ function setEnd(end: string): void {
       :disabled="disabled"
       :readonly="readonly"
       :invalid="invalid"
+      :required="required"
       :describedby="describedby"
       :placeholder="endPlaceholder ?? 'Sampai'"
       :prev-month-label="prevMonthLabel"

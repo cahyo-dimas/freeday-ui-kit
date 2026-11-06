@@ -82,10 +82,11 @@
    *   data-fdy-required  the app asking for it, on the control's ROOT
    *   data-value         the live value, which every value-bearing kit control now mirrors
    * and the element that takes aria-invalid and focus is found by `aria-haspopup`, which every
-   * popup-style kit trigger already sets. `FdyAutocomplete` and `FdyCfl` are absent on purpose:
-   * they render a real <input>, so the NATIVE `required` is what fits them, and routing them
-   * through here would give one field two sources of truth. No prop exposes that yet, which is a
-   * separate gap and is written down in NEXT-UP.md rather than half-closed here. */
+   * popup-style kit trigger already sets. A choose-from-list belongs here too: its <input> is
+   * `readonly`, and a readonly input is barred from constraint validation, so a native `required`
+   * on it never refuses anything; its open button carries `aria-haspopup="dialog"`. An
+   * autocomplete does NOT: its input is editable, so the native `required` is the one that fits,
+   * and routing it through here would give one field two sources of truth (#114). */
   function kitRoots(form) {
     return Array.prototype.slice.call(form.querySelectorAll('[data-fdy-required]'));
   }
@@ -97,6 +98,9 @@
   }
 
   function kitMessage(root) {
+    /* Read again on every pass, not only when the root was collected: a field required only under
+       a condition loses the attribute while its error is still painted (#114). */
+    if (!root.hasAttribute('data-fdy-required')) return '';
     if ((root.getAttribute('data-value') || '') !== '') return '';
     var form = root.closest('form');
     return root.getAttribute('data-fdy-msg-required')
@@ -143,6 +147,17 @@
     return custom || el.getAttribute('data-fdy-msg') || (alias && textOf(form, alias)) || el.validationMessage || textOf(form, 'invalid');
   }
 
+  /* Two controls can share one `.fdy-field` and so one message slot: a date range's two ends, or two
+     native inputs side by side. The slot is found per FIELD, so clearing the end that was filled
+     used to erase the message the other end still needed, leaving it red with nothing to say why
+     (#114). The slot is kept while any other control that points at it is still invalid. */
+  function stillClaimed(errEl, except) {
+    var scope = except.closest('form') || document;
+    return Array.prototype.some.call(scope.querySelectorAll('[aria-invalid="true"]'), function (other) {
+      return other !== except && (other.getAttribute('aria-describedby') || '').split(/\s+/).indexOf(errEl.id) !== -1;
+    });
+  }
+
   function paint(el, message) {
     var errEl = ensureErrorEl(el);
     if (message) {
@@ -151,6 +166,7 @@
       errEl.hidden = false;
     } else {
       el.removeAttribute('aria-invalid');
+      if (stillClaimed(errEl, el)) return;
       errEl.textContent = '';
       errEl.hidden = true;
     }
@@ -208,7 +224,7 @@
       root.dataset.fdyKitBound = '1';
       new MutationObserver(function () {
         if (submitted || eager) validateKit(root);
-      }).observe(root, { attributes: true, attributeFilter: ['data-value'] });
+      }).observe(root, { attributes: true, attributeFilter: ['data-value', 'data-fdy-required'] });
     }
     function validateOne(el) {
       var msg = messageFor(el);

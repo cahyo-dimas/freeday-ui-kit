@@ -44,13 +44,18 @@ public partial class FdyAutocomplete
     /// <summary>Marks the field invalid (<c>aria-invalid</c>).</summary>
     [Parameter] public bool Invalid { get; set; }
 
+    /// <summary>The native <c>required</c>, on the input itself: it is editable, so constraint
+    /// validation (and so a <c>data-fdy-validate</c> form) applies to it as to any input. Pushed
+    /// with the other states, so a field required only under a condition follows it (#114).</summary>
+    [Parameter] public bool Required { get; set; }
+
     protected override bool ShouldRender() => !Hydrated;
 
     protected override async Task OnParametersSetAsync()
     {
         if (!Hydrated) return;
         await JS.InvokeVoidAsync("FreedayAutocomplete.setState", Root,
-            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
 
     /// <summary>Invoked by the bridge when the user picks a suggestion.</summary>

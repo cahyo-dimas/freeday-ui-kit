@@ -70,7 +70,7 @@ public partial class FdyTimepicker
     {
         if (!Hydrated) return;
         await JS.InvokeVoidAsync("FreedayTimepicker.setState", Root,
-            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
 
     /// <summary>Invoked by the bridge when the reader picks a time (enhancer's fdy-time-select).</summary>

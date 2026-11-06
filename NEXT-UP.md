@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05; §20 dan §21 tidak ada di berkasnya):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07; §20 dan §21 tidak ada di berkasnya):
 
 | § | pokok | status |
 |---|---|---|
@@ -99,6 +99,7 @@ dan tidak punya berkas tidak pernah ada.
 | 19 | `.fdy-btn--stretch` di luar kartu menutup seluruh halaman tanpa suara | terkirim 3.15.1 `#109` sebagai peringatan sekali per tombol pada klik pertama, ditambah bentuk dua target yang bertumpuk; dibaca dari containing block, sehingga wadah `position:relative` milik app tetap sah |
 | 22 | `fdy-form-grid` menjadikan setiap anak bukan-isian sebuah kolom | terkirim 3.16.0 `#111`, usul 1 catatan: anak bukan-`.fdy-field` merentang baris penuh; sel non-isian yang harus sekolom dibungkus `div.fdy-field` |
 | 23 | pengalih tema hanya ada untuk Blazor | terkirim 3.17.0 `#113` sebagai `FreedayTheme` + `useTheme()` Vue/React + Blazor yang disambungkan ke inti yang sama; catatan keliru soal Blazor, yang punya hanya pembantu demo tanpa penyimpanan. `'system'` mencabut atribut, bukan menghitungnya. Sinkron antar-tab sengaja tidak dibuat |
+| 24 | `FdyAutocomplete` tak dapat dijadikan wajib | terkirim 3.18.0 `#114` untuk ketiga kontrol yang tertinggal: Autocomplete lewat `required` native, Cfl lewat `data-fdy-required` (input-nya readonly, jadi usul "native" di catatan tidak akan pernah menolak), dan DateRange yang tak disebut catatannya. Audit kelasnya juga menutup slot pesan yang saling hapus, `Required` Blazor yang hanya terbaca sekali, dan `setState` yang menghapus tanda merah form |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 
@@ -137,12 +138,12 @@ diverifikasi bisa merah dengan mutasi — termasuk satu uji yang semula LOLOS de
 dimatikan, karena "galatnya hilang" hampa benar saat tak ada galat; uji itu sekarang menuntut
 galatnya tampak lebih dulu.
 
-**Sisa yang terbuka, kecil dan sengaja tak ditutup bersamanya:** `FdyAutocomplete` dan `FdyCfl`
-merender `<input>` asli, jadi `required` **native** yang cocok untuk keduanya — tetapi belum ada
-prop yang mengeksposnya, dan atribut tak dikenal jatuh ke AKAR wrapper, bukan ke input di
-dalamnya. Jadi hari ini keduanya tak bisa dijadikan wajib di stack mana pun. Mengalirkannya lewat
-aturan kit akan memberi satu field dua sumber kebenaran, jadi perbaikannya adalah meneruskan
-`required` ke input-nya (satu baris per stack) — dikerjakan saat ada yang membutuhkannya.
+**Sisanya DITUTUP di 3.18.0 (`#114`), dan setengah dari rencana di sini keliru.** `FdyAutocomplete`
+memang mengambil `required` native. `FdyCfl` tidak bisa: input-nya `readonly`, dan input readonly
+dikecualikan dari validasi bawaan, jadi "meneruskan `required` ke input-nya" akan menghasilkan
+isian yang tampak wajib tetapi tidak pernah menolak. Cfl kini lewat `data-fdy-required` seperti
+kelima kontrol berpemicu tombol. `FdyDateRange` ternyata tertinggal juga, dan tidak tercatat di
+sini.
 
 **Kegoyahan `browser/cfl-multi.mjs` DITUTUP 2026-10-27, dan tersangka yang saya catat pagi itu
 salah jenis.** Catatannya menebak "penantian berbasis waktu". Keliru: tak ada satu pun timeout di

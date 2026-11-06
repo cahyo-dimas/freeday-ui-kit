@@ -64,6 +64,13 @@ const props = defineProps<{
   /** Locked/view mode: shows the picked value (focusable, copyable), but the search dialog can't be opened. Unlike `disabled`, it keeps tab order and isn't greyed. */
   readonly?: boolean;
   invalid?: boolean;
+  /** Let a `data-fdy-validate` form demand a row be picked. It renders `data-fdy-required` on the
+   *  field group, which mirrors the picked keys in `data-value`; `freeday-form.js` refuses the
+   *  submit, paints the message in the field and focuses the open button. Not the native
+   *  `required`: the field's input is readonly, and a readonly input is barred from constraint
+   *  validation, so `required` on it never refused anything (#114). Ignored with `dialogOnly`,
+   *  which has no field to paint. */
+  required?: boolean;
   /** Render a clear button when a row is picked, so an OPTIONAL foreign key can be unset. Without it
    *  `modelValue` accepts `Row | null` but the component can only ever produce a `Row`. */
   clearable?: boolean;
@@ -122,6 +129,8 @@ const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid ==
 const currentRows: ComputedRef<Row[]> = computed((): Row[] =>
   Array.isArray(props.modelValue) ? props.modelValue : props.modelValue !== null ? [props.modelValue as Row] : [],
 );
+/* The live value on the root, as every value-bearing kit control mirrors it: the picked keys. */
+const valueAttr: ComputedRef<string> = computed((): string => currentRows.value.map((r: Row): string => props.rowKey(r)).join(','));
 const selectedTextFor = (n: number): string => (props.selectedText ?? '{n} selected').replace('{n}', String(n));
 const displayValue: ComputedRef<string> = computed((): string => {
   if (props.multiple === true) return currentRows.value.length === 0 ? '' : selectedTextFor(currentRows.value.length);
@@ -346,7 +355,8 @@ onBeforeUnmount((): void => {
 </script>
 
 <template>
-  <div :class="isDialogOnly ? 'fdy-cfl__host' : 'fdy-input-group'">
+  <div :class="isDialogOnly ? 'fdy-cfl__host' : 'fdy-input-group'" :data-value="valueAttr"
+       :data-fdy-required="required === true && !isDialogOnly ? '' : undefined">
     <template v-if="!isDialogOnly">
       <input
         :id="fieldId"

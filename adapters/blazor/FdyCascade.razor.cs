@@ -61,7 +61,7 @@ public partial class FdyCascade
     {
         if (!Hydrated) return;
         await JS.InvokeVoidAsync("FreedayCascade.setState", Root,
-            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid });
+            new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
 
     /// <summary>Invoked by the bridge when the user selects a leaf.</summary>
