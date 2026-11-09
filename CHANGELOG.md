@@ -9,6 +9,30 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.19.1] - 2026-11-09
+
+Hanya dokumen dan uji. Tidak ada perubahan pada CSS, enhancer, atau pembungkus.
+
+### Docs
+
+- **Jumlah pembungkus tidak lagi ditulis dengan kata** (`#117`, §27). "Eleven" dan "thirteen" dipakai
+  untuk himpunan yang sama di 18 tempat dalam lima berkas, enam di antaranya di blok tempel
+  `agent-onboarding.md`. Agen yang menuruti "the eleven" dapat menyimpulkan dua komponen tidak punya
+  pembungkus. Kini tiap kalimat menunjuk ke daftar namanya, yang sudah dijaga uji.
+  `FdyTableFooter` disebut sebagai bagian dari `FdyTable`.
+- **`timepicker` keluar dari daftar "no wrapper"** (`#117`). `FdyTimepicker` ada di ketiga stack, dan
+  paragraf yang sama melarang menulis markup mentahnya. Yang tidak punya pembungkus adalah
+  `datetimepicker`.
+- **`FdyChart` perlu enhancer di Vue dan React** (`#117`). Blok tempel mengatakan pembungkus bertipe
+  tidak perlu `import '@cahyo-dimas/freeday'`. `FdyChart` melukis lewat `window.FreedayChart`, jadi
+  tanpa impor itu grafiknya tidak tergambar. Dicatat di blok tempel dan di `COMPONENTS.md`.
+
+### Catatan
+
+- Proyek yang menyalin blok `agent-onboarding.md` perlu menggantinya seluruhnya.
+- Uji baru di `test/docs.test.mjs`: kata bilangan untuk pembungkus ditolak di tujuh dokumen, dan
+  nama di daftar "no wrapper" tidak boleh punya pembungkus.
+
 ## [3.19.0] - 2026-11-09
 
 **`FdyAutocomplete` kini berlaku seperti input.** Keduanya ketahuan saat tiga isian `<input list>`

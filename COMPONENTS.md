@@ -38,7 +38,7 @@ live docs.
    any field being invalid.
 6. **Interactive components need their enhancer script.** Static ones (button, card, badge, table,
    alert, breadcrumb, timeline, accordion, tree-without-cascade…) are CSS-only.
-7. **On Vue, React or Blazor, thirteen components have a typed wrapper. Use it.** `FdyCombo` ·
+7. **On Vue, React or Blazor, these components have a typed wrapper. Use it.** `FdyCombo` ·
    `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyTimepicker` · `FdyAutocomplete` ·
    `FdyCascade` · `FdyCfl` ·
    `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`, from `@cahyo-dimas/freeday/vue`, `/react`, or the
@@ -1806,7 +1806,7 @@ rather than rendering zero: a widget that shows 0 for a request that failed read
 do", the opposite of what happened.
 
 ## Charts — `data-fdy-chart`
-> **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below.
+> **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below. It paints through the enhancer: on Vue and React it needs `import '@cahyo-dimas/freeday'` once at app entry, the one typed wrapper that does. Without it the slot content stays and no chart is drawn.
 
 ### Props — `<FdyChart>`
 

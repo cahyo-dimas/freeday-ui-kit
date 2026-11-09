@@ -21,7 +21,7 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    the enhancer owns the widget's DOM. You **listen for `fdy-*` events** (all bubbling
    `CustomEvent`s, data in `event.detail`) → store them in your framework state. Event/API contract
    table: [`integrations.md` §Event & API contract](integrations.md).
-   **On Vue, React or Blazor this is not the path to take for thirteen of the components.** `FdyCombo`,
+   **On Vue, React or Blazor this is not the path to take for the components with a typed wrapper.** `FdyCombo`,
    `FdyDatepicker`, `FdyMonthpicker`, `FdyDateRange`, `FdyTimepicker`, `FdyAutocomplete`, `FdyCascade`, `FdyCfl`,
    `FdyChart`, `FdyTable`, `FdyModal`, `FdyDrawer`, `FdyAppShell` ship typed wrappers that own the state properly (Vue and
    React re-implement the interaction natively; Blazor wraps the enhancer over interop). Use them;
@@ -198,7 +198,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.19.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.19.1"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)
@@ -317,7 +317,7 @@ dev; `useFreeday` is idempotent, so it's safe.
 ### 5. Alternative: typed controlled components
 For fields you'd normally write as a native `<select>`/`<input type="date">`,
 `@cahyo-dimas/freeday/react` also exports typed **controlled** components with plain `value`/`onChange`,
-no manual event bubbling — the same eleven listed in §Core concepts #2, at parity with the Vue
+no manual event bubbling — the same set listed in §Core concepts #2, at parity with the Vue
 `v-model` components above:
 ```tsx
 import { FdyCombo } from '@cahyo-dimas/freeday/react';
@@ -452,7 +452,7 @@ kit's CSS/enhancers), then bind:
 <FdyChart Type="donut" Values="_byCity" Labels="_cityLabels" AriaLabel="Revenue by city" />
 <FdyDrawer @bind-Open="_drawerOpen" Title="Detail" Side="right">…</FdyDrawer>
 ```
-Thirteen components at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
+The same components, at parity with the Vue/React adapters: **`FdyModal`** · **`FdyDrawer`** (`@bind-Open`,
 `Title`, `Size`/`Side`, `Dismissible`) · **`FdyCombo<TValue>`** · **`FdyDatepicker`** ·
 **`FdyMonthpicker`** (`@bind-Value` as `yyyy-MM`) · **`FdyTimepicker`** (`@bind-Value` as `HH:MM`) · **`FdyAutocomplete`** · **`FdyCascade`** · **`FdyDateRange`** (`@bind-From`/`@bind-To`) ·
 **`FdyCfl<TRow>`** (async `LoadPage`) · **`FdyChart`** · **`FdyTable<TRow>`** (client sort/filter/page,

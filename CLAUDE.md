@@ -112,7 +112,7 @@ berikutnya.
 
 ## Status: **feature-complete**, demand-driven
 Kit ini sudah lewat fase roadmap: 51 stylesheet di `src/components/` + 32 enhancer di
-`src/freeday-*.js` (keduanya angka terhitung, bukan hafalan), paritas 11/11 komponen typed di
+`src/freeday-*.js` (keduanya angka terhitung, bukan hafalan), paritas komponen typed di
 **4 stack** (vanilla · Vue · React · Blazor), terbit publik di npm. **Sikap default sekarang =
 tunggu demand**, bukan bangun spekulatif; friksi dari app nyata yang menentukan rilis berikutnya.
 Riwayat per-versi: [`CHANGELOG.md`](CHANGELOG.md) · kandidat kerja berikutnya (dengan pemicunya):

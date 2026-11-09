@@ -5,7 +5,7 @@
 > **More free days for devs. The UI kit is ready to use.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v3.19.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.19.0)
+[![Release](https://img.shields.io/badge/release-v3.19.1-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.19.1)
 
 A token-driven, framework-agnostic UI kit. One source of truth for color, typography,
 spacing, and components. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -33,18 +33,18 @@ npm test                # build-transform tests + WCAG contrast (node:test)
 
 ### First: which entry point is yours?
 
-Most of Freeday is markup + `fdy-*` classes and is identical everywhere. **Eleven interactive
+Most of Freeday is markup + `fdy-*` classes and is identical everywhere. **Some interactive
 components also ship a typed wrapper.** In those stacks, use the wrapper rather than raw markup +
 enhancer:
 
-| Your stack | Import the eleven from | Binding |
+| Your stack | Import the wrappers from | Binding |
 |---|---|---|
 | **Vue 3** | `@cahyo-dimas/freeday/vue` | `v-model` |
 | **React 18/19** | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
 | **Blazor (net8.0)** | `Freeday.Blazor` RCL | `@bind-Value` |
 | Static HTML · Svelte · server-rendered templates | *(no wrapper)* raw markup + enhancers, below | `fdy-*` events |
 
-The thirteen: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyTimepicker` ·
+The wrappers: `FdyCombo` · `FdyDatepicker` · `FdyMonthpicker` · `FdyDateRange` · `FdyTimepicker` ·
 `FdyAutocomplete` · `FdyCascade` · `FdyCfl` · `FdyChart` · `FdyTable` · `FdyModal` · `FdyDrawer` · `FdyAppShell`.
 Hand-writing the raw
 markup for these inside Vue/React/Blazor *looks* fine at first, because the first render is correct.

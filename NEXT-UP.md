@@ -102,6 +102,7 @@ dan tidak punya berkas tidak pernah ada.
 | 24 | `FdyAutocomplete` tak dapat dijadikan wajib | terkirim 3.18.0 `#114` untuk ketiga kontrol yang tertinggal: Autocomplete lewat `required` native, Cfl lewat `data-fdy-required` (input-nya readonly, jadi usul "native" di catatan tidak akan pernah menolak), dan DateRange yang tak disebut catatannya. Audit kelasnya juga menutup slot pesan yang saling hapus, `Required` Blazor yang hanya terbaca sekali, dan `setState` yang menghapus tanda merah form |
 | 25 | `FdyAutocomplete`: atribut tak sampai ke input, `emptyText` per-instans, daftar terbuka tersaring | (a) dan (c) terkirim 3.19.0 `#115` di ketiga stack dan enhancer. (b) tidak diambil: yang dibaca dari `<form>` hanya pesan validasi, jadi bentuk yang benar adalah teks bawaan seluruh kit, tunggu ada yang membutuhkannya |
 | 26 | `<h1>` shell berisi merek | ditutup dengan dokumen 3.19.0 `#116`: `title` adalah nama halaman, dan dua dokumen yang masih berbunyi `<h1>` saja disamakan. `<h1>`-nya tidak diubah; perbaikannya di app yang mengisi `title` dengan merek |
+| 27 | Blok onboarding menyebut beberapa angka untuk satu himpunan pembungkus | ditutup dengan dokumen 3.19.1 `#117`: kata bilangan dihapus dari 18 tempat dan dijaga uji. Audit kelasnya menemukan dua lagi di blok yang sama: `timepicker` tercatat tanpa pembungkus, dan `FdyChart` tercatat tidak butuh enhancer. Membangkitkan angka saat rilis tidak diambil: tanpa angka, tidak ada yang perlu dibangkitkan |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

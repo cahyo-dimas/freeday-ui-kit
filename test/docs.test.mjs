@@ -374,8 +374,8 @@ test('COMPONENTS.md documents the typed wrappers\' props (NEXT-UP #11)', () => {
 test('every list of the typed wrappers names all of them', () => {
   /* `FdyAppShell` shipped in 1.54.0 as the eleventh wrapper, and three shipped documents went on
      listing ten for a whole major version — `agent-onboarding.md` managing to say both "ten" and
-     "eleven" about the same set, in the same file. The count word in prose cannot be guarded; the
-     list beside it can. Any run of six or more wrapper names is read as an enumeration and has to
+     "eleven" about the same set, in the same file. The list beside the count word is guarded here,
+     and the count word itself is refused by the next test. Any run of six or more wrapper names is read as an enumeration and has to
      be complete. `FdyTableFooter` is excluded: it is a part of the table, documented with it, and
      never appears in these lists. */
   const typed = [...read('adapters/vue/index.js').matchAll(/export \{ default as (Fdy\w+) \}/g)]
@@ -410,6 +410,39 @@ test('every list of the typed wrappers names all of them', () => {
   assert.deepEqual(offenders, [],
     'a wrapper that ships but is missing from a list is a wrapper consumers never reach for:\n' +
     offenders.join('\n'));
+});
+
+test('no document states how many typed wrappers there are', () => {
+  /* The number kept going stale, and 3.19.0 shipped "eleven" and "thirteen" for one set in 18
+     places, six of them inside the block consumers paste. The list beside it is complete and
+     guarded, so the prose names no number. Eleven and up only: the words
+     below that are ordinary English here. The two exemptions are the only other uses in these
+     files, a count of title levels and a year-picker page. */
+  const UNRELATED = /not eleven|of twelve/gi;
+  const COUNT = /\b(?:eleven|twelve|thirteen|fourteen|fifteen|sixteen|(?:ke)?sebelas(?:nya)?|(?:ke)?(?:dua|tiga|empat|lima|enam) belas(?:nya)?)\b|\b1\d (?:typed |interactive )?(?:components|wrappers|komponen)\b/gi;
+  const offenders = [];
+  for (const file of ['README.md', 'README.id.md', 'COMPONENTS.md', 'USAGE.md',
+                      'docs/getting-started.md', 'docs/agent-onboarding.md', 'docs/integrations.md']) {
+    for (const m of read(file).replace(UNRELATED, '').matchAll(COUNT)) {
+      offenders.push(`${file}: "${m[0]}"`);
+    }
+  }
+  assert.deepEqual(offenders, [], 'a count of the typed wrappers in prose:\n' + offenders.join('\n'));
+});
+
+test('the list of components without a wrapper names none that has one', () => {
+  /* The onboarding block told agents `timepicker` had no wrapper in the same paragraph that told
+     them never to hand-write `FdyTimepicker`. */
+  const wrappers = new Set([...read('adapters/vue/index.js').matchAll(/export \{ default as Fdy(\w+) \}/g)]
+    .map(m => m[1].toLowerCase()));
+  const list = read('docs/agent-onboarding.md')
+    .match(/the \*other\* interactive components \(([^)]+)\) there is no/);
+  assert.ok(list, 'the "no wrapper" sentence in agent-onboarding.md was not found');
+  const names = list[1].split(',').map(n => n.replace(/\s+/g, '').toLowerCase());
+  assert.ok(names.length >= 6, `parsed only ${names.length} components from that sentence`);
+  assert.ok(wrappers.size >= 10, `parsed only ${wrappers.size} typed wrappers`);
+  assert.deepEqual(names.filter(n => wrappers.has(n)), [],
+    'listed as having no wrapper, and exported as one');
 });
 
 test('COMPONENTS.md documents the whole column contract (#040)', () => {

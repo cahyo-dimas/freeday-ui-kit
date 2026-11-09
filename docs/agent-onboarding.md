@@ -20,34 +20,35 @@ the **root of the consuming project**:
 
 All UI in this project is built from Freeday: a **token-driven CSS kit** (`fdy-*` classes on plain
 markup) with **typed components for Vue, React and Blazor** layered on top. Most of the kit is
-markup + classes; eleven interactive components also ship a typed wrapper, and in those three stacks
+markup + classes; the interactive components listed below also ship a typed wrapper, and in those three stacks
 the wrapper is the correct way to use them.
 
 **0. First decide which entry point this project uses. This is not an optimisation. Get it wrong
 and the code looks correct and fails later.**
 
-| This project's stack | Import the eleven components from | Binding |
+| This project's stack | Import the typed wrappers from | Binding |
 |---|---|---|
 | Vue 3 | `@cahyo-dimas/freeday/vue` | `v-model` |
 | React 18/19 | `@cahyo-dimas/freeday/react` | `value` + `onChange` |
 | Blazor (net8.0) | `@using Freeday.Blazor` (RCL) | `@bind-Value` |
 | Static HTML, Svelte, server-rendered templates… | no wrapper: raw markup + the enhancer script | `fdy-*` DOM events |
 
-The thirteen: **FdyCombo · FdyDatepicker · FdyMonthpicker · FdyDateRange · FdyTimepicker ·
+The typed wrappers: **FdyCombo · FdyDatepicker · FdyMonthpicker · FdyDateRange · FdyTimepicker ·
 FdyAutocomplete · FdyCascade · FdyCfl · FdyChart · FdyTable · FdyModal · FdyDrawer · FdyAppShell**. In
-Vue/React/Blazor, **never hand-write the raw markup + enhancer for these thirteen.** The raw path *appears* to work: the enhancer auto-initialises
+Vue/React/Blazor, **never hand-write the raw markup + enhancer for any of these.** The raw path *appears* to work: the enhancer auto-initialises
 once on `DOMContentLoaded` and the first render is correct. Then it fails quietly: DOM your framework
 renders later is never hydrated, and the widget's state lives in the DOM instead of in your
 framework's state.
 
 Everything else is the same in every stack: plain `fdy-*` markup (button, card, badge, alert,
 table markup, layout…). For the *other* interactive components (chips, stepper, input mask, file
-upload, tree, tabs, menu, rating, slider, form validation, carousel, timepicker) there is no
+upload, tree, tabs, menu, rating, slider, form validation, carousel, datetimepicker) there is no
 wrapper, use the raw markup and hydrate it:
 
 - **Vue / React:** `useFreeday(rootRef)` from the same import path, plus `import '@cahyo-dimas/freeday'`
-  once at app entry to register the enhancers. (The eleven typed components do **not** need this: they
-  are native Vue/React implementations of the same markup, not wrappers over the enhancer.)
+  once at app entry to register the enhancers. (The typed wrappers do **not** need this: they
+  are native Vue/React implementations of the same markup, not wrappers over the enhancer. The one
+  exception is `FdyChart`, which paints through the enhancer and draws nothing without that import.)
 - **Blazor:** `FreedayBlazor.initAll` interop. (Here the typed components *are* thin wrappers over
   the enhancers, so the enhancer script is always required.)
 
@@ -76,7 +77,7 @@ wrapper, use the raw markup and hydrate it:
    Icon-only buttons need `aria-label`. Status is never colour-only.
 7. Interactive components need their enhancer script loaded (see the table in COMPONENTS.md); in an
    SPA, re-hydrate dynamic DOM with `useFreeday` / `FreedayBlazor.initAll`. This applies to the
-   components **without** a typed wrapper. For the eleven in step 0, use the wrapper instead.
+   components **without** a typed wrapper. For the ones listed in step 0, use the wrapper instead.
 8. Freeday owns components + tokens, **not layout**. Grids/stacks/one-off gaps come from our own
    layout layer. Build its theme on `var(--space-N)` so both systems stay in step.
 9. The enhancers render their own English UI strings (pager, filter dialog, validation). Never
@@ -103,7 +104,7 @@ Blazor). Then verify the agent can actually read those files. An agent that can'
 | `dist/freeday.media.css` | The breakpoints as `@custom-media` (`@cahyo-dimas/freeday/media`), so a responsive rule in your CSS states the kit's condition instead of a retyped literal. Needs PostCSS; carries no rules, and is **not** in the bundle. |
 | `src/components/*.css` | The authoritative source for every class, when a doc is ambiguous. |
 | `tokens/tokens.json` | Every token in W3C DTCG format, machine-readable. |
-| `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers, 11 components each (plus `FdyTableFooter`). |
+| `adapters/vue` · `adapters/react` · `adapters/blazor` | Typed wrappers: the same set in each, listed in step 0, plus `FdyTableFooter`, which is a part of `FdyTable`. |
 
 The live docs (with an interactive playground) are at
 <https://cahyo-dimas.github.io/freeday-ui-kit/>, and the repo (including three complete example
