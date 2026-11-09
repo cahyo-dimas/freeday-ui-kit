@@ -307,6 +307,13 @@ export async function withPage(fileUrl, fn) {
       await sleep(40);
     };
 
+    /* Text as a keyboard would enter it into the focused field: real `input` events, which is what
+       a framework's controlled input listens to. */
+    const insertText = async (text) => {
+      await cmd('Input.insertText', { text });
+      await sleep(40);
+    };
+
     /* The ACCESSIBLE NAME as the browser computes it, not textContent. CSS generated content never
        appears in textContent, so a tick painted through ::after is invisible to a DOM-level assert
        while a screen reader still reads it. Two kit features now hinge on that difference
@@ -440,7 +447,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
+    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
   } finally {
     if (ws !== null) {
       try {
@@ -517,6 +524,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-form-required.tsx'),
       join(HERE, 'entries', 'vue-form-required-rest.js'),
       join(HERE, 'entries', 'react-form-required-rest.tsx'),
+      join(HERE, 'entries', 'vue-autocomplete-attrs.js'),
+      join(HERE, 'entries', 'react-autocomplete-attrs.tsx'),
       join(HERE, 'entries', 'vue-picker-in-modal.js'),
       join(HERE, 'entries', 'vue-page-scan.js'),
       join(HERE, 'entries', 'vue-sortable.js'),

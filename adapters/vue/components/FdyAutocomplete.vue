@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, watch, type ComputedRef, type Ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, useAttrs, useId, watch, type ComputedRef, type Ref, type StyleValue } from 'vue';
 import { usePopover } from '../usePopover';
 
 // A controlled Vue port of freeday's autocomplete (src/freeday-autocomplete.js +
@@ -8,6 +8,23 @@ import { usePopover } from '../usePopover';
 // DOM mutation, so Vue owns the input. Filtering mirrors the enhancer exactly (case-insensitive
 // substring on the trimmed query); pass server-filtered `options` and it stays a no-op re-filter.
 // `select` is emitted only on commit (the enhancer's fdy-autocomplete-select event).
+
+// Anything not declared below belongs on the <input> (maxlength, inputmode, name, a per-control
+// data-fdy-msg-required), which is what an author of `<input>` expects; on the wrapper <div> it
+// meant nothing and reported nothing (#115). class and style stay on the root, which is what sizes
+// the control. Read at render, not in a computed: useAttrs() is not reactive.
+defineOptions({ inheritAttrs: false });
+const attrs: Record<string, unknown> = useAttrs();
+function rootClass(): string | undefined {
+  return attrs.class as string | undefined;
+}
+function rootStyle(): StyleValue {
+  return attrs.style as StyleValue;
+}
+function inputAttrs(): Record<string, unknown> {
+  const { class: _class, style: _style, ...rest } = attrs;
+  return rest;
+}
 
 const props = defineProps<{
   modelValue: string;
@@ -45,6 +62,8 @@ const inputEl: Ref<HTMLInputElement | null> = ref(null);
 const listboxEl: Ref<HTMLUListElement | null> = ref(null);
 const open: Ref<boolean> = ref(false);
 const active: Ref<number> = ref(-1);
+/** Typed since this list opened. Until then the field's value is not a query (#115). */
+const typed: Ref<boolean> = ref(false);
 
 // Render the listbox in the top layer so it escapes any ancestor overflow clip.
 usePopover(listboxEl, inputEl, open);
@@ -54,7 +73,7 @@ const isReadonly: ComputedRef<boolean> = computed((): boolean => props.readonly 
 const isInvalid: ComputedRef<boolean> = computed((): boolean => props.invalid === true);
 
 const filtered: ComputedRef<string[]> = computed((): string[] => {
-  const q: string = props.modelValue.trim().toLowerCase();
+  const q: string = typed.value ? props.modelValue.trim().toLowerCase() : '';
   return q === '' ? props.options.slice() : props.options.filter((o: string): boolean => o.toLowerCase().includes(q));
 });
 
@@ -68,6 +87,7 @@ function openList(): void {
 function closeList(): void {
   open.value = false;
   active.value = -1;
+  typed.value = false;
 }
 function choose(label: string): void {
   emit('update:modelValue', label);
@@ -78,6 +98,7 @@ function choose(label: string): void {
 function onInput(e: Event): void {
   const target: HTMLInputElement = e.target as HTMLInputElement;
   emit('update:modelValue', target.value);
+  typed.value = true;
   active.value = -1;
   openList();
 }
@@ -133,8 +154,9 @@ watch(active, async (i: number): Promise<void> => {
 </script>
 
 <template>
-  <div ref="rootEl" class="fdy-autocomplete" @keydown="onKeydown">
+  <div ref="rootEl" class="fdy-autocomplete" :class="rootClass()" :style="rootStyle()" @keydown="onKeydown">
     <input
+      v-bind="inputAttrs()"
       :id="inputId"
       ref="inputEl"
       :class="isInvalid ? 'fdy-input fdy-input--error' : 'fdy-input'"

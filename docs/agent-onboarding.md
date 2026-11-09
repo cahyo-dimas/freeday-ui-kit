@@ -68,7 +68,8 @@ wrapper, use the raw markup and hydrate it:
 2. Components only touch semantic tokens (`--color-*`), never the primitive ramp (`--azure-600`).
 3. `.fdy-btn` is already the primary action (there is no `--primary`). One per screen; everything
    else is `--ghost` or `--text`.
-4. Three title roles only: `.fdy-title-page` (one `<h1>`) / `.fdy-title-section` / `.fdy-title-card`.
+4. Three title roles only: `.fdy-title-page` (one `<h1>`; `<h2>` inside `.fdy-app`, whose topbar title
+   is the `<h1>` and names the current page) / `.fdy-title-section` / `.fdy-title-card`.
    Never reuse a card title as a page title.
 5. Assemble from the frame down: `.fdy-app` → `.fdy-page` → `.fdy-page-section` → components.
 6. Form errors: `aria-invalid="true"` + `aria-describedby` → a `.fdy-help.fdy-help--error`.

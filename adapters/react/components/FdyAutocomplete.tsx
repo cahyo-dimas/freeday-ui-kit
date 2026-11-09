@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import type { InputHTMLAttributes, JSX } from 'react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { usePopover } from '../usePopover';
 
@@ -9,7 +9,12 @@ import { usePopover } from '../usePopover';
 // (case-insensitive substring on the trimmed query); pass server-filtered `options` and it
 // stays a no-op re-filter. `onSelect` fires only on commit (the enhancer's select event).
 
-export interface FdyAutocompleteProps {
+/** What the component owns on its <input>, or redefines with another signature. */
+type OwnedInputAttrs = 'value' | 'defaultValue' | 'onChange' | 'onSelect' | 'type' | 'role' | 'autoComplete' | 'list' | 'readOnly' | 'children' | 'dangerouslySetInnerHTML';
+
+/** Any other input attribute (maxLength, inputMode, name, a per-control data-fdy-msg-required) lands
+ *  on the <input>; className and style stay on the root, which is what sizes the control (#115). */
+export interface FdyAutocompleteProps extends Omit<InputHTMLAttributes<HTMLInputElement>, OwnedInputAttrs> {
   value: string;
   onChange: (value: string) => void;
   options: ReadonlyArray<string>;
@@ -32,6 +37,12 @@ export interface FdyAutocompleteProps {
 }
 
 export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
+  const {
+    value: _value, onChange: _onChange, options: _options, onSelect: _onSelect, emptyText: _emptyText,
+    placeholder: _placeholder, id: _id, ariaLabel: _ariaLabel, ariaLabelledby: _ariaLabelledby,
+    disabled: _disabled, readonly: _readonly, invalid: _invalid, required: _required,
+    describedby: _describedby, className, style, onFocus, ...inputAttrs
+  } = props;
   const baseId: string = useId();
   const inputId: string = props.id ?? `${baseId}-input`;
   const listboxId: string = `${baseId}-listbox`;
@@ -42,6 +53,8 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   const listboxRef = useRef<HTMLUListElement>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [active, setActive] = useState<number>(-1);
+  /* Typed since this list opened. Until then the field's value is not a query (#115). */
+  const [typed, setTyped] = useState<boolean>(false);
 
   usePopover(listboxRef, inputRef, open);
   // Popover attr for React 18/19 JSX typing: set once on mount (same as FdyCombo).
@@ -54,15 +67,15 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   const isInvalid: boolean = props.invalid === true;
 
   const filtered: string[] = useMemo((): string[] => {
-    const q: string = props.value.trim().toLowerCase();
+    const q: string = typed ? props.value.trim().toLowerCase() : '';
     return q === '' ? props.options.slice() : props.options.filter((o: string): boolean => o.toLowerCase().includes(q));
-  }, [props.options, props.value]);
+  }, [props.options, props.value, typed]);
 
   const activeDescendant: string | undefined =
     open && active >= 0 && active < filtered.length ? optionId(active) : undefined;
 
   const openList = (): void => { if (!isDisabled && !isReadonly) setOpen(true); };
-  const closeList = (): void => { setOpen(false); setActive(-1); };
+  const closeList = (): void => { setOpen(false); setActive(-1); setTyped(false); };
 
   const choose = (label: string): void => {
     props.onChange(label);
@@ -117,8 +130,9 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
   }, [active, open]);
 
   return (
-    <div ref={rootRef} className="fdy-autocomplete" onKeyDown={onKeyDown}>
+    <div ref={rootRef} className={className === undefined ? 'fdy-autocomplete' : `fdy-autocomplete ${className}`} style={style} onKeyDown={onKeyDown}>
       <input
+        {...inputAttrs}
         ref={inputRef}
         id={inputId}
         className={isInvalid ? 'fdy-input fdy-input--error' : 'fdy-input'}
@@ -138,8 +152,8 @@ export function FdyAutocomplete(props: FdyAutocompleteProps): JSX.Element {
         readOnly={isReadonly}
         required={props.required === true}
         value={props.value}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>): void => { props.onChange(e.target.value); setActive(-1); openList(); }}
-        onFocus={openList}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>): void => { props.onChange(e.target.value); setTyped(true); setActive(-1); openList(); }}
+        onFocus={(e: React.FocusEvent<HTMLInputElement>): void => { openList(); onFocus?.(e); }}
       />
       <ul
         ref={listboxRef}

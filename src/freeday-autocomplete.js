@@ -57,6 +57,7 @@
       input.removeAttribute('aria-activedescendant');
       active = -1;
       clearHighlight();
+      showAll();
       document.removeEventListener('click', onDocClick, true);
     }
     function onDocClick(e) { if (!root.contains(e.target)) close(); }
@@ -69,6 +70,14 @@
       vis[i].classList.add('is-highlighted');
       input.setAttribute('aria-activedescendant', vis[i].id);
       vis[i].scrollIntoView({ block: 'nearest' });
+    }
+
+    /* A list opens whole; only typing narrows it. A value that was already in the field (a default,
+       a saved record) is not a query, and filtering by it opened a one-item list that looked broken
+       (#115). Reset on close, so the arrow keys reopen it whole as well. */
+    function showAll() {
+      options.forEach(function (o) { o.hidden = false; });
+      if (emptyEl) emptyEl.hidden = options.length !== 0;
     }
 
     function applyFilter() {
@@ -94,7 +103,11 @@
     }
 
     input.addEventListener('input', applyFilter);
-    input.addEventListener('focus', function () { applyFilter(); });
+    input.addEventListener('focus', function () {
+      if (!listbox.hidden) return;
+      showAll();
+      open();
+    });
     input.addEventListener('keydown', function (e) {
       var vis = visible();
       switch (e.key) {

@@ -5,8 +5,8 @@
    option list as the user types and, on pick, fills the input + emits fdy-autocomplete-select
    with the chosen text. Value is that text. The enhancer owns the input/listbox after
    hydration (ShouldRender => false); the initial value seeds the input. *@
-<div @ref="Root" data-fdy-autocomplete class="fdy-autocomplete">
-    <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
+<div @ref="Root" data-fdy-autocomplete class="@RootClass" style="@RootStyle">
+    <input @attributes="InputAttributes" class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
            aria-controls="@_listId" autocomplete="off" value="@Value"
            placeholder="@Placeholder" aria-label="@AriaLabel"
            id="@Id" aria-labelledby="@AriaLabelledby" aria-describedby="@Describedby"

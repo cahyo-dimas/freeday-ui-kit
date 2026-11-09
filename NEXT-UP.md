@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07; §20 dan §21 tidak ada di berkasnya):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07, §25 dan §26 2026-11-07; §20 dan §21 tidak ada di berkasnya):
 
 | § | pokok | status |
 |---|---|---|
@@ -100,6 +100,8 @@ dan tidak punya berkas tidak pernah ada.
 | 22 | `fdy-form-grid` menjadikan setiap anak bukan-isian sebuah kolom | terkirim 3.16.0 `#111`, usul 1 catatan: anak bukan-`.fdy-field` merentang baris penuh; sel non-isian yang harus sekolom dibungkus `div.fdy-field` |
 | 23 | pengalih tema hanya ada untuk Blazor | terkirim 3.17.0 `#113` sebagai `FreedayTheme` + `useTheme()` Vue/React + Blazor yang disambungkan ke inti yang sama; catatan keliru soal Blazor, yang punya hanya pembantu demo tanpa penyimpanan. `'system'` mencabut atribut, bukan menghitungnya. Sinkron antar-tab sengaja tidak dibuat |
 | 24 | `FdyAutocomplete` tak dapat dijadikan wajib | terkirim 3.18.0 `#114` untuk ketiga kontrol yang tertinggal: Autocomplete lewat `required` native, Cfl lewat `data-fdy-required` (input-nya readonly, jadi usul "native" di catatan tidak akan pernah menolak), dan DateRange yang tak disebut catatannya. Audit kelasnya juga menutup slot pesan yang saling hapus, `Required` Blazor yang hanya terbaca sekali, dan `setState` yang menghapus tanda merah form |
+| 25 | `FdyAutocomplete`: atribut tak sampai ke input, `emptyText` per-instans, daftar terbuka tersaring | (a) dan (c) terkirim 3.19.0 `#115` di ketiga stack dan enhancer. (b) tidak diambil: yang dibaca dari `<form>` hanya pesan validasi, jadi bentuk yang benar adalah teks bawaan seluruh kit, tunggu ada yang membutuhkannya |
+| 26 | `<h1>` shell berisi merek | ditutup dengan dokumen 3.19.0 `#116`: `title` adalah nama halaman, dan dua dokumen yang masih berbunyi `<h1>` saja disamakan. `<h1>`-nya tidak diubah; perbaikannya di app yang mengisi `title` dengan merek |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 

@@ -49,6 +49,32 @@ public class FdyRequiredTests : BunitContext
     }
 
     [Fact]
+    public void Autocomplete_puts_unmatched_attributes_on_its_input_and_class_on_its_root()
+    {
+        var cut = Render<FdyAutocomplete>(p => p
+            .Add(c => c.Options, new List<string> { "pcs" })
+            .AddUnmatched("maxlength", "20")
+            .AddUnmatched("inputmode", "text")
+            .AddUnmatched("data-fdy-msg-required", "Satuan wajib diisi.")
+            .AddUnmatched("class", "sizer")
+            .AddUnmatched("style", "width:200px")
+            .AddUnmatched("role", "textbox"));
+
+        var input = cut.Find("input");
+        Assert.Equal("20", input.GetAttribute("maxlength"));
+        Assert.Equal("text", input.GetAttribute("inputmode"));
+        Assert.Equal("Satuan wajib diisi.", input.GetAttribute("data-fdy-msg-required"));
+        Assert.Equal("fdy-input", input.GetAttribute("class"));
+        Assert.Null(input.GetAttribute("style"));
+        Assert.Equal("combobox", input.GetAttribute("role"));
+
+        var root = cut.Find(".fdy-autocomplete");
+        Assert.True(root.ClassList.Contains("sizer"));
+        Assert.Equal("width:200px", root.GetAttribute("style"));
+        Assert.False(root.HasAttribute("maxlength"));
+    }
+
+    [Fact]
     public void Every_render_once_control_pushes_a_later_Required()
     {
         var auto = Render<FdyAutocomplete>(p => p.Add(c => c.Options, new List<string> { "pcs" }));

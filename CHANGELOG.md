@@ -9,6 +9,43 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.19.0] - 2026-11-09
+
+**`FdyAutocomplete` kini berlaku seperti input.** Keduanya ketahuan saat tiga isian `<input list>`
+dipindahkan ke komponen ini (`CATATAN-FREEDAY.md` §25): `maxlength` dan pesan per-kolom hilang tanpa
+suara, dan isian yang punya nilai bawaan membuka daftar berisi satu saran.
+
+### Changed
+- **Atribut yang tidak dikenal `FdyAutocomplete` mendarat di `<input>`-nya** (`#115`), di ketiga
+  stack: `maxlength`, `inputmode`, `name`, `data-fdy-msg-required`, dan listener. Sebelumnya atribut
+  itu jatuh ke `div` pembungkus di Vue, dan hilang di React serta Blazor. `class` dan `style` tetap
+  di akar. **Di Vue ini perubahan perilaku:** atribut seperti `data-testid` yang dulu ada di akar kini
+  ada di input. Yang menjadi kontrak combobox (`role`, `type`, `autocomplete`, ARIA) tetap milik
+  komponen. React menerima atribut input lewat tipenya; Blazor lewat `AdditionalAttributes`.
+- **Daftar autocomplete terbuka utuh, dan hanya ketikan yang menyaringnya** (`#115`), di Vue, React,
+  dan enhancer yang dipakai Blazor serta jalur mentah. Nilai yang sudah ada di isian bukan kueri.
+  Penyaringan dilupakan saat daftar ditutup, jadi tombol panah juga membukanya utuh; di enhancer
+  sebelumnya tombol panah membuka opsi sisa saringan terakhir.
+
+### Fixed
+- **Pesan per-kontrol `FdyAutocomplete` kini sampai ke aturan form** (`#115`), sebab aturan itu
+  membacanya dari input.
+
+### Docs
+- **`.fdy-title-page` di dalam `.fdy-app` adalah `<h2>`** (`#116`, §26). `COMPONENTS.md` sudah
+  menyebutnya, tetapi `USAGE.md` dan `docs/agent-onboarding.md` masih berbunyi `<h1>` saja. Blok
+  onboarding berubah di butir 4, jadi salinannya di proyek konsumen perlu diganti saat naik versi.
+- **`title` di `FdyAppShell` adalah nama halaman yang sedang dibuka**, bukan nama produk. Ia
+  dirender sebagai `<h1>` dokumen; nama produk tempatnya di merek sidebar (`brand`, Blazor
+  `BrandContent`).
+
+### Catatan
+- **§26 tidak mengganti `<h1>` shell menjadi `<p>`.** Contoh kit selalu mengisi `title` dengan nama
+  halaman, jadi `<h1>`-nya memang benar. Yang keliru adalah mengisinya dengan merek.
+- **§25b tidak diambil.** Premisnya, bahwa string kit lain dapat disetel sekali di `<form>`, hanya
+  berlaku untuk pesan validasi. Autocomplete juga dapat dipakai di luar form, dan bawaan Inggris yang
+  sama ada di `FdyCfl` serta `FdyTable`. Kalau dibutuhkan, bentuknya teks bawaan untuk seluruh kit.
+
 ## [3.18.0] - 2026-11-07
 
 **Setiap kontrol bernilai kini dapat dijadikan wajib, di ketiga stack.** 3.12.0 (`#096`) memberi

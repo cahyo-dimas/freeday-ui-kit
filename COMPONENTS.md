@@ -156,7 +156,7 @@ which is why React's list is longer while offering the same thing.
 | `navOpen?` | `boolean` | Whether the nav is visible. Optional because the default is the **viewport's**, and a caller cannot state that in one initial value. Vue binds `v-model:navOpen`. |
 | `onNavOpenChange?` | `(open: boolean) => void` | React. Visibility changed: the toggle, Escape, the backdrop, or a followed nav item. Vue emits `update:navOpen`. |
 | `navMode?` | `'push' \| 'overlay'` | How a **visible** nav sits on a **wide** viewport: `push` (default) is the column that displaces the content, `overlay` floats it over the page with a backdrop. Below the nav breakpoint it is ignored — the nav is off-canvas there by definition, so there is nothing to choose. Blazor takes the enum `FdyNavMode`. |
-| `title?` | `string` (Vue) · `ReactNode` | Topbar title. |
+| `title?` | `string` (Vue) · `ReactNode` | Topbar title, rendered as the document's `<h1>`: the name of the **current page**, not the product. The product's name goes in the sidebar brand (Vue slot `brand`, React `brand`, Blazor `BrandContent`), and the page's own `.fdy-title-page` steps down to `<h2>`. |
 | `toggleLabel?` | `string` | Accessible name for the nav toggle button. |
 | `toggleIcon?` | `ReactNode` | React. Replaces the default hamburger; Vue uses the slot of that name. |
 | `skip?` | `ReactNode` | React. Skip link, rendered first in the tab order. |
@@ -317,7 +317,7 @@ carry the doctrine in markup.
   <header class="fdy-page__header">
     <div class="fdy-page__heading">
       <p class="fdy-eyebrow">Sales</p>
-      <h1 class="fdy-title-page">Invoices</h1>
+      <h1 class="fdy-title-page">Invoices</h1><!-- <h2> inside .fdy-app: the topbar title is the <h1> -->
       <p class="fdy-page__desc">Every invoice issued this period.</p>
     </div>
     <div class="fdy-page__actions"><button class="fdy-btn">New invoice</button></div>
@@ -861,7 +861,14 @@ Blazor carries all of these. The states live on the input natively, and
 render. A `readonly` input no longer opens its suggestion list, which it used to do over a field
 nobody could edit.
 
-Editable combobox that filters as you type. Needs `freeday-autocomplete.js`.
+**Anything the table does not name lands on the `<input>`** — `maxlength` (`maxLength` in React),
+`inputmode`, `name`, a per-control `data-fdy-msg-required`, an event listener. `class` and `style`
+stay on the root, which is what sizes the control. What the combobox contract depends on (`role`,
+`type`, `autocomplete`, the ARIA wiring) is set by the component and cannot be overridden.
+
+Editable combobox: **the list opens whole, and typing narrows it.** A value already in the field (a
+default, a saved record) is not a query, so opening shows every option; filtering starts on the first
+keystroke and is forgotten when the list closes. Needs `freeday-autocomplete.js`.
 
 - `.fdy-autocomplete` · `__listbox` `__option` `__empty`
 - The `<input>` carries `role="combobox"`, `aria-expanded`, `aria-autocomplete="list"`,
@@ -1351,7 +1358,8 @@ blur/input. Needs `freeday-form.js`.
   invalid, so filling one end does not erase the message the other end still needs. The message override is per-control (`data-fdy-msg-required` on the root) wherever
   attributes reach the root — the raw path, and Vue, where an unknown attribute falls through. In
   React and Blazor they do not, so use the form-level `data-fdy-text-required`, which reads the
-  same in every stack.
+  same in every stack. `FdyAutocomplete` is the exception: it is validated on its input, and
+  forwards the attribute there in all three.
 - **`data-value` on a control's root is the live value**, not just the seed it used to be on the
   datepicker, timepicker and cascade (the combo always kept it current). That is what makes the
   rule above possible, and it is also the handle a test or a CSS empty-state rule can read.

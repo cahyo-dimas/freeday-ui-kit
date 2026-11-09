@@ -18,7 +18,7 @@ the single biggest cause of "flat grey mush". Pick the role, not the size:
 | Role | Class | When |
 |---|---|---|
 | Eyebrow | `.fdy-eyebrow` | A small uppercase label above a page/section title. Optional. |
-| Page title | `.fdy-title-page` | One per screen. The `<h1>`. |
+| Page title | `.fdy-title-page` | One per screen. The `<h1>` on a standalone page; `<h2>` inside `.fdy-app`, whose `.fdy-app__title` is already the `<h1>` and names the current page. |
 | Section title | `.fdy-title-section` | A region within the page (`<h2>`). |
 | Card / row title | `.fdy-title-card` (or `.fdy-card__title`) | A title inside a card or list row (`<h3>`). |
 | Body | *(default)* | Running text. |

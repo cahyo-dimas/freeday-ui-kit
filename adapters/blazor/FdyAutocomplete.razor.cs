@@ -49,6 +49,21 @@ public partial class FdyAutocomplete
     /// with the other states, so a field required only under a condition follows it (#114).</summary>
     [Parameter] public bool Required { get; set; }
 
+    /// <summary>Any other attribute (<c>maxlength</c>, <c>inputmode</c>, <c>name</c>, a per-control
+    /// <c>data-fdy-msg-required</c>) lands on the <c>&lt;input&gt;</c>; <c>class</c> and <c>style</c>
+    /// stay on the root, which is what sizes the control. The attributes the component sets itself
+    /// win, since they are written after these (#115).</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string RootClass => Unmatched("class") is { } extra ? $"fdy-autocomplete {extra}" : "fdy-autocomplete";
+    private string? RootStyle => Unmatched("style");
+    private IEnumerable<KeyValuePair<string, object>> InputAttributes =>
+        (AdditionalAttributes ?? new Dictionary<string, object>()).Where(a => a.Key is not ("class" or "style"));
+
+    private string? Unmatched(string name) =>
+        AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(name, out object? value) ? value?.ToString() : null;
+
     protected override bool ShouldRender() => !Hydrated;
 
     protected override async Task OnParametersSetAsync()

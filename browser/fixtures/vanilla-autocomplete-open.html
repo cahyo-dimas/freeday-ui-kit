@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: a raw autocomplete whose field already holds a value opens its whole list</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+<div id="root" class="fdy-autocomplete" data-fdy-autocomplete>
+  <input id="ac" class="fdy-input" type="text" role="combobox" aria-expanded="false" aria-autocomplete="list"
+         aria-controls="list" autocomplete="off" value="buah">
+  <ul id="list" class="fdy-autocomplete__listbox" role="listbox" hidden>
+    <li class="fdy-autocomplete__option" role="option">buah</li>
+    <li class="fdy-autocomplete__option" role="option">galon</li>
+    <li class="fdy-autocomplete__option" role="option">pcs</li>
+    <li class="fdy-autocomplete__empty" hidden>Tidak ada</li>
+  </ul>
+</div>
+<button id="luar" type="button">luar</button>
+<script src="../../dist/freeday.js"></script>
+<script>
+  window.isOpen = () => document.getElementById('ac').getAttribute('aria-expanded') === 'true';
+  window.shownOptions = () => [...document.querySelectorAll('#list [role="option"]')].filter((o) => !o.hidden).map((o) => o.textContent.trim());
+  window.emptyShown = () => { const e = document.querySelector('.fdy-autocomplete__empty'); return e !== null && !e.hidden; };
+</script>
