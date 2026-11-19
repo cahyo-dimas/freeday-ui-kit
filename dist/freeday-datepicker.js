@@ -11,6 +11,11 @@
  *               <div data-fdy-datepicker data-role="to" data-placeholder="To"></div>
  *             </div>
  *    The range links the two: the end can never precede the start (out-of-range days disable).
+ *  - Range in ONE field: <div data-fdy-daterange data-layout="single" data-value="2026-11-01/2026-11-30"
+ *               data-label="Period"></div>
+ *    One trigger, one calendar: the first day picked is the start, the second the end. The value is
+ *    "start/end" (ISO 8601 interval) or "", and it changes only when the range is whole, announced
+ *    by "fdy-daterange-settled" {from, to} on the root. Escape or a click outside drops half a range.
  *  - Month:  <div data-fdy-datepicker data-mode="month" data-value="2026-10"></div>
  *    The calendar opens ON the month grid and stops there; the value is "YYYY-MM".
  *
@@ -54,7 +59,14 @@
     nextYears: 'Next years',
     chooseMonth: '{label}, choose month',
     chooseYear: '{label}, choose year',
-    backToMonths: '{start} to {end}, back to months'
+    backToMonths: '{start} to {end}, back to months',
+    /* The single-field range's own pair, for the same reason month mode has one: "Choose a date"
+       on a field that wants two of them tells the reader half the job. */
+    labelRange: 'Date range',
+    placeholderRange: 'Choose dates',
+    /* Appended to a day's accessible name, so an end of the range is not told by colour alone. */
+    rangeStart: 'range start',
+    rangeEnd: 'range end'
   };
   /* HTML lowercases attribute names, so a camelCase key like `prevMonth` can only ever be written
      as `data-fdy-text-prevmonth`, while the kebab form anybody would reach for,
@@ -95,6 +107,16 @@
     var d = new Date(Number(p[0]), Number(p[1]) - 1, p.length > 2 ? Number(p[2]) : 1);
     return isNaN(d.getTime()) ? null : d;
   }
+  /* "start/end", the ISO 8601 interval form, so a range is ONE `data-value` like every other kit
+     control and `freeday-form.js` can require it without knowing it is a range. Half an interval,
+     or an end before its start, reads as empty: the field never shows a range it would not commit. */
+  function parseInterval(s) {
+    var p = String(s || '').split('/');
+    var a = p.length === 2 ? parseISO(p[0]) : null;
+    var b = p.length === 2 ? parseISO(p[1]) : null;
+    if (!a || !b || b.getTime() < a.getTime()) return { start: null, end: null };
+    return { start: a, end: b };
+  }
   function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
   function sameDay(a, b) { return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
   function addDays(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
@@ -126,10 +148,26 @@
        opens on it, Enter and a click commit from it, the day grid is never built, and the value is
        "YYYY-MM". Anything else, including the attribute's absence, is the day picker unchanged. */
     var monthOnly = wrap.getAttribute('data-mode') === 'month';
+    /* A `data-fdy-daterange` root reaches this function only for `data-layout="single"`: the range
+       in one field. It is the same calendar with a different answer, so it lives here rather than
+       in a second copy of everything below. `selected` holds the start and `selectedEnd` the end;
+       `anchor` is a start picked in this opening and not yet answered by an end, and `preview` the
+       day the pointer or the keyboard is on while it waits. */
+    var rangeMode = wrap.hasAttribute('data-fdy-daterange');
     var parseVal = monthOnly ? parseISOMonth : parseISO;
-    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, monthOnly ? 'placeholderMonth' : 'placeholder');
-    var label = wrap.getAttribute('data-label') || textOf(wrap, monthOnly ? 'labelMonth' : 'label');
-    var selected = parseVal(wrap.getAttribute('data-value'));
+    var placeholder = wrap.getAttribute('data-placeholder') || textOf(wrap, monthOnly ? 'placeholderMonth' : rangeMode ? 'placeholderRange' : 'placeholder');
+    var label = wrap.getAttribute('data-label') || (rangeMode && wrap.getAttribute('aria-label')) || textOf(wrap, monthOnly ? 'labelMonth' : rangeMode ? 'labelRange' : 'label');
+    var seed = rangeMode ? parseInterval(wrap.getAttribute('data-value')) : null;
+    var selected = rangeMode ? seed.start : parseVal(wrap.getAttribute('data-value'));
+    var selectedEnd = rangeMode ? seed.end : null;
+    var anchor = null, preview = null;
+    if (rangeMode) {
+      wrap.classList.add('fdy-datepicker--range');
+      /* The group role the split layout needs would wrap one button here; the trigger carries
+         the name instead. */
+      wrap.removeAttribute('role');
+      wrap.removeAttribute('aria-label');
+    }
     var minDate = parseVal(wrap.getAttribute('data-min'));
     var maxDate = parseVal(wrap.getAttribute('data-max'));
     var rangeStart = null, rangeEnd = null; // for in-range shading
@@ -175,7 +213,22 @@
     wrap.appendChild(trigger);
     wrap.appendChild(panel);
 
+    function rangeValue() {
+      return selected && selectedEnd ? toISO(selected) + '/' + toISO(selectedEnd) : '';
+    }
+
     function updateDisplay() {
+      if (rangeMode) {
+        wrap.setAttribute('data-value', rangeValue());
+        if (selected && selectedEnd) {
+          valueSpan.textContent = valueFmt.format(selected) + ' – ' + valueFmt.format(selectedEnd);
+          valueSpan.classList.remove('fdy-datepicker__value--placeholder');
+        } else {
+          valueSpan.textContent = placeholder;
+          valueSpan.classList.add('fdy-datepicker__value--placeholder');
+        }
+        return;
+      }
       /* Mirror the value onto the ROOT, which until now only seeded it. `freeday-select.js` has
          always done this, so this makes the family agree rather than inventing a second idea, and
          it is what lets `freeday-form.js` require a kit control without knowing which control it
@@ -284,7 +337,8 @@
         btn.textContent = d.getDate();
         if (d.getMonth() !== view.getMonth()) btn.classList.add('is-outside');
         if (sameDay(d, today)) btn.classList.add('is-today');
-        if (selected && sameDay(d, selected)) { btn.classList.add('is-selected'); btn.setAttribute('aria-selected', 'true'); }
+        if (rangeMode) paintRange(btn, d);
+        else if (selected && sameDay(d, selected)) { btn.classList.add('is-selected'); btn.setAttribute('aria-selected', 'true'); }
         if (rangeStart && rangeEnd) {
           var t = startOfDay(d).getTime();
           if (t > startOfDay(rangeStart).getTime() && t < startOfDay(rangeEnd).getTime()) btn.classList.add('in-range');
@@ -296,7 +350,82 @@
         grid.appendChild(btn);
       }
       grid.addEventListener('keydown', onGridKey);
+      if (rangeMode) grid.addEventListener('mouseover', onRangeHover);
       panel.appendChild(grid);
+    }
+
+    /* The two ends the grid shows. While a start waits for its end, the end is the day under the
+       pointer or the keyboard, and only when it does not precede the start: a day before it would
+       become the new start, so drawing a band backwards would promise something a click will not do. */
+    function shownEnds() {
+      if (anchor) {
+        var to = preview && startOfDay(preview).getTime() >= anchor.getTime() ? startOfDay(preview) : null;
+        return { from: anchor, to: to, pending: true };
+      }
+      return { from: selected, to: selectedEnd, pending: false };
+    }
+
+    /* Every range state of one day cell, written in full each time, so the same function serves the
+       render and the cheaper repaint a hover asks for (rebuilding the grid under a moving pointer
+       would replace the element the pointer is on). The ends are rounded on their outer side only,
+       and a committed end is filled like a picked day. A previewed end is not filled: it is not an
+       answer yet. Each end also says so in its accessible name, so the range is not colour alone. */
+    function paintRange(btn, d) {
+      var ends = shownEnds();
+      var t = startOfDay(d).getTime();
+      var isFrom = !!ends.from && sameDay(d, ends.from);
+      var isTo = !!ends.to && sameDay(d, ends.to);
+      var span = !!ends.from && !!ends.to && !sameDay(ends.from, ends.to);
+      var filled = isFrom || (isTo && !ends.pending);
+      btn.classList.toggle('is-selected', filled);
+      if (filled) btn.setAttribute('aria-selected', 'true'); else btn.removeAttribute('aria-selected');
+      btn.classList.toggle('is-range-start', isFrom && span);
+      btn.classList.toggle('is-range-end', isTo && span);
+      btn.classList.toggle('in-range', span && ((t > ends.from.getTime() && t < ends.to.getTime()) || (isTo && ends.pending)));
+      var name = dayLabelFmt.format(d);
+      if (isFrom) name += ', ' + textOf(wrap, 'rangeStart');
+      else if (isTo && !ends.pending) name += ', ' + textOf(wrap, 'rangeEnd');
+      btn.setAttribute('aria-label', name);
+    }
+
+    function repaintRange() {
+      Array.prototype.forEach.call(panel.querySelectorAll('.fdy-cal__day'), function (btn) {
+        if (btn._date) paintRange(btn, btn._date);
+      });
+    }
+
+    function onRangeHover(e) {
+      if (!anchor) return;
+      var cell = e.target && e.target.closest ? e.target.closest('.fdy-cal__day') : null;
+      if (!cell || !cell._date || cell.disabled) return;
+      if (preview && sameDay(preview, cell._date)) return;
+      preview = cell._date;
+      repaintRange();
+    }
+
+    /* First pick: the start, and the panel stays open for the end. Second pick on or after it: the
+       range is whole, committed and announced, and the panel closes. A second pick BEFORE the start
+       becomes the new start instead of silently swapping the two, which would leave the reader
+       wondering which end they just moved. */
+    function pickRange(d) {
+      var day = startOfDay(d);
+      focusDate = day;
+      if (!anchor || day.getTime() < anchor.getTime()) {
+        anchor = day;
+        preview = day;
+        render();
+        focusFocusDate();
+        return;
+      }
+      selected = anchor;
+      selectedEnd = day;
+      anchor = null;
+      preview = null;
+      updateDisplay();
+      wrap.dispatchEvent(new CustomEvent('fdy-daterange-settled', {
+        bubbles: true, detail: { from: toISO(selected), to: toISO(selectedEnd) }
+      }));
+      close(true);
     }
 
     function renderMonths() {
@@ -518,6 +647,9 @@
 
     function moveFocus(next) {
       focusDate = next;
+      /* The keyboard previews the band exactly as the pointer does, or a keyboard user would pick
+         the end without ever seeing the range they are about to commit. */
+      if (anchor) preview = startOfDay(next);
       if (next.getMonth() !== view.getMonth() || next.getFullYear() !== view.getFullYear()) {
         view = new Date(next.getFullYear(), next.getMonth(), 1);
       }
@@ -546,6 +678,7 @@
 
     function pick(d) {
       if (isDisabled(d)) return;
+      if (rangeMode) { pickRange(d); return; }
       selected = startOfDay(d);
       focusDate = selected;
       updateDisplay();
@@ -622,6 +755,10 @@
 
     function close(returnFocus) {
       if (panel.hidden) return;
+      /* Every way out that is not a second pick drops half a range: the value never held it, so
+         there is nothing to restore, only the start this opening was waiting on. */
+      anchor = null;
+      preview = null;
       var p = popCtl(); if (p) p.hide(); else panel.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
       trigger.classList.remove('is-open');
@@ -643,8 +780,11 @@
     var api = {
       wrap: wrap,
       setState: setState,
-      getValue: function () { return selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : ''; },
-      clear: function () { selected = null; updateDisplay(); if (!panel.hidden) render(); },
+      getValue: function () {
+        if (rangeMode) return rangeValue();
+        return selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : '';
+      },
+      clear: function () { selected = null; selectedEnd = null; updateDisplay(); if (!panel.hidden) render(); },
       setMin: function (iso) { minDate = parseVal(iso); if (!panel.hidden) render(); },
       setMax: function (iso) { maxDate = parseVal(iso); if (!panel.hidden) render(); },
       setRange: function (fromIso, toIso) {
@@ -661,6 +801,9 @@
     if (root.dataset.fdyDrReady === '1') return;
     if (root.closest('[data-fdy-ignore]')) return;
     root.dataset.fdyDrReady = '1';
+    /* One field: the root IS the picker, and the range logic lives in initPicker beside the
+       calendar it draws on. The split layout below is unchanged. */
+    if (root.getAttribute('data-layout') === 'single') { initPicker(root); return; }
     var fromEl = root.querySelector('[data-fdy-datepicker][data-role="from"]');
     var toEl = root.querySelector('[data-fdy-datepicker][data-role="to"]');
     if (!fromEl || !toEl) return;

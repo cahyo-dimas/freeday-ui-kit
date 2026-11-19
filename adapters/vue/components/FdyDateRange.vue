@@ -3,20 +3,37 @@ export interface DateRangeValue {
   start: string | null;
   end: string | null;
 }
+
+/** `split`: two linked pickers. `single`: one field, one calendar, both ends picked in it. */
+export type FdyDateRangeLayout = 'split' | 'single';
 </script>
 
 <script setup lang="ts">
-import { computed, type ComputedRef } from 'vue';
+import { computed, provide, type ComputedRef } from 'vue';
 import FdyDatepicker from './FdyDatepicker.vue';
+import { FDY_RANGE_FIELD, type FdyRangeFieldContext } from '../rangeField';
 
-// A controlled date range over freeday's `.fdy-daterange` layout (src/components/datepicker.css):
-// two linked FdyDatepickers where the end can't precede the start (start.max = end, end.min =
-// start). A real `v-model:DateRangeValue` that composes the single-date picker rather than
-// re-implementing the calendar. The vanilla enhancer's cross-calendar `.in-range` day shading is
-// not reproduced (each picker is independent), the min/max linkage is what keeps the range valid.
+// A controlled date range, in one of two layouts that share the value and every prop below.
+//
+// `split` (the default) is freeday's `.fdy-daterange` (src/components/datepicker.css): two linked
+// FdyDatepickers where the end can't precede the start (start.max = end, end.min = start). The
+// vanilla enhancer's cross-calendar `.in-range` shading is not reproduced there (each picker is
+// independent); the min/max linkage is what keeps the range valid.
+//
+// `single` is ONE FdyDatepicker that draws the range itself, told so through FDY_RANGE_FIELD rather
+// than a prop of its own. The first day picked is the start, the second the end, and the value
+// changes only when the range is whole, so `change` and `settled` arrive together.
 
 const props = defineProps<{
   modelValue: DateRangeValue;
+  /** `'split'` (default): two pickers. `'single'`: one field holding both dates. */
+  layout?: FdyDateRangeLayout;
+  /** The empty field's text under `layout="single"`. Default 'Select dates'. */
+  placeholder?: string;
+  /** Added to the accessible name of the range's first and last day under `layout="single"`, so
+   *  an end is not told by colour alone. Defaults 'range start' / 'range end'. */
+  rangeStartLabel?: string;
+  rangeEndLabel?: string;
   min?: string;
   max?: string;
   locale?: string;
@@ -71,10 +88,43 @@ function setStart(start: string): void {
 function setEnd(end: string): void {
   commit({ start: props.modelValue.start, end });
 }
+
+const rangeField: FdyRangeFieldContext = {
+  enabled: computed((): boolean => props.layout === 'single'),
+  start: computed((): string | null => props.modelValue.start),
+  end: computed((): string | null => props.modelValue.end),
+  ariaLabel: computed((): string | undefined => props.ariaLabel),
+  rangeStartLabel: computed((): string => props.rangeStartLabel ?? 'range start'),
+  rangeEndLabel: computed((): string => props.rangeEndLabel ?? 'range end'),
+  commit: (start: string, end: string): void => commit({ start, end }),
+};
+provide(FDY_RANGE_FIELD, rangeField);
 </script>
 
 <template>
-  <div class="fdy-daterange" role="group" :aria-label="ariaLabel" :aria-labelledby="ariaLabelledby">
+  <FdyDatepicker
+    v-if="layout === 'single'"
+    :model-value="modelValue.start"
+    :min="min"
+    :max="max"
+    :locale="locale"
+    :disabled="disabled"
+    :readonly="readonly"
+    :invalid="invalid"
+    :required="required"
+    :describedby="describedby"
+    :aria-labelledby="ariaLabelledby"
+    :placeholder="placeholder ?? 'Select dates'"
+    :prev-month-label="prevMonthLabel"
+    :next-month-label="nextMonthLabel"
+    :prev-year-label="prevYearLabel"
+    :next-year-label="nextYearLabel"
+    :prev-years-label="prevYearsLabel"
+    :next-years-label="nextYearsLabel"
+    :choose-month-label="chooseMonthLabel"
+    :choose-year-label="chooseYearLabel"
+  />
+  <div v-else class="fdy-daterange" role="group" :aria-label="ariaLabel" :aria-labelledby="ariaLabelledby">
     <FdyDatepicker
       :model-value="modelValue.start"
       :min="min"

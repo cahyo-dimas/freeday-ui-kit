@@ -1,19 +1,37 @@
 import type { JSX } from 'react';
 import { FdyDatepicker } from './FdyDatepicker';
+import { FdyRangeField, type FdyRangeFieldContext } from '../rangeField';
 
-// A controlled date range over freeday's `.fdy-daterange` layout (src/components/datepicker.css):
-// two linked FdyDatepickers where the end can't precede the start (start.max = end, end.min = start).
-// `value` + `onChange` in place of Vue's `v-model`; this composes the single-date picker rather than
-// re-implementing the calendar. Note: the vanilla enhancer's cross-calendar `.in-range` day shading
-// is not reproduced (each picker is independent), the min/max linkage is what keeps the range valid.
+// A controlled date range, in one of two layouts that share the value and every prop below.
+// `value` + `onChange` in place of Vue's `v-model`.
+//
+// `split` (the default) is freeday's `.fdy-daterange` (src/components/datepicker.css): two linked
+// FdyDatepickers where the end can't precede the start (start.max = end, end.min = start). The
+// vanilla enhancer's cross-calendar `.in-range` shading is not reproduced there (each picker is
+// independent); the min/max linkage is what keeps the range valid.
+//
+// `single` is ONE FdyDatepicker that draws the range itself, told so through the FdyRangeField
+// context rather than a prop of its own. The first day picked is the start, the second the end, and
+// the value changes only when the range is whole, so `onChange` and `onSettled` arrive together.
 
 export interface DateRangeValue {
   start: string | null;
   end: string | null;
 }
 
+/** `split`: two linked pickers. `single`: one field, one calendar, both ends picked in it. */
+export type FdyDateRangeLayout = 'split' | 'single';
+
 export interface FdyDateRangeProps {
   value: DateRangeValue;
+  /** `'split'` (default): two pickers. `'single'`: one field holding both dates. */
+  layout?: FdyDateRangeLayout;
+  /** The empty field's text under `layout="single"`. Default 'Select dates'. */
+  placeholder?: string;
+  /** Added to the accessible name of the range's first and last day under `layout="single"`, so
+   *  an end is not told by colour alone. Defaults 'range start' / 'range end'. */
+  rangeStartLabel?: string;
+  rangeEndLabel?: string;
   onChange: (value: DateRangeValue) => void;
   /** Both ends chosen, or both cleared: the only states worth reloading a list for (#063). */
   onSettled?: (value: DateRangeValue) => void;
@@ -54,6 +72,44 @@ export function FdyDateRange(props: FdyDateRangeProps): JSX.Element {
   };
   const onStart = (start: string): void => commit({ start, end: props.value.end });
   const onEnd = (end: string): void => commit({ start: props.value.start, end });
+
+  if (props.layout === 'single') {
+    const field: FdyRangeFieldContext = {
+      start: props.value.start,
+      end: props.value.end,
+      ariaLabel: props.ariaLabel,
+      rangeStartLabel: props.rangeStartLabel ?? 'range start',
+      rangeEndLabel: props.rangeEndLabel ?? 'range end',
+      commit: (start: string, end: string): void => commit({ start, end }),
+    };
+    return (
+      <FdyRangeField.Provider value={field}>
+        <FdyDatepicker
+          value={props.value.start}
+          /* Never called: under the range context the picker commits through `field.commit`. */
+          onChange={(): void => undefined}
+          min={props.min}
+          max={props.max}
+          locale={props.locale}
+          disabled={props.disabled}
+          readonly={props.readonly}
+          invalid={props.invalid}
+          required={props.required}
+          describedby={props.describedby}
+          ariaLabelledby={props.ariaLabelledby}
+          placeholder={props.placeholder ?? 'Select dates'}
+          prevMonthLabel={props.prevMonthLabel}
+          nextMonthLabel={props.nextMonthLabel}
+          prevYearLabel={props.prevYearLabel}
+          nextYearLabel={props.nextYearLabel}
+          prevYearsLabel={props.prevYearsLabel}
+          nextYearsLabel={props.nextYearsLabel}
+          chooseMonthLabel={props.chooseMonthLabel}
+          chooseYearLabel={props.chooseYearLabel}
+        />
+      </FdyRangeField.Provider>
+    );
+  }
 
   return (
     <div

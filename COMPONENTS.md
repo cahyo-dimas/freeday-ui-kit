@@ -1125,18 +1125,31 @@ grid's own title.
 | Prop | Type | What it does |
 |---|---|---|
 | `modelValue` · `value` | `DateRangeValue` = `{ start, end }`, each `string \| null` | Both ends at once, so the pair can never be half-applied. |
+| `layout?` | `'split' \| 'single'` | `split` (default) is two pickers side by side. `single` is one field holding both dates, with one calendar in which the first day picked is the start and the second is the end. The value changes only once the range is whole, so `change` and `settled` arrive together, and Escape or a click outside drops a start that has no end yet. Blazor takes the enum `FdyDateRangeLayout`. |
+| `placeholder?` | `string` | The empty field's text under `layout="single"`. Default `Select dates`. |
+| `rangeStartLabel?` · `rangeEndLabel?` | `string` | Under `layout="single"`, appended to the accessible name of the range's first and last day, so the ends are not told apart by colour alone. Defaults `range start` / `range end`. |
 | `onChange` | `(value: DateRangeValue) => void` | React. Vue emits `update:modelValue` and `change`. Fires on **each** end, which is right for a binding and wrong for a reload. |
 | `onSettled?` | `(value: DateRangeValue) => void` | React. Vue emits `settled`, Blazor `Settled` (`SettledRange(From, To)`), the raw path `fdy-daterange-settled` `{ from, to }` on the group. Fires only when **both ends are chosen or both are empty**, so a list that reloads on it never filters on half a range. |
 | `min?` · `max?` | `string` | ISO bounds for both ends. The end can never precede the start. |
 | `locale?` | `string` | As on the single picker. |
-| `startPlaceholder?` · `endPlaceholder?` | `string` | One per field. |
+| `startPlaceholder?` · `endPlaceholder?` | `string` | One per field, under `layout="split"`. |
 | `ariaLabel?` · `ariaLabelledby?` · `describedby?` | `string` | Names the group (`role="group"`), or points at the text that does. |
 | `disabled?` · `readonly?` · `invalid?` | `boolean` | Applied to both pickers together. |
 | `required?` | `boolean` | Both ends must be filled for a [`data-fdy-validate`](#form-validation--data-fdy-validate) form to submit. Each picker refuses on its own, and the two share the field's one message slot, which stays up while either end is still empty. Blazor: `Required`. |
 | `prevMonthLabel?` · `nextMonthLabel?` · `prevYearLabel?` · `nextYearLabel?` · `prevYearsLabel?` · `nextYearsLabel?` · `chooseMonthLabel?` · `chooseYearLabel?` | `string` | Forwarded verbatim to **both** pickers. Until 3.11.0 this was the one picker in the kit whose calendar nav could not be named in the page's own language: the single picker took these, the range dropped them. Blazor adds `BackToMonthsLabel`, since the raw seed both pickers are built from has that button. |
 
 Blazor splits the value into two scalars, `From` / `FromChanged` and `To` / `ToChanged`, because a
-C# binding cannot express one object bound in two places, and it adds `Separator`.
+C# binding cannot express one object bound in two places, and it adds `Separator`. Under
+`Layout="FdyDateRangeLayout.Single"` both scalars change in the same call, followed by `Settled`, and
+it takes `Placeholder`, `RangeStartLabel` and `RangeEndLabel`.
+
+**When to pick `single`.** It takes one field's width instead of two, and the whole range is visible
+in the calendar while it is being picked. In a `.fdy-filterbar`, give its field `.fdy-field--w-xl`.
+The widest pair measured, 28 September to 30 December, needs 14.63rem in `id`, 14.94rem in `en-GB`
+and 15.13rem in `en-US`, so the bar's default 12rem cuts the second date short and `--w-lg` (15rem)
+still clips it in `en-US`. Keep
+`split` where each end is its own decision, such as a start date filled in long before the end is
+known.
 
 Input-styled trigger + calendar popover. Needs `freeday-datepicker.js`. **Author an empty `<div>`**
 The enhancer builds everything.
@@ -1149,6 +1162,15 @@ The enhancer builds everything.
   a start picked past the end clears the end, and that clear fires `fdy-datepicker-change` with
   `value: ''` like a pick. Reload on `fdy-daterange-settled`, not on each change.
   **Typed wrapper: `<FdyDateRange>`** (Vue/React/Blazor). Use it in those stacks.
+- Range in one field: an **empty** `<div data-fdy-daterange data-layout="single">`, with no class
+  and no children. The enhancer builds one `.fdy-datepicker.fdy-datepicker--range`. `data-value`
+  holds `"start/end"` (the ISO 8601 interval form) or `""`; the root mirrors it live, so
+  `data-fdy-required` works as on any kit control, and half a range reads as empty. `data-label` or
+  `aria-label` names the trigger. `data-min`, `data-max` and `data-placeholder` work as on one
+  picker. It emits only `fdy-daterange-settled` `{ from, to }`, once per whole range. The ends of
+  the band carry `.is-range-start` / `.is-range-end`, the days between `.in-range`, and the two
+  extra strings are `data-fdy-text-range-start` / `data-fdy-text-range-end` (defaults `range start`
+  / `range end`), beside `data-fdy-text-label-range` and `data-fdy-text-placeholder-range`.
 **Getting to a distant date.** The title is a **button**, and it drills up one level each press:
 day grid → 12-cell month grid (`.fdy-cal__grid--months` of `.fdy-cal__month`) → 12-cell year grid
 (`.fdy-cal__grid--years` of `.fdy-cal__year`). The arrows follow the level shown: months, then
@@ -1216,6 +1238,13 @@ it has always been, down to the `YYYY-MM-DD` it reports.
   <div data-fdy-datepicker data-role="from" data-placeholder="From" data-label="Start date"></div>
   <span class="fdy-daterange__sep" aria-hidden="true">–</span>
   <div data-fdy-datepicker data-role="to" data-placeholder="To" data-label="End date"></div>
+</div>
+
+<!-- The same range in one field. Typed stacks: <FdyDateRange layout="single">. -->
+<div class="fdy-field">
+  <span class="fdy-label">Reporting period</span>
+  <div data-fdy-daterange data-layout="single" data-value="2026-11-01/2026-11-30"
+       data-label="Reporting period"></div>
 </div>
 ```
 

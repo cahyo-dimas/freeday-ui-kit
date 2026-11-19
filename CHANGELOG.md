@@ -9,6 +9,54 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.20.0] - 2026-11-19
+
+**Rentang tanggal dalam satu kolom.** `FdyDateRange` selama ini dua picker bersebelahan: makan dua
+kolom di filter bar, patah jadi dua baris di layar sempit dengan `–` tertinggal di baris pertama, dan
+rentangnya tidak pernah terlihat utuh di satu kalender. Diminta dari app ronda (`CATATAN-FREEDAY.md`
+§28), dengan enam filter bar yang memakainya.
+
+### Added
+- **`layout="single"` di `FdyDateRange`** (`#118`, §28), di Vue, React, Blazor (`Layout =
+  FdyDateRangeLayout.Single`) dan jalur mentah (`data-fdy-daterange data-layout="single"` pada `div`
+  kosong). Satu pemicu berisi kedua tanggal dan satu kalender. Hari pertama yang dipilih menjadi
+  awal dan panel tetap terbuka; hari kedua menjadi akhir dan panel menutup. Hari sebelum awal
+  menjadi awal yang baru, tidak ditukar diam-diam. Hari yang di-hover atau difokus keyboard
+  menggambar pita pratinjau dengan ujung yang belum terisi, jadi rentangnya terlihat sebelum
+  dikomit. Escape dan klik di luar membuang awal yang belum punya akhir.
+- **Nilainya hanya berubah saat rentangnya utuh**, jadi `change` dan `settled` datang bersamaan di
+  bentuk ini. Jalur mentah memancarkan `fdy-daterange-settled` saja. `data-value` di akarnya berbentuk
+  interval ISO 8601 `"awal/akhir"`, atau kosong selama rentangnya belum utuh, sehingga
+  `data-fdy-required` berlaku tanpa aturan baru di `freeday-form.js`.
+- **Prop baru:** `layout`, `placeholder` (bawaan `Select dates`; enhancer `Choose dates`),
+  `rangeStartLabel` dan `rangeEndLabel` (bawaan `range start` / `range end`), yang ditambahkan ke nama
+  aksesibel hari awal dan akhir supaya kedua ujung tidak dibedakan oleh warna saja. Di jalur mentah
+  kuncinya `data-fdy-text-range-start`, `-range-end`, `-label-range` dan `-placeholder-range`.
+  `FdyDateRangeLayout` diekspor sebagai tipe dari `/vue` dan `/react`.
+- **`.fdy-datepicker--range`**, `.is-range-start` dan `.is-range-end`. Lebar maksimum pemicu 18rem,
+  sebab pasangan tanggal terpanjang yang diukur butuh 14,63rem (`id`) sampai 15,13rem (`en-US`).
+
+### Changed
+- **Pita `.in-range` kini menyambung.** Sel hari berjarak 2px, jadi pita di jalur mentah bentuk
+  `split` selama ini bergaris. Tiap sel di pita kini menutup celah di kedua sisinya, dan cincin fokus
+  dikembalikan pada sel pita, yang tadinya tertimpa bayangan pita.
+
+### Catatan
+- **Satu kalender per stack, tanpa salinan baru.** `FdyDatepicker` Vue dan React menggambar rentang
+  itu sendiri saat `FdyDateRange` menyediakan konteks internal (`provide` di Vue, Context di React).
+  Rentang tidak dijadikan prop `FdyDatepicker`, sebab bentuk nilai yang ditentukan prop lain adalah
+  cacat yang memensiunkan `mode="month"`. Aturan murninya (ujung mana yang tampil, keadaan tiap sel,
+  arti sebuah klik) ada di `adapters/core/date-range.js`; enhancer memegang salinannya sendiri karena
+  alasan yang sama dengan `month-grid.js`.
+- **Bentuk `split` di Vue dan React tetap tanpa pewarnaan `.in-range`**, seperti sebelumnya. Tiap
+  pickernya berdiri sendiri, dan menambahkannya tidak diminta.
+- **`Layout` di Blazor dibaca sekali**, pada render pertama, seperti setiap seed lain yang komponen
+  itu serahkan ke enhancer.
+- Diuji di `browser/daterange-single.mjs`: 13 kasus dengan mouse dan tombol asli di ketiga
+  implementasi, termasuk form yang menolak rentang setengah jadi. Tiga mutasi (komit di klik
+  pertama, pita pratinjau hilang, setengah rentang bertahan sesudah ditutup) masing-masing membuat 5,
+  4 dan 1 kasus merah. Ditambah 3 uji bUnit dan 5 uji unit untuk `date-range.js`.
+
 ## [3.19.1] - 2026-11-09
 
 Hanya dokumen dan uji. Tidak ada perubahan pada CSS, enhancer, atau pembungkus.

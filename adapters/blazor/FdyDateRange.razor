@@ -1,14 +1,20 @@
 @namespace Freeday.Blazor
 @inherits FreedayComponentBase<FdyDateRange>
 
-@* Two linked seed datepickers (freeday-datepicker.js data-fdy-daterange: the end can't precede
-   the start). The daterange sits INSIDE Root so initAll(Root) finds and links it as a descendant.
-   Both children emit fdy-datepicker-change; the bridge's dateRangeOn tags each with its data-role
-   so From/To bind separately. Enhancer-owned DOM → render once (ShouldRender => false). *@
+@* Split: two linked seed datepickers (freeday-datepicker.js data-fdy-daterange: the end can't
+   precede the start). Both children emit fdy-datepicker-change; the bridge's dateRangeOn tags each
+   with its data-role so From/To bind separately.
+   Single: ONE seed the enhancer turns into a field holding both dates. It answers once, with the
+   whole range, through fdy-daterange-settled.
+   Either sits INSIDE Root so initAll(Root) finds it as a descendant. Enhancer-owned DOM → render
+   once (ShouldRender => false). *@
 <div @ref="Root">
-    <div data-fdy-daterange role="group" aria-label="@AriaLabel">
-        <div @ref="_fromEl" data-fdy-datepicker data-role="from" data-fdy-required="@(Required ? "" : null)"
-             data-value="@From" data-placeholder="@FromPlaceholder" data-min="@Min" data-max="@Max"
+    @if (Layout == FdyDateRangeLayout.Single)
+    {
+        <div @ref="_singleEl" data-fdy-daterange data-layout="single" data-fdy-required="@(Required ? "" : null)"
+             data-value="@SeedInterval" data-label="@AriaLabel" data-placeholder="@Placeholder" data-min="@Min" data-max="@Max"
+             data-fdy-text-range-start="@RangeStartLabel"
+             data-fdy-text-range-end="@RangeEndLabel"
              data-fdy-text-prev-month="@PrevMonthLabel"
              data-fdy-text-next-month="@NextMonthLabel"
              data-fdy-text-prev-year="@PrevYearLabel"
@@ -18,17 +24,33 @@
              data-fdy-text-choose-month="@ChooseMonthLabel"
              data-fdy-text-choose-year="@ChooseYearLabel"
              data-fdy-text-back-to-months="@BackToMonthsLabel"></div>
-        <span class="fdy-daterange__sep">@Separator</span>
-        <div @ref="_toEl" data-fdy-datepicker data-role="to" data-fdy-required="@(Required ? "" : null)"
-             data-value="@To" data-placeholder="@ToPlaceholder" data-min="@Min" data-max="@Max"
-             data-fdy-text-prev-month="@PrevMonthLabel"
-             data-fdy-text-next-month="@NextMonthLabel"
-             data-fdy-text-prev-year="@PrevYearLabel"
-             data-fdy-text-next-year="@NextYearLabel"
-             data-fdy-text-prev-years="@PrevYearsLabel"
-             data-fdy-text-next-years="@NextYearsLabel"
-             data-fdy-text-choose-month="@ChooseMonthLabel"
-             data-fdy-text-choose-year="@ChooseYearLabel"
-             data-fdy-text-back-to-months="@BackToMonthsLabel"></div>
-    </div>
+    }
+    else
+    {
+        <div data-fdy-daterange role="group" aria-label="@AriaLabel">
+            <div @ref="_fromEl" data-fdy-datepicker data-role="from" data-fdy-required="@(Required ? "" : null)"
+                 data-value="@From" data-placeholder="@FromPlaceholder" data-min="@Min" data-max="@Max"
+                 data-fdy-text-prev-month="@PrevMonthLabel"
+                 data-fdy-text-next-month="@NextMonthLabel"
+                 data-fdy-text-prev-year="@PrevYearLabel"
+                 data-fdy-text-next-year="@NextYearLabel"
+                 data-fdy-text-prev-years="@PrevYearsLabel"
+                 data-fdy-text-next-years="@NextYearsLabel"
+                 data-fdy-text-choose-month="@ChooseMonthLabel"
+                 data-fdy-text-choose-year="@ChooseYearLabel"
+                 data-fdy-text-back-to-months="@BackToMonthsLabel"></div>
+            <span class="fdy-daterange__sep">@Separator</span>
+            <div @ref="_toEl" data-fdy-datepicker data-role="to" data-fdy-required="@(Required ? "" : null)"
+                 data-value="@To" data-placeholder="@ToPlaceholder" data-min="@Min" data-max="@Max"
+                 data-fdy-text-prev-month="@PrevMonthLabel"
+                 data-fdy-text-next-month="@NextMonthLabel"
+                 data-fdy-text-prev-year="@PrevYearLabel"
+                 data-fdy-text-next-year="@NextYearLabel"
+                 data-fdy-text-prev-years="@PrevYearsLabel"
+                 data-fdy-text-next-years="@NextYearsLabel"
+                 data-fdy-text-choose-month="@ChooseMonthLabel"
+                 data-fdy-text-choose-year="@ChooseYearLabel"
+                 data-fdy-text-back-to-months="@BackToMonthsLabel"></div>
+        </div>
+    }
 </div>

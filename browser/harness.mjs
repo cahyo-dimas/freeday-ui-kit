@@ -299,6 +299,20 @@ export async function withPage(fileUrl, fn) {
        dismissal guard written with it passes for the wrong reason and reports a broken kit as fine. */
     const VK = { Tab: 9, Enter: 13, Escape: 27, Space: 32, End: 35, Home: 36,
                  ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 };
+    /* The pointer resting on an element, no button: what a hover preview listens for. Brought into
+       view and settled the way clickCenter is, for the same reason. */
+    const hoverCenter = async (selector) => {
+      await evalJS(`(function () {
+        var el = document.querySelector(${JSON.stringify(selector)});
+        if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center', inline: 'center' });
+        return true;
+      })()`);
+      await waitFor(`!${stillMoving(selector)}`, { timeout: ANIMATION_SETTLE_MS });
+      const c = await centerOf(selector);
+      if (c === null) throw new Error('cannot hover missing element: ' + selector);
+      await cmd('Input.dispatchMouseEvent', { type: 'mouseMoved', x: c.x, y: c.y });
+      await sleep(40);
+    };
     const pressKey = async (key, { shift = false } = {}) => {
       const vk = VK[key] || 0;
       const params = { key, code: key, windowsVirtualKeyCode: vk, nativeVirtualKeyCode: vk, modifiers: shift ? 8 : 0 };
@@ -447,7 +461,7 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
-    return await fn({ evalJS, waitFor, clickCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
+    return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
   } finally {
     if (ws !== null) {
       try {
@@ -504,6 +518,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-table-select.tsx'),
       join(HERE, 'entries', 'vue-daterange.js'),
       join(HERE, 'entries', 'react-daterange.tsx'),
+      join(HERE, 'entries', 'vue-daterange-single.js'),
+      join(HERE, 'entries', 'react-daterange-single.tsx'),
       join(HERE, 'entries', 'vue-table-empty.js'),
       join(HERE, 'entries', 'react-table-empty.tsx'),
       join(HERE, 'entries', 'vue-table-footer-text.js'),

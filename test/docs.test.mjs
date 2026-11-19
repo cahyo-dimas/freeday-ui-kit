@@ -590,6 +590,10 @@ test('the enhancers ship exactly these strings (#006)', () => {
       chooseMonth: '{label}, choose month',
       chooseYear: '{label}, choose year',
       backToMonths: '{start} to {end}, back to months',
+      labelRange: 'Date range',
+      placeholderRange: 'Choose dates',
+      rangeStart: 'range start',
+      rangeEnd: 'range end',
     },
     'freeday-form.js': {
       invalid: 'Invalid.',

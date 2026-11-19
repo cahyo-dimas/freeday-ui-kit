@@ -1,0 +1,21 @@
+// Mount the real FdyDateRange.vue with layout="single" and record every change and every settle,
+// so the harness can tell a half-picked range from a whole one.
+import { createApp, h, ref } from 'vue';
+import FdyDateRange from '../../adapters/vue/components/FdyDateRange.vue';
+
+const value = ref({ start: null, end: null });
+window.__changes = [];
+window.__settled = [];
+
+createApp({
+  render: () =>
+    h(FdyDateRange, {
+      modelValue: value.value,
+      layout: 'single',
+      locale: 'en-GB',
+      ariaLabel: 'Period',
+      'onUpdate:modelValue': (v) => { value.value = v; },
+      onChange: (v) => window.__changes.push(v),
+      onSettled: (v) => window.__settled.push(v),
+    }),
+}).mount('#app');

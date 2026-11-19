@@ -23,6 +23,22 @@ public partial class FdyDateRange
     [Parameter] public string? Max { get; set; }
     [Parameter] public string Separator { get; set; } = "–";
 
+    /// <summary><see cref="FdyDateRangeLayout.Split"/> (default): two pickers.
+    /// <see cref="FdyDateRangeLayout.Single"/>: one field holding both dates, whose
+    /// <c>From</c>/<c>To</c> change only together, when the range is whole. Read on the first
+    /// render, like every other seed this component hands the enhancer.</summary>
+    [Parameter] public FdyDateRangeLayout Layout { get; set; }
+
+    /// <summary>The empty field's text under <see cref="FdyDateRangeLayout.Single"/>. Default
+    /// 'Choose dates' (the enhancer's).</summary>
+    [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>Added to the accessible name of the range's first and last day under
+    /// <see cref="FdyDateRangeLayout.Single"/>, so an end is not told by colour alone. Defaults
+    /// 'range start' / 'range end'.</summary>
+    [Parameter] public string? RangeStartLabel { get; set; }
+    [Parameter] public string? RangeEndLabel { get; set; }
+
     /* The calendars' own navigation labels, forwarded verbatim to BOTH pickers. Month and weekday
        NAMES follow the page's `lang` through Intl and need nothing here; these are the buttons
        around them. Until now the range was the one picker in the kit whose nav could not be named
@@ -51,18 +67,35 @@ public partial class FdyDateRange
     private int _token;
     private ElementReference _fromEl;
     private ElementReference _toEl;
+    private ElementReference _singleEl;
+
+    /// <summary>"from/to" (ISO 8601 interval), the one <c>data-value</c> the single field reads,
+    /// or null while either end is missing: the field never shows half a range.</summary>
+    private string? SeedInterval => string.IsNullOrEmpty(From) || string.IsNullOrEmpty(To) ? null : $"{From}/{To}";
 
     // initAll(Root) links the daterange (descendant) and inits both child pickers.
     protected override ValueTask HydrateAsync() => JS.InvokeVoidAsync("FreedayDatepicker.initAll", Root);
 
     protected override async ValueTask OnHydratedAsync()
-        => _token = await JS.InvokeAsync<int>("FreedayBlazor.dateRangeOn", Root, Self, nameof(OnChange));
+    {
+        if (Layout == FdyDateRangeLayout.Single)
+        {
+            await SubscribeAsync("fdy-daterange-settled", nameof(OnSettled));
+            return;
+        }
+        _token = await JS.InvokeAsync<int>("FreedayBlazor.dateRangeOn", Root, Self, nameof(OnChange));
+    }
 
     protected override bool ShouldRender() => !Hydrated;
 
     protected override async Task OnParametersSetAsync()
     {
         if (!Hydrated) return;
+        if (Layout == FdyDateRangeLayout.Single)
+        {
+            await JS.InvokeVoidAsync("FreedayDatepicker.setState", _singleEl, new { required = Required });
+            return;
+        }
         await JS.InvokeVoidAsync("FreedayDatepicker.setState", _fromEl, new { required = Required });
         await JS.InvokeVoidAsync("FreedayDatepicker.setState", _toEl, new { required = Required });
     }
@@ -87,6 +120,18 @@ public partial class FdyDateRange
         }
     }
 
+    /// <summary>Invoked by the bridge when the single field commits a whole range. Both ends move
+    /// together, so <c>Settled</c> follows every call.</summary>
+    [JSInvokable]
+    public async Task OnSettled(SettledDetail detail)
+    {
+        From = detail.From;
+        To = detail.To;
+        await FromChanged.InvokeAsync(detail.From);
+        await ToChanged.InvokeAsync(detail.To);
+        await Settled.InvokeAsync(new SettledRange(From, To));
+    }
+
     protected override async ValueTask CleanupAsync()
     {
         if (_token != 0)
@@ -97,6 +142,22 @@ public partial class FdyDateRange
 
     public sealed record RangeDetail(string? Value, string? Role);
 
+    /// <summary>The detail of <c>fdy-daterange-settled</c>, <c>{ from, to }</c>.</summary>
+    public sealed record SettledDetail(string? From, string? To);
+
     /// <summary>The range as it stands when it settles; both empty means "no period".</summary>
     public sealed record SettledRange(string? From, string? To);
+}
+
+/// <summary>
+/// How <see cref="FdyDateRange"/> lays the range out. The JS adapters take the same idea as the
+/// string union <c>'split' | 'single'</c>; C# gets an enum, as <see cref="FdyNavMode"/> does.
+/// </summary>
+public enum FdyDateRangeLayout
+{
+    /// <summary>Two linked pickers, one per end (the default, and what every earlier range was).</summary>
+    Split,
+
+    /// <summary>One field and one calendar: the first day picked is the start, the second the end.</summary>
+    Single,
 }

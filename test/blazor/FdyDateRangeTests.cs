@@ -46,4 +46,48 @@ public class FdyDateRangeTests : BunitContext
         Assert.Empty(settled);
         Assert.Equal("", cut.Instance.To);
     }
+
+    [Fact]
+    public void Single_layout_seeds_one_field_with_the_whole_interval()
+    {
+        var cut = Render<FdyDateRange>(p => p
+            .Add(c => c.Layout, FdyDateRangeLayout.Single)
+            .Add(c => c.From, "2026-11-01")
+            .Add(c => c.To, "2026-11-30")
+            .Add(c => c.AriaLabel, "Period"));
+
+        var field = cut.Find("[data-fdy-daterange]");
+        Assert.Equal("single", field.GetAttribute("data-layout"));
+        Assert.Equal("2026-11-01/2026-11-30", field.GetAttribute("data-value"));
+        Assert.Equal("Period", field.GetAttribute("data-label"));
+        Assert.Empty(cut.FindAll("[data-fdy-datepicker]"));
+    }
+
+    [Fact]
+    public void Single_layout_never_seeds_half_a_range()
+    {
+        var cut = Render<FdyDateRange>(p => p
+            .Add(c => c.Layout, FdyDateRangeLayout.Single)
+            .Add(c => c.From, "2026-11-01"));
+
+        Assert.Null(cut.Find("[data-fdy-daterange]").GetAttribute("data-value"));
+    }
+
+    [Fact]
+    public async Task Single_layout_moves_both_ends_together_and_settles_once()
+    {
+        var settled = new List<FdyDateRange.SettledRange>();
+        string? from = null, to = null;
+        var cut = Render<FdyDateRange>(p => p
+            .Add(c => c.Layout, FdyDateRangeLayout.Single)
+            .Add(c => c.FromChanged, (string? v) => from = v)
+            .Add(c => c.ToChanged, (string? v) => to = v)
+            .Add(c => c.Settled, (FdyDateRange.SettledRange r) => settled.Add(r)));
+
+        await cut.InvokeAsync(() => cut.Instance.OnSettled(new FdyDateRange.SettledDetail("2026-11-03", "2026-11-13")));
+
+        Assert.Equal("2026-11-03", from);
+        Assert.Equal("2026-11-13", to);
+        Assert.Equal(new FdyDateRange.SettledRange("2026-11-03", "2026-11-13"), Assert.Single(settled));
+    }
 }

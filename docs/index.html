@@ -333,7 +333,7 @@
     <section class="doc-section doc-hero" id="sec-ikhtisar">
       <div class="doc-hero__grid">
         <div>
-          <p class="doc-eyebrow">Design System · v3.19.1</p>
+          <p class="doc-eyebrow">Design System · v3.20.0</p>
           <h1 data-i18n="hero.h1">Konsisten dari <em>token</em> sampai layar bisnis.</h1>
           <p class="doc-hero__lead" data-i18n="hero.lead">Freeday adalah sumber kebenaran <strong>token-driven</strong> &amp; <strong>framework-agnostic</strong>. Warna, tipografi, spasi, dan 45 komponen aksesibel yang dirakit jadi layar nyata di Vue, React, atau Blazor. Nol dependency runtime, kontras WCAG AA di terang &amp; gelap.</p>
           <div class="doc-hero__cta">
@@ -811,7 +811,7 @@
 
     <section class="doc-section" id="sec-datepicker">
       <h2>Date picker</h2>
-      <p class="doc-desc">Trigger bergaya input + kalender popover, konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut; akhir tak boleh mendahului awal. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Judul kalender <strong>menelusuri dua tingkat</strong>: hari → bulan → tahun (12 tahun per halaman, sejajar: 2016–2027, lalu 2028–2039), jadi tanggal lahir tak lagi berarti puluhan klik panah. Tiap tingkat di atas grid hari hanyalah navigasi: tak ada yang di-commit sampai sebuah hari dipilih. Butuh <code>freeday-datepicker.js</code>.</p>
+      <p class="doc-desc">Trigger bergaya input + kalender popover, konsisten lintas-browser &amp; bisa di-theme. (Native <code>&lt;input type="date"&gt;</code> tetap pilihan ringan bila tak butuh theming.) Rentang = dua picker tertaut (akhir tak boleh mendahului awal), atau satu kolom dengan <code>data-layout="single"</code>: satu kalender, hari pertama yang dipilih jadi awal dan hari kedua jadi akhir, dan nilainya baru berubah saat rentangnya utuh. Keyboard: <kbd class="fdy-kbd">←</kbd>/<kbd class="fdy-kbd">→</kbd> hari, <kbd class="fdy-kbd">↑</kbd>/<kbd class="fdy-kbd">↓</kbd> minggu, <kbd class="fdy-kbd">PgUp</kbd>/<kbd class="fdy-kbd">PgDn</kbd> bulan, <kbd class="fdy-kbd">Enter</kbd> pilih, <kbd class="fdy-kbd">Esc</kbd> tutup. Judul kalender <strong>menelusuri dua tingkat</strong>: hari → bulan → tahun (12 tahun per halaman, sejajar: 2016–2027, lalu 2028–2039), jadi tanggal lahir tak lagi berarti puluhan klik panah. Tiap tingkat di atas grid hari hanyalah navigasi: tak ada yang di-commit sampai sebuah hari dipilih. Butuh <code>freeday-datepicker.js</code>.</p>
       <div class="doc-demo" style="align-items:flex-start;gap:var(--space-6)">
         <div class="fdy-field">
           <span class="fdy-label">Tanggal faktur</span>
@@ -825,6 +825,12 @@
             <div data-fdy-datepicker data-role="to" data-placeholder="Sampai" data-label="Tanggal akhir"></div>
           </div>
           <span class="fdy-help">Akhir tak boleh mendahului awal.</span>
+        </div>
+        <div class="fdy-field" style="max-width:18rem">
+          <span class="fdy-label">Periode laporan, satu kolom</span>
+          <div data-fdy-daterange data-layout="single" data-value="2026-11-01/2026-11-30" data-label="Periode laporan"
+               data-placeholder="Pilih rentang tanggal" data-fdy-text-range-start="awal rentang" data-fdy-text-range-end="akhir rentang"></div>
+          <span class="fdy-help">Klik pertama memilih awal, klik kedua memilih akhir.</span>
         </div>
       </div>
       <p class="doc-desc" style="margin-top:var(--space-6)">Varian ikon (konvensi kit): <strong>default</strong> (kalender), <strong>tanpa ikon</strong> lewat <code>data-fdy-no-icon</code>, atau <strong>ikon custom</strong> dengan <code>&lt;template data-fdy-icon&gt;</code> di dalam wrapper.</p>
@@ -2205,7 +2211,7 @@
     </section>
 
     <footer class="doc-footer">
-      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.19.1 · <a href="../LICENSE">MIT</a></div>
+      <div><b>Freeday</b> · design system token-driven &amp; framework-agnostic · v3.20.0 · <a href="../LICENSE">MIT</a></div>
       <nav class="doc-footer__links" aria-label="Tautan">
         <a href="../README.md">README</a>
         <a href="../CHANGELOG.md">Changelog</a>

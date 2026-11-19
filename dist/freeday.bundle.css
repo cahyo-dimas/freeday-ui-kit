@@ -2461,6 +2461,21 @@ a { color: var(--color-primary-strong); }
 .fdy-daterange .fdy-datepicker{flex:0 1 11rem;min-width:7rem;}
 .fdy-daterange__sep{flex:none;color:var(--color-text-subtle);}
 
+/* Range in one field (`data-layout="single"` / `layout="single"`): one trigger holding both dates.
+   Wider than a single picker's cap, which is sized for one date and would cut the second one off. */
+.fdy-datepicker--range{max-width:18rem;}
+/* The band. Day cells sit 2px apart, so a band painted on the cells alone is striped; each cell in it
+   spreads 1px into the gap on both sides, which closes it. The ends are square on their inner side
+   and keep their radius on the outer one, so the run reads as one bar from start to end. */
+.fdy-cal__day.in-range{box-shadow:-1px 0 0 var(--color-primary-soft),1px 0 0 var(--color-primary-soft);}
+.fdy-cal__day.in-range.is-today{box-shadow:inset 0 0 0 1.5px var(--color-border-strong),-1px 0 0 var(--color-primary-soft),1px 0 0 var(--color-primary-soft);}
+.fdy-cal__day.is-range-start{border-top-right-radius:0;border-bottom-right-radius:0;box-shadow:1px 0 0 var(--color-primary-soft);}
+.fdy-cal__day.is-range-end{border-top-left-radius:0;border-bottom-left-radius:0;box-shadow:-1px 0 0 var(--color-primary-soft);}
+.fdy-cal__day.is-range-end.in-range{border-top-right-radius:var(--radius-sm);border-bottom-right-radius:var(--radius-sm);}
+/* The band rules above weigh what the focus ring weighs and come later, so without this the day the
+   keyboard is previewing from would be the one cell in the grid with no visible focus. */
+.fdy-cal__day.in-range:focus-visible,.fdy-cal__day.is-range-start:focus-visible,.fdy-cal__day.is-range-end:focus-visible{box-shadow:0 0 0 3px rgba(var(--color-primary-rgb),.26);}
+
 @media (prefers-reduced-motion:no-preference){.fdy-datepicker__panel:not([hidden]){animation:fdy-combo-in var(--dur-fast) var(--ease-standard);}}
 
 /* Freeday. Datetime picker (composed: date picker + time picker → one value).

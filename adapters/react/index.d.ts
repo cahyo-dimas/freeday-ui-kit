@@ -63,7 +63,7 @@ export { FdyDatepicker, type FdyDatepickerProps, type FdyDatepickerMode } from '
  *  `mode="month"`, where one prop carried two formats and another prop chose between them. */
 export { FdyMonthpicker, type FdyMonthpickerProps } from './components/FdyMonthpicker';
 export type { FdyMonth } from '../core/month-grid';
-export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue } from './components/FdyDateRange';
+export { FdyDateRange, type FdyDateRangeProps, type DateRangeValue, type FdyDateRangeLayout } from './components/FdyDateRange';
 export { FdyTimepicker, type FdyTimepickerProps } from './components/FdyTimepicker';
 export { FdyAutocomplete, type FdyAutocompleteProps } from './components/FdyAutocomplete';
 export { FdyCascade, type FdyCascadeProps, type CascadeNode } from './components/FdyCascade';

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId, type ComputedRef, type Ref } from 'vue';
+import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref, useId, type ComputedRef, type Ref } from 'vue';
 import { usePopover } from '../usePopover';
+import { FDY_RANGE_FIELD, type FdyRangeFieldContext } from '../rangeField';
+import { rangeAfterPick, rangeDayState, shownEnds, type FdyRangeDayState, type FdyShownEnds } from '../../core/date-range.js';
 /* The month and year grids, which `FdyMonthpicker` reads from the same module. They were written
    here and moved out when the month picker arrived: a second copy of the bounds rule is a second
    place to fix it, and this release spent three items on exactly that failure in the panel-position
@@ -35,7 +37,9 @@ import {
 // re-implements its single-date calendar behavior (month grid, keyboard nav,
 // min/max clamping, Intl locale formatting) in Vue, giving a real `v-model`
 // over the same kit classes. Open/close (outside-click + focusout) mirrors the
-// already-approved FdyCombo.vue pattern. Range mode is out of scope (v1 = single date).
+// already-approved FdyCombo.vue pattern. The range in ONE field is drawn here too, when
+// FdyDateRange layout="single" provides FDY_RANGE_FIELD (see ../rangeField.ts); without it
+// this is the single-date picker, unchanged.
 
 /** Which grid is on screen. The drill goes days -> months -> years and back down. */
 type CalendarLevel = 'days' | 'months' | 'years';
@@ -53,6 +57,10 @@ interface DayCell {
   selected: boolean;
   disabled: boolean;
   focusable: boolean;
+  /** Range layout only; all false for a single date. */
+  rangeStart: boolean;
+  rangeEnd: boolean;
+  inRange: boolean;
 }
 
 const props = defineProps<{
@@ -181,6 +189,33 @@ const chooseYearLabelText: ComputedRef<string> = computed((): string => props.ch
 const prevYearsLabelText: ComputedRef<string> = computed((): string => props.prevYearsLabel ?? 'Previous years');
 const nextYearsLabelText: ComputedRef<string> = computed((): string => props.nextYearsLabel ?? 'Next years');
 
+/* The range in one field. `anchor` is a start picked in this opening and not yet answered by an end,
+   `preview` the day the pointer or keyboard is on while it waits. Both live here, with the panel
+   they belong to, and are dropped by every close that is not a second pick: the value never held
+   them, so a half range is never committed. */
+const injectedRange: FdyRangeFieldContext | null = inject(FDY_RANGE_FIELD, null);
+const range: FdyRangeFieldContext | null = injectedRange !== null && injectedRange.enabled.value ? injectedRange : null;
+const anchor: Ref<Date | null> = ref(null);
+const preview: Ref<Date | null> = ref(null);
+/** The committed range, or neither end: half an interval, or one running backwards, is no range. */
+const committedRange: ComputedRef<{ start: Date | null; end: Date | null }> = computed(() => {
+  const start: Date | null = range === null ? null : parseISO(range.start.value);
+  const end: Date | null = range === null ? null : parseISO(range.end.value);
+  if (start === null || end === null || end.getTime() < start.getTime()) return { start: null, end: null };
+  return { start, end };
+});
+/** "start/end" (ISO 8601 interval) or "": one `data-value`, so a form can require the range. */
+const rangeValue: ComputedRef<string> = computed((): string => {
+  const { start, end } = committedRange.value;
+  return start === null || end === null ? '' : `${toISO(start)}/${toISO(end)}`;
+});
+const ends: ComputedRef<FdyShownEnds> = computed((): FdyShownEnds => shownEnds({
+  start: committedRange.value.start,
+  end: committedRange.value.end,
+  anchor: anchor.value,
+  preview: preview.value,
+}));
+
 const view: Ref<Date> = ref(startOfMonth(selectedDate.value ?? new Date()));
 const focusDate: Ref<Date> = ref(selectedDate.value ?? new Date());
 
@@ -250,6 +285,10 @@ const dowFmt: ComputedRef<Intl.DateTimeFormat> = computed(
    already use, which is the whole point of the mode: <input type="month"> names the month in the
    browser's language, this names it in the page's. */
 const displayValue: ComputedRef<string> = computed((): string => {
+  if (range !== null) {
+    const { start, end } = committedRange.value;
+    return start === null || end === null ? displayPlaceholder.value : `${valueFmt.value.format(start)} – ${valueFmt.value.format(end)}`;
+  }
   if (selectedDate.value === null) return displayPlaceholder.value;
   const fmt: Intl.DateTimeFormat = isMonthMode.value ? formatters.value.name : valueFmt.value;
   return fmt.format(selectedDate.value);
@@ -275,20 +314,52 @@ const gridCells: ComputedRef<DayCell[]> = computed((): DayCell[] => {
   const cells: DayCell[] = [];
   for (let i = 0; i < 42; i++) {
     const d: Date = addDays(startCell, i);
+    const name: string = dayLabelFmt.value.format(d);
+    const r: FdyRangeDayState | null = range === null ? null : rangeDayState(startOfDay(d), ends.value);
+    const role: string | null = range === null || r === null || r.role === null
+      ? null
+      : r.role === 'start' ? range.rangeStartLabel.value : range.rangeEndLabel.value;
     cells.push({
       date: d,
       iso: toISO(d),
       label: d.getDate(),
-      ariaLabel: dayLabelFmt.value.format(d),
+      ariaLabel: role === null ? name : `${name}, ${role}`,
       outside: d.getMonth() !== view.value.getMonth(),
       today: sameDay(d, today),
-      selected: sameDay(d, selectedDate.value),
+      selected: r === null ? sameDay(d, selectedDate.value) : r.filled,
       disabled: isDayDisabled(d),
       focusable: sameDay(d, focus),
+      rangeStart: r !== null && r.rangeStart,
+      rangeEnd: r !== null && r.rangeEnd,
+      inRange: r !== null && r.inRange,
     });
   }
   return cells;
 });
+
+/** The day under the pointer previews the band while a start waits. Ignored otherwise. */
+function onDayHover(d: Date): void {
+  if (anchor.value === null || isDayDisabled(d)) return;
+  preview.value = startOfDay(d);
+}
+
+/* First pick anchors and keeps the panel open; a pick on or after it commits the whole range and
+   closes; a pick before it becomes the new start. The rule itself is adapters/core/date-range.js. */
+function pickRange(field: FdyRangeFieldContext, d: Date): void {
+  const day: Date = startOfDay(d);
+  focusDate.value = day;
+  const next = rangeAfterPick(anchor.value, day);
+  if (next.kind === 'anchor') {
+    anchor.value = next.anchor;
+    preview.value = next.anchor;
+    void nextTick((): void => focusCell());
+    return;
+  }
+  anchor.value = null;
+  preview.value = null;
+  field.commit(toISO(next.start), toISO(next.end));
+  closePanel(true);
+}
 
 function setDayRef(iso: string, el: Element | null): void {
   dayRefs[iso] = el as HTMLButtonElement | null;
@@ -300,6 +371,8 @@ function focusCell(): void {
 
 function moveFocus(next: Date): void {
   focusDate.value = next;
+  // The keyboard previews the band exactly as the pointer does.
+  if (anchor.value !== null) preview.value = startOfDay(next);
   view.value = new Date(next.getFullYear(), next.getMonth(), 1);
   void nextTick((): void => focusCell());
 }
@@ -400,6 +473,10 @@ function onMonthKeydown(e: KeyboardEvent): void {
 
 function pick(d: Date): void {
   if (isDayDisabled(d)) return;
+  if (range !== null) {
+    pickRange(range, d);
+    return;
+  }
   const day: Date = startOfDay(d);
   focusDate.value = day;
   const iso: string = toISO(day);
@@ -435,6 +512,8 @@ function openPanel(): void {
 
 function closePanel(returnFocus: boolean): void {
   if (!open.value) return;
+  anchor.value = null;
+  preview.value = null;
   open.value = false;
   if (returnFocus) triggerEl.value?.focus();
 }
@@ -524,8 +603,8 @@ onBeforeUnmount((): void => {
 </script>
 
 <template>
-  <div ref="rootEl" class="fdy-datepicker" :class="{ 'fdy-datepicker--error': isInvalid }"
-       :data-value="modelValue ?? ''" :data-fdy-required="required === true ? '' : undefined" @focusout="onFocusout">
+  <div ref="rootEl" class="fdy-datepicker" :class="{ 'fdy-datepicker--error': isInvalid, 'fdy-datepicker--range': range !== null }"
+       :data-value="range === null ? (modelValue ?? '') : rangeValue" :data-fdy-required="required === true ? '' : undefined" @focusout="onFocusout">
     <button
       :id="triggerId"
       ref="triggerEl"
@@ -534,6 +613,7 @@ onBeforeUnmount((): void => {
       :class="{ 'is-open': open }"
       aria-haspopup="dialog"
       :aria-expanded="open"
+      :aria-label="range?.ariaLabel.value"
       :aria-labelledby="ariaLabelledby"
       :aria-invalid="isInvalid ? 'true' : undefined"
       :aria-readonly="isReadonly ? 'true' : undefined"
@@ -541,7 +621,7 @@ onBeforeUnmount((): void => {
       :disabled="isDisabled"
       @click="toggle"
     >
-      <span class="fdy-datepicker__value" :class="{ 'fdy-datepicker__value--placeholder': selectedDate === null }">{{ displayValue }}</span>
+      <span class="fdy-datepicker__value" :class="{ 'fdy-datepicker__value--placeholder': range === null ? selectedDate === null : rangeValue === '' }">{{ displayValue }}</span>
       <span class="fdy-datepicker__icon" :class="{ 'is-hidden': showClear }" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
@@ -637,12 +717,16 @@ onBeforeUnmount((): void => {
           :ref="(el) => setDayRef(cell.iso, el as Element | null)"
           type="button"
           class="fdy-cal__day"
-          :class="{ 'is-outside': cell.outside, 'is-today': cell.today, 'is-selected': cell.selected }"
+          :class="{
+            'is-outside': cell.outside, 'is-today': cell.today, 'is-selected': cell.selected,
+            'is-range-start': cell.rangeStart, 'is-range-end': cell.rangeEnd, 'in-range': cell.inRange,
+          }"
           role="gridcell"
           :aria-label="cell.ariaLabel"
           :aria-selected="cell.selected ? 'true' : undefined"
           :disabled="cell.disabled"
           :tabindex="cell.focusable ? 0 : -1"
+          @mouseenter="onDayHover(cell.date)"
           @click="pick(cell.date)"
         >{{ cell.label }}</button>
       </div>

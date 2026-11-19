@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: vanilla daterange in one field</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>body { padding: 40px; }</style>
+<form data-fdy-validate novalidate id="form">
+  <div class="fdy-field">
+    <span class="fdy-label" id="period-label">Period</span>
+    <div data-fdy-daterange data-layout="single" id="range" aria-label="Period"
+         data-fdy-required></div>
+  </div>
+  <button type="submit" class="fdy-btn">Save</button>
+</form>
+<script>
+  window.__settled = [];
+  window.__submitted = 0;
+  const range = document.getElementById('range');
+  range.addEventListener('fdy-daterange-settled', (e) => window.__settled.push(e.detail));
+  document.getElementById('form').addEventListener('fdy-form-valid', () => { window.__submitted += 1; });
+  // A valid form really submits, and reloading the fixture would reset the counters above.
+  document.getElementById('form').addEventListener('submit', (e) => e.preventDefault());
+</script>

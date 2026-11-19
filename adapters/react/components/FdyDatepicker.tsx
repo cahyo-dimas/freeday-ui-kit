@@ -1,6 +1,8 @@
 import type { JSX } from 'react';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { usePopover } from '../usePopover';
+import { FdyRangeField, type FdyRangeFieldContext } from '../rangeField';
+import { rangeAfterPick, rangeDayState, shownEnds, type FdyRangeDayState, type FdyShownEnds } from '../../core/date-range.js';
 /* The month and year grids, which `FdyMonthpicker` reads from the same module. They were written
    here and moved out when the month picker arrived: a second copy of the bounds rule is a second
    place to fix it, and this release spent three items on exactly that failure in the panel-position
@@ -31,8 +33,9 @@ import {
 // `.fdy-cal__*` classes (see src/components/datepicker.css). Re-implements the single-date
 // calendar behavior (month grid, keyboard nav, min/max clamping, Intl locale formatting) as a
 // controlled React component (`value` + `onChange` in place of Vue's `v-model`). Open/close
-// (outside-click + focusout) mirrors the already-approved FdyCombo.tsx pattern. Range mode is
-// out of scope (v1 = single date).
+// (outside-click + focusout) mirrors the already-approved FdyCombo.tsx pattern. The range in ONE
+// field is drawn here too, when FdyDateRange layout="single" wraps it in the FdyRangeField context
+// (see ../rangeField.ts); without it this is the single-date picker, unchanged.
 
 /** Which grid is on screen. The drill goes days -> months -> years and back down. */
 type CalendarLevel = 'days' | 'months' | 'years';
@@ -50,6 +53,10 @@ interface DayCell {
   selected: boolean;
   disabled: boolean;
   focusable: boolean;
+  /** Range layout only; all false for a single date. */
+  rangeStart: boolean;
+  rangeEnd: boolean;
+  inRange: boolean;
 }
 
 export interface FdyDatepickerProps {
@@ -135,7 +142,18 @@ function dayClassName(cell: DayCell): string {
   if (cell.outside) cls += ' is-outside';
   if (cell.today) cls += ' is-today';
   if (cell.selected) cls += ' is-selected';
+  if (cell.rangeStart) cls += ' is-range-start';
+  if (cell.rangeEnd) cls += ' is-range-end';
+  if (cell.inRange) cls += ' in-range';
   return cls;
+}
+
+/** The committed range, or neither end: half an interval, or one running backwards, is no range. */
+function committedRange(range: FdyRangeFieldContext | null): { start: Date | null; end: Date | null } {
+  const start: Date | null = range === null ? null : parseISO(range.start);
+  const end: Date | null = range === null ? null : parseISO(range.end);
+  if (start === null || end === null || end.getTime() < start.getTime()) return { start: null, end: null };
+  return { start, end };
 }
 
 export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
@@ -205,6 +223,20 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   const nextMonthLabelText: string = props.nextMonthLabel ?? 'Next month';
   const clearLabelText: string = props.clearLabel ?? 'Clear date';
 
+  /* The range in one field. `anchor` is a start picked in this opening and not yet answered by an
+     end, `preview` the day the pointer or keyboard is on while it waits. Both live here, with the
+     panel they belong to, and are dropped by every close that is not a second pick: the value never
+     held them, so a half range is never committed. */
+  const range: FdyRangeFieldContext | null = useContext(FdyRangeField);
+  const [anchor, setAnchor] = useState<Date | null>(null);
+  const [preview, setPreview] = useState<Date | null>(null);
+  const committed: { start: Date | null; end: Date | null } = committedRange(range);
+  const ends: FdyShownEnds = shownEnds({ start: committed.start, end: committed.end, anchor, preview });
+  /** "start/end" (ISO 8601 interval) or "": one `data-value`, so a form can require the range. */
+  const rangeValue: string = committed.start === null || committed.end === null
+    ? ''
+    : `${toISO(committed.start)}/${toISO(committed.end)}`;
+
   const [viewMonth, setViewMonth] = useState<Date>((): Date => startOfMonth(parseValue(props.value) ?? new Date()));
   const [focusDate, setFocusDate] = useState<Date>((): Date => parseValue(props.value) ?? new Date());
 
@@ -236,9 +268,14 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   /* Month mode shows the month through the SAME formatter the month cells and the day grid's title
      already use, which is the whole point of the mode: <input type="month"> names the month in the
      browser's language, this names it in the page's. */
-  const displayValue: string = selectedDate === null
-    ? displayPlaceholder
-    : (isMonthMode ? formatters.name : valueFmt).format(selectedDate);
+  const hasValue: boolean = range === null ? selectedDate !== null : rangeValue !== '';
+  const displayValue: string = range !== null
+    ? (committed.start === null || committed.end === null
+      ? displayPlaceholder
+      : `${valueFmt.format(committed.start)} – ${valueFmt.format(committed.end)}`)
+    : selectedDate === null
+      ? displayPlaceholder
+      : (isMonthMode ? formatters.name : valueFmt).format(selectedDate);
 
   const weekdayHeaders: string[] = useMemo((): string[] => {
     const monday: Date = new Date(2024, 0, 1); // a known Monday
@@ -275,23 +312,34 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     const cells: DayCell[] = [];
     for (let i = 0; i < 42; i++) {
       const d: Date = addDays(startCell, i);
+      const name: string = dayLabelFmt.format(d);
+      const r: FdyRangeDayState | null = range === null ? null : rangeDayState(startOfDay(d), ends);
+      const role: string | null = range === null || r === null || r.role === null
+        ? null
+        : r.role === 'start' ? range.rangeStartLabel : range.rangeEndLabel;
       cells.push({
         date: d,
         iso: toISO(d),
         label: d.getDate(),
-        ariaLabel: dayLabelFmt.format(d),
+        ariaLabel: role === null ? name : `${name}, ${role}`,
         outside: d.getMonth() !== viewMonth.getMonth(),
         today: sameDay(d, today),
-        selected: sameDay(d, selectedDate),
+        selected: r === null ? sameDay(d, selectedDate) : r.filled,
         disabled: isDayDisabled(d),
         focusable: sameDay(d, focus),
+        rangeStart: r !== null && r.rangeStart,
+        rangeEnd: r !== null && r.rangeEnd,
+        inRange: r !== null && r.inRange,
       });
     }
     return cells;
     // Deps intentionally mirror the port recipe, not every closure read: minDate/maxDate,
     // dayLabelFmt and effectiveFocusDate all derive deterministically from the listed deps
     // within the same render pass, so this stays in sync without listing them separately.
-  }, [viewMonth, props.value, props.min, props.max, activeLocale, isMonthMode]);
+    // The range ends are listed by what they derive from: the context's value and labels, and the
+    // anchor and preview state.
+  }, [viewMonth, props.value, props.min, props.max, activeLocale, isMonthMode,
+    range?.start, range?.end, range?.rangeStartLabel, range?.rangeEndLabel, anchor, preview]);
 
   // Focus the roving-tabindex cell after a render triggered by moveFocus/openPanel (React's
   // analogue of Vue's `nextTick(focusCell)`). Runs after every render; cheap no-op otherwise.
@@ -415,10 +463,38 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     setFocusDate(next);
     setViewMonth(new Date(next.getFullYear(), next.getMonth(), 1));
     pendingFocusRef.current = toISO(next);
+    // The keyboard previews the band exactly as the pointer does.
+    if (anchor !== null) setPreview(startOfDay(next));
+  }
+
+  /** The day under the pointer previews the band while a start waits. Ignored otherwise. */
+  function onDayHover(d: Date): void {
+    if (anchor === null || isDayDisabled(d)) return;
+    setPreview(startOfDay(d));
+  }
+
+  /* First pick anchors and keeps the panel open; a pick on or after it commits the whole range and
+     closes; a pick before it becomes the new start. The rule itself is adapters/core/date-range.js. */
+  function pickRange(field: FdyRangeFieldContext, d: Date): void {
+    const day: Date = startOfDay(d);
+    setFocusDate(day);
+    const next = rangeAfterPick(anchor, day);
+    if (next.kind === 'anchor') {
+      setAnchor(next.anchor);
+      setPreview(next.anchor);
+      pendingFocusRef.current = toISO(day);
+      return;
+    }
+    field.commit(toISO(next.start), toISO(next.end));
+    closePanel(true);
   }
 
   function pick(d: Date): void {
     if (isDayDisabled(d)) return;
+    if (range !== null) {
+      pickRange(range, d);
+      return;
+    }
     const day: Date = startOfDay(d);
     setFocusDate(day);
     const iso: string = toISO(day);
@@ -453,6 +529,8 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
 
   function closePanel(returnFocus: boolean): void {
     if (!open) return;
+    setAnchor(null);
+    setPreview(null);
     setOpen(false);
     if (returnFocus) triggerRef.current?.focus();
   }
@@ -535,8 +613,9 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
   }, [open]);
 
   return (
-    <div ref={rootRef} className={isInvalid ? 'fdy-datepicker fdy-datepicker--error' : 'fdy-datepicker'}
-         data-value={props.value ?? ''} data-fdy-required={props.required === true ? '' : undefined} onBlur={onFocusout}>
+    <div ref={rootRef}
+         className={['fdy-datepicker', isInvalid ? 'fdy-datepicker--error' : '', range !== null ? 'fdy-datepicker--range' : ''].filter(Boolean).join(' ')}
+         data-value={range === null ? (props.value ?? '') : rangeValue} data-fdy-required={props.required === true ? '' : undefined} onBlur={onFocusout}>
       <button
         id={triggerId}
         ref={triggerRef}
@@ -544,6 +623,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         className={open ? 'fdy-datepicker__trigger is-open' : 'fdy-datepicker__trigger'}
         aria-haspopup="dialog"
         aria-expanded={open}
+        aria-label={range?.ariaLabel}
         aria-labelledby={props.ariaLabelledby}
         aria-invalid={isInvalid ? 'true' : undefined}
         aria-readonly={isReadonly ? 'true' : undefined}
@@ -551,7 +631,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         disabled={isDisabled}
         onClick={toggle}
       >
-        <span className={selectedDate === null ? 'fdy-datepicker__value fdy-datepicker__value--placeholder' : 'fdy-datepicker__value'}>
+        <span className={hasValue ? 'fdy-datepicker__value' : 'fdy-datepicker__value fdy-datepicker__value--placeholder'}>
           {displayValue}
         </span>
         <span className={showClear ? 'fdy-datepicker__icon is-hidden' : 'fdy-datepicker__icon'} aria-hidden="true">
@@ -669,6 +749,7 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
               aria-selected={cell.selected ? 'true' : undefined}
               disabled={cell.disabled}
               tabIndex={cell.focusable ? 0 : -1}
+              onMouseEnter={(): void => onDayHover(cell.date)}
               onClick={(): void => pick(cell.date)}
             >
               {cell.label}

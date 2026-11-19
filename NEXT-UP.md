@@ -74,7 +74,7 @@ Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga di
 dan tidak punya berkas tidak pernah ada.
 
 **Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07, §25 dan §26 2026-11-07; §20 dan §21 tidak ada di berkasnya):
+`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07, §25 dan §26 2026-11-07, §28 2026-11-19; §20 dan §21 tidak ada di berkasnya):
 
 | § | pokok | status |
 |---|---|---|
@@ -103,6 +103,7 @@ dan tidak punya berkas tidak pernah ada.
 | 25 | `FdyAutocomplete`: atribut tak sampai ke input, `emptyText` per-instans, daftar terbuka tersaring | (a) dan (c) terkirim 3.19.0 `#115` di ketiga stack dan enhancer. (b) tidak diambil: yang dibaca dari `<form>` hanya pesan validasi, jadi bentuk yang benar adalah teks bawaan seluruh kit, tunggu ada yang membutuhkannya |
 | 26 | `<h1>` shell berisi merek | ditutup dengan dokumen 3.19.0 `#116`: `title` adalah nama halaman, dan dua dokumen yang masih berbunyi `<h1>` saja disamakan. `<h1>`-nya tidak diubah; perbaikannya di app yang mengisi `title` dengan merek |
 | 27 | Blok onboarding menyebut beberapa angka untuk satu himpunan pembungkus | ditutup dengan dokumen 3.19.1 `#117`: kata bilangan dihapus dari 18 tempat dan dijaga uji. Audit kelasnya menemukan dua lagi di blok yang sama: `timepicker` tercatat tanpa pembungkus, dan `FdyChart` tercatat tidak butuh enhancer. Membangkitkan angka saat rilis tidak diambil: tanpa angka, tidak ada yang perlu dibangkitkan |
+| 28 | Tidak ada rentang tanggal dalam satu kolom | terkirim 3.20.0 `#118` sebagai `layout="single"` di `FdyDateRange` untuk ketiga stack dan `data-layout="single"` di jalur mentah. Nilainya hanya berubah saat rentangnya utuh. Dua bulan berdampingan, kalender layar penuh, dan preset tidak dibuat, seperti yang dikecualikan catatannya sendiri |
 
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 
