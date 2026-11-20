@@ -57,8 +57,8 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    @import '@fontsource/sora/600.css'; @import '@fontsource/sora/700.css';
    @import '@fontsource-variable/ibm-plex-sans'; @import '@fontsource/jetbrains-mono/500.css';
    ```
-   (Or a `<link>` to your own self-hosted copies, or override `--font-display`/`--font-body`/`--font-mono`
-   to faces you already ship. If you keep a system-sans fallback, consider softening
+   (Or a `<link>` to your own self-hosted copies. Choosing different families is part of the app's
+   identity: see `USAGE.md` §0. If you keep a system-sans fallback, consider softening
    `--tracking-tighter` on headings, since it's tuned for Sora's proportions.)
 8. **Start from the shell, then compose.** Every application goes inside **`.fdy-app`** (see below);
    inside it, assemble screens from the composition primitives (`.fdy-page`, `.fdy-page__header`,

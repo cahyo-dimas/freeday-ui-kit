@@ -18,8 +18,10 @@ the **root of the consuming project**:
 ```markdown
 ## UI: Freeday design system (@cahyo-dimas/freeday)
 
-All UI in this project is built from Freeday: a **token-driven CSS kit** (`fdy-*` classes on plain
-markup) with **typed components for Vue, React and Blazor** layered on top. Most of the kit is
+This project's components and tokens come from Freeday: a **token-driven CSS kit** (`fdy-*` classes
+on plain markup) with **typed components for Vue, React and Blazor** layered on top. How the app
+looks (type, shape, depth, palette, neutral, and the shape of each screen) is decided for this app,
+inside the contract in `USAGE.md` §0. Most of the kit is
 markup + classes; the interactive components listed below also ship a typed wrapper, and in those three stacks
 the wrapper is the correct way to use them.
 
@@ -62,10 +64,16 @@ wrapper, use the raw markup and hydrate it:
 - `node_modules/@cahyo-dimas/freeday/docs/screen-states.md` lists the screens and states an app
   needs beyond its ideal screens: 404/403/session expired, the three kinds of empty, loading, load
   error, action feedback, account flows. **Starting a new app, build these with the first screens.**
+- **Starting a new app, decide the look before the first screen.** Write the design brief from
+  `USAGE.md` §0 into this project's `DESIGN.md`, then `app.identity.css` from the template beside
+  it, then set `data-primary`, `data-neutral`, `data-style`, `data-density` and the default theme on
+  `<html>`. Keeping a default is allowed when the brief says why. Then pick each screen's
+  archetype from `USAGE.md` §7b before writing its markup.
 
 **Non-negotiables:**
 1. No raw hex or px in app CSS. Use tokens: `var(--color-primary)`, `var(--space-4)` (4px scale),
-   `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`.
+   `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`. The one exception is `app.identity.css`,
+   which gives the tokens listed in `USAGE.md` §0 their literal values and sets nothing else.
 2. Components only touch semantic tokens (`--color-*`), never the primitive ramp (`--azure-600`).
 3. `.fdy-btn` is already the primary action (there is no `--primary`). One per screen; everything
    else is `--ghost` or `--text`.
@@ -79,7 +87,10 @@ wrapper, use the raw markup and hydrate it:
    SPA, re-hydrate dynamic DOM with `useFreeday` / `FreedayBlazor.initAll`. This applies to the
    components **without** a typed wrapper. For the ones listed in step 0, use the wrapper instead.
 8. Freeday owns components + tokens, **not layout**. Grids/stacks/one-off gaps come from our own
-   layout layer. Build its theme on `var(--space-N)` so both systems stay in step.
+   layout layer. Build its theme on `var(--space-N)` so both systems stay in step. Each screen's
+   shape comes from the archetype table in `USAGE.md` §7b. Screens do not all open with a stats
+   row, a page is not a grid of identical cards, and an app with a few destinations puts a
+   horizontal `.fdy-nav` in the app bar instead of a sidebar.
 9. The enhancers render their own English UI strings (pager, filter dialog, validation). Never
    hand-translate one by rewriting the enhancer's nodes — set `data-fdy-text-<key>` on the
    component root, and `<html lang>` for date names. Keys are in COMPONENTS.md.
@@ -161,19 +172,20 @@ Recent additions most likely to replace something an app hand-rolled (all detail
 The order matters; skipping to components is what produces flat, identical-card screens.
 
 0. **Pick the screen shape first.** Which archetype is this: dashboard, master-detail, kanban,
-   wizard, POS…? The repo's
-   [`reference/README.md`](https://github.com/cahyo-dimas/freeday-ui-kit/blob/main/reference/README.md)
-   maps 15 archetypes to the exact primitives that compose each one, and says plainly which shapes
-   the kit has **no** component for (kanban columns, calendar month grid, chat bubbles, canvas) so
-   you build the frame instead of inventing a class. Not in the npm package, so read it on GitHub.
+   wizard, POS…? `USAGE.md` §7b maps 15 archetypes to the primitives that compose each one, and
+   says plainly which shapes the kit has **no** component for (kanban columns, calendar month grid,
+   chat bubbles, canvas), so you build the frame instead of inventing a class.
 1. **Shell:** is `.fdy-app` already in place (usually once, in the app layout)? If not, copy it
    from `docs/getting-started.md` §The app shell.
 2. **Theme:** `data-theme="light|dark"` + `data-density="comfortable|compact"`, normally on
    `<html>`, set once at the root. Use `compact` for table-heavy back-office screens. Both attributes
    also work on **any ancestor**: `<section data-theme="dark">` inverts that region and every
    component inside it follows, so never hand-colour an inverted panel.
-3. **Fonts:** the package ships **no** `@font-face`. Load Sora / IBM Plex Sans / JetBrains Mono
-   yourself, or override `--font-display`/`--font-body`/`--font-mono`. Skipping this reads as
+   `data-primary` and `data-neutral` are set once on `<html>`; on a region they only take effect
+   beside a `data-theme` on the same element (`USAGE.md` §5b).
+3. **Fonts:** the package ships **no** `@font-face`. Choose the families in `app.identity.css`
+   (`USAGE.md` §0) and load them yourself; the defaults are Sora / IBM Plex Sans / JetBrains Mono.
+   Skipping this reads as
    "unfinished design", not "missing dependency".
 4. **Page frame:** `.fdy-page` + `.fdy-page__header` (eyebrow + `.fdy-title-page` + desc on the
    left, **one** primary action on the right).

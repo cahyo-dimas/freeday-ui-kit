@@ -991,3 +991,13 @@ test('USAGE.md carries the identity contract and the composition table', () => {
     assert.ok(usage.includes(archetype), `archetype row "${archetype}" did not move into USAGE.md`);
   }
 });
+
+test('the onboarding block sends a new app through the identity contract first', () => {
+  const block = read('docs/agent-onboarding.md');
+  assert.doesNotMatch(block, /All UI in this project is built from Freeday/,
+    'the opening still tells agents the look is not theirs to decide');
+  assert.match(block, /USAGE\.md` §0/, 'the block must point at the identity contract');
+  assert.match(block, /USAGE\.md` §7b/, 'the block must point at the composition table');
+  assert.match(block, /DESIGN\.md/, 'the block must ask for the design brief');
+  assert.doesNotMatch(block, /reference\/README\.md/, 'the archetype table ships in USAGE.md now');
+});
