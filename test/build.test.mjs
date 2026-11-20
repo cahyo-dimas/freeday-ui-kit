@@ -157,3 +157,26 @@ test('buildMediaCss: a below/from pair per ramp step, and the off-ramp widths na
   /* Rules here would be silently dropped by a consumer that runs no PostCSS. */
   assert.ok(!/\{/.test(out.replace(/\/\*[\s\S]*?\*\//g, '')), 'the media sheet carries at-rules only, never rules');
 });
+
+test('no token outside the slate ramp and the neutral alias names a slate shade', () => {
+  /* Every semantic reads the neutral alias, so data-neutral can re-point it. A {slate.N} written
+     anywhere else stays cool under a warm neutral, and nothing else would notice. */
+  const tokens = JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url), 'utf8'));
+  const found = [];
+  const walk = (node, path) => {
+    if (typeof node === 'string') {
+      if (/\{slate\.\d+/.test(node)) found.push(`${path}: ${node}`);
+      return;
+    }
+    if (node === null || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (k === '$comment' || k.startsWith('_')) continue;
+      walk(v, `${path}.${k}`);
+    }
+  };
+  for (const [k, v] of Object.entries(tokens)) {
+    if (k === 'slate' || k === 'neutral') continue;
+    walk(v, k);
+  }
+  assert.deepEqual(found, [], `slate referenced directly:\n  ${found.join('\n  ')}`);
+});
