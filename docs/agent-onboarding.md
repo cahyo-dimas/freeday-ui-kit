@@ -66,13 +66,13 @@ wrapper, use the raw markup and hydrate it:
   error, action feedback, account flows. **Starting a new app, build these with the first screens.**
 - **Starting a new app, decide the look before the first screen.** Write the design brief from
   `USAGE.md` §0 into this project's `DESIGN.md`, then `app.identity.css` from the template beside
-  it, then set `data-primary`, `data-neutral`, `data-style`, `data-density` and the default theme on
+  it, then set `data-primary`, `data-neutral`, `data-style`, the app's default `data-density` and the default theme on
   `<html>`. Keeping a default is allowed when the brief says why. Then pick each screen's
   archetype from `USAGE.md` §7b before writing its markup.
 
 **Non-negotiables:**
 1. No raw hex or px in app CSS. Use tokens: `var(--color-primary)`, `var(--space-4)` (4px scale),
-   `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`. The one exception is `app.identity.css`,
+   `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-base)`. The one exception is `app.identity.css`,
    which gives the tokens listed in `USAGE.md` §0 their literal values and sets nothing else.
 2. Components only touch semantic tokens (`--color-*`), never the primitive ramp (`--azure-600`).
 3. `.fdy-btn` is already the primary action (there is no `--primary`). One per screen; everything
@@ -180,9 +180,10 @@ The order matters; skipping to components is what produces flat, identical-card 
 2. **Theme:** `data-theme="light|dark"` + `data-density="comfortable|compact"`, normally on
    `<html>`, set once at the root. Use `compact` for table-heavy back-office screens. Both attributes
    also work on **any ancestor**: `<section data-theme="dark">` inverts that region and every
-   component inside it follows, so never hand-colour an inverted panel.
-   `data-primary` and `data-neutral` are set once on `<html>`; on a region they only take effect
-   beside a `data-theme` on the same element (`USAGE.md` §5b).
+   component inside it follows, so never hand-colour an inverted panel. `data-primary` and
+   `data-neutral` are set once on `<html>`. An inverted region in an app with a non-default palette
+   or neutral repeats both beside its `data-theme`, or its labels lose contrast. Never put either
+   axis on a bare wrapper: it half-applies (`USAGE.md` §5b).
 3. **Fonts:** the package ships **no** `@font-face`. Choose the families in `app.identity.css`
    (`USAGE.md` §0) and load them yourself; the defaults are Sora / IBM Plex Sans / JetBrains Mono.
    Skipping this reads as

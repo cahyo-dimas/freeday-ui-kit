@@ -33,7 +33,7 @@ Everything else stays with the kit. Colour reaches an app only through the attri
 the attributes are what the contrast gate tests, so your CSS carries no `--color-*`, `--tone-*` or
 `--chart-*`. Spacing (`--space-*`) and control size (`--control-*`) carry density. The type size
 scale (`--text-*`, `--leading-*`) sets control heights and table density, so a screen that wants
-big type uses `var(--text-xl)` and up in its own content. `--radius-full`, `--bw-*` and the focus
+big type uses `var(--text-xl)` and up in its own content. `--radius-full`, `--bw` and the focus
 ring are accessibility contracts.
 
 `app.identity.css` is the one file where literal values belong, and only as values of the tokens
@@ -240,9 +240,13 @@ rule is about the document, and un-rooting it would re-darken the children of a 
 `data-primary` and `data-neutral` follow the same selectors, with one difference. They re-point
 an alias ramp, and the semantic tokens resolve that ramp where they are declared: on `<html>`, or
 on an element that carries `data-theme`. So put them on `<html>`. To re-brand or re-tint a single
-region, put the axis on that region together with `data-theme`; on a bare wrapper the alias
-changes and nothing reads it. The same goes for an inverted island inside an app with a
-non-default neutral: repeat `data-neutral` on the island beside its `data-theme`.
+region, put the axis on that region together with `data-theme`. Never put either axis on a bare
+wrapper: it half-applies. A palette moves the label ink (`--color-on-primary`) but not the fill, so
+orange, amber, lime, green, emerald, teal and cyan leave dark ink on the azure fill (2.87:1 for orange); a neutral moves
+the tone inks, borders, stripe and danger border but not the surfaces. An inverted island inside an app
+with a non-default look must repeat `data-primary` and `data-neutral` beside its `data-theme`.
+Otherwise the island keeps the app's fill but takes the default label ink, and white labels on an
+orange fall to about 2:1.
 
 ## 6. Density: `compact` for data-dense screens
 
@@ -315,6 +319,9 @@ own language; for the rest (grids, one-off spacing), pair a utility framework ru
 preflight-off**, and build its theme on `var(--space-N)` so the two systems agree. See
 `docs/getting-started.md` §Core concepts.
 
+*Layout classes here live in `src/components/composition.css`. If a screen needs a primitive that
+isn't here, it probably belongs here. Open an issue rather than re-inventing it per screen.*
+
 ## 7b. Composition: pick the screen's shape first
 
 Decide what kind of screen this is before reaching for components. Freeday owns components and
@@ -352,6 +359,3 @@ Three habits make every app look like the same template, so avoid them:
   with `.fdy-nav.fdy-nav--horizontal` in the app bar (§6b), and gets the width back.
 
 ---
-
-*Layout classes here live in `src/components/composition.css`. If a screen needs a primitive that
-isn't here, it probably belongs here. Open an issue rather than re-inventing it per screen.*

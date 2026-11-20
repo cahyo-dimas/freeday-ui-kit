@@ -101,7 +101,7 @@ export function hexOfName(name, index) {
 
 /* The label ink of each primary palette. `$primaries` states it per palette rather than through a
    token, so the triples it needs are collected from there by hand — otherwise a palette whose ink
-   is slate.950 would reference a --slate-950-rgb that nothing emitted. */
+   is neutral.950 would reference a --neutral-950-rgb that nothing emitted. */
 export function primaryInkRefs(tokens) {
   const spec = tokens.$primaries;
   if (spec === undefined) return [];
@@ -379,7 +379,8 @@ export function neutralDarkKeys(base, variant, lightSet) {
  * `[data-theme="light"]` back-light block mirrors the primary axis and is belt-and-braces here.
  *
  * Like data-primary, this takes effect where the semantics are resolved: on <html>, or on a nested
- * element that also carries data-theme (USAGE.md §5b). */
+ * element that also carries data-theme (USAGE.md §5b). On a bare wrapper it half-applies: tone
+ * inks, borders, stripe and the danger border move, surfaces do not. */
 export function buildNeutralsCss(tokens) {
   const spec = tokens.$neutrals;
   if (spec === undefined) return '';
@@ -416,8 +417,9 @@ export function buildNeutralsCss(tokens) {
  *
  * Scoping follows `data-theme` exactly, and for the same reasons: the selector is bare. A palette
  * re-brands where the semantics are resolved, which is <html>, or a nested element that ALSO carries
- * data-theme (browser/axis-nesting.mjs pins both); on a bare wrapper the alias changes and nothing
- * reads it. The dark scopes are emitted only for the keys
+ * data-theme (browser/axis-nesting.mjs pins both). On a bare wrapper a palette half-applies: the
+ * label ink (--color-on-primary) is declared here directly and moves, while the fill resolves on
+ * :root and does not. An inverted island must repeat the palette beside its data-theme. The dark scopes are emitted only for the keys
  * that actually DIFFER in dark (the label ink, and the shifted aliases), because restating the
  * unchanged ones is how two blocks drift apart; and a `[data-theme="light"]` re-assert follows, so a
  * light island inside a dark region wins back. */

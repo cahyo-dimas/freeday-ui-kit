@@ -53,6 +53,7 @@ pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
 | # | Kandidat | Kerjakan saat |
 |---|---|---|
 | B | **Preset identitas**: `inbox`, `feed`, `thread`, `ledger`, `workspace`, `board`. Masing-masing satu berkas identitas (`app.identity.css`) ditambah satu layar acuan | ada app yang memakai kontrak §0 dan mengulang pilihan yang sama |
+| D | **Tinta palet lewat alias**: palet kini menulis token semantic (`--color-on-primary`). Kalau palet menulis tinta alias (mis. `--primary-on` / `--primary-on-dark`) yang dipetakan blok tema ke `--color-on-primary`, island terbalik dan wrapper polos akan jalan tanpa mengulang palet | laporan pertama label island yang rusak |
 | C | **Server MCP** yang dikirim sebagai `bin` di paket, dengan tool `check_identity` yang memeriksa app terhadap kontrak identitas | preset B ada, dan agen konsumen sering melanggar kontrak tanpa ada yang memeriksa |
 
 **Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel

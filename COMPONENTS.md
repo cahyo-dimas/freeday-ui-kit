@@ -22,7 +22,7 @@ live docs.
 2. **Never invent a class.** If it is not in this file, it does not exist. Freeday has no
    `fdy-grid`, no `fdy-flex`, no `fdy-mt-4`, no `fdy-primary`.
 3. **Never write a raw hex or px value** in app CSS. Use the tokens: `var(--color-primary)`,
-   `var(--space-4)`, `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-2)`. Spacing is a 4px scale
+   `var(--space-4)`, `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-base)`. Spacing is a 4px scale
    (`--space-0`…`--space-24`); a loose value breaks density switching.
 4. **Freeday owns components + tokens, not layout.** The only layout it ships is the shell
    (`.fdy-app`, and `.fdy-standalone` for screens outside it), the composition primitives below, and `.fdy-hidden`/`.fdy-visually-hidden`.
@@ -529,7 +529,7 @@ without a reload.
 inks, the chart grid, and the `noir` palette): `slate` (the default, and what you get with no
 attribute), `grey` (no hue) and `stone` (warm). Each shade keeps the lightness of the slate shade
 with the same number, and every option is contrast-gated in both themes and under all 18 palettes.
-Set it on `<html>`; on a region, only together with `data-theme` (`USAGE.md` §5b).
+Set it on `<html>`; on a region, only together with `data-theme`, because on a bare wrapper it half-applies (`USAGE.md` §5b).
 
 ```html
 <html data-neutral="stone" data-primary="noir">
@@ -539,7 +539,9 @@ Set it on `<html>`; on a region, only together with `data-theme` (`USAGE.md` §5
 attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`
 `yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it on `<html>`. To re-brand one
 region, put it on that region together with `data-theme`: the palette only reaches the semantic
-tokens where `data-theme` re-declares them, so on a bare wrapper it changes nothing.
+tokens where `data-theme` re-declares them. On a bare wrapper it half-applies: the label ink
+moves but the fill does not, so never do that. An inverted island (`data-theme` on a region) in an
+app with a non-default look repeats `data-primary` and `data-neutral` beside its `data-theme`.
 
 ```html
 <html data-primary="emerald" data-theme="dark">
