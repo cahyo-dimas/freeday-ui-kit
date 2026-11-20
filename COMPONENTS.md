@@ -525,6 +525,16 @@ without a reload.
 <script>try{var t=localStorage.getItem('fdy-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 ```
 
+**Neutral: `data-neutral`.** Three options for every grey in the kit (surfaces, borders, text
+inks, the chart grid, and the `noir` palette): `slate` (the default, and what you get with no
+attribute), `grey` (no hue) and `stone` (warm). Each shade keeps the lightness of the slate shade
+with the same number, and every option is contrast-gated in both themes and under all 18 palettes.
+Set it on `<html>`; on a region, only together with `data-theme` (`USAGE.md` §5b).
+
+```html
+<html data-neutral="stone" data-primary="noir">
+```
+
 **Primary palette: `data-primary`.** 18 options — `azure` (the default, and what you get with no
 attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`
 `yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it on `<html>`. To re-brand one

@@ -61,7 +61,6 @@ const DOCS = [
   ['USAGE.md', classesInMarkdown],
   ['docs/agent-onboarding.md', classesInMarkdown],
   ['docs/screen-states.md', classesInMarkdown],
-  ['reference/README.md', classesInMarkdown],
   ['docs/reference-screen.html', classesInHtml],
 ];
 
@@ -980,4 +979,15 @@ test('the <head> theme snippet in COMPONENTS.md reads the key the theme core wri
   const key = read('src/freeday-theme.js').match(/var KEY = '([^']+)'/);
   assert.ok(key !== null, 'src/freeday-theme.js no longer declares its storage KEY');
   assert.equal(documented[1], key[1], 'the snippet reads a different key than the core writes');
+});
+
+test('USAGE.md carries the identity contract and the composition table', () => {
+  const usage = read('USAGE.md');
+  assert.match(usage, /^## 0\. App identity/m, 'the identity contract section is missing');
+  assert.match(usage, /^## 7b\. Composition/m, 'the composition section is missing');
+  assert.match(usage, /app\.identity\.css/);
+  assert.match(usage, /data-neutral/);
+  for (const archetype of ['Dashboard / admin', 'Master-detail', 'Kanban board', 'Point of sale', 'Community / forum']) {
+    assert.ok(usage.includes(archetype), `archetype row "${archetype}" did not move into USAGE.md`);
+  }
 });

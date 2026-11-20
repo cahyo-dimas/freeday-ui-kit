@@ -10,6 +10,73 @@ but start here, not from a blank page.
 
 ---
 
+## 0. App identity: what the app decides
+
+Freeday supplies components and tokens. How an app looks is the app's decision, made inside the
+contract below. An app that changes nothing looks like the kit's docs page. That suits the docs
+page and wastes the decision everywhere else.
+
+The look lives in two places: the `data-*` attributes on `<html>`, and one file,
+`app.identity.css`, loaded after the Freeday bundle.
+
+| The app owns | Where |
+|---|---|
+| Palette (18), neutral (`slate`, `grey`, `stone`), style, density, default theme | `data-primary`, `data-neutral`, `data-style`, `data-density`, `data-theme` on `<html>` |
+| Type families: `--font-display`, `--font-body`, `--font-mono` | `app.identity.css` |
+| Weights and tracking: `--weight-*`, `--tracking-*` | `app.identity.css` |
+| Shape: `--radius-xs` to `--radius-xl` | `app.identity.css` |
+| Depth: `--shadow-1` to `--shadow-4`, `--shadow-lift`, `--shadow-lift-hover` | `app.identity.css`, light and dark |
+| Motion: `--dur-*`, `--ease-*` | `app.identity.css` |
+| One component, locally: `--fdy-<component>-<property>` | your own CSS |
+
+Everything else stays with the kit. Colour reaches an app only through the attributes, because
+the attributes are what the contrast gate tests, so your CSS carries no `--color-*`, `--tone-*` or
+`--chart-*`. Spacing (`--space-*`) and control size (`--control-*`) carry density. The type size
+scale (`--text-*`, `--leading-*`) sets control heights and table density, so a screen that wants
+big type uses `var(--text-xl)` and up in its own content. `--radius-full`, `--bw-*` and the focus
+ring are accessibility contracts.
+
+`app.identity.css` is the one file where literal values belong, and only as values of the tokens
+in the table. Shadows need four blocks in this order, because the kit sets dark shadows in three
+scopes and a lone `:root` rule loses to one of them in each dark mode:
+
+```css
+/* app.identity.css: load after @cahyo-dimas/freeday/css. Owned tokens only. */
+:root {
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --shadow-1: 0 1px 0 rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --shadow-1: 0 1px 0 rgba(0,0,0,.5); }
+}
+[data-theme="dark"] { --shadow-1: 0 1px 0 rgba(0,0,0,.5); }
+[data-theme="light"] { --shadow-1: 0 1px 0 rgba(0,0,0,.06); }
+```
+
+Fonts, radius and motion have no dark value and need only the `:root` block. The file loads its
+own fonts. A replacement body or display font needs tabular figures (the OpenType `tnum` feature):
+stat values, calendar days, chart values and the slider readout set `tabular-nums`, and without
+it their digits shift as they change.
+
+Decide before the first screen. A new app starts with a short brief in its own `DESIGN.md`,
+then `app.identity.css`, then the attributes. Leaving an axis at its default is fine when the
+brief says why.
+
+```markdown
+## Design brief
+- Who uses this, and the one task they do most:
+- Density: comfortable | compact, and why
+- Mood, in three words (not "clean", "modern" or "intuitive"):
+- Axes: data-primary=… data-neutral=… data-style=… default theme=…
+- Type: display / body / mono, and why they suit these users
+- Shape and depth: radius scale, shadow scale
+- Screens and their archetype (§7b):
+- One thing this app has that a default Freeday app does not:
+```
+
 ## 1. Type roles: three title levels, not eleven
 
 Do **not** reuse `.fdy-card__title` for a page title. Collapsing page/section/card into one style is
@@ -170,6 +237,13 @@ restating colours per element.
 The **system** default (`@media (prefers-color-scheme: dark)`) stays root-scoped on purpose: that
 rule is about the document, and un-rooting it would re-darken the children of a light island.
 
+`data-primary` and `data-neutral` follow the same selectors, with one difference. They re-point
+an alias ramp, and the semantic tokens resolve that ramp where they are declared: on `<html>`, or
+on an element that carries `data-theme`. So put them on `<html>`. To re-brand or re-tint a single
+region, put the axis on that region together with `data-theme`; on a bare wrapper the alias
+changes and nothing reads it. The same goes for an inverted island inside an app with a
+non-default neutral: repeat `data-neutral` on the island beside its `data-theme`.
+
 ## 6. Density: `compact` for data-dense screens
 
 `data-density="compact"` tightens control height **and** the mid-range spacing scale
@@ -240,6 +314,42 @@ Freeday deliberately owns **components + tokens, not layout**. Everything above 
 own language; for the rest (grids, one-off spacing), pair a utility framework run **utilities-only,
 preflight-off**, and build its theme on `var(--space-N)` so the two systems agree. See
 `docs/getting-started.md` §Core concepts.
+
+## 7b. Composition: pick the screen's shape first
+
+Decide what kind of screen this is before reaching for components. Freeday owns components and
+tokens, not layout, so for most shapes the frame is yours and the kit fills it. This table splits
+the work for 15 common web-app archetypes:
+
+| # | Archetype | Freeday gives you | You build |
+|---|---|---|---|
+| 1 | **Dashboard / admin** | `.fdy-app` · `.fdy-page` · `.fdy-stats`/`.fdy-stat` · `.fdy-card` · `data-fdy-chart` · `.fdy-datatable` | nothing — fully covered, see [`docs/reference-screen.html`](docs/reference-screen.html) |
+| 2 | **Master-detail** | list = `.fdy-datatable` + `.fdy-table__row--activatable`; detail = `.fdy-card` + `.fdy-dl` + `.fdy-tabs`; narrow screens = `.fdy-drawer` | the two-pane split |
+| 3 | **Kanban board** | cards = `.fdy-card--interactive` / `--button`; labels = `.fdy-chip--tone-N`; counts = `.fdy-badge` | the column grid **and** drag-and-drop (no DnD in the kit) |
+| 4 | **Feed / timeline** | `.fdy-timeline` (event feed) · `.fdy-card` (items) · `.fdy-avatar` · `.fdy-skeleton` while loading | the column widths |
+| 5 | **Chat / messaging** | conversation list = `.fdy-nav`; unread = `.fdy-badge-ov`; composer = `.fdy-textarea` + `.fdy-btn`; `.fdy-avatar` | the bubbles and the scroll-to-bottom behaviour |
+| 6 | **Canvas / whiteboard** | chrome only: `.fdy-appbar` · `.fdy-btn-group` · `.fdy-fab` · `.fdy-menu` · `.fdy-tooltip` | the canvas itself |
+| 7 | **Calendar / scheduler** | range filter = `.fdy-daterange`; events = `.fdy-chip` / `.fdy-badge`; day detail = `.fdy-drawer` | the month grid — there is **no** calendar-view component (`.fdy-cal__grid` / `.fdy-cal__day` are datepicker internals, not public layout) |
+| 8 | **Document editor** | `.fdy-app` shell · outline = `.fdy-tree` · `.fdy-toolbar` + `.fdy-btn-group` · `.fdy-kbd` for shortcuts | the editing surface |
+| 9 | **Media / streaming** | tiles = `.fdy-card` · rails = `.fdy-carousel` · `.fdy-skeleton` · playback = `.fdy-progress` | the poster grid |
+| 10 | **E-commerce account** | `.fdy-page-section` · `.fdy-dl` · orders = `.fdy-table` · status = `.fdy-badge` · `.fdy-accordion` | nothing much — mostly covered |
+| 11 | **Analytics / BI** | `.fdy-stats` · `data-fdy-chart` (sparkline/bar/line/area/donut, palette `--chart-1`…`8`) · `.fdy-filterbar` · `.fdy-daterange` | the tile grid |
+| 12 | **Point of sale** | `.fdy-app--nav-collapsed` for screen space · product tiles = `.fdy-card--button` · cart = `.fdy-table` + `.fdy-table__num` · totals = `.fdy-stat` · `.fdy-fab` to pay · `data-density="compact"` | the two-column till layout |
+| 13 | **Wizard / multi-step** | `.fdy-stepper` · `.fdy-step-panels` · `.fdy-step-nav` · `.fdy-form-grid` | nothing — fully covered |
+| 14 | **File manager** | folders = `.fdy-tree` · upload = `.fdy-dropzone` + `.fdy-filelist` + `.fdy-file` · actions = `.fdy-menu` · `.fdy-breadcrumb` | the icon grid |
+| 15 | **Community / forum** | threads = `.fdy-card` · `.fdy-avatar--tone-N` · tags = `.fdy-chip` · `.fdy-pagination` · replies = `.fdy-timeline` | the thread list layout |
+
+If a shape needs something the kit has no component for, build the shape and fill it with kit
+components. Never invent an `fdy-` class for it; the complete list is `COMPONENTS.md`.
+
+Three habits make every app look like the same template, so avoid them:
+
+- **A stats row on top of every screen.** `.fdy-stats` belongs on a screen whose job is the
+  numbers. On a list or a form it pushes the work below the fold.
+- **A page that is a grid of identical cards.** See §3: one raised element that matters, the rest
+  flat.
+- **A sidebar for a handful of destinations.** An app with only a few places to go reads better
+  with `.fdy-nav.fdy-nav--horizontal` in the app bar (§6b), and gets the width back.
 
 ---
 
