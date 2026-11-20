@@ -34,7 +34,7 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 - **Spasi:** selalu kelipatan 4px (skala `--space-*`), tak pernah nilai lepas.
 - **Satu file per komponen** di `src/components/*.css`; digabung ke `dist/freeday.css`.
 
-## Theming: 3 sumbu via `data-*` di `<html>`
+## Theming: 5 sumbu via `data-*` di `<html>`
 - `data-theme="light|dark"` → re-definisi token **semantic** (wajib). Selector-nya bare (bukan
   `:root`), jadi bisa dipasang di ancestor mana pun untuk membalik satu region; default sistem
   (`prefers-color-scheme`) sengaja tetap root-scoped.
@@ -45,6 +45,10 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
   berbeda pendapat soal arti "primary". Sumbernya `$primaries` di `tokens.json`; **setiap palet
   dijaga gerbang kontras di kedua tema** (`test/contrast.test.mjs`), dan nilai `on`/`onDark`-nya
   hasil ukur, bukan tebakan.
+- `data-neutral="slate|grey|stone"` → mengarahkan ulang ramp alias `--neutral-*` yang dibaca setiap
+  abu-abu (permukaan, teks, border, kontrol). `slate` bawaan; `grey` tanpa rona, `stone` hangat.
+  Keduanya menjaga kecerahan slate di tiap shade, dan lolos gerbang kontras di kedua tema dan di
+  bawah ke-18 palet. Tanpa atribut ini keluaran sama dengan 3.20.0.
 - `data-style="soft|glass"` → sumbu gaya visual. `soft` default (tampilan kit selama ini); `glass`
   memfrost **permukaan terangkat saja** lewat `--color-surface-raised`, `--surface-filter`,
   `--surface-inset` — bukan `--color-surface`, yang juga jadi isian input, chip, sel tabel dan kolom
@@ -119,8 +123,8 @@ Riwayat per-versi: [`CHANGELOG.md`](CHANGELOG.md) · kandidat kerja berikutnya (
 [`NEXT-UP.md`](NEXT-UP.md) · kondisi terkini: [`HANDOFF.md`](HANDOFF.md).
 
 ## Aset tersedia, semuanya di `reference/` (material input, **tak pernah** di-ship)
-Lihat [`reference/README.md`](reference/README.md): isinya provenance tiap file + tabel **15 arketipe
-layout → primitif Freeday mana** (mana yang sudah tertutup komponen, mana yang framenya tetap milikmu).
+Lihat [`reference/README.md`](reference/README.md): isinya provenance tiap file. Tabel **15 arketipe layout → primitif
+Freeday mana** pindah ke `USAGE.md` §7b supaya ikut terkirim di paket.
 - `reference/foundation-design-system.html` adalah artefak asal tempat kit ini di-port (historis: 44/44
   komponen sudah di-port, jadi ini catatan provenance, bukan daftar kerja).
   **Tak ada font yang bisa diekstrak dari file ini**: `@font-face`-nya menunjuk UUID mati sisa

@@ -45,6 +45,32 @@ Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras
 tiap rilis sinkron SEMUA ref versi publik incl. live Pages ([[sync-docs-on-version-bump]]); repo
 PUBLIC ([[public-repo-keep-internal-out]]).
 
+## Kandidat berikutnya, dipicu rilis 3.21.0 dan permintaan owner
+
+**Lanjutan identitas.** Pemicunya 3.21.0: kontrak identitas dan sumbu `data-neutral` sudah ada, jadi
+pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
+
+| # | Kandidat | Kerjakan saat |
+|---|---|---|
+| B | **Preset identitas**: `inbox`, `feed`, `thread`, `ledger`, `workspace`, `board`. Masing-masing satu berkas identitas (`app.identity.css`) ditambah satu layar acuan | ada app yang memakai kontrak §0 dan mengulang pilihan yang sama |
+| C | **Server MCP** yang dikirim sebagai `bin` di paket, dengan tool `check_identity` yang memeriksa app terhadap kontrak identitas | preset B ada, dan agen konsumen sering melanggar kontrak tanpa ada yang memeriksa |
+
+**Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel
+pihak ketiga. Yang diambil polanya, bukan tampilannya. Tiap fitur dibrainstorm setelah branch
+`feat/app-identity` digabung. Kit memegang interaksi, aksesibilitas, dan kontrak event; app memegang
+data dan aturan bisnis. Pembungkus Vue, React, dan Blazor mengikuti tiap fitur.
+
+Urutan usulan: 0, 1, 2, 3 (dengan Gantt). Nomor 4 independen dan kecil, jadi boleh disisipkan kapan
+saja.
+
+| # | Fitur | Isi |
+|---|---|---|
+| 0 | **Kontrak "pindah" bersama** | Perluas `data-fdy-sortable` ke pindah antar-daftar dan gulir otomatis di tepi; docs-nya kini menulis keduanya sebagai "not in the kit". Event bisa dibatalkan, ada jalur papan ketik (WCAG 2.5.7), pengumuman live region, dan fokus dikembalikan |
+| 1 | **Papan kanban** | Seret antar-kolom (status, veto app, batas WIP), urut ulang dalam kolom, klik kartu membuka drawer, tambah di kolom, angkat/pindah/jatuhkan lewat papan ketik dan menu "Move to...", kolom kosong dan meluap. Swimlane dan lipat kolom diputuskan saat brainstorm |
+| 2 | **Kalender acara** | Tampilan Bulan dan Agenda, acara seharian, tumpahan "+N more", klik tanggal membuka hari atau agenda, klik acara membuka detail |
+| 3 | **Penjadwal sumber daya** | Baris sumber daya berkelompok lawan kolom jam, baris kapasitas (Full/jumlah), lajur "Not assigned", strip 7 hari dengan hitungan dan yang tertunda, baris peringatan. Klik sel kosong membuat entri terisi awal (Full, lampau, libur ditolak dengan alasan); klik batang membuka drawer; seret untuk pindah sumber daya atau waktu (veto), ubah ukuran, jalur papan ketik. Ditambah mode Gantt: baris = tugas, zoom hari/minggu/bulan, garis hari ini, dependensi menyusul |
+| 4 | **Timeline aktivitas yang kaya** | Perluas `.fdy-timeline` dengan pengelompokan tanggal, butir yang bisa diklik atau dibuka, saringan jenis event, dan muat lebih banyak |
+
 ---
 
 Riwayat rilis **tidak** diulang di sini: 15 blok log `Update …` (v1.8.0–v1.18.0) plus tiga

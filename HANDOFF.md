@@ -11,6 +11,15 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
+**`3.21.0`, disiapkan dan menunggu tag** (2026-11-20). Isinya dalam satu kalimat: **sebuah app
+memutuskan tampilannya sendiri.** Sumbu kelima `data-neutral` (`slate` bawaan, `grey`, `stone`)
+berdampingan dengan `data-primary`, `data-style`, `data-density`, dan `data-theme`. Kontrak
+identitas, apa yang dimiliki app dan brief yang diisi sebelum layar pertama, ada di `USAGE.md` §0;
+tabel komposisi 15 arketipe ada di `USAGE.md` §7b. Tanpa `data-neutral` keluarannya sama dengan
+3.20.0, dijaga `test/token-snapshot.test.mjs`. Rencana kerja berikutnya ada di `NEXT-UP.md`.
+
+Bagian di bawah ini adalah catatan rilis lama dan belum disapu; yang berlaku hanya paragraf ini.
+
 **`3.10.0`, disiapkan dan menunggu tag** (2026-10-26). Isi 3.9.4: setiap transisi dinetralkan di bawah Reduce Motion lewat satu aturan di base.css, sesudah tiga rilis menambalnya satu per satu dan hitungan 9 dari 56 menghentikan polanya. Belum terbit saat baris ini ditulis; yang
 sudah ada di `main` adalah commit versinya. 3.9.0 sudah terbit, 2026-10-26T02:42:52Z.
 

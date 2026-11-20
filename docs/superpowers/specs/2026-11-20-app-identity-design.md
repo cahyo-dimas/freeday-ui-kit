@@ -108,8 +108,8 @@ the contract.
 
 The neutral ramp becomes an axis built the same way `data-primary` is.
 
-- **Alias ramp.** A Tier-1 alias `neutral.*` with the thirteen shades the semantics consume (`0 50
-  100 200 300 400 450 500 600 700 800 900 950`), defaulting to `slate`. Every `{slate.N}` reference
+- **Alias ramp.** A Tier-1 alias `neutral.*` with the fourteen shades the semantics consume (`0 50
+  100 200 300 400 450 500 600 700 800 850 900 950`), defaulting to `slate`. Every `{slate.N}` reference
   outside the `slate` ramp itself becomes `{neutral.N}`, in `$value` and `$dark` alike. That covers
   the semantic colours (surface, text, border, control border, inverse, the `on-*` inks), the channel
   triples that read slate, `chart.grid`, `chart.tick`, and the `noir` primary palette (D4).
@@ -128,7 +128,12 @@ The neutral ramp becomes an axis built the same way `data-primary` is.
   three scopes the primary axis uses (dark media query, `[data-theme="dark"]`, `[data-theme="light"]`
   re-assert). `slate` emits nothing: it is what `:root` already says.
 - **No change for existing consumers.** Without the attribute, `dist/freeday.tokens.css` resolves to
-  the same values as 3.20.0. `test/baseline.test.mjs` asserts it.
+  the same values as 3.20.0. `test/token-snapshot.test.mjs` asserts it, against values captured from 3.20.0.
+- **Dark values follow the cascade.** The system-dark base rule has specificity (0,2,0) and a
+  neutral's light block has (0,1,0), so on a dark system a light-themed neutral would lose to the
+  default's dark value. A neutral therefore re-states its dark value for every key its light block
+  carries that the default declares dark (`neutralDarkKeys` in `tokens/build.mjs`). Found in review
+  before release; no shipped token was affected.
 
 ### D3. Everything that silently assumed slate
 
@@ -137,8 +142,9 @@ one has to follow the neutral or the warm theme ships with cool pieces in it.
 
 | Where | Today | Change |
 |---|---|---|
-| Flattened blends: `--tone-N-bg`, `--tone-N-ink`, `--tone-N-border`, `--color-danger-border`, and any other `color-mix()` the build flattens | computed once, over slate surface, text and border | `buildNeutralsCss` flattens each blend per neutral and emits it only where it differs. The existing guard that throws on a mix in an unflattened axis is extended: a mix whose chain reaches `neutral.*` and is not flattened per neutral fails the build. |
-| `--color-surface-stripe` | literals `#fbfbfc` / `#131721` | moves into `$neutrals` as `stripe` / `stripeDark` per entry; `:root` and the theme scopes read the `slate` entry, so the default output is the same two literals. No mix weight reproduces them exactly, which is why this is a measured value per entry instead of a blend. The `grey` and `stone` values sit at the same relative position between their own `0`/`50` and `950`/`900`. |
+| Flattened blends: `--tone-N-bg`, `--tone-N-ink`, `--tone-N-border`, `--color-danger-border`, and any other `color-mix()` the build flattens | computed once, over slate surface, text and border | `buildNeutralsCss` flattens each blend per neutral and emits it only where it differs. The build flattens the whole token set per neutral and emits what differs, so no mix can miss the neutral and no extra guard is needed. |
+| `--color-surface-stripe` | literals `#fbfbfc` / `#131721` | written as `color-mix(in srgb, {color.surface-2} 55%, {color.surface})`, which reproduces both slate literals to the byte, so the build re-flattens it per neutral. |
+| `--color-border-muted` dark | literal `#1c2130` | becomes `{neutral.850}`; slate gains an 850 shade with that value, and grey and stone get an 850 by the §3 method. |
 | Glass dark surface `rgba(23,27,38,.90)` | literal; `23,27,38` is `slate.900` | becomes `rgba({neutral.900.rgb},.90)`. Same output for slate. |
 | `noir` primary palette | aliases `{slate.N}` directly | aliases `{neutral.N}`, so a black primary on a warm app is a warm black. |
 | `chart.grid`, `chart.tick` | `{slate.N}` | `{neutral.N}` (covered by D2's rewrite, listed here because they sit outside `color`). |
@@ -218,7 +224,7 @@ for slate moves by at most a few hundredths. Method: convert each slate shade to
 set `C = 0` for `grey`, and for `stone` set hue 70 with `C = min(0.85 × C_slate, 0.020)`. The values
 are computed once by a script and committed as literals; the build does no OKLCH maths.
 
-| Shade | slate | grey | stone (candidate) |
+| Shade | slate | grey | stone |
 |---|---|---|---|
 | 0 | `#ffffff` | `#ffffff` | `#ffffff` |
 | 50 | `#f7f8fa` | `#f8f8f8` | `#f9f8f6` |
@@ -230,23 +236,25 @@ are computed once by a script and committed as literals; the build does no OKLCH
 | 500 | `#6b7488` | `#747474` | `#7c7268` |
 | 600 | `#4d5568` | `#555555` | `#5d5449` |
 | 700 | `#3a4152` | `#414141` | `#484036` |
-| 800 | `#262b38` | `#2b2b2b` | `#322a21` |
-| 900 | `#171b26` | `#1b1b1b` | `#211a12` |
-| 950 | `#0e111a` | `#111111` | `#161009` |
+| 800 | `#262b38` | `#2b2b2b` | `#2f2a25` |
+| 850 | `#1c2130` | `#222222` | `#25211b` |
+| 900 | `#171b26` | `#1b1b1b` | `#1f1a15` |
+| 950 | `#0e111a` | `#111111` | `#15110c` |
 
-Relative luminance of every candidate is within 1.5% of the slate shade it replaces. The `stone`
-dark end (800 to 950) reads brown rather than warm grey at this chroma. It is reviewed in the
-playground in dark mode before the values freeze, and its chroma may be lowered for those shades.
+Relative luminance of every shade is within 1.5% of the slate shade it replaces. The first stone
+candidate used `C = min(0.85 × C_slate, 0.020)` for every shade. At 800 to 950 it read as brown on a
+dark surface, and the owner reviewed it in the playground in dark mode. The values above cap the
+chroma at 0.012 for those four shades (800, 850, 900, 950); the lighter shades keep the 0.020 cap.
 The gate decides whether any value ships; the eye decides only between values that pass.
 
 ## 4. Order of work
 
 1. Add the `grey` and `stone` Tier-1 ramps (§3), with a `$comment` that records the method.
 2. Add the `neutral` alias ramp and rewrite every `{slate.N}` reference outside Tier 1 to it (D2).
-   Rebuild; the baseline test must show no change.
-3. Move the slate-assuming literals (D3): stripe into `$neutrals`, glass dark onto the triple,
+   Rebuild; the snapshot test must show no change.
+3. Move the slate-assuming literals (D3): stripe as a mix of `surface-2` and `surface`, glass dark onto the triple,
    `noir` onto the alias.
-4. Add `$neutrals` and `buildNeutralsCss`, including per-neutral flattening and the extended guard.
+4. Add `$neutrals` and `buildNeutralsCss`, including per-neutral flattening of the whole token set.
 5. Extend `test/contrast.test.mjs` (§5).
 6. Scoping (D4): the browser test, then the corrected wording in `docs/index.html` and
    `tokens/build.mjs`.
@@ -255,7 +263,7 @@ The gate decides whether any value ships; the eye decides only between values th
 
 ## 5. Verification
 
-- **Baseline.** `test/baseline.test.mjs`: with no `data-neutral`, every token resolves to its
+- **Baseline.** `test/token-snapshot.test.mjs`, against values captured from 3.20.0: with no `data-neutral`, every token resolves to its
   3.20.0 value in both themes, both densities and both styles.
 - **Contrast.** `test/contrast.test.mjs` runs every existing semantic, tone and glass pair under each
   neutral in both themes, and every primary palette under each neutral in both themes (18 × 3 × 2 =

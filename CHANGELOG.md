@@ -9,6 +9,45 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.21.0] - 2026-11-20
+
+**Sebuah app memutuskan tampilannya sendiri.** Sebelum rilis ini kit hanya menawarkan palet primary,
+dan semua abu-abu tetap slate yang kebiruan. App yang tidak mengubah apa pun tampil persis seperti
+halaman docs kit, jadi keputusan tampilan sering tidak pernah diambil.
+
+### Added
+- **`data-neutral="slate|grey|stone"`, sumbu kelima.** Ia mengarahkan ulang ramp alias `--neutral-*`
+  yang dibaca setiap abu-abu: permukaan, teks, border, kontrol, dan tinta `on-*`. `slate` tetap
+  bawaan. `grey` tanpa rona; `stone` hangat. Keduanya mempertahankan kecerahan slate di tiap shade,
+  jadi rasio kontras bergeser paling banyak beberapa persepuluh. Gerbang kontras mengukur semua
+  pasangan di kedua tema, `soft` dan `glass`, dan di bawah 18 palet. Ramp alias kini punya 14 shade
+  karena `slate` mendapat shade `850` (`#1c2130`, nilai `--color-border-muted` gelap yang dulu
+  literal).
+- **Kontrak identitas di `USAGE.md` §0**: apa yang dimiliki app (sumbu, keluarga huruf, bobot, bentuk,
+  kedalaman, gerak) dan apa yang tidak, ditambah brief identitas yang diisi sebelum layar pertama.
+- **Tabel komposisi di `USAGE.md` §7b.** Tabel 15 arketipe layout kini ikut terkirim di paket;
+  sebelumnya ia hanya ada di `reference/README.md`, yang tak pernah dikirim.
+
+### Changed
+- **Blok onboarding di `docs/agent-onboarding.md` ditulis ulang**: app baru memutuskan tampilannya
+  sebelum layar pertama. Proyek yang menyalin blok itu perlu menggantinya seluruhnya.
+
+### Fixed (docs)
+- **Klaim soal `data-primary` pada elemen bersarang dikoreksi.** Yang tertulis: palet bisa dipasang
+  di elemen mana pun untuk mengubah satu region. Yang benar: ramp `--primary-*` ikut berubah, tetapi
+  token semantic yang membacanya dihitung di `:root` dan tidak ikut turun. Region bersarang butuh
+  `data-theme` di elemen yang sama supaya token semantic dihitung ulang di sana. Dikoreksi di
+  `docs/index.html`, `tokens/build.mjs`, dan `USAGE.md` §5b, dan dijaga satu uji peramban.
+
+### Catatan
+- **Tanpa `data-neutral`, keluarannya tidak berubah.** Setiap token bernilai sama dengan 3.20.0 di
+  terang, gelap, `soft`, `glass`, dan di bawah tiap palet. `test/token-snapshot.test.mjs` menjaganya
+  terhadap nilai yang direkam dari 3.20.0.
+- **Tiga triple Tier-1 tidak lagi dikeluarkan**: `--slate-0-rgb`, `--slate-900-rgb`, dan
+  `--slate-950-rgb`. Pengganti bagi yang membacanya langsung: `--neutral-0-rgb`, `--neutral-900-rgb`,
+  `--neutral-950-rgb`. Nilainya sama di bawah slate.
+- Tidak ada perubahan pada `src/components/*.css`, enhancer, atau pembungkus.
+
 ## [3.20.0] - 2026-11-19
 
 **Rentang tanggal dalam satu kolom.** `FdyDateRange` selama ini dua picker bersebelahan: makan dua
