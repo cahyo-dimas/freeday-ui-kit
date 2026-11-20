@@ -143,7 +143,7 @@ Tabel lebar (banyak kolom) butuh wrapper untuk scroll horizontal: bungkus `.fdy-
 border/shadow-nya sudah ada sendiri). Tanpa salah satu wrapper ini, tabel lebar akan overflow
 container-nya, bukan scroll sendiri.
 
-### 3. Theming: 3 sumbu lewat `data-*` di root
+### 3. Theming: 5 sumbu lewat `data-*` di root
 - `data-theme="light|dark"` me-redefinisi token semantic (bind ke state tema app-mu).
   Berlaku di **ancestor mana pun**, tak harus root: `<section data-theme="dark">` membalik region itu
   dan semua komponen di dalamnya ikut (lihat [`USAGE.md`](USAGE.md) §5b).
@@ -151,7 +151,9 @@ container-nya, bukan scroll sendiri.
   Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
   custom/hand-built harus baca `--control-h` sendiri (mis. `height: var(--control-h)`) supaya ikut
   menyusut/melebar saat `data-density` berubah.
-- (roadmap) `data-style` untuk varian visual lain.
+- `data-style="soft|glass"` memilih gaya visual, `data-primary` satu dari 18 palet primary, dan
+  `data-neutral="slate|grey|stone"` keluarga semua abu-abu. Pasang dua yang terakhir di `<html>`;
+  di sebuah region hanya bersama `data-theme` (lihat [`USAGE.md`](USAGE.md) §0 dan §5b).
 - Skala breakpoint (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, sama dengan utilitas
   `src/components/breakpoints.css`) tersedia untuk app-mu dalam dua bahasa: `import { breakpoints }
   from '@cahyo-dimas/freeday/breakpoints'` untuk JS (`matchMedia`, varian utility), dan `@import

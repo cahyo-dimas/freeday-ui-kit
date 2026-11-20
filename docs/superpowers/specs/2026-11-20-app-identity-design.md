@@ -64,7 +64,7 @@ Locked, for the reason given:
 | Every `--color-*`, `--tone-*`, `--chart-*` | Colour reaches the app only through the `data-*` axes, because the axes are what the contrast gate tests. A hand-set colour token is untested. |
 | `--space-*`, `--control-*` | Spacing and control height carry the density axis and the 4px rhythm. |
 | `--text-*` (size scale), `--leading-*` | Control heights and table density are built on the size scale. A screen that wants large type uses `var(--text-xl)` and up in its own content CSS. |
-| `--radius-full`, `--bw-*`, `--focus-ring*` | Pills must stay pills; border width and the focus ring are accessibility contracts. |
+| `--radius-full`, `--bw`, `--focus-ring*` | Pills must stay pills; border width and the focus ring are accessibility contracts. |
 
 `app.identity.css` is the one file in an app where literal values (a font stack, `4px`, a shadow) are
 allowed, and only as values of owned tokens. Non-negotiable 1 ("no raw hex or px in app CSS") is
@@ -241,7 +241,7 @@ are computed once by a script and committed as literals; the build does no OKLCH
 | 900 | `#171b26` | `#1b1b1b` | `#1f1a15` |
 | 950 | `#0e111a` | `#111111` | `#15110c` |
 
-Relative luminance of every shade is within 1.5% of the slate shade it replaces. The first stone
+Relative luminance of every shade is within about 3.5% of the slate shade it replaces (measured extremes: grey 850 +3.3%, stone 950 +3.2%, stone 900 -2.0%). The first stone
 candidate used `C = min(0.85 × C_slate, 0.020)` for every shade. At 800 to 950 it read as brown on a
 dark surface, and the owner reviewed it in the playground in dark mode. The values above cap the
 chroma at 0.012 for those four shades (800, 850, 900, 950); the lighter shades keep the 0.020 cap.

@@ -145,7 +145,7 @@ Wide tables (many columns) need a wrapper for horizontal scroll: wrap `.fdy-tabl
 border/shadow shell). Without one of these wrappers, a wide table overflows its container instead
 of scrolling.
 
-### 3. Theming: 3 axes via `data-*` on the root
+### 3. Theming: 5 axes via `data-*` on the root
 - `data-theme="light|dark"` redefines the semantic tokens (bind it to your app's theme state).
   Works on **any ancestor**, not just the root: `<section data-theme="dark">` inverts that region
   and every component inside it follows (see [`USAGE.md`](USAGE.md) §5b).
@@ -153,7 +153,9 @@ of scrolling.
   This auto-applies only to Freeday's built-in controls (button, input, combo, etc.);
   custom/hand-built components must read `--control-h` themselves (e.g. `height: var(--control-h)`)
   to shrink or grow when `data-density` changes.
-- (roadmap) `data-style` for alternative visual variants.
+- `data-style="soft|glass"` picks the visual style, `data-primary` one of 18 primary palettes, and
+  `data-neutral="slate|grey|stone"` the family of every grey. Set the last two on `<html>`; on a
+  region only beside `data-theme` (see [`USAGE.md`](USAGE.md) §0 and §5b).
 - The breakpoint scale (`sm`/`md`/`lg`/`xl` = 600/960/1280/1920px, matching the
   `src/components/breakpoints.css` utilities) is available to your app in both languages: `import
   { breakpoints } from '@cahyo-dimas/freeday/breakpoints'` for JS (`matchMedia`, utility variants),

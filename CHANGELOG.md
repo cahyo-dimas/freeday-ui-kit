@@ -37,7 +37,18 @@ halaman docs kit, jadi keputusan tampilan sering tidak pernah diambil.
   di elemen mana pun untuk mengubah satu region. Yang benar: ramp `--primary-*` ikut berubah, tetapi
   token semantic yang membacanya dihitung di `:root` dan tidak ikut turun. Region bersarang butuh
   `data-theme` di elemen yang sama supaya token semantic dihitung ulang di sana. Dikoreksi di
-  `docs/index.html`, `tokens/build.mjs`, dan `USAGE.md` §5b, dan dijaga satu uji peramban.
+  `docs/index.html`, `tokens/build.mjs`, `USAGE.md` §5b, `COMPONENTS.md`, dan
+  `docs/agent-onboarding.md`, dan dijaga satu uji peramban.
+- **Di wrapper polos, sumbu hanya setengah berlaku.** Palet menggeser tinta label tetapi tidak
+  fill-nya; netral menggeser tinta tone, border, stripe, dan border danger tetapi tidak
+  permukaannya. Jadi jangan pasang sumbu di wrapper polos: pasang di `<html>`, atau di region
+  bersama `data-theme`.
+- **Batasan yang didokumentasikan:** island terbalik (`data-theme` di sebuah region) di app dengan
+  palet atau netral bukan-default harus mengulang `data-primary` dan `data-neutral` di elemen yang
+  sama. Tanpa itu, label di atas fill oranye, amber, lime, hijau, emerald, teal, atau cyan jatuh ke
+  sekitar 2 sampai 2,8:1. Sudah begitu sejak 3.20.0; akar masalahnya dicatat di `NEXT-UP.md`.
+- `noir` kini mengikuti netral yang dipilih, dan nama token `--bw` serta `--dur-base` di docs
+  dikoreksi.
 
 ### Catatan
 - **Tanpa `data-neutral`, keluarannya tidak berubah.** Setiap token bernilai sama dengan 3.20.0 di
