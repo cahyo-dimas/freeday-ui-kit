@@ -236,3 +236,25 @@ test('neutralDarkKeys: skips a light-block key whose base declares no dark and w
   const lightSet = new Map([['--y', '#333333']]);
   assert.deepEqual(neutralDarkKeys(base, variant, lightSet), []);
 });
+
+/* The declarations of the first block opened by `selector` (indent-agnostic: the system-dark twins sit inside a media query). */
+const declsOf = (css, selector) => {
+  const at = css.indexOf(`${selector} {`);
+  assert.notEqual(at, -1, `no block for ${selector}`);
+  const body = css.slice(css.indexOf('{', at) + 1, css.indexOf('}', at));
+  return Object.fromEntries([...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(d => [d[1], d[2].trim()]));
+};
+
+test('the system-dark twin carries exactly the declarations of the explicit dark block', () => {
+  const css = buildTokensCss(TOKENS);
+  const pairs = [
+    [':root:not([data-theme="light"])', '[data-theme="dark"]'],
+    ...['grey', 'stone'].map(n => [
+      `:root:not([data-theme="light"])[data-neutral="${n}"]`,
+      `[data-theme="dark"][data-neutral="${n}"]`,
+    ]),
+  ];
+  for (const [system, explicit] of pairs) {
+    assert.deepEqual(declsOf(css, system), declsOf(css, explicit), `${system} drifted from ${explicit}`);
+  }
+});

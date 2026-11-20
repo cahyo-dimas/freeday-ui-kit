@@ -5,7 +5,9 @@
  * RESOLVED value, so re-pointing an alias ramp lower in the tree changes nothing a component reads.
  * The axis takes effect on a nested element only when that element also carries data-theme, whose
  * selectors re-declare the semantics there. Until 3.21.0 the docs said a palette worked on any
- * wrapper; this pins what is true so the claim cannot drift back. */
+ * wrapper; this pins what is true so the claim cannot drift back. A bare wrapper half-applies: the
+ * palette's label ink (--color-on-primary) is declared in the palette block and moves, while the
+ * fill does not. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dirname, join } from 'node:path';
@@ -26,6 +28,8 @@ test('an axis on a nested element needs data-theme beside it', { skip }, async (
     const rootPrimary = await read('root-probe', '--color-primary');
     assert.equal(await read('primary-bare', '--color-primary'), rootPrimary,
       'a bare nested data-primary does not re-brand; if this now differs, update USAGE.md §5b and COMPONENTS.md');
+    assert.notEqual(await read('primary-bare', '--color-on-primary'), await read('root-probe', '--color-on-primary'),
+      'a bare nested data-primary half-applies: the label ink moves while the fill does not');
     assert.notEqual(await read('primary-themed', '--color-primary'), rootPrimary,
       'data-primary with data-theme on the same element re-brands that region');
 

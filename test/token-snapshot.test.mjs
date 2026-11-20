@@ -1,7 +1,8 @@
 /* The default output does not move. Captured from 3.20.0 before the neutral axis existed: every
  * value a consumer could observe without data-neutral, in light and dark, soft and glass, and
- * what each primary palette changes. New tokens are allowed; a captured one that resolves to
- * anything else is a regression for every app that never opted in. */
+ * what each primary palette changes. New tokens are allowed in the soft/glass maps; a palette's
+ * diff must match exactly, and a captured token that resolves to anything else is a regression
+ * for every app that never opted in. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
