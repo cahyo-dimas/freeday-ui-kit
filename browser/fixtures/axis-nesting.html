@@ -1,0 +1,17 @@
+<!doctype html>
+<!-- data-theme="light" is pinned for the same reason as theme-subtree.html: without it the root
+     follows prefers-color-scheme and the probes compare across themes. -->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Freeday: axes on a nested element</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <div id="root-probe"></div>
+  <div data-primary="teal"><div id="primary-bare"></div></div>
+  <div data-primary="teal" data-theme="light"><div id="primary-themed"></div></div>
+  <div data-neutral="stone"><div id="neutral-bare"></div></div>
+  <div data-neutral="stone" data-theme="light"><div id="neutral-themed"></div></div>
+</body>
+</html>

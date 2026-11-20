@@ -527,8 +527,9 @@ without a reload.
 
 **Primary palette: `data-primary`.** 18 options — `azure` (the default, and what you get with no
 attribute) · `sky` `blue` `indigo` `violet` `purple` `fuchsia` `pink` `rose` · `orange` `amber`
-`yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it anywhere `data-theme` works,
-including on a wrapper to re-brand one region:
+`yellow` `lime` `green` `emerald` `teal` `cyan` · `noir`. Set it on `<html>`. To re-brand one
+region, put it on that region together with `data-theme`: the palette only reaches the semantic
+tokens where `data-theme` re-declares them, so on a bare wrapper it changes nothing.
 
 ```html
 <html data-primary="emerald" data-theme="dark">

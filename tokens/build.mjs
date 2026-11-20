@@ -387,8 +387,10 @@ export function buildNeutralsCss(tokens) {
  * semantics — so which shade is the fill, which is hover and which is the soft wash is stated once,
  * in `color.primary*`, and a palette that got one of them wrong is not a shape this can produce.
  *
- * Scoping follows `data-theme` exactly, and for the same reasons: the selector is bare, so a palette
- * can be set on any ancestor and re-brand one region; the dark scopes are emitted only for the keys
+ * Scoping follows `data-theme` exactly, and for the same reasons: the selector is bare. A palette
+ * re-brands where the semantics are resolved, which is <html>, or a nested element that ALSO carries
+ * data-theme (browser/axis-nesting.mjs pins both); on a bare wrapper the alias changes and nothing
+ * reads it. The dark scopes are emitted only for the keys
  * that actually DIFFER in dark (the label ink, and the shifted aliases), because restating the
  * unchanged ones is how two blocks drift apart; and a `[data-theme="light"]` re-assert follows, so a
  * light island inside a dark region wins back. */
