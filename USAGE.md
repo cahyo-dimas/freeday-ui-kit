@@ -323,19 +323,19 @@ the work for 15 common web-app archetypes:
 
 | # | Archetype | Freeday gives you | You build |
 |---|---|---|---|
-| 1 | **Dashboard / admin** | `.fdy-app` · `.fdy-page` · `.fdy-stats`/`.fdy-stat` · `.fdy-card` · `data-fdy-chart` · `.fdy-datatable` | nothing — fully covered, see [`docs/reference-screen.html`](docs/reference-screen.html) |
+| 1 | **Dashboard / admin** | `.fdy-app` · `.fdy-page` · `.fdy-stats`/`.fdy-stat` · `.fdy-card` · `data-fdy-chart` · `.fdy-datatable` | nothing, fully covered; see [`docs/reference-screen.html`](docs/reference-screen.html) |
 | 2 | **Master-detail** | list = `.fdy-datatable` + `.fdy-table__row--activatable`; detail = `.fdy-card` + `.fdy-dl` + `.fdy-tabs`; narrow screens = `.fdy-drawer` | the two-pane split |
 | 3 | **Kanban board** | cards = `.fdy-card--interactive` / `--button`; labels = `.fdy-chip--tone-N`; counts = `.fdy-badge` | the column grid **and** drag-and-drop (no DnD in the kit) |
 | 4 | **Feed / timeline** | `.fdy-timeline` (event feed) · `.fdy-card` (items) · `.fdy-avatar` · `.fdy-skeleton` while loading | the column widths |
 | 5 | **Chat / messaging** | conversation list = `.fdy-nav`; unread = `.fdy-badge-ov`; composer = `.fdy-textarea` + `.fdy-btn`; `.fdy-avatar` | the bubbles and the scroll-to-bottom behaviour |
 | 6 | **Canvas / whiteboard** | chrome only: `.fdy-appbar` · `.fdy-btn-group` · `.fdy-fab` · `.fdy-menu` · `.fdy-tooltip` | the canvas itself |
-| 7 | **Calendar / scheduler** | range filter = `.fdy-daterange`; events = `.fdy-chip` / `.fdy-badge`; day detail = `.fdy-drawer` | the month grid — there is **no** calendar-view component (`.fdy-cal__grid` / `.fdy-cal__day` are datepicker internals, not public layout) |
+| 7 | **Calendar / scheduler** | range filter = `.fdy-daterange`; events = `.fdy-chip` / `.fdy-badge`; day detail = `.fdy-drawer` | the month grid: there is **no** calendar-view component (`.fdy-cal__grid` / `.fdy-cal__day` are datepicker internals, not public layout) |
 | 8 | **Document editor** | `.fdy-app` shell · outline = `.fdy-tree` · `.fdy-toolbar` + `.fdy-btn-group` · `.fdy-kbd` for shortcuts | the editing surface |
 | 9 | **Media / streaming** | tiles = `.fdy-card` · rails = `.fdy-carousel` · `.fdy-skeleton` · playback = `.fdy-progress` | the poster grid |
-| 10 | **E-commerce account** | `.fdy-page-section` · `.fdy-dl` · orders = `.fdy-table` · status = `.fdy-badge` · `.fdy-accordion` | nothing much — mostly covered |
+| 10 | **E-commerce account** | `.fdy-page-section` · `.fdy-dl` · orders = `.fdy-table` · status = `.fdy-badge` · `.fdy-accordion` | nothing much, mostly covered |
 | 11 | **Analytics / BI** | `.fdy-stats` · `data-fdy-chart` (sparkline/bar/line/area/donut, palette `--chart-1`…`8`) · `.fdy-filterbar` · `.fdy-daterange` | the tile grid |
 | 12 | **Point of sale** | `.fdy-app--nav-collapsed` for screen space · product tiles = `.fdy-card--button` · cart = `.fdy-table` + `.fdy-table__num` · totals = `.fdy-stat` · `.fdy-fab` to pay · `data-density="compact"` | the two-column till layout |
-| 13 | **Wizard / multi-step** | `.fdy-stepper` · `.fdy-step-panels` · `.fdy-step-nav` · `.fdy-form-grid` | nothing — fully covered |
+| 13 | **Wizard / multi-step** | `.fdy-stepper` · `.fdy-step-panels` · `.fdy-step-nav` · `.fdy-form-grid` | nothing, fully covered |
 | 14 | **File manager** | folders = `.fdy-tree` · upload = `.fdy-dropzone` + `.fdy-filelist` + `.fdy-file` · actions = `.fdy-menu` · `.fdy-breadcrumb` | the icon grid |
 | 15 | **Community / forum** | threads = `.fdy-card` · `.fdy-avatar--tone-N` · tags = `.fdy-chip` · `.fdy-pagination` · replies = `.fdy-timeline` | the thread list layout |
 
