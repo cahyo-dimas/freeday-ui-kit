@@ -141,7 +141,7 @@ for (const s of SURF) add('--color-accent', s, AA_UI, `accent on ${s}`);
 /** Every required pairing that fails in `theme`, as readable lines. */
 const reqFails = (theme) => req
   .map((p) => ({ p, r: R(p.fg, p.bg, theme) }))
-  .filter(({ p, r }) => r < p.min)
+  .filter(({ p, r }) => !(r >= p.min))
   .map(({ p, r }) => `${p.label} = ${r.toFixed(2)}:1 (need ${p.min}:1)`);
 
 for (const [themeName, theme] of Object.entries(THEMES)) {
@@ -163,7 +163,7 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 /** Tones whose ink falls under AA on their own tint in `theme`. */
 const toneFails = (theme) => [1, 2, 3, 4, 5, 6, 7, 8]
   .map((i) => ({ i, r: ratio(parse(theme[`--tone-${i}-ink`], theme), parse(theme[`--tone-${i}-bg`], theme)) }))
-  .filter(({ r }) => r < AA_TEXT)
+  .filter(({ r }) => !(r >= AA_TEXT))
   .map(({ i, r }) => `tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
 
 for (const [themeName, theme] of Object.entries(THEMES)) {
@@ -217,7 +217,7 @@ const paletteFails = (theme) => {
   const fails = [];
   const check = (fg, bg, min, label) => {
     const r = R(fg, bg, theme);
-    if (r < min) fails.push(`${label}: ${r.toFixed(2)} < ${min}`);
+    if (!(r >= min)) fails.push(`${label}: ${r.toFixed(2)} < ${min}`);
   };
   check('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
   check('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
@@ -294,7 +294,7 @@ const glassFails = (theme) => {
     const bg = over(parse(theme['--color-surface-raised'], theme), parse(ground, theme));
     const check = (fg, min, label) => {
       const r = ratio(parse(theme[fg], theme), bg);
-      if (r < min) fails.push(`${label} over ${groundName}: ${r.toFixed(2)} < ${min}`);
+      if (!(r >= min)) fails.push(`${label} over ${groundName}: ${r.toFixed(2)} < ${min}`);
     };
     check('--color-text', AA_TEXT, 'body text');
     check('--color-text-muted', AA_TEXT, 'muted text');
@@ -357,16 +357,26 @@ for (const n of NEUTRALS) {
       assert.deepEqual([...reqFails(theme), ...toneFails(theme)], [], `neutral ${n} (${themeName}) fails:`);
     });
   }
+  /* Order follows specificity, not source order: the light neutral block (0,1,0) must not override
+     glass dark (0,2,0), so glass dark is spread after it. */
   const glassThemes = {
     LIGHT: { ...base, ...glassL, ...nl },
-    DARK: { ...base, ...darkVars, ...glassL, ...glassD, ...nl, ...nd },
+    DARK: { ...base, ...darkVars, ...glassL, ...nl, ...glassD, ...nd },
   };
+  const glassSlate = { LIGHT: GLASS_LIGHT, DARK: GLASS_DARK };
   for (const [themeName, theme] of Object.entries(glassThemes)) {
     test(`WCAG contrast: neutral ${n}, glass (${themeName}) holds over any ground`, () => {
+      assert.notDeepEqual(parse(theme['--color-text'], theme), parse(glassSlate[themeName]['--color-text'], glassSlate[themeName]),
+        `neutral ${n} glass (${themeName}) must change the resolved text colour, or this re-tests slate`);
       assert.deepEqual(glassFails(theme), [], `neutral ${n} glass (${themeName}) fails:`);
     });
   }
   test(`WCAG contrast: neutral ${n} under every palette`, () => {
+    for (const [themeName, theme] of Object.entries(themes)) {
+      const slate = themeName === 'LIGHT' ? base : dark;
+      assert.notDeepEqual(parse(theme['--color-text'], theme), parse(slate['--color-text'], slate),
+        `neutral ${n} (${themeName}) must change the resolved text colour, or the palette sweep re-tests slate`);
+    }
     const fails = [];
     for (const p of PALETTES) {
       const pl = paletteScope(p, '');
