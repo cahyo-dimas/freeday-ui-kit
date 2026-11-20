@@ -325,22 +325,41 @@ export function buildStylesCss(flat) {
 
 /** The token set with the neutral alias pointed at `ramp`. Nothing else differs. */
 export function neutralVariant(tokens, ramp) {
+  if (tokens.neutral === undefined) throw new Error('$neutrals is set but tokens.neutral (the alias ramp) is missing');
   const variant = structuredClone(tokens);
   for (const s of NEUTRAL_SHADES) variant.neutral[s] = { $value: `{${ramp}.${s}}` };
   return variant;
 }
 
-/** name -> { light, dark } for every declaration :root and the dark scope would carry, mixes
- *  flattened, dark falling back to light, plus every channel triple. */
+/** @typedef {{ light: string, dark: string, declaresDark: boolean }} ResolvedLeaf */
+
+/** name -> ResolvedLeaf for every declaration :root and the dark scope would carry, mixes
+ *  flattened, dark falling back to light, plus every channel triple. `declaresDark` records
+ *  whether the base stylesheet emits a dark declaration for the key at all.
+ *  @param {object} tokens
+ *  @returns {Map<string, ResolvedLeaf>} */
 function resolvedLeaves(tokens) {
   const flat = flattenMixes(flatten(tokens));
   const index = valueIndex(flat);
-  const out = new Map(flat.map(t => [t.name, { light: String(t.value), dark: String(t.dark ?? t.value) }]));
+  const out = new Map(flat.map(t => [t.name, { light: String(t.value), dark: String(t.dark ?? t.value), declaresDark: t.dark !== undefined }]));
   for (const n of wantedTriples(tokens, flat)) {
     const triple = hexToTriple(hexOfName(n, index));
-    out.set(`${n}-rgb`, { light: triple, dark: triple });
+    out.set(`${n}-rgb`, { light: triple, dark: triple, declaresDark: false });
   }
   return out;
+}
+
+/** The entries a neutral's dark blocks must restate.
+ *  @param {Map<string, ResolvedLeaf>} base default token set
+ *  @param {Map<string, ResolvedLeaf>} variant token set with the neutral applied
+ *  @param {Map<string, string>} lightSet key -> light value, for keys the neutral light block sets
+ *  @returns {Array<[string, ResolvedLeaf]>} */
+export function neutralDarkKeys(base, variant, lightSet) {
+  return [...variant].filter(([k, v]) => {
+    const baseLeaf = base.get(k);
+    const shown = lightSet.has(k) ? lightSet.get(k) : baseLeaf.dark;
+    return v.dark !== shown || (lightSet.has(k) && baseLeaf.declaresDark);
+  });
 }
 
 /* The neutral axis. A neutral is the whole token set with the alias re-pointed, so the block it
@@ -350,9 +369,14 @@ function resolvedLeaves(tokens) {
  * the axis without anyone remembering to add it.
  *
  * Scoping is the primary axis's, for the same reasons, with one rule added for what the light
- * block already set. On a dark element both the theme's dark block and this light block match at
- * (0,1,0), and this one comes later, so for a key it sets the light value would win in dark. The
- * dark block therefore restates every key whose dark value differs from what would otherwise show.
+ * block already set. Two cases make the light block win in dark where it should not:
+ *  - the bare `[data-theme="dark"]` base block is (0,1,0) and earlier in source, so this light
+ *    block (0,1,0, later) overrides it;
+ *  - the system-dark base rule `:root:not([data-theme="light"])` is (0,2,0) and OUTRANKS this light
+ *    block (0,1,0), so a key whose base declares a dark value shows the default's dark value.
+ * The dark block therefore restates every key whose dark value differs from what would otherwise
+ * show, plus every light-block key whose base declares a dark value (see neutralDarkKeys). The
+ * `[data-theme="light"]` back-light block mirrors the primary axis and is belt-and-braces here.
  *
  * Like data-primary, this takes effect where the semantics are resolved: on <html>, or on a nested
  * element that also carries data-theme (USAGE.md §5b). */
@@ -364,9 +388,12 @@ export function buildNeutralsCss(tokens) {
   for (const [name, n] of Object.entries(spec)) {
     if (name.startsWith('_')) continue;
     const variant = resolvedLeaves(neutralVariant(tokens, n.ramp));
+    for (const k of variant.keys()) {
+      if (!base.has(k)) throw new Error(`neutral "${name}" resolves --${k}, which the default does not`);
+    }
     const light = [...variant].filter(([k, v]) => base.get(k).light !== v.light);
     const lightSet = new Map(light.map(([k, v]) => [k, v.light]));
-    const dark = [...variant].filter(([k, v]) => v.dark !== (lightSet.has(k) ? lightSet.get(k) : base.get(k).dark));
+    const dark = neutralDarkKeys(base, variant, lightSet);
     const sel = `[data-neutral="${name}"]`;
     if (light.length > 0) out.push(`${sel} {\n${light.map(([k, v]) => decl(k, v.light)).join('\n')}\n}`);
     if (dark.length > 0) {

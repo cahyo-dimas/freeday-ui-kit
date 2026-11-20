@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss, buildNeutralsCss, NEUTRAL_SHADES, evalMix, flattenMixes } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss, buildNeutralsCss, neutralDarkKeys, NEUTRAL_SHADES, evalMix, flattenMixes } from '../tokens/build.mjs';
 
 test('bundleFullCss: tokens then components, both present', () => {
   const out = bundleFullCss('/* tok */\n:root{--a:1}', '/* comp */\n.fdy-x{color:var(--a)}');
@@ -221,4 +221,18 @@ test('noir reaches its channels through the neutral alias', () => {
   const rgb = Object.entries(noir).filter(([k]) => /^--primary-\d+-rgb$/.test(k));
   assert.ok(rgb.length > 0, 'noir emits no primary triples, the selector or the palette changed');
   for (const [k, v] of rgb) assert.match(v, /^var\(--neutral-\d+-rgb\)$/, `${k} is a literal, so it stays slate under any neutral`);
+});
+
+test('neutralDarkKeys: restates a light-block key whose base declares dark (system dark outranks the light block)', () => {
+  const base = new Map([['--x', { light: '#111111', dark: '#222222', declaresDark: true }]]);
+  const variant = new Map([['--x', { light: '#333333', dark: '#333333', declaresDark: false }]]);
+  const lightSet = new Map([['--x', '#333333']]);
+  assert.deepEqual(neutralDarkKeys(base, variant, lightSet).map(([k]) => k), ['--x']);
+});
+
+test('neutralDarkKeys: skips a light-block key whose base declares no dark and whose dark equals its light', () => {
+  const base = new Map([['--y', { light: '#111111', dark: '#111111', declaresDark: false }]]);
+  const variant = new Map([['--y', { light: '#333333', dark: '#333333', declaresDark: false }]]);
+  const lightSet = new Map([['--y', '#333333']]);
+  assert.deepEqual(neutralDarkKeys(base, variant, lightSet), []);
 });
