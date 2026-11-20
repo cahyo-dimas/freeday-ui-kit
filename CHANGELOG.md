@@ -45,8 +45,8 @@ halaman docs kit, jadi keputusan tampilan sering tidak pernah diambil.
   bersama `data-theme`.
 - **Batasan yang didokumentasikan:** island terbalik (`data-theme` di sebuah region) di app dengan
   palet atau netral bukan-default harus mengulang `data-primary` dan `data-neutral` di elemen yang
-  sama. Tanpa itu, label di atas fill oranye, amber, lime, hijau, emerald, teal, atau cyan jatuh ke
-  sekitar 2 sampai 2,8:1. Sudah begitu sejak 3.20.0; akar masalahnya dicatat di `NEXT-UP.md`.
+  sama. Tanpa itu, label di atas fill oranye, amber, lime, hijau, emerald, teal, atau cyan jatuh ke kisaran
+  2 sampai 3,8:1 (lime 1,98:1 dan oranye 2,80:1 di island gelap; island terang di app gelap 3,09 sampai 3,77:1). Sudah begitu sejak 3.20.0; akar masalahnya dicatat di `NEXT-UP.md`.
 - `noir` kini mengikuti netral yang dipilih, dan nama token `--bw` serta `--dur-base` di docs
   dikoreksi.
 
@@ -692,7 +692,7 @@ perbaikan ini terdengar jauh lebih mahal daripada yang ternyata.
 
 ### Catatan
 - `FdyAutocomplete` dan `FdyCfl` **di luar** aturan ini: keduanya merender `<input>` asli, jadi
-  `required` native yang cocok. Belum ada prop yang mengeksposnya, dan atribut tak dikenal jatuh ke
+  `required` native yang cocok. Belum ada prop yang mengeksposnya, dan atribut tak dikenal jatuh ke kisaran
   AKAR wrapper bukan ke input di dalamnya, jadi hari ini keduanya tak bisa dijadikan wajib di stack
   mana pun. Dicatat terbuka di `NEXT-UP.md` alih-alih ditutup separuh: mengalirkannya lewat jalur
   kit akan memberi satu field dua sumber kebenaran.
@@ -1118,7 +1118,7 @@ mentok di iOS 15.
 
 Perbaikan pertama yang dicoba justru membuktikan sebabnya. Pola cadangan yang biasa dipakai orang,
 nilai statis dulu lalu `color-mix()` sesudahnya, tidak bekerja ketika deklarasinya memuat `var()`:
-deklarasi itu sah saat parse dan baru gagal saat computed-value, dan di jalur itu properti jatuh ke
+deklarasi itu sah saat parse dan baru gagal saat computed-value, dan di jalur itu properti jatuh ke kisaran
 nilai initial, bukan ke baris sebelumnya. Untuk `border-color` nilai initial itu `currentColor`,
 yaitu hitam. Keluhan tentang garis hitam tebal di mana-mana itulah bukti mekanismenya. Jadi
 `color-mix()`-nya yang dibuang.

@@ -245,8 +245,8 @@ wrapper: it half-applies. A palette moves the label ink (`--color-on-primary`) b
 orange, amber, lime, green, emerald, teal and cyan leave dark ink on the azure fill (2.87:1 for orange); a neutral moves
 the tone inks, borders, stripe and danger border but not the surfaces. An inverted island inside an app
 with a non-default look must repeat `data-primary` and `data-neutral` beside its `data-theme`.
-Otherwise the island keeps the app's fill but takes the default label ink, and white labels on an
-orange fall to about 2:1.
+Otherwise the island keeps the app's fill but takes the default label ink, and white labels on
+those fills drop to between 2:1 and 3.8:1 (lime 1.98:1 and orange 2.80:1 in a dark island).
 
 ## 6. Density: `compact` for data-dense screens
 

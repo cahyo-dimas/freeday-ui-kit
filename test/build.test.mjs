@@ -255,6 +255,8 @@ test('the system-dark twin carries exactly the declarations of the explicit dark
     ]),
   ];
   for (const [system, explicit] of pairs) {
-    assert.deepEqual(declsOf(css, system), declsOf(css, explicit), `${system} drifted from ${explicit}`);
+    const [sys, exp] = [declsOf(css, system), declsOf(css, explicit)];
+    assert.ok(Object.keys(sys).length > 0 && Object.keys(exp).length > 0, `empty block for ${system} or ${explicit}`);
+    assert.deepEqual(sys, exp, `${system} drifted from ${explicit}`);
   }
 });
