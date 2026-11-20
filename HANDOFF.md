@@ -11,8 +11,7 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.21.0`, disiapkan dan menunggu tag** (2026-11-20). Isinya dalam satu kalimat: **sebuah app
-memutuskan tampilannya sendiri.** Sumbu kelima `data-neutral` (`slate` bawaan, `grey`, `stone`)
+**`3.21.0`, disiapkan dan menunggu tag** (2026-11-20). Sebuah app kini memutuskan tampilannya sendiri. Sumbu kelima `data-neutral` (`slate` bawaan, `grey`, `stone`)
 berdampingan dengan `data-primary`, `data-style`, `data-density`, dan `data-theme`. Kontrak
 identitas, apa yang dimiliki app dan brief yang diisi sebelum layar pertama, ada di `USAGE.md` §0;
 tabel komposisi 15 arketipe ada di `USAGE.md` §7b. Tanpa `data-neutral` keluarannya sama dengan

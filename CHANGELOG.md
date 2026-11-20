@@ -19,7 +19,7 @@ halaman docs kit, jadi keputusan tampilan sering tidak pernah diambil.
 - **`data-neutral="slate|grey|stone"`, sumbu kelima.** Ia mengarahkan ulang ramp alias `--neutral-*`
   yang dibaca setiap abu-abu: permukaan, teks, border, kontrol, dan tinta `on-*`. `slate` tetap
   bawaan. `grey` tanpa rona; `stone` hangat. Keduanya mempertahankan kecerahan slate di tiap shade,
-  jadi rasio kontras bergeser paling banyak beberapa persepuluh. Gerbang kontras mengukur semua
+  jadi rasio kontras bergeser paling banyak sekitar 0,1 (terukur: grey 0,04, stone 0,11). Gerbang kontras mengukur semua
   pasangan di kedua tema, `soft` dan `glass`, dan di bawah 18 palet. Ramp alias kini punya 14 shade
   karena `slate` mendapat shade `850` (`#1c2130`, nilai `--color-border-muted` gelap yang dulu
   literal).

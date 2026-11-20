@@ -220,7 +220,7 @@ already checks the classes named in `reference/README.md`; that check moves with
 ## 3. Neutral ramp values
 
 `grey` and `stone` keep slate's lightness at every shade, so every contrast ratio the gate measures
-for slate moves by at most a few hundredths. Method: convert each slate shade to OKLCH, keep `L`,
+for slate moves by about a tenth at most (measured: 0.04 for grey, 0.11 for stone). Method: convert each slate shade to OKLCH, keep `L`,
 set `C = 0` for `grey`, and for `stone` set hue 70 with `C = min(0.85 × C_slate, 0.020)`. The values
 are computed once by a script and committed as literals; the build does no OKLCH maths.
 

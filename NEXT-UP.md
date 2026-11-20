@@ -56,7 +56,7 @@ pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
 | C | **Server MCP** yang dikirim sebagai `bin` di paket, dengan tool `check_identity` yang memeriksa app terhadap kontrak identitas | preset B ada, dan agen konsumen sering melanggar kontrak tanpa ada yang memeriksa |
 
 **Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel
-pihak ketiga. Yang diambil polanya, bukan tampilannya. Tiap fitur dibrainstorm setelah branch
+pihak ketiga. Yang diambil hanya polanya. Tiap fitur dibrainstorm setelah branch
 `feat/app-identity` digabung. Kit memegang interaksi, aksesibilitas, dan kontrak event; app memegang
 data dan aturan bisnis. Pembungkus Vue, React, dan Blazor mengikuti tiap fitur.
 
