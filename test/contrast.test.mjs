@@ -7,6 +7,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { buildTokensCss } from '../tokens/build.mjs';
+import { block } from './token-scopes.mjs';
 
 const css = buildTokensCss(JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url))));
 
@@ -137,12 +138,15 @@ add('--color-primary-strong', '--color-surface-3', AA_UI, 'primary ink as an ico
 for (const s of SURF) add('--color-accent', s, AA_UI, `accent on ${s}`);
 
 // --- assert ---------------------------------------------------------------
+/** Every required pairing that fails in `theme`, as readable lines. */
+const reqFails = (theme) => req
+  .map((p) => ({ p, r: R(p.fg, p.bg, theme) }))
+  .filter(({ p, r }) => r < p.min)
+  .map(({ p, r }) => `${p.label} = ${r.toFixed(2)}:1 (need ${p.min}:1)`);
+
 for (const [themeName, theme] of Object.entries(THEMES)) {
   test(`WCAG contrast: ${themeName}`, () => {
-    for (const p of req) {
-      const r = R(p.fg, p.bg, theme);
-      assert.ok(r >= p.min, `${themeName}: ${p.label} = ${r.toFixed(2)}:1 (need ${p.min}:1)`);
-    }
+    assert.deepEqual(reqFails(theme), [], `${themeName} fails:`);
   });
 }
 
@@ -156,14 +160,15 @@ for (const [themeName, theme] of Object.entries(THEMES)) {
 // than the colour: the tint is computed at build time and ROUNDED to 8 bits now, so re-deriving it
 // would clear AA on a value no browser ever paints. The rounding moves a ratio by <0.01, well inside
 // the headroom every tone has, but the point is that the gate reads what ships.
+/** Tones whose ink falls under AA on their own tint in `theme`. */
+const toneFails = (theme) => [1, 2, 3, 4, 5, 6, 7, 8]
+  .map((i) => ({ i, r: ratio(parse(theme[`--tone-${i}-ink`], theme), parse(theme[`--tone-${i}-bg`], theme)) }))
+  .filter(({ r }) => r < AA_TEXT)
+  .map(({ i, r }) => `tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
+
 for (const [themeName, theme] of Object.entries(THEMES)) {
   test(`WCAG contrast, categorical tones: ${themeName}`, () => {
-    for (let i = 1; i <= 8; i++) {
-      const bg = parse(theme[`--tone-${i}-bg`], theme);
-      const fg = parse(theme[`--tone-${i}-ink`], theme);
-      const r = ratio(fg, bg);
-      assert.ok(r >= AA_TEXT, `${themeName}: tone-${i} = ${r.toFixed(2)}:1 (need ${AA_TEXT}:1)`);
-    }
+    assert.deepEqual(toneFails(theme), [], `${themeName} tones fail:`);
   });
 }
 
@@ -207,6 +212,29 @@ test('every palette is actually emitted', () => {
   }
 });
 
+/** The palette contract (see the comment above `req` for each threshold), failing pairs only. */
+const paletteFails = (theme) => {
+  const fails = [];
+  const check = (fg, bg, min, label) => {
+    const r = R(fg, bg, theme);
+    if (r < min) fails.push(`${label}: ${r.toFixed(2)} < ${min}`);
+  };
+  check('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
+  check('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
+  /* The palette axis is where the ink threshold has teeth: the generic pairing above only ever
+     measured azure. Thresholds and the surface-3 reasoning are explained where they are added
+     to `req`. */
+  check('--color-primary-strong', '--color-surface', AA_TEXT, 'primary ink on surface');
+  check('--color-primary-strong', '--color-surface-2', AA_TEXT, 'primary ink on surface-2');
+  check('--color-primary-strong', '--color-surface-3', AA_UI, 'primary ink as an icon on surface-3');
+  check('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
+  for (const s of SURF) {
+    check('--color-primary-strong', { soft: '--color-primary-soft', on: s }, AA_TEXT,
+      `primary-strong on primary-soft/${s.replace('--color-surface', 'surf')}`);
+  }
+  return fails;
+};
+
 for (const name of PALETTES) {
   /* Cascade order, not convenience order. The palette blocks are emitted AFTER the theme blocks and
      match at the same specificity (0,1,0), so a palette's `--color-on-primary` wins over the
@@ -218,24 +246,7 @@ for (const name of PALETTES) {
 
   for (const [themeName, theme] of [['LIGHT', light], ['DARK', dark]]) {
     test(`WCAG contrast: palette ${name} (${themeName})`, () => {
-      const fails = [];
-      const check = (fg, bg, min, label) => {
-        const r = R(fg, bg, theme);
-        if (r < min) fails.push(`${label}: ${r.toFixed(2)} < ${min}`);
-      };
-      check('--color-on-primary', '--color-primary', AA_TEXT, 'primary button label');
-      check('--color-primary', '--color-surface', AA_UI, 'primary fill vs surface');
-      /* The palette axis is where the ink threshold has teeth: the generic pairing above only ever
-         measured azure. Thresholds and the surface-3 reasoning are explained where they are added
-         to `req`. */
-      check('--color-primary-strong', '--color-surface', AA_TEXT, 'primary ink on surface');
-      check('--color-primary-strong', '--color-surface-2', AA_TEXT, 'primary ink on surface-2');
-      check('--color-primary-strong', '--color-surface-3', AA_UI, 'primary ink as an icon on surface-3');
-      check('--focus-ring', '--color-surface', AA_UI, 'focus ring on surface');
-      for (const s of SURF) {
-        check('--color-primary-strong', { soft: '--color-primary-soft', on: s }, AA_TEXT,
-          `primary-strong on primary-soft/${s.replace('--color-surface', 'surf')}`);
-      }
+      const fails = paletteFails(theme);
       assert.deepEqual(fails, [], `palette "${name}" (${themeName}) fails its contract:\n  ` + fails.join('\n  '));
     });
   }
@@ -276,19 +287,25 @@ test('the glass scope actually resolves', () => {
  * another panel; fail either and the kit is quietly relying on a background it does not control. */
 const GROUNDS = { black: '#000000', white: '#ffffff' };
 
+/** Glass ink that does not hold over a black or a white ground in `theme`. */
+const glassFails = (theme) => {
+  const fails = [];
+  for (const [groundName, ground] of Object.entries(GROUNDS)) {
+    const bg = over(parse(theme['--color-surface-raised'], theme), parse(ground, theme));
+    const check = (fg, min, label) => {
+      const r = ratio(parse(theme[fg], theme), bg);
+      if (r < min) fails.push(`${label} over ${groundName}: ${r.toFixed(2)} < ${min}`);
+    };
+    check('--color-text', AA_TEXT, 'body text');
+    check('--color-text-muted', AA_TEXT, 'muted text');
+    check('--color-primary-strong', AA_TEXT, 'primary-strong');
+  }
+  return fails;
+};
+
 for (const [name, theme] of [['LIGHT', GLASS_LIGHT], ['DARK', GLASS_DARK]]) {
   test(`WCAG contrast: glass (${name}) holds over any ground`, () => {
-    const fails = [];
-    for (const [groundName, ground] of Object.entries(GROUNDS)) {
-      const bg = over(parse(theme['--color-surface-raised'], theme), parse(ground, theme));
-      const check = (fg, min, label) => {
-        const r = ratio(parse(theme[fg], theme), bg);
-        if (r < min) fails.push(`${label} over ${groundName}: ${r.toFixed(2)} < ${min}`);
-      };
-      check('--color-text', AA_TEXT, 'body text');
-      check('--color-text-muted', AA_TEXT, 'muted text');
-      check('--color-primary-strong', AA_TEXT, 'primary-strong');
-    }
+    const fails = glassFails(theme);
     assert.deepEqual(fails, [], `glass (${name}) fails its contract:\n  ` + fails.join('\n  '));
   });
 }
@@ -302,6 +319,65 @@ test('soft is a real rule, not the absence of glass', () => {
   assert.deepEqual(Object.keys(soft).sort(), Object.keys(glass).sort(),
     'every key glass sets must be reset by soft, or a region cannot opt back out');
 });
+
+/* --- the neutral axis ------------------------------------------------------------------------
+ *
+ * Every pairing above, again under each neutral: the semantic set and the tones in both themes,
+ * glass over both grounds, and all 18 palettes. The ramps keep slate's lightness shade for shade,
+ * so these should pass with the same headroom; this is what says so. A failure here is fixed in the
+ * neutral's ramp, never by moving a threshold. */
+const TOKENS = JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url)));
+const DEFAULT_RAMP = TOKENS.neutral['0'].$value.match(/^\{(\w+)\.0\}$/)[1];
+const NEUTRALS = Object.keys(TOKENS.$neutrals).filter((k) => !k.startsWith('_') && TOKENS.$neutrals[k].ramp !== DEFAULT_RAMP);
+
+test('every non-default neutral is actually emitted', () => {
+  assert.ok(NEUTRALS.length >= 2, `expected grey and stone, found ${NEUTRALS.join(', ')}`);
+  for (const n of NEUTRALS) {
+    assert.ok(Object.keys(block(css, `[data-neutral="${n}"]`)).length >= 14,
+      `[data-neutral="${n}"] emitted nothing, a neutral that does not resolve is as green as one that passes`);
+  }
+});
+
+for (const n of NEUTRALS) {
+  const nl = block(css, `[data-neutral="${n}"]`);
+  const nd = block(css, `[data-theme="dark"][data-neutral="${n}"]`);
+  const glassL = styleVars('[data-style="glass"]');
+  const glassD = styleVars('[data-theme="dark"][data-style="glass"]');
+  const themes = {
+    LIGHT: { ...base, ...nl },
+    DARK: { ...base, ...darkVars, ...nl, ...nd },
+  };
+  for (const [themeName, theme] of Object.entries(themes)) {
+    test(`WCAG contrast: neutral ${n} (${themeName})`, () => {
+      /* surface-2 is an alias (`var(--neutral-50)`) in every neutral, so the raw strings are equal by
+         design; the neutral redefines the alias, and only the RESOLVED colour can differ. */
+      const slate = themeName === 'LIGHT' ? base : dark;
+      assert.notDeepEqual(parse(theme['--color-surface-2'], theme), parse(slate['--color-surface-2'], slate),
+        `neutral ${n} must change the resolved surface-2, or this re-tests slate`);
+      assert.deepEqual([...reqFails(theme), ...toneFails(theme)], [], `neutral ${n} (${themeName}) fails:`);
+    });
+  }
+  const glassThemes = {
+    LIGHT: { ...base, ...glassL, ...nl },
+    DARK: { ...base, ...darkVars, ...glassL, ...glassD, ...nl, ...nd },
+  };
+  for (const [themeName, theme] of Object.entries(glassThemes)) {
+    test(`WCAG contrast: neutral ${n}, glass (${themeName}) holds over any ground`, () => {
+      assert.deepEqual(glassFails(theme), [], `neutral ${n} glass (${themeName}) fails:`);
+    });
+  }
+  test(`WCAG contrast: neutral ${n} under every palette`, () => {
+    const fails = [];
+    for (const p of PALETTES) {
+      const pl = paletteScope(p, '');
+      const pd = paletteScope(p, '[data-theme="dark"]');
+      for (const [themeName, theme] of [['LIGHT', { ...base, ...nl, ...pl }], ['DARK', { ...base, ...darkVars, ...nl, ...nd, ...pl, ...pd }]]) {
+        for (const f of paletteFails(theme)) fails.push(`${p} ${themeName}: ${f}`);
+      }
+    }
+    assert.deepEqual(fails, [], `neutral ${n} breaks palettes:\n  ` + fails.join('\n  '));
+  });
+}
 
 /* --- no component paints TEXT with --color-primary ----------------------------------------------
  *
