@@ -385,6 +385,17 @@
   --green-500-rgb: 34,197,94;
   --green-600-rgb: 22,163,74;
   --neutral-0-rgb: 255,255,255;
+  --neutral-100-rgb: 238,240,244;
+  --neutral-200-rgb: 224,227,234;
+  --neutral-300-rgb: 203,208,218;
+  --neutral-400-rgb: 153,161,179;
+  --neutral-450-rgb: 121,130,149;
+  --neutral-50-rgb: 247,248,250;
+  --neutral-500-rgb: 107,116,136;
+  --neutral-600-rgb: 77,85,104;
+  --neutral-700-rgb: 58,65,82;
+  --neutral-800-rgb: 38,43,56;
+  --neutral-850-rgb: 28,33,48;
   --neutral-900-rgb: 23,27,38;
   --neutral-950-rgb: 14,17,26;
   --primary-400-rgb: 92,139,246;
@@ -741,6 +752,273 @@
 [data-theme="light"][data-style="glass"] {
   --color-surface-raised: rgba(255,255,255,.82);
   --surface-inset: inset 0 1px 0 rgba(255,255,255,.55);
+}
+/* Neutral axis. 3 options, see $neutrals in tokens.json. */
+[data-neutral="grey"] {
+  --neutral-0: var(--grey-0);
+  --neutral-50: var(--grey-50);
+  --neutral-100: var(--grey-100);
+  --neutral-200: var(--grey-200);
+  --neutral-300: var(--grey-300);
+  --neutral-400: var(--grey-400);
+  --neutral-450: var(--grey-450);
+  --neutral-500: var(--grey-500);
+  --neutral-600: var(--grey-600);
+  --neutral-700: var(--grey-700);
+  --neutral-800: var(--grey-800);
+  --neutral-850: var(--grey-850);
+  --neutral-900: var(--grey-900);
+  --neutral-950: var(--grey-950);
+  --color-surface-stripe: #fbfbfb;
+  --color-danger-border: #e09797;
+  --tone-1-ink: #234a79;
+  --tone-2-ink: #834228;
+  --tone-3-ink: #1b654b;
+  --tone-4-ink: #845e0e;
+  --tone-5-ink: #824b60;
+  --tone-6-ink: #0e4f0e;
+  --tone-7-ink: #332b61;
+  --tone-8-ink: #7f3232;
+  --tone-1-border: #abc3df;
+  --tone-2-border: #e5beae;
+  --tone-3-border: #a7d3c3;
+  --tone-4-border: #e6cf9f;
+  --tone-5-border: #e4c4d0;
+  --tone-6-border: #9fc69f;
+  --tone-7-border: #b5b0d1;
+  --tone-8-border: #e3b5b4;
+  --neutral-900-rgb: 27,27,27;
+  --neutral-950-rgb: 17,17,17;
+  --neutral-50-rgb: 248,248,248;
+  --neutral-100-rgb: 240,240,240;
+  --neutral-200-rgb: 227,227,227;
+  --neutral-300-rgb: 208,208,208;
+  --neutral-400-rgb: 161,161,161;
+  --neutral-450-rgb: 130,130,130;
+  --neutral-500-rgb: 116,116,116;
+  --neutral-600-rgb: 85,85,85;
+  --neutral-700-rgb: 65,65,65;
+  --neutral-800-rgb: 43,43,43;
+  --neutral-850-rgb: 34,34,34;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-neutral="grey"] {
+  --color-surface-stripe: #171717;
+  --color-danger-border: #7d4747;
+  --tone-1-bg: #182637;
+  --tone-2-bg: #351e15;
+  --tone-3-bg: #122a22;
+  --tone-4-bg: #32260e;
+  --tone-5-bg: #341d25;
+  --tone-6-bg: #0e260e;
+  --tone-7-bg: #282638;
+  --tone-8-bg: #372020;
+  --tone-1-ink: #95bceb;
+  --tone-2-ink: #e5a58b;
+  --tone-3-ink: #85c7b0;
+  --tone-4-ink: #ddbb78;
+  --tone-5-ink: #e3a1b9;
+  --tone-6-ink: #78ba78;
+  --tone-7-ink: #c0bbed;
+  --tone-8-ink: #ebacac;
+  --tone-1-border: #2f4763;
+  --tone-2-border: #5f392a;
+  --tone-3-border: #264e40;
+  --tone-4-border: #5a461e;
+  --tone-5-border: #5e3645;
+  --tone-6-border: #1e451e;
+  --tone-7-border: #494664;
+  --tone-8-border: #633d3d;
+  }
+}
+[data-theme="dark"][data-neutral="grey"] {
+  --color-surface-stripe: #171717;
+  --color-danger-border: #7d4747;
+  --tone-1-bg: #182637;
+  --tone-2-bg: #351e15;
+  --tone-3-bg: #122a22;
+  --tone-4-bg: #32260e;
+  --tone-5-bg: #341d25;
+  --tone-6-bg: #0e260e;
+  --tone-7-bg: #282638;
+  --tone-8-bg: #372020;
+  --tone-1-ink: #95bceb;
+  --tone-2-ink: #e5a58b;
+  --tone-3-ink: #85c7b0;
+  --tone-4-ink: #ddbb78;
+  --tone-5-ink: #e3a1b9;
+  --tone-6-ink: #78ba78;
+  --tone-7-ink: #c0bbed;
+  --tone-8-ink: #ebacac;
+  --tone-1-border: #2f4763;
+  --tone-2-border: #5f392a;
+  --tone-3-border: #264e40;
+  --tone-4-border: #5a461e;
+  --tone-5-border: #5e3645;
+  --tone-6-border: #1e451e;
+  --tone-7-border: #494664;
+  --tone-8-border: #633d3d;
+}
+[data-theme="light"][data-neutral="grey"] {
+  --color-surface-stripe: #fbfbfb;
+  --color-danger-border: #e09797;
+  --tone-1-bg: #d9e7f8;
+  --tone-2-bg: #fbe4da;
+  --tone-3-bg: #d6f1e7;
+  --tone-4-bg: #fceed1;
+  --tone-5-bg: #fbe7ef;
+  --tone-6-bg: #d1e9d1;
+  --tone-7-bg: #dedcef;
+  --tone-8-bg: #fadede;
+  --tone-1-ink: #234a79;
+  --tone-2-ink: #834228;
+  --tone-3-ink: #1b654b;
+  --tone-4-ink: #845e0e;
+  --tone-5-ink: #824b60;
+  --tone-6-ink: #0e4f0e;
+  --tone-7-ink: #332b61;
+  --tone-8-ink: #7f3232;
+  --tone-1-border: #abc3df;
+  --tone-2-border: #e5beae;
+  --tone-3-border: #a7d3c3;
+  --tone-4-border: #e6cf9f;
+  --tone-5-border: #e4c4d0;
+  --tone-6-border: #9fc69f;
+  --tone-7-border: #b5b0d1;
+  --tone-8-border: #e3b5b4;
+}
+[data-neutral="stone"] {
+  --neutral-0: var(--stone-0);
+  --neutral-50: var(--stone-50);
+  --neutral-100: var(--stone-100);
+  --neutral-200: var(--stone-200);
+  --neutral-300: var(--stone-300);
+  --neutral-400: var(--stone-400);
+  --neutral-450: var(--stone-450);
+  --neutral-500: var(--stone-500);
+  --neutral-600: var(--stone-600);
+  --neutral-700: var(--stone-700);
+  --neutral-800: var(--stone-800);
+  --neutral-850: var(--stone-850);
+  --neutral-900: var(--stone-900);
+  --neutral-950: var(--stone-950);
+  --color-surface-stripe: #fcfbfa;
+  --color-danger-border: #e39794;
+  --tone-1-ink: #264974;
+  --tone-2-ink: #864123;
+  --tone-3-ink: #1e6546;
+  --tone-4-ink: #875e09;
+  --tone-5-ink: #854b5b;
+  --tone-6-ink: #114f09;
+  --tone-7-ink: #362a5d;
+  --tone-8-ink: #82322d;
+  --tone-1-border: #aec2db;
+  --tone-2-border: #e8bdaa;
+  --tone-3-border: #aad3bf;
+  --tone-4-border: #e9cf9b;
+  --tone-5-border: #e7c3cc;
+  --tone-6-border: #a2c69b;
+  --tone-7-border: #b8b0cd;
+  --tone-8-border: #e6b4b0;
+  --neutral-900-rgb: 33,26,18;
+  --neutral-950-rgb: 22,16,9;
+  --neutral-50-rgb: 249,248,246;
+  --neutral-100-rgb: 242,239,237;
+  --neutral-200-rgb: 231,226,221;
+  --neutral-300-rgb: 213,207,199;
+  --neutral-400-rgb: 169,159,148;
+  --neutral-450-rgb: 138,128,117;
+  --neutral-500-rgb: 124,114,104;
+  --neutral-600-rgb: 93,84,73;
+  --neutral-700-rgb: 72,64,54;
+  --neutral-800-rgb: 50,42,33;
+  --neutral-850-rgb: 40,32,23;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"])[data-neutral="stone"] {
+  --color-surface-stripe: #1c160e;
+  --color-danger-border: #814641;
+  --tone-1-bg: #1c2531;
+  --tone-2-bg: #391d0e;
+  --tone-3-bg: #172a1c;
+  --tone-4-bg: #362507;
+  --tone-5-bg: #381c1f;
+  --tone-6-bg: #122507;
+  --tone-7-bg: #2c2531;
+  --tone-8-bg: #3b201a;
+  --tone-1-ink: #96bbe9;
+  --tone-2-ink: #e6a48a;
+  --tone-3-ink: #86c7af;
+  --tone-4-ink: #deba77;
+  --tone-5-ink: #e4a0b7;
+  --tone-6-ink: #79b977;
+  --tone-7-ink: #c1baeb;
+  --tone-8-ink: #ecabaa;
+  --tone-1-border: #34465c;
+  --tone-2-border: #643823;
+  --tone-3-border: #2b4d39;
+  --tone-4-border: #5f4517;
+  --tone-5-border: #63363e;
+  --tone-6-border: #234517;
+  --tone-7-border: #4e455d;
+  --tone-8-border: #683c36;
+  }
+}
+[data-theme="dark"][data-neutral="stone"] {
+  --color-surface-stripe: #1c160e;
+  --color-danger-border: #814641;
+  --tone-1-bg: #1c2531;
+  --tone-2-bg: #391d0e;
+  --tone-3-bg: #172a1c;
+  --tone-4-bg: #362507;
+  --tone-5-bg: #381c1f;
+  --tone-6-bg: #122507;
+  --tone-7-bg: #2c2531;
+  --tone-8-bg: #3b201a;
+  --tone-1-ink: #96bbe9;
+  --tone-2-ink: #e6a48a;
+  --tone-3-ink: #86c7af;
+  --tone-4-ink: #deba77;
+  --tone-5-ink: #e4a0b7;
+  --tone-6-ink: #79b977;
+  --tone-7-ink: #c1baeb;
+  --tone-8-ink: #ecabaa;
+  --tone-1-border: #34465c;
+  --tone-2-border: #643823;
+  --tone-3-border: #2b4d39;
+  --tone-4-border: #5f4517;
+  --tone-5-border: #63363e;
+  --tone-6-border: #234517;
+  --tone-7-border: #4e455d;
+  --tone-8-border: #683c36;
+}
+[data-theme="light"][data-neutral="stone"] {
+  --color-surface-stripe: #fcfbfa;
+  --color-danger-border: #e39794;
+  --tone-1-bg: #d9e7f8;
+  --tone-2-bg: #fbe4da;
+  --tone-3-bg: #d6f1e7;
+  --tone-4-bg: #fceed1;
+  --tone-5-bg: #fbe7ef;
+  --tone-6-bg: #d1e9d1;
+  --tone-7-bg: #dedcef;
+  --tone-8-bg: #fadede;
+  --tone-1-ink: #264974;
+  --tone-2-ink: #864123;
+  --tone-3-ink: #1e6546;
+  --tone-4-ink: #875e09;
+  --tone-5-ink: #854b5b;
+  --tone-6-ink: #114f09;
+  --tone-7-ink: #362a5d;
+  --tone-8-ink: #82322d;
+  --tone-1-border: #aec2db;
+  --tone-2-border: #e8bdaa;
+  --tone-3-border: #aad3bf;
+  --tone-4-border: #e9cf9b;
+  --tone-5-border: #e7c3cc;
+  --tone-6-border: #a2c69b;
+  --tone-7-border: #b8b0cd;
+  --tone-8-border: #e6b4b0;
 }
 /* Primary palette axis. 18 options, see $primaries in tokens.json. */
 [data-primary="azure"] {
@@ -1163,9 +1441,9 @@
   --primary-600: var(--neutral-900);
   --primary-700: var(--neutral-800);
   --primary-800: var(--neutral-950);
-  --primary-400-rgb: 58,65,82;
-  --primary-500-rgb: 38,43,56;
-  --primary-600-rgb: 23,27,38;
+  --primary-400-rgb: var(--neutral-700-rgb);
+  --primary-500-rgb: var(--neutral-800-rgb);
+  --primary-600-rgb: var(--neutral-900-rgb);
   --color-on-primary: var(--neutral-0);
   --color-on-primary-rgb: var(--neutral-0-rgb);
 }
@@ -1179,9 +1457,9 @@
   --primary-600: var(--neutral-50);
   --primary-700: var(--neutral-200);
   --primary-800: var(--neutral-300);
-  --primary-400-rgb: 224,227,234;
-  --primary-500-rgb: 238,240,244;
-  --primary-600-rgb: 247,248,250;
+  --primary-400-rgb: var(--neutral-200-rgb);
+  --primary-500-rgb: var(--neutral-100-rgb);
+  --primary-600-rgb: var(--neutral-50-rgb);
   --color-on-primary: var(--neutral-950);
   --color-on-primary-rgb: var(--neutral-950-rgb);
   }
@@ -1195,9 +1473,9 @@
   --primary-600: var(--neutral-50);
   --primary-700: var(--neutral-200);
   --primary-800: var(--neutral-300);
-  --primary-400-rgb: 224,227,234;
-  --primary-500-rgb: 238,240,244;
-  --primary-600-rgb: 247,248,250;
+  --primary-400-rgb: var(--neutral-200-rgb);
+  --primary-500-rgb: var(--neutral-100-rgb);
+  --primary-600-rgb: var(--neutral-50-rgb);
   --color-on-primary: var(--neutral-950);
   --color-on-primary-rgb: var(--neutral-950-rgb);
 }
@@ -1210,9 +1488,9 @@
   --primary-600: var(--neutral-900);
   --primary-700: var(--neutral-800);
   --primary-800: var(--neutral-950);
-  --primary-400-rgb: 58,65,82;
-  --primary-500-rgb: 38,43,56;
-  --primary-600-rgb: 23,27,38;
+  --primary-400-rgb: var(--neutral-700-rgb);
+  --primary-500-rgb: var(--neutral-800-rgb);
+  --primary-600-rgb: var(--neutral-900-rgb);
   --color-on-primary: var(--neutral-0);
   --color-on-primary-rgb: var(--neutral-0-rgb);
 }

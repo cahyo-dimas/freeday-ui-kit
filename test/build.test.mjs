@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss, buildNeutralsCss, NEUTRAL_SHADES, evalMix, flattenMixes } from '../tokens/build.mjs';
 
 test('bundleFullCss: tokens then components, both present', () => {
   const out = bundleFullCss('/* tok */\n:root{--a:1}', '/* comp */\n.fdy-x{color:var(--a)}');
@@ -179,4 +179,46 @@ test('no token outside the slate ramp and the neutral alias names a slate shade'
     walk(v, k);
   }
   assert.deepEqual(found, [], `slate referenced directly:\n  ${found.join('\n  ')}`);
+});
+
+const TOKENS = JSON.parse(readFileSync(new URL('../tokens/tokens.json', import.meta.url), 'utf8'));
+const neutralBlock = (css, sel) => {
+  const m = css.match(new RegExp(`\\n${sel.replace(/[[\]"^$.*+?()|{}\\]/g, '\\$&')}\\s*\\{([\\s\\S]*?)\\n\\}`));
+  return m === null ? {} : Object.fromEntries([...m[1].matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map(d => [d[1], d[2].trim()]));
+};
+
+test('the neutral alias ramp is the slate entry of $neutrals', () => {
+  assert.equal(TOKENS.$neutrals.slate.ramp, 'slate');
+  for (const s of NEUTRAL_SHADES) {
+    assert.equal(TOKENS.neutral[s].$value, `{slate.${s}}`, `neutral.${s} must default to slate.${s}`);
+  }
+});
+
+test('a non-default neutral re-points every alias shade, and slate emits nothing', () => {
+  const css = buildNeutralsCss(TOKENS);
+  for (const name of ['grey', 'stone']) {
+    const light = neutralBlock(css, `[data-neutral="${name}"]`);
+    for (const s of NEUTRAL_SHADES) {
+      assert.equal(light[`--neutral-${s}`], `var(--${name}-${s})`, `[data-neutral="${name}"] --neutral-${s}`);
+    }
+  }
+  assert.doesNotMatch(css, /\[data-neutral="slate"\]/, 'the default re-states nothing');
+});
+
+test('tone tints are re-flattened over the neutral surface', () => {
+  const css = buildTokensCss(TOKENS);
+  const dark = neutralBlock(css, '[data-theme="dark"][data-neutral="stone"]');
+  const slateDark = flattenMixes(flatten(TOKENS)).find(t => t.name === 'tone-1-bg').dark;
+  /* Independent of the build's diffing: 18% of tone 1 (dark) straight over stone 950. */
+  const nodes = new Map([['tone-1', { value: TOKENS.chart['1'].$value, dark: TOKENS.chart['1'].$dark }], ['s', { value: TOKENS.stone['950'].$value }]]);
+  const expected = evalMix('color-mix(in srgb, {tone.1} 18%, {s})', nodes, 'dark', 'test');
+  assert.notEqual(dark['--tone-1-bg'], slateDark, 'stone dark must not reuse the slate tint');
+  assert.equal(dark['--tone-1-bg'], expected);
+});
+
+test('noir reaches its channels through the neutral alias', () => {
+  const noir = neutralBlock(buildTokensCss(TOKENS), '[data-primary="noir"]');
+  const rgb = Object.entries(noir).filter(([k]) => /^--primary-\d+-rgb$/.test(k));
+  assert.ok(rgb.length > 0, 'noir emits no primary triples, the selector or the palette changed');
+  for (const [k, v] of rgb) assert.match(v, /^var\(--neutral-\d+-rgb\)$/, `${k} is a literal, so it stays slate under any neutral`);
 });

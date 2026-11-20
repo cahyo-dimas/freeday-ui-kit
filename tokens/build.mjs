@@ -117,6 +117,22 @@ export function tripleDecls(names, index) {
   return [...names].sort().map(n => decl(`${n}-rgb`, hexToTriple(hexOfName(n, index))));
 }
 
+/* The fourteen shades of the neutral alias. Every one gets a channel triple whether or not a token
+   asks for it today: the noir palette and the glass panel reach them through the alias, and a
+   triple the default never asked for would be missing under exactly the neutral that needs it. */
+export const NEUTRAL_SHADES = ['0', '50', '100', '200', '300', '400', '450', '500', '600', '700', '800', '850', '900', '950'];
+
+/** Every token name whose `-rgb` triple the stylesheet must carry. */
+export function wantedTriples(tokens, flat) {
+  const names = rgbRefsIn([
+    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.glass, t.glassDark]),
+    ...primaryInkRefs(tokens),
+  ]);
+  /* A token set without the alias (a synthetic fixture) has no neutral triples to carry. */
+  if (tokens.neutral !== undefined) for (const s of NEUTRAL_SHADES) names.add(`neutral-${s}`);
+  return names;
+}
+
 /* ---------------------------------------------------------------------------
  * PRECOMPUTED MIXES: a token may be WRITTEN as `color-mix(in srgb, {tone.1} 18%, {color.surface})`,
  * and the build flattens it to the colour it names. color-mix() never reaches the stylesheet.
@@ -220,10 +236,7 @@ export function buildTokensCss(tokens) {
   /* Resolved to literals HERE, in :root only. The one family that moves with an axis is the
      primary ramp, and buildPrimariesCss re-states those triples beside the shades they belong
      to — the same place, and the same condition, as the shades themselves. */
-  const wanted = rgbRefsIn([
-    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.glass, t.glassDark]),
-    ...primaryInkRefs(tokens),
-  ]);
+  const wanted = wantedTriples(tokens, flat);
   const root = [...flat.map(t => decl(t.name, t.value)), ...tripleDecls(wanted, index)].join('\n');
   const darkTokens = flat.filter(t => t.dark !== undefined);
   const dark = darkTokens.map(t => decl(t.name, t.dark)).join('\n');
@@ -274,7 +287,7 @@ ${compact}
 [data-density="comfortable"] {
 ${comfortable}
 }
-${buildStylesCss(flat)}${buildPrimariesCss(tokens)}`;
+${buildStylesCss(flat)}${buildNeutralsCss(tokens)}${buildPrimariesCss(tokens)}`;
 }
 
 /* The visual-style axis. `soft` is the kit's own look and the default; `glass` frosts the RAISED
@@ -310,6 +323,66 @@ export function buildStylesCss(flat) {
   return out;
 }
 
+/** The token set with the neutral alias pointed at `ramp`. Nothing else differs. */
+export function neutralVariant(tokens, ramp) {
+  const variant = structuredClone(tokens);
+  for (const s of NEUTRAL_SHADES) variant.neutral[s] = { $value: `{${ramp}.${s}}` };
+  return variant;
+}
+
+/** name -> { light, dark } for every declaration :root and the dark scope would carry, mixes
+ *  flattened, dark falling back to light, plus every channel triple. */
+function resolvedLeaves(tokens) {
+  const flat = flattenMixes(flatten(tokens));
+  const index = valueIndex(flat);
+  const out = new Map(flat.map(t => [t.name, { light: String(t.value), dark: String(t.dark ?? t.value) }]));
+  for (const n of wantedTriples(tokens, flat)) {
+    const triple = hexToTriple(hexOfName(n, index));
+    out.set(`${n}-rgb`, { light: triple, dark: triple });
+  }
+  return out;
+}
+
+/* The neutral axis. A neutral is the whole token set with the alias re-pointed, so the block it
+ * needs is whatever that set resolves to differently from the default: the fourteen alias shades,
+ * their triples, and every tint the build flattened over a neutral surface, border or ink. No list
+ * of "neutral-dependent tokens" is kept, so a token added later that mixes over the surface follows
+ * the axis without anyone remembering to add it.
+ *
+ * Scoping is the primary axis's, for the same reasons, with one rule added for what the light
+ * block already set. On a dark element both the theme's dark block and this light block match at
+ * (0,1,0), and this one comes later, so for a key it sets the light value would win in dark. The
+ * dark block therefore restates every key whose dark value differs from what would otherwise show.
+ *
+ * Like data-primary, this takes effect where the semantics are resolved: on <html>, or on a nested
+ * element that also carries data-theme (USAGE.md §5b). */
+export function buildNeutralsCss(tokens) {
+  const spec = tokens.$neutrals;
+  if (spec === undefined) return '';
+  const base = resolvedLeaves(tokens);
+  const out = [];
+  for (const [name, n] of Object.entries(spec)) {
+    if (name.startsWith('_')) continue;
+    const variant = resolvedLeaves(neutralVariant(tokens, n.ramp));
+    const light = [...variant].filter(([k, v]) => base.get(k).light !== v.light);
+    const lightSet = new Map(light.map(([k, v]) => [k, v.light]));
+    const dark = [...variant].filter(([k, v]) => v.dark !== (lightSet.has(k) ? lightSet.get(k) : base.get(k).dark));
+    const sel = `[data-neutral="${name}"]`;
+    if (light.length > 0) out.push(`${sel} {\n${light.map(([k, v]) => decl(k, v.light)).join('\n')}\n}`);
+    if (dark.length > 0) {
+      const darkDecls = dark.map(([k, v]) => decl(k, v.dark)).join('\n');
+      out.push(
+        `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"])${sel} {\n${darkDecls}\n  }\n}`,
+        `[data-theme="dark"]${sel} {\n${darkDecls}\n}`,
+        `[data-theme="light"]${sel} {\n${dark.map(([k, v]) => decl(k, v.light)).join('\n')}\n}`,
+      );
+    }
+  }
+  if (out.length === 0) return '';
+  return `/* Neutral axis. ${Object.keys(spec).filter(k => !k.startsWith('_')).length} options, see $neutrals in tokens.json. */\n`
+    + out.join('\n') + '\n';
+}
+
 /* The primary-palette axis. Each palette redefines the eight-shade `primary` ALIAS ramp, never the
  * semantics — so which shade is the fill, which is hover and which is the soft wash is stated once,
  * in `color.primary*`, and a palette that got one of them wrong is not a shape this can produce.
@@ -333,7 +406,11 @@ export function buildPrimariesCss(tokens) {
      being touched, and one that stops asking loses it. */
   const asked = rgbRefsIn(flat.flatMap(t => [t.value, t.dark, t.compact, t.glass, t.glassDark]));
   const rgbShades = SHADES.filter(s => asked.has(`primary-${s}`));
-  const triple = (ref) => hexToTriple(hexOfValue(ref, index));
+  /* A palette built on the neutral alias (noir) keeps its channels on the alias too. A literal
+     triple here would be slate's, and stay slate's under data-neutral. */
+  const triple = (ref) => (/^\{neutral\.\d+\}$/.test(ref)
+    ? ref.replace(/\}$/, '.rgb}')
+    : hexToTriple(hexOfValue(ref, index)));
 
   for (const [name, p] of Object.entries(spec)) {
     if (name.startsWith('_')) continue;
