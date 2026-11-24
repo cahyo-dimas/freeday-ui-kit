@@ -252,6 +252,32 @@ for (const name of PALETTES) {
   }
 }
 
+/* --- palettes under the OS dark setting -----------------------------------------------------
+ *
+ * The suite above models [data-theme="dark"] only. Under the OS setting the base rule is
+ * `:root:not([data-theme="light"])` at (0,2,0), which OUTRANKS a palette's own block (0,1,0), so a
+ * palette that relied on its light-block ink in dark shipped white labels on a light fill for
+ * every phone in dark mode. Spread by specificity, not source order: the palette block, then the
+ * base system-dark rule that beats it, then the palette's own system-dark twin (0,3,0). */
+const mediaBlock = (sel) => {
+  const m = css.match(new RegExp(`\\n  ${sel.replace(/[[\]"^$.*+?()|{}\\]/g, '\\$&')} \\{([\\s\\S]*?)\\n  \\}`));
+  return m === null ? {} : vars(m[1]);
+};
+const SYSTEM_DARK = ':root:not([data-theme="light"])';
+
+test('the OS dark scope actually resolves', () => {
+  assert.ok(Object.keys(mediaBlock(SYSTEM_DARK)).length > 20,
+    `${SYSTEM_DARK} parsed ${Object.keys(mediaBlock(SYSTEM_DARK)).length} vars, the media block shape changed`);
+});
+
+for (const name of PALETTES) {
+  test(`WCAG contrast: palette ${name} under the OS dark setting`, () => {
+    const theme = { ...base, ...paletteScope(name, ''), ...mediaBlock(SYSTEM_DARK), ...mediaBlock(`${SYSTEM_DARK}[data-primary="${name}"]`) };
+    const fails = paletteFails(theme);
+    assert.deepEqual(fails, [], `palette "${name}" under the OS dark setting:\n  ` + fails.join('\n  '));
+  });
+}
+
 /* --- the glass style axis -----------------------------------------------------------------------
  *
  * A frosted panel is TRANSLUCENT, so the ink on it is not read against the panel — it is read

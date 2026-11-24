@@ -432,6 +432,12 @@ export function buildPrimariesCss(tokens) {
   const out = [];
   const flat = flatten(tokens);
   const index = valueIndex(flat);
+  /* The base dark scopes declare --color-on-primary too, and the system-dark one,
+     `:root:not([data-theme="light"])` at (0,2,0), OUTRANKS this palette's own block (0,1,0). So a
+     palette whose dark ink differs from the BASE dark ink restates it in its dark twins even when
+     its own light and dark inks agree; otherwise every OS in dark mode shows the base ink on this
+     palette's fill. */
+  const baseDarkOn = tokens.color['on-primary'].$dark;
   /* Which shades need a channel triple is read off the tokens, not listed here: a semantic that
      starts asking for {primary.300.rgb} gains its triple in all 18 palettes without this function
      being touched, and one that stops asking loses it. */
@@ -460,16 +466,17 @@ export function buildPrimariesCss(tokens) {
     out.push(`${sel} {\n${lightDecls}\n}`);
 
     // Only what dark actually changes.
+    const darkInk = p.onDark !== p.on || p.onDark !== baseDarkOn;
     const darkDecls = [
       ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, dark[s]))),
       ...(dark === null ? [] : rgbShades.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}-rgb`, triple(dark[s])))),
-      ...(p.onDark !== p.on ? [decl('color-on-primary', p.onDark), decl('color-on-primary-rgb', p.onDark.replace(/\}$/, '.rgb}'))] : []),
+      ...(darkInk ? [decl('color-on-primary', p.onDark), decl('color-on-primary-rgb', p.onDark.replace(/\}$/, '.rgb}'))] : []),
     ];
     if (darkDecls.length === 0) continue;
     const backLight = [
       ...(dark === null ? [] : SHADES.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}`, light[s]))),
       ...(dark === null ? [] : rgbShades.filter(s => dark[s] !== light[s]).map(s => decl(`primary-${s}-rgb`, triple(light[s])))),
-      ...(p.onDark !== p.on ? [decl('color-on-primary', p.on), decl('color-on-primary-rgb', p.on.replace(/\}$/, '.rgb}'))] : []),
+      ...(darkInk ? [decl('color-on-primary', p.on), decl('color-on-primary-rgb', p.on.replace(/\}$/, '.rgb}'))] : []),
     ].join('\n');
     out.push(
       `@media (prefers-color-scheme: dark) {\n  :root:not([data-theme="light"])${sel} {\n${darkDecls.join('\n')}\n  }\n}`,
