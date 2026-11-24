@@ -89,6 +89,37 @@ a { color: var(--color-primary-strong); }
  * browser without JS, so we animate the revealed panel instead, cheap, safe, reduced-motion gated. */
 @media (prefers-reduced-motion:no-preference){.fdy-accordion__item[open] > .fdy-accordion__panel{animation:fdy-combo-in var(--dur-base) var(--ease-standard);}}
 
+/* Freeday. Action bar
+ *
+ * One to three actions pinned to the bottom of the screen, where a thumb reaches them on a phone:
+ * the sign-in button, approve and reject on a document, save on a long form. Before this, an app
+ * either put its primary action mid-page, where it scrolled away, or hand-wrote a fixed bar that
+ * sat on top of the bottom nav.
+ *
+ * Sticky, not fixed: the bar keeps its place in the flow, so the last row above it is never
+ * covered and the page needs no extra reservation. In a shell with a bottom nav it rests on top of
+ * the nav; anywhere else it clears the home indicator itself. */
+.fdy-actionbar{
+  position:sticky;bottom:0;z-index:40;
+  display:flex;gap:var(--space-2);
+  padding:var(--space-3) var(--space-4);
+  padding-bottom:calc(var(--space-3) + env(safe-area-inset-bottom,0px));
+  background:var(--color-surface-raised);
+  backdrop-filter:var(--surface-filter);
+  -webkit-backdrop-filter:var(--surface-filter);
+  border-top:var(--bw) solid var(--color-border);
+}
+/* The buttons share the width; the primary action goes last, nearest the thumb. */
+.fdy-actionbar > .fdy-btn{flex:1 1 0;min-width:0;}
+/* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
+ * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */
+@media (max-width:720px){
+  .fdy-app--has-bottomnav .fdy-actionbar{
+    bottom:calc(var(--fdy-bottomnav-h) + env(safe-area-inset-bottom,0px));
+    padding-bottom:var(--space-3);
+  }
+}
+
 /* Freeday. Alert (inline) */
 .fdy-alert{display:flex;gap:var(--space-3);padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);border:var(--bw) solid var(--color-border);font-size:var(--text-sm);color:var(--color-text);background:var(--color-surface-2);}
 .fdy-alert__icon{flex:none;display:inline-flex;align-items:center;justify-content:center;width:1.25rem;height:1.25rem;margin-top:.05rem;}
@@ -428,6 +459,11 @@ a { color: var(--color-primary-strong); }
  * Deliberately NOT part of `.fdy-app`'s markup: it is `position:fixed`, so it works from
  * anywhere inside the shell's content slot, and an application that does not want one
  * pays nothing. `.fdy-app--has-bottomnav` on the shell is what reserves room for it. */
+/* The bar's height, stated once so anything resting on the bar (the action bar) reads the same
+ * number the bar is drawn with: a 44px item, the vertical padding, the top hairline. Before this
+ * the height was only implied, and an item's icon and label made it 0.39px taller than the sum,
+ * more with a taller app font. The safe-area inset is added where it is used, not here. */
+.fdy-app--has-bottomnav{--fdy-bottomnav-h:calc(2.75rem + 2 * var(--space-2) + var(--bw));}
 .fdy-bottomnav{display:none;}
 @media (max-width:720px){
   .fdy-bottomnav{
@@ -442,6 +478,8 @@ a { color: var(--color-primary-strong); }
     backdrop-filter:var(--surface-filter);
     -webkit-backdrop-filter:var(--surface-filter);
     border-top:var(--bw) solid var(--color-border);
+    box-sizing:border-box;
+    height:calc(var(--fdy-bottomnav-h,auto) + env(safe-area-inset-bottom,0px));
   }
   /* Room for the bar, or the last row of every list on every screen sits under it -- and
      a row you cannot scroll to is a row nobody knows is there. */

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freeday: action bar</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+</head>
+<body>
+  <div class="fdy-app fdy-app--has-bottomnav" id="app">
+    <aside class="fdy-app__sidebar"><nav class="fdy-nav"><a class="fdy-nav__item" href="#">Beranda</a></nav></aside>
+    <div class="fdy-app__content">
+      <header class="fdy-app__topbar"><h1 class="fdy-app__title">Persetujuan</h1></header>
+      <main class="fdy-app__main" id="main">
+        <ul class="fdy-list" id="list"></ul>
+        <div class="fdy-actionbar" id="bar">
+          <button class="fdy-btn fdy-btn--ghost" type="button" id="b1">Tolak</button>
+          <button class="fdy-btn" type="button" id="b2">Setujui</button>
+        </div>
+      </main>
+    </div>
+    <nav class="fdy-bottomnav" id="nav" aria-label="Navigasi utama">
+      <a class="fdy-bottomnav__item" href="#" aria-current="page"><span class="fdy-bottomnav__icon">▣</span><span class="fdy-bottomnav__label">Beranda</span></a>
+      <a class="fdy-bottomnav__item" href="#"><span class="fdy-bottomnav__icon">▤</span><span class="fdy-bottomnav__label">Setujui</span></a>
+    </nav>
+  </div>
+<script>
+  var list = document.getElementById('list');
+  for (var i = 1; i <= 40; i++) {
+    var li = document.createElement('li');
+    li.className = 'fdy-list__row'; li.id = 'row' + i; li.textContent = 'Dokumen ' + i;
+    list.appendChild(li);
+  }
+</script>
+</body>
+</html>

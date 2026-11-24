@@ -1,0 +1,30 @@
+/* Freeday. Action bar
+ *
+ * One to three actions pinned to the bottom of the screen, where a thumb reaches them on a phone:
+ * the sign-in button, approve and reject on a document, save on a long form. Before this, an app
+ * either put its primary action mid-page, where it scrolled away, or hand-wrote a fixed bar that
+ * sat on top of the bottom nav.
+ *
+ * Sticky, not fixed: the bar keeps its place in the flow, so the last row above it is never
+ * covered and the page needs no extra reservation. In a shell with a bottom nav it rests on top of
+ * the nav; anywhere else it clears the home indicator itself. */
+.fdy-actionbar{
+  position:sticky;bottom:0;z-index:40;
+  display:flex;gap:var(--space-2);
+  padding:var(--space-3) var(--space-4);
+  padding-bottom:calc(var(--space-3) + env(safe-area-inset-bottom,0px));
+  background:var(--color-surface-raised);
+  backdrop-filter:var(--surface-filter);
+  -webkit-backdrop-filter:var(--surface-filter);
+  border-top:var(--bw) solid var(--color-border);
+}
+/* The buttons share the width; the primary action goes last, nearest the thumb. */
+.fdy-actionbar > .fdy-btn{flex:1 1 0;min-width:0;}
+/* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
+ * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */
+@media (max-width:720px){
+  .fdy-app--has-bottomnav .fdy-actionbar{
+    bottom:calc(var(--fdy-bottomnav-h) + env(safe-area-inset-bottom,0px));
+    padding-bottom:var(--space-3);
+  }
+}

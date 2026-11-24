@@ -2152,6 +2152,29 @@ and a row nobody can scroll to is a row nobody knows is there.
 </nav>
 ```
 
+## Action bar — `.fdy-actionbar`
+One to three actions pinned to the bottom of the screen, where a thumb reaches them on a phone: the
+sign-in button, approve and reject on a document, save at the end of a long form. Put it as the last
+child of the page content (`.fdy-app__main`), holding `.fdy-btn` elements. They share the width, and
+the primary action goes last, nearest the thumb.
+
+- It is `position: sticky`, so it keeps its place in the flow and never covers the last row above it.
+- In a shell with `.fdy-app--has-bottomnav`, below 720px it rests on top of the bottom nav, using
+  `--fdy-bottomnav-h` (declared on that shell). Elsewhere it clears the home indicator with
+  `env(safe-area-inset-bottom)`.
+- No ARIA of its own: it is a row of buttons, and each keeps its own name.
+- CSS only. Vue, React and Blazor use the same markup.
+
+```html
+<main class="fdy-app__main">
+  <!-- the screen -->
+  <div class="fdy-actionbar">
+    <button class="fdy-btn fdy-btn--ghost" type="button">Reject</button>
+    <button class="fdy-btn" type="button">Approve</button>
+  </div>
+</main>
+```
+
 ## Nav (menu) — `.fdy-nav`
 Navigation links, **vertical by default** (the app shell sidebar), horizontal with `--horizontal`. Items are `<a class="fdy-nav__item">` with
 `__icon` / `__label` / `__badge`; the current one gets `aria-current="page"`.
