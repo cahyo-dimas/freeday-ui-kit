@@ -14,8 +14,9 @@
 /* The bar's height, stated once so anything resting on the bar (the action bar) reads the same
  * number the bar is drawn with: a 44px item, the vertical padding, the top hairline. Before this
  * the height was only implied, and an item's icon and label made it 0.39px taller than the sum,
- * more with a taller app font. The safe-area inset is added where it is used, not here. The price of a stated height: with
- * a taller app font the label may overflow into the nav's bottom padding instead of growing it. */
+ * more with a taller app font. The safe-area inset is added where it is used, not here. The
+ * price of a stated height: with a taller app font the label may overflow into the nav's bottom
+ * padding instead of growing it. */
 .fdy-app--has-bottomnav{--fdy-bottomnav-h:calc(2.75rem + 2 * var(--space-2) + var(--bw));}
 @media (max-width:720px){
   .fdy-bottomnav{

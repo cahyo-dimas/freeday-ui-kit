@@ -96,3 +96,55 @@ test('scrolled to the end on a phone without a bottom nav, the bar is at the vie
     assert.ok(Math.abs(bar.bottom - PHONE[1]) <= 0.5, `at the end the bar ends at ${bar.bottom}px, the viewport at ${PHONE[1]}px`);
   });
 });
+
+// Framework pages put the bar inside `.fdy-page` rather than directly in main. The wrapper has to
+// be main's last child and carry no bottom padding or margin; `.fdy-page` is a flex column with a gap only.
+const wrapInPage = (p) => p.evalJS(`(() => {
+  const main = document.getElementById('main');
+  const page = document.createElement('div');
+  page.className = 'fdy-page';
+  while (main.firstChild) page.appendChild(main.firstChild);
+  main.appendChild(page);
+  return true;
+})()`);
+
+test('inside a .fdy-page wrapper on a phone, the bar still rests on the nav at the end', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await wrapInPage(p);
+    await toEnd(p);
+    const bar = await box(p, '#bar');
+    const nav = await box(p, '#nav');
+    const row = await box(p, '#row40');
+    assert.ok(Math.abs(nav.top - bar.bottom) <= 0.5, `at the end the bar ends at ${bar.bottom}px, the nav starts at ${nav.top}px`);
+    assert.ok(row.bottom <= bar.top + 0.5, `the last row ends at ${row.bottom}px under the bar at ${bar.top}px`);
+  });
+});
+
+test('inside a .fdy-page wrapper on a desktop, the bar is at the viewport edge at the end', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...DESKTOP);
+    await wrapInPage(p);
+    await toEnd(p);
+    const bar = await box(p, '#bar');
+    const row = await box(p, '#row40');
+    assert.ok(Math.abs(bar.bottom - DESKTOP[1]) <= 0.5, `at the end the bar ends at ${bar.bottom}px, the viewport at ${DESKTOP[1]}px`);
+    assert.ok(row.bottom <= bar.top + 0.5, `the last row ends at ${row.bottom}px under the bar at ${bar.top}px`);
+  });
+});
+
+test('a bar inside a fixed dialog in the nav shell is not lifted by the nav offset', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await p.evalJS(`(() => {
+      const d = document.createElement('div');
+      d.id = 'dlg';
+      d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;height:200px;overflow:auto;z-index:60;';
+      d.innerHTML = '<div style="height:500px"></div><div class="fdy-actionbar" id="dbar"><button class="fdy-btn" type="button">OK</button></div>';
+      document.getElementById('app').appendChild(d);
+      return true;
+    })()`);
+    const bar = await box(p, '#dbar');
+    assert.ok(Math.abs(bar.bottom - PHONE[1]) <= 0.5, `the dialog bar ends at ${bar.bottom}px, its panel at ${PHONE[1]}px`);
+  });
+});

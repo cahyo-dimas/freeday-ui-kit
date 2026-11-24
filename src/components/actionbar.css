@@ -23,15 +23,20 @@
 /* Sticky is bounded by its parent, and `.fdy-app__main` has bottom padding that sits below the bar,
  * so at the end of the page the bar would stop short of the edge by that padding. A negative bottom
  * margin cancels it when the bar is the last child (no :has(), the support floor includes iOS 15).
+ * The bar may also sit one wrapper down, in a page wrapper such as `.fdy-page` that is main's last
+ * child. Sticky is then bounded by the wrapper, so the wrapper's content box must end where main's
+ * does: no bottom padding, border or margin of its own (`.fdy-page` has none).
  * Values mirror app-shell.css: main's padding is --space-8, and --space-5 at max-width 720px. */
-.fdy-app__main > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-8));}
+.fdy-app__main > .fdy-actionbar:last-child,
+.fdy-app__main > :last-child > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-8));}
 @media (max-width:720px){
-  .fdy-app__main > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-5));}
+  .fdy-app__main > .fdy-actionbar:last-child,
+  .fdy-app__main > :last-child > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-5));}
 }
 /* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
  * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */
 @media (max-width:720px){
-  .fdy-app--has-bottomnav .fdy-actionbar{
+  .fdy-app--has-bottomnav .fdy-app__main .fdy-actionbar{
     bottom:calc(var(--fdy-bottomnav-h) + env(safe-area-inset-bottom,0px));
     padding-bottom:var(--space-3);
   }
@@ -39,7 +44,8 @@
    * --fdy-bottomnav-h + inset tall. What must remain below the bar is exactly the nav, so the
    * bar ends on the nav at the end of the page and is not pushed up over the last row. The
    * insets cancel. */
-  .fdy-app--has-bottomnav .fdy-app__main > .fdy-actionbar:last-child{
+  .fdy-app--has-bottomnav .fdy-app__main > .fdy-actionbar:last-child,
+  .fdy-app--has-bottomnav .fdy-app__main > :last-child > .fdy-actionbar:last-child{
     margin-bottom:calc(var(--fdy-bottomnav-h) - var(--space-20));
   }
 }
