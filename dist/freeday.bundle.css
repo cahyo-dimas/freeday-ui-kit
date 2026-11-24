@@ -1947,12 +1947,27 @@ a { color: var(--color-primary-strong); }
 }
 /* The buttons share the width; the primary action goes last, nearest the thumb. */
 .fdy-actionbar > .fdy-btn{flex:1 1 0;min-width:0;}
+/* Sticky is bounded by its parent, and `.fdy-app__main` has bottom padding that sits below the bar,
+ * so at the end of the page the bar would stop short of the edge by that padding. A negative bottom
+ * margin cancels it when the bar is the last child (no :has(), the support floor includes iOS 15).
+ * Values mirror app-shell.css: main's padding is --space-8, and --space-5 at max-width 720px. */
+.fdy-app__main > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-8));}
+@media (max-width:720px){
+  .fdy-app__main > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-5));}
+}
 /* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
  * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */
 @media (max-width:720px){
   .fdy-app--has-bottomnav .fdy-actionbar{
     bottom:calc(var(--fdy-bottomnav-h) + env(safe-area-inset-bottom,0px));
     padding-bottom:var(--space-3);
+  }
+  /* In the nav shell main's padding is --space-20 + inset (bottomnav.css) and the nav is
+   * --fdy-bottomnav-h + inset tall. What must remain below the bar is exactly the nav, so the
+   * bar ends on the nav at the end of the page and is not pushed up over the last row. The
+   * insets cancel. */
+  .fdy-app--has-bottomnav .fdy-app__main > .fdy-actionbar:last-child{
+    margin-bottom:calc(var(--fdy-bottomnav-h) - var(--space-20));
   }
 }
 
@@ -2294,13 +2309,15 @@ a { color: var(--color-primary-strong); }
  *
  * Deliberately NOT part of `.fdy-app`'s markup: it is `position:fixed`, so it works from
  * anywhere inside the shell's content slot, and an application that does not want one
- * pays nothing. `.fdy-app--has-bottomnav` on the shell is what reserves room for it. */
+ * pays nothing. `.fdy-app--has-bottomnav` on the shell is what reserves room for it and states
+ * the bar's height, `--fdy-bottomnav-h`, which the bar is sized by. */
+.fdy-bottomnav{display:none;}
 /* The bar's height, stated once so anything resting on the bar (the action bar) reads the same
  * number the bar is drawn with: a 44px item, the vertical padding, the top hairline. Before this
  * the height was only implied, and an item's icon and label made it 0.39px taller than the sum,
- * more with a taller app font. The safe-area inset is added where it is used, not here. */
+ * more with a taller app font. The safe-area inset is added where it is used, not here. The price of a stated height: with
+ * a taller app font the label may overflow into the nav's bottom padding instead of growing it. */
 .fdy-app--has-bottomnav{--fdy-bottomnav-h:calc(2.75rem + 2 * var(--space-2) + var(--bw));}
-.fdy-bottomnav{display:none;}
 @media (max-width:720px){
   .fdy-bottomnav{
     display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;
