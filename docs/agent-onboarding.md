@@ -68,12 +68,12 @@ wrapper, use the raw markup and hydrate it:
   `USAGE.md` §0 into this project's `DESIGN.md`, then `app.identity.css` from the template beside
   it, then set `data-primary`, `data-neutral`, `data-style`, the app's default `data-density` and the default theme on
   `<html>`. Keeping a default is allowed when the brief says why. Then pick each screen's
-  archetype from `USAGE.md` §7b before writing its markup.
+  archetype from `USAGE.md` §7b before writing its markup, and lay out phone screens by `USAGE.md` §8.
 
 **Non-negotiables:**
 1. No raw hex or px in app CSS. Use tokens: `var(--color-primary)`, `var(--space-4)` (4px scale),
    `var(--radius-md)`, `var(--shadow-1)`, `var(--dur-base)`. The one exception is `app.identity.css`,
-   which gives the tokens listed in `USAGE.md` §0 their literal values and sets nothing else.
+   which gives the tokens listed in `USAGE.md` §0 their literal values. Overriding anything else takes the app outside the kit's guarantee (§0): prefer the sanctioned attribute, such as `data-density="touch"` or `data-primary-fill="deep"`, when one exists.
 2. Components only touch semantic tokens (`--color-*`), never the primitive ramp (`--azure-600`).
 3. `.fdy-btn` is already the primary action (there is no `--primary`). One per screen; everything
    else is `--ghost` or `--text`.

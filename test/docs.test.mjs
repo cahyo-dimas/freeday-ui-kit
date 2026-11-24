@@ -1001,3 +1001,13 @@ test('the onboarding block sends a new app through the identity contract first',
   assert.match(block, /DESIGN\.md/, 'the block must ask for the design brief');
   assert.doesNotMatch(block, /reference\/README\.md/, 'the archetype table ships in USAGE.md now');
 });
+
+test('USAGE.md carries the mobile doctrine and the touch and deep routes', () => {
+  const usage = read('USAGE.md');
+  assert.match(usage, /^## 8\. Mobile/m, 'the mobile section is missing');
+  assert.match(usage, /data-density="touch"/);
+  assert.match(usage, /data-primary-fill="deep"/);
+  assert.match(usage, /\.fdy-actionbar/);
+  assert.doesNotMatch(usage, /^Everything else stays with the kit\./m, '§0 still calls the rest locked');
+  assert.match(read('docs/agent-onboarding.md'), /USAGE\.md` §8/, 'onboarding must point phone screens at §8');
+});

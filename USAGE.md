@@ -29,12 +29,14 @@ The look lives in two places: the `data-*` attributes on `<html>`, and one file,
 | Motion: `--dur-*`, `--ease-*` | `app.identity.css` |
 | One component, locally: `--fdy-<component>-<property>` | your own CSS |
 
-Everything else stays with the kit. Colour reaches an app only through the attributes, because
-the attributes are what the contrast gate tests, so your CSS carries no `--color-*`, `--tone-*` or
-`--chart-*`. Spacing (`--space-*`) and control size (`--control-*`) carry density. The type size
-scale (`--text-*`, `--leading-*`) sets control heights and table density, so a screen that wants
-big type uses `var(--text-xl)` and up in its own content. `--radius-full`, `--bw` and the focus
-ring are accessibility contracts.
+Everything else is outside the kit's guarantee. You may override it, and some apps need to, but the
+contrast gate and the kit's own tests no longer cover what you change: check the contrast yourself
+and write down why in `DESIGN.md`. Take a sanctioned route first when one exists. Colour reaches an
+app through the attributes, including `data-primary-fill="deep"` for a white label on a darker fill.
+Control size has `data-density="touch"` for 44px targets. Spacing (`--space-*`) carries density, and
+the type size scale (`--text-*`, `--leading-*`) sets control heights and table density, so a screen
+that wants big type uses `var(--text-xl)` and up in its own content. `--radius-full`, `--bw` and the
+focus ring are accessibility contracts, and no reason in `DESIGN.md` makes overriding them safe.
 
 `app.identity.css` is the one file where literal values belong, and only as values of the tokens
 in the table. Shadows need four blocks in this order, because the kit sets dark shadows in three
@@ -237,11 +239,11 @@ restating colours per element.
 The **system** default (`@media (prefers-color-scheme: dark)`) stays root-scoped on purpose: that
 rule is about the document, and un-rooting it would re-darken the children of a light island.
 
-`data-primary` and `data-neutral` follow the same selectors, with one difference. They re-point
+`data-primary`, `data-neutral` and `data-primary-fill="deep"` follow the same selectors, with one difference. They re-point
 an alias ramp, and the semantic tokens resolve that ramp where they are declared: on `<html>`, or
 on an element that carries `data-theme`. So put them on `<html>`. To re-brand or re-tint a single
-region, put the axis on that region together with `data-theme`. Never put either axis on a bare
-wrapper: it half-applies. A palette moves the label ink (`--color-on-primary`) but not the fill, so
+region, put the axis on that region together with `data-theme`. Never put any of them on a bare
+wrapper: it half-applies (a bare `deep` subtree gets the 700 fill under the OS dark setting). A palette moves the label ink (`--color-on-primary`) but not the fill, so
 orange, amber, lime, green, emerald, teal and cyan leave dark ink on the azure fill (2.87:1 for orange); a neutral moves
 the tone inks, borders, stripe and danger border but not the surfaces. An inverted island inside an app
 with a non-default look must repeat `data-primary` and `data-neutral` beside its `data-theme`.
@@ -266,6 +268,14 @@ a footer shared with a sibling product that has to line up pixel for pixel. Inhe
 downhill; without that rule a compact root left every subtree compact and a `comfortable` wrapper
 changed nothing. Do not restate the five values by hand: that copy goes stale the moment the kit
 retunes a step.
+
+**`touch` is for apps used on the move.** `data-density="touch"` sets the control height to 2.75rem
+(44px), the smallest target a thumb or a gloved finger hits reliably. It changes only the control
+height, so spacing stays whatever the surrounding density gives. Use it for a whole app used standing
+up (a guard's phone, a warehouse scanner) or for one shell of a mixed app, and avoid `.fdy-btn--sm`
+there: it is 36px under `touch`. A `touch` region nested inside a compact one keeps compact spacing;
+to get touch with comfortable spacing there, put `touch` on a comfortable ancestor (or nest
+`comfortable` first). `comfortable` resets `touch` the way it resets `compact`.
 
 ## 6b. Navigation: one component, two orientations, and never a tab role
 
@@ -357,5 +367,26 @@ Three habits make every app look like the same template, so avoid them:
   flat.
 - **A sidebar for a handful of destinations.** An app with only a few places to go reads better
   with `.fdy-nav.fdy-nav--horizontal` in the app bar (§6b), and gets the width back.
+
+## 8. Mobile: the phone is its own layout
+
+A phone gets its own layout. Most of these rules already live in COMPONENTS.md; they are collected
+here because apps miss them.
+
+- **Navigation.** A bottom nav (`.fdy-bottomnav`) carries three to five destinations, chosen by role.
+  Everything else goes behind an account or "More" item. Labels are required.
+- **Lists, not tables.** Below `md`, a table becomes a `.fdy-list` (COMPONENTS.md, List). A row is
+  one tap target that opens its detail. Row actions move into a `.fdy-menu` behind a "..." button or
+  onto the detail screen; a column of stacked buttons makes one row as tall as the screen.
+- **The primary action stays in reach.** Put it in `.fdy-actionbar` or a `.fdy-fab--extended`, where
+  it stays on screen as the page scrolls.
+- **One frame.** The page header is not wrapped in a card on a phone, because the screen already is
+  the frame.
+- **Drop the views a phone cannot use.** A list/box/grid switch shows only list (and box, if it
+  reads) below `md`.
+- **Say where the user is.** A multi-tenant app (several sites, clusters or companies) shows the
+  current one as a chip in the topbar, with the switch beside it.
+- **Size targets for the way the app is held.** An app used standing up or on the move sets
+  `data-density="touch"` (§6), per app or per shell.
 
 ---

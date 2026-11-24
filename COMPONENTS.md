@@ -563,10 +563,21 @@ and `violet` shift one step lighter in dark, because at their mid shade neither 
 reaches 4.5:1. `noir` is not a hue at all — it re-points the alias ramp at the neutral ramp, so
 "primary" becomes near-black in light and near-white in dark.
 
+**Deep fill: `data-primary-fill="deep"`.** For a white label on a darker fill, in the light theme
+only. The fill, hover, active and strong ink move one shade down the palette's ramp (fill 700,
+hover/active/strong 800, focus ring 700), and the label becomes the palette's measured `onDeep` ink,
+which is white for all 18 palettes (lowest: lime, 4.99:1). The soft wash does not change, and the
+dark theme keeps its normal values. Set it beside `data-primary`, on `<html>` or on a region, and on
+a region only together with `data-theme` on the same element: on a bare subtree it half-applies
+(under the OS dark setting that subtree gets the 700 fill).
+
 Density: `data-density="compact"` works on `<html>` **or any wrapper**, because the selector is a bare
 `[data-density="compact"]` over inheriting custom properties, so one screen can be dense while the
 rest of the app is not. `data-density="comfortable"` is a real rule too, so the reverse also works:
 a compact root with one region opted back out (shared chrome that must match a sibling product).
+`data-density="touch"` is the third value: 2.75rem (44px) controls, for an app used standing up or on
+the move. It sets only the control height, so a touch region inside a compact one keeps compact
+spacing; put `touch` on a comfortable ancestor to avoid that. `comfortable` resets it too.
 
 ---
 
