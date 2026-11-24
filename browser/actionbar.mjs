@@ -133,15 +133,53 @@ test('inside a .fdy-page wrapper on a desktop, the bar is at the viewport edge a
   });
 });
 
-test('a bar inside a fixed dialog in the nav shell is not lifted by the nav offset', { skip }, async () => {
+// The adapters' shell renders its slot inside main: main > [page, closed dialog, the fixed nav].
+const ronda = (p) => p.evalJS(`(() => {
+  const main = document.getElementById('main');
+  const page = document.createElement('div');
+  page.className = 'fdy-page';
+  while (main.firstChild) page.appendChild(main.firstChild);
+  main.appendChild(page);
+  main.appendChild(document.createElement('dialog'));
+  main.appendChild(document.getElementById('nav'));
+  return true;
+})()`);
+
+test('Ronda layout (page, closed dialog, nav inside main) on a phone: the bar rests on the nav at the end', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await ronda(p);
+    await toEnd(p);
+    const bar = await box(p, '#bar');
+    const nav = await box(p, '#nav');
+    const row = await box(p, '#row40');
+    assert.ok(Math.abs(nav.top - bar.bottom) <= 0.5, `at the end the bar ends at ${bar.bottom}px, the nav starts at ${nav.top}px`);
+    assert.ok(row.bottom <= bar.top + 0.5, `the last row ends at ${row.bottom}px under the bar at ${bar.top}px`);
+  });
+});
+
+test('Ronda layout on a desktop: the bar is at the viewport edge at the end', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...DESKTOP);
+    await ronda(p);
+    await toEnd(p);
+    const bar = await box(p, '#bar');
+    const row = await box(p, '#row40');
+    assert.ok(Math.abs(bar.bottom - DESKTOP[1]) <= 0.5, `at the end the bar ends at ${bar.bottom}px, the viewport at ${DESKTOP[1]}px`);
+    assert.ok(row.bottom <= bar.top + 0.5, `the last row ends at ${row.bottom}px under the bar at ${bar.top}px`);
+  });
+});
+
+test('a bar inside an open dialog inside main is not lifted by the nav offset', { skip }, async () => {
   await withPage(fixture('vanilla-actionbar.html'), async (p) => {
     await p.setViewport(...PHONE);
     await p.evalJS(`(() => {
-      const d = document.createElement('div');
+      const d = document.createElement('dialog');
       d.id = 'dlg';
-      d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;height:200px;overflow:auto;z-index:60;';
+      d.style.cssText = 'position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:0;border:0;height:200px;overflow:auto;z-index:60;';
       d.innerHTML = '<div style="height:500px"></div><div class="fdy-actionbar" id="dbar"><button class="fdy-btn" type="button">OK</button></div>';
-      document.getElementById('app').appendChild(d);
+      document.getElementById('main').appendChild(d);
+      d.show();
       return true;
     })()`);
     const bar = await box(p, '#dbar');

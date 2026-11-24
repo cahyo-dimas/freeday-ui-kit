@@ -247,7 +247,7 @@ wrapper. A palette moves the label ink (`--color-on-primary`) but not the fill, 
 orange, amber, lime, green, emerald, teal and cyan leave dark ink on the azure fill (2.87:1 for orange); a neutral moves
 the tone inks, borders, stripe and danger border but not the surfaces. A bare `deep` wrapper applies
 its light values in every theme, so under any dark theme (an ancestor's or the OS's) its fill and
-strong ink are wrong: on teal, a 700 fill and 800 strong ink on the dark surface measure about 2.5:1.
+strong ink are wrong: on teal, the 800 strong ink measures about 2.5:1 on the dark surface.
 An inverted island inside an app with a non-default look must repeat `data-primary`, `data-neutral`
 and `data-primary-fill` beside its `data-theme`; a deep island that leaves out `data-primary` inherits
 the page palette's ink, and teal gets white on its 500 fill.

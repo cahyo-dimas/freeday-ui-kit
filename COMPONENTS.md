@@ -2172,8 +2172,10 @@ and a row nobody can scroll to is a row nobody knows is there.
 ## Action bar — `.fdy-actionbar`
 One to three actions pinned to the bottom of the screen, where a thumb reaches them on a phone: the
 sign-in button, approve and reject on a document, save at the end of a long form. Put it as the last
-child of the page content (`.fdy-app__main`), or of a single page wrapper such as `.fdy-page` that is
-main's last child and has no bottom padding, border or margin of its own. It holds `.fdy-btn` elements. They share the width, and
+child of the page content (`.fdy-app__main`), or of one page wrapper such as `.fdy-page` inside it. The
+wrapper must be the last in-flow content of main and have no bottom padding, border or margin of its own;
+the fixed bottom nav and closed dialogs may follow it. A bar inside a modal or drawer is not offset.
+It holds `.fdy-btn` elements. They share the width, and
 the primary action goes last, nearest the thumb.
 
 - It is `position: sticky`, so it keeps its place in the flow and never covers the last row above it.
