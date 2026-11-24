@@ -415,6 +415,56 @@ for (const n of NEUTRALS) {
   });
 }
 
+/* --- the deep primary fill ------------------------------------------------------------------
+ *
+ * Light: every palette under every neutral passes the palette contract with the fill one shade
+ * deeper and the measured onDeep ink. Dark: deep must change nothing; the generic dark twin
+ * restates the default's values, and a dark-ink palette needs its own twin or its label goes
+ * white, so this compares resolved values rather than trusting the blocks. Spread in source and
+ * specificity order: palette (0,1,0), deep (0,1,0, later), palette-specific deep (0,2,0); in dark,
+ * the deep dark twin (0,2,0) after the palette's dark twin, then the palette-specific one (0,3,0). */
+const DEEP = '[data-primary-fill="deep"]';
+const DEEP_KEYS = ['--color-primary', '--color-primary-hover', '--color-primary-active', '--color-primary-strong',
+  '--color-primary-rgb', '--focus-ring', '--color-on-primary', '--color-on-primary-rgb'];
+const resolved = (k, t) => {
+  let v = t[k];
+  for (let i = 0; i < 20 && v.includes('var('); i++) v = v.replace(/var\((--[\w-]+)\)/g, (_, n) => t[n]);
+  return v;
+};
+
+test('the deep fill is actually emitted', () => {
+  assert.equal(block(css, DEEP)['--color-primary'], 'var(--primary-700)', 'no deep light block, or it maps the fill elsewhere');
+  assert.ok(Object.keys(block(css, `[data-theme="dark"]${DEEP}`)).length >= 6, 'no deep dark twin');
+});
+
+for (const n of [null, ...NEUTRALS]) {
+  const label = n ?? 'slate';
+  const nl = n === null ? {} : block(css, `[data-neutral="${n}"]`);
+  const nd = n === null ? {} : block(css, `[data-theme="dark"][data-neutral="${n}"]`);
+
+  test(`WCAG contrast: deep fill under every palette, neutral ${label} (LIGHT)`, () => {
+    const fails = [];
+    for (const p of PALETTES) {
+      const theme = { ...base, ...nl, ...paletteScope(p, ''), ...block(css, DEEP), ...block(css, `[data-primary="${p}"]${DEEP}`) };
+      assert.equal(theme['--color-primary'], 'var(--primary-700)', `${p}: deep did not reach the fill`);
+      for (const f of paletteFails(theme)) fails.push(`${p}: ${f}`);
+    }
+    assert.deepEqual(fails, [], `deep fill (${label}, LIGHT):\n  ` + fails.join('\n  '));
+  });
+
+  test(`deep leaves the dark theme alone, neutral ${label}`, () => {
+    const moved = [];
+    for (const p of PALETTES) {
+      const plain = { ...base, ...darkVars, ...nl, ...nd, ...paletteScope(p, ''), ...paletteScope(p, '[data-theme="dark"]') };
+      const deep = { ...plain, ...block(css, DEEP), ...block(css, `[data-theme="dark"]${DEEP}`), ...block(css, `[data-theme="dark"][data-primary="${p}"]${DEEP}`) };
+      for (const k of DEEP_KEYS) {
+        if (resolved(k, deep) !== resolved(k, plain)) moved.push(`${p} ${k}: ${resolved(k, plain)} -> ${resolved(k, deep)}`);
+      }
+    }
+    assert.deepEqual(moved, [], `deep moved dark values (${label}):\n  ` + moved.join('\n  '));
+  });
+}
+
 /* --- no component paints TEXT with --color-primary ----------------------------------------------
  *
  * The numbers above bind the roles somebody thought to name. The defect this guard replaces was not
