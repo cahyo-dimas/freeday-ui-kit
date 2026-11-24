@@ -307,3 +307,22 @@ test('each palette block carries its own 700 channels', () => {
   const noir = neutralBlock(css, '[data-primary="noir"]');
   assert.equal(noir['--primary-700-rgb'], 'var(--neutral-800-rgb)');
 });
+
+test('a palette whose onDeep differs from the default gets its own deep ink block and light twin', () => {
+  const css = buildPrimaryFillCss({
+    primary: { 600: { $value: '{azure.600}' } },
+    color: { primary: { $value: '{primary.600}', $dark: '{primary.500}' } },
+    $primaryFill: { deep: { 'color-primary': '{primary.700}' } },
+    $primaries: {
+      azure: { onDeep: '{neutral.0}', on: '{neutral.0}', onDark: '{neutral.0}' },
+      teal: { onDeep: '{neutral.950}', on: '{neutral.0}', onDark: '{neutral.0}' },
+      plain: { onDeep: '{neutral.0}', on: '{neutral.0}', onDark: '{neutral.0}' },
+    },
+  });
+  for (const sel of ['[data-primary="teal"][data-primary-fill="deep"]', '[data-theme="light"][data-primary="teal"][data-primary-fill="deep"]']) {
+    const block = neutralBlock(css, sel);
+    assert.equal(block['--color-on-primary'], 'var(--neutral-950)', `${sel} states the palette's own deep ink`);
+    assert.equal(block['--color-on-primary-rgb'], 'var(--neutral-950-rgb)');
+  }
+  assert.ok(!css.includes('[data-primary="plain"][data-primary-fill="deep"]'), 'a palette that agrees with the default adds no block');
+});

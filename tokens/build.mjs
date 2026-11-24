@@ -123,12 +123,20 @@ export function tripleDecls(names, index) {
    triple the default never asked for would be missing under exactly the neutral that needs it. */
 export const NEUTRAL_SHADES = ['0', '50', '100', '200', '300', '400', '450', '500', '600', '700', '800', '850', '900', '950'];
 
+/** Every token source that can ask for a `-rgb` triple. A new axis is added here once and both
+ *  `wantedTriples` and `buildPrimariesCss` see it. */
+function tripleRequestSources(tokens, flat) {
+  return [
+    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]),
+    ...Object.values(tokens.$primaryFill?.deep ?? {}),
+  ];
+}
+
 /** Every token name whose `-rgb` triple the stylesheet must carry. */
 export function wantedTriples(tokens, flat) {
   const names = rgbRefsIn([
-    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]),
+    ...tripleRequestSources(tokens, flat),
     ...primaryInkRefs(tokens),
-    ...Object.values(tokens.$primaryFill?.deep ?? {}),
   ]);
   /* A token set without the alias (a synthetic fixture) has no neutral triples to carry. */
   if (tokens.neutral !== undefined) for (const s of NEUTRAL_SHADES) names.add(`neutral-${s}`);
@@ -457,10 +465,7 @@ export function buildPrimariesCss(tokens) {
   /* Which shades need a channel triple is read off the tokens, not listed here: a semantic that
      starts asking for {primary.300.rgb} gains its triple in all 18 palettes without this function
      being touched, and one that stops asking loses it. */
-  const asked = rgbRefsIn([
-    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]),
-    ...Object.values(tokens.$primaryFill?.deep ?? {}),
-  ]);
+  const asked = rgbRefsIn(tripleRequestSources(tokens, flat));
   const rgbShades = SHADES.filter(s => asked.has(`primary-${s}`));
   /* A palette built on the neutral alias (noir) keeps its channels on the alias too. A literal
      triple here would be slate's, and stay slate's under data-neutral. */
