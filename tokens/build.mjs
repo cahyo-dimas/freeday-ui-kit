@@ -128,6 +128,7 @@ export function wantedTriples(tokens, flat) {
   const names = rgbRefsIn([
     ...flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]),
     ...primaryInkRefs(tokens),
+    ...Object.values(tokens.$primaryFill?.deep ?? {}),
   ]);
   /* A token set without the alias (a synthetic fixture) has no neutral triples to carry. */
   if (tokens.neutral !== undefined) for (const s of NEUTRAL_SHADES) names.add(`neutral-${s}`);
@@ -294,7 +295,7 @@ ${touch}
 [data-density="comfortable"] {
 ${comfortable}
 }
-${buildStylesCss(flat)}${buildNeutralsCss(tokens)}${buildPrimariesCss(tokens)}`;
+${buildStylesCss(flat)}${buildNeutralsCss(tokens)}${buildPrimariesCss(tokens)}${buildPrimaryFillCss(tokens)}`;
 }
 
 /* The visual-style axis. `soft` is the kit's own look and the default; `glass` frosts the RAISED
@@ -418,6 +419,14 @@ export function buildNeutralsCss(tokens) {
     + out.join('\n') + '\n';
 }
 
+/** The channel triple a palette shade ref stands for: a bare `{neutral.N}` ref becomes
+ * `{neutral.N.rgb}` so it follows data-neutral (noir), anything else is resolved to a literal triple. */
+export function paletteTriple(ref, index) {
+  return /^\{neutral\.\d+\}$/.test(ref)
+    ? ref.replace(/\}$/, '.rgb}')
+    : hexToTriple(hexOfValue(ref, index));
+}
+
 /* The primary-palette axis. Each palette redefines the eight-shade `primary` ALIAS ramp, never the
  * semantics — so which shade is the fill, which is hover and which is the soft wash is stated once,
  * in `color.primary*`, and a palette that got one of them wrong is not a shape this can produce.
@@ -452,9 +461,7 @@ export function buildPrimariesCss(tokens) {
   const rgbShades = SHADES.filter(s => asked.has(`primary-${s}`));
   /* A palette built on the neutral alias (noir) keeps its channels on the alias too. A literal
      triple here would be slate's, and stay slate's under data-neutral. */
-  const triple = (ref) => (/^\{neutral\.\d+\}$/.test(ref)
-    ? ref.replace(/\}$/, '.rgb}')
-    : hexToTriple(hexOfValue(ref, index)));
+  const triple = (ref) => paletteTriple(ref, index);
 
   for (const [name, p] of Object.entries(spec)) {
     if (name.startsWith('_')) continue;
@@ -493,6 +500,69 @@ export function buildPrimariesCss(tokens) {
   }
   return `/* Primary palette axis. ${Object.keys(spec).filter(k => !k.startsWith('_')).length} options, see $primaries in tokens.json. */\n`
     + out.join('\n') + '\n';
+}
+
+/* The primary-fill sub-axis. `deep` puts the fill family one shade down the alias ramp in the LIGHT
+ * theme, for an app that wants a white label on a darker fill (a measured choice per palette,
+ * `onDeep`). Dark is left alone: a dark fill is already lighter than the surface needs, and a
+ * deeper one would lower the fill against the surface.
+ *
+ * Which token points where is data ($primaryFill.deep), so this function only emits scopes:
+ * - the light block (0,1,0), after every palette block, so it wins their fill and ink;
+ * - its [data-theme="dark"] twin (0,2,0) and system-dark twin (0,3,0), restating each token's
+ *   normal dark value, because a later (0,1,0) block would otherwise win in an explicit dark theme;
+ * - a [data-theme="light"] re-assert, as every axis has;
+ * - per palette: its 700 channel triple (so --color-primary-rgb follows the palette without touching
+ *   palette blocks), and where the palette's ink differs from the default's: its own deep light block for
+ *   onDeep (0,2,0), and deep dark twins (0,3,0) and (0,4,0) for onDark, since the generic dark twin
+ *   restates the DEFAULT dark ink and would put white on teal. */
+export function buildPrimaryFillCss(tokens) {
+  const deep = tokens.$primaryFill?.deep;
+  const spec = tokens.$primaries;
+  if (deep === undefined || spec === undefined) return '';
+  const flat = flatten(tokens);
+  const byName = new Map(flat.map(t => [t.name, t]));
+  const index = valueIndex(flat);
+  const defaultName = String(tokens.primary['600'].$value).match(/^\{(\w+)\.600\}$/)?.[1];
+  const dflt = spec[defaultName];
+  if (dflt === undefined) throw new Error(`the primary alias defaults to "${defaultName}", which is not in $primaries`);
+  const ink = (ref) => [decl('color-on-primary', ref), decl('color-on-primary-rgb', ref.replace(/\}$/, '.rgb}'))];
+  const darkOf = (name) => {
+    const t = byName.get(name);
+    if (t === undefined) throw new Error(`$primaryFill.deep names --${name}, which is not a token`);
+    return decl(name, t.dark ?? t.value);
+  };
+  const lightDecls = [...Object.entries(deep).map(([n, ref]) => decl(n, ref)), ...ink(dflt.onDeep)].join('\n');
+  const darkDecls = [...Object.keys(deep).map(darkOf), ...ink(dflt.onDark)].join('\n');
+  const SEL = '[data-primary-fill="deep"]';
+  const SYS = ':root:not([data-theme="light"])';
+  const out = [
+    `${SEL} {\n${lightDecls}\n}`,
+    `@media (prefers-color-scheme: dark) {\n  ${SYS}${SEL} {\n${darkDecls}\n  }\n}`,
+    `[data-theme="dark"]${SEL} {\n${darkDecls}\n}`,
+    `[data-theme="light"]${SEL} {\n${lightDecls}\n}`,
+  ];
+  for (const [name, p] of Object.entries(spec)) {
+    if (name.startsWith('_')) continue;
+    if (p.onDeep === undefined) throw new Error(`$primaries.${name} has no onDeep, measure the ink on its 700 shade`);
+    const P = `[data-primary="${name}"]${SEL}`;
+    /* The shade is restated beside its triple (the same value the palette block gives), because a
+       triple is only ever emitted next to the shade it belongs to. */
+    const shade700 = p.light?.['700'] ?? `{${p.ramp}.700}`;
+    const lightLines = [
+      decl('primary-700', shade700),
+      decl('primary-700-rgb', paletteTriple(shade700, index)),
+      ...(p.onDeep !== dflt.onDeep ? ink(p.onDeep) : []),
+    ].join('\n');
+    out.push(`${P} {\n${lightLines}\n}`, `[data-theme="light"]${P} {\n${lightLines}\n}`);
+    if (p.onDark !== dflt.onDark) {
+      out.push(
+        `@media (prefers-color-scheme: dark) {\n  ${SYS}${P} {\n${ink(p.onDark).join('\n')}\n  }\n}`,
+        `[data-theme="dark"]${P} {\n${ink(p.onDark).join('\n')}\n}`,
+      );
+    }
+  }
+  return '/* Primary fill sub-axis, see $primaryFill in tokens.json. */\n' + out.join('\n') + '\n';
 }
 
 /* The CSS half of the breakpoint scale.

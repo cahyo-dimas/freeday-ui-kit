@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss, buildNeutralsCss, neutralDarkKeys, NEUTRAL_SHADES, evalMix, flattenMixes } from '../tokens/build.mjs';
+import { flatten, resolveValue, buildTokensCss, bundleCss, bundleJs, bundleFullCss, buildMediaCss, buildNeutralsCss, buildPrimaryFillCss, hexToTriple, hexOfName, valueIndex, neutralDarkKeys, NEUTRAL_SHADES, evalMix, flattenMixes } from '../tokens/build.mjs';
 
 test('bundleFullCss: tokens then components, both present', () => {
   const out = bundleFullCss('/* tok */\n:root{--a:1}', '/* comp */\n.fdy-x{color:var(--a)}');
@@ -263,4 +263,47 @@ test('the system-dark twin carries exactly the declarations of the explicit dark
     assert.ok(Object.keys(sys).length > 0 && Object.keys(exp).length > 0, `empty block for ${system} or ${explicit}`);
     assert.deepEqual(sys, exp, `${system} drifted from ${explicit}`);
   }
+});
+
+test('every palette states the ink it uses on the deep fill', () => {
+  for (const [name, p] of Object.entries(TOKENS.$primaries)) {
+    if (name.startsWith('_')) continue;
+    assert.match(String(p.onDeep), /^\{neutral\.\d+\}$/, `$primaries.${name}.onDeep must be a measured neutral ink`);
+  }
+});
+
+test('deep re-points exactly the fill family, light theme only', () => {
+  const css = buildTokensCss(TOKENS);
+  const light = neutralBlock(css, '[data-primary-fill="deep"]');
+  assert.deepEqual(light, {
+    '--color-primary': 'var(--primary-700)',
+    '--color-primary-hover': 'var(--primary-800)',
+    '--color-primary-active': 'var(--primary-800)',
+    '--color-primary-strong': 'var(--primary-800)',
+    '--color-primary-rgb': 'var(--primary-700-rgb)',
+    '--focus-ring': 'var(--primary-700)',
+    '--color-on-primary': 'var(--neutral-0)',
+    '--color-on-primary-rgb': 'var(--neutral-0-rgb)',
+  });
+  const dark = neutralBlock(css, '[data-theme="dark"][data-primary-fill="deep"]');
+  const flat = flatten(TOKENS);
+  for (const k of Object.keys(light).filter(k => !k.startsWith('--color-on-primary'))) {
+    const t = flat.find(x => `--${x.name}` === k);
+    assert.equal(dark[k], resolveValue(t.dark ?? t.value), `${k} must be restated to its normal dark value`);
+  }
+});
+
+test('a dark-ink palette gets its own deep dark twin', () => {
+  const css = buildTokensCss(TOKENS);
+  const twin = neutralBlock(css, '[data-theme="dark"][data-primary="teal"][data-primary-fill="deep"]');
+  assert.equal(twin['--color-on-primary'], 'var(--neutral-950)',
+    'the generic deep dark block restates the default dark ink, which is wrong for teal');
+});
+
+test('each deep palette block carries its own 700 channels', () => {
+  const css = buildTokensCss(TOKENS);
+  const teal = neutralBlock(css, '[data-primary="teal"][data-primary-fill="deep"]');
+  assert.equal(teal['--primary-700-rgb'], hexToTriple(hexOfName('teal-700', valueIndex(flatten(TOKENS)))));
+  const noir = neutralBlock(css, '[data-primary="noir"][data-primary-fill="deep"]');
+  assert.equal(noir['--primary-700-rgb'], 'var(--neutral-800-rgb)');
 });
