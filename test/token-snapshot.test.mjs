@@ -35,6 +35,12 @@ for (const style of ['soft', 'glass']) {
 
 for (const palette of Object.keys(expected.palettes)) {
   test(`3.20.0 values hold: palette ${palette}`, () => {
-    assert.deepEqual(actual.palettes[palette], expected.palettes[palette]);
+    /* --primary-700-rgb: added in 3.22.0 for data-primary-fill="deep"; nothing reads it without
+       that attribute. Owner-approved exception; no other key may be added. */
+    const strip = (m) => Object.fromEntries(Object.entries(m).filter(([k]) => k !== '--primary-700-rgb'));
+    assert.deepEqual(
+      { light: strip(actual.palettes[palette].light), dark: strip(actual.palettes[palette].dark) },
+      expected.palettes[palette],
+    );
   });
 }

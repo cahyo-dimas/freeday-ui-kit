@@ -300,10 +300,10 @@ test('a dark-ink palette gets its own deep dark twin', () => {
     'the generic deep dark block restates the default dark ink, which is wrong for teal');
 });
 
-test('each deep palette block carries its own 700 channels', () => {
+test('each palette block carries its own 700 channels', () => {
   const css = buildTokensCss(TOKENS);
-  const teal = neutralBlock(css, '[data-primary="teal"][data-primary-fill="deep"]');
+  const teal = neutralBlock(css, '[data-primary="teal"]');
   assert.equal(teal['--primary-700-rgb'], hexToTriple(hexOfName('teal-700', valueIndex(flatten(TOKENS)))));
-  const noir = neutralBlock(css, '[data-primary="noir"][data-primary-fill="deep"]');
+  const noir = neutralBlock(css, '[data-primary="noir"]');
   assert.equal(noir['--primary-700-rgb'], 'var(--neutral-800-rgb)');
 });

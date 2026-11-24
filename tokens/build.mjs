@@ -457,7 +457,10 @@ export function buildPrimariesCss(tokens) {
   /* Which shades need a channel triple is read off the tokens, not listed here: a semantic that
      starts asking for {primary.300.rgb} gains its triple in all 18 palettes without this function
      being touched, and one that stops asking loses it. */
-  const asked = rgbRefsIn(flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]));
+  const asked = rgbRefsIn([
+    ...flat.flatMap(t => [t.value, t.dark, t.compact, t.touch, t.glass, t.glassDark]),
+    ...Object.values(tokens.$primaryFill?.deep ?? {}),
+  ]);
   const rgbShades = SHADES.filter(s => asked.has(`primary-${s}`));
   /* A palette built on the neutral alias (noir) keeps its channels on the alias too. A literal
      triple here would be slate's, and stay slate's under data-neutral. */
@@ -512,20 +515,18 @@ export function buildPrimariesCss(tokens) {
  * - its [data-theme="dark"] twin (0,2,0) and system-dark twin (0,3,0), restating each token's
  *   normal dark value, because a later (0,1,0) block would otherwise win in an explicit dark theme;
  * - a [data-theme="light"] re-assert, as every axis has;
- * - per palette: its 700 channel triple (so --color-primary-rgb follows the palette without touching
- *   palette blocks), and where the palette's ink differs from the default's: its own deep light block for
+ * - per palette, where the palette's ink differs from the default's: its own deep light block for
  *   onDeep (0,2,0), and deep dark twins (0,3,0) and (0,4,0) for onDark, since the generic dark twin
  *   restates the DEFAULT dark ink and would put white on teal. */
 export function buildPrimaryFillCss(tokens) {
   const deep = tokens.$primaryFill?.deep;
   const spec = tokens.$primaries;
   if (deep === undefined || spec === undefined) return '';
-  const flat = flatten(tokens);
-  const byName = new Map(flat.map(t => [t.name, t]));
-  const index = valueIndex(flat);
+  const byName = new Map(flatten(tokens).map(t => [t.name, t]));
   const defaultName = String(tokens.primary['600'].$value).match(/^\{(\w+)\.600\}$/)?.[1];
   const dflt = spec[defaultName];
   if (dflt === undefined) throw new Error(`the primary alias defaults to "${defaultName}", which is not in $primaries`);
+  if (dflt.onDeep === undefined) throw new Error(`the default palette "${defaultName}" has no onDeep`);
   const ink = (ref) => [decl('color-on-primary', ref), decl('color-on-primary-rgb', ref.replace(/\}$/, '.rgb}'))];
   const darkOf = (name) => {
     const t = byName.get(name);
@@ -546,15 +547,9 @@ export function buildPrimaryFillCss(tokens) {
     if (name.startsWith('_')) continue;
     if (p.onDeep === undefined) throw new Error(`$primaries.${name} has no onDeep, measure the ink on its 700 shade`);
     const P = `[data-primary="${name}"]${SEL}`;
-    /* The shade is restated beside its triple (the same value the palette block gives), because a
-       triple is only ever emitted next to the shade it belongs to. */
-    const shade700 = p.light?.['700'] ?? `{${p.ramp}.700}`;
-    const lightLines = [
-      decl('primary-700', shade700),
-      decl('primary-700-rgb', paletteTriple(shade700, index)),
-      ...(p.onDeep !== dflt.onDeep ? ink(p.onDeep) : []),
-    ].join('\n');
-    out.push(`${P} {\n${lightLines}\n}`, `[data-theme="light"]${P} {\n${lightLines}\n}`);
+    if (p.onDeep !== dflt.onDeep) {
+      out.push(`${P} {\n${ink(p.onDeep).join('\n')}\n}`, `[data-theme="light"]${P} {\n${ink(p.onDeep).join('\n')}\n}`);
+    }
     if (p.onDark !== dflt.onDark) {
       out.push(
         `@media (prefers-color-scheme: dark) {\n  ${SYS}${P} {\n${ink(p.onDark).join('\n')}\n  }\n}`,
