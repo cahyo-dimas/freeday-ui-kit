@@ -427,8 +427,9 @@ const DEEP = '[data-primary-fill="deep"]';
 const DEEP_KEYS = ['--color-primary', '--color-primary-hover', '--color-primary-active', '--color-primary-strong',
   '--color-primary-rgb', '--focus-ring', '--color-on-primary', '--color-on-primary-rgb'];
 const resolved = (k, t) => {
-  let v = t[k];
-  for (let i = 0; i < 20 && v.includes('var('); i++) v = v.replace(/var\((--[\w-]+)\)/g, (_, n) => t[n]);
+  const get = (n) => { if (t[n] === undefined) throw new Error(`undefined custom property ${n}`); return t[n]; };
+  let v = get(k);
+  for (let i = 0; i < 20 && v.includes('var('); i++) v = v.replace(/var\((--[\w-]+)\)/g, (_, n) => get(n));
   return v;
 };
 
@@ -447,9 +448,46 @@ for (const n of [null, ...NEUTRALS]) {
     for (const p of PALETTES) {
       const theme = { ...base, ...nl, ...paletteScope(p, ''), ...block(css, DEEP), ...block(css, `[data-primary="${p}"]${DEEP}`) };
       assert.equal(theme['--color-primary'], 'var(--primary-700)', `${p}: deep did not reach the fill`);
+      assert.equal(resolved('--color-primary-rgb', theme), resolved('--primary-700-rgb', theme), `${p}: rgb leg is not the 700 channels`);
       for (const f of paletteFails(theme)) fails.push(`${p}: ${f}`);
     }
     assert.deepEqual(fails, [], `deep fill (${label}, LIGHT):\n  ` + fails.join('\n  '));
+  });
+
+  /* Explicit light theme: [data-theme="light"][data-primary="teal"] (0,2,0) re-asserts teal's dark
+     ink over deep L (0,1,0); only [data-theme="light"][data-primary-fill="deep"] (0,2,0, later)
+     restores the white label. Spread by specificity, ties by source order: palette (0,1,0), deep
+     (0,1,0), palette light twin (0,2,0), light deep twin (0,2,0, later), palette deep (0,2,0),
+     palette light deep (0,3,0). */
+  test(`WCAG contrast: deep fill under every palette, neutral ${label} (explicit LIGHT theme)`, () => {
+    const fails = [];
+    for (const p of PALETTES) {
+      const theme = { ...base, ...block(css, '[data-theme="light"]'), ...nl, ...paletteScope(p, ''),
+        ...block(css, DEEP), ...paletteScope(p, '[data-theme="light"]'), ...block(css, `[data-theme="light"]${DEEP}`),
+        ...block(css, `[data-primary="${p}"]${DEEP}`), ...block(css, `[data-theme="light"][data-primary="${p}"]${DEEP}`) };
+      if (theme['--color-primary'] !== 'var(--primary-700)') fails.push(`${p}: deep did not reach the fill`);
+      if (resolved('--color-on-primary', theme) !== '#ffffff') fails.push(`${p}: label is ${resolved('--color-on-primary', theme)}, not white`);
+      if (resolved('--color-primary-rgb', theme) !== resolved('--primary-700-rgb', theme)) fails.push(`${p}: rgb leg is not the 700 channels`);
+      for (const f of paletteFails(theme)) fails.push(`${p}: ${f}`);
+    }
+    assert.deepEqual(fails, [], `deep fill (${label}, explicit LIGHT):\n  ` + fails.join('\n  '));
+  });
+
+  /* OS dark, spread by specificity: palette L (0,1,0), deep L (0,1,0, later), base system-dark
+     (0,2,0), neutral system-dark (0,3,0), palette system-dark (0,3,0), generic deep system-dark
+     twin (0,3,0), per-palette deep system-dark twin (0,4,0). */
+  test(`deep leaves the OS dark setting alone, neutral ${label}`, () => {
+    const moved = [];
+    for (const p of PALETTES) {
+      const sys = [mediaBlock(SYSTEM_DARK), n === null ? {} : mediaBlock(`${SYSTEM_DARK}[data-neutral="${n}"]`), mediaBlock(`${SYSTEM_DARK}[data-primary="${p}"]`)];
+      const plain = { ...base, ...nl, ...paletteScope(p, ''), ...sys[0], ...sys[1], ...sys[2] };
+      const deep = { ...base, ...nl, ...paletteScope(p, ''), ...block(css, DEEP), ...sys[0], ...sys[1], ...sys[2],
+        ...mediaBlock(`${SYSTEM_DARK}${DEEP}`), ...mediaBlock(`${SYSTEM_DARK}[data-primary="${p}"]${DEEP}`) };
+      for (const k of DEEP_KEYS) {
+        if (resolved(k, deep) !== resolved(k, plain)) moved.push(`${p} ${k}: ${resolved(k, plain)} -> ${resolved(k, deep)}`);
+      }
+    }
+    assert.deepEqual(moved, [], `deep moved OS dark values (${label}):\n  ` + moved.join('\n  '));
   });
 
   test(`deep leaves the dark theme alone, neutral ${label}`, () => {
