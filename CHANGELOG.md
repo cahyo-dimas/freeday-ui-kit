@@ -13,16 +13,17 @@ sisi kit.
 
 **Sebuah app yang dipakai di HP punya tombol berukuran ibu jari, isian primary yang lebih dalam, dan
 bilah aksi yang menempel di atas navigasi bawah.** Tanpa atribut baru, setiap token tetap bernilai
-sama dengan 3.21.0 di terang, gelap, `soft`, `glass`, di bawah semua palet dan netral
-(`test/token-snapshot.test.mjs`).
+sama dengan 3.21.0 di terang, gelap, `soft`, `glass`, di bawah semua palet dan netral, selain satu
+token baru, `--primary-700-rgb`, di setiap blok palet (tak ada yang membacanya tanpa
+`data-primary-fill="deep"`). `test/token-snapshot.test.mjs` menjaganya.
 
 ### Added
 - **`data-density="touch"`.** Menyetel `--control-h` ke `2.75rem` (44px) dan tidak mengubah yang lain.
   Di dalam region `compact` ia mempertahankan spasi compact.
-- **`data-primary-fill="deep"`.** Isian primary memakai shade 700, hover dan active memakai 800, label
-  memakai `onDeep`. Hanya tema terang; tema gelap tidak berubah. `onDeep` bernilai putih di 18 palet
-  (terukur: terendah lime 4,99:1, di bawah slate, grey, dan stone). Setiap blok palet kini juga
-  membawa `--primary-700-rgb`. Region bersarang butuh `data-theme` di elemen yang sama; tanpa itu region
+- **`data-primary-fill="deep"`.** Isian primary memakai shade 700; hover, active, dan strong memakai 800;
+  `--color-primary-rgb` dan cincin fokus memakai 700; label memakai `onDeep`. Hanya tema terang; tema
+  gelap tidak berubah. `onDeep` bernilai putih di 18 palet (terukur: terendah lime 4,99:1, di ketiga
+  netral slate, grey, dan stone). Setiap blok palet kini juga membawa `--primary-700-rgb`. Region bersarang butuh `data-theme` di elemen yang sama; tanpa itu region
   hanya setengah terpasang, dan di bawah pengaturan gelap OS ia mendapat isian 700.
 - **`.fdy-actionbar`** (`src/components/actionbar.css`, hanya CSS): aksi yang menempel di atas navigasi
   bawah dan tidak pernah menutup baris terakhir. Bersamanya token `--fdy-bottomnav-h`.
