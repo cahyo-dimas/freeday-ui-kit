@@ -61,7 +61,7 @@ pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
 | # | Kandidat | Kerjakan saat |
 |---|---|---|
 | B2 | **Preset identitas `ledger`, `inbox`, `thread`, `field`**, masing-masing dengan layar desktop dan layar mobile yang dibangun di atas `USAGE.md` §8. Konsep mobilenya datang dari Ronda. Berupa contoh, bukan impor: tak ada jalur import, dan menyalin boleh bila manusia memintanya | owner meminta |
-| R | **Tindak lanjut Ronda** (dimiliki repo Ronda): pakai `data-density="touch"` dan `data-primary-fill="deep"`, hapus `--control-h` dan `--color-primary*` teal yang disetel tangan serta jalan keluar on-primary di `[data-theme='dark']`, lalu terapkan §8 ke layar daftarnya (tabel jadi baris daftar, navigasi bawah 5 item, tanpa kartu di sekitar header halaman, aksi utama di `.fdy-actionbar`, tanpa tampilan Grid di HP) | repo Ronda menaikkan kit ke 3.22.0 |
+| R | **Tindak lanjut Ronda** (dimiliki repo Ronda): pakai `data-density="touch"` dan `data-primary-fill="deep"`, hapus `--control-h` dan `--color-primary*` teal yang disetel tangan dan override `--color-on-primary` di `:root[data-primary=teal]` (kini kalah dari kembaran gelap OS; `deep` menggantikannya). Jalan keluar on-primary di `[data-theme='dark']` baru boleh dihapus setelah region POS gelap membawa `data-primary` di sebelah `data-theme`. Lalu terapkan §8 ke layar daftarnya (tabel jadi baris daftar, navigasi bawah 5 item, tanpa kartu di sekitar header halaman, aksi utama di `.fdy-actionbar`, tanpa tampilan Grid di HP) | repo Ronda menaikkan kit ke 3.22.0 |
 
 **Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel
 pihak ketiga. Yang diambil hanya polanya. Tiap fitur dibrainstorm setelah branch

@@ -326,7 +326,7 @@
     <h1 class="fdy-app__title">Komponen</h1>
     <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="lang" aria-label="Switch to English" title="Bahasa / Language">EN</button>
     <button class="fdy-btn fdy-btn--ghost fdy-btn--icon fdy-btn--sm" id="theme" aria-label="Ganti tema (terang / gelap)" title="Ganti tema" aria-pressed="false"><span class="fdy-btn__icon" id="theme-icon"></span></button>
-    <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="density" aria-pressed="false">Kerapatan</button>
+    <button class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="density">Kerapatan: comfortable</button>
   </header>
 
   <main class="fdy-app__main" id="main">
@@ -2296,11 +2296,12 @@
   themeBtn.onclick = () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; paintTheme(); };
   const densityBtn = document.getElementById('density');
   const DENSITIES = ['comfortable', 'compact', 'touch'];
+  // Three states do not fit aria-pressed, so the current value is part of the button's name.
+  const paintDensity = () => { densityBtn.textContent = (root.lang === 'en' ? UI.density : 'Kerapatan') + ': ' + (root.dataset.density || 'comfortable'); };
   densityBtn.onclick = () => {
     const d = DENSITIES[(DENSITIES.indexOf(root.dataset.density) + 1) % DENSITIES.length];
     root.dataset.density = d;
-    densityBtn.setAttribute('aria-pressed', String(d !== 'comfortable'));
-    densityBtn.title = d;
+    paintDensity();
   };
   // Landing language toggle (ID ⇄ EN): swaps [data-i18n] content on the landing section.
   const I18N = {
@@ -2470,8 +2471,8 @@
     document.querySelectorAll('[data-label]').forEach((el) => trAttr(el, 'data-label', en));
     document.querySelectorAll('[data-placeholder]').forEach((el) => trAttr(el, 'data-placeholder', en));
     if (titleEl) { const o = cap(titleEl); titleEl.innerHTML = en ? UI.title : o; }
-    { const o = cap(densityBtn); densityBtn.innerHTML = en ? UI.density : o; }
     root.lang = l;
+    paintDensity();
     langBtn.textContent = l === 'id' ? 'EN' : 'ID';
     langBtn.setAttribute('aria-label', l === 'id' ? 'Switch to English' : 'Ganti ke Bahasa Indonesia');
   };

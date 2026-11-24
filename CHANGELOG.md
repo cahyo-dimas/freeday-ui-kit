@@ -23,10 +23,12 @@ token baru, `--primary-700-rgb`, di setiap blok palet (tak ada yang membacanya t
 - **`data-primary-fill="deep"`.** Isian primary memakai shade 700; hover, active, dan strong memakai 800;
   `--color-primary-rgb` dan cincin fokus memakai 700; label memakai `onDeep`. Hanya tema terang; tema
   gelap tidak berubah. `onDeep` bernilai putih di 18 palet (terukur: terendah lime 4,99:1, di ketiga
-  netral slate, grey, dan stone). Setiap blok palet kini juga membawa `--primary-700-rgb`. Region bersarang butuh `data-theme` di elemen yang sama; tanpa itu region
-  hanya setengah terpasang, dan di bawah pengaturan gelap OS ia mendapat isian 700.
+  netral slate, grey, dan stone). Setiap blok palet kini juga membawa `--primary-700-rgb`. Region bersarang mengulang `data-theme` dan `data-primary` di elemen yang sama. Wrapper
+  polos memakai nilai terang `deep` di semua tema, jadi di bawah tema gelap (milik leluhur atau OS)
+  isian dan tinta strong-nya salah.
 - **`.fdy-actionbar`** (`src/components/actionbar.css`, hanya CSS): aksi yang menempel di atas navigasi
-  bawah dan tidak pernah menutup baris terakhir. Bersamanya token `--fdy-bottomnav-h`.
+  bawah dan tidak pernah menutup baris terakhir. Boleh berada di dalam satu wrapper halaman seperti
+  `.fdy-page` yang menjadi anak terakhir `main`. Bersamanya token `--fdy-bottomnav-h`.
 - **`USAGE.md` §8 Mobile**: HP adalah layout sendiri, bukan desktop yang diperkecil.
 
 ### Fixed
@@ -52,8 +54,13 @@ token baru, `--primary-700-rgb`, di setiap blok palet (tak ada yang membacanya t
 - Ganti `--control-h: 2.75rem` yang disetel tangan dengan `data-density="touch"`.
 - Ganti primary yang lebih dalam yang disetel tangan (`--color-primary: var(--primary-700)` dan
   kawan-kawannya) dengan `data-primary-fill="deep"`.
-- Hapus penyetelan `--color-on-primary` bertinta gelap di bawah `[data-theme='dark']` yang dipasang
-  sebagai jalan keluar dari bug gelap OS; perbaikannya kini ada di kit.
+- Penyetelan `--color-on-primary` bertinta gelap di bawah `[data-theme='dark']` baru boleh dihapus
+  setelah region gelap itu membawa `data-primary` di sebelah `data-theme` (`USAGE.md` §5b). Perbaikan
+  kit hanya berlaku di scope yang menaruh keduanya pada elemen yang sama; region gelap bersarang yang
+  mewarisi palet dari `<html>` masih butuh aturan itu.
+- `--color-on-primary` yang disetel tangan di bawah `:root[data-primary=…]` kini kalah dari
+  `:root:not([data-theme="light"])[data-primary=…]` saat OS gelap. Hapus override itu dan pakai
+  `data-primary-fill="deep"` dalam perubahan yang sama.
 
 ## [3.21.0] - 2026-11-20
 

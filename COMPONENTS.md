@@ -529,7 +529,7 @@ without a reload.
 inks, the chart grid, and the `noir` palette): `slate` (the default, and what you get with no
 attribute), `grey` (no hue) and `stone` (warm). Each shade keeps the lightness of the slate shade
 with the same number, and every option is contrast-gated in both themes and under all 18 palettes.
-Set it on `<html>`; on a region, only together with `data-theme`, because on a bare wrapper it half-applies (`USAGE.md` §5b).
+Set it on `<html>`; on a region, only together with `data-theme`, because a bare wrapper takes the ink but not the surfaces (`USAGE.md` §5b).
 
 ```html
 <html data-neutral="stone" data-primary="noir">
@@ -568,8 +568,10 @@ only. The fill, hover, active and strong ink move one shade down the palette's r
 hover/active/strong 800, focus ring 700), and the label becomes the palette's measured `onDeep` ink,
 which is white for all 18 palettes (lowest: lime, 4.99:1). The soft wash does not change, and the
 dark theme keeps its normal values. Set it beside `data-primary`, on `<html>` or on a region, and on
-a region only together with `data-theme` on the same element: on a bare subtree it half-applies
-(under the OS dark setting that subtree gets the 700 fill).
+a region only together with `data-theme` and `data-primary` on the same element. A bare wrapper
+applies deep's light values in every theme, so under any dark theme (an ancestor's or the OS's) its fill
+and strong ink are wrong. Noir is the odd one: its deep fill (neutral-800) is lighter than its standard
+fill (neutral-900).
 
 Density: `data-density="compact"` works on `<html>` **or any wrapper**, because the selector is a bare
 `[data-density="compact"]` over inheriting custom properties, so one screen can be dense while the
@@ -2149,6 +2151,10 @@ and a row nobody can scroll to is a row nobody knows is there.
   glyph means. Long labels ellipsis rather than wrap, so the bar keeps one height.
 - Bottom padding includes `env(safe-area-inset-bottom)`, so labels do not sit under the home
   indicator on a notched phone.
+- **`--fdy-bottomnav-h`** is the bar's stated height (a 44px item, the vertical padding and the top
+  hairline), declared on `.fdy-app--has-bottomnav`. The bar is drawn at that height, and
+  `.fdy-actionbar` reads it to rest on top of the bar. The trade-off: a taller app font overflows
+  into the bar's padding instead of making the bar taller.
 
 ```html
 <nav class="fdy-bottomnav" aria-label="Main">
@@ -2166,7 +2172,8 @@ and a row nobody can scroll to is a row nobody knows is there.
 ## Action bar — `.fdy-actionbar`
 One to three actions pinned to the bottom of the screen, where a thumb reaches them on a phone: the
 sign-in button, approve and reject on a document, save at the end of a long form. Put it as the last
-child of the page content (`.fdy-app__main`), holding `.fdy-btn` elements. They share the width, and
+child of the page content (`.fdy-app__main`), or of a single page wrapper such as `.fdy-page` that is
+main's last child and has no bottom padding, border or margin of its own. It holds `.fdy-btn` elements. They share the width, and
 the primary action goes last, nearest the thumb.
 
 - It is `position: sticky`, so it keeps its place in the flow and never covers the last row above it.

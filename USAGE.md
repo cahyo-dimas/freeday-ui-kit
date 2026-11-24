@@ -243,10 +243,14 @@ rule is about the document, and un-rooting it would re-darken the children of a 
 an alias ramp, and the semantic tokens resolve that ramp where they are declared: on `<html>`, or
 on an element that carries `data-theme`. So put them on `<html>`. To re-brand or re-tint a single
 region, put the axis on that region together with `data-theme`. Never put any of them on a bare
-wrapper: it half-applies (a bare `deep` subtree gets the 700 fill under the OS dark setting). A palette moves the label ink (`--color-on-primary`) but not the fill, so
+wrapper. A palette moves the label ink (`--color-on-primary`) but not the fill, so
 orange, amber, lime, green, emerald, teal and cyan leave dark ink on the azure fill (2.87:1 for orange); a neutral moves
-the tone inks, borders, stripe and danger border but not the surfaces. An inverted island inside an app
-with a non-default look must repeat `data-primary` and `data-neutral` beside its `data-theme`.
+the tone inks, borders, stripe and danger border but not the surfaces. A bare `deep` wrapper applies
+its light values in every theme, so under any dark theme (an ancestor's or the OS's) its fill and
+strong ink are wrong: on teal, a 700 fill and 800 strong ink on the dark surface measure about 2.5:1.
+An inverted island inside an app with a non-default look must repeat `data-primary`, `data-neutral`
+and `data-primary-fill` beside its `data-theme`; a deep island that leaves out `data-primary` inherits
+the page palette's ink, and teal gets white on its 500 fill.
 Otherwise the island keeps the app's fill but takes the default label ink, and white labels on
 those fills drop to between 2:1 and 3.8:1 (lime 1.98:1 and orange 2.80:1 in a dark island).
 
@@ -378,8 +382,9 @@ here because apps miss them.
 - **Lists, not tables.** Below `md`, a table becomes a `.fdy-list` (COMPONENTS.md, List). A row is
   one tap target that opens its detail. Row actions move into a `.fdy-menu` behind a "..." button or
   onto the detail screen; a column of stacked buttons makes one row as tall as the screen.
-- **The primary action stays in reach.** Put it in `.fdy-actionbar` or a `.fdy-fab--extended`, where
-  it stays on screen as the page scrolls.
+- **The primary action stays in reach.** Put it in `.fdy-actionbar`, which stays on screen as
+  the page scrolls. A `.fdy-fab--extended` works too, but the app positions it (above `--fdy-bottomnav-h`
+  when there is a bottom nav); the kit does not.
 - **One frame.** The page header is not wrapped in a card on a phone, because the screen already is
   the frame.
 - **Drop the views a phone cannot use.** A list/box/grid switch shows only list (and box, if it

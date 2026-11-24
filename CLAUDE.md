@@ -43,8 +43,9 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
   region compact ia mempertahankan spasi compact.
 - `data-primary-fill="deep"` → isian primary satu langkah lebih gelap (shade 700, hover 800) dengan label
   putih. Hanya tema terang; tema gelap tidak berubah. `onDeep` hasil ukur (putih di 18 palet, terendah
-  lime 4,99:1) dan `$primaryFill` ada di `tokens.json`. Region bersarang butuh `data-theme` di elemen
-  yang sama.
+  lime 4,99:1) dan `$primaryFill` ada di `tokens.json`. Wrapper polos memakai nilai terang `deep` di
+  semua tema, jadi di bawah tema gelap (milik leluhur atau OS) isian dan tinta strong-nya salah; sebuah
+  region mengulang `data-theme` dan `data-primary` di sebelah `data-primary-fill`.
 - `data-primary="<nama>"` → 18 palet primary (default `azure`). Yang di-redefinisi adalah **ramp
   alias** `--primary-*` berisi delapan shade, bukan token semantic-nya: pemetaan "shade mana yang
   jadi fill / hover / wash" ditulis sekali di `color.primary*`, jadi sebuah palet tak mungkin
@@ -121,7 +122,7 @@ mana pun yang berlaku. Keputusan tidak-dikerjakan yang tak dicatat akan dibangun
 berikutnya.
 
 ## Status: **feature-complete**, demand-driven
-Kit ini sudah lewat fase roadmap: 51 stylesheet di `src/components/` + 32 enhancer di
+Kit ini sudah lewat fase roadmap: 52 stylesheet di `src/components/` + 33 enhancer di
 `src/freeday-*.js` (keduanya angka terhitung, bukan hafalan), paritas komponen typed di
 **4 stack** (vanilla · Vue · React · Blazor), terbit publik di npm. **Sikap default sekarang =
 tunggu demand**, bukan bangun spekulatif; friksi dari app nyata yang menentukan rilis berikutnya.

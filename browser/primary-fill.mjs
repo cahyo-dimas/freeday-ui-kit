@@ -70,3 +70,55 @@ test('a deep region inside an inherited palette gets that palette triple', { ski
       'region: --color-primary-rgb is the channels of --color-primary');
   });
 });
+
+// A bare deep wrapper applies its light values in every theme. Under a dark theme (here an
+// explicit ancestor) the fill is the 700 shade on a dark surface; a region repeats data-theme AND
+// data-primary beside data-primary-fill. These pin the hazard USAGE.md section 5b documents.
+const regionProp = (p, id, name) => p.evalJS(
+  `getComputedStyle(document.getElementById(${JSON.stringify(id)})).getPropertyValue(${JSON.stringify(name)}).trim()`);
+const setupDarkTeal = (p) => p.evalJS(`(() => {
+  const r = document.documentElement;
+  r.setAttribute('data-theme', 'dark');
+  r.setAttribute('data-primary', 'teal');
+  r.removeAttribute('data-primary-fill');
+  document.body.insertAdjacentHTML('beforeend',
+    '<div id="bare" data-primary-fill="deep"></div>' +
+    '<div id="plain" data-theme="dark" data-primary="teal"></div>' +
+    '<div id="region" data-theme="dark" data-primary="teal" data-primary-fill="deep"></div>' +
+    '<div id="inherit" data-theme="dark" data-primary-fill="deep"></div>');
+  return true;
+})()`);
+
+test('a bare deep wrapper under a dark ancestor still takes the light 700 fill', { skip }, async () => {
+  await withPage(fixture('primary-fill.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete"');
+    await p.setColorScheme('light');
+    await setupDarkTeal(p);
+    assert.equal(await regionProp(p, 'bare', '--color-primary'), await prop(p, '--teal-700'),
+      'bare deep: teal-700 even though the ancestor is dark');
+    assert.equal(await regionProp(p, 'bare', '--color-primary-strong'), await prop(p, '--teal-800'),
+      'bare deep: the strong ink is teal-800, wrong on a dark surface');
+  });
+});
+
+test('a region repeating data-theme and data-primary is unchanged by deep in dark', { skip }, async () => {
+  await withPage(fixture('primary-fill.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete"');
+    await p.setColorScheme('light');
+    await setupDarkTeal(p);
+    for (const name of ['--color-primary', '--color-primary-strong', '--color-on-primary']) {
+      assert.equal(await regionProp(p, 'region', name), await regionProp(p, 'plain', name),
+        `${name}: the deep region equals the same region without deep`);
+    }
+  });
+});
+
+test('a dark deep region without its own data-primary loses the dark-ink twin', { skip }, async () => {
+  await withPage(fixture('primary-fill.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete"');
+    await p.setColorScheme('light');
+    await setupDarkTeal(p);
+    assert.notEqual(await regionProp(p, 'inherit', '--color-on-primary'), await regionProp(p, 'plain', '--color-on-primary'),
+      'inheriting the palette from html gives the default dark ink, not the teal one');
+  });
+});
