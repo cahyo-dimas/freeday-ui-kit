@@ -28,7 +28,8 @@ token baru, `--primary-700-rgb`, di setiap blok palet (tak ada yang membacanya t
   isian dan tinta strong-nya salah.
 - **`.fdy-actionbar`** (`src/components/actionbar.css`, hanya CSS): aksi yang menempel di atas navigasi
   bawah dan tidak pernah menutup baris terakhir. Boleh berada di dalam satu wrapper halaman seperti
-  `.fdy-page` yang menjadi anak terakhir `main`. Bersamanya token `--fdy-bottomnav-h`.
+  `.fdy-page` yang menjadi anak terakhir `main`. Di HP (720px ke bawah) bar selebar layar, seperti
+  navigasi bawah. Bersamanya token `--fdy-bottomnav-h`.
 - **`USAGE.md` §8 Mobile**: HP adalah layout sendiri, bukan desktop yang diperkecil.
 
 ### Fixed

@@ -195,4 +195,7 @@ field on `$primaries`. No existing value changes without the new attributes.
 - A sticky action bar needs no extra bottom reservation, since it keeps its place in flow. As the last
   child of `.fdy-app__main` it cancels main's bottom padding with a negative margin per context (desktop
   `space-8`, 720px and below `space-5`, nav shell `calc(var(--fdy-bottomnav-h) - var(--space-20))`).
+- Below 720px the bar spans the screen edge to edge with `margin-inline: calc(-1 * var(--space-5))`, at
+  the same depths as the bottom margin. Inset by main's padding, it left a 20px strip of scrolling
+  content on each side. Owner's choice, 2026-11-24.
 - `touch` sets only `--control-h`; inside a compact region it keeps compact spacing.

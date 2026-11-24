@@ -1961,6 +1961,16 @@ a { color: var(--color-primary-strong); }
 @media (max-width:720px){
   .fdy-app__main > .fdy-actionbar:last-child,
   .fdy-app__main > :not(dialog):not(.fdy-drawer) > .fdy-actionbar:last-child{margin-bottom:calc(-1 * var(--space-5));}
+  /* On a phone the bar runs edge to edge, like the nav it rests on: inset by main's side padding
+   * it would leave a strip of scrolling content showing on either side. The same depth rule
+   * holds: a wrapper between main and the bar must add no side padding, border or margin. The
+   * landscape notch is cleared by the bar's own padding. */
+  .fdy-app__main > .fdy-actionbar,
+  .fdy-app__main > :not(dialog):not(.fdy-drawer) > .fdy-actionbar{
+    margin-inline:calc(-1 * var(--space-5));
+    padding-left:calc(var(--space-4) + env(safe-area-inset-left,0px));
+    padding-right:calc(var(--space-4) + env(safe-area-inset-right,0px));
+  }
 }
 /* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
  * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */

@@ -2183,6 +2183,9 @@ the primary action goes last, nearest the thumb.
 - In a shell with `.fdy-app--has-bottomnav`, below 720px it rests on top of the bottom nav, using
   `--fdy-bottomnav-h` (declared on that shell). Elsewhere it clears the home indicator with
   `env(safe-area-inset-bottom)`.
+- Below 720px it runs edge to edge, like the bottom nav, by cancelling main's side padding. The
+  wrapper rule holds here too: a wrapper between main and the bar adds no side padding, border or
+  margin. The bar's own side padding clears a landscape notch.
 - No ARIA of its own: it is a row of buttons, and each keeps its own name.
 - CSS only. Vue, React and Blazor use the same markup.
 

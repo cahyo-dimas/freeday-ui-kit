@@ -207,3 +207,51 @@ test('two wrappers deep (page > form > bar) on a phone, the bar rests on the nav
     assert.ok(Math.abs(nav.top - bar.bottom) <= 0.01, `mid-scroll the bar ends at ${bar.bottom}px, the nav starts at ${nav.top}px`);
   });
 });
+
+// On a phone the bar spans the screen edge to edge, like the nav it rests on; main's 20px side
+// padding would otherwise leave a strip of content showing on either side of it.
+const spansPhone = (bar) => Math.abs(bar.left) <= 0.5 && Math.abs(bar.right - PHONE[0]) <= 0.5;
+
+test('on a phone the bar spans the full screen width', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    const bar = await box(p, '#bar');
+    assert.ok(spansPhone(bar), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${PHONE[0]}px`);
+  });
+});
+
+test('inside a .fdy-page wrapper on a phone, the bar spans the full screen width', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await wrapInPage(p);
+    const bar = await box(p, '#bar');
+    assert.ok(spansPhone(bar), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${PHONE[0]}px`);
+  });
+});
+
+test('on a desktop the bar keeps main\'s side padding', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...DESKTOP);
+    const bar = await box(p, '#bar');
+    const list = await box(p, '#list');
+    assert.ok(Math.abs(bar.left - list.left) <= 0.5 && Math.abs(bar.right - list.right) <= 0.5,
+      `the bar runs ${bar.left}-${bar.right}px, the content ${list.left}-${list.right}px`);
+  });
+});
+
+test('a bar inside a dialog inside main stays within the dialog', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await p.evalJS(`(() => {
+      const d = document.createElement('dialog');
+      d.style.cssText = 'position:fixed;left:40px;right:40px;bottom:0;top:auto;margin:0;padding:0;border:0;height:200px;width:auto;overflow:auto;';
+      d.innerHTML = '<div class="fdy-actionbar" id="dbar"><button class="fdy-btn" type="button">OK</button></div>';
+      document.getElementById('main').appendChild(d);
+      d.show();
+      return true;
+    })()`);
+    const bar = await box(p, '#dbar');
+    assert.ok(Math.abs(bar.left - 40) <= 0.5 && Math.abs(bar.right - (PHONE[0] - 40)) <= 0.5,
+      `the dialog bar runs ${bar.left}-${bar.right}px, its panel 40-${PHONE[0] - 40}px`);
+  });
+});
