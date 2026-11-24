@@ -2175,6 +2175,7 @@ sign-in button, approve and reject on a document, save at the end of a long form
 child of the page content (`.fdy-app__main`), or of one page wrapper such as `.fdy-page` inside it. The
 wrapper must be the last in-flow content of main and have no bottom padding, border or margin of its own;
 the fixed bottom nav and closed dialogs may follow it. A bar inside a modal or drawer is not offset.
+Nested deeper than one wrapper (inside a form, say), the bar still rests on the nav while scrolling but stops short of it at the end of the page. An in-flow block after the wrapper is overlapped at the end of the page.
 It holds `.fdy-btn` elements. They share the width, and
 the primary action goes last, nearest the thumb.
 

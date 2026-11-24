@@ -186,3 +186,24 @@ test('a bar inside an open dialog inside main is not lifted by the nav offset', 
     assert.ok(Math.abs(bar.bottom - PHONE[1]) <= 0.5, `the dialog bar ends at ${bar.bottom}px, its panel at ${PHONE[1]}px`);
   });
 });
+
+test('two wrappers deep (page > form > bar) on a phone, the bar rests on the nav mid-scroll', { skip }, async () => {
+  await withPage(fixture('vanilla-actionbar.html'), async (p) => {
+    await p.setViewport(...PHONE);
+    await p.evalJS(`(() => {
+      const main = document.getElementById('main');
+      const page = document.createElement('div');
+      page.className = 'fdy-page';
+      const form = document.createElement('form');
+      while (main.firstChild) form.appendChild(main.firstChild);
+      page.appendChild(form);
+      main.appendChild(page);
+      return true;
+    })()`);
+    await p.evalJS('window.scrollTo(0, 400)');
+    await p.evalJS('new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => r(true))))');
+    const bar = await box(p, '#bar');
+    const nav = await box(p, '#nav');
+    assert.ok(Math.abs(nav.top - bar.bottom) <= 0.01, `mid-scroll the bar ends at ${bar.bottom}px, the nav starts at ${nav.top}px`);
+  });
+});

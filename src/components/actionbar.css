@@ -38,10 +38,14 @@
 /* Above the bottom nav: --fdy-bottomnav-h is declared, and obeyed, in bottomnav.css. The nav adds
  * the safe-area inset itself, so the bar rests on all of it and does not add the inset twice. */
 @media (max-width:720px){
-  .fdy-app--has-bottomnav .fdy-app__main > .fdy-actionbar,
-  .fdy-app--has-bottomnav .fdy-app__main > :not(dialog):not(.fdy-drawer) > .fdy-actionbar{
+  .fdy-app--has-bottomnav .fdy-app__main .fdy-actionbar{
     bottom:calc(var(--fdy-bottomnav-h) + env(safe-area-inset-bottom,0px));
     padding-bottom:var(--space-3);
+  }
+  /* A modal or drawer is its own screen: its bar sits at its own bottom, whatever the depth. */
+  .fdy-app--has-bottomnav .fdy-app__main :is(dialog, .fdy-drawer) .fdy-actionbar{
+    bottom:0;
+    padding-bottom:calc(var(--space-3) + env(safe-area-inset-bottom,0px));
   }
   /* In the nav shell main's padding is --space-20 + inset (bottomnav.css) and the nav is
    * --fdy-bottomnav-h + inset tall. What must remain below the bar is exactly the nav, so the
