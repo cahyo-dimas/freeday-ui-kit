@@ -9,6 +9,51 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.22.0] - 2026-11-24
+
+**Sebuah app yang dipakai di HP punya tombol berukuran ibu jari, isian primary yang lebih dalam, dan
+bilah aksi yang menempel di atas navigasi bawah.** Tanpa atribut baru, setiap token tetap bernilai
+sama dengan 3.21.0 di terang, gelap, `soft`, `glass`, di bawah semua palet dan netral
+(`test/token-snapshot.test.mjs`).
+
+### Added
+- **`data-density="touch"`.** Menyetel `--control-h` ke `2.75rem` (44px) dan tidak mengubah yang lain.
+  Di dalam region `compact` ia mempertahankan spasi compact.
+- **`data-primary-fill="deep"`.** Isian primary memakai shade 700, hover dan active memakai 800, label
+  memakai `onDeep`. Hanya tema terang; tema gelap tidak berubah. `onDeep` bernilai putih di 18 palet
+  (terukur: terendah lime 4,99:1, di bawah slate, grey, dan stone). Setiap blok palet kini juga
+  membawa `--primary-700-rgb`. Region bersarang butuh `data-theme` di elemen yang sama; tanpa itu region
+  hanya setengah terpasang, dan di bawah pengaturan gelap OS ia mendapat isian 700.
+- **`.fdy-actionbar`** (`src/components/actionbar.css`, hanya CSS): aksi yang menempel di atas navigasi
+  bawah dan tidak pernah menutup baris terakhir. Bersamanya token `--fdy-bottomnav-h`.
+- **`USAGE.md` §8 Mobile**: HP adalah layout sendiri, bukan desktop yang diperkecil.
+
+### Fixed
+- **Tinta label palet di bawah pengaturan gelap OS.** Tujuh palet bertinta gelap (orange, amber, lime,
+  green, emerald, teal, cyan) menampilkan label putih di isian 500 selama OS gelap, bahkan dengan
+  `data-theme="dark"`. Terukur sebelum perbaikan: orange 2,80, amber 2,15, lime 1,98, green 2,28,
+  emerald 2,54, teal 2,49, cyan 2,43 :1. Sebabnya: aturan dasar `:root:not([data-theme="light"])` (0,2,0)
+  mengalahkan blok palet (0,1,0), dan `buildPrimariesCss` hanya menulis kembaran gelap bila `onDark`
+  berbeda dari `on`. Gerbang kontras tidak pernah memodelkan cakupan gelap OS. Kini ada kembaran
+  gelap, dan tes kontras serta tes browser menjaganya.
+
+### Changed
+- **Tinggi navigasi bawah kini dinyatakan.** `--fdy-bottomnav-h` dideklarasikan di
+  `.fdy-app--has-bottomnav` dan navigasi mengambil tingginya dari sana. Tingginya dulu 61,39px karena
+  isi satu item (ikon, label) 0,39px lebih tinggi dari 44px; kini tepat 61px. Dengan font app yang lebih
+  tinggi, label meluap ke padding bawah dan tidak lagi menambah tinggi bilah.
+- **`.fdy-actionbar` sebagai anak terakhir `.fdy-app__main`** meniadakan padding bawah main dengan margin
+  negatif per konteks, sehingga di akhir halaman ia bersandar rata pada navigasi atau tepi viewport.
+- **Docs.** `USAGE.md` §0 kini menyebut "di luar jaminan kit" sebagai ganti "terkunci". Daftar
+  `data-density` di README, `docs/getting-started.md`, dan `docs/agent-onboarding.md` memuat `touch`.
+
+### Upgrade
+- Ganti `--control-h: 2.75rem` yang disetel tangan dengan `data-density="touch"`.
+- Ganti primary yang lebih dalam yang disetel tangan (`--color-primary: var(--primary-700)` dan
+  kawan-kawannya) dengan `data-primary-fill="deep"`.
+- Hapus penyetelan `--color-on-primary` bertinta gelap di bawah `[data-theme='dark']` yang dipasang
+  sebagai jalan keluar dari bug gelap OS; perbaikannya kini ada di kit.
+
 ## [3.21.0] - 2026-11-20
 
 **Sebuah app memutuskan tampilannya sendiri.** Sebelum rilis ini kit hanya menawarkan palet primary,

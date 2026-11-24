@@ -5,7 +5,7 @@
 > **Lebih banyak _free day_ buat dev. UI kit-nya sudah siap pakai.**
 
 [![Live docs](https://img.shields.io/badge/docs-live-2050d8?style=flat-square)](https://cahyo-dimas.github.io/freeday-ui-kit/)
-[![Release](https://img.shields.io/badge/release-v3.21.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.21.0)
+[![Release](https://img.shields.io/badge/release-v3.22.0-0078d4?style=flat-square)](https://github.com/cahyo-dimas/freeday-ui-kit/tree/v3.22.0)
 
 UI KIT yang token-driven & framework-agnostic. Satu sumber kebenaran untuk warna, tipografi,
 spasi, dan komponen. Blueprint: `docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`.
@@ -147,7 +147,7 @@ container-nya, bukan scroll sendiri.
 - `data-theme="light|dark"` me-redefinisi token semantic (bind ke state tema app-mu).
   Berlaku di **ancestor mana pun**, tak harus root: `<section data-theme="dark">` membalik region itu
   dan semua komponen di dalamnya ikut (lihat [`USAGE.md`](USAGE.md) §5b).
-- `data-density="comfortable|compact"` mengatur tinggi kontrol (`--control-h`) untuk layar padat data.
+- `data-density="comfortable|compact|touch"` mengatur tinggi kontrol (`--control-h`): `compact` untuk layar padat data, `touch` (44px) untuk app yang dipakai di HP.
   Ini auto-apply hanya ke kontrol bawaan Freeday (button, input, combo, dst); komponen
   custom/hand-built harus baca `--control-h` sendiri (mis. `height: var(--control-h)`) supaya ikut
   menyusut/melebar saat `data-density` berubah.

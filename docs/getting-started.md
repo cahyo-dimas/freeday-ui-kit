@@ -30,7 +30,7 @@ Freeday = **CSS** (semantic tokens + `fdy-*` classes) + **zero-dependency JS enh
    **after** that must be re-hydrated: `window.Freeday<X>.initAll(el)` (idempotent, safe to repeat).
    Each framework's adapter wraps this, so you don't call it manually.
 4. **Theme via `data-*`.** `data-theme="light|dark"` (all semantic tokens switch) +
-   `data-density="comfortable|compact"` (control height, for data-dense screens). Normally on
+   `data-density="comfortable|compact|touch"` (control height: `compact` for data-dense screens, `touch` for phones). Normally on
    `<html>`; change at runtime with `document.documentElement.dataset.theme = 'dark'`. Both also
    work on **any ancestor**, because these are inheriting custom properties, so `<section data-theme="dark">`
    inverts just that region and every component inside it follows. See [`USAGE.md`](../USAGE.md) §5b.
@@ -198,7 +198,7 @@ live docs also have a copy button per component.
 ```bash
 npm i @cahyo-dimas/freeday
 ```
-Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.21.0"` (public npm package). `dist/` is
+Lands in `package.json` as `"@cahyo-dimas/freeday": "^3.22.0"` (public npm package). `dist/` is
 committed and published → no build step; `npm ci` runs without auth.
 
 ### 2. Import the CSS + enhancers **once** in your entry (`src/main.ts`)

@@ -173,3 +173,26 @@ A bar of one to three actions pinned to the bottom of the screen on a phone.
 
 Minor, **3.22.0**: two new attribute values, one new component, one new component token, one new
 field on `$primaries`. No existing value changes without the new attributes.
+
+## 6. Decided during planning and execution
+
+- The OS-dark palette fix joined B1. Seven palettes whose label ink is dark in both themes (orange,
+  amber, lime, green, emerald, teal, cyan) showed white on the 500 fill whenever the OS was dark,
+  even with `data-theme="dark"`. Measured before the fix: 2.80, 2.15, 1.98, 2.28, 2.54, 2.49 and 2.43 to 1.
+- No new fixture. The 3.20.0 fixture already pins the default, and 3.21.0 changed no default value.
+- Every palette block also carries `--primary-700-rgb` (noir's dark twins restate it), added for the deep
+  fill. The owner edited `test/token-snapshot.test.mjs` to allow exactly that one added key in the
+  per-palette diffs.
+- Per-palette `[data-primary=X][data-primary-fill="deep"]` blocks carry only the ink and exist only where
+  a palette's `onDeep` differs from the default. None does today. Dark twins exist for the dark-ink
+  palettes. The generic deep system-dark twin is redundant and kept as defence.
+- `onDeep` measured white for all 18 palettes; the lowest is lime at 4.99:1.
+- Deep on a region needs `data-theme` on the same element. A bare subtree half-applies, and under OS dark
+  it gets the 700 fill.
+- `--fdy-bottomnav-h` is declared on `.fdy-app--has-bottomnav`, and the bottom nav takes its height from
+  it. The nav was 61.39px and is now exactly 61px, because an item's icon and label were 0.39px taller
+  than 44px.
+- A sticky action bar needs no extra bottom reservation, since it keeps its place in flow. As the last
+  child of `.fdy-app__main` it cancels main's bottom padding with a negative margin per context (desktop
+  `space-8`, 720px and below `space-5`, nav shell `calc(var(--fdy-bottomnav-h) - var(--space-20))`).
+- `touch` sets only `--control-h`; inside a compact region it keeps compact spacing.

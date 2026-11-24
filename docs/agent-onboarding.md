@@ -177,8 +177,8 @@ The order matters; skipping to components is what produces flat, identical-card 
    chat bubbles, canvas), so you build the frame instead of inventing a class.
 1. **Shell:** is `.fdy-app` already in place (usually once, in the app layout)? If not, copy it
    from `docs/getting-started.md` §The app shell.
-2. **Theme:** `data-theme="light|dark"` + `data-density="comfortable|compact"`, normally on
-   `<html>`, set once at the root. Use `compact` for table-heavy back-office screens. Both attributes
+2. **Theme:** `data-theme="light|dark"` + `data-density="comfortable|compact|touch"`, normally on
+   `<html>`, set once at the root. Use `compact` for table-heavy back-office screens and `touch` for an app people use on a phone. Both attributes
    also work on **any ancestor**: `<section data-theme="dark">` inverts that region and every
    component inside it follows, so never hand-colour an inverted panel. `data-primary` and
    `data-neutral` are set once on `<html>`. An inverted region in an app with a non-default palette

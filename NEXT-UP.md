@@ -56,6 +56,13 @@ pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
 | D | **Tinta palet lewat alias**: palet kini menulis token semantic (`--color-on-primary`). Kalau palet menulis tinta alias (mis. `--primary-on` / `--primary-on-dark`) yang dipetakan blok tema ke `--color-on-primary`, island terbalik dan wrapper polos akan jalan tanpa mengulang palet | laporan pertama label island yang rusak |
 | C | **Server MCP** yang dikirim sebagai `bin` di paket, dengan tool `check_identity` yang memeriksa app terhadap kontrak identitas | preset B ada, dan agen konsumen sering melanggar kontrak tanpa ada yang memeriksa |
 
+**Dipicu rilis 3.22.0.** B1 (touch, deep, bilah aksi, `USAGE.md` §8) selesai di 3.22.0. B2 berikutnya.
+
+| # | Kandidat | Kerjakan saat |
+|---|---|---|
+| B2 | **Preset identitas `ledger`, `inbox`, `thread`, `field`**, masing-masing dengan layar desktop dan layar mobile yang dibangun di atas `USAGE.md` §8. Konsep mobilenya datang dari Ronda. Berupa contoh, bukan impor: tak ada jalur import, dan menyalin boleh bila manusia memintanya | owner meminta |
+| R | **Tindak lanjut Ronda** (dimiliki repo Ronda): pakai `data-density="touch"` dan `data-primary-fill="deep"`, hapus `--control-h` dan `--color-primary*` teal yang disetel tangan serta jalan keluar on-primary di `[data-theme='dark']`, lalu terapkan §8 ke layar daftarnya (tabel jadi baris daftar, navigasi bawah 5 item, tanpa kartu di sekitar header halaman, aksi utama di `.fdy-actionbar`, tanpa tampilan Grid di HP) | repo Ronda menaikkan kit ke 3.22.0 |
+
 **Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel
 pihak ketiga. Yang diambil hanya polanya. Tiap fitur dibrainstorm setelah branch
 `feat/app-identity` digabung. Kit memegang interaksi, aksesibilitas, dan kontrak event; app memegang

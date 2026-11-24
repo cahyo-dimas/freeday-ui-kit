@@ -38,7 +38,13 @@ di CSS komponen. Butuh nilai baru → compose → extend modifier → only then 
 - `data-theme="light|dark"` → re-definisi token **semantic** (wajib). Selector-nya bare (bukan
   `:root`), jadi bisa dipasang di ancestor mana pun untuk membalik satu region; default sistem
   (`prefers-color-scheme`) sengaja tetap root-scoped.
-- `data-density="comfortable|compact"` → `--control-h` (compact untuk layar data-dense).
+- `data-density="comfortable|compact|touch"` → `--control-h` (compact untuk layar data-dense; `touch` = 44px
+  dengan spasi comfortable, untuk app yang dipakai di HP). `touch` hanya menyetel `--control-h`; di dalam
+  region compact ia mempertahankan spasi compact.
+- `data-primary-fill="deep"` → isian primary satu langkah lebih gelap (shade 700, hover 800) dengan label
+  putih. Hanya tema terang; tema gelap tidak berubah. `onDeep` hasil ukur (putih di 18 palet, terendah
+  lime 4,99:1) dan `$primaryFill` ada di `tokens.json`. Region bersarang butuh `data-theme` di elemen
+  yang sama.
 - `data-primary="<nama>"` → 18 palet primary (default `azure`). Yang di-redefinisi adalah **ramp
   alias** `--primary-*` berisi delapan shade, bukan token semantic-nya: pemetaan "shade mana yang
   jadi fill / hover / wash" ditulis sekali di `color.primary*`, jadi sebuah palet tak mungkin
