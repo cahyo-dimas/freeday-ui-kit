@@ -209,14 +209,17 @@ test('two wrappers deep (page > form > bar) on a phone, the bar rests on the nav
 });
 
 // On a phone the bar spans the screen edge to edge, like the nav it rests on; main's 20px side
-// padding would otherwise leave a strip of content showing on either side of it.
-const spansPhone = (bar) => Math.abs(bar.left) <= 0.5 && Math.abs(bar.right - PHONE[0]) <= 0.5;
+// padding would otherwise leave a strip of content showing on either side of it. The screen is the
+// layout width, not the viewport: Chrome on Linux keeps a 15px classic scrollbar, so there it is 375px.
+const layoutWidth = async (p) => Number(await p.evalJS('document.documentElement.clientWidth'));
+const spansPhone = (bar, width) => Math.abs(bar.left) <= 0.5 && Math.abs(bar.right - width) <= 0.5;
 
 test('on a phone the bar spans the full screen width', { skip }, async () => {
   await withPage(fixture('vanilla-actionbar.html'), async (p) => {
     await p.setViewport(...PHONE);
     const bar = await box(p, '#bar');
-    assert.ok(spansPhone(bar), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${PHONE[0]}px`);
+    const width = await layoutWidth(p);
+    assert.ok(spansPhone(bar, width), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${width}px`);
   });
 });
 
@@ -225,7 +228,8 @@ test('inside a .fdy-page wrapper on a phone, the bar spans the full screen width
     await p.setViewport(...PHONE);
     await wrapInPage(p);
     const bar = await box(p, '#bar');
-    assert.ok(spansPhone(bar), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${PHONE[0]}px`);
+    const width = await layoutWidth(p);
+    assert.ok(spansPhone(bar, width), `the bar runs from ${bar.left}px to ${bar.right}px, the screen from 0 to ${width}px`);
   });
 });
 
@@ -251,7 +255,8 @@ test('a bar inside a dialog inside main stays within the dialog', { skip }, asyn
       return true;
     })()`);
     const bar = await box(p, '#dbar');
-    assert.ok(Math.abs(bar.left - 40) <= 0.5 && Math.abs(bar.right - (PHONE[0] - 40)) <= 0.5,
-      `the dialog bar runs ${bar.left}-${bar.right}px, its panel 40-${PHONE[0] - 40}px`);
+    const panel = await box(p, 'dialog[open]');
+    assert.ok(Math.abs(bar.left - panel.left) <= 0.5 && Math.abs(bar.right - panel.right) <= 0.5,
+      `the dialog bar runs ${bar.left}-${bar.right}px, its panel ${panel.left}-${panel.right}px`);
   });
 });
