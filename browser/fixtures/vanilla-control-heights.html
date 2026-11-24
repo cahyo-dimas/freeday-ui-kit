@@ -20,6 +20,11 @@
     <button class="fdy-btn" id="cbtn">Button</button>
     <span class="fdy-input-group" id="cgrp"><input class="fdy-input"></span>
   </div>
+  <div data-density="touch" style="display:flex;gap:8px;align-items:flex-start;margin-top:8px">
+    <button class="fdy-btn" id="tbtn">Button</button>
+    <span class="fdy-input-group" id="tgrp"><input class="fdy-input"></span>
+    <div data-density="comfortable"><button class="fdy-btn" id="tcbtn">Back to comfortable</button></div>
+  </div>
 <script>
   window.heights = function () {
     var h = function (id) { return Math.round(document.getElementById(id).getBoundingClientRect().height * 100) / 100; };
@@ -28,7 +33,7 @@
       dpr: window.devicePixelRatio,
       btn: h('btn'), group: h('grp'), plain: h('plain'), combo: h('cmb'),
       datepicker: h('dpk'), timepicker: h('tpk'),
-      compactBtn: h('cbtn'), compactGroup: h('cgrp'),
+      compactBtn: h('cbtn'), compactGroup: h('cgrp'), touchBtn: h('tbtn'), touchGroup: h('tgrp'), touchComfortableBtn: h('tcbtn'),
       borderTop: cs.borderTopWidth, boxSizing: cs.boxSizing
     };
   };

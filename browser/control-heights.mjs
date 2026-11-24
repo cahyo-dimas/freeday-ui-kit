@@ -40,5 +40,12 @@ test('an input group is exactly as tall as the controls beside it (#018)', { ski
     /* Compact is where a compensation written against one --control-h silently stops matching. */
     assert.equal(h.compactGroup, h.compactBtn,
       `under data-density="compact" too: group ${h.compactGroup}px vs button ${h.compactBtn}px`);
+
+    /* Touch is 2.75rem, 44px at the harness's 16px root: the smallest target a thumb hits
+       reliably. A comfortable island inside it must return to the default height. */
+    assert.equal(h.touchBtn, 44, `a button under data-density="touch" is ${h.touchBtn}px, expected 44`);
+    assert.equal(h.touchGroup, h.touchBtn, `under touch: group ${h.touchGroup}px vs button ${h.touchBtn}px`);
+    assert.equal(h.touchComfortableBtn, h.btn,
+      `a comfortable island inside touch is ${h.touchComfortableBtn}px, the default is ${h.btn}px`);
   });
 });

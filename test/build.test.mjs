@@ -99,13 +99,17 @@ test('density opts back out, and its values are derived rather than restated (#0
     [...css.match(/^:root \{([\s\S]*?)\n\}/m)[1].matchAll(/(--[\w-]+):\s*([^;]+);/g)].map(x => [x[1], x[2].trim()]),
   );
   const compact = block('compact');
+  const touch = block('touch');
   const comfortable = block('comfortable');
 
-  assert.deepEqual(Object.keys(comfortable), Object.keys(compact),
-    'the two density blocks must cover the same tokens, or one of them is a partial reset');
+  assert.deepEqual(touch, { '--control-h': '2.75rem' },
+    'touch is bigger targets, not a looser layout: it sets the control height and nothing else');
+  assert.deepEqual(Object.keys(comfortable).sort(), [...new Set([...Object.keys(compact), ...Object.keys(touch)])].sort(),
+    'comfortable must reset every key either other density sets, or one of them cannot be left');
   for (const [k, v] of Object.entries(comfortable)) {
     assert.equal(v, root[k], `${k} must restate the default (${root[k]}), got ${v}, derive it, do not copy it`);
-    assert.notEqual(v, compact[k], `${k} is identical in both densities, so one of them does nothing`);
+    if (k in compact) assert.notEqual(v, compact[k], `${k} is identical in comfortable and compact, so one of them does nothing`);
+    if (k in touch) assert.notEqual(v, touch[k], `${k} is identical in comfortable and touch, so one of them does nothing`);
   }
 });
 

@@ -718,6 +718,11 @@
   --space-6: 1.25rem;
   --control-h: 2rem;
 }
+/* Touch: the control height a thumb or a gloved finger hits reliably (44px), for an app used
+ * standing up or on the move. Spacing stays comfortable; a bigger target is not a looser layout. */
+[data-density="touch"] {
+  --control-h: 2.75rem;
+}
 /* ...and the way back out. Inheritance only runs downhill: once the root is compact every subtree is
  * compact, and before this rule existed a data-density="comfortable" wrapper matched nothing, so the
  * comment above was true in one direction only. An app that is dense overall and carries one region
