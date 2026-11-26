@@ -143,6 +143,12 @@ dan tidak punya berkas tidak pernah ada.
 | 31 | Tab tegak tanpa bentuk ringkas di layar sempit | terkirim 3.23.0 `#121` sebagai `.fdy-tabs--picker-narrow` (container query 40rem, cadangan media query di bawah Safari 16). Pembungkus bertipe `FdyTabs` tidak dibuat, tunggu pemakai kedua |
 | 26b | `reference-screen.html` menyembunyikan `<h1>` di HP | dikerjakan 3.23.0 `#122`; dijaga uji yang menolak `<h1>` ber-`hide-below` atau `hidden` di semua contoh kit |
 
+**Terbuka, uji peramban yang kadang merah di CI (belum terverifikasi sebabnya):**
+
+| uji | status |
+|---|---|
+| `theme-pref.mjs`: "a choice is stored, applied, painted, and survives a reload before the kit loads" | **terbuka, belum terverifikasi.** Merah di CI 2026-11-05 dan 2026-11-26 (tag v3.23.0, dua kali), lulus di laptop setiap kali. `window.beforeKit` terbaca `null`: cuplikan `<head>` sesudah muat ulang tidak menemukan `fdy-theme` di `localStorage`. Dugaan: Chromium menyetor tulisan `localStorage` ke proses peramban secara batch, dan di runner yang sibuk muat ulang datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu sampai `DOMStorage.getDOMStorageItems` lewat CDP melihat kuncinya, baru muat ulang), bukan di kit, sebab pemakai nyata tidak memuat ulang dalam milidetik. Jangan menaikkan timeout atau menjalankan ulang sebagai jawaban; reproduksi dulu di runner. Bukan kelas yang sama dengan bundle 0 byte di 3.23.0: uji ini tidak memuat `.build/`. |
+
 **Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
 
 | pokok | status |

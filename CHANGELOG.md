@@ -56,6 +56,12 @@ menjadi pemilih di wadah sempit, dan layar rujukan tidak lagi kehilangan `<h1>`-
   diam sesudah halaman tenang), `browser/tabs-picker.mjs` (tiga kasus, masing-masing terbukti merah
   oleh mutasi), uji kembar container query lawan cadangannya di `test/baseline.test.mjs`, dan
   penjaga `<h1>` tersembunyi di `test/docs.test.mjs`. Keempatnya merah pada kode lama.
+- **Harness peramban: bundle uji kini mendarat lewat rename** (`browser/harness.mjs`). Setiap berkas
+  spesifikasi berjalan di prosesnya sendiri dan memanggil `buildEntries()`, dan esbuild menulis dengan
+  mengosongkan berkas dulu. Terukur di laptop: 27 dari 90.477 pembacaan selama pembangunan ulang
+  serentak mendapati berkas 0 byte, dan halaman yang memuat skrip kosong tidak pernah terpasang. Di CI
+  itu muncul sebagai `cfl-narrow` yang gagal dua kali pada tag ini sementara commit yang sama lulus
+  di `main`. Sesudahnya 0 dari 102.634. Hanya alat uji; tidak ada yang terkirim di paket.
 
 ## [3.22.0] - 2026-11-24
 

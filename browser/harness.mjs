@@ -16,7 +16,7 @@
 import { spawn } from 'node:child_process';
 import { inflateSync } from 'node:zlib';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, renameSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -492,9 +492,17 @@ const vueSfcPlugin = {
  * Bundle the Vue/React mount entries (framework runtime inlined) into self-contained
  * IIFEs the fixtures load over file://, no import maps, no dev server. Written to
  * browser/.build/ (gitignored). Call once before the adapter specs run.
+ *
+ * Every spec file runs in its own process, three at a time, and each one calls this, so one process
+ * rewrites a bundle while another's page is loading it. esbuild writes by truncating first: measured
+ * on a laptop, 27 of 90,477 reads during concurrent rebuilds saw a 0-byte file, and a page that loads
+ * an empty script never mounts. On a CI runner that surfaced as `cfl-narrow` and `theme-pref` timing
+ * out on the release tag while the same commit passed on main. So the bundles are built in memory and
+ * each lands by rename, which is atomic on one filesystem: a reader sees the old file or the new one,
+ * whole, and both hold the same code.
  */
 export async function buildEntries() {
-  await esbuild.build({
+  const result = await esbuild.build({
     entryPoints: [
       join(HERE, 'entries', 'vue-combo.js'),
       join(HERE, 'entries', 'react-combo.tsx'),
@@ -553,6 +561,7 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-theme.tsx'),
     ],
     outdir: join(HERE, '.build'),
+    write: false,
     bundle: true,
     format: 'iife',
     platform: 'browser',
@@ -566,4 +575,10 @@ export async function buildEntries() {
     },
     plugins: [vueSfcPlugin],
   });
+  mkdirSync(join(HERE, '.build'), { recursive: true });
+  for (const file of result.outputFiles) {
+    const temp = `${file.path}.${process.pid}.tmp`;
+    writeFileSync(temp, file.contents);
+    renameSync(temp, file.path);
+  }
 }
