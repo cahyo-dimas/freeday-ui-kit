@@ -11,7 +11,13 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.22.0`, disiapkan dan menunggu tag** (2026-11-24). Tiga tambahan untuk app yang dipakai di HP:
+**`3.23.0`, disiapkan dan menunggu tag** (2026-11-26). Empat catatan dari app ronda: `useFreeday`
+kini mengamati subtree-nya, jadi formulir yang dipasang komponen anak ikut tervalidasi (§29);
+`.fdy-link` dan `--muted` (§30); tab yang berganti menjadi pemilih di wadah 40rem ke bawah
+lewat `.fdy-tabs--picker-narrow` (§31); dan `<h1>` layar rujukan yang tidak lagi hilang di HP.
+Pembungkus bertipe `FdyTabs` sengaja belum dibuat, alasannya di CHANGELOG.
+
+**`3.22.0`, terbit** (2026-11-24). Tiga tambahan untuk app yang dipakai di HP:
 `data-density="touch"` (kontrol 44px), `data-primary-fill="deep"` (isian shade 700 dengan label putih,
 hanya tema terang) dan `.fdy-actionbar` (aksi di atas navigasi bawah), ditambah `USAGE.md` §8 Mobile.
 Satu perbaikan ikut: tujuh palet bertinta gelap menampilkan label putih di bawah pengaturan gelap OS.

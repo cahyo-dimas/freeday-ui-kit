@@ -1,0 +1,14 @@
+/* Freeday. Text link
+ * A bare `<a>` is already a link here: base.css paints it `--color-primary-strong` and the browser
+ * underlines it. `.fdy-link` names that look so it can be found in COMPONENTS.md, sets the underline
+ * the same way in every browser, and is the base the muted variant modifies.
+ *
+ * The underline stays in both, at rest. A link told apart by colour alone fails WCAG 1.4.1, and in
+ * the muted variant there is no colour to tell it by. Hover thickens it; focus is base.css's ring. */
+.fdy-link{color:var(--color-primary-strong);text-decoration-line:underline;text-underline-offset:.2em;text-decoration-thickness:.06em;}
+.fdy-link:hover{text-decoration-thickness:.12em;}
+/* For a column of names that each open their own record: a table of accounts, each linking to its
+   ledger. Twenty primary-coloured links in one column outweigh the numbers beside them. The text
+   ink with a muted underline keeps every name reading as a link without competing with the data. */
+.fdy-link--muted{color:var(--color-text);text-decoration-color:var(--color-text-muted);}
+.fdy-link--muted:hover{color:var(--color-primary-strong);text-decoration-color:currentColor;}

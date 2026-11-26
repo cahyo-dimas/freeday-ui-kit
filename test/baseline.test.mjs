@@ -392,9 +392,9 @@ test('no `transition` shorthand carries `allow-discrete`, and every longhand set
     + 'below the floor:\n' + faults.join('\n'));
 });
 
-/* The one place in the kit where a declaration block is written twice, on purpose: CSS cannot share
-   a block between a container query and the media query that stands in for it below the floor. Two
-   copies drift, so they are compared here. */
+/* The two places in the kit where a declaration block is written twice, on purpose (this one, and the
+   tabs picker below): CSS cannot share a block between a container query and the media query that
+   stands in for it below the floor. Two copies drift, so they are compared here. */
 test('the narrow CFL layout reads the same under the container query and under its fallback', () => {
   const css = read('src/components/cfl.css');
   const body = (header) => {
@@ -417,4 +417,27 @@ test('the narrow CFL layout reads the same under the container query and under i
     'The container query and the @supports-not fallback in src/components/cfl.css have to declare '
     + 'the same stacked layout. They are a copy of each other, because no CSS construct shares one '
     + 'block between two conditions, and an edit that reached one of them missed the other.');
+});
+
+test('the narrow tabs picker reads the same under the container query and under its fallback', () => {
+  const css = read('src/components/tabs.css');
+  const body = (header) => {
+    const at = css.indexOf(header);
+    assert.notEqual(at, -1, `src/components/tabs.css no longer contains \`${header}\``);
+    let depth = 1;
+    let i = at + header.length;
+    const from = i;
+    while (i < css.length && depth > 0) {
+      if (css[i] === '{') depth += 1;
+      else if (css[i] === '}') depth -= 1;
+      i += 1;
+    }
+    return uncommented(css.slice(from, i - 1)).replace(/\s+/g, ' ').trim();
+  };
+
+  assert.equal(
+    body('@container fdy-tabs (max-width: 40rem){'),
+    body('@media (max-width:40rem){'),
+    'The container query and the @supports-not fallback in src/components/tabs.css have to declare '
+    + 'the same picker layout. They are a copy of each other, and an edit that reached one missed the other.');
 });

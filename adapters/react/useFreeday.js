@@ -47,8 +47,19 @@ var EMPTY_REF = 'Freeday: useFreeday(ref) got a ref that is still null after the
   + 'element that is not rendered yet (a condition). Put the ref on an element that is always rendered, or '
   + 'call useFreeday() with no argument if the whole document is what you mean.';
 
+/* True when a batch of mutation records added at least one element. Text edits and removals cannot
+   bring a new enhancer hook into the tree, so they do not cost a scan. */
+function addedElement(records) {
+  for (var i = 0; i < records.length; i++) {
+    var nodes = records[i].addedNodes;
+    for (var j = 0; j < nodes.length; j++) if (nodes[j].nodeType === 1) return true;
+  }
+  return false;
+}
+
 export function useFreeday(rootRef) {
   var checked = useRef(false);
+  var observerRef = useRef(null);
   var rehydrate = useCallback(function () {
     var el = rootRef && rootRef.current ? rootRef.current : undefined;
     var apis = freedayApis();
@@ -62,6 +73,26 @@ export function useFreeday(rootRef) {
       if (rootRef && !rootRef.current) console.warn(EMPTY_REF);
     }
     rehydrate();
+    if (observerRef.current) observerRef.current.takeRecords();
   });
+  /* DOM a CHILD component commits later is hydrated too. The effect above runs when THIS component
+     commits, and a child that renders a form behind its own state never makes the parent commit, so
+     the form's `data-fdy-validate` silently did nothing (CATATAN-FREEDAY §29). The observer rehydrates
+     in its callback, a microtask, so the widget is enhanced before the browser paints it raw, and
+     takeRecords() drops what the enhancers just built, so one rehydrate never schedules the next. */
+  useEffect(function () {
+    var target = rootRef && rootRef.current ? rootRef.current : document.body;
+    var observer = new MutationObserver(function (records) {
+      if (!addedElement(records)) return;
+      rehydrate();
+      observer.takeRecords();
+    });
+    observerRef.current = observer;
+    observer.observe(target, { childList: true, subtree: true });
+    return function () {
+      observer.disconnect();
+      observerRef.current = null;
+    };
+  }, [rehydrate]);
   return { rehydrate: rehydrate };
 }

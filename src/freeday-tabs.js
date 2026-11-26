@@ -10,9 +10,72 @@
  * other pair is left entirely alone rather than bound as a second axis: Left and Right over a
  * column of tabs belong to whatever else is on the page, and a widget that preventDefaults a key
  * it has no meaning for has taken it from the page silently. Home/End answer on both.
+ *
+ * `.fdy-tabs--picker-narrow` on the root: this builds a `.fdy-tabs__picker` holding one combo of
+ * the same tabs, first in the root, and keeps the two in step both ways. tabs.css shows it instead
+ * of the list in a container of 40rem or less. It needs freeday-select.js (FreedayCombo), which
+ * dist/freeday.js carries; without it the list simply stays. A picker the author wrote is left alone.
  */
 (function () {
   'use strict';
+
+  /* The picker's accessible name when the tablist has none of its own to lend it. */
+  var TEXT = {
+    picker: 'Section'
+  };
+  function textOf(root, key) {
+    var kebab = key.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); });
+    var custom = root.getAttribute('data-fdy-text-' + kebab);
+    return custom != null && custom !== '' ? custom : TEXT[key];
+  }
+  var uidSeq = 0;
+  function uid(p) { uidSeq += 1; return p + '-' + uidSeq; }
+
+  /* The combo freeday-select.js reads, built from the tabs themselves: one option per tab, its value
+     the tab's id. Named by the tablist's own label when it has one, so the two read as one control. */
+  function buildPicker(root, list, tabs) {
+    var wrap = document.createElement('div');
+    wrap.className = 'fdy-tabs__picker';
+    var combo = document.createElement('div');
+    combo.className = 'fdy-combo';
+    combo.setAttribute('data-fdy-combo', '');
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'fdy-combo__button';
+    button.setAttribute('role', 'combobox');
+    button.setAttribute('aria-haspopup', 'listbox');
+    button.setAttribute('aria-expanded', 'false');
+    var value = document.createElement('span');
+    value.className = 'fdy-combo__value';
+    value.id = uid('fdy-tabs-picker-value');
+    button.appendChild(value);
+    var labelledby = list ? list.getAttribute('aria-labelledby') : null;
+    var label = list ? list.getAttribute('aria-label') : null;
+    if (labelledby) button.setAttribute('aria-labelledby', labelledby + ' ' + value.id);
+    else button.setAttribute('aria-label', label || textOf(root, 'picker'));
+    var listbox = document.createElement('ul');
+    listbox.className = 'fdy-combo__listbox';
+    listbox.setAttribute('role', 'listbox');
+    listbox.hidden = true;
+    tabs.forEach(function (tab) {
+      if (!tab.id) tab.id = uid('fdy-tab');
+      var opt = document.createElement('li');
+      opt.className = 'fdy-combo__option';
+      opt.setAttribute('role', 'option');
+      opt.setAttribute('data-value', tab.id);
+      opt.setAttribute('aria-selected', 'false');
+      var check = document.createElement('span');
+      check.className = 'fdy-combo__check';
+      opt.appendChild(check);
+      opt.appendChild(document.createTextNode((tab.textContent || '').replace(/\s+/g, ' ').trim()));
+      listbox.appendChild(opt);
+    });
+    combo.appendChild(button);
+    combo.appendChild(listbox);
+    wrap.appendChild(combo);
+    root.insertBefore(wrap, root.firstChild);
+    return combo;
+  }
 
   function initTabs(root) {
     if (root.dataset.fdyTabsReady === '1') return;
@@ -31,6 +94,17 @@
       list.setAttribute('aria-orientation', 'vertical');
     }
     var vertical = list !== null && list.getAttribute('aria-orientation') === 'vertical';
+    var picker = null;
+    if (root.classList.contains('fdy-tabs--picker-narrow') && window.FreedayCombo
+        && root.querySelector(':scope > .fdy-tabs__picker') === null) {
+      picker = buildPicker(root, list, tabs);
+      window.FreedayCombo.init(picker);
+      picker.addEventListener('fdy-change', function (e) {
+        var id = e.detail && e.detail.value;
+        var tab = tabs.filter(function (t) { return t.id === id; })[0];
+        if (tab) select(tab, false);
+      });
+    }
     var NEXT_KEY = vertical ? 'ArrowDown' : 'ArrowRight';
     var PREV_KEY = vertical ? 'ArrowUp' : 'ArrowLeft';
 
@@ -46,6 +120,8 @@
         var panel = panelFor(t);
         if (panel) panel.hidden = !on;
       });
+      /* Silent: setValue raises no fdy-change, so the picker cannot echo a pick back here. */
+      if (picker) window.FreedayCombo.setValue(picker, tab.id);
       if (focus) tab.focus();
     }
 

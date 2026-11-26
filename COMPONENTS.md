@@ -52,7 +52,12 @@ live docs.
    never enhanced logs one `console.warn` naming it, with the element attached. The usual cause is
    a `useFreeday()` ref on a wrapper that does not contain it. `freeday-unhydrated.js` does this,
    and it ships in the root import.
-   **A `useFreeday(ref)` whose ref is still null at mount says so too.** That is a ref left off the
+   **`useFreeday` also reaches DOM a child component mounts later**, such as a form a child renders
+  behind its own `v-if` or condition. It watches its subtree for added elements and rehydrates in
+  the same microtask, before the browser paints, so one call in a page component covers the dialogs
+  and panels its children open. Before 3.23.0 it ran only when the calling component itself
+  re-rendered, and a child's form went unvalidated without a sound.
+  **A `useFreeday(ref)` whose ref is still null at mount says so too.** That is a ref left off the
    template, or one on an element behind `v-if` / a condition, and the call falls back to the whole
    document: everything works, wider than asked, and other markup on the page can come to rely on
    that scan unnoticed. It logs one `console.warn` per component. Put the ref on an element that is
@@ -429,6 +434,12 @@ One role per level of hierarchy. Never re-use a card title for a page title.
 | `.fdy-text-success` · `.fdy-text-warning` · `.fdy-text-danger` | any | Inline text that carries **state** — a sentence, not a status. Use when a badge is wrong (it is prose) and an alert is wrong (it is one line inside a row): "Amount changed from X to Y", "No approver assigned". **Do not stack two colour roles** (`.fdy-help.fdy-text-warning`): both are single classes, so the one that happens to come later in the stylesheet wins — put the state class on its own element, and use `.fdy-help--error` for help text. |
 | `.fdy-icon` | `<svg>` or a wrapper | Icon box: `1em` square, `flex:none`, so the glyph tracks the text beside it at every scale. The kit ships no paths — bring your own, use the box. |
 | `.fdy-mono` | any | Tabular/monospace data (codes, amounts, ids). |
+| `.fdy-link` · `.fdy-link--muted` | `<a>` (a router's link component renders one) | A text link, in a sentence or a table cell. A bare `<a>` already looks like `.fdy-link`; the class sets the underline the same way in every browser. `--muted` is for a column of names that each open their own record (accounts in a balance sheet, each linking to its ledger): text ink with a muted underline, primary on hover. Both keep the underline at rest, so a link is never told apart by colour alone. |
+
+**A link goes somewhere; a button does something.** If activating it changes the URL, or would make
+sense opened in a new tab, it is an `<a>` with `.fdy-link`, or a whole row as
+`<a class="fdy-list__row">`. If it saves, deletes, opens a dialog or toggles a state, it is a
+`<button>`, and `.fdy-btn--text` is the one that looks like text.
 
 ## Utilities
 `.fdy-hidden` · `.fdy-visually-hidden` (screen-reader-only) · `.fdy-list-reset` (strip native
@@ -440,7 +451,10 @@ The browser's own `display:none` for `[hidden]` loses to any class that sets `di
 layer restates it with `!important`. `hidden="until-found"` is left to the browser, which keeps it
 findable with find-in-page.
 
-Responsive display: `.fdy-hide-below-sm|md|lg` · `.fdy-hide-above-sm|md|lg`.
+Responsive display: `.fdy-hide-below-sm|md|lg` · `.fdy-hide-above-sm|md|lg`. These are `display:none`, so
+what they hide leaves the accessibility tree as well. Never put one on a heading: a page whose `<h1>`
+is hidden below a width has no `<h1>` there. A title that must not be painted takes
+`.fdy-visually-hidden`, which a screen reader still reads.
 Breakpoints (min-width): `sm` 600 · `md` 960 · `lg` 1280 · `xl` 1920, importable as
 `import { breakpoints } from '@cahyo-dimas/freeday/breakpoints'`.
 
@@ -2334,6 +2348,40 @@ settings screen whose sections are a list, not a strip.
   is why the axis is read from the attribute and never from the painted layout.
 - Measured in `browser/tabs-vertical.mjs`, which also holds the line that a strip with no
   `aria-orientation` behaves and paints exactly as it did before the variant existed.
+- **A picker in a narrow container: `.fdy-tabs--picker-narrow`**, opt-in, on the strip or the
+  vertical variant. When the tabs' own width is 40rem or less, a `.fdy-tabs__picker` (a wrapper
+  holding one combo of the same sections) replaces the list. It is a container query, so tabs in a
+  20rem drawer on a desktop switch too. Below Safari 16 the same rule applies by viewport width, which
+  covers phones and leaves a narrow drawer on a wide screen with its list.
+  - **Raw path:** add the class. `freeday-tabs.js` builds the picker first in the root, names it
+    after the tablist's `aria-labelledby` or `aria-label` (else `data-fdy-text-picker`, default
+    `Section`), and keeps tab and picker in step both ways. It needs `freeday-select.js`, which
+    `dist/freeday.js` carries.
+  - **Vue, React, Blazor:** tabs whose state lives in your framework render the picker themselves:
+    a `FdyCombo` bound to the same value as the tabs, inside `<div class="fdy-tabs__picker">`, placed
+    **before** `.fdy-tabs__list`.
+  - The list is hidden only when a picker precedes it, so the class on tabs with no picker changes
+    nothing, and no width can leave a screen without a way between its sections.
+  - Use it when the labels are long or there are more than about four tabs. A strip of three short
+    labels fits a phone as it is.
+
+  ```html
+  <div class="fdy-tabs fdy-tabs--vertical fdy-tabs--picker-narrow" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-label="Settings sections">…</div>
+    <div class="fdy-tabs__panel" role="tabpanel" …>…</div>
+  </div>
+
+  <!-- Vue: the picker is yours, bound to the state the tabs already read. One label names both:
+       FdyCombo takes ariaLabelledby, and an aria-label on it would land on its root, not its button. -->
+  <span id="sections" class="fdy-visually-hidden">Settings sections</span>
+  <div class="fdy-tabs fdy-tabs--vertical fdy-tabs--picker-narrow">
+    <div class="fdy-tabs__picker">
+      <FdyCombo v-model="tab" :options="sections" aria-labelledby="sections" />
+    </div>
+    <div class="fdy-tabs__list" role="tablist" aria-orientation="vertical" aria-labelledby="sections">…</div>
+    …
+  </div>
+  ```
 
 ---
 

@@ -63,3 +63,41 @@
 .fdy-tabs--vertical .fdy-tabs__tab:focus-visible{border-radius:var(--radius-md);}
 .fdy-tabs--vertical .fdy-tabs__tab[aria-selected="true"],.fdy-tabs--vertical .fdy-tabs__tab[aria-current="page"]{background:var(--color-primary-soft);color:var(--color-primary-strong);font-weight:var(--weight-semibold);}
 .fdy-tabs--vertical .fdy-tabs__panel{flex:1;min-width:0;padding:0;}
+
+/* PICKER IN A NARROW CONTAINER: `.fdy-tabs--picker-narrow`, opt-in, on either variant.
+ *
+ * At 40rem of its own width or less, the tab list gives way to `.fdy-tabs__picker`, a wrapper
+ * holding one combo of the same sections. Six tabs with real labels do not fit a phone as a strip,
+ * and as a column they fill the screen before the panel starts. A container query rather than a
+ * viewport one, because the same tabs can sit in a page or in a 20rem drawer.
+ *
+ * The list is hidden only through `.fdy-tabs__picker ~ .fdy-tabs__list`, so the picker has to come
+ * BEFORE the list, and tabs with no picker in them keep their list at every width: the class alone
+ * can never leave a screen with no way between its sections. On the raw path freeday-tabs.js builds
+ * the picker; in a typed stack it is a `FdyCombo` bound to the same state as the tabs.
+ *
+ * `flex-wrap` is what makes the vertical variant work: a container query styles what is inside the
+ * container, never the container itself, so `.fdy-tabs--vertical` stays a flex row. The picker takes
+ * a whole line and the panel wraps under it. While the list shows, the panel's `min-width:0` means it
+ * never wraps.
+ *
+ * 40rem: a column of labels and a panel worth reading do not both fit under it. Below Safari 16
+ * there are no container queries, and the same body applies by viewport width instead; that answers
+ * every phone, and leaves tabs in a narrow drawer on a wide screen as lists. The two bodies are
+ * copies, compared in test/baseline.test.mjs. */
+.fdy-tabs__picker{display:none;}
+.fdy-tabs--picker-narrow{flex-wrap:wrap;}
+.fdy-tabs__picker > .fdy-combo{max-width:none;}
+@supports (container-type:inline-size){
+  .fdy-tabs--picker-narrow{container:fdy-tabs / inline-size;}
+  @container fdy-tabs (max-width: 40rem){
+    .fdy-tabs--picker-narrow > .fdy-tabs__picker{display:block;flex:0 0 100%;}
+    .fdy-tabs--picker-narrow > .fdy-tabs__picker ~ .fdy-tabs__list{display:none;}
+  }
+}
+@supports not (container-type:inline-size){
+  @media (max-width:40rem){
+    .fdy-tabs--picker-narrow > .fdy-tabs__picker{display:block;flex:0 0 100%;}
+    .fdy-tabs--picker-narrow > .fdy-tabs__picker ~ .fdy-tabs__list{display:none;}
+  }
+}

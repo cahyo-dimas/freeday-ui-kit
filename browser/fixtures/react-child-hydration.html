@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: react useFreeday hydrates a child's late DOM</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 40px; }</style>
+<div id="app"></div>
+<script src="../../dist/freeday.js"></script>
+<script>
+  // Counts every scan of the form enhancer, to prove the observer settles instead of re-arming itself.
+  window.__scans = 0;
+  const initAll = window.FreedayForm.initAll;
+  window.FreedayForm.initAll = function (root) { window.__scans += 1; return initAll(root); };
+</script>
+<script src="../.build/react-child-hydration.js"></script>

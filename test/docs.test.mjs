@@ -637,6 +637,9 @@ test('the enhancers ship exactly these strings (#006)', () => {
     'freeday-timepicker.js': {
       label: 'Choose a time',
     },
+    'freeday-tabs.js': {
+      picker: 'Section',
+    },
     'freeday-toast.js': {
       close: 'Close',
     },
@@ -1010,4 +1013,22 @@ test('USAGE.md carries the mobile doctrine and the touch and deep routes', () =>
   assert.match(usage, /\.fdy-actionbar/);
   assert.doesNotMatch(usage, /^Everything else stays with the kit\./m, '§0 still calls the rest locked');
   assert.match(read('docs/agent-onboarding.md'), /USAGE\.md` §8/, 'onboarding must point phone screens at §8');
+});
+
+test('no example hides its <h1> at any width', () => {
+  /* reference-screen.html shipped `<h1 class="fdy-app__title fdy-hide-below-md">`, and the
+     hide-below utilities are `display:none`, which removes the heading from the accessibility tree
+     too: below 960px the screen every new app copies had no <h1> at all, and an app that copied it
+     inherited that (CATATAN-FREEDAY §26, adopted in the ronda app). The title already ellipsises in
+     a narrow topbar, measured with room to spare at 320px. A heading that must not be painted is
+     `.fdy-visually-hidden`, which keeps it readable. */
+  const files = ['docs/reference-screen.html', 'docs/index.html', 'COMPONENTS.md', 'USAGE.md',
+                 'docs/getting-started.md', 'docs/agent-onboarding.md', 'docs/screen-states.md'];
+  const offenders = [];
+  for (const file of files) {
+    for (const m of read(file).matchAll(/<h1\b[^>]*>/g)) {
+      if (/fdy-hide-below-|\bhidden\b|display:\s*none/.test(m[0])) offenders.push(`${file}: ${m[0]}`);
+    }
+  }
+  assert.deepEqual(offenders, [], 'an <h1> that is display:none at some width is a page with no <h1> there');
 });

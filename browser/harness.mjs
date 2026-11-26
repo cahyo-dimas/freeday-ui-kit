@@ -520,6 +520,8 @@ export async function buildEntries() {
       join(HERE, 'entries', 'react-daterange.tsx'),
       join(HERE, 'entries', 'vue-daterange-single.js'),
       join(HERE, 'entries', 'react-daterange-single.tsx'),
+      join(HERE, 'entries', 'vue-child-hydration.js'),
+      join(HERE, 'entries', 'react-child-hydration.tsx'),
       join(HERE, 'entries', 'vue-table-empty.js'),
       join(HERE, 'entries', 'react-table-empty.tsx'),
       join(HERE, 'entries', 'vue-table-footer-text.js'),

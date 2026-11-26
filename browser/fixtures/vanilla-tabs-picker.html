@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: tabs give way to a picker in a narrow container</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>body { padding: 40px; } .box { margin-bottom: 48px; }</style>
+
+<!-- The same tabs at a page's width and in a 20rem drawer: the container decides, not the viewport. -->
+<div class="box" style="width:60rem">
+  <div id="wide" class="fdy-tabs fdy-tabs--vertical fdy-tabs--picker-narrow" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-label="Settings sections">
+      <button class="fdy-tabs__tab" role="tab" id="w-1" aria-controls="wp-1" aria-selected="true">Profile</button>
+      <button class="fdy-tabs__tab" role="tab" id="w-2" aria-controls="wp-2">Billing</button>
+      <button class="fdy-tabs__tab" role="tab" id="w-3" aria-controls="wp-3">Members</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="wp-1" aria-labelledby="w-1">Profile panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="wp-2" aria-labelledby="w-2" hidden>Billing panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="wp-3" aria-labelledby="w-3" hidden>Members panel</div>
+  </div>
+</div>
+
+<div class="box" style="width:20rem">
+  <div id="narrow" class="fdy-tabs fdy-tabs--vertical fdy-tabs--picker-narrow" data-fdy-tabs>
+    <div class="fdy-tabs__list" role="tablist" aria-label="Settings sections">
+      <button class="fdy-tabs__tab" role="tab" id="n-1" aria-controls="np-1" aria-selected="true">Profile</button>
+      <button class="fdy-tabs__tab" role="tab" id="n-2" aria-controls="np-2">Billing</button>
+      <button class="fdy-tabs__tab" role="tab" id="n-3" aria-controls="np-3">Members</button>
+    </div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="np-1" aria-labelledby="n-1">Profile panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="np-2" aria-labelledby="n-2" hidden>Billing panel</div>
+    <div class="fdy-tabs__panel" role="tabpanel" id="np-3" aria-labelledby="n-3" hidden>Members panel</div>
+  </div>
+</div>
+
+<!-- The class with no picker in it (a typed stack that has not rendered one): the list must stay. -->
+<div class="box" style="width:20rem">
+  <div id="bare" class="fdy-tabs fdy-tabs--picker-narrow">
+    <div class="fdy-tabs__list" role="tablist" aria-label="Bare">
+      <button class="fdy-tabs__tab" role="tab" aria-selected="true">One</button>
+      <button class="fdy-tabs__tab" role="tab">Two</button>
+    </div>
+  </div>
+</div>

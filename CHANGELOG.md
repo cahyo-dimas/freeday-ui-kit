@@ -9,6 +9,54 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.23.0] - 2026-11-26
+
+**Empat catatan dari app ronda (`CATATAN-FREEDAY.md` §29 sampai §31, dan satu temuan di §26).**
+Formulir di komponen anak kini tervalidasi, tautan teks punya nama di daftar kelas, tab bisa berganti
+menjadi pemilih di wadah sempit, dan layar rujukan tidak lagi kehilangan `<h1>`-nya di HP.
+
+### Added
+- **`.fdy-tabs--picker-narrow` dan `.fdy-tabs__picker`** (`#121`, §31). Saat lebar tab itu sendiri
+  40rem atau kurang, satu combo berisi bagian yang sama menggantikan daftar tab. Ini container query,
+  jadi tab di laci 20rem pada desktop ikut berganti; di bawah Safari 16 aturan yang sama berlaku
+  menurut lebar viewport. Di jalur mentah `freeday-tabs.js` membangun pemilihnya, menamainya dengan
+  label tablist (atau `data-fdy-text-picker`, bawaan `Section`), dan menyinkronkan keduanya. Di Vue,
+  React dan Blazor pemilihnya `FdyCombo` yang diikat ke state yang sama, di dalam
+  `.fdy-tabs__picker` sebelum daftar. Daftar hanya disembunyikan bila ada pemilih di depannya, jadi
+  kelas ini tanpa pemilih tidak mengubah apa pun.
+- **`.fdy-link` dan `.fdy-link--muted`** (`#120`, §30). `<a>` polos sudah lama dilukis sebagai tautan
+  oleh `base.css`, tetapi tidak ada kelas di `COMPONENTS.md` yang mengatakannya, dan daftar kelas itu
+  tertutup. `--muted` untuk kolom nama yang masing-masing membuka catatannya sendiri: tinta teks
+  dengan garis bawah redup, primary saat hover. Keduanya mempertahankan garis bawah saat diam, supaya
+  tautan tidak dikenali dari warna saja. Aturan tautan lawan tombol ditulis di sebelahnya.
+
+### Changed
+- **`useFreeday` menjangkau DOM yang dipasang komponen anak belakangan** (`#119`, §29), di Vue dan
+  React. Formulir `data-fdy-validate` yang dirender anak di balik `v-if` atau kondisinya sendiri tidak
+  pernah terhidrasi: `onUpdated` dan efek React milik komponen yang berubah, yaitu anak, bukan
+  pemanggil `useFreeday`. Isian wajib yang kosong lolos terkirim. Kini `useFreeday` mengamati
+  subtree-nya dan menghidrasi ulang di microtask yang sama, sebelum layar dilukis. `takeRecords()`
+  membuang mutasi yang dibuat enhancer sendiri, jadi satu hidrasi tidak menjadwalkan hidrasi
+  berikutnya.
+
+### Fixed
+- **`docs/reference-screen.html` punya `<h1>` di setiap lebar** (`#122`, temuan di §26). Judul topbar
+  memakai `fdy-hide-below-md`, yang `display:none`, jadi di bawah 960px layar yang disalin setiap app
+  baru tidak punya `<h1>` sama sekali. Judulnya sudah terpotong rapi di topbar sempit; diukur muat di
+  320, 375 dan 412px tanpa gulir samping. `COMPONENTS.md` kini mengatakan bahwa utilitas `hide-below`
+  juga mengeluarkan isinya dari pohon aksesibilitas, dan bahwa judul yang tidak boleh terlihat memakai
+  `.fdy-visually-hidden`.
+
+### Catatan
+- **§31 tidak menjadi pembungkus bertipe `FdyTabs`.** Usulannya menyebut kunci, ARIA dan sinkronisasi
+  sebagai milik kit. Di jalur mentah memang demikian. Di stack bertipe, tab yang statenya dipegang
+  framework sudah sinkron lewat nilai yang sama, dan ARIA pemilihnya milik `FdyCombo`. Navigasi
+  papan ketik daftar tab tetap ditulis app sampai ada pemakai kedua yang membutuhkan pembungkusnya.
+- Diuji di `browser/child-hydration.mjs` (Vue dan React: formulir anak tervalidasi, dan pengamat
+  diam sesudah halaman tenang), `browser/tabs-picker.mjs` (tiga kasus, masing-masing terbukti merah
+  oleh mutasi), uji kembar container query lawan cadangannya di `test/baseline.test.mjs`, dan
+  penjaga `<h1>` tersembunyi di `test/docs.test.mjs`. Keempatnya merah pada kode lama.
+
 ## [3.22.0] - 2026-11-24
 
 **Sebuah app yang dipakai di HP punya tombol berukuran ibu jari, isian primary yang lebih dalam, dan
