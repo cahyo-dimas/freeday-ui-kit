@@ -50,6 +50,15 @@ function onCancel(): void {
 function onClick(e: MouseEvent): void {
   if (dismissible.value && e.target === dialogEl.value) emit('close');
 }
+/* The dialog closed while the app still says open: Chrome honours a prevented `cancel` once per user
+   activation, so a second Escape closes it regardless. Reported when the drawer is dismissible, shown
+   again when it is not; see FdyModal.vue. */
+function onClose(): void {
+  const el: HTMLDialogElement | null = dialogEl.value;
+  if (!props.open || el === null) return;
+  if (dismissible.value) emit('close');
+  else el.showModal();
+}
 </script>
 
 <template>
@@ -59,6 +68,7 @@ function onClick(e: MouseEvent): void {
     data-fdy-ignore
     :aria-labelledby="titleId"
     @cancel.prevent="onCancel"
+    @close="onClose"
     @click="onClick"
   >
     <div class="fdy-drawer__header">

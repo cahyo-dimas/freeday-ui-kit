@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: a validated form's own reset button clears its errors</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<body style="padding:40px">
+<form id="form" data-fdy-validate novalidate>
+  <div class="fdy-field">
+    <label class="fdy-label" for="name">Name</label>
+    <input id="name" class="fdy-input" required>
+  </div>
+  <button type="submit" class="fdy-btn" id="send">Save</button>
+  <button type="reset" class="fdy-btn fdy-btn--ghost" id="reset">Reset</button>
+</form>
+<script>document.getElementById('form').addEventListener('submit', (e) => e.preventDefault());</script>

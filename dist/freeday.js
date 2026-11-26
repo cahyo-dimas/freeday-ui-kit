@@ -2430,13 +2430,24 @@
       return b;
     }
 
+    /* Every arrow rebuilds the panel, and with it the arrow that was pressed, so focus fell to <body>
+       and the next key press (another arrow, Escape) went nowhere. The arrow in the same place takes
+       focus back, unless the handler already moved it somewhere in the panel on purpose. */
     function navButton(glyph, aria, onClick) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'fdy-cal__nav';
       b.textContent = glyph;
       b.setAttribute('aria-label', aria);
-      b.addEventListener('click', onClick);
+      var side = glyph === '‹' ? 'prev' : 'next';
+      b.setAttribute('data-fdy-nav', side);
+      b.addEventListener('click', function () {
+        onClick();
+        if (!panel.contains(document.activeElement)) {
+          var again = panel.querySelector('.fdy-cal__nav[data-fdy-nav="' + side + '"]');
+          if (again) again.focus();
+        }
+      });
       return b;
     }
 
@@ -2930,6 +2941,19 @@
     }
 
     trigger.addEventListener('click', function () { panel.hidden ? open() : close(true); });
+    /* Escape from anywhere in the panel. The grids handle it first and say so with preventDefault;
+       this answers for the arrows and the title, where it used to do nothing. */
+    panel.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      e.preventDefault();
+      close(true);
+    });
+    /* Focus leaving the field closes it, as the Vue and React pickers always have. A null target is
+       a rebuilt panel taking the focused element with it, which is not focus leaving. */
+    wrap.addEventListener('focusout', function (e) {
+      var next = e.relatedTarget;
+      if (next && !wrap.contains(next)) close(false);
+    });
 
     updateDisplay();
 
@@ -3459,6 +3483,9 @@
         kitRoots(form).forEach(function (root) { paint(kitAria(root), ''); });
       }
     };
+    /* The form's own <button type="reset"> empties the fields; the messages about them went with it
+       only through api.reset(), so a reset form kept its red text and still counted as submitted. */
+    form.addEventListener('reset', function () { api.reset(); });
     form._fdyForm = api;
     return api;
   }
@@ -4652,10 +4679,10 @@
         var marker = s.querySelector('.fdy-step__marker');
         if (marker) marker.innerHTML = i < active ? CHECK : (marker.dataset.num || String(i + 1));
         var btn = s.querySelector('.fdy-step__btn');
-        if (btn) btn.disabled = i > maxReached;
+        if (btn) btn.disabled = i > maxReached || deciding;
       });
       panels.forEach(function (p, i) { p.hidden = i !== active; });
-      if (prevBtn) prevBtn.disabled = active === 0;
+      if (prevBtn) prevBtn.disabled = deciding || active === 0;
       if (nextBtn) nextBtn.textContent = active === steps.length - 1 ? textOf(root, 'done') : (nextLabel || textOf(root, 'next'));
       root.dispatchEvent(new CustomEvent('fdy-step-change', { bubbles: true, detail: { index: active } }));
     }
@@ -4678,12 +4705,19 @@
      * opinion about form libraries and this is the line that keeps it that way. */
     var deciding = false;
 
+    /* While a guard decides, nothing moves: Next, Back and the step headers alike. Only Next and Back
+       used to check, so a header click went through mid-decision, and the decision then landed on a
+       step it was never asked about. */
     function lock(on) {
       deciding = on;
       var list = root.querySelector('.fdy-stepper');
       if (list) { if (on) list.setAttribute('aria-busy', 'true'); else list.removeAttribute('aria-busy'); }
       if (prevBtn) prevBtn.disabled = on || active === 0;
       if (nextBtn) nextBtn.disabled = on;
+      steps.forEach(function (s, i) {
+        var btn = s.querySelector('.fdy-step__btn');
+        if (btn) btn.disabled = on || i > maxReached;
+      });
     }
 
     function request(to, onAllowed) {
@@ -4708,16 +4742,18 @@
       );
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', function () { go(active - 1); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { if (!deciding) go(active - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () {
-      if (active < steps.length - 1) request(active + 1, function () { go(active + 1); });
+      /* The target is fixed when asked: the guard approves THIS move, whatever happens meanwhile. */
+      var to = active + 1;
+      if (active < steps.length - 1) request(to, function () { go(to); });
       else request(active + 1, function () { root.dispatchEvent(new CustomEvent('fdy-step-finish', { bubbles: true })); });
     });
     steps.forEach(function (s, i) {
       var btn = s.querySelector('.fdy-step__btn');
       if (!btn) return;
       btn.addEventListener('click', function () {
-        if (i > maxReached) return;
+        if (deciding || i > maxReached) return;
         // Going BACK is always allowed — nothing is being committed. Jumping forward to a step
         // already reached still leaves the current one behind, so it asks the guard like Next does.
         if (i <= active) go(i);
@@ -5325,8 +5361,12 @@
         closePopover();
       }
     });
+    /* preventDefault says the key was used. Without it a dialog's close watcher acted on the same
+       Escape, and a filter open in a table inside a modal closed the modal with it. */
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && openPopover) closePopover(true);
+      if (e.key !== 'Escape' || !openPopover) return;
+      e.preventDefault();
+      closePopover(true);
     });
 
     buildColumnFilters();
@@ -6434,6 +6474,13 @@
     /* Back to a measured bar. While the indeterminate modifier is on it owns the bar's width, so an
        explicit one has to be restored when it comes off: .fdy-progress__bar is a plain block div, and
        with no width at all it fills the track, a full bar, which is the opposite of what 0% means. */
+    function showUploading() {
+      el.classList.remove('fdy-file--error', 'fdy-file--success');
+      icon.innerHTML = FILE_ICON;
+      sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
+      ensureProgress();
+      determinate();
+    }
     function determinate() {
       progressEl.classList.remove('fdy-progress--indeterminate');
       if (!bar.style.width) bar.style.width = '0%';
@@ -6451,13 +6498,12 @@
         dropProgress();
       },
       uploading: function () {
-        el.classList.remove('fdy-file--error', 'fdy-file--success');
-        icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
-        ensureProgress();
-        determinate();
+        showUploading();
       },
       setProgress: function (pct) {
+        /* A percentage means the file is uploading again, whatever the row said before. A retry that
+           reported progress straight after done() or fail() painted "Uploaded" over a moving bar. */
+        if (el.classList.contains('fdy-file--success') || el.classList.contains('fdy-file--error')) showUploading();
         ensureProgress();
         determinate();
         var v = Math.max(0, Math.min(100, pct));
@@ -6538,9 +6584,13 @@
     ['dragenter', 'dragover'].forEach(function (ev) {
       zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('is-dragover'); });
     });
-    ['dragleave', 'dragend'].forEach(function (ev) {
-      zone.addEventListener(ev, function (e) { if (e.target === zone) zone.classList.remove('is-dragover'); });
+    /* Off when the pointer has left the ZONE, read from where it went: dragleave fires on whichever
+       child it was over, so `e.target === zone` missed a drag that left through the icon, and the
+       highlight stayed. A null relatedTarget is the window, or a drag cancelled with Escape. */
+    zone.addEventListener('dragleave', function (e) {
+      if (!e.relatedTarget || !zone.contains(e.relatedTarget)) zone.classList.remove('is-dragover');
     });
+    zone.addEventListener('dragend', function () { zone.classList.remove('is-dragover'); });
     zone.addEventListener('drop', function (e) {
       e.preventDefault();
       zone.classList.remove('is-dragover');

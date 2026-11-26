@@ -286,6 +286,9 @@
         kitRoots(form).forEach(function (root) { paint(kitAria(root), ''); });
       }
     };
+    /* The form's own <button type="reset"> empties the fields; the messages about them went with it
+       only through api.reset(), so a reset form kept its red text and still counted as submitted. */
+    form.addEventListener('reset', function () { api.reset(); });
     form._fdyForm = api;
     return api;
   }

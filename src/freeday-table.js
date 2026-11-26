@@ -579,8 +579,12 @@
         closePopover();
       }
     });
+    /* preventDefault says the key was used. Without it a dialog's close watcher acted on the same
+       Escape, and a filter open in a table inside a modal closed the modal with it. */
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && openPopover) closePopover(true);
+      if (e.key !== 'Escape' || !openPopover) return;
+      e.preventDefault();
+      closePopover(true);
     });
 
     buildColumnFilters();

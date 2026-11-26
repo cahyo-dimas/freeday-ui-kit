@@ -9,6 +9,64 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.24.0] - 2026-11-27
+
+**Satu keadaan, satu pintu.** Audit state machine implisit di kit (dan di app ronda yang memakainya)
+menemukan keadaan yang disimpan sebagai beberapa variabel terpisah, yang bisa saling bertentangan.
+Rilis ini menambah `useLoad` untuk app, dan menutup sembilan cacat kit dari kelas yang sama
+(`#123`). Setiap cacat direproduksi di peramban atau bUnit dulu, dan ujinya terbukti merah pada kode
+lama.
+
+### Added
+- **`useLoad`** di Vue dan React (`/vue`, `/react`). Satu muatan data sebagai satu nilai:
+  `idle`, `loading` (dengan `previous`), `ready` (dengan `data`), atau `error` (dengan `error` dan
+  `previous`), sesuai keadaan yang `docs/screen-states.md` sebut untuk area data. `load()`
+  membatalkan permintaan sebelumnya lewat `AbortSignal` dan membuang jawaban yang datang sesudah
+  muatan yang lebih baru dimulai. Data lama hanya bisa diambil lewat nama `previous`, jadi menampilkan
+  data basi selalu keputusan yang terlihat di template. Tipe `LoadState<T>` ikut diekspor.
+
+### Fixed
+- **`FdyCfl` tidak lagi mencampur baris dua kueri**, di Vue, React dan Blazor. "Load more" di dalam
+  jeda debounce membaca kotak pencarian yang sudah berisi ketikan baru, lalu menambahkan halaman 1
+  kueri baru di bawah halaman 0 kueri lama. Kini ia meminta halaman berikut untuk kueri baris yang
+  tampil. Pencarian baru yang gagal tidak meninggalkan baris kueri lama di bawah teks baru, dan
+  "Try again" mengulang permintaan yang gagal beserta kuerinya.
+- **`FdyCfl` Blazor saat dibuka ulang dan ditutup.** Membuka ulang tidak lagi menampilkan baris
+  pencarian terakhir sampai halaman baru tiba. Menutup membatalkan permintaan yang sedang berjalan
+  dan pencarian yang menunggu debounce. "Try again" mengulang halaman yang gagal, sama seperti Vue
+  dan React, alih-alih memuat ulang halaman 0.
+- **`FdyTable` tidak lagi berputar me-render tanpa henti** saat induk menyimpan hasil `onProcess` /
+  `Process` ke state-nya. React: tabel mode server tanpa prop `filters` membuat objek filter baru
+  setiap render, dan literal `columns`/`page` di induk berbuat sama; terukur 8.625 laporan dalam
+  setengah detik. Blazor: render queue meluap sampai stack overflow. Kini laporan hanya dikirim saat
+  baris di halaman atau totalnya berubah, di kedua stack. Vue sudah aman dan kini ikut dijaga uji.
+- **`FdyModal` dan `FdyDrawer`: `open` tidak lagi menyimpang dari `<dialog>`**, di Vue, React dan
+  Blazor. Chrome menghormati `cancel` yang dicegah hanya sekali per aktivasi pengguna, jadi Escape
+  kedua menutup dialog sementara app masih memegang `open=true`, dan tidak bisa membukanya lagi.
+  Kini yang `dismissible` melaporkan penutupan itu, dan yang tidak dibuka kembali.
+- **Datepicker: Escape menutup panel dari mana pun di dalamnya**, di ketiga stack. Sebelumnya hanya
+  dari grid, jadi fokus di panah bulan membuat Escape tidak berbuat apa-apa. Di jalur mentah panah
+  yang dibangun ulang kini mempertahankan fokus, dan panel menutup saat fokus keluar dari field,
+  sama dengan Vue dan React (sekaligus membuang setengah rentang yang tertunda).
+- **Stepper: selama penjaga `waitFor` memutuskan, tidak ada navigasi yang lolos.** Klik header
+  langkah dulu lolos, dan saat penjaga menjawab, Next bergerak dari posisi yang baru: perpindahan
+  yang tidak pernah ditanyakan ke penjaga, sementara yang disetujui hilang.
+- **Upload:** `setProgress` sesudah `done()`/`fail()` mengembalikan baris ke keadaan mengunggah,
+  bukan bilah progres di bawah tulisan "Uploaded". Sorotan `is-dragover` hilang saat seretan keluar
+  dari zona lewat elemen anak atau dibatalkan dengan Escape.
+- **Form:** tombol `<button type="reset">` milik form kini menghapus pesan galat dan status
+  "sudah dikirim", seperti `api.reset()`.
+- **Tabel mentah:** Escape yang menutup panel filter tidak lagi ikut menutup modal di belakangnya.
+
+### Catatan
+- **Belum dikerjakan, dicatat di `NEXT-UP.md`:** pembungkus Blazor `FdyAutocomplete`,
+  `FdyDatepicker` dan `FdyDateRange` tidak mendorong `Value`/`From`/`To` atau `Options` yang
+  berubah sesudah hidrasi (butuh API `setValue` di enhancer, jadi dirancang terpisah); opsi
+  autocomplete mentah yang ditambahkan belakangan; dan carousel (indeks ditimpa saat gulir halus,
+  autoplay saat fokus di dalam), yang baru dilacak di kode.
+- `FdyModal`/`FdyDrawer` Blazor diperbaiki di jembatan JS, jadi tidak tercakup bUnit; jalurnya sama
+  dengan Vue dan React yang diuji di peramban.
+
 ## [3.23.0] - 2026-11-26
 
 **Empat catatan dari app ronda (`CATATAN-FREEDAY.md` §29 sampai §31, dan satu temuan di §26).**

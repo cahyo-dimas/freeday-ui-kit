@@ -39,6 +39,24 @@ export interface UseThemeReturn {
  */
 export declare function useTheme(rootRef?: Ref<HTMLElement | null>): UseThemeReturn;
 
+export type { LoadState } from '../core/load-state';
+
+export interface UseLoadReturn<T> {
+  /** The load, as one value: 'idle', 'loading' (with `previous`), 'ready' (with `data`) or 'error'
+   *  (with `error` and `previous`). Narrow on `status` before reading the rest. */
+  state: Readonly<Ref<import('../core/load-state').LoadState<T>>>;
+  /** Starts a load, aborting the one before it. Settles when this load does; never rejects. */
+  load: () => Promise<void>;
+}
+
+/**
+ * One data load as one state. The fetcher receives an AbortSignal; a newer `load()` aborts the older
+ * request and discards its answer, so a quick change of filter can never leave the older result on
+ * screen. Unmounting aborts what is in flight. The states are those docs/screen-states.md lists for a
+ * data area: render loading, error and ready from `state.status`, and an error never as empty.
+ */
+export declare function useLoad<T>(fetcher: (signal: AbortSignal) => Promise<T>): UseLoadReturn<T>;
+
 /**
  * Which of the panel's edges lines up with the trigger's. `'start'` (the default) puts the panel's
  * LEFT edge on the trigger's left edge, right for an input-shaped dropdown; `'end'` puts its RIGHT

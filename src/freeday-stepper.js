@@ -78,10 +78,10 @@
         var marker = s.querySelector('.fdy-step__marker');
         if (marker) marker.innerHTML = i < active ? CHECK : (marker.dataset.num || String(i + 1));
         var btn = s.querySelector('.fdy-step__btn');
-        if (btn) btn.disabled = i > maxReached;
+        if (btn) btn.disabled = i > maxReached || deciding;
       });
       panels.forEach(function (p, i) { p.hidden = i !== active; });
-      if (prevBtn) prevBtn.disabled = active === 0;
+      if (prevBtn) prevBtn.disabled = deciding || active === 0;
       if (nextBtn) nextBtn.textContent = active === steps.length - 1 ? textOf(root, 'done') : (nextLabel || textOf(root, 'next'));
       root.dispatchEvent(new CustomEvent('fdy-step-change', { bubbles: true, detail: { index: active } }));
     }
@@ -104,12 +104,19 @@
      * opinion about form libraries and this is the line that keeps it that way. */
     var deciding = false;
 
+    /* While a guard decides, nothing moves: Next, Back and the step headers alike. Only Next and Back
+       used to check, so a header click went through mid-decision, and the decision then landed on a
+       step it was never asked about. */
     function lock(on) {
       deciding = on;
       var list = root.querySelector('.fdy-stepper');
       if (list) { if (on) list.setAttribute('aria-busy', 'true'); else list.removeAttribute('aria-busy'); }
       if (prevBtn) prevBtn.disabled = on || active === 0;
       if (nextBtn) nextBtn.disabled = on;
+      steps.forEach(function (s, i) {
+        var btn = s.querySelector('.fdy-step__btn');
+        if (btn) btn.disabled = on || i > maxReached;
+      });
     }
 
     function request(to, onAllowed) {
@@ -134,16 +141,18 @@
       );
     }
 
-    if (prevBtn) prevBtn.addEventListener('click', function () { go(active - 1); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { if (!deciding) go(active - 1); });
     if (nextBtn) nextBtn.addEventListener('click', function () {
-      if (active < steps.length - 1) request(active + 1, function () { go(active + 1); });
+      /* The target is fixed when asked: the guard approves THIS move, whatever happens meanwhile. */
+      var to = active + 1;
+      if (active < steps.length - 1) request(to, function () { go(to); });
       else request(active + 1, function () { root.dispatchEvent(new CustomEvent('fdy-step-finish', { bubbles: true })); });
     });
     steps.forEach(function (s, i) {
       var btn = s.querySelector('.fdy-step__btn');
       if (!btn) return;
       btn.addEventListener('click', function () {
-        if (i > maxReached) return;
+        if (deciding || i > maxReached) return;
         // Going BACK is always allowed — nothing is being committed. Jumping forward to a step
         // already reached still leaves the current one behind, so it asks the guard like Next does.
         if (i <= active) go(i);

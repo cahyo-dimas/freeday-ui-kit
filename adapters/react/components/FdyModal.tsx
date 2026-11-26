@@ -46,6 +46,17 @@ export function FdyModal(props: FdyModalProps): JSX.Element {
         e.preventDefault(); // stop the native close; app state stays the single source of truth
         if (dismissible) props.onClose();
       }}
+      onClose={(): void => {
+        /* The dialog closed while the app still says open. Chrome's close watcher honours a prevented
+           `cancel` once per user activation, so a second Escape with no click between closes the
+           dialog regardless. Left alone, the app held open=true over a closed dialog and could not
+           reopen it, since the value never changed. A dismissible modal reports the close; one that
+           may not be dismissed is shown again, because that is what dismissible=false promises. */
+        const el: HTMLDialogElement | null = dialogRef.current;
+        if (!props.open || el === null) return;
+        if (dismissible) props.onClose();
+        else el.showModal();
+      }}
       onClick={(e): void => {
         // The ::backdrop is not a separate element, target === the dialog box means a backdrop click.
         if (dismissible && e.target === dialogRef.current) props.onClose();

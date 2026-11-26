@@ -159,6 +159,12 @@ public partial class FdyTable<TRow>
     // Both notifications are therefore queued here and flushed in OnAfterRenderAsync.
     private int? _pendingClamp;
     private bool _processDirty;
+    /* What was last reported through Process. Every parent render re-sets this component's
+       parameters, Recompute runs, and the page comes out as a new list of the same rows; reporting
+       that again made a parent that stores the report render the table again, until the render queue
+       overflowed the stack. A report goes out when the rows on the page or the total change. */
+    private IReadOnlyList<TRow>? _reportedRows;
+    private int _reportedTotal = -1;
 
     private static readonly IReadOnlyDictionary<string, FdyColumnFilter> EmptyFilters = new Dictionary<string, FdyColumnFilter>();
 
@@ -240,7 +246,23 @@ public partial class FdyTable<TRow>
             _displayRows = filteredSorted;
         }
 
-        _processDirty = true;
+        if (_reportedRows is null || _reportedTotal != _totalCount || !SameRows(_reportedRows, _displayRows))
+        {
+            _reportedRows = _displayRows;
+            _reportedTotal = _totalCount;
+            _processDirty = true;
+        }
+    }
+
+    /// <summary>The same rows in the same order: one page, compared element by element.</summary>
+    private static bool SameRows(IReadOnlyList<TRow> a, IReadOnlyList<TRow> b)
+    {
+        if (a.Count != b.Count) return false;
+        for (int i = 0; i < a.Count; i++)
+        {
+            if (!EqualityComparer<TRow>.Default.Equals(a[i], b[i])) return false;
+        }
+        return true;
     }
 
     private FdyColumnFilter? GetFilter(string key) => EffectiveFilters.TryGetValue(key, out FdyColumnFilter? f) ? f : null;

@@ -97,6 +97,13 @@ public partial class FdyCfl<TRow>
     private string? _error;
     private int _reqSeq;      // out-of-order response guard
     private int _debounceSeq; // supersedes stale debounced searches
+    /* The query the rows on screen came from, which is not always _query: during the debounce the
+       box holds a search not yet sent, and "Load more" appends to the ROWS (#123). */
+    private string _shownQuery = string.Empty;
+    /* The request that last ran, so Try again repeats it: the page that failed, with its query,
+       the same as the Vue and React pickers. It used to reload page 0, dropping appended pages. */
+    private string _lastQuery = string.Empty;
+    private bool _lastReset = true;
 
     private string DisplayValue => Value is null ? string.Empty : Display(Value);
     /* The live value on the group, as every value-bearing kit control mirrors it: the picked keys. */
@@ -121,11 +128,18 @@ public partial class FdyCfl<TRow>
         if (Disabled || Readonly || _open) return;
         _open = true;
         _query = string.Empty;
+        /* Nothing from the last opening survives into this one: its rows answered another search,
+           and showing them under an empty box until the new page lands reads as this search's
+           results, or stays on screen beside the error if that page fails. */
+        _rows.Clear();
+        _error = null;
+        _hasMore = false;
+        _page = 0;
         /* Re-seeded per open, so Cancel really is a cancel: the ticks start as whatever the caller holds. */
         _picked.Clear();
         if (Multiple && Values is not null) _picked.AddRange(Values);
         await JS.InvokeVoidAsync("FreedayBlazor.dialogShow", Root);
-        await LoadAsync(reset: true);
+        await LoadAsync(_query, reset: true);
     }
 
     /// <summary>Close the picker without committing, the same path Esc and the footer button take.</summary>
@@ -133,6 +147,12 @@ public partial class FdyCfl<TRow>
     {
         if (!_open) return;
         _open = false;
+        /* A response in flight, or a search still waiting out its debounce, belongs to the dialog
+           that just closed. Bumping both counters drops them; without it a search typed just before
+           closing was still sent, and its rows landed in the next opening. */
+        ++_reqSeq;
+        ++_debounceSeq;
+        _loading = false;
         await JS.InvokeVoidAsync("FreedayBlazor.dialogClose", Root);
     }
 
@@ -148,27 +168,43 @@ public partial class FdyCfl<TRow>
             await Task.Delay(SearchDebounceMs);
             if (seq != _debounceSeq) return; // a newer keystroke superseded this one
         }
-        await LoadAsync(reset: true);
+        await LoadAsync(_query, reset: true);
     }
 
-    private async Task LoadAsync(bool reset)
+    private async Task LoadAsync(string query, bool reset)
     {
+        _lastQuery = query;
+        _lastReset = reset;
         _loading = true;
         _error = null;
         StateHasChanged();
         int seq = ++_reqSeq;
         try
         {
-            CflPage<TRow> result = await LoadPage(_query, reset ? 0 : _page);
+            CflPage<TRow> result = await LoadPage(query, reset ? 0 : _page);
             if (seq != _reqSeq) return; // a newer request superseded this response
-            if (reset) _rows.Clear();
+            if (reset)
+            {
+                _rows.Clear();
+                _shownQuery = query;
+            }
             _rows.AddRange(result.Rows);
             _hasMore = result.HasMore;
             _page = reset ? 1 : _page + 1;
         }
         catch (Exception ex)
         {
-            if (seq == _reqSeq) _error = string.IsNullOrEmpty(ex.Message) ? ErrorText : ex.Message;
+            if (seq == _reqSeq)
+            {
+                /* A failed new search leaves no rows from the old one under the new text. A failed
+                   next page keeps the rows it was adding to, which still answer their own query. */
+                if (reset)
+                {
+                    _rows.Clear();
+                    _hasMore = false;
+                }
+                _error = string.IsNullOrEmpty(ex.Message) ? ErrorText : ex.Message;
+            }
         }
         finally
         {
@@ -180,9 +216,9 @@ public partial class FdyCfl<TRow>
         }
     }
 
-    private Task LoadMoreAsync() => _hasMore && !_loading ? LoadAsync(reset: false) : Task.CompletedTask;
+    private Task LoadMoreAsync() => _hasMore && !_loading ? LoadAsync(_shownQuery, reset: false) : Task.CompletedTask;
 
-    private Task RetryAsync() => LoadAsync(reset: true);
+    private Task RetryAsync() => LoadAsync(_lastQuery, _lastReset);
 
     /// <summary>Unset the value. Not "choosing nothing": the dialog is not involved, so this neither
     /// opens nor closes it.</summary>

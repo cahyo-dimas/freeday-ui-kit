@@ -144,6 +144,13 @@
     /* Back to a measured bar. While the indeterminate modifier is on it owns the bar's width, so an
        explicit one has to be restored when it comes off: .fdy-progress__bar is a plain block div, and
        with no width at all it fills the track, a full bar, which is the opposite of what 0% means. */
+    function showUploading() {
+      el.classList.remove('fdy-file--error', 'fdy-file--success');
+      icon.innerHTML = FILE_ICON;
+      sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
+      ensureProgress();
+      determinate();
+    }
     function determinate() {
       progressEl.classList.remove('fdy-progress--indeterminate');
       if (!bar.style.width) bar.style.width = '0%';
@@ -161,13 +168,12 @@
         dropProgress();
       },
       uploading: function () {
-        el.classList.remove('fdy-file--error', 'fdy-file--success');
-        icon.innerHTML = FILE_ICON;
-        sub.textContent = fmtSize(file.size) + ' · ' + textOf(zone, 'uploading');
-        ensureProgress();
-        determinate();
+        showUploading();
       },
       setProgress: function (pct) {
+        /* A percentage means the file is uploading again, whatever the row said before. A retry that
+           reported progress straight after done() or fail() painted "Uploaded" over a moving bar. */
+        if (el.classList.contains('fdy-file--success') || el.classList.contains('fdy-file--error')) showUploading();
         ensureProgress();
         determinate();
         var v = Math.max(0, Math.min(100, pct));
@@ -248,9 +254,13 @@
     ['dragenter', 'dragover'].forEach(function (ev) {
       zone.addEventListener(ev, function (e) { e.preventDefault(); zone.classList.add('is-dragover'); });
     });
-    ['dragleave', 'dragend'].forEach(function (ev) {
-      zone.addEventListener(ev, function (e) { if (e.target === zone) zone.classList.remove('is-dragover'); });
+    /* Off when the pointer has left the ZONE, read from where it went: dragleave fires on whichever
+       child it was over, so `e.target === zone` missed a drag that left through the icon, and the
+       highlight stayed. A null relatedTarget is the window, or a drag cancelled with Escape. */
+    zone.addEventListener('dragleave', function (e) {
+      if (!e.relatedTarget || !zone.contains(e.relatedTarget)) zone.classList.remove('is-dragover');
     });
+    zone.addEventListener('dragend', function () { zone.classList.remove('is-dragover'); });
     zone.addEventListener('drop', function (e) {
       e.preventDefault();
       zone.classList.remove('is-dragover');

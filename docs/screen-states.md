@@ -75,6 +75,9 @@ Notes:
 These replace one data area (a table, a list, a card), not the page. Put the `.fdy-state` inside
 the card or section it replaces, so the page header and its actions stay usable.
 
+In Vue and React, `useLoad` holds which of these a data area is in, as one value; see `.fdy-state`
+in COMPONENTS.md.
+
 ### 10. Ideal
 
 The data as designed. Design it last, after the four below, because those decide whether the

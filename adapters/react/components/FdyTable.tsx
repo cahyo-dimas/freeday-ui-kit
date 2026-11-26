@@ -1,5 +1,5 @@
 import type { CSSProperties, JSX, ReactNode } from 'react';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   cellValue,
   cellText,
@@ -154,6 +154,19 @@ export interface FdyTableProps<Row extends object> {
   pageLabel?: string;
 }
 
+/** The same rows in the same order: one page, compared element by element. */
+function sameRows<Row>(a: ReadonlyArray<Row>, b: ReadonlyArray<Row>): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/* One empty filter map for every render. A server-paged table with no `filters` prop counts as
+   filter-controlled and used to read `props.filters ?? {}`: a NEW object each render, which broke
+   every memo after it, handed onProcess a new array on every commit, and looped any parent that put
+   that array in state (measured 8,625 reports in half a second). */
+const NO_FILTERS: FdyFilterMap = Object.freeze({}) as FdyFilterMap;
+
 export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Element {
   const serverPaged: boolean = props.page != null;
   const sortControlled: boolean = serverPaged || props.sort !== undefined;
@@ -175,7 +188,7 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
   }
 
   const effectiveSort: FdySortState | null = sortControlled ? (props.sort ?? null) : internalSort;
-  const effectiveFilters: FdyFilterMap = filtersControlled ? (props.filters ?? {}) : internalFilters;
+  const effectiveFilters: FdyFilterMap = filtersControlled ? (props.filters ?? NO_FILTERS) : internalFilters;
 
   // Enum options: explicit (server mode) or distinct values across the current rows (client mode).
   const enumOptionsMap: Record<string, ReadonlyArray<string>> = useMemo(() => {
@@ -229,10 +242,20 @@ export function FdyTable<Row extends object>(props: FdyTableProps<Row>): JSX.Ele
 
   // Surface the processed page + total to the parent (both modes), so the same result can drive a
   // responsive card list / summary / export without re-implementing filter/sort/paginate.
-  const onProcess = props.onProcess;
+  /* Reported when what the parent would SEE changes: the total, or any row on the page. Identity is
+     not that. A parent writing `columns={[...]}` or `page={{...}}` inline hands over new objects on
+     every render, the memos above recompute, and the page comes out as a new array of the same rows;
+     a parent that stored it in state then rendered again, without end. The callback itself is read
+     through a ref for the same reason: an inline arrow is a new function every render. */
+  const onProcessRef = useRef(props.onProcess);
+  onProcessRef.current = props.onProcess;
+  const lastReportRef = useRef<{ rows: Row[]; total: number } | null>(null);
   useEffect((): void => {
-    onProcess?.({ rows: displayRows, total: totalCount });
-  }, [onProcess, displayRows, totalCount]);
+    const last = lastReportRef.current;
+    if (last !== null && last.total === totalCount && sameRows(last.rows, displayRows)) return;
+    lastReportRef.current = { rows: displayRows, total: totalCount };
+    onProcessRef.current?.({ rows: displayRows, total: totalCount });
+  }, [displayRows, totalCount]);
 
   function ariaSortOf(col: FdyTableColumn<Row>): 'ascending' | 'descending' | undefined {
     if (effectiveSort === null || effectiveSort.key !== col.key) return undefined;

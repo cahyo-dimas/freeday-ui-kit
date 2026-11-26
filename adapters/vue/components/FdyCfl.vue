@@ -161,10 +161,15 @@ let reqToken: number = 0;
 const cache: Map<string, CflPage> = new Map<string, CflPage>();
 let lastPage: number = 0;
 let lastAppend: boolean = false;
+let lastQuery: string = '';
+/* The query the rows on screen came from, which is not always the one in the search box: for 250 ms
+   after typing, the box holds a search that has not been sent. "Load more" appends to the ROWS, so it
+   asks for their query; reading the box appended page 1 of "ab" under page 0 of "a". */
+let shownQuery: string = '';
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-async function loadPage(targetPage: number, append: boolean): Promise<void> {
-  const q: string = query.value;
+async function loadPage(q: string, targetPage: number, append: boolean): Promise<void> {
+  lastQuery = q;
   lastPage = targetPage;
   lastAppend = append;
   const token: number = ++reqToken;
@@ -178,11 +183,20 @@ async function loadPage(targetPage: number, append: boolean): Promise<void> {
     if (cached === undefined) cache.set(key, res);
     const copy: Row[] = res.rows.slice(); // never mutate the caller's array
     rows.value = append ? rows.value.concat(copy) : copy;
+    if (!append) shownQuery = q;
     hasMore.value = res.hasMore;
     page.value = targetPage;
     if (!append) activeIndex.value = rows.value.length > 0 ? 0 : -1;
   } catch (err: unknown) {
     if (token !== reqToken) return;
+    /* A new search that failed leaves no rows behind: the old ones answer a different query, and
+       under the new text they would read as its results. A failed NEXT page keeps the rows it was
+       adding to, which still belong to the query they say they do. */
+    if (!append) {
+      rows.value = [];
+      hasMore.value = false;
+      activeIndex.value = -1;
+    }
     error.value = err instanceof Error ? err : new Error(String(err));
   } finally {
     if (token === reqToken) loading.value = false;
@@ -190,19 +204,19 @@ async function loadPage(targetPage: number, append: boolean): Promise<void> {
 }
 
 function retry(): void {
-  void loadPage(lastPage, lastAppend);
+  void loadPage(lastQuery, lastPage, lastAppend);
 }
 
 function loadMore(): void {
   if (loading.value || !hasMore.value) return;
-  void loadPage(page.value + 1, true);
+  void loadPage(shownQuery, page.value + 1, true);
 }
 
 function onSearchInput(e: Event): void {
   query.value = (e.target as HTMLInputElement).value;
   if (searchTimer !== null) clearTimeout(searchTimer);
   searchTimer = setTimeout((): void => {
-    void loadPage(0, false);
+    void loadPage(query.value, 0, false);
   }, 250);
 }
 
@@ -318,7 +332,7 @@ function openDialog(): void {
   picked.value = props.multiple === true ? [...currentRows.value] : [];
   dialogEl.value?.showModal();
   void nextTick((): void => searchEl.value?.focus());
-  void loadPage(0, false);
+  void loadPage(query.value, 0, false);
 }
 
 function closeDialog(): void {

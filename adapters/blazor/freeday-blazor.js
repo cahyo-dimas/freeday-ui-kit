@@ -144,10 +144,20 @@
       // itself (not its content) is a backdrop click.
       if (dismissible && e.target === dialog) dotNetRef.invokeMethodAsync(dismissMethod);
     };
+    /* A close nobody here asked for: Chrome honours a prevented `cancel` once per user activation,
+       so a second Escape closes the dialog regardless, while .NET still holds Open=true and cannot
+       reopen it. dialogClose marks its own closes; any other one is reported when dismissible, and
+       undone when not, because that is what Dismissible=false promises. */
+    var onClose = function () {
+      if (dialog._fdyClosing) { dialog._fdyClosing = false; return; }
+      if (dismissible) dotNetRef.invokeMethodAsync(dismissMethod);
+      else if (typeof dialog.showModal === 'function') dialog.showModal();
+    };
     dialog.addEventListener('cancel', onCancel);
     dialog.addEventListener('click', onClick);
+    dialog.addEventListener('close', onClose);
     var token = ++dialogSeq;
-    dialogSubs[token] = { el: dialog, cancel: onCancel, click: onClick };
+    dialogSubs[token] = { el: dialog, cancel: onCancel, click: onClick, close: onClose };
     return token;
   }
 
@@ -156,7 +166,10 @@
   }
 
   function dialogClose(dialog) {
-    if (dialog && dialog.open) dialog.close();
+    if (dialog && dialog.open) {
+      dialog._fdyClosing = true;
+      dialog.close();
+    }
   }
 
   function dialogDispose(token) {
@@ -164,6 +177,7 @@
     if (s) {
       s.el.removeEventListener('cancel', s.cancel);
       s.el.removeEventListener('click', s.click);
+      s.el.removeEventListener('close', s.close);
       delete dialogSubs[token];
     }
   }

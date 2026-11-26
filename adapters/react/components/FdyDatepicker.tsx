@@ -589,6 +589,14 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
     }
   }
 
+  /* Escape from anywhere in the panel. The grids handle it first and say so with preventDefault; this
+     answers for the arrows and the title, where it used to do nothing. */
+  function onPanelKeydown(e: React.KeyboardEvent<HTMLDivElement>): void {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    e.preventDefault();
+    closePanel(true);
+  }
+
   // Close when focus leaves the control entirely (e.g. Shift+Tab off the trigger).
   /* A null relatedTarget means focus fell to <body>, which is what happens when the element the
      user just pressed is REMOVED by the click it triggered (drilling into the month grid replaces
@@ -655,7 +663,8 @@ export function FdyDatepicker(props: FdyDatepickerProps): JSX.Element {
         </button>
       ) : null}
 
-      <div ref={panelRef} className="fdy-datepicker__panel" role="dialog" aria-modal="false" aria-labelledby={titleId} hidden={!open}>
+      <div ref={panelRef} className="fdy-datepicker__panel" role="dialog" aria-modal="false" aria-labelledby={titleId} hidden={!open}
+           onKeyDown={onPanelKeydown}>
         {/* ONE head for both modes on purpose: swapping it destroys the very button the user just
             pressed, focus falls to <body>, and the panel's own focusout handler closes it. */}
         <div className="fdy-cal__head">

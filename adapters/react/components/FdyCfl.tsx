@@ -138,6 +138,11 @@ function FdyCflInner<Row extends Record<string, unknown>>(
   const cacheRef = useRef<Map<string, CflPage<Row>>>(new Map<string, CflPage<Row>>());
   const lastPageRef = useRef<number>(0);
   const lastAppendRef = useRef<boolean>(false);
+  const lastQueryRef = useRef<string>('');
+  /* The query the rows on screen came from, which is not always the one in the search box: for 250 ms
+     after typing, the box holds a search that has not been sent. "Load more" appends to the ROWS, so
+     it asks for their query; reading the box appended page 1 of "ab" under page 0 of "a". */
+  const shownQueryRef = useRef<string>('');
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isDisabled: boolean = props.disabled === true;
@@ -174,6 +179,7 @@ function FdyCflInner<Row extends Record<string, unknown>>(
 
   // --- Async engine ----------------------------------------------------------------------
   async function load(targetQuery: string, targetPage: number, append: boolean): Promise<void> {
+    lastQueryRef.current = targetQuery;
     lastPageRef.current = targetPage;
     lastAppendRef.current = append;
     const token: number = ++reqIdRef.current;
@@ -187,27 +193,36 @@ function FdyCflInner<Row extends Record<string, unknown>>(
       if (cached === undefined) cacheRef.current.set(key, res);
       const copy: Row[] = res.rows.slice(); // never mutate the caller's array
       setRows((prev: Row[]): Row[] => (append ? prev.concat(copy) : copy));
+      if (!append) shownQueryRef.current = targetQuery;
       setHasMore(res.hasMore);
       setPage(targetPage);
       if (!append) setActiveIndex(copy.length > 0 ? 0 : -1);
     } catch (err: unknown) {
       if (token !== reqIdRef.current) return;
+      /* A new search that failed leaves no rows behind: the old ones answer a different query, and
+         under the new text they would read as its results. A failed NEXT page keeps the rows it was
+         adding to, which still belong to the query they say they do. */
+      if (!append) {
+        setRows([]);
+        setHasMore(false);
+        setActiveIndex(-1);
+      }
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       if (token === reqIdRef.current) setLoading(false);
     }
   }
 
-  // Mirrors Vue's `retry()`: only `lastPage`/`lastAppend` are frozen from the failed request,
-  // the query is re-read live so a retry after editing the search box (within the debounce
-  // window) uses what's currently typed, not a stale snapshot.
+  /* Repeats the request that failed, query included. Re-reading the box instead paired a page
+     number from one query with the text of another; a newer search, if one was typed, follows on
+     its own debounce. */
   function retry(): void {
-    void load(query, lastPageRef.current, lastAppendRef.current);
+    void load(lastQueryRef.current, lastPageRef.current, lastAppendRef.current);
   }
 
   function loadMore(): void {
     if (loading || !hasMore) return;
-    void load(query, page + 1, true);
+    void load(shownQueryRef.current, page + 1, true);
   }
 
   function onSearchInput(e: React.ChangeEvent<HTMLInputElement>): void {

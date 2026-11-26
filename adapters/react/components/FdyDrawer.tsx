@@ -49,6 +49,14 @@ export function FdyDrawer(props: FdyDrawerProps): JSX.Element {
       onClick={(e): void => {
         if (dismissible && e.target === dialogRef.current) props.onClose();
       }}
+      onClose={(): void => {
+        /* Closed while the app still says open: Chrome honours a prevented `cancel` once per user
+           activation. Reported when dismissible, shown again when not; see FdyModal.tsx. */
+        const el: HTMLDialogElement | null = dialogRef.current;
+        if (!props.open || el === null) return;
+        if (dismissible) props.onClose();
+        else el.showModal();
+      }}
     >
       <div className="fdy-drawer__header">
         <h3 id={titleId} className="fdy-drawer__title">{props.title}</h3>

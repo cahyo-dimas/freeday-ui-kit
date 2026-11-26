@@ -143,6 +143,16 @@ dan tidak punya berkas tidak pernah ada.
 | 31 | Tab tegak tanpa bentuk ringkas di layar sempit | terkirim 3.23.0 `#121` sebagai `.fdy-tabs--picker-narrow` (container query 40rem, cadangan media query di bawah Safari 16). Pembungkus bertipe `FdyTabs` tidak dibuat, tunggu pemakai kedua |
 | 26b | `reference-screen.html` menyembunyikan `<h1>` di HP | dikerjakan 3.23.0 `#122`; dijaga uji yang menolak `<h1>` ber-`hide-below` atau `hidden` di semua contoh kit |
 
+**Audit state machine implisit, 2026-11-26 (`#123`, sebagian terkirim 3.24.0).** Yang terkirim ada
+di CHANGELOG 3.24.0. Yang tersisa:
+
+| pokok | status |
+|---|---|
+| Blazor `FdyAutocomplete`, `FdyDatepicker`, `FdyDateRange` tidak mendorong `Value`/`From`/`To`/`Options` yang berubah sesudah hidrasi; autocomplete Blazor juga tidak melapor teks bebas | **terbuka.** `FdyCombo` sudah punya `comboSetValue`; yang lain butuh API `setValue` di enhancer-nya (datepicker belum punya). Dirancang sebagai satu rilis paritas Blazor, bukan tambalan |
+| Autocomplete mentah: opsi ditangkap sekali saat init, dan flag ready mencegah init ulang | **terbuka.** Butuh keputusan bentuk: `setOptions()` di API, atau membaca opsi ulang saat dibuka |
+| Carousel: `goTo` ditimpa handler gulir selama gulir halus (dua klik cepat berhenti di slide 2); `mouseleave` menyalakan autoplay saat fokus keyboard masih di dalam | **terbuka, belum terverifikasi** di peramban; baru dilacak di kode |
+| Upload demo: simulasi `data-fdy-upload-simulate` terus berjalan sesudah barisnya dihapus | **terbuka**, hanya mode demo |
+
 **Terbuka, uji peramban yang kadang merah di CI (belum terverifikasi sebabnya):**
 
 | uji | status |

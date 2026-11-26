@@ -271,13 +271,24 @@
       return b;
     }
 
+    /* Every arrow rebuilds the panel, and with it the arrow that was pressed, so focus fell to <body>
+       and the next key press (another arrow, Escape) went nowhere. The arrow in the same place takes
+       focus back, unless the handler already moved it somewhere in the panel on purpose. */
     function navButton(glyph, aria, onClick) {
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'fdy-cal__nav';
       b.textContent = glyph;
       b.setAttribute('aria-label', aria);
-      b.addEventListener('click', onClick);
+      var side = glyph === '‹' ? 'prev' : 'next';
+      b.setAttribute('data-fdy-nav', side);
+      b.addEventListener('click', function () {
+        onClick();
+        if (!panel.contains(document.activeElement)) {
+          var again = panel.querySelector('.fdy-cal__nav[data-fdy-nav="' + side + '"]');
+          if (again) again.focus();
+        }
+      });
       return b;
     }
 
@@ -771,6 +782,19 @@
     }
 
     trigger.addEventListener('click', function () { panel.hidden ? open() : close(true); });
+    /* Escape from anywhere in the panel. The grids handle it first and say so with preventDefault;
+       this answers for the arrows and the title, where it used to do nothing. */
+    panel.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      e.preventDefault();
+      close(true);
+    });
+    /* Focus leaving the field closes it, as the Vue and React pickers always have. A null target is
+       a rebuilt panel taking the focused element with it, which is not focus leaving. */
+    wrap.addEventListener('focusout', function (e) {
+      var next = e.relatedTarget;
+      if (next && !wrap.contains(next)) close(false);
+    });
 
     updateDisplay();
 

@@ -1874,6 +1874,33 @@ replaces.
 rather than rendering zero: a widget that shows 0 for a request that failed reads as "nothing to
 do", the opposite of what happened.
 
+**Which state to render: `useLoad`** (Vue and React, from the same import path). One data load as
+one value, so a screen cannot be loading and failed at once, show its empty state beside its error,
+or show a form filled with defaults after the load meant to fill it failed:
+
+| `state.status` | Also holds | Render |
+|---|---|---|
+| `'idle'` | nothing | nothing yet |
+| `'loading'` | `previous`: the last good data, or `null` | skeleton or `FdyTable`'s `loading` |
+| `'error'` | `error`, `previous` | `.fdy-state--danger` with Try again. Never the empty state. |
+| `'ready'` | `data` | the data, or one of the three empty states when it has none |
+
+```js
+const { state, load } = useLoad((signal) => fetchInvoices(month.value, signal));
+onMounted(load);
+watch(month, load);
+```
+
+- `load()` aborts the request before it (the fetcher receives an `AbortSignal`) and discards any
+  answer that arrives after a newer load started, so a quick change of filter never leaves the
+  older result on screen. Unmounting aborts what is in flight.
+- It returns a promise that settles when that load does and never rejects; the error is in `state`.
+- Data from an earlier load is reachable only as `previous`, so showing stale rows while reloading,
+  or beside an error, is a decision visible in the template. A form that edits loaded data renders
+  only under `'ready'`.
+- In React `load` is stable and calls the latest fetcher, so `useEffect(() => { void load(); },
+  [month, load])` is enough.
+
 ## Charts — `data-fdy-chart`
 > **Typed wrapper: `<FdyChart>`**. data props in all three (`type` + `values` / `series`); it repaints on data change, so `FreedayChart.update(el)` is only for the raw path below. It paints through the enhancer: on Vue and React it needs `import '@cahyo-dimas/freeday'` once at app entry, the one typed wrapper that does. Without it the slot content stays and no chart is drawn.
 

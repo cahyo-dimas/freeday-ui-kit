@@ -586,6 +586,14 @@ function onDocPointerDown(e: MouseEvent): void {
  * the grid, and with it the cell that had focus). That is not focus leaving the control, and
  * closing on it made the panel vanish mid-navigation. A pointer that really lands outside is
  * handled by the mousedown listener, which is the reliable path for that case. */
+/* Escape from anywhere in the panel. The grids handle it first and say so with preventDefault; this
+   answers for the arrows and the title, where it used to do nothing. */
+function onPanelKeydown(e: KeyboardEvent): void {
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  e.preventDefault();
+  closePanel(true);
+}
+
 function onFocusout(e: FocusEvent): void {
   const next: EventTarget | null = e.relatedTarget;
   if (next === null) return;
@@ -642,7 +650,8 @@ onBeforeUnmount((): void => {
       </svg>
     </button>
 
-    <div ref="panelEl" class="fdy-datepicker__panel" role="dialog" aria-modal="false" popover="manual" :aria-labelledby="titleId" :hidden="!open">
+    <div ref="panelEl" class="fdy-datepicker__panel" role="dialog" aria-modal="false" popover="manual" :aria-labelledby="titleId" :hidden="!open"
+         @keydown="onPanelKeydown">
       <!-- ONE head for both modes on purpose: swapping it with v-if destroys the very button the user
            just pressed, focus falls to <body>, and the panel's own focusout handler closes it. The
            labels and handlers switch; the elements do not. -->

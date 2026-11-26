@@ -54,6 +54,17 @@ function onCancel(): void {
 }
 // The ::backdrop is not a separate element, a click whose target is the dialog box itself (not its
 // content) is a backdrop click.
+/* The dialog closed while the app still says open. Chrome's close watcher honours a prevented
+   `cancel` once per user activation, so a second Escape with no click between closes the dialog
+   regardless. Left alone, the app held open=true over a closed dialog and could not reopen it, since
+   the value never changed. A dismissible modal reports the close; one that may not be dismissed is
+   shown again, because that is what dismissible=false promises. */
+function onClose(): void {
+  const el: HTMLDialogElement | null = dialogEl.value;
+  if (!props.open || el === null) return;
+  if (dismissible.value) emit('close');
+  else el.showModal();
+}
 function onClick(e: MouseEvent): void {
   if (dismissible.value && e.target === dialogEl.value) emit('close');
 }
@@ -65,6 +76,7 @@ function onClick(e: MouseEvent): void {
     :class="modalClass"
     :aria-labelledby="titleId"
     @cancel.prevent="onCancel"
+    @close="onClose"
     @click="onClick"
   >
     <div class="fdy-modal__header">
