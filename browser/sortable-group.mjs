@@ -274,3 +274,33 @@ test('keyboard: disabled lists are skipped, refused ones are landed on and say w
     await p.pressKey('Escape');
   });
 });
+
+test('keyboard: a screen-reader activation takes focus for the handle', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`document.activeElement.blur()`);
+    await p.evalJS(`document.getElementById('hC').click()`);
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b c~ e');
+    assert.equal(await p.evalJS('document.activeElement.id'), 'hC', 'the lift moves focus to its handle');
+    await p.pressKey('Escape');
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b c e');
+  });
+});
+
+test('keyboard: a list with no slot to arrive in refuses, marks nothing, and holds on', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`document.getElementById('hSA').focus()`);
+    await p.pressEnter();
+    await p.pressKey('ArrowRight');
+    await p.pressKey('ArrowRight');
+    assert.equal(await p.evalJS('window.live()'), 'Pinned only, position 2 of 2. Pinned only does not take Sierra.');
+    assert.equal(await p.evalJS(`window.listMark('slowpin')`), 'refused');
+    assert.equal(await p.evalJS(`window.marks('slowpin')`), 'zp', 'no landing line');
+    await p.pressEnter();
+    assert.equal(await p.evalJS('window.live()'), 'Pinned only does not take Sierra.');
+    assert.equal(await p.evalJS(`window.marks('slow1')`), 'sa~');
+    await p.pressKey('Escape');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+  });
+});

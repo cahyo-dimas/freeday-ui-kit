@@ -363,6 +363,8 @@
     var from = fromOf(g);
     lift = { g: g, handle: handle, list: root, to: from, from: from, watch: new MutationObserver(liftWatch) };
     lift.watch.observe(document.body, { childList: true, subtree: true });
+    /* A screen reader's activation need not move focus; the keys and the blur guard need it here. */
+    handle.focus();
     handle.addEventListener('blur', liftBlur);
     item.classList.add('is-lifted');
     root.classList.add('is-sorting');
@@ -388,7 +390,15 @@
   /* A realtime re-render that removes the item or the marked list ends the lift: no change may fire
      for an item that no longer exists. */
   function liftWatch() {
-    if (lift !== null && (!lift.g.item.isConnected || !lift.list.isConnected)) cancelLift();
+    if (lift !== null && (!lift.g.item.isConnected || !lift.list.isConnected || !lift.handle.isConnected || lift.g.item.parentElement !== lift.g.source)) cancelLift();
+  }
+
+  /* verdict(), plus: a list with no slot an arriving item may take (only fixed rows) refuses too. */
+  function liftRefusal(g, list) {
+    var reason = verdict(g, list);
+    if (reason !== null) return reason;
+    var r = arrivalRange(list);
+    return list !== g.source && r.lo > r.hi ? refusedText(g, list) : null;
   }
 
   function showLift() {
@@ -396,7 +406,7 @@
     clearMarks(g);
     var total = items(list).length + (list === g.source ? 0 : 1);
     var where = textOf(g.source, 'over', { list: listLabel(list), position: String(lift.to + 1), total: String(total) });
-    var reason = verdict(g, list);
+    var reason = liftRefusal(g, list);
     if (reason !== null) {
       list.scrollIntoView({ block: 'nearest', inline: 'nearest' });
       list.classList.add('is-drop-refused');
@@ -439,7 +449,7 @@
 
   function liftDrop() {
     var g = lift.g, list = lift.list;
-    var reason = verdict(g, list);
+    var reason = liftRefusal(g, list);
     if (reason !== null) {
       announce(reason);
       return;
@@ -449,7 +459,10 @@
       return;
     }
     var slot = liftSlot();
-    if (!legal(g, list, slot)) return;
+    if (!legal(g, list, slot)) {
+      announce(refusedText(g, list));
+      return;
+    }
     endLift();
     commit(g, list, slot, true);
   }
