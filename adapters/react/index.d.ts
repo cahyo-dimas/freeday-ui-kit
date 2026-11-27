@@ -68,8 +68,26 @@ export interface FdyMaskDetail { value: string; raw: string }
 export interface FdyFormInvalidDetail { invalid: HTMLElement[] }
 export interface FdyChipChangeDetail { value: string; pressed: boolean; selected: string[] }
 export interface FdyChipRemoveDetail { value: string }
-/** `fdy-sort-change`, cancelable: `order` is every item's `data-key` in the new order. */
-export interface FdySortChangeDetail { key: string; from: number; to: number; order: string[] }
+/** `fdy-sort-change`, cancelable, dispatched on the destination list. `order` is the destination's
+ *  keys after the move; `fromOrder` the source's (the same array within one list). `fromList` /
+ *  `toList` are the lists' `data-key`, null on a list without one. */
+export interface FdySortChangeDetail {
+  key: string;
+  from: number;
+  to: number;
+  order: string[];
+  fromList: string | null;
+  toList: string | null;
+  fromOrder: string[];
+}
+/** `fdy-sort-check`, dispatched on a list of the same group the first time a gesture reaches it.
+ *  Call `refuse(reason)` to keep the item out; the reason is shown and announced. */
+export interface FdySortCheckDetail {
+  key: string;
+  fromList: string;
+  toList: string;
+  refuse(reason: string): void;
+}
 export interface FdyCflSelectDetail { row?: unknown; rows?: unknown[] }
 export interface FdyTableChangeDetail { page: number; sort: string | null; query: string }
 

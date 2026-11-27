@@ -2675,43 +2675,74 @@ row.addEventListener('fdy-chip-remove', async (e) => {
 `--tone-1`…`--tone-8` for non-semantic category colours.
 
 ## Sortable list — `data-fdy-sortable`
-Reorder a list by dragging a handle, or by focusing the handle and pressing ↑ / ↓. Needs
-`freeday-sortable.js`. The kit draws the handle and the drag states; the list keeps whatever look it
-already had (`.fdy-list`, a table body, plain rows).
+Reorder a list by dragging a handle or from the keyboard, and move items between lists that share a
+group. Needs `freeday-sortable.js`. The kit draws the handle and the drag states; the list keeps
+whatever look it already had (`.fdy-list`, a table body, plain rows).
 
 - Container: `.fdy-sortable` + `data-fdy-sortable` on a `<ul>`/`<ol>`, a `<tbody>` or a `<div>`.
-  Its element children are the items.
+  Its element children are the items, so an empty-state message goes **outside** it.
 - Item: `data-key` (the id the event reports, **required** when a framework renders the list),
   `data-label` (the name read out, the item's text otherwise), and `data-fdy-sort-fixed` for an item
   that never moves and that nothing can pass, such as a system row pinned to one end.
 - Handle: `<button class="fdy-sortable__handle" type="button">` inside the item, icon inside. With no
-  `aria-label` of your own it gets *Move {label}. Drag, or press the up and down arrow keys.*
-- `data-disabled` on the container switches reordering off, and the handles follow through
-  `aria-disabled`. Set it while the list is searched or filtered, where a row's visible position is
-  not its stored one.
-- States, set by the enhancer: `is-sorting` on the container, `is-dragging` on the item, and
-  `is-drop-before` / `is-drop-after` on the item it will land against. Nothing moves until the
-  pointer is released, and Escape cancels.
-- Event: `fdy-sort-change` on the container, `detail {key, from, to, order}`, **cancelable**. Left
-  alone, the kit moves the element. Under Vue, React or Blazor, cancel it and reorder your state,
-  because the DOM is the framework's. Either way the kit announces *{label} moved to position {n} of
-  {total}.* in a polite live region, and after a keyboard step it puts focus back on the moved
-  item's handle, found by `data-key` so a re-render that replaced the element still gets it.
-- Strings: `data-fdy-text-handle`, `data-fdy-text-moved` on the container.
-- Not in the kit: scrolling the page while a drag nears its edge, and moving items between lists.
-  Keep a sortable list short enough to see whole, or paginate it.
+  `aria-label` of your own it gets *Move {label}. Drag, or press the up and down arrow keys.* (in a
+  group: *Move {label}. Drag, or press Space to lift it.*)
+- `data-disabled` on the container switches it off, and the handles follow through `aria-disabled`.
+  Set it while the list is searched or filtered, where a row's visible position is not its stored one.
+- States, set by the enhancer: `is-sorting` on the container, `is-dragging` / `is-lifted` on the
+  item, `is-drop-before` / `is-drop-after` on the item it will land against, `is-drop-into` on an
+  empty list, `is-drop-refused` on a list that will not take it. Nothing moves until the drop, and
+  Escape cancels.
+- Event: `fdy-sort-change` on the **destination** list, bubbling, **cancelable**, `detail {key, from,
+  to, order, fromList, toList, fromOrder}` (`FdySortChangeDetail`). Left alone, the kit moves the
+  element. Under Vue, React or Blazor, cancel it and move your state, because the DOM is the
+  framework's. Either way the kit announces the move, and after a keyboard step or `move()` it puts
+  focus on the moved item's handle, found by `data-key` once your render has put it there (it waits
+  up to 2 seconds, and never takes focus from a user who has moved on).
+- While a pointer drag is held near the edge of a scroll container or the window, that container
+  scrolls.
+
+**Groups.** Give lists the same value, `data-fdy-sortable="board"`, and items move between them. The
+group is page-wide; two boards on one page need two names.
+
+- Each grouped list needs `data-key` (its name in events; without it the list is not initialised and
+  a TypeError is reported) and is called by `data-label` or `aria-label`.
+- Keyboard: Space or Enter on a handle **lifts** the item (and puts focus on the handle, so the arrows and Escape reach it); ↑/↓ move the landing mark, ←/→ go to the
+  previous/next list of the group (mirrored right to left; disabled lists are skipped); Space or Enter
+  **drops** it, firing one event; Escape, or focus leaving the handle, puts it back. Ungrouped lists
+  keep ↑/↓ moving one step at once.
+- Fixed items keep their end across lists: they never leave, and nothing lands above the fixed run at
+  a list's start or below the one at its end.
+- Refusing a destination, before the drop: `data-fdy-sort-refuse="Done is full (5 of 5)."` on a list
+  refuses every arriving item (any stack; bind it to your state). For per-item rules, listen for
+  `fdy-sort-check` (`FdySortCheckDetail {key, fromList, toList, refuse(reason)}`), dispatched once per
+  list per gesture, and call `refuse()`; it must answer synchronously, so it is not available to
+  Blazor. A refused list shows the reason in a `.fdy-sortable__refusal` pill and announces it. A list with no slot an arriving item could take (it holds only fixed items) counts as refused during a keyboard lift, and a keyboard drop that becomes illegal mid-lift (list disabled) is announced with the same `refused` string instead of failing silently.
+- `FreedaySortable.move(item, toList, index)` is the drag-free path (WCAG 2.5.7): build your "Move
+  to…" menu or "Move up" buttons on it. It returns `false` when the move is refused or not allowed.
+
+Strings: `data-fdy-text-handle`, `-handle-group`, `-lifted`, `-over`, `-moved`, `-moved-to`,
+`-cancelled`, `-refused` on the container (read from the item's source list).
 
 ```vue
-<ul ref="list" class="fdy-list fdy-sortable" data-fdy-sortable
-    :data-disabled="filtered ? '' : undefined"
-    @fdy-sort-change.prevent="(e) => saveOrder(e.detail.order)">
-  <li v-for="r in rows" :key="r.id" class="fdy-list__row" :data-key="r.id" :data-label="r.name">
-    <button class="fdy-sortable__handle" type="button"><IconGrip class="fdy-icon" aria-hidden="true" /></button>
-    {{ r.name }}
-  </li>
-</ul>
-<!-- useFreeday(list) in <script setup> -->
+<div ref="root" @fdy-sort-change.prevent="(e) => moveCard(e.detail)">
+  <ul v-for="col in columns" :key="col.id" class="fdy-list fdy-sortable"
+      data-fdy-sortable="board" :data-key="col.id" :data-label="col.name"
+      :data-fdy-sort-refuse="col.cards.length >= col.limit ? `${col.name} is full.` : undefined">
+    <li v-for="c in col.cards" :key="c.id" class="fdy-list__row" :data-key="c.id" :data-label="c.title">
+      <button class="fdy-sortable__handle" type="button"><IconGrip class="fdy-icon" aria-hidden="true" /></button>
+      {{ c.title }}
+    </li>
+  </ul>
+</div>
+<!-- moveCard({fromList, fromOrder, toList, order}) rebuilds both columns from the key arrays.
+     useFreeday(root) in <script setup>: the ref holds every list, so a column added later is hydrated. -->
 ```
+
+Blazor: hydrate with `FreedayBlazor.initAll`, then subscribe with
+`FreedayBlazor.sortOn(listRef, dotNetRef, "OnSortChange")`, which cancels the event in the same turn
+and hands `FdySortChangeDetail` to your `[JSInvokable]` method. `FreedayBlazor.on` cannot do this:
+.NET answers after the kit has already moved the element.
 
 ## Timeline — `.fdy-timeline`
 Vertical event feed, pure CSS. `<ol class="fdy-timeline">` of `.fdy-timeline__item` (`--muted`
