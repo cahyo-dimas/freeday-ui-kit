@@ -318,3 +318,22 @@ test('a drag held at the edge of a scroll container scrolls it, and lands on wha
     assert.ok(order.indexOf('t0') >= 6, `T0 landed against a row that started out of view, got: ${order.join(' ')}`);
   });
 });
+
+test('Vue: a cancelled move between lists moves the row between two arrays, and focus follows it', { skip }, async () => {
+  await withPage(fixture('vue-sortable-group.html'), async (p) => {
+    await p.waitFor('typeof window.vueLanes === "function" && document.querySelector("#vdone[data-fdy-sortable-ready]")');
+    await p.evalJS(`document.getElementById('va').focus()`);
+    await p.pressEnter();
+    await p.pressKey('ArrowRight');
+    await p.pressEnter();
+    assert.equal(await p.evalJS('window.vueLanes()'), 'todo:b done:ac', 'the app moved the row between its arrays');
+    assert.equal(await p.evalJS(`Array.from(document.querySelectorAll('#vdone > li')).map(l => l.dataset.key).join('')`), 'ac',
+      'and Vue rendered it; the kit moved nothing behind its back');
+    await p.waitFor(`document.activeElement === document.getElementById('va')`);
+
+    const b = await p.centerXY('#vb');
+    const afterC = await at(p, '#vdone > li[data-key="c"]', 0.8);
+    await p.dragFromTo(b.x, b.y, afterC.x, afterC.y);
+    assert.equal(await p.evalJS('window.vueLanes()'), 'todo: done:acb', 'a drag reaches the state the same way');
+  });
+});

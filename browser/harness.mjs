@@ -590,6 +590,7 @@ export async function buildEntries() {
       join(HERE, 'entries', 'vue-picker-in-modal.js'),
       join(HERE, 'entries', 'vue-page-scan.js'),
       join(HERE, 'entries', 'vue-sortable.js'),
+      join(HERE, 'entries', 'vue-sortable-group.js'),
       join(HERE, 'entries', 'vue-empty-ref.js'),
       join(HERE, 'entries', 'react-empty-ref.tsx'),
       join(HERE, 'entries', 'vue-theme.js'),
