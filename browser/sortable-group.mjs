@@ -304,3 +304,17 @@ test('keyboard: a list with no slot to arrive in refuses, marks nothing, and hol
     assert.equal(await p.evalJS('window.events.length'), 0);
   });
 });
+
+test('a drag held at the edge of a scroll container scrolls it, and lands on what came into view', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    const t0 = await p.centerXY('#hT0');
+    const edge = await json(p, `(() => { const r = document.getElementById('scroller').getBoundingClientRect();
+      return { x: Math.round(r.x + r.width / 2), y: Math.round(r.bottom - 4) }; })()`);
+    await p.dragFromTo(t0.x, t0.y, edge.x, edge.y, async () => { await sleep(700); });
+    const scrolled = await p.evalJS(`document.getElementById('scroller').scrollTop`);
+    assert.ok(scrolled > 0, `the container scrolled while the pointer was held still (scrollTop ${scrolled})`);
+    const order = (await p.evalJS('window.tallOrder()')).split(' ');
+    assert.ok(order.indexOf('t0') >= 6, `T0 landed against a row that started out of view, got: ${order.join(' ')}`);
+  });
+});

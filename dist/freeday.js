@@ -4998,6 +4998,59 @@
     }
   }
 
+  /* ---- Auto-scroll during a pointer drag ---- */
+
+  var EDGE_MAX_PX = 48;
+  var EDGE_SHARE = 0.15;
+  var SPEED_MAX_PX = 16;
+
+  /* Pixels per frame toward the nearer edge: negative toward `start`, positive toward `end`, 0
+     outside both bands. The band is the smaller of 48px and 15% of the container on that axis. */
+  function edgeSpeed(pos, start, end) {
+    var band = Math.min(EDGE_MAX_PX, (end - start) * EDGE_SHARE);
+    if (band <= 0) return 0;
+    if (pos < start + band) return -Math.ceil(SPEED_MAX_PX * Math.min(1, (start + band - pos) / band));
+    if (pos > end - band) return Math.ceil(SPEED_MAX_PX * Math.min(1, (pos - (end - band)) / band));
+    return 0;
+  }
+  /* Whether `el` can still scroll by `v` on `axis`. Right to left, scrollLeft runs from 0 down to
+     minus the overflow. */
+  function canScroll(el, axis, v) {
+    if (axis === 'y') return v < 0 ? el.scrollTop > 0 : el.scrollTop < el.scrollHeight - el.clientHeight - 1;
+    var max = el.scrollWidth - el.clientWidth;
+    var rtl = getComputedStyle(el).direction === 'rtl';
+    var lo = rtl ? -max : 0, hi = rtl ? 0 : max;
+    return v < 0 ? el.scrollLeft > lo + 0.5 : el.scrollLeft < hi - 0.5;
+  }
+  /* One frame: per axis, the nearest scrollable ancestor of what is under the pointer that can still
+     scroll toward the edge the pointer is near, else the page. Axes are independent, so a long
+     column scrolls down while the wide board around it scrolls sideways. */
+  function scrollStep(x, y) {
+    var hit = document.elementFromPoint(x, y);
+    var moved = false;
+    ['x', 'y'].forEach(function (axis) {
+      for (var n = hit; n !== null && n !== document.body && n !== document.documentElement; n = n.parentElement) {
+        var style = getComputedStyle(n);
+        var overflow = axis === 'y' ? style.overflowY : style.overflowX;
+        if (overflow !== 'auto' && overflow !== 'scroll') continue;
+        var rect = n.getBoundingClientRect();
+        var v = axis === 'y' ? edgeSpeed(y, rect.top, rect.bottom) : edgeSpeed(x, rect.left, rect.right);
+        if (v !== 0 && canScroll(n, axis, v)) {
+          n.scrollBy(axis === 'x' ? v : 0, axis === 'y' ? v : 0);
+          moved = true;
+          return;
+        }
+      }
+      var page = document.scrollingElement;
+      var w = axis === 'y' ? edgeSpeed(y, 0, window.innerHeight) : edgeSpeed(x, 0, window.innerWidth);
+      if (w !== 0 && page !== null && canScroll(page, axis, w)) {
+        window.scrollBy(axis === 'x' ? w : 0, axis === 'y' ? w : 0);
+        moved = true;
+      }
+    });
+    return moved;
+  }
+
   function initSortable(root) {
     if (root.dataset.fdySortableReady === '1') return;
     if (root.closest('[data-fdy-ignore]')) return;
@@ -5064,11 +5117,26 @@
       if (drag === null) return;
       var d = drag;
       drag = null;
+      if (d.raf !== 0) cancelAnimationFrame(d.raf);
       document.removeEventListener('keydown', onEscape, true);
       clearMarks(d.g);
       d.g.item.classList.remove('is-dragging');
       root.classList.remove('is-sorting');
       if (apply && d.started && d.list !== null && verdict(d.g, d.list) === null && legal(d.g, d.list, d.slot)) commit(d.g, d.list, d.slot, false);
+    }
+    /* Keeps scrolling while the pointer is held still in a band, which sends no pointermove; the
+       landing is recomputed after each step from the last pointer position. */
+    function autoScroll() {
+      var d = drag;
+      if (d.raf !== 0) return;
+      d.raf = requestAnimationFrame(function tick() {
+        d.raf = 0;
+        if (drag !== d) return;
+        if (scrollStep(d.x, d.y)) {
+          track();
+          d.raf = requestAnimationFrame(tick);
+        }
+      });
     }
     function onEscape(e) {
       if (e.key === 'Escape') { e.preventDefault(); end(false); }
@@ -5101,6 +5169,7 @@
       drag.x = e.clientX;
       drag.y = e.clientY;
       track();
+      autoScroll();
     });
 
     root.addEventListener('pointerup', function () { end(true); });
