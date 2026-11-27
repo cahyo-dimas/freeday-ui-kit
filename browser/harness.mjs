@@ -325,6 +325,15 @@ export async function withPage(fileUrl, fn) {
       await cmd('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
       await sleep(40);
     };
+    /* Enter as a keyboard types it: a keyDown WITH text, so the engine runs the button's activation
+       behaviour (a click whose detail is 0). pressKey sends rawKeyDown without text, which a button
+       ignores. */
+    const pressEnter = async () => {
+      const params = { key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, nativeVirtualKeyCode: 13 };
+      await cmd('Input.dispatchKeyEvent', { type: 'keyDown', text: '\r', unmodifiedText: '\r', ...params });
+      await cmd('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+      await sleep(40);
+    };
 
     /* Text as a keyboard would enter it into the focused field: real `input` events, which is what
        a framework's controlled input listens to. */
@@ -479,7 +488,7 @@ export async function withPage(fileUrl, fn) {
        page is handed over once the fixture itself has loaded. */
     await cmd('Page.navigate', { url: fileUrl });
     await waitFor(`location.href !== 'about:blank' && document.readyState === 'complete'`, { timeout: 10000 });
-    return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme, setReducedMotion });
+    return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, pressEnter, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme, setReducedMotion });
   } finally {
     if (ws !== null) {
       try {

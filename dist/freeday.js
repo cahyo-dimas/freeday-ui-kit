@@ -4854,6 +4854,137 @@
     return true;
   }
 
+  /* ---- Keyboard in a group: lift, carry, drop ----
+     One lift per page. Nothing in the DOM moves until the drop, so the handle keeps focus throughout,
+     and the keys keep arriving at the source list's listener even while the mark is in another list.
+     Lift and drop hang off the button's ACTIVATION (a click with detail 0), not a keydown: a screen
+     reader in browse mode activates a button with a synthesized click and never sends the key. */
+
+  var lift = null;
+
+  function liftSlot() {
+    var from = fromOf(lift.g);
+    return lift.list === lift.g.source && lift.to > from ? lift.to + 1 : lift.to;
+  }
+  /* The final positions the item can take in `list`. */
+  function liftRange(g, list) {
+    return list === g.source ? { lo: 0, hi: items(list).length - 1 } : arrivalRange(list);
+  }
+
+  function startLift(root, handle) {
+    var item = itemOf(root, handle);
+    if (item === null || item.hasAttribute('data-fdy-sort-fixed')) return;
+    var g = gestureFor(item);
+    var from = fromOf(g);
+    lift = { g: g, handle: handle, list: root, to: from, from: from, watch: new MutationObserver(liftWatch) };
+    lift.watch.observe(document.body, { childList: true, subtree: true });
+    handle.addEventListener('blur', liftBlur);
+    item.classList.add('is-lifted');
+    root.classList.add('is-sorting');
+    announce(textOf(root, 'lifted', { label: labelOf(item), list: listLabel(root), position: String(from + 1), total: String(items(root).length) }));
+  }
+  function endLift() {
+    var l = lift;
+    lift = null;
+    l.watch.disconnect();
+    l.handle.removeEventListener('blur', liftBlur);
+    clearMarks(l.g);
+    l.g.item.classList.remove('is-lifted');
+    l.g.source.classList.remove('is-sorting');
+    return l;
+  }
+  function cancelLift() {
+    var l = endLift();
+    announce(textOf(l.g.source, 'cancelled', { label: labelOf(l.g.item), list: listLabel(l.g.source), position: String(l.from + 1) }));
+  }
+  function liftBlur() {
+    if (lift !== null) cancelLift();
+  }
+  /* A realtime re-render that removes the item or the marked list ends the lift: no change may fire
+     for an item that no longer exists. */
+  function liftWatch() {
+    if (lift !== null && (!lift.g.item.isConnected || !lift.list.isConnected)) cancelLift();
+  }
+
+  function showLift() {
+    var g = lift.g, list = lift.list;
+    clearMarks(g);
+    var total = items(list).length + (list === g.source ? 0 : 1);
+    var where = textOf(g.source, 'over', { list: listLabel(list), position: String(lift.to + 1), total: String(total) });
+    var reason = verdict(g, list);
+    if (reason !== null) {
+      list.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      list.classList.add('is-drop-refused');
+      showPill(list, reason);
+      announce(where + ' ' + reason);
+      return;
+    }
+    if (!(list === g.source && lift.to === fromOf(g))) {
+      var mark = landing(list, liftSlot());
+      mark.el.classList.add(mark.cls);
+      mark.el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+    announce(where);
+  }
+
+  function liftStepWithin(dy) {
+    var g = lift.g, list = lift.list;
+    var range = liftRange(g, list);
+    var to = lift.to + dy;
+    if (to < range.lo || to > range.hi) return;
+    var home = list === g.source && to === fromOf(g);
+    var slot = list === g.source && to > fromOf(g) ? to + 1 : to;
+    if (!home && !legal(g, list, slot)) return;
+    lift.to = to;
+    showLift();
+  }
+  function liftStepAcross(dx) {
+    var g = lift.g;
+    var lists = groupLists(g.group).filter(function (l) { return l === g.source || !disabled(l); });
+    var i = lists.indexOf(lift.list) + dx;
+    if (i < 0 || i >= lists.length) return;
+    var next = lists[i];
+    var range = liftRange(g, next);
+    lift.list = next;
+    lift.to = Math.max(range.lo, Math.min(range.hi, lift.to));
+    /* Back home, a position across a fixed item is not one the item can take: return it to its own. */
+    if (next === g.source && lift.to !== fromOf(g) && !legal(g, next, liftSlot())) lift.to = fromOf(g);
+    showLift();
+  }
+
+  function liftDrop() {
+    var g = lift.g, list = lift.list;
+    var reason = verdict(g, list);
+    if (reason !== null) {
+      announce(reason);
+      return;
+    }
+    if (list === g.source && lift.to === fromOf(g)) {
+      cancelLift();
+      return;
+    }
+    var slot = liftSlot();
+    if (!legal(g, list, slot)) return;
+    endLift();
+    commit(g, list, slot, true);
+  }
+
+  function liftKey(e, root, handle) {
+    if (lift === null || lift.handle !== handle) return;
+    var rtl = getComputedStyle(root).direction === 'rtl';
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelLift();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      liftStepWithin(e.key === 'ArrowUp' ? -1 : 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      /* The arrow points where the mark goes: mirrored in a right-to-left board. */
+      liftStepAcross((e.key === 'ArrowRight') !== rtl ? 1 : -1);
+    }
+  }
+
   function initSortable(root) {
     if (root.dataset.fdySortableReady === '1') return;
     if (root.closest('[data-fdy-ignore]')) return;
@@ -4868,14 +4999,28 @@
 
     root.addEventListener('keydown', function (e) {
       var handle = e.target.closest ? e.target.closest(HANDLE) : null;
-      if (!handle || !root.contains(handle) || disabled(root)) return;
-      if (groupOf(root) !== '') return;
+      if (!handle || !root.contains(handle)) return;
+      if (groupOf(root) !== '') {
+        liftKey(e, root, handle);
+        return;
+      }
+      if (disabled(root)) return;
       if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
       e.preventDefault();
       var list = items(root);
       var from = list.indexOf(itemOf(root, handle));
       var to = from + (e.key === 'ArrowUp' ? -1 : 1);
       if (from !== -1 && allowed(list, from, to)) commit(gestureFor(list[from]), root, to > from ? to + 1 : to, true);
+    });
+
+    /* detail 0: Space, Enter, or a screen reader's synthesized click. A real pointer click (detail
+       1+) is a press without travel, which moves nothing. */
+    root.addEventListener('click', function (e) {
+      var handle = e.target.closest ? e.target.closest(HANDLE) : null;
+      if (!handle || !root.contains(handle) || groupOf(root) === '' || e.detail !== 0) return;
+      e.preventDefault();
+      if (lift !== null && lift.handle === handle) liftDrop();
+      else if (lift === null && !disabled(root)) startLift(root, handle);
     });
 
     var drag = null;
@@ -4921,6 +5066,7 @@
       if (!handle || !root.contains(handle) || disabled(root) || e.button !== 0) return;
       var item = itemOf(root, handle);
       if (!item) return;
+      if (lift !== null) cancelLift();
       e.preventDefault();
       handle.focus();
       handle.setPointerCapture(e.pointerId);

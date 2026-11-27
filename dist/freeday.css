@@ -1901,6 +1901,7 @@ fieldset.fdy-field>legend{padding:0;float:none;margin-bottom:var(--space-2);}
 /* The refusal's reason, placed by the enhancer at the top of the list's visible part. The tooltip's
  * surface, so it reads as the same kind of thing; never a hit-test target. */
 .fdy-sortable__refusal{position:fixed;z-index:150;max-width:16rem;padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);font-size:var(--text-xs);font-weight:var(--weight-medium);line-height:var(--leading-snug);color:var(--color-inverse-text);background:var(--color-inverse-surface);box-shadow:var(--shadow-2);pointer-events:none;}
+.fdy-sortable > .is-lifted{opacity:.45;}
 
 /* Freeday. Spinner */
 .fdy-spinner{display:inline-block;width:1.5rem;height:1.5rem;border:2.5px solid var(--color-border-strong);border-top-color:var(--color-primary);border-radius:var(--radius-full);animation:fdy-spin .7s linear infinite;}

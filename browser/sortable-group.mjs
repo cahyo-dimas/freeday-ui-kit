@@ -194,3 +194,83 @@ test('FreedaySortable.move runs the same contract, refuses with a reason, and fo
     await p.waitFor(`document.activeElement && document.activeElement.id === 'hSA2'`);
   });
 });
+
+test('keyboard: lift, carry across lists, drop once, and focus stays on the handle', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    assert.equal(await p.axName('#hA'), 'Move Alpha. Drag, or press Space to lift it.');
+    await p.evalJS(`document.getElementById('hA').focus()`);
+    await p.pressEnter();
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a~ b c e');
+    assert.equal(await p.evalJS('window.live()'), 'Alpha lifted. To do, position 1 of 4. Arrow keys move it, Space drops it, Escape cancels.');
+
+    await p.pressKey('ArrowRight');
+    assert.equal(await p.evalJS('window.live()'), 'Doing, position 2 of 3.', 'the slot above the pinned row is skipped');
+    assert.equal(await p.evalJS(`window.marks('doing')`), 'top d^');
+    await p.pressKey('ArrowRight');
+    assert.equal(await p.evalJS('window.live()'), 'Done, position 1 of 1.');
+    assert.equal(await p.evalJS(`window.listMark('done')`), 'into');
+    await p.pressKey('ArrowLeft');
+    assert.equal(await p.evalJS('window.live()'), 'Doing, position 2 of 3.');
+    await p.pressKey('ArrowDown');
+    assert.equal(await p.evalJS('window.live()'), 'Doing, position 3 of 3.');
+    assert.equal(await p.evalJS(`window.marks('doing')`), 'top dv');
+    assert.equal(await p.evalJS('window.events.length'), 0, 'nothing is committed while carried');
+
+    await p.pressEnter();
+    assert.equal(await p.evalJS('window.lanes()'), 'todo:bce doing:topda done: off:o full:f review:rtail solo:s');
+    assert.deepEqual(await json(p, 'window.events.map(e => [e.key, e.from, e.to, e.fromList, e.toList])'), [['a', 0, 2, 'todo', 'doing']],
+      'exactly one change, for the list it was dropped in');
+    assert.equal(await p.evalJS('window.live()'), 'Alpha moved to Doing, position 3 of 3.');
+    await p.waitFor(`document.activeElement === document.getElementById('hA')`);
+  });
+});
+
+test('keyboard: Escape and blur put the item back; a pointer click lifts nothing, an activation click does', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`document.getElementById('hB').focus()`);
+    await p.pressEnter();
+    await p.pressKey('ArrowRight');
+    await p.pressKey('Escape');
+    assert.equal(await p.evalJS('window.live()'), 'Move cancelled. Bravo is back in To do, position 2.');
+    assert.equal(await p.evalJS(`window.marks('todo') + ' | ' + window.marks('doing')`), 'a b c e | top d');
+
+    await p.pressEnter();
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b~ c e');
+    await p.evalJS(`document.getElementById('hC').focus()`);
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b c e', 'focus leaving the handle drops the lift');
+
+    await p.evalJS(`document.getElementById('hC').click()`);
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b c~ e', 'a click with no pointer behind it (detail 0), as a screen reader sends, lifts');
+    await p.pressKey('Escape');
+
+    await p.clickCenter('#hE');
+    assert.equal(await p.evalJS(`window.marks('todo')`), 'a b c e', 'a real pointer click without travel lifts nothing');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+  });
+});
+
+test('keyboard: disabled lists are skipped, refused ones are landed on and say why, and right-to-left mirrors the arrows', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`document.getElementById('hD').focus()`);
+    await p.pressEnter();
+    await p.pressKey('ArrowRight');
+    assert.equal(await p.evalJS('window.live()'), 'Done, position 1 of 1.');
+    await p.pressKey('ArrowRight');
+    assert.equal(await p.evalJS('window.live()'), 'Full, position 1 of 2. Full is at its limit (1 of 1).', 'Off is disabled and skipped');
+    assert.equal(await p.evalJS(`window.listMark('full')`), 'refused');
+    await p.pressEnter();
+    assert.equal(await p.evalJS('window.live()'), 'Full is at its limit (1 of 1).', 'dropping on a refused list repeats why');
+    assert.equal(await p.evalJS(`window.marks('doing')`), 'top d~', 'and holds on to the item');
+    await p.pressKey('Escape');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+
+    await p.evalJS(`document.getElementById('board').dir = 'rtl'; document.getElementById('hB').focus()`);
+    await p.pressEnter();
+    await p.pressKey('ArrowLeft');
+    assert.match(await p.evalJS('window.live()'), /^Doing, /, 'right to left, the left arrow goes to the next list');
+    await p.pressKey('Escape');
+  });
+});
