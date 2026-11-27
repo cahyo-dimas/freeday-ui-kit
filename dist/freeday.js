@@ -4587,7 +4587,7 @@
       document.body.appendChild(live);
     }
     /* The same sentence twice in a row is no change, and a live region announces changes. */
-    live.textContent = live.textContent === message ? message + ' ' : message;
+    live.textContent = live.textContent === message ? message + '\u00a0' : message;
   }
 
   function items(root) {
