@@ -9,11 +9,27 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
-## [Unreleased]
+## [3.27.0] - 2026-11-27
 
-Hanya alat uji. Tidak ada yang terkirim di paket.
+**Carousel: posisi dan autoplay** (`#123`, butir terakhir audit state machine). Ditambah perbaikan
+alat uji yang belum dirilis sejak 3.26.0.
+
+### Fixed
+- **Dua tekanan cepat pada Next berpindah dua slide.** Handler gulir membulatkan posisi gulir halus
+  yang masih berjalan dan menimpa indeks yang baru diset, jadi tekanan kedua dihitung dari slide yang
+  ditinggalkan dan carousel berhenti di slide 2, bukan 3. Kini indeks dibiarkan sampai gulir yang
+  dimulai skrip tiba; pointer, roda atau sentuhan di viewport mengambil alih kapan saja.
+- **Autoplay tidak lagi menyala saat fokus papan ketik masih di dalam.** `mouseleave` memulainya
+  tanpa melihat fokus. Kini ia lanjut hanya bila pointer dan fokus sama-sama di luar.
+- **Di bawah reduced motion, autoplay tidak pernah jalan.** Saat dimuat ia memang tidak mulai, tetapi
+  `mouseleave` atau `focusout` pertama menyalakannya. Gulir dari panah, titik dan tombol panah juga
+  tidak lagi beranimasi, sebab gulir animasi dari skrip tidak terjangkau aturan reduced-motion di
+  `base.css`.
 
 ### Catatan
+- Diuji di `browser/carousel.mjs` (fixture carousel pertama di repo): tiga kasus merah pada kode
+  lama, ditambah satu penjaga bahwa autoplay masih maju bila tidak disentuh. Harness mendapat
+  `setReducedMotion()`.
 - **`theme-pref.mjs` tidak lagi merah di CI.** Sebabnya bukan di kit, dan bukan dugaan yang dicatat
   sebelumnya (penyetoran `localStorage` yang kalah cepat). Diukur dengan Chrome penuh, mesin yang
   dipakai CI: tulisan `localStorage` hilang pada muat ulang **pertama** sebuah sesi, 2 dari 72 muat

@@ -396,6 +396,12 @@ export async function withPage(fileUrl, fn) {
 
     /* The OS light/dark setting, as a page sees it. Waits until matchMedia agrees, for the same
        reason setViewport waits for its size: a read before the switch lands reports the old one. */
+    /* prefers-reduced-motion, for code that reads it. An enhancer that reads it once at init needs a
+       reload after this; the emulation survives the navigation. */
+    const setReducedMotion = async (on) => {
+      await cmd('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: on ? 'reduce' : 'no-preference' }] });
+      await waitFor(`matchMedia('(prefers-reduced-motion: reduce)').matches === ${on ? 'true' : 'false'}`);
+    };
     const setColorScheme = async (scheme) => {
       await cmd('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] });
       const switched = await waitFor(`matchMedia('(prefers-color-scheme: ${scheme})').matches`);
@@ -473,7 +479,7 @@ export async function withPage(fileUrl, fn) {
        page is handed over once the fixture itself has loaded. */
     await cmd('Page.navigate', { url: fileUrl });
     await waitFor(`location.href !== 'about:blank' && document.readyState === 'complete'`, { timeout: 10000 });
-    return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
+    return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme, setReducedMotion });
   } finally {
     if (ws !== null) {
       try {

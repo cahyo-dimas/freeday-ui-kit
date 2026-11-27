@@ -20,8 +20,7 @@ didahulukan dari fitur.
 
 | # | Pekerjaan | Kenapa sekarang | Selesai bila |
 |---|---|---|---|
-| 1 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
-| 2 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
+| 1 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
 
 ---
 
@@ -270,4 +269,4 @@ CHANGELOG. Kalau kamu memutuskan tidak mengerjakannya, barisnya masuk ke sini da
 |---|---|
 | Kontrol native di seluruh layar ronda, 2026-10-26 | date/time 3.11.0 `#094`/`#095`; accordion, search × dan isian angka di §2 dan §7 |
 | Celah validasi kontrol kit | 3.12.0 `#096` dan 3.18.0 `#114` |
-| State machine implisit, 2026-11-26 | 3.24.0 `#123`: `useLoad` dan sembilan cacat. 3.25.0: nilai dari host di enam wrapper Blazor, opsi autocomplete. 3.26.0: pohon `FdyCascade`. Sisanya §1 butir 2 (carousel) |
+| State machine implisit, 2026-11-26 | 3.24.0 `#123`: `useLoad` dan sembilan cacat. 3.25.0: nilai dari host di enam wrapper Blazor, opsi autocomplete. 3.26.0: pohon `FdyCascade`. 3.27.0: carousel. Audit selesai |

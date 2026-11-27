@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: carousel position and autoplay</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<style>body { padding: 40px; } .fdy-carousel { width: 420px; margin-bottom: 40px; } .fdy-carousel__slide { height: 120px; }</style>
+<body>
+<div class="fdy-carousel" id="c" data-fdy-carousel role="region" aria-roledescription="carousel" aria-label="Plain" tabindex="0">
+  <button class="fdy-carousel__arrow fdy-carousel__arrow--prev" type="button" aria-label="Previous">‹</button>
+  <div class="fdy-carousel__viewport">
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">One</div>
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">Two</div>
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">Three</div>
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">Four</div>
+  </div>
+  <button class="fdy-carousel__arrow fdy-carousel__arrow--next" type="button" aria-label="Next">›</button>
+  <div class="fdy-carousel__dots"></div>
+</div>
+<div class="fdy-carousel" id="a" data-fdy-carousel data-fdy-autoplay="250" role="region" aria-roledescription="carousel" aria-label="Autoplay" tabindex="0">
+  <button class="fdy-carousel__arrow fdy-carousel__arrow--prev" type="button" aria-label="Previous">‹</button>
+  <div class="fdy-carousel__viewport">
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">One</div>
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">Two</div>
+    <div class="fdy-carousel__slide" role="group" aria-roledescription="slide">Three</div>
+  </div>
+  <button class="fdy-carousel__arrow fdy-carousel__arrow--next" type="button" aria-label="Next">›</button>
+  <div class="fdy-carousel__dots"></div>
+</div>
+<script>
+  window.__changes = { c: 0, a: 0 };
+  document.addEventListener('fdy-carousel-change', (e) => { window.__changes[e.target.id] += 1; });
+  window.current = (id) => [...document.querySelectorAll('#' + id + ' .fdy-carousel__dot')].findIndex((d) => d.getAttribute('aria-current') === 'true');
+</script>

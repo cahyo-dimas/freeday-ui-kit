@@ -2519,6 +2519,11 @@ Scroll-snap slides + arrows + dots; optional `data-fdy-autoplay` (pauses on hove
 Root is `role="region" aria-roledescription="carousel"` + `aria-label` + `tabindex="0"`; each slide
 is `role="group" aria-roledescription="slide"`.
 
+`data-fdy-autoplay="<ms>"` pauses while the pointer is over the carousel or focus is in it, and
+resumes only when neither holds. Under `prefers-reduced-motion: reduce` it never runs, and the arrows,
+dots and arrow keys scroll without animation. Quick repeated presses each move one slide, counted
+from the slide the last press was heading to.
+
 ---
 
 # Display

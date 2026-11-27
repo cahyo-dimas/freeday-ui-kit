@@ -56,6 +56,13 @@
     var next = root.querySelector('.fdy-carousel__arrow--next');
     var dotsWrap = root.querySelector('.fdy-carousel__dots');
     var index = 0;
+    /* The slide a scroll this script started is heading to, until it arrives. While it travels, the
+       scroll handler leaves `index` alone: it rounded the position mid-flight and wrote it over the
+       index goTo had set, so a second quick click counted from the slide being left (#123). */
+    var target = null;
+    /* Read once, as the autoplay always did. It also turns the scroll instant: a scroll animated by
+       script is not something base.css's reduced-motion rule can reach. */
+    var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
     slides.forEach(function (s, i) {
       if (!s.hasAttribute('aria-label')) s.setAttribute('aria-label', textOf(root, 'position', { n: i + 1, total: slides.length }));
@@ -84,7 +91,8 @@
 
     function goTo(i) {
       index = clamp(i);
-      viewport.scrollTo({ left: index * viewport.clientWidth, behavior: 'smooth' });
+      target = index;
+      viewport.scrollTo({ left: index * viewport.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
       sync();
       root.dispatchEvent(new CustomEvent('fdy-carousel-change', { bubbles: true, detail: { index: index } }));
     }
@@ -105,21 +113,38 @@
         ticking = false;
         var w = viewport.clientWidth || 1;
         var i = clamp(Math.round(viewport.scrollLeft / w));
+        if (target !== null) {
+          if (i === target && Math.abs(viewport.scrollLeft - target * w) < 2) target = null;
+          return;
+        }
         if (i !== index) { index = i; sync(); }
       });
     }, { passive: true });
+    /* A hand on the viewport takes over from a scroll in flight, so a swipe mid-animation is followed. */
+    ['pointerdown', 'wheel', 'touchstart'].forEach(function (ev) {
+      viewport.addEventListener(ev, function () { target = null; }, { passive: true });
+    });
 
     var autoplay = parseInt(root.getAttribute('data-fdy-autoplay'), 10);
     if (autoplay > 0) {
       var timer = null;
       var start = function () { if (!timer) timer = setInterval(function () { goTo(index >= slides.length - 1 ? 0 : index + 1); }, autoplay); };
       var stop = function () { if (timer) { clearInterval(timer); timer = null; } };
-      root.addEventListener('mouseenter', stop);
-      root.addEventListener('mouseleave', start);
-      root.addEventListener('focusin', stop);
-      root.addEventListener('focusout', start);
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!reduce) start();
+      /* Paused while the pointer is over it OR focus is in it, and resumed only when neither holds. The
+         pointer leaving used to restart it under someone still reading by keyboard. Reduced motion
+         never starts it: before, the first mouseleave or focusout did, ignoring the setting. */
+      var hovering = false;
+      var focused = false;
+      var resume = function () { if (!reduce && !hovering && !focused) start(); };
+      root.addEventListener('mouseenter', function () { hovering = true; stop(); });
+      root.addEventListener('mouseleave', function () { hovering = false; resume(); });
+      root.addEventListener('focusin', function () { focused = true; stop(); });
+      root.addEventListener('focusout', function (e) {
+        if (e.relatedTarget && root.contains(e.relatedTarget)) return;
+        focused = false;
+        resume();
+      });
+      resume();
     }
 
     sync();
