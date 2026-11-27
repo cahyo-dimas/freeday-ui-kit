@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freeday — sortable groups, raw path</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>
+  body { padding: 24px; }
+  #scroller { width: 20rem; height: 10rem; overflow-y: auto; margin-bottom: 24px; }
+  #board, #slowboard { display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch; margin-bottom: 24px; }
+  #board > ul, #slowboard > ul { flex: 1 1 9rem; margin: 0; }
+</style>
+<script src="../../dist/freeday.js" defer></script>
+</head>
+<body>
+  <!-- Group "tall": a list longer than its scroll container, for auto-scroll. -->
+  <div id="scroller">
+    <ul class="fdy-list fdy-sortable" id="tall" data-fdy-sortable="tall" data-key="tall" data-label="Tall">
+      <li class="fdy-list__row" data-key="t0" data-label="T0"><button class="fdy-sortable__handle" type="button" id="hT0">≡</button> T0</li>
+      <li class="fdy-list__row" data-key="t1" data-label="T1"><button class="fdy-sortable__handle" type="button">≡</button> T1</li>
+      <li class="fdy-list__row" data-key="t2" data-label="T2"><button class="fdy-sortable__handle" type="button">≡</button> T2</li>
+      <li class="fdy-list__row" data-key="t3" data-label="T3"><button class="fdy-sortable__handle" type="button">≡</button> T3</li>
+      <li class="fdy-list__row" data-key="t4" data-label="T4"><button class="fdy-sortable__handle" type="button">≡</button> T4</li>
+      <li class="fdy-list__row" data-key="t5" data-label="T5"><button class="fdy-sortable__handle" type="button">≡</button> T5</li>
+      <li class="fdy-list__row" data-key="t6" data-label="T6"><button class="fdy-sortable__handle" type="button">≡</button> T6</li>
+      <li class="fdy-list__row" data-key="t7" data-label="T7"><button class="fdy-sortable__handle" type="button">≡</button> T7</li>
+      <li class="fdy-list__row" data-key="t8" data-label="T8"><button class="fdy-sortable__handle" type="button">≡</button> T8</li>
+      <li class="fdy-list__row" data-key="t9" data-label="T9"><button class="fdy-sortable__handle" type="button">≡</button> T9</li>
+      <li class="fdy-list__row" data-key="t10" data-label="T10"><button class="fdy-sortable__handle" type="button">≡</button> T10</li>
+      <li class="fdy-list__row" data-key="t11" data-label="T11"><button class="fdy-sortable__handle" type="button">≡</button> T11</li>
+    </ul>
+  </div>
+
+  <!-- Group "board". Document order is the order ←/→ walk. -->
+  <div id="board">
+    <ul class="fdy-list fdy-sortable" id="todo" data-fdy-sortable="board" data-key="todo" data-label="To do">
+      <li class="fdy-list__row" data-key="a" data-label="Alpha"><button class="fdy-sortable__handle" type="button" id="hA">≡</button> Alpha</li>
+      <li class="fdy-list__row" data-key="b" data-label="Bravo"><button class="fdy-sortable__handle" type="button" id="hB">≡</button> Bravo</li>
+      <li class="fdy-list__row" data-key="c" data-label="Charlie"><button class="fdy-sortable__handle" type="button" id="hC">≡</button> Charlie</li>
+      <li class="fdy-list__row" data-key="e" data-label="Echo"><button class="fdy-sortable__handle" type="button" id="hE">≡</button> Echo</li>
+    </ul>
+    <!-- A pinned first row: nothing lands above it, and it never leaves. -->
+    <ul class="fdy-list fdy-sortable" id="doing" data-fdy-sortable="board" data-key="doing" data-label="Doing">
+      <li class="fdy-list__row" data-key="top" data-label="Pinned" data-fdy-sort-fixed><button class="fdy-sortable__handle" type="button" id="hTop">≡</button> Pinned</li>
+      <li class="fdy-list__row" data-key="d" data-label="Delta"><button class="fdy-sortable__handle" type="button" id="hD">≡</button> Delta</li>
+    </ul>
+    <ul class="fdy-list fdy-sortable" id="done" data-fdy-sortable="board" data-key="done" data-label="Done"></ul>
+    <ul class="fdy-list fdy-sortable" id="off" data-fdy-sortable="board" data-key="off" data-label="Off" data-disabled>
+      <li class="fdy-list__row" data-key="o" data-label="Oscar"><button class="fdy-sortable__handle" type="button" id="hO">≡</button> Oscar</li>
+    </ul>
+    <ul class="fdy-list fdy-sortable" id="full" data-fdy-sortable="board" data-key="full" data-label="Full" data-fdy-sort-refuse="Full is at its limit (1 of 1).">
+      <li class="fdy-list__row" data-key="f" data-label="Foxtrot"><button class="fdy-sortable__handle" type="button" id="hF">≡</button> Foxtrot</li>
+    </ul>
+    <!-- A pinned last row; fdy-sort-check refuses Bravo (with a reason) and Charlie (without). -->
+    <ul class="fdy-list fdy-sortable" id="review" data-fdy-sortable="board" data-key="review" data-label="Review">
+      <li class="fdy-list__row" data-key="r" data-label="Romeo"><button class="fdy-sortable__handle" type="button" id="hR">≡</button> Romeo</li>
+      <li class="fdy-list__row" data-key="tail" data-label="Archive" data-fdy-sort-fixed>Archive</li>
+    </ul>
+    <!-- Not in the group: never a destination. -->
+    <ul class="fdy-list fdy-sortable" id="solo" data-fdy-sortable>
+      <li class="fdy-list__row" data-key="s" data-label="Sierra"><button class="fdy-sortable__handle" type="button" id="hS">≡</button> Sierra</li>
+    </ul>
+  </div>
+<script>
+  var LANES = ['todo', 'doing', 'done', 'off', 'full', 'review', 'solo'];
+  var keysOf = function (id) { return Array.from(document.getElementById(id).children).map(function (li) { return li.dataset.key; }).join(''); };
+  window.lanes = function () { return LANES.map(function (id) { return id + ':' + keysOf(id); }).join(' '); };
+  window.tallOrder = function () { return Array.from(document.getElementById('tall').children).map(function (li) { return li.dataset.key; }).join(' '); };
+  /* Items of one list with their states: ^ line before, v line after, * dragging, ~ lifted. */
+  window.marks = function (id) {
+    return Array.from(document.getElementById(id).children).map(function (li) {
+      var c = li.classList;
+      return li.dataset.key + (c.contains('is-drop-before') ? '^' : '') + (c.contains('is-drop-after') ? 'v' : '')
+        + (c.contains('is-dragging') ? '*' : '') + (c.contains('is-lifted') ? '~' : '');
+    }).join(' ');
+  };
+  window.listMark = function (id) {
+    var c = document.getElementById(id).classList;
+    return c.contains('is-drop-into') ? 'into' : c.contains('is-drop-refused') ? 'refused' : '';
+  };
+  window.pill = function () {
+    var el = document.querySelector('body > .fdy-sortable__refusal');
+    if (!el || el.hidden) return { shown: false, text: '', hits: false };
+    var r = el.getBoundingClientRect();
+    return { shown: true, text: el.textContent, hits: document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2) === el };
+  };
+  window.live = function () { var r = document.querySelector('body > .fdy-visually-hidden[aria-live]'); return r ? r.textContent.trim() : ''; };
+  window.events = [];
+  window.checks = [];
+  var board = document.getElementById('board');
+  board.addEventListener('fdy-sort-change', function (e) {
+    window.events.push(Object.assign({ on: e.target.id }, e.detail, { cancelable: e.cancelable }));
+  });
+  board.addEventListener('fdy-sort-check', function (e) {
+    window.checks.push(e.detail.toList + ':' + e.detail.key);
+    if (e.detail.toList === 'review' && e.detail.key === 'b') e.detail.refuse('Bravo has not been estimated.');
+    if (e.detail.toList === 'review' && e.detail.key === 'c') e.detail.refuse('');
+  });
+</script>
+</body>
+</html>

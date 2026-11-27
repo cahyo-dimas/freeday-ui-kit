@@ -40,7 +40,10 @@ test('a mouse drag shows where the row lands, moves nothing until release, then 
     assert.equal(midOrder, 'abcdz', 'nothing moves while the button is held');
     assert.equal(await p.evalJS('window.order()'), 'bcadz', 'released, the kit moved the row (nobody cancelled)');
     assert.equal(await p.evalJS('window.marks()'), 'b c a d z', 'and cleared every drag state');
-    assert.deepEqual(await json(p, 'window.events'), [{ key: 'a', from: 0, to: 2, order: ['b', 'c', 'a', 'd', 'z'], cancelable: true }]);
+    assert.deepEqual(await json(p, 'window.events'), [{
+      key: 'a', from: 0, to: 2, order: ['b', 'c', 'a', 'd', 'z'],
+      fromList: null, toList: null, fromOrder: ['b', 'c', 'a', 'd', 'z'], cancelable: true,
+    }], 'an ungrouped list names no lists, and its fromOrder is its order');
     assert.equal(await p.evalJS('window.live()'), 'Alpha moved to position 3 of 5.');
   });
 });

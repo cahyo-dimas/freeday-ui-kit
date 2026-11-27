@@ -616,7 +616,13 @@ test('the enhancers ship exactly these strings (#006)', () => {
     },
     'freeday-sortable.js': {
       handle: 'Move {label}. Drag, or press the up and down arrow keys.',
+      handleGroup: 'Move {label}. Drag, or press Space to lift it.',
+      lifted: '{label} lifted. {list}, position {position} of {total}. Arrow keys move it, Space drops it, Escape cancels.',
+      over: '{list}, position {position} of {total}.',
       moved: '{label} moved to position {position} of {total}.',
+      movedTo: '{label} moved to {list}, position {position} of {total}.',
+      cancelled: 'Move cancelled. {label} is back in {list}, position {position}.',
+      refused: '{list} does not take {label}.',
     },
     'freeday-table.js': {
       close: 'Close',
