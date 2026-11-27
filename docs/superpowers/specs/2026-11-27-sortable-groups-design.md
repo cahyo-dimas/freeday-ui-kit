@@ -171,8 +171,8 @@ when the move was made, on the source handle, or lost to `<body>` (the focused e
   column): the end of the list. An ungrouped list keeps 3.27.0's rule, items only. Marked `is-drop-into` on an empty list, `is-drop-after` on the last item
   otherwise.
 - Over a refused list: `is-drop-refused` on the list (its content muted), no landing mark, and the
-  reason in a `.fdy-sortable__refusal` pill the kit places at the top of the list's visible part,
-  clamped into the viewport. The pill has `pointer-events: none`, or hit testing would find it
+  reason in a `.fdy-sortable__refusal` pill the kit places at the top of the list, clamped into
+  the viewport. The pill has `pointer-events: none`, or hit testing would find it
   instead of the list underneath. Released there, nothing moves and no change fires. The reason is
   announced once per list per gesture. No cursor change: the handle holds pointer capture, and a
   captured pointer shows the capturing element's cursor, not the list's.
@@ -267,13 +267,15 @@ A refusal with a reason is announced as the app's reason, verbatim.
 
 An ungrouped list (`data-fdy-sortable` with no value) runs the 3.27.0 code path unchanged: same
 keys, same strings, same event detail plus the three new fields (`fromList`/`toList` = the
-container's `data-key` or null, `fromOrder` = `order`). One deliberate change reaches it: focus
+container's `data-key` or null, `fromOrder` = `order`). Two deliberate changes reach it. Focus
 after a keyboard step now waits for the item to appear (§4) instead of looking once on a timer,
-which only matters to a stack that renders later than the next task. Every sortable list in Ronda
-is ungrouped (checked 2026-11-27) and needs no change. The five existing tests in
-`browser/sortable.mjs` stay as the regression guard, with one edit: the first compares the event
-detail with `deepEqual`, so its expected object gains `fromList: null, toList: null, fromOrder`.
-Under the type policy this is `### Added`, not breaking: no existing field changes type.
+which only matters to a stack that renders later than the next task. And auto-scroll (§5.3) reaches
+an ungrouped list too, since it runs for every pointer drag; 3.27.0 documented it as missing for
+every list. Every sortable list in Ronda is ungrouped (checked 2026-11-27) and needs no change. The
+five existing tests in `browser/sortable.mjs` stay as the regression guard, with one edit: the
+first compares the event detail with `deepEqual`, so its expected object gains `fromList: null,
+toList: null, fromOrder`. Under the type policy this is `### Added`, not breaking: no existing
+field changes type.
 
 ## 9. Tests
 

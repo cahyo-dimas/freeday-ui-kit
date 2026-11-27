@@ -121,7 +121,7 @@ element is fine. Events are bubbling
 | `data-fdy-tree` | `freeday-tree.js` | `FreedayTree` | — |
 | `data-fdy-rating` | `freeday-rating.js` | `FreedayRating` | — (native `change`) |
 | `data-fdy-slider` | `freeday-slider.js` | `FreedaySlider` | — (native `input`) |
-| `data-fdy-sortable` | `freeday-sortable.js` | `FreedaySortable` | `fdy-sort-change` |
+| `data-fdy-sortable` | `freeday-sortable.js` | `FreedaySortable` | `fdy-sort-change`, `fdy-sort-check` |
 | `data-fdy-number` | `freeday-number.js` | `FreedayNumber` | — (native `input`, `change`) |
 | `data-fdy-search` | `freeday-search.js` | `FreedaySearch` | `fdy-search` (+ native `input` on clear) |
 | `data-fdy-copy="value"` (delegated, no hydration) | `freeday-copy.js` | `FreedayCopy` | `fdy-copy` |
@@ -2707,19 +2707,27 @@ group is page-wide; two boards on one page need two names.
 
 - Each grouped list needs `data-key` (its name in events; without it the list is not initialised and
   a TypeError is reported) and is called by `data-label` or `aria-label`.
-- Keyboard: Space or Enter on a handle **lifts** the item (and puts focus on the handle, so the arrows and Escape reach it); ↑/↓ move the landing mark, ←/→ go to the
-  previous/next list of the group (mirrored right to left; disabled lists are skipped); Space or Enter
-  **drops** it, firing one event; Escape, or focus leaving the handle, puts it back. Ungrouped lists
-  keep ↑/↓ moving one step at once.
+- Keyboard: Space or Enter on a handle **lifts** the item (and puts focus on the handle, so the
+  arrows and Escape reach it); ↑/↓ move the landing mark, ←/→ go to the previous/next list of the
+  group (mirrored right to left; disabled lists are skipped); Space or Enter **drops** it, firing
+  one event; Escape, or focus leaving the handle, puts it back. Ungrouped lists keep ↑/↓ moving one
+  step at once.
 - Fixed items keep their end across lists: they never leave, and nothing lands above the fixed run at
   a list's start or below the one at its end.
 - Refusing a destination, before the drop: `data-fdy-sort-refuse="Done is full (5 of 5)."` on a list
-  refuses every arriving item (any stack; bind it to your state). For per-item rules, listen for
-  `fdy-sort-check` (`FdySortCheckDetail {key, fromList, toList, refuse(reason)}`), dispatched once per
-  list per gesture, and call `refuse()`; it must answer synchronously, so it is not available to
-  Blazor. A refused list shows the reason in a `.fdy-sortable__refusal` pill and announces it. A list with no slot an arriving item could take (it holds only fixed items) counts as refused during a keyboard lift, and a keyboard drop that becomes illegal mid-lift (list disabled) is announced with the same `refused` string instead of failing silently.
+  refuses every arriving item (any stack; bind it to your state). An empty value,
+  `data-fdy-sort-refuse=""`, refuses too, in the kit's `refused` words. For per-item rules, listen
+  for `fdy-sort-check` (`FdySortCheckDetail {key, fromList, toList, refuse(reason)}`), dispatched
+  once per list per gesture, and call `refuse()`; it must answer synchronously, so it is not
+  available to Blazor. A refused list shows the reason in a `.fdy-sortable__refusal` pill and
+  announces it. A list with no slot an arriving item could take (it holds only fixed items) counts
+  as refused during a keyboard lift, and a keyboard drop that becomes illegal mid-lift (list
+  disabled) is announced with the same `refused` string instead of failing silently.
 - `FreedaySortable.move(item, toList, index)` is the drag-free path (WCAG 2.5.7): build your "Move
-  to…" menu or "Move up" buttons on it. It returns `false` when the move is refused or not allowed.
+  to…" menu or "Move up" buttons on it. `index` is the item's final position in `toList`. It returns
+  `true` when a change was dispatched (even if your listener then cancels it) and `false` when the
+  move is not allowed or is refused (a refusal's reason is announced). It throws a `TypeError` for
+  an item outside a sortable list, a `toList` that is not one, or an index that is not an integer.
 
 Strings: `data-fdy-text-handle`, `-handle-group`, `-lifted`, `-over`, `-moved`, `-moved-to`,
 `-cancelled`, `-refused` on the container (read from the item's source list).
@@ -2742,7 +2750,9 @@ Strings: `data-fdy-text-handle`, `-handle-group`, `-lifted`, `-over`, `-moved`, 
 Blazor: hydrate with `FreedayBlazor.initAll`, then subscribe with
 `FreedayBlazor.sortOn(listRef, dotNetRef, "OnSortChange")`, which cancels the event in the same turn
 and hands `FdySortChangeDetail` to your `[JSInvokable]` method. `FreedayBlazor.on` cannot do this:
-.NET answers after the kit has already moved the element.
+.NET answers after the kit has already moved the element. Render each item with `@key` (its
+`data-key`), so Blazor moves the row's element instead of rewriting rows in place, and focus follows
+the moved row.
 
 ## Timeline — `.fdy-timeline`
 Vertical event feed, pure CSS. `<ol class="fdy-timeline">` of `.fdy-timeline__item` (`--muted`

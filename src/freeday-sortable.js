@@ -15,12 +15,13 @@
  * `data-disabled` on the container switches it off, and the handles follow through aria-disabled.
  *
  * GROUPS. A value, `data-fdy-sortable="board"`, joins every list on the page with the same value:
- * items move between them. Each grouped list needs a `data-key` (its name in events) and is called
- * by `data-label` or `aria-label`. Across lists a fixed item keeps its END: it never leaves, and
+ * items move between them. A list with no value (`data-fdy-sortable` alone) is a list on its own,
+ * as before. Each grouped list needs a `data-key` (its name in events) and is called by
+ * `data-label` or `aria-label`. Across lists a fixed item keeps its END: it never leaves, and
  * nothing lands above the fixed run at a list's start or below the one at its end.
  * `data-fdy-sort-refuse="reason"` on a grouped list refuses every arriving item; a bubbling
  * `fdy-sort-check` {key, fromList, toList, refuse(reason)} asks the app per item, once per list per
- * gesture, before the drop. An empty value keeps today's single-list behaviour unchanged.
+ * gesture, before the drop.
  *
  * Emits a bubbling, CANCELABLE "fdy-sort-change" on the DESTINATION list, detail {key, from, to,
  * order, fromList, toList, fromOrder}: `order` is the destination's keys after the move, `fromOrder`
@@ -338,7 +339,10 @@
   }
 
   /* The drag-free path (WCAG 2.5.7): an app's "Move to…" menu or "Move up" button. Same refusal,
-     legality, event, announcement and focus as a drop. */
+     legality, event, announcement and focus as a drop. `index` is the item's final position in
+     `toList`. Returns true when a change was dispatched (even if the app then cancels it), false
+     when the move is not allowed or is refused (a refusal's reason is announced). Throws TypeError
+     for an item outside a sortable list, a `toList` that is not one, or a non-integer index. */
   function move(item, toList, index) {
     var source = item && item.parentElement;
     if (!source || !source.matches || !source.matches(LIST)) throw new TypeError('FreedaySortable.move: the item is not a child of a [data-fdy-sortable] list.');
