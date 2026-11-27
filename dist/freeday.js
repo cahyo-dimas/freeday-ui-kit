@@ -4669,16 +4669,22 @@
     return items(g.source).indexOf(g.item);
   }
 
+  /* Whether `dest` could take the item at all, before anyone is asked: an initialised, connected,
+     enabled list that is the item's own, or one of its group when the item is not fixed. */
+  function reachable(g, dest) {
+    if (!dest.isConnected || dest.dataset.fdySortableReady !== '1' || disabled(dest) || disabled(g.source)) return false;
+    if (dest === g.source) return true;
+    return g.group !== '' && groupOf(dest) === g.group && !g.item.hasAttribute('data-fdy-sort-fixed');
+  }
+
   /* Whether the item may land at insertion index `slot` of `dest`, against the DOM as it is NOW, so
      a list disabled or removed mid-gesture is not dropped into. Refusals are verdict()'s. */
   function legal(g, dest, slot) {
-    if (!g.item.isConnected || g.item.parentElement !== g.source || !dest.isConnected) return false;
-    if (disabled(g.source) || disabled(dest)) return false;
+    if (!g.item.isConnected || g.item.parentElement !== g.source || !reachable(g, dest)) return false;
     if (dest === g.source) {
       var from = fromOf(g);
       return allowed(items(dest), from, slot > from ? slot - 1 : slot);
     }
-    if (g.group === '' || groupOf(dest) !== g.group || g.item.hasAttribute('data-fdy-sort-fixed')) return false;
     var range = arrivalRange(dest);
     return slot >= range.lo && slot <= range.hi;
   }
@@ -4856,6 +4862,7 @@
     var g = gestureFor(item);
     var from = fromOf(g);
     var slot = toList === source && index > from ? index + 1 : index;
+    if (!reachable(g, toList)) return false;
     var reason = verdict(g, toList);
     if (reason !== null) {
       announce(reason);
@@ -4962,7 +4969,7 @@
   }
   function liftStepAcross(dx) {
     var g = lift.g;
-    var lists = groupLists(g.group).filter(function (l) { return l === g.source || !disabled(l); });
+    var lists = groupLists(g.group).filter(function (l) { return l === g.source || reachable(g, l); });
     var i = lists.indexOf(lift.list) + dx;
     if (i < 0 || i >= lists.length) return;
     var next = lists[i];
@@ -5109,7 +5116,7 @@
       d.list = null;
       d.slot = null;
       var at = pointAt(d.g, d.x, d.y);
-      if (at === null) return;
+      if (at === null || !reachable(d.g, at.list)) return;
       var reason = verdict(d.g, at.list);
       if (reason !== null) {
         at.list.classList.add('is-drop-refused');

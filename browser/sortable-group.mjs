@@ -319,6 +319,34 @@ test('a drag held at the edge of a scroll container scrolls it, and lands on wha
   });
 });
 
+test('a list that can never take the item is not asked about it', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`window.allChecks = []; document.addEventListener('fdy-sort-check', (e) => allChecks.push(e.detail.toList + ':' + e.detail.key)); 1`);
+    const moved = await json(p, `(() => {
+      const a = document.querySelector('#todo > li[data-key="a"]');
+      const top = document.querySelector('#doing > li[data-key="top"]');
+      return [
+        FreedaySortable.move(a, document.getElementById('tall'), 0),
+        FreedaySortable.move(a, document.getElementById('solo'), 0),
+        FreedaySortable.move(a, document.getElementById('off'), 0),
+        FreedaySortable.move(top, document.getElementById('done'), 0),
+      ];
+    })()`);
+    assert.deepEqual(moved, [false, false, false, false], 'another group, an ungrouped list, a disabled list, a fixed item');
+
+    const a = await p.centerXY('#hA');
+    const off = await at(p, '#off', 0.5);
+    await p.dragFromTo(a.x, a.y, off.x, off.y);
+    assert.equal(await p.evalJS('window.lanes()'), START, 'released over a disabled list, nothing moved');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+
+    const checks = await json(p, 'window.allChecks');
+    assert.deepEqual(checks.filter((c) => /^(tall|null|solo|off):|:top$/.test(c)), [],
+      `no fdy-sort-check for a list that can never take the item, got: ${checks.join(', ')}`);
+  });
+});
+
 test('a stale focus watcher from an earlier move does not take focus from the next one', { skip }, async () => {
   await withPage(fixture('vue-sortable.html'), async (p) => {
     await p.waitFor('typeof window.vueOrder === "function" && document.querySelector("#vlist[data-fdy-sortable-ready]")');
