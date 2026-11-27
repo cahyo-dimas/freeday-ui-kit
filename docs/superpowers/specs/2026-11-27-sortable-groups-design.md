@@ -72,8 +72,10 @@ DOM that Blazor owns.
 - **List:** `data-key` names it in events (`fromList`/`toList`); `data-label`, else `aria-label`, is
   what announcements call it. Both optional for an ungrouped list. In a group `data-key` is
   required: events that cannot say which list an item went to are useless to the app. `initAll`
-  initialises every other list first, then throws a TypeError naming the group, so one bad list
-  does not leave the rest of the page dead.
+  initialises every other list first, then reports a TypeError naming the group through
+  `reportError` (an uncaught error: console, `window.onerror`). Not a synchronous throw: `useFreeday`
+  and `FreedayBlazor.initAll` call every enhancer in one loop, and a throw from this one would leave
+  every enhancer after it unhydrated.
 - **`data-fdy-sort-refuse`** on a grouped list: arriving items are refused with this text as the
   reason. An empty value refuses with the `refused` string (§6). Read at the moment a gesture
   reaches the list and again at drop, so a binding that changes mid-gesture is honoured.
@@ -139,6 +141,8 @@ framework renders when it renders: Vue and React before the next task, Blazor af
 trip. So the kit does not look once on a timer. It looks immediately, then watches the destination
 list (MutationObserver) until an element with that key appears, for at most 2 seconds. If it never
 appears (the app reverted), focus is left on the source handle while it is still in the document.
+It never takes focus from a user who has moved on: it acts only while focus is still where it was
+when the move was made, on the source handle, or lost to `<body>` (the focused element removed).
 
 ## 5. Behaviour
 
@@ -163,13 +167,15 @@ appears (the app reverted), focus is left on the source handle while it is still
   wherever the pointer is. Hit testing walks up from `elementFromPoint` to the nearest list of the
   item's group.
 - Over an item: before or after it by the vertical midpoint, as today.
-- Over the list but no item (an empty list, or the space under the last card of a tall column):
-  the end of the list. Marked `is-drop-into` on an empty list, `is-drop-after` on the last item
+- Over a grouped list but no item (an empty list, or the space under the last card of a tall
+  column): the end of the list. An ungrouped list keeps 3.27.0's rule, items only. Marked `is-drop-into` on an empty list, `is-drop-after` on the last item
   otherwise.
-- Over a refused list: `is-drop-refused` on the list, no landing mark, `cursor: not-allowed`, and the
+- Over a refused list: `is-drop-refused` on the list (its content muted), no landing mark, and the
   reason in a `.fdy-sortable__refusal` pill the kit places at the top of the list's visible part,
   clamped into the viewport. The pill has `pointer-events: none`, or hit testing would find it
-  instead of the list underneath. Released there, nothing moves and no change fires.
+  instead of the list underneath. Released there, nothing moves and no change fires. The reason is
+  announced once per list per gesture. No cursor change: the handle holds pointer capture, and a
+  captured pointer shows the capturing element's cursor, not the list's.
 - Escape cancels, as today. `pointercancel` cancels.
 
 ### 5.3 Auto-scroll
@@ -252,7 +258,7 @@ A refusal with a reason is announced as the app's reason, verbatim.
   Not `:empty`, which whitespace and Vue's `<!--v-if-->` comments defeat.
 - `.is-lifted`: same treatment as `.is-dragging`.
 - `.is-drop-into`: an inset ring of `var(--focus-ring-width)` in `var(--color-primary)`.
-- `.is-drop-refused`: `cursor: not-allowed`, muted content.
+- `.is-drop-refused`: muted content.
 - `.fdy-sortable__refusal`: the tooltip's surface, ink, radius and shadow tokens, `position: fixed`,
   `pointer-events: none`.
 - Tokens only; no hex, no px in CSS.
@@ -265,7 +271,9 @@ container's `data-key` or null, `fromOrder` = `order`). One deliberate change re
 after a keyboard step now waits for the item to appear (§4) instead of looking once on a timer,
 which only matters to a stack that renders later than the next task. Every sortable list in Ronda
 is ungrouped (checked 2026-11-27) and needs no change. The five existing tests in
-`browser/sortable.mjs` stay as they are, as the regression guard.
+`browser/sortable.mjs` stay as the regression guard, with one edit: the first compares the event
+detail with `deepEqual`, so its expected object gains `fromList: null, toList: null, fromOrder`.
+Under the type policy this is `### Added`, not breaking: no existing field changes type.
 
 ## 9. Tests
 
