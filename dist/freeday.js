@@ -4695,6 +4695,59 @@
       list.classList.remove.apply(list.classList, MARKS);
       items(list).forEach(function (el) { el.classList.remove.apply(el.classList, MARKS); });
     });
+    hidePill();
+  }
+
+  /* ---- Refusal, before the drop ---- */
+
+  function refusedText(g, dest) {
+    return textOf(g.source, 'refused', { label: labelOf(g.item), list: listLabel(dest) });
+  }
+  /* The reason `dest` refuses the item, or null when it takes it. The attribute is read live every
+     time, so a binding that changes mid-gesture is honoured; the app's fdy-sort-check is asked once
+     per list per gesture. refuse() takes effect when called: an exception thrown inside a listener
+     is swallowed by dispatchEvent, so a refuse() that threw on a bad reason would be a refusal the
+     kit never saw. */
+  function verdict(g, dest) {
+    if (dest === g.source) return null;
+    var attr = dest.getAttribute('data-fdy-sort-refuse');
+    if (attr !== null) return attr !== '' ? attr : refusedText(g, dest);
+    for (var i = 0; i < g.verdicts.length; i++) if (g.verdicts[i].list === dest) return g.verdicts[i].reason;
+    var reason = null;
+    dest.dispatchEvent(new CustomEvent('fdy-sort-check', {
+      bubbles: true,
+      cancelable: false,
+      detail: {
+        key: keyOf(g.item, fromOf(g)),
+        fromList: listKey(g.source),
+        toList: listKey(dest),
+        refuse: function (why) { reason = typeof why === 'string' && why !== '' ? why : refusedText(g, dest); }
+      }
+    }));
+    g.verdicts.push({ list: dest, reason: reason });
+    return reason;
+  }
+
+  /* The reason, where a pointer user is looking. Spoken through the live region, so hidden from the
+     accessibility tree here; and pointer-events:none in CSS, or elementFromPoint would find it. */
+  var pill = null;
+  function showPill(list, reason) {
+    if (pill === null) {
+      pill = document.createElement('div');
+      pill.className = 'fdy-sortable__refusal';
+      pill.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(pill);
+    }
+    pill.textContent = reason;
+    pill.hidden = false;
+    var rect = list.getBoundingClientRect();
+    var left = Math.min(Math.max(rect.left, 0), Math.max(0, window.innerWidth - pill.offsetWidth));
+    var top = Math.min(Math.max(rect.top, 0), Math.max(0, window.innerHeight - pill.offsetHeight));
+    pill.style.left = left + 'px';
+    pill.style.top = top + 'px';
+  }
+  function hidePill() {
+    if (pill !== null) pill.hidden = true;
   }
 
   /* Where a pointer at (x, y) would land the item: over an item, before or after it by its midpoint;
@@ -4799,7 +4852,18 @@
       d.list = null;
       d.slot = null;
       var at = pointAt(d.g, d.x, d.y);
-      if (at === null || !legal(d.g, at.list, at.slot)) return;
+      if (at === null) return;
+      var reason = verdict(d.g, at.list);
+      if (reason !== null) {
+        at.list.classList.add('is-drop-refused');
+        showPill(at.list, reason);
+        if (d.told.indexOf(at.list) === -1) {
+          d.told.push(at.list);
+          announce(reason);
+        }
+        return;
+      }
+      if (!legal(d.g, at.list, at.slot)) return;
       d.list = at.list;
       d.slot = at.slot;
       at.el.classList.add(at.cls);
@@ -4812,7 +4876,7 @@
       clearMarks(d.g);
       d.g.item.classList.remove('is-dragging');
       root.classList.remove('is-sorting');
-      if (apply && d.started && d.list !== null && legal(d.g, d.list, d.slot)) commit(d.g, d.list, d.slot, false);
+      if (apply && d.started && d.list !== null && verdict(d.g, d.list) === null && legal(d.g, d.list, d.slot)) commit(d.g, d.list, d.slot, false);
     }
     function onEscape(e) {
       if (e.key === 'Escape') { e.preventDefault(); end(false); }

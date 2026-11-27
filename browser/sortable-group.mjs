@@ -127,3 +127,47 @@ test('a grouped list with no data-key is reported, and the lists after it still 
     assert.match(result.seen[0], /^TypeError: .*"lost"/);
   });
 });
+
+test('a refused list says why while the item is held, takes nothing, and is asked once per gesture', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    const a = await p.centerXY('#hA');
+    const full = await at(p, '#full > li', 0.8);
+    let seen = null;
+    await p.dragFromTo(a.x, a.y, full.x, full.y, async () => {
+      seen = { mark: await p.evalJS(`window.listMark('full')`), lines: await p.evalJS(`window.marks('full')`), pill: await json(p, 'window.pill()'), live: await p.evalJS('window.live()') };
+    });
+    assert.deepEqual(seen, {
+      mark: 'refused', lines: 'f',
+      pill: { shown: true, text: 'Full is at its limit (1 of 1).', hits: false },
+      live: 'Full is at its limit (1 of 1).',
+    }, 'refused while held: marked, no landing line, the reason shown and spoken, and the pill never in the way of hit testing');
+    assert.equal(await p.evalJS('window.lanes()'), START, 'released there, nothing moved');
+    assert.equal((await json(p, 'window.pill()')).shown, false, 'and the pill is gone');
+
+    const b = await p.centerXY('#hB');
+    const review = await at(p, '#review > li[data-key="r"]', 0.2);
+    let reason = '';
+    await p.dragFromTo(b.x, b.y, review.x, review.y, async () => {
+      /* More moves inside the refused list: the kit must not ask again within one gesture. */
+      for (const dy of [2, 4, 6]) {
+        await p.evalJS(`document.getElementById('hB').dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: ${review.x}, clientY: ${review.y + dy} }))`);
+      }
+      reason = (await json(p, 'window.pill()')).text;
+    });
+    assert.equal(reason, 'Bravo has not been estimated.');
+    assert.deepEqual(await json(p, `window.checks.filter(c => c.startsWith('review:'))`), ['review:b'], 'asked once for that list across the gesture');
+
+    const c = await p.centerXY('#hC');
+    await p.dragFromTo(c.x, c.y, review.x, review.y, async () => { reason = (await json(p, 'window.pill()')).text; });
+    assert.equal(reason, 'Review does not take Charlie.', 'refuse() with no reason still refuses, in the kit’s words');
+
+    const e = await p.centerXY('#hE');
+    const done = await at(p, '#done', 0.5);
+    await p.dragFromTo(e.x, e.y, done.x, done.y, async () => {
+      await p.evalJS(`document.getElementById('done').setAttribute('data-fdy-sort-refuse', 'Closed for the day.')`);
+    });
+    assert.equal(await p.evalJS('window.lanes()'), START, 'a list refused mid-gesture is not dropped into');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+  });
+});
