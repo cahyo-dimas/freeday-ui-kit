@@ -4805,8 +4805,17 @@
      the current task, and look on every change to `dest` for FOCUS_WAIT_MS. Only while focus is
      still where it was when the move was made, on the source handle, or lost to <body> (the focused
      element removed): a user who has moved on keeps their focus. If the item never arrives (the app
-     reverted), nothing happens and focus stays on the source handle. */
+     reverted), nothing happens and focus stays on the source handle. One watch at a time: a newer
+     move ends the last one, whose item would otherwise take focus back when the next re-render
+     drops it to <body>. */
+  var focusWatch = null;
   function focusMoved(dest, item, key) {
+    if (focusWatch !== null) {
+      focusWatch.observer.disconnect();
+      clearTimeout(focusWatch.soon);
+      clearTimeout(focusWatch.stop);
+      focusWatch = null;
+    }
     var before = document.activeElement;
     var sourceHandle = item.querySelector(HANDLE);
     function attempt() {
@@ -4817,10 +4826,13 @@
       if (handle && now !== handle) handle.focus();
     }
     attempt();
-    setTimeout(attempt, 0);
-    var watch = new MutationObserver(attempt);
-    watch.observe(dest, { childList: true, subtree: true });
-    setTimeout(function () { watch.disconnect(); }, FOCUS_WAIT_MS);
+    var w = { observer: new MutationObserver(attempt), soon: setTimeout(attempt, 0), stop: 0 };
+    w.observer.observe(dest, { childList: true, subtree: true });
+    w.stop = setTimeout(function () {
+      w.observer.disconnect();
+      if (focusWatch === w) focusWatch = null;
+    }, FOCUS_WAIT_MS);
+    focusWatch = w;
   }
 
   function syncHandles(root) {

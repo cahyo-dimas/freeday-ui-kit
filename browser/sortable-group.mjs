@@ -319,6 +319,22 @@ test('a drag held at the edge of a scroll container scrolls it, and lands on wha
   });
 });
 
+test('a stale focus watcher from an earlier move does not take focus from the next one', { skip }, async () => {
+  await withPage(fixture('vue-sortable.html'), async (p) => {
+    await p.waitFor('typeof window.vueOrder === "function" && document.querySelector("#vlist[data-fdy-sortable-ready]")');
+    await p.evalJS(`document.getElementById('va').focus()`);
+    await p.pressKey('ArrowDown');
+    await p.waitFor(`window.vueOrder() === 'bac'`);
+    await sleep(100);
+    await p.evalJS(`document.getElementById('vc').focus()`);
+    await p.pressKey('ArrowUp');
+    await p.waitFor(`document.activeElement === document.getElementById('vc')`);
+    await sleep(300);
+    assert.equal(await p.evalJS('document.activeElement.id'), 'vc', 'focus stays on the row just moved');
+    assert.equal(await p.evalJS('window.vueOrder()'), 'bca');
+  });
+});
+
 test('Vue: a cancelled move between lists moves the row between two arrays, and focus follows it', { skip }, async () => {
   await withPage(fixture('vue-sortable-group.html'), async (p) => {
     await p.waitFor('typeof window.vueLanes === "function" && document.querySelector("#vdone[data-fdy-sortable-ready]")');
