@@ -4546,7 +4546,7 @@
  *
  * The drag shows where the item will land (is-drop-before / is-drop-after on an item, is-drop-into
  * on an empty list) and moves nothing until the pointer is released; Escape cancels it.
- * Exposes window.FreedaySortable { init, initAll }.
+ * Exposes window.FreedaySortable { init, initAll, move(item, toList, index) }.
  */
 (function () {
   'use strict';
@@ -4577,6 +4577,7 @@
   var HANDLE = '.fdy-sortable__handle';
   var LIST = '[data-fdy-sortable]';
   var MARKS = ['is-drop-before', 'is-drop-after', 'is-drop-into', 'is-drop-refused'];
+  var FOCUS_WAIT_MS = 2000;
 
   var live = null;
   function announce(message) {
@@ -4799,14 +4800,27 @@
     if (refocus) focusMoved(dest, item, key);
   }
 
-  /* After the app's own render, which a framework runs after this handler returns. Moving a focused
-     element drops its focus, and a keyed re-render may have replaced the element outright. */
+  /* Focus the moved item's handle in `dest` once it is there. A framework renders when it renders:
+     Vue and React before the next task, Blazor after an interop round trip. So: look now, look after
+     the current task, and look on every change to `dest` for FOCUS_WAIT_MS. Only while focus is
+     still where it was when the move was made, on the source handle, or lost to <body> (the focused
+     element removed): a user who has moved on keeps their focus. If the item never arrives (the app
+     reverted), nothing happens and focus stays on the source handle. */
   function focusMoved(dest, item, key) {
-    setTimeout(function () {
+    var before = document.activeElement;
+    var sourceHandle = item.querySelector(HANDLE);
+    function attempt() {
+      var now = document.activeElement;
+      if (now !== null && now !== document.body && now !== before && now !== sourceHandle) return;
       var moved = item.parentElement === dest ? item : items(dest).filter(function (el, i) { return keyOf(el, i) === key; })[0];
       var handle = moved ? moved.querySelector(HANDLE) : null;
-      if (handle && document.activeElement !== handle) handle.focus();
-    }, 0);
+      if (handle && now !== handle) handle.focus();
+    }
+    attempt();
+    setTimeout(attempt, 0);
+    var watch = new MutationObserver(attempt);
+    watch.observe(dest, { childList: true, subtree: true });
+    setTimeout(function () { watch.disconnect(); }, FOCUS_WAIT_MS);
   }
 
   function syncHandles(root) {
@@ -4818,6 +4832,26 @@
       if (handle.getAttribute('aria-disabled') !== off) handle.setAttribute('aria-disabled', off);
       if (!handle.hasAttribute('aria-label')) handle.setAttribute('aria-label', textOf(root, textKey, { label: labelOf(item) }));
     });
+  }
+
+  /* The drag-free path (WCAG 2.5.7): an app's "Move to…" menu or "Move up" button. Same refusal,
+     legality, event, announcement and focus as a drop. */
+  function move(item, toList, index) {
+    var source = item && item.parentElement;
+    if (!source || !source.matches || !source.matches(LIST)) throw new TypeError('FreedaySortable.move: the item is not a child of a [data-fdy-sortable] list.');
+    if (!toList || !toList.matches || !toList.matches(LIST)) throw new TypeError('FreedaySortable.move: toList is not a [data-fdy-sortable] list.');
+    if (typeof index !== 'number' || Math.floor(index) !== index) throw new TypeError('FreedaySortable.move: index must be an integer, got ' + String(index) + '.');
+    var g = gestureFor(item);
+    var from = fromOf(g);
+    var slot = toList === source && index > from ? index + 1 : index;
+    var reason = verdict(g, toList);
+    if (reason !== null) {
+      announce(reason);
+      return false;
+    }
+    if (!legal(g, toList, slot)) return false;
+    commit(g, toList, slot, true);
+    return true;
   }
 
   function initSortable(root) {
@@ -4937,7 +4971,7 @@
     initAll();
   }
 
-  window.FreedaySortable = { init: initSortable, initAll: initAll };
+  window.FreedaySortable = { init: initSortable, initAll: initAll, move: move };
 })();
 
 /* Freeday, stepper/wizard enhancer (optional, zero-dependency).

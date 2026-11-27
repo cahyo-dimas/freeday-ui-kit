@@ -171,3 +171,26 @@ test('a refused list says why while the item is held, takes nothing, and is aske
     assert.equal(await p.evalJS('window.events.length'), 0);
   });
 });
+
+test('FreedaySortable.move runs the same contract, refuses with a reason, and focus waits for a late render', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    const refused = await p.evalJS(`FreedaySortable.move(document.querySelector('#todo > li[data-key="b"]'), document.getElementById('review'), 0)`);
+    assert.equal(refused, false);
+    assert.equal(await p.evalJS('window.live()'), 'Bravo has not been estimated.', 'the refusal is spoken');
+    assert.equal(await p.evalJS('window.events.length'), 0);
+
+    const bad = await p.evalJS(`(() => { try { FreedaySortable.move(document.body, document.getElementById('done'), 0); return 'no error'; } catch (e) { return e.name; } })()`);
+    assert.equal(bad, 'TypeError', 'an item outside any sortable list is a programming error');
+
+    const ok = await p.evalJS(`FreedaySortable.move(document.querySelector('#todo > li[data-key="a"]'), document.getElementById('done'), 0)`);
+    assert.equal(ok, true);
+    assert.equal(await p.evalJS('window.lanes()'), 'todo:bce doing:topd done:a off:o full:f review:rtail solo:s');
+    await p.waitFor(`document.activeElement === document.getElementById('hA')`);
+
+    await p.evalJS(`document.getElementById('moveSA').focus(); window.moved = FreedaySortable.move(document.querySelector('#slow1 > li[data-key="sa"]'), document.getElementById('slow2'), 0)`);
+    assert.equal(await p.evalJS('window.moved'), true);
+    assert.equal(await p.evalJS('document.activeElement.id'), 'moveSA', 'nothing to focus until the app renders');
+    await p.waitFor(`document.activeElement && document.activeElement.id === 'hSA2'`);
+  });
+});

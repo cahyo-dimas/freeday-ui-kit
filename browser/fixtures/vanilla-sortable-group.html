@@ -62,6 +62,15 @@
       <li class="fdy-list__row" data-key="s" data-label="Sierra"><button class="fdy-sortable__handle" type="button" id="hS">≡</button> Sierra</li>
     </ul>
   </div>
+
+  <!-- Group "slow": the app cancels and renders 300ms later, as a Blazor app after an interop round trip. -->
+  <div id="slowboard">
+    <ul class="fdy-list fdy-sortable" id="slow1" data-fdy-sortable="slow" data-key="slow1" data-label="Slow one">
+      <li class="fdy-list__row" data-key="sa" data-label="Sierra"><button class="fdy-sortable__handle" type="button" id="hSA">≡</button> Sierra</li>
+    </ul>
+    <ul class="fdy-list fdy-sortable" id="slow2" data-fdy-sortable="slow" data-key="slow2" data-label="Slow two"></ul>
+    <button class="fdy-btn fdy-btn--ghost" type="button" id="moveSA">Move Sierra to Slow two</button>
+  </div>
 <script>
   var LANES = ['todo', 'doing', 'done', 'off', 'full', 'review', 'solo'];
   var keysOf = function (id) { return Array.from(document.getElementById(id).children).map(function (li) { return li.dataset.key; }).join(''); };
@@ -96,6 +105,18 @@
     window.checks.push(e.detail.toList + ':' + e.detail.key);
     if (e.detail.toList === 'review' && e.detail.key === 'b') e.detail.refuse('Bravo has not been estimated.');
     if (e.detail.toList === 'review' && e.detail.key === 'c') e.detail.refuse('');
+  });
+  document.getElementById('slowboard').addEventListener('fdy-sort-change', function (e) {
+    e.preventDefault();
+    setTimeout(function () {
+      document.querySelector('#slow1 > li[data-key="sa"]').remove();
+      var li = document.createElement('li');
+      li.className = 'fdy-list__row';
+      li.dataset.key = 'sa';
+      li.dataset.label = 'Sierra';
+      li.innerHTML = '<button class="fdy-sortable__handle" type="button" id="hSA2">≡</button> Sierra';
+      document.getElementById('slow2').appendChild(li);
+    }, 300);
   });
 </script>
 </body>
