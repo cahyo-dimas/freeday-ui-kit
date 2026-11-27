@@ -20,9 +20,8 @@ didahulukan dari fitur.
 
 | # | Pekerjaan | Kenapa sekarang | Selesai bila |
 |---|---|---|---|
-| 1 | **`theme-pref.mjs` kadang merah di CI.** Merah 2026-11-05 dan dua kali pada tag v3.23.0, selalu lulus di laptop. `window.beforeKit` terbaca `null`: sesudah muat ulang, cuplikan `<head>` tidak menemukan `fdy-theme` di `localStorage` | Tag yang merah menahan rilis, dan sudah dua kali memaksa jalanan ulang | Direproduksi di runner. Dugaan: Chromium menyetor `localStorage` ke proses peramban secara batch, dan muat ulang di runner sibuk datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu kuncinya terlihat lewat CDP `DOMStorage.getDOMStorageItems`, lalu muat ulang), bukan di kit. Tidak dengan menaikkan timeout |
-| 2 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
-| 3 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
+| 1 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
+| 2 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
 
 ---
 
@@ -157,7 +156,10 @@ CHANGELOG), dan 2.0.0 major karena bahasa bawaan enhancer berubah.
 1. **Gerbang lokal, semuanya hijau:** `node tokens/build.mjs && node --test`,
    `npm run typecheck:react`, `npm run test:blazor`, `npm run test:browser`. Suite peramban sekitar
    tiga menit; jaga laptop tidak tidur, karena tidur memutus CDP dan suitenya menggantung. WebKit
-   (`npm run test:webkit`) hanya jalan di CI.
+   (`npm run test:webkit`) hanya jalan di CI. **CI memakai Chrome penuh** (`/usr/bin/google-chrome`),
+   laptop memakai `chrome-headless-shell`, dan model prosesnya berbeda: kegagalan yang hanya muncul
+   di CI direproduksi dengan `CHROME_BIN="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`.
+   Kegoyahan `theme-pref` tersembunyi tiga minggu karena ini.
 2. **Versi:** `npm version <versi> --no-git-tag-version`, lalu cari setiap stempel lama, jangan dari
    ingatan:
 

@@ -30,6 +30,10 @@ test('a choice is stored, applied, painted, and survives a reload before the kit
   await withPage(fixture('vanilla-theme-pref.html'), async (p) => {
     await p.waitFor('typeof window.state === "function"');
     await p.setColorScheme('light');
+    /* The emulation lands after load. On a machine whose OS is dark, full Chrome painted the page dark
+       first, so pinning light raised a change event before this spec did anything. What is under
+       test is what a toggle reports, so the record starts here. */
+    await p.evalJS('window.events = [], true');
     let s = await state(p);
     assert.deepEqual([s.html, s.stored, s.theme, s.resolved, s.page], [null, null, 'system', 'light', 'light'],
       'nothing chosen yet: no attribute, nothing stored, the page follows the OS');

@@ -9,6 +9,23 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [Unreleased]
+
+Hanya alat uji. Tidak ada yang terkirim di paket.
+
+### Catatan
+- **`theme-pref.mjs` tidak lagi merah di CI.** Sebabnya bukan di kit, dan bukan dugaan yang dicatat
+  sebelumnya (penyetoran `localStorage` yang kalah cepat). Diukur dengan Chrome penuh, mesin yang
+  dipakai CI: tulisan `localStorage` hilang pada muat ulang **pertama** sebuah sesi, 2 dari 72 muat
+  ulang, dan nilainya tetap tidak ada setengah detik kemudian. Muat ulang berikutnya di sesi yang
+  sama selalu benar. Dokumen pertama itu adalah halaman yang diberikan lewat baris perintah Chrome.
+  `browser/harness.mjs` kini membuka Chrome di `about:blank` dan memuat fixture lewat `Page.navigate`,
+  seperti halaman nyata tiba: 0 dari 72, dan `theme-pref.mjs` 0 kegagalan dalam 30 putaran (2 dari 30
+  sebelumnya). Laptop tidak pernah melihatnya karena memakai `chrome-headless-shell`.
+- **`theme-pref.mjs` di mesin bermode gelap.** Emulasi skema terang mendarat sesudah halaman dimuat, jadi
+  di OS gelap satu `fdy-theme-change` tercatat sebelum uji berbuat apa pun. Catatan event kini dimulai
+  sesudah skemanya dipatok.
+
 ## [3.26.0] - 2026-11-27
 
 **Pohon `FdyCascade` Blazor mengikuti host** (`#123`), butir terakhir kelas "nilai dan opsi dari host"

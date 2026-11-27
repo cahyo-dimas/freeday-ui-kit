@@ -138,7 +138,12 @@ export async function withPage(fileUrl, fn) {
     '--no-default-browser-check',
     '--disable-gpu',
     '--window-size=1000,900',
-    fileUrl,
+    /* Not the fixture: a page given on the command line is the session's first document, and its
+       localStorage writes were LOST on its first reload in full Chrome (the engine CI runs). Measured
+       with full Chrome on a laptop: 2 of 72 reloads, always the first of a session, the value still
+       absent half a second later. theme-pref failed so on CI three times. The fixture is loaded by
+       an ordinary navigation below instead, which is how every real page arrives. */
+    'about:blank',
   ]);
 
   let ws = null;
@@ -466,6 +471,7 @@ export async function withPage(fileUrl, fn) {
        to read `document.documentElement` while the fixture's document was replacing it, and got
        null: palette-os-dark failed so in the 3.25.0 run, and six more specs wait the same way. The
        page is handed over once the fixture itself has loaded. */
+    await cmd('Page.navigate', { url: fileUrl });
     await waitFor(`location.href !== 'about:blank' && document.readyState === 'complete'`, { timeout: 10000 });
     return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
   } finally {
