@@ -20,10 +20,9 @@ didahulukan dari fitur.
 
 | # | Pekerjaan | Kenapa sekarang | Selesai bila |
 |---|---|---|---|
-| 1 | **Pohon `FdyCascade` Blazor sesudah hidrasi.** `Nodes` yang diubah host tidak pernah tampil: enhancer menelan `<ul>` seed dan menghapusnya, dan tidak punya API untuk mengganti pohonnya | Sisa terakhir kelas "nilai dan opsi dari host" (`#123`), yang 3.25.0 tutup untuk nilai di enam wrapper dan opsi autocomplete | `FreedayCascade.setNodes(root, tree)`, didorong dari `OnParametersSetAsync` bila isi pohonnya berubah (dibandingkan per isi, seperti opsi autocomplete), dengan uji bUnit dan uji peramban yang terbukti merah |
-| 2 | **`theme-pref.mjs` kadang merah di CI.** Merah 2026-11-05 dan dua kali pada tag v3.23.0, selalu lulus di laptop. `window.beforeKit` terbaca `null`: sesudah muat ulang, cuplikan `<head>` tidak menemukan `fdy-theme` di `localStorage` | Tag yang merah menahan rilis, dan sudah dua kali memaksa jalanan ulang | Direproduksi di runner. Dugaan: Chromium menyetor `localStorage` ke proses peramban secara batch, dan muat ulang di runner sibuk datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu kuncinya terlihat lewat CDP `DOMStorage.getDOMStorageItems`, lalu muat ulang), bukan di kit. Tidak dengan menaikkan timeout |
-| 3 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
-| 4 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
+| 1 | **`theme-pref.mjs` kadang merah di CI.** Merah 2026-11-05 dan dua kali pada tag v3.23.0, selalu lulus di laptop. `window.beforeKit` terbaca `null`: sesudah muat ulang, cuplikan `<head>` tidak menemukan `fdy-theme` di `localStorage` | Tag yang merah menahan rilis, dan sudah dua kali memaksa jalanan ulang | Direproduksi di runner. Dugaan: Chromium menyetor `localStorage` ke proses peramban secara batch, dan muat ulang di runner sibuk datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu kuncinya terlihat lewat CDP `DOMStorage.getDOMStorageItems`, lalu muat ulang), bukan di kit. Tidak dengan menaikkan timeout |
+| 2 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
+| 3 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
 
 ---
 
@@ -269,4 +268,4 @@ CHANGELOG. Kalau kamu memutuskan tidak mengerjakannya, barisnya masuk ke sini da
 |---|---|
 | Kontrol native di seluruh layar ronda, 2026-10-26 | date/time 3.11.0 `#094`/`#095`; accordion, search × dan isian angka di §2 dan §7 |
 | Celah validasi kontrol kit | 3.12.0 `#096` dan 3.18.0 `#114` |
-| State machine implisit, 2026-11-26 | 3.24.0 `#123`: `useLoad` dan sembilan cacat. 3.25.0: nilai dari host di enam wrapper Blazor, opsi autocomplete. Sisanya §1 butir 1 dan 3 |
+| State machine implisit, 2026-11-26 | 3.24.0 `#123`: `useLoad` dan sembilan cacat. 3.25.0: nilai dari host di enam wrapper Blazor, opsi autocomplete. 3.26.0: pohon `FdyCascade`. Sisanya §1 butir 2 (carousel) |

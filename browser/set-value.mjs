@@ -79,3 +79,26 @@ test('the autocomplete takes pushed options and text, and sees options rendered 
     assert.deepEqual(await p.evalJS('window.__events'), []);
   });
 });
+
+test('the cascade takes a new tree, shows it, and finds a value only that tree has', { skip }, async () => {
+  await withPage(URL, async (p) => {
+    await ready(p);
+    await p.evalJS(`FreedayCascade.setValue(document.getElementById('cc'), 'bdg'),
+      FreedayCascade.setNodes(document.getElementById('cc'), [
+        { value: 'jkt', label: 'Jakarta' },
+        { value: 'jatim', label: 'East Java', children: [{ value: 'sby', label: 'Surabaya' }] },
+      ]), true`);
+    assert.equal(await text(p, '#cc .fdy-cascade__value'), await p.evalJS(
+      `document.getElementById('cc').getAttribute('data-placeholder') || 'Select…'`),
+      'a value the new tree lacks shows the placeholder until the host sets one it has');
+
+    await p.evalJS(`FreedayCascade.setValue(document.getElementById('cc'), 'sby'), true`);
+    assert.match(await text(p, '#cc .fdy-cascade__value'), /East Java.*Surabaya/);
+
+    await p.clickCenter('#cc .fdy-cascade__trigger');
+    await p.waitFor(`document.querySelectorAll('#cc .fdy-cascade__opt').length > 0`);
+    const shown = await p.evalJS(`[...document.querySelectorAll('#cc .fdy-cascade__opt-label')].map((l) => l.textContent)`);
+    assert.deepEqual(shown, ['Surabaya'], 'it opens at the new value\'s level, in the new tree');
+    assert.deepEqual(await p.evalJS('window.__events'), []);
+  });
+});

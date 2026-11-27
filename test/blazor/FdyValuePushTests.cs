@@ -72,6 +72,38 @@ public class FdyValuePushTests : BunitContext
         Assert.Equal(new object?[] { "b" }, Assert.Single(Pushed("FreedayCascade.setValue")));
     }
 
+    private static List<FdyCascadeNode> Region(string city) => new()
+    {
+        new("jkt", "Jakarta"),
+        new("jabar", "West Java", new List<FdyCascadeNode> { new(city.ToLowerInvariant(), city) }),
+    };
+
+    [Fact]
+    public void Cascade_pushes_a_new_tree_and_not_an_identical_one_rebuilt()
+    {
+        var cut = Render<FdyCascade>(p => p.Add(c => c.Nodes, Region("Bandung")));
+
+        cut.Render(p => p.Add(c => c.Nodes, Region("Bandung")));
+        Assert.Empty(JSInterop.Invocations["FreedayCascade.setNodes"]);
+
+        cut.Render(p => p.Add(c => c.Nodes, Region("Bogor")));
+        var tree = (IReadOnlyList<FdyCascadeNode>)Assert.Single(Pushed("FreedayCascade.setNodes"))[0]!;
+        Assert.Equal("bogor", tree[1].Children![0].Value);
+    }
+
+    [Fact]
+    public void Cascade_pushes_the_tree_before_a_value_that_only_the_new_tree_has()
+    {
+        var cut = Render<FdyCascade>(p => p.Add(c => c.Nodes, Region("Bandung")).Add(c => c.Value, "bandung"));
+        cut.Render(p => p.Add(c => c.Nodes, Region("Bogor")).Add(c => c.Value, "bogor"));
+
+        string[] order = JSInterop.Invocations
+            .Select(i => i.Identifier)
+            .Where(id => id is "FreedayCascade.setNodes" or "FreedayCascade.setValue")
+            .ToArray();
+        Assert.Equal(new[] { "FreedayCascade.setNodes", "FreedayCascade.setValue" }, order);
+    }
+
     [Fact]
     public void Autocomplete_pushes_value_and_options_the_host_changes_and_compares_options_by_content()
     {

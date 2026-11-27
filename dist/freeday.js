@@ -851,6 +851,18 @@
     });
     return nodes;
   }
+  /* A tree from a host, in the shape parse() produces: an empty value falls back to the label, and
+     a node with no children (or an empty list) is a leaf. */
+  function normalize(list) {
+    return (list || []).map(function (n) {
+      var label = String(n.label == null ? '' : n.label);
+      return {
+        label: label,
+        value: n.value != null && n.value !== '' ? String(n.value) : label,
+        children: n.children && n.children.length ? normalize(n.children) : null
+      };
+    });
+  }
   // Depth-first search for the stack of labels leading to a leaf value.
   function pathTo(nodes, value, trail) {
     for (var i = 0; i < nodes.length; i++) {
@@ -1143,6 +1155,17 @@
         wrap.setAttribute('data-value', selectedValue);
         showValue();
         if (!panel.hidden) render();
+      },
+      /* A new tree from the host. The seed <ul> was consumed at init, so this is the only way a
+         render-once host (Blazor) can change the options (#123). The view goes back to the top
+         level, and the value's path is looked up again: a value the new tree lacks shows the
+         placeholder until the host sets one it has. */
+      setNodes: function (tree) {
+        root = normalize(tree);
+        stack = [];
+        current = root;
+        showValue();
+        if (!panel.hidden) render();
       }
     };
     wrap._fdyCascade = api;
@@ -1173,6 +1196,11 @@
     setValue: function (root, value) {
       var api = root && root._fdyCascade ? root._fdyCascade : null;
       if (api) api.setValue(value);
+    },
+    /* The options as a tree, [{ value, label, children }], replacing the one the seed gave. */
+    setNodes: function (root, tree) {
+      var api = root && root._fdyCascade ? root._fdyCascade : null;
+      if (api) api.setNodes(tree);
     }
   };
 })();

@@ -9,6 +9,26 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.26.0] - 2026-11-27
+
+**Pohon `FdyCascade` Blazor mengikuti host** (`#123`), butir terakhir kelas "nilai dan opsi dari host"
+yang 3.25.0 tutup untuk nilai di enam wrapper dan opsi autocomplete.
+
+### Added
+- **`FreedayCascade.setNodes(root, tree)`**, dengan pohon `[{ value, label, children }]` yang dibaca
+  seperti `<ul>` seed: nilai kosong jatuh ke label, tanpa anak berarti daun. Tampilan kembali ke
+  tingkat atas dan jalur nilai terpilih dicari ulang; nilai yang tidak ada di pohon baru menampilkan
+  placeholder sampai host menyetel yang ada.
+
+### Fixed
+- **`FdyCascade` Blazor mendorong `Nodes` yang berubah sesudah render pertama.** Enhancer menelan
+  `<ul>` seed saat init, jadi pohon yang diganti host tidak pernah tampil. Pohon dibandingkan menurut
+  isi (kesetaraan record C# membandingkan `Children` per referensi), dan didorong sebelum `Value`,
+  supaya nilai yang hanya ada di pohon baru menemukan jalurnya.
+
+### Catatan
+- Diuji: 2 bUnit dan 1 uji peramban baru, merah pada kode lama.
+
 ## [3.25.0] - 2026-11-27
 
 **Nilai dari host sampai ke layar, di setiap wrapper Blazor** (`#123`, sisa audit 3.24.0). Wrapper

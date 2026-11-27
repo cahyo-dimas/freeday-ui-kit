@@ -56,6 +56,21 @@ public partial class FdyCascade
     protected override bool ShouldRender() => !Hydrated;
 
     private string? _shownValue;
+    private IReadOnlyList<FdyCascadeNode> _shownNodes = Array.Empty<FdyCascadeNode>();
+
+    /// <summary>The same tree by content. Record equality compares <c>Children</c> by reference, so a
+    /// host that rebuilds an identical tree on every render would otherwise push it every time.</summary>
+    private static bool SameTree(IReadOnlyList<FdyCascadeNode>? a, IReadOnlyList<FdyCascadeNode>? b)
+    {
+        int countA = a?.Count ?? 0, countB = b?.Count ?? 0;
+        if (countA != countB) return false;
+        for (int i = 0; i < countA; i++)
+        {
+            FdyCascadeNode x = a![i], y = b![i];
+            if (x.Value != y.Value || x.Label != y.Label || !SameTree(x.Children, y.Children)) return false;
+        }
+        return true;
+    }
 
     /* Pushed, not re-rendered: the seed's <ul> is consumed and removed by the enhancer, so this
        component can never render again. */
@@ -66,7 +81,14 @@ public partial class FdyCascade
         if (!Hydrated)
         {
             _shownValue = Value;
+            _shownNodes = Nodes;
             return;
+        }
+        /* The tree before the value, so a value that only exists in the new tree finds its path. */
+        if (!SameTree(_shownNodes, Nodes))
+        {
+            _shownNodes = Nodes;
+            await JS.InvokeVoidAsync("FreedayCascade.setNodes", Root, Nodes);
         }
         if (Value != _shownValue)
         {

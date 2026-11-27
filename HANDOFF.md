@@ -11,7 +11,10 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.25.0`, disiapkan dan menunggu tag** (2026-11-27). Nilai dari host di enam wrapper Blazor
+**`3.26.0`, disiapkan dan menunggu tag** (2026-11-27). Pohon `FdyCascade` Blazor didorong lewat
+`FreedayCascade.setNodes`; kelas "nilai dan opsi dari host" dari audit `#123` kini tertutup.
+
+**`3.25.0`, terbit** (2026-11-27). Nilai dari host di enam wrapper Blazor
 lewat `setValue`/`setRange`/`setOptions` yang senyap di enhancer, teks bebas autocomplete Blazor,
 dan opsi autocomplete mentah yang dibaca ulang. Sisa kelasnya: pohon `FdyCascade` (`NEXT-UP.md` §1).
 

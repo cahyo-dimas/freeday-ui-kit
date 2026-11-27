@@ -145,9 +145,11 @@ event, so the binding that set it does not hear it back as a pick. `FreedayCombo
 `FreedayDatepicker.setValue(root, v)` (`YYYY-MM-DD`, `YYYY-MM` in month mode, `"start/end"` on a
 single-field range), `FreedayDatepicker.setRange(root, from, to)` on a two-picker
 `data-fdy-daterange` root (it relinks the end's minimum as a pick would), `FreedayTimepicker.setValue`,
-`FreedayCascade.setValue`, and `FreedayAutocomplete.setValue(root, text)` with
-`FreedayAutocomplete.setOptions(root, labels)`. An empty string clears. The Blazor wrappers call these
-when a bound `Value`, `From`, `To` or `Options` changes after the first render; before 3.25.0 only
+`FreedayCascade.setValue` with `FreedayCascade.setNodes(root, tree)` (`[{ value, label, children }]`,
+read as the seed `<ul>` is: an empty value falls back to the label, no children means a leaf), and
+`FreedayAutocomplete.setValue(root, text)` with `FreedayAutocomplete.setOptions(root, labels)`. An
+empty string clears. The Blazor wrappers call these when a bound `Value`, `From`, `To`, `Options` or
+`Nodes` changes after the first render, comparing lists and trees by content; before 3.25.0 only
 `FdyCombo` did, and the others kept showing their first value. The autocomplete also reads its
 options from the list each time it uses them, so options an app renders later are filtered like the
 rest.
