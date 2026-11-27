@@ -1,377 +1,272 @@
 # Freeday — Next up
 
-Titik lanjut. Kalau mau nerusin kerjaan di repo ini, **buka dokumen ini dulu**, pilih satu item,
-kerjakan. Status ada di [`HANDOFF.md`](HANDOFF.md); riwayat versi di [`CHANGELOG.md`](CHANGELOG.md);
-sumber-kebenaran desain di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md).
+Apa yang dikerjakan berikutnya, apa yang menunggu pemicunya, dan apa yang sudah diputuskan tidak
+dikerjakan. Mulai dari §1. Keadaan sekarang ada di [`HANDOFF.md`](HANDOFF.md), riwayat di
+[`CHANGELOG.md`](CHANGELOG.md), dan sumber kebenaran desain di
+[`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md).
 
-_Dokumen ini **hanya melihat ke depan**: backlog + invariant yang masih berlaku. Riwayat dibuang
-ke `CHANGELOG.md` saat pembersihan v1.20.0, supaya tak ada dua tempat mencatat hal yang sama._
+Berkas ini hanya memuat yang masih berlaku. Butir yang terkirim pindah ke CHANGELOG. Butir yang
+diputuskan tidak dikerjakan pindah ke §7 beserta alasannya, sebab keputusan yang tidak tercatat akan
+dibangun ulang oleh orang berikutnya. Nomor `#1` sampai `#16` di §10 tetap, karena uji dan komentar
+kode merujuknya ("NEXT-UP #8").
+
+**Sikap bawaan: tunggu demand.** Kit ini feature-complete di empat stack sejak 1.16.0. Yang
+menentukan rilis berikutnya adalah cacat yang ditemukan dan permintaan dari app nyata. Cacat
+didahulukan dari fitur.
 
 ---
 
-## Roadmap ke depan (per v2.0.0), default: **tunggu demand**
+## 1. Berikutnya, urut
 
-Per **v1.16.0** kit ini **feature-complete**: 11/11 komponen paritas penuh di **4 stack**
-(vanilla · Vue · React · Blazor). Tak ada gap "wajib" tersisa, dan membangun spekulatif dari sini
-melanggar prinsip demand-driven yang menjaga kit tetap ramping ([[freeday-consumption-model]]).
-**Sikap default = tunggu demand.** Sinyal paling berharga = project Blazor berikutnya: bangun
-memakainya, biar friksi nyata (prop kurang, timing Server-mode, kebutuhan NuGet) yang menentukan
-rilis berikut, yang lebih murah dan akurat daripada menebak. Kandidat #1 & #2 paling mungkin muncul
-duluan dari project itu.
+| # | Pekerjaan | Kenapa sekarang | Selesai bila |
+|---|---|---|---|
+| 1 | **Paritas nilai Blazor.** `FdyAutocomplete`, `FdyDatepicker` dan `FdyDateRange` Blazor hanya me-render seed-nya sekali (`ShouldRender => !Hydrated`), jadi `Value`, `From`, `To` dan `Options` yang diubah host sesudah hidrasi tidak pernah sampai ke DOM. Autocomplete Blazor juga tidak melaporkan teks bebas (`ValueChanged` hanya saat memilih). Sekalian: autocomplete jalur mentah menangkap opsinya sekali saat init, dan flag ready menolak init ulang | Sisa audit `#123`. Cacatnya diam di setiap app Blazor, dan kit menjanjikan paritas empat stack. `FdyCombo` sudah benar lewat `comboSetValue`, jadi bentuknya sudah ada | Enhancer datepicker dan autocomplete punya `setValue` (autocomplete juga `setOptions`), wrapper Blazor mendorongnya dari `OnParametersSet` seperti combo, dan uji bUnit atas invocation-nya terbukti merah pada kode lama. Satu rilis |
+| 2 | **`theme-pref.mjs` kadang merah di CI.** Merah 2026-11-05 dan dua kali pada tag v3.23.0, selalu lulus di laptop. `window.beforeKit` terbaca `null`: sesudah muat ulang, cuplikan `<head>` tidak menemukan `fdy-theme` di `localStorage` | Tag yang merah menahan rilis, dan sudah dua kali memaksa jalanan ulang | Direproduksi di runner. Dugaan: Chromium menyetor `localStorage` ke proses peramban secara batch, dan muat ulang di runner sibuk datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu kuncinya terlihat lewat CDP `DOMStorage.getDOMStorageItems`, lalu muat ulang), bukan di kit. Tidak dengan menaikkan timeout |
+| 3 | **Carousel.** Handler gulir menimpa indeks yang baru diset `goTo` selama gulir halus, jadi dua klik Next cepat berhenti di slide 2. `mouseleave` menyalakan autoplay lagi saat fokus papan ketik masih di dalam | Sisa audit `#123`, baru dilacak di kode | Direproduksi di peramban dulu, lalu diperbaiki dengan uji yang terbukti merah |
+| 4 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
 
-Backlog jujur (terurut, **bukan** untuk dikerjakan sekarang; pemicunya di kolom kanan):
+---
 
-| # | Kandidat | Kerjakan saat |
-|---|---|---|
-| 1 | **NuGet package `Freeday.Blazor`**: kini source-only via `<ProjectReference>`; NuGet (bundle static asset lewat RCL `wwwroot`) = distribusi bersih di luar repo | ada consumer di luar repo ini |
-| 2 | ~~**Verifikasi Blazor Server + prerender.**~~ **selesai** (2026-08-26): harness Server sungguhan di `test/blazor-server/` + `browser/blazor-server.mjs` (`npm run test:blazor-server`), **4/4 hijau**. Prerender mengeluarkan markup penuh tanpa satu pun penanda hidrasi; enhancer hidrat begitu circuit tersambung; `<dialog>` show/close dari .NET benar; combo yang dipilih dengan mouse asli sampai ke binding .NET. **Koreksi yang layak dibawa:** satu check sempat merah dan sempat dilaporkan sebagai cacat kit. Ia bukan. Enhancer auto-init saat DOMContentLoaded, jadi mereka menstempel `data-fdy-*-ready` pada markup **prerender yang sebentar lagi dibuang** Blazor saat circuit tersambung — test yang menunggu penanda itu menunggu hal yang salah, dan klik-nya mendarat di node yang akan dilepas. Menunggu komponen benar-benar interaktif membuatnya hijau, 3 dari 3 run. Pelajarannya: **di bawah prerendering, penanda hidrasi bisa benar tentang DOM yang tak punya masa depan.** | — |
-| 3 | ~~**Row selection + bulk-action bar** di `FdyTable` (ketiga adapter).~~ **selesai** (2026-08-26, 3.0.0): pemicunya datang dari layar back-office nyata (note `#049`). `selectable` + `selectedKeys` di Vue/React/Blazor, ber-key `rowKey` seperti `expandedKeys`. Select-all sengaja hanya menjangkau **halaman yang terlihat**, dan key dari halaman lain dipertahankan. Blazor butuh satu interop (`setIndeterminate`) karena `indeterminate` properti DOM tanpa atribut. Dijaga 2 test Chrome + 7 bUnit, keduanya diverifikasi dengan mutasi | — |
-| 4 | **Deferred YAGNI**: data grid virtualized · ~~form master-detail 2-kolom~~ (terkirim `[Unreleased]`, `#065`) · `data-style` **selain** `soft`/`glass` (neumorph/clay/dst.) — `glass` sendiri **terkirim di 3.0.0** | on-demand murni |
-| 5 | ~~_Opsional infra:_ bUnit guard komponen Blazor di CI~~ **selesai** (2026-08-25): `test/blazor/`, 7 test, jalan di `npm run test:blazor` dan di CI. Catatan lama menyebut "manual runtime-verify via `drive-*.mjs` + CDP", padahal skrip itu **tak ada**; sebelum ini satu-satunya gerbang Blazor adalah `dotnet build`, yaitu kompilasi | — |
-| 6 | ~~**String UI vanilla bisa di-override.**~~ **selesai** (2026-08-25): owner memilih (b), ganti default ke English, terbit di **2.0.0** — 39 string di 9 enhancer plus fallback locale datepicker (`lang || 'en'`). Hook override (a) ternyata sudah ada sejak 1.39.0, jadi migrasinya atribut: `data-fdy-text-<key>`, dan `<html lang="id">` untuk nama tanggal | — |
-| 7 | **`groupBy` di `FdyTable`.** Layar list ber-grup kini merender satu `FdyTable` per grup (note 003 §5, dikonfirmasi lagi di 004 §1). Dengan `pageIndex` terkontrol (v1.20.0) satu index sudah bisa menjangkau beberapa tabel, jadi ini murni soal kenyamanan sekarang | ada layar ber-grup yang cukup banyak grupnya sampai N tabel jadi masalah |
-| 8 | ~~**Perilaku drawer `.fdy-app` tak ikut dikirim**~~ **selesai**: `freeday-app-shell.js` di **1.53.0**, `FdyAppShell` typed (Vue/React/Blazor) di **1.54.0**. Nomornya sengaja dipertahankan meski isinya kosong: CHANGELOG, spec, dan header guard menyebut "NEXT-UP #8", jadi menomori ulang baris di bawahnya akan memutus rujukan yang sudah tertulis | — |
-| 9 | **`.fdy-pagination` tanpa rule CSS.** Class blok di `<nav>` cuma hook penamaan; `__list`/`__link`/`__ellipsis` yang menata. Konsisten secara dokumentasi (COMPONENTS.md + guard `STRUCTURAL_HOOKS`), tapi kalau nanti wrapper butuh style (mis. `justify-content`), di situlah tempatnya. **Sejak 3.1.0 hook itu benar-benar dikirim** — sebelumnya nol match di seluruh paket, jadi kalimat "di situlah tempatnya" tak akan berlaku untuk keluaran kit sendiri (`improvement-notes` #050 §2) | wrapper paginasi butuh style sendiri |
-| 10 | ~~**Tombol clear ber-teme untuk `type="search"`.**~~ **selesai** (2026-10-22, `[Unreleased]`): pemicunya `#061`, layar list yang mencari hanya saat Enter sehingga mengosongkan kotak tidak mengembalikan baris. Jawabannya `[data-fdy-search]`, persis bentuk yang ditulis di bawah ini, plus satu event untuk jeda, Enter dan clear. Teks lama: Tombol × bawaan WebKit tak berteme sama seperti spin button di #44 (v1.27.0), tapi **sengaja tak distrip**: ia satu-satunya cara mengosongkan field, jadi menghapusnya membuang fungsi. Kalau mau konsisten visual, bentuknya bukan CSS melainkan `.fdy-input-group__btn` yang mengosongkan input (pola yang sudah dipakai FdyDatepicker clearable v1.13.0), dengan `type="text"` supaya × bawaan tak muncul. Ditulis di COMPONENTS.md sebagai keputusan, bukan kelalaian | ada layar yang mempermasalahkan × bawaan itu — jangan spekulatif |
-| 11 | ~~**Props 10 komponen typed sisanya di `COMPONENTS.md`.**~~ **selesai** (2026-08-25): 12 tabel `### Props — <FdyX>`, satu per wrapper yang diekspor, plus guard dua arah + gerbang kelengkapan di `test/docs.test.mjs` (nama prop di docs == prop Vue ∪ React; wrapper baru tanpa tabel = merah). Diverifikasi dengan mutasi | — |
-| 12 | ~~**Paritas prop Blazor untuk empat wrapper picker.**~~ **selesai** (2026-08-26, 2.2.0): akar masalahnya bukan wrapper Blazor melainkan **enhancer**-nya, yang tak pernah punya konsep `disabled`/`readonly`/`invalid` meski CSS-nya sudah menata ketiganya sejak awal. Jalur mentah kini punya `data-disabled`/`data-readonly`/`data-invalid` + `data-id`/`data-describedby` + `setState()`; Blazor: datepicker 6→20 parameter, autocomplete 6→12, cascade 8→13, combo dapat `Describedby`. Empat pengecualian didokumentasikan dengan alasannya. Dijaga guard paritas + 7 test bUnit + 7 test Chrome | — |
-| 13 | ~~**Bikin kegagalan CI bisa dibaca tanpa hak admin.**~~ **selesai** (2026-08-26), tapi bukan seperti yang ditulis di sini: artifact TAP tak pernah dibutuhkan, karena `ci.yml` **sudah** menganotasi tiap baris `not ok` lewat `::error::`, dan anotasi itu terbaca via API tanpa autentikasi. Anotasi itulah yang menjawab flake-nya: tiga test **berkoordinat** gagal bersamaan. Sebabnya geometri, bukan asersi — target di bawah lipatan pada jendela runner, klik mendarat di titik kosong. `clickCenter` kini men-scroll target ke tampilan lalu menolak titik kosong dengan pesan yang menyebut viewport + rect | — |
-| 14 | **Permukaan di balik 3.94:1.** Note `#053` §3 melaporkan `--color-text-muted` di 3.94:1 atas `--color-surface-raised` gelap. Tak reproduksi: di `soft` permukaan itu **identik** dengan `--color-surface` (7.28:1), di `glass` terburuknya 6.70:1, dan muted tak pernah di bawah 5.46:1 di mana pun ramp gelap. Angkanya sendiri nyata — 3.94 persis `slate-400` di atas `slate-700`, yaitu `--color-border-strong`, token border yang tak dipakai komponen mana pun sebagai latar. Kalau ternyata ada komponen kit yang mengecatnya sebagai latar, itu cacat | pelapor menyebut selector/permukaan yang diukurnya |
+## 2. Menunggu pemicu
 
-| 15 | **Sapuan deskripsi modifier di `COMPONENTS.md`.** `#055` §3: `.fdy-nav--flat` ada sejak 1.1.0, melakukan tiga hal, dan dijelaskan sebagai *"drops the surface"* — yang tak pernah dilakukannya. Dua console lalu membangun ulang varian yang sudah mereka punya, empat bulan. Pola ini tak mungkin cuma sekali: setiap `--modifier` yang deskripsinya ditulis tangan bisa hanyut dari rule-nya, dan tak ada gerbang yang membandingkan keduanya. Bentuknya: baca tiap `.fdy-*--*` di `dist/freeday.css`, cocokkan dengan kalimat yang menjelaskannya, laporkan yang tak bisa dibenarkan oleh deklarasinya | ada satu lagi yang ketahuan salah — atau saat ada waktu, karena satu temuan sudah membayar sapuannya |
-| 16 | **Jadikan `--hover-actionable` default di 4.0.** Terkirim sebagai opt-in (`#064`) karena mengubah hover setiap tabel consumer. Di 4.0: pindahkan perilakunya ke `.fdy-table` dasar, sisakan `--hover-all` untuk yang memang ingin semua baris ber-hover, catat di `### Changed: BREAKING` | ada rilis mayor karena alasan lain, atau consumer kedua melaporkan baris inert yang diklik |
+Jangan dikerjakan sebelum pemicunya datang. Nomor `#` merujuk ke §10.
 
-Prinsip tetap: komponen hanya sentuh token Tier-2/3 (nol hex/px mentah); kontras AA gate wajib hijau;
-tiap rilis sinkron SEMUA ref versi publik incl. live Pages ([[sync-docs-on-version-bump]]); repo
-PUBLIC ([[public-repo-keep-internal-out]]).
+| Butir | Pemicu |
+|---|---|
+| `#1` NuGet package `Freeday.Blazor` (kini hanya `<ProjectReference>`) | ada consumer Blazor di luar repo ini |
+| `#7` `groupBy` di `FdyTable` (layar bergrup kini satu tabel per grup) | ada layar dengan cukup banyak grup sampai N tabel jadi masalah |
+| `#9` gaya untuk `.fdy-pagination` (kini hook penamaan saja) | wrapper paginasi butuh gaya sendiri |
+| `#14` permukaan di balik angka 3.94:1 | pelapor menyebut selector dan permukaan yang diukurnya |
+| `#15` sapuan deskripsi modifier di `COMPONENTS.md` | satu lagi ketahuan salah, atau ada waktu luang |
+| Pembungkus bertipe `FdyTabs` (navigasi papan ketik daftar tab masih ditulis app) | pemakai kedua yang menulis ulang kunci tab sendiri |
+| Penyempitan cakupan `useFreeday(ref)` yang ref-nya kosong (kini memindai seluruh dokumen dan memperingatkan) | konsumen sudah membereskan peringatannya; dibahas di rilis minor |
+| `[data-fdy-number]` sebagai bawaan untuk `input[type=number]` | app berikutnya juga memakai nol, padahal punya isian angka (ronda: 10 isian, 0 opt-in) |
+| Uji otomatis untuk label `[data-token]` di `docs/index.html` | ada label yang hanyut lagi |
+| Data grid virtualisasi (spec §7), `data-style` selain `soft`/`glass` (spec §6) | project nyata yang butuh |
 
-## Kandidat berikutnya, dipicu rilis 3.21.0 dan permintaan owner
+## 3. Menunggu ukuran di perangkat
 
-**Lanjutan identitas.** Pemicunya 3.21.0: kontrak identitas dan sumbu `data-neutral` sudah ada, jadi
-pertanyaan berikutnya adalah seberapa jauh kit membantu app memilih tampilan.
+Mesin yang bisa melihat cacat ini (Safari iOS 15, iPhone 7 pemilik) bukan mesin yang menjalankan uji
+kit. Mengirim perbaikan tanpa ukuran pernah memakan empat rilis dalam sehari.
 
-| # | Kandidat | Kerjakan saat |
-|---|---|---|
-| B | **Preset identitas**: `inbox`, `feed`, `thread`, `ledger`, `workspace`, `board`. Masing-masing satu berkas identitas (`app.identity.css`) ditambah satu layar acuan | ada app yang memakai kontrak §0 dan mengulang pilihan yang sama |
-| D | **Tinta palet lewat alias**: palet kini menulis token semantic (`--color-on-primary`). Kalau palet menulis tinta alias (mis. `--primary-on` / `--primary-on-dark`) yang dipetakan blok tema ke `--color-on-primary`, island terbalik dan wrapper polos akan jalan tanpa mengulang palet | laporan pertama label island yang rusak |
-| C | **Server MCP** yang dikirim sebagai `bin` di paket, dengan tool `check_identity` yang memeriksa app terhadap kontrak identitas | preset B ada, dan agen konsumen sering melanggar kontrak tanpa ada yang memeriksa |
+| Butir | Yang perlu diukur |
+|---|---|
+| Latar ikut tergulir di belakang drawer di HP. `overscroll-behavior:contain` butuh Safari 16, dan scrim yang ditarik menggulir halaman di semua peramban karena scrim bukan kotak yang menggulir | Dua kandidat, keduanya diukur di iOS 15 dulu: `touch-action:none` di `.fdy-app__backdrop` (menutup tarikan di scrim di semua peramban; tap untuk menutup tetap jalan), atau `html:has(.fdy-app--nav-open){overflow:hidden}` di dalam `@supports not (overscroll-behavior:contain)`. Alasan versi pendeknya ada di `ALLOWED`, `test/baseline.test.mjs` |
+| Badan `FdyModal` di Safari 15 (`#104`, terkirim 3.14.1) | Konfirmasi dari iPhone 7 bahwa badan modal tidak lagi selarik. Mekanismenya baru direproduksi di Chrome |
+| `FdyModal`/`FdyDrawer` Blazor sesudah Escape kedua (3.24.0) | Perbaikannya di jembatan JS, jadi bUnit tidak melihatnya. Satu kasus di `browser/blazor-server.mjs` menutupnya |
 
-**Dipicu rilis 3.22.0.** B1 (touch, deep, bilah aksi, `USAGE.md` §8) selesai di 3.22.0. B2 berikutnya.
+## 4. Dikumpulkan untuk 4.0
 
-| # | Kandidat | Kerjakan saat |
-|---|---|---|
-| B2 | **Preset identitas `ledger`, `inbox`, `thread`, `field`**, masing-masing dengan layar desktop dan layar mobile yang dibangun di atas `USAGE.md` §8. Konsep mobilenya datang dari Ronda. Berupa contoh, bukan impor: tak ada jalur import, dan menyalin boleh bila manusia memintanya | owner meminta |
-| R | **Tindak lanjut Ronda** (dimiliki repo Ronda): pakai `data-density="touch"` dan `data-primary-fill="deep"`, hapus `--control-h` dan `--color-primary*` teal yang disetel tangan dan override `--color-on-primary` di `:root[data-primary=teal]` (kini kalah dari kembaran gelap OS; `deep` menggantikannya). Jalan keluar on-primary di `[data-theme='dark']` baru boleh dihapus setelah region POS gelap membawa `data-primary` di sebelah `data-theme`. Lalu terapkan §8 ke layar daftarnya (tabel jadi baris daftar, navigasi bawah 5 item, tanpa kartu di sekitar header halaman, aksi utama di `.fdy-actionbar`, tanpa tampilan Grid di HP) | repo Ronda menaikkan kit ke 3.22.0. Tata letak Ronda (`main` berisi halaman, `<dialog>` tertutup, dan navigasi bawah) sudah bekerja apa adanya dengan `.fdy-actionbar` |
+Perubahan yang memecah, ditahan sampai ada rilis mayor karena alasan lain.
 
-**Empat fitur yang diminta owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel
-pihak ketiga. Yang diambil hanya polanya. Tiap fitur dibrainstorm setelah branch
-`feat/app-identity` digabung. Kit memegang interaksi, aksesibilitas, dan kontrak event; app memegang
-data dan aturan bisnis. Pembungkus Vue, React, dan Blazor mengikuti tiap fitur.
+- `#16` `--hover-actionable` jadi perilaku bawaan `.fdy-table`, dengan `--hover-all` untuk yang ingin
+  semua baris ber-hover.
+- `.fdy-badge` netral jadi bawaan (catatan ronda §4; separuhnya dijawab `--outline` di 3.9.0).
+- `mode="month"` di `FdyDatepicker` dan `FdyDatepickerMode.Month` di Blazor dihapus. Penggantinya
+  `FdyMonthpicker`. Jalur mentah tetap `data-mode="month"`.
 
-Urutan usulan: 0, 1, 2, 3 (dengan Gantt). Nomor 4 independen dan kecil, jadi boleh disisipkan kapan
-saja.
+## 5. Fitur yang diminta
+
+**Empat fitur dari owner (2026-11-20),** dipicu tangkapan layar sebuah app pemesanan bengkel pihak
+ketiga; yang diambil hanya polanya. Kit memegang interaksi, aksesibilitas dan kontrak event; app
+memegang data dan aturan bisnis. Pembungkus Vue, React dan Blazor ikut di tiap fitur. Urutannya 0,
+1, 2, 3. Nomor 4 kecil dan boleh disisipkan kapan saja.
 
 | # | Fitur | Isi |
 |---|---|---|
-| 0 | **Kontrak "pindah" bersama** | Perluas `data-fdy-sortable` ke pindah antar-daftar dan gulir otomatis di tepi; docs-nya kini menulis keduanya sebagai "not in the kit". Event bisa dibatalkan, ada jalur papan ketik (WCAG 2.5.7), pengumuman live region, dan fokus dikembalikan |
-| 1 | **Papan kanban** | Seret antar-kolom (status, veto app, batas WIP), urut ulang dalam kolom, klik kartu membuka drawer, tambah di kolom, angkat/pindah/jatuhkan lewat papan ketik dan menu "Move to...", kolom kosong dan meluap. Swimlane dan lipat kolom diputuskan saat brainstorm |
-| 2 | **Kalender acara** | Tampilan Bulan dan Agenda, acara seharian, tumpahan "+N more", klik tanggal membuka hari atau agenda, klik acara membuka detail |
-| 3 | **Penjadwal sumber daya** | Baris sumber daya berkelompok lawan kolom jam, baris kapasitas (Full/jumlah), lajur "Not assigned", strip 7 hari dengan hitungan dan yang tertunda, baris peringatan. Klik sel kosong membuat entri terisi awal (Full, lampau, libur ditolak dengan alasan); klik batang membuka drawer; seret untuk pindah sumber daya atau waktu (veto), ubah ukuran, jalur papan ketik. Ditambah mode Gantt: baris = tugas, zoom hari/minggu/bulan, garis hari ini, dependensi menyusul |
-| 4 | **Timeline aktivitas yang kaya** | Perluas `.fdy-timeline` dengan pengelompokan tanggal, butir yang bisa diklik atau dibuka, saringan jenis event, dan muat lebih banyak |
+| 0 | Kontrak "pindah" bersama | `data-fdy-sortable` diperluas ke pindah antar-daftar dan gulir otomatis di tepi (kini tertulis "not in the kit"). Event dapat dibatalkan, jalur papan ketik (WCAG 2.5.7), live region, fokus dikembalikan |
+| 1 | Papan kanban | Seret antar-kolom (status, veto app, batas WIP), urut ulang dalam kolom, klik kartu membuka drawer, tambah di kolom, angkat/pindah/jatuhkan lewat papan ketik dan menu "Move to...". Swimlane dan lipat kolom diputuskan saat brainstorm |
+| 2 | Kalender acara | Tampilan Bulan dan Agenda, acara seharian, "+N more", klik tanggal membuka hari, klik acara membuka detail |
+| 3 | Penjadwal sumber daya | Baris sumber daya berkelompok lawan kolom jam, baris kapasitas, lajur "Not assigned", strip 7 hari, klik sel kosong membuat entri (yang penuh, lampau, atau libur ditolak dengan alasan), seret untuk pindah atau ubah ukuran dengan veto app, jalur papan ketik. Ditambah mode Gantt |
+| 4 | Timeline aktivitas | `.fdy-timeline` dengan pengelompokan tanggal, butir yang dapat dibuka, saringan jenis event, dan muat lebih banyak |
+
+**Identitas, lanjutan 3.21.0 dan 3.22.0.**
+
+| # | Butir | Pemicu |
+|---|---|---|
+| B2 | Preset identitas `ledger`, `inbox`, `thread`, `field`, masing-masing dengan layar desktop dan mobile di atas `USAGE.md` §8. Berupa contoh, bukan impor | owner meminta |
+| D | Tinta palet lewat alias (`--primary-on`, dipetakan blok tema ke `--color-on-primary`), supaya island terbalik dan wrapper polos jalan tanpa mengulang palet | laporan pertama label island yang rusak |
+| C | Server MCP di paket (`bin`) dengan tool `check_identity` | B2 ada, dan agen konsumen sering melanggar kontrak identitas |
+
+## 6. Dimiliki repo lain
+
+**Ronda** (diperiksa 2026-11-27: `package.json` masih `^3.20.0`, `data-primary-fill` dan
+`.fdy-actionbar` belum dipakai):
+- Naik ke 3.24.0, lalu pindahkan loader ke `useLoad` (urutannya ada di catatan serah terima audit
+  `#123`).
+- Pakai `data-density="touch"` dan `data-primary-fill="deep"`, lalu hapus `--control-h` dan
+  `--color-primary*` teal yang disetel tangan serta override `--color-on-primary` di
+  `:root[data-primary=teal]`. Jalan keluar on-primary di `[data-theme='dark']` baru boleh dihapus
+  setelah region POS gelap membawa `data-primary` di sebelah `data-theme`.
+- Terapkan `USAGE.md` §8 ke layar daftarnya: tabel jadi baris daftar, navigasi bawah 5 item, tanpa
+  kartu di sekitar header halaman, aksi utama di `.fdy-actionbar`, tanpa tampilan Grid di HP.
 
 ---
 
-Riwayat rilis **tidak** diulang di sini: 15 blok log `Update …` (v1.8.0–v1.18.0) plus tiga
-post-mortem item lama (2026-07-27) dan snapshot kondisi v1.7.0 dibuang di v1.20.0: semuanya sudah
-tercatat di **[`CHANGELOG.md`](CHANGELOG.md)**, dan snapshot yang basi lebih berbahaya daripada
-tidak ada. Kondisi terkini: **[`HANDOFF.md`](HANDOFF.md)**.
+## 7. Diputuskan tidak dikerjakan
 
-## Catatan masuk: sudah dikerjakan atau belum
+| Butir | Alasan |
+|---|---|
+| `text-wrap:balance` dipagari untuk Safari di bawah 17.5 | Nilainya keyword, jadi peramban lama menolaknya saat parse dan judul patah seperti dulu. Tidak ada cara kedua di CSS, jadi `@supports` tidak membeli apa pun |
+| `100dvh` dipagari untuk Chrome 105 sampai 107 | Dua dari tiga pemakaian ada di sidebar yang juga `top:0;bottom:0`. Cadangan `vh` yang membawa `var()` jatuh ke nilai initial, bukan ke baris di atasnya (`test/color-mix.test.mjs`). Ditinjau lagi saat floor bergerak |
+| Penanda `summary` di accordion | Diukur di Firefox: `summary` yang `display:flex` tidak punya kotak `::marker`. Dugaan awalnya dari satu baris `grep` yang tidak membaca aturan lengkapnya |
+| Tombol × bawaan `type="search"` diberi tema atau dihapus | Ia satu-satunya cara mengosongkan isian. Yang ingin bertema memakai `[data-fdy-search]` (`#10`) |
+| `.fdy-list-bullet` (catatan ronda §12) | Daftar `ul` polos sudah berbutir; janjinya ditulis dan dijaga uji (`#101`) |
+| String autocomplete per `<form>` (catatan ronda §25b) | Yang dibaca dari `<form>` hanya pesan validasi. Bentuk yang benar adalah teks bawaan untuk seluruh kit, bila ada yang butuh |
+| Sinkron tema antar-tab (`#113`) | Tidak diminta |
+| Membangkitkan jumlah pembungkus saat rilis (`#117`) | Prosa tidak lagi menyebut angkanya, jadi tidak ada yang dibangkitkan |
+| `FdyDateRange`: dua bulan berdampingan, kalender layar penuh, preset (`#118`) | Dikecualikan catatannya sendiri; diusulkan terpisah bila ada pemakai |
+| Pewarnaan `.in-range` di `FdyDateRange` `layout="split"` Vue/React | Tiap picker berdiri sendiri; tidak diminta |
+| Simulasi `data-fdy-upload-simulate` yang tetap berjalan sesudah barisnya dihapus | Hanya mode demo |
 
-`improvement-notes/` **gitignored sejak 2026-10-26**, sesudah 26 berkas menumpuk dan setiap
-`git status` membawa satu baris `?? improvement-notes/`. Berkasnya tetap ada di disk dan tetap
-terbaca lewat path, jadi `grep`, `ls` dan `cat` melihatnya persis seperti sebelumnya; yang hilang
-cuma kebisingan `git status` dan alat apa pun yang menghormati `.gitignore`. Hook pre-commit tetap
-memblokirnya, sebab repo ini publik dan nama berkasnya memuat kode klien.
+---
 
-Folder itu **tidak pernah** jadi catatan status. Yang jadi catatan status ini:
+## 8. Aturan yang berlaku
 
-**Catatan bernomor dijawab `CHANGELOG.md`.** Setiap butir yang terkirim mengutip nomor catatannya,
-jadi pertanyaan "sudah dikerjakan belum" dijawab satu perintah, bukan ingatan:
+1. **Deskripsi modifier harus bisa dibenarkan oleh deklarasinya.** `.fdy-nav--flat` dijelaskan
+   "drops the surface", yang tidak pernah ia lakukan, dan dua console membangun ulang varian yang
+   sudah ada selama empat bulan (`#055`). Varian yang hilang menghasilkan laporan; varian yang
+   dijelaskan salah menghasilkan pekerjaan duplikat yang diam.
+2. **Nilai token tidak pernah ditulis di prosa atau label docs.** Pakai `<span data-token="--x">`
+   (diisi dari stylesheet saat runtime) atau `<code>var(--x)</code>`. Breakpoint hanya hidup di
+   `tokens/breakpoints.mjs`.
+3. **Komponen yang bergantung pada fokus, blur atau pointer diuji dengan gestur asli** (CDP
+   `Input.dispatchMouseEvent` lewat `browser/harness.mjs`), bukan `.click()`. `.click()` tidak
+   memicu `focusout`, dan bug combo 1.6.1 hanya muncul dengan mouse asli.
+4. **Uji baru dipercaya sesudah terbukti merah** pada kode lama (stash, atau mutasi pada kode baru).
+   Penjaga yang tidak bisa gagal sudah pernah lolos untuk perbaikan yang mati.
+5. **"Nilainya tidak berubah" dan "belum ada apa-apa" adalah penjaga hampa**, sebab keduanya juga
+   keadaan sebelum klik diproses. Cari pengamatan positif yang hanya perilaku benar dapat hasilkan.
+6. **CI merah: jalankan ulang hanya bila ujinya lulus sendirian dan jalanan yang merah berbeda dari
+   jalanan hijau atas kode yang sama.** Selain itu selidiki. Menaikkan timeout bukan jawaban:
+   bundle 0 byte di 3.23.0 tampak seperti timeout dan ternyata balapan tulis.
+7. **Satu kelas cacat, satu rilis.** Saat satu cacat ketahuan, audit kelasnya di semua komponen dan
+   keempat stack, lalu kirim bersama penjaga yang menangkap kelasnya.
+8. **Floor peramban tinggal di satu baris** `README.md`/`README.id.md`, dibaca
+   `test/baseline.test.mjs`. Fitur di atas floor dipagari, dipasangkan dengan `-webkit-`, atau masuk
+   `ALLOWED` dengan alasan yang menyebut apa yang hilang.
+9. **Di bawah prerender, penanda hidrasi bisa benar tentang DOM yang akan dibuang** (`#2`). Uji
+   Blazor Server menunggu komponen interaktif, bukan `data-fdy-*-ready`.
+10. **Komponen hanya menyentuh token tier 2 dan 3**, kontras AA dijaga gerbang, dan repo ini publik:
+    `improvement-notes/` di-ignore dan diblokir hook pre-commit karena nama berkasnya memuat kode klien.
+
+## 9. Rilis
+
+Bump mengikuti apa yang berubah. Tipe publik yang melebar dihitung breaking (kebijakan di kepala
+CHANGELOG), dan 2.0.0 major karena bahasa bawaan enhancer berubah.
+
+1. **Gerbang lokal, semuanya hijau:** `node tokens/build.mjs && node --test`,
+   `npm run typecheck:react`, `npm run test:blazor`, `npm run test:browser`. Suite peramban sekitar
+   tiga menit; jaga laptop tidak tidur, karena tidur memutus CDP dan suitenya menggantung. WebKit
+   (`npm run test:webkit`) hanya jalan di CI.
+2. **Versi:** `npm version <versi> --no-git-tag-version`, lalu cari setiap stempel lama, jangan dari
+   ingatan:
+
+   ```bash
+   git grep -n '<versi-lama>' -- . ':!CHANGELOG.md'
+   ```
+
+   Yang kena: `package.json`, `package-lock.json`, `README.md`, `README.id.md` (badge dan tautan tag),
+   `docs/index.html` (eyebrow dan footer), `docs/getting-started.md`. `test/docs.test.mjs` menjaganya.
+   Jangan sentuh "WCAG 1.4.11" di README dan entri lama CHANGELOG.
+3. **Tulisan:** entri CHANGELOG (bahasa Indonesia, nomor catatan `#NNN` disebut), paragraf versi di
+   HANDOFF, dan baris status di §11 (atau §7 bila tidak dikerjakan) berkas ini. Semua prosa lewat `/humanizer:humanizer`.
+4. **Terbitkan dengan tag, tidak pernah `npm publish`:**
+
+   ```bash
+   git tag -a v<versi> -m "<versi>: <isi>" && git push origin main --follow-tags
+   ```
+
+   `publish.yml` menjalankan `ci.yml` dulu, jadi tag yang merah tidak sampai ke npm. `npm publish`
+   lokal melewati gerbang itu dan berhenti di `EOTP` karena akunnya ber-2FA.
+5. **Kawal:** `gh run watch <id> --exit-status`. Registry baru menyajikan versi baru 1 sampai 3
+   menit sesudah publish sukses; `notarget` di jendela itu adalah propagasi, bukan kegagalan
+   (`npm view @cahyo-dimas/freeday version --prefer-online`). Pages membangun ulang dalam hitungan
+   detik.
+6. **Tag merah:** lihat aturan 6. Tag yang versinya belum pernah ada di npm boleh dipindah ke commit
+   perbaikan (`git tag -fa`, lalu `git push -f origin v<versi>`), sesudah memastikannya dengan
+   `npm view ... versions`. Versi yang sudah terbit tidak pernah dipindah; naikkan patch.
+
+---
+
+## 10. Nomor tetap
+
+Dirujuk uji dan komentar kode, jadi baris yang selesai tetap di sini dan nomornya tidak dipakai ulang.
+
+| # | Butir | Status |
+|---|---|---|
+| 1 | NuGet package `Freeday.Blazor` | menunggu (§2) |
+| 2 | Verifikasi Blazor Server + prerender | selesai 2026-08-26: `test/blazor-server/`, `browser/blazor-server.mjs` |
+| 3 | Row selection + bulk action di `FdyTable` | selesai 3.0.0 (`#049`): select-all hanya halaman yang terlihat, key halaman lain dipertahankan |
+| 4 | Ditunda: grid virtualisasi, `data-style` lain | menunggu (§2); form dua kolom terkirim sebagai `.fdy-page__columns` (`#065`) |
+| 5 | bUnit guard Blazor di CI | selesai 2026-08-25: `test/blazor/` |
+| 6 | String UI enhancer bisa diganti | selesai 2.0.0: bawaan Inggris, `data-fdy-text-<key>`, `<html lang>` untuk nama tanggal |
+| 7 | `groupBy` di `FdyTable` | menunggu (§2) |
+| 8 | Perilaku drawer `.fdy-app` | selesai: `freeday-app-shell.js` 1.53.0, `FdyAppShell` 1.54.0 |
+| 9 | `.fdy-pagination` tanpa aturan CSS | menunggu (§2). Hook penamaan, dikirim sejak 3.1.0 dan dijaga `STRUCTURAL_HOOKS` |
+| 10 | Tombol bersih untuk `type="search"` | selesai: `[data-fdy-search]` (`#061`). Tombol × bawaan sengaja dibiarkan, karena ia satu-satunya cara mengosongkan isian; yang ingin bertema memakai hook itu |
+| 11 | Tabel props pembungkus di `COMPONENTS.md` | selesai 2026-08-25, dijaga dua arah di `test/docs.test.mjs` |
+| 12 | Paritas prop Blazor untuk picker | selesai 2.2.0: `setState()` di enhancer, empat pengecualian didokumentasikan |
+| 13 | Kegagalan CI terbaca tanpa hak admin | selesai: `ci.yml` menganotasi tiap `not ok` |
+| 14 | Permukaan di balik 3.94:1 | menunggu (§2). Tidak tereproduksi: 3.94 adalah `--color-border-strong`, yang tidak dipakai sebagai latar |
+| 15 | Sapuan deskripsi modifier | menunggu (§2); lihat aturan 1 |
+| 16 | `--hover-actionable` jadi bawaan | untuk 4.0 (§4) |
+
+## 11. Catatan masuk: sudah dikerjakan atau belum
+
+`improvement-notes/` di-ignore dan bukan catatan status. Statusnya di sini dan di CHANGELOG.
+
+**Catatan bernomor** dijawab CHANGELOG, yang mengutip nomornya:
 
 ```bash
 awk '/^## \[/{v=$2} match($0,/#[01][0-9][0-9]([^0-9a-fA-F]|$)/){print substr($0,RSTART,4)" -> "v}' CHANGELOG.md | sort -u
 ```
 
-Per 3.9.0 itu mencetak `#005` sampai `#086`. Per 3.13.0 polanya menerima tiga digit sampai `#199` dan menolak warna hex: pola lama berhenti di `#099`, dan membaca `#0078d4` serta `#06233f` sebagai catatan `#007` dan `#062`. Keduapuluh tiga berkas bernomor yang ada di folder
-(`46` sampai `71`) semuanya muncul di sana, jadi semuanya sudah dikerjakan. Nomor yang tidak muncul
-dan tidak punya berkas tidak pernah ada.
+Polanya menolak warna hex (`#0078d4` tidak terbaca sebagai `#007`). Nomor yang tidak muncul dan
+tidak punya berkas tidak pernah ada.
 
-**Catatan tak bernomor perlu dicatat di sini**, sebab tak ada nomor untuk dicari. Yang ada saat ini
-`CATATAN-FREEDAY.md` (2026-10-23, delapan bagian, dari app ronda yang menemukan Safari 15; §9 sampai §15 menyusul 2026-10-29, §16 dan §17 2026-10-30, §18 2026-10-30, §19 2026-11-02, §22 2026-11-04, §23 2026-11-05, §24 2026-11-07, §25 dan §26 2026-11-07, §28 2026-11-19, §29 sampai §31 2026-11-25; §20 dan §21 tidak ada di berkasnya):
+**Catatan tak bernomor** dicatat di tabel ini. Kalau kamu mengerjakan sebuah catatan, nomornya masuk
+CHANGELOG. Kalau kamu memutuskan tidak mengerjakannya, barisnya masuk ke sini dan alasannya ke §7.
 
-| § | pokok | status |
+`CATATAN-FREEDAY.md` dari app ronda (§20 dan §21 tidak ada di berkasnya):
+
+| § | Pokok | Status |
 |---|---|---|
-| 1 | `FdyTableFooter` berteks Inggris tanpa cara menggantinya | terkirim 3.8.0 `#075`, diperluas ke `FdyTable` 3.9.0 `#080` |
-| 2 | popover mengabaikan `fdy-menu--end` | terkirim 3.8.0 `#074`, jalur bertipe 3.9.0 `#081` |
-| 3 | `.fdy-pagination` didokumentasikan tetapi tak ada di bundle | ditutup tanpa kode; kelasnya ada di bundle, dan dokumen menyebutnya hook struktural |
-| 4 | `.fdy-badge` tanpa modifier netral | separuh dijawab 3.9.0 `#083` dengan mendokumentasikan `--outline` (7.46:1 terang, 7.28:1 gelap); separuh "netral jadi BAWAAN" menunggu 4.0 |
-| 5 | ritme `.fdy-card__body > * + *` mengenai kolom grid | ditutup tanpa kode; aturan itu sudah tidak ada |
-| 6 | preset `teal` terlalu terang di tema terang | terkirim 3.7.0 `#073` |
-| 7 | tidak ada varian tab tegak | terkirim 3.8.0 `#077` |
-| 8 | tidak ada pemilih bulan | terkirim 3.8.0 `#076`, dibentuk ulang jadi `FdyMonthpicker` 3.9.0 `#086` |
-| 9 | enhancer chip menghapus chip-nya sendiri, padahal app punya alur konfirmasi | terkirim 3.13.0 `#098`; `fdy-upload-remove` ikut dapat dibatalkan |
-| 10 | `useFreeday()` yang salah cakupan gagal tanpa suara | terkirim 3.13.0 `#099` untuk SETIAP hook, bukan hanya form; audit kelasnya menemukan `FreedayCfl` dan `FreedayBreakpoint` tanpa `initAll` |
-| 11 | `--danger` di tombol dan alert, `--error` di teks bantuan | terkirim 3.13.0 `#100`, alias untuk `.fdy-help` saja; kontrol form sengaja tidak, sebab `aria-invalid` yang menggerakkannya |
-| 12 | tak ada daftar berbutir sederhana | terkirim 3.13.0 `#101` sebagai janji tertulis plus uji; `.fdy-list-bullet` tidak dibuat |
-| 13 | `required` pada `FdyCombo` | sudah terkirim 3.12.0 `#096`, sebelum catatannya ditulis; sisanya adopsi di sisi app |
-| 14 | tak ada cara menyatakan markup sengaja mentah | terkirim 3.14.0 `#102` sebagai `data-fdy-ignore` (bukan `data-fdy-raw`, yang di kit berarti kebalikannya); auditnya menemukan `FdyDrawer` Vue/React yang tertutup lewat backdrop walau `dismissible=false`. Angka 9 menit di catatan itu bukan ongkos pemindaian (1,1 ms per rehydrate pada bentuk yang sama); **belum terverifikasi** dugaan bahwa itu uji yang menunggu sampai timeout sebelum 3.13.0 |
-| 15 | tak ada pengurutan daftar lewat seret | terkirim 3.14.0 `#103` sebagai `data-fdy-sortable`, dengan jalur papan ketik; gulir otomatis di tepi halaman dan pindah antar-daftar sengaja tidak dibuat, tunggu layar yang membutuhkannya |
-| 16 | badan `FdyModal` selarik di Safari iOS, semua modal | terkirim 3.14.1 `#104`: basis `flex:1` (0%) di kontainer bertinggi tak tentu, dibaca 0 oleh WebKit lama, diganti `1 1 auto`; ditambah `100dvh` di tiga tempat. Mekanismenya direproduksi di Chrome dengan basis `0px`; **belum terverifikasi di perangkat** bahwa Safari 15 membaca 0% sebagai 0. Konfirmasinya dari iPhone 7 pemilik sesudah app naik versi |
-| 17 | `useFreeday(ref)` dengan ref kosong memindai seluruh dokumen tanpa suara | terkirim 3.14.2 `#105` sebagai peringatan sekali per komponen di Vue dan React; yang dipindai sengaja tidak diubah, sebab mempersempitnya mematikan markup yang hari ini bergantung pada pemindaian itu. Penyempitan baru layak dibahas di rilis minor sesudah konsumen membereskan peringatannya |
-| 18 | tak ada pilihan bertumpuk bertarget ibu jari | terkirim 3.15.0 `#107` sebagai `.fdy-btn-group--stack`, nama yang memang ditulis app lebih dulu dan tidak ada; semantiknya tetap `aria-pressed` yang dikelola app |
-| 19 | `.fdy-btn--stretch` di luar kartu menutup seluruh halaman tanpa suara | terkirim 3.15.1 `#109` sebagai peringatan sekali per tombol pada klik pertama, ditambah bentuk dua target yang bertumpuk; dibaca dari containing block, sehingga wadah `position:relative` milik app tetap sah |
-| 22 | `fdy-form-grid` menjadikan setiap anak bukan-isian sebuah kolom | terkirim 3.16.0 `#111`, usul 1 catatan: anak bukan-`.fdy-field` merentang baris penuh; sel non-isian yang harus sekolom dibungkus `div.fdy-field` |
-| 23 | pengalih tema hanya ada untuk Blazor | terkirim 3.17.0 `#113` sebagai `FreedayTheme` + `useTheme()` Vue/React + Blazor yang disambungkan ke inti yang sama; catatan keliru soal Blazor, yang punya hanya pembantu demo tanpa penyimpanan. `'system'` mencabut atribut, bukan menghitungnya. Sinkron antar-tab sengaja tidak dibuat |
-| 24 | `FdyAutocomplete` tak dapat dijadikan wajib | terkirim 3.18.0 `#114` untuk ketiga kontrol yang tertinggal: Autocomplete lewat `required` native, Cfl lewat `data-fdy-required` (input-nya readonly, jadi usul "native" di catatan tidak akan pernah menolak), dan DateRange yang tak disebut catatannya. Audit kelasnya juga menutup slot pesan yang saling hapus, `Required` Blazor yang hanya terbaca sekali, dan `setState` yang menghapus tanda merah form |
-| 25 | `FdyAutocomplete`: atribut tak sampai ke input, `emptyText` per-instans, daftar terbuka tersaring | (a) dan (c) terkirim 3.19.0 `#115` di ketiga stack dan enhancer. (b) tidak diambil: yang dibaca dari `<form>` hanya pesan validasi, jadi bentuk yang benar adalah teks bawaan seluruh kit, tunggu ada yang membutuhkannya |
-| 26 | `<h1>` shell berisi merek | ditutup dengan dokumen 3.19.0 `#116`: `title` adalah nama halaman, dan dua dokumen yang masih berbunyi `<h1>` saja disamakan. `<h1>`-nya tidak diubah; perbaikannya di app yang mengisi `title` dengan merek |
-| 27 | Blok onboarding menyebut beberapa angka untuk satu himpunan pembungkus | ditutup dengan dokumen 3.19.1 `#117`: kata bilangan dihapus dari 18 tempat dan dijaga uji. Audit kelasnya menemukan dua lagi di blok yang sama: `timepicker` tercatat tanpa pembungkus, dan `FdyChart` tercatat tidak butuh enhancer. Membangkitkan angka saat rilis tidak diambil: tanpa angka, tidak ada yang perlu dibangkitkan |
-| 28 | Tidak ada rentang tanggal dalam satu kolom | terkirim 3.20.0 `#118` sebagai `layout="single"` di `FdyDateRange` untuk ketiga stack dan `data-layout="single"` di jalur mentah. Nilainya hanya berubah saat rentangnya utuh. Dua bulan berdampingan, kalender layar penuh, dan preset tidak dibuat, seperti yang dikecualikan catatannya sendiri |
-| 29 | `useFreeday` tidak menghidrasi DOM yang dipasang komponen anak belakangan | terkirim 3.23.0 `#119` sebagai usul 1 catatannya: `MutationObserver` atas subtree, di Vue dan React. Hidrasi di callback (microtask), bukan sebingkai kemudian, supaya widget tidak sempat terlukis mentah |
-| 30 | Tidak ada kelas tautan teks | terkirim 3.23.0 `#120` sebagai `.fdy-link` dan `--muted`. `<a>` polos sudah dilukis `base.css`; yang hilang adalah namanya di daftar kelas. Garis bawah tetap ada saat diam, berbeda dari usulan yang memasangnya hanya saat hover, sebab `--muted` tidak punya warna untuk membedakannya |
-| 31 | Tab tegak tanpa bentuk ringkas di layar sempit | terkirim 3.23.0 `#121` sebagai `.fdy-tabs--picker-narrow` (container query 40rem, cadangan media query di bawah Safari 16). Pembungkus bertipe `FdyTabs` tidak dibuat, tunggu pemakai kedua |
-| 26b | `reference-screen.html` menyembunyikan `<h1>` di HP | dikerjakan 3.23.0 `#122`; dijaga uji yang menolak `<h1>` ber-`hide-below` atau `hidden` di semua contoh kit |
+| 1 | `FdyTableFooter` berteks Inggris | 3.8.0 `#075`, diperluas ke `FdyTable` 3.9.0 `#080` |
+| 2 | Popover mengabaikan `fdy-menu--end` | 3.8.0 `#074`, jalur bertipe 3.9.0 `#081` |
+| 3 | `.fdy-pagination` tidak ada di bundle | ditutup tanpa kode: kelasnya ada, sebagai hook struktural |
+| 4 | `.fdy-badge` tanpa modifier netral | separuh 3.9.0 `#083` (`--outline`); netral sebagai bawaan untuk 4.0 (§4) |
+| 5 | Ritme `.fdy-card__body > * + *` mengenai kolom grid | ditutup tanpa kode: aturannya sudah tidak ada |
+| 6 | Preset `teal` terlalu terang | 3.7.0 `#073` |
+| 7 | Tidak ada tab tegak | 3.8.0 `#077` |
+| 8 | Tidak ada pemilih bulan | 3.8.0 `#076`, jadi `FdyMonthpicker` 3.9.0 `#086` |
+| 9 | Enhancer chip menghapus chip-nya sendiri | 3.13.0 `#098` |
+| 10 | `useFreeday()` salah cakupan gagal tanpa suara | 3.13.0 `#099`, untuk setiap hook |
+| 11 | `--danger` lawan `--error` | 3.13.0 `#100`, alias untuk `.fdy-help` saja |
+| 12 | Daftar berbutir sederhana | 3.13.0 `#101` sebagai janji dan uji (§7) |
+| 13 | `required` pada `FdyCombo` | sudah ada di 3.12.0 `#096` |
+| 14 | Markup yang sengaja mentah | 3.14.0 `#102`, `data-fdy-ignore` |
+| 15 | Urut ulang lewat seret | 3.14.0 `#103`, `data-fdy-sortable`; antar-daftar dan gulir tepi masuk fitur 0 (§5) |
+| 16 | Badan `FdyModal` selarik di Safari iOS | 3.14.1 `#104`; konfirmasi perangkat menunggu (§3) |
+| 17 | `useFreeday(ref)` ref kosong memindai seluruh dokumen | 3.14.2 `#105` sebagai peringatan; penyempitan menunggu (§2) |
+| 18 | Pilihan bertumpuk untuk ibu jari | 3.15.0 `#107`, `.fdy-btn-group--stack` |
+| 19 | `.fdy-btn--stretch` di luar kartu | 3.15.1 `#109`, peringatan pada klik pertama |
+| 22 | `fdy-form-grid` menjadikan anak bukan-isian kolom | 3.16.0 `#111` |
+| 23 | Pengalih tema hanya untuk Blazor | 3.17.0 `#113`, `FreedayTheme` dan `useTheme()` |
+| 24 | `FdyAutocomplete` tidak dapat dijadikan wajib | 3.18.0 `#114`, ditambah Cfl dan DateRange |
+| 25 | Atribut autocomplete, daftar terbuka tersaring | (a) dan (c) 3.19.0 `#115`; (b) tidak diambil (§7) |
+| 26 | `<h1>` shell berisi merek | dokumen 3.19.0 `#116`; perbaikannya di app |
+| 26b | `reference-screen.html` menyembunyikan `<h1>` di HP | 3.23.0 `#122` |
+| 27 | Angka himpunan pembungkus di blok onboarding | dokumen 3.19.1 `#117` |
+| 28 | Rentang tanggal dalam satu kolom | 3.20.0 `#118`, `layout="single"` |
+| 29 | `useFreeday` tidak menghidrasi DOM anak | 3.23.0 `#119`, `MutationObserver` |
+| 30 | Tidak ada kelas tautan teks | 3.23.0 `#120`, `.fdy-link` |
+| 31 | Tab tegak tanpa bentuk ringkas | 3.23.0 `#121`, `.fdy-tabs--picker-narrow`; `FdyTabs` menunggu (§2) |
 
-**Audit state machine implisit, 2026-11-26 (`#123`, sebagian terkirim 3.24.0).** Yang terkirim ada
-di CHANGELOG 3.24.0. Yang tersisa:
+**Audit, bukan catatan app:**
 
-| pokok | status |
+| Audit | Status |
 |---|---|
-| Blazor `FdyAutocomplete`, `FdyDatepicker`, `FdyDateRange` tidak mendorong `Value`/`From`/`To`/`Options` yang berubah sesudah hidrasi; autocomplete Blazor juga tidak melapor teks bebas | **terbuka.** `FdyCombo` sudah punya `comboSetValue`; yang lain butuh API `setValue` di enhancer-nya (datepicker belum punya). Dirancang sebagai satu rilis paritas Blazor, bukan tambalan |
-| Autocomplete mentah: opsi ditangkap sekali saat init, dan flag ready mencegah init ulang | **terbuka.** Butuh keputusan bentuk: `setOptions()` di API, atau membaca opsi ulang saat dibuka |
-| Carousel: `goTo` ditimpa handler gulir selama gulir halus (dua klik cepat berhenti di slide 2); `mouseleave` menyalakan autoplay saat fokus keyboard masih di dalam | **terbuka, belum terverifikasi** di peramban; baru dilacak di kode |
-| Upload demo: simulasi `data-fdy-upload-simulate` terus berjalan sesudah barisnya dihapus | **terbuka**, hanya mode demo |
-
-**Terbuka, uji peramban yang kadang merah di CI (belum terverifikasi sebabnya):**
-
-| uji | status |
-|---|---|
-| `theme-pref.mjs`: "a choice is stored, applied, painted, and survives a reload before the kit loads" | **terbuka, belum terverifikasi.** Merah di CI 2026-11-05 dan 2026-11-26 (tag v3.23.0, dua kali), lulus di laptop setiap kali. `window.beforeKit` terbaca `null`: cuplikan `<head>` sesudah muat ulang tidak menemukan `fdy-theme` di `localStorage`. Dugaan: Chromium menyetor tulisan `localStorage` ke proses peramban secara batch, dan di runner yang sibuk muat ulang datang lebih dulu. Kalau benar, perbaikannya di uji (tunggu sampai `DOMStorage.getDOMStorageItems` lewat CDP melihat kuncinya, baru muat ulang), bukan di kit, sebab pemakai nyata tidak memuat ulang dalam milidetik. Jangan menaikkan timeout atau menjalankan ulang sebagai jawaban; reproduksi dulu di runner. Bukan kelas yang sama dengan bundle 0 byte di 3.23.0: uji ini tidak memuat `.build/`. |
-
-**Terbuka, ditemukan 2026-10-26 saat memakai kit di app ronda:**
-
-| pokok | status |
-|---|---|
-| `@container fdy-cfl` di `src/components/cfl.css` tidak dipagari | **dikerjakan 2026-10-26.** `container-type` dan blok `@container`-nya sekarang di dalam `@supports (container-type:inline-size)`, dan di bawahnya ada `@supports not (...)` berisi `@media (max-width:32rem)` dengan badan aturan yang sama. 32rem itu diturunkan dari dialognya, bukan dipilih: lebarnya `min(46rem, 100vw - var(--space-8))` dengan `--space-8` 2rem, jadi kotak hasilnya ada di 30rem atau kurang tepat ketika viewport-nya 32rem atau kurang. Yang tetap tak terjawab cadangan itu adalah dialog sempit di viewport lebar (panel yang didok), dan di Safari 15 kasus itu tetap tabel yang digulir. Badan aturannya ada dua salinan karena CSS tak punya cara membagi satu blok ke dua kondisi; `test/baseline.test.mjs` membandingkan keduanya supaya suntingan yang cuma kena satu jadi merah. |
-| `overscroll-behavior:contain` butuh Safari 16, dan latar ikut tergulir di belakang drawer di HP | **terbuka, dan sengaja belum dikerjakan.** Tiga pemakaiannya cuma mematikan rantai gulir di ujung panel; latar yang tergulir saat scrim-nya yang ditarik terjadi di SEMUA browser, floor ke atas juga, karena scrim bukan kotak yang menggulir. Jadi properti itu sendiri tak pernah menjadi kunci gulir yang utuh, dan absennya di 15.4 sampai 15.8 bukan tata letak yang rusak melainkan gulir yang lanjut ke halaman di belakang. Dua kandidat perbaikan, dua-duanya butuh diukur di perangkat iOS 15 dulu: `touch-action:none` di `.fdy-app__backdrop` (menutup tarikan di scrim, di semua browser sekaligus, dan tap-untuk-tutup tetap jalan), atau `html:has(.fdy-app--nav-open){overflow:hidden}` di dalam `@supports not (overscroll-behavior:contain)` (`:has()` ada tepat di floor, tapi komponen kit tak pernah menata `html`, dan kunci gulir di iOS 15 terkenal setengah jalan). Mengirim salah satunya tanpa ukuran adalah pola yang memakan empat rilis di 2026-10-26. Alasan versi pendeknya ada di `ALLOWED` di `test/baseline.test.mjs`. |
-| `text-wrap:balance` butuh Safari 17.5 | **ditutup tanpa kode.** Nilainya keyword biasa, jadi browser yang tak mengenalnya menolak deklarasinya saat parse dan judulnya patah seperti sebelum properti ini ada: font, ukuran, dan kotaknya sama. Tak ada cara kedua menyeimbangkan judul di CSS, jadi `@supports` tak membeli apa pun, dan satu-satunya ganti di bawah floor adalah ganti baris yang ditaruh tangan di naskah konsumen. |
-| `allow-discrete` di empat shorthand `transition` butuh Safari 17.4 | **DIKERJAKAN 3.12.1 (`#097`).** Dipecah jadi longhand, jadi di bawah lantai yang hilang hanya `transition-behavior` dan paruh opacity/transform-nya bertahan: modal dan drawer kini beranimasi MASUK di iPhone 7. Keluarnya tetap seketika sebab `display` tak dapat ditransisikan di sana, sama seperti sebelumnya. Ekuivalensi di atas lantai diukur dengan membandingkan gaya terkomputasi, dan satu nilai `transition-duration` diukur tetap berlaku untuk setiap properti (280ms, easing per-indeks). Dijaga di `baseline.test.mjs`, dan penjaganya diverifikasi bisa merah. Percobaan pertama saya lolos karena saya menguji `dist/` yang belum dibangun ulang sesudah mutasi; gerbang itu membaca dist, bukan src. |
-| `100dvh` butuh Chrome 108, sementara floor-nya menyatakan Chrome 105 | **ditutup tanpa kode.** Safari punya unit itu sejak 15.4, Firefox sejak 101, jadi jendelanya cuma Chrome 105 sampai 107. Dua dari tiga pemakaiannya ada di sidebar off-canvas yang juga menyetel `top:0` dan `bottom:0`, jadi tingginya sudah ditentukan dan deklarasi yang dibuang tak mengubah apa pun. Yang ketiga membatasi rail sticky dari 960px, dan tanpa itu batasnya jadi `none`. Baris cadangan `vh` di atasnya akan jadi kode mati, dan repo ini sudah mengukurnya sekali: deklarasinya membawa `var()`, jadi ia ditahan sebagai token saat parse dan baru gagal saat computed-value, dan jalur itu menjatuhkan properti ke nilai INITIAL-nya, bukan ke baris di atasnya (`test/color-mix.test.mjs`). Yang bekerja hanya pagar `@supports`, dan dua blok `@supports` untuk tiga rilis Chrome dari 2022 di peramban yang memperbarui diri bukan tukar yang pantas. Tinjau ulang saat floor-nya bergerak. |
-
-**Audit kontrol native, 2026-10-26, seluruh layar app ronda (bukan satu yang mengeluh):** 20
-kontrol di 9 berkas. Tiga `type="date"` dan empat `type="time"` ditutup oleh `FdyDateRange`,
-`FdyDatepicker` dan `FdyTimepicker` baru (3.11.0, `#094`/`#095`). Yang tersisa:
-
-| pokok | status |
-|---|---|
-| `.fdy-accordion__item > summary` disangka hanya menyembunyikan penanda lewat `::-webkit-details-marker` | **DIUKUR, bukan cacat** (2026-10-27). Dugaannya salah, dan salahnya karena saya membaca sepotong aturan: barisnya **juga** menyetel `list-style:none` DAN `display:flex`, dan `summary` yang `display:flex` bukan `list-item`, jadi kotak `::marker` tak pernah dibuat di mesin mana pun. Diukur di Firefox (terpasang khusus untuk ini) dengan pembanding ber-`list-style:none` inline: geser teksnya **0px**, `list-style-type=none`, `display=flex`. Pelajarannya bukan tentang `<details>`: menyimpulkan dari satu baris `grep` yang cocok, padahal aturan lengkapnya punya tiga mekanisme, adalah cara menciptakan pekerjaan yang tidak ada. |
-| sepuluh `.fdy-input[type="number"]` di satu app tanpa satu pun `[data-fdy-number]` | **ditutup tanpa kode, dicatat sebagai sinyal.** Kit menyembunyikan tombol putar bawaan peramban (tak dapat ditema) dan mengembalikan afordansinya lewat `[data-fdy-number]` yang **opt-in**. Jadi tak ada divergensi antar-mesin di sini: kesepuluhnya tampil sama di mana pun, cuma tanpa tombol. Yang layak dicatat bukan cacatnya melainkan angkanya — sepuluh berbanding nol berarti opt-in itu mudah terlewat. Kalau app berikutnya juga nol, pertimbangkan apakah afordansinya pantas jadi bawaan. |
-| tiga `type="search"` memakai tombol bersih (×) berwarna OS | **ditutup tanpa kode.** Ini keputusan kit yang sudah ada alasannya di `COMPONENTS.md`: tombol itu satu-satunya cara mengosongkan field, jadi menyembunyikannya lebih buruk daripada membiarkannya tak bertema. Yang ingin bertema sekaligus mencari ulang saat dibersihkan punya `[data-fdy-search]`. Jadi beda penampilan di iOS memang ada, dan memang dipilih. |
-
-**Celah validasi kontrol kit: DITUTUP di 3.12.0 (`#096`), dengan satu koreksi atas catatan ini
-sendiri.** Catatan versi sebelumnya menulis "tiga belas wrapper bertipe merender `<button>`". Itu
-salah, dan diukur salahnya: hanya lima yang berpemicu tombol (`FdyCombo`, `FdyDatepicker`,
-`FdyMonthpicker`, `FdyTimepicker`, `FdyCascade`). `FdyAutocomplete` dan `FdyCfl` merender `<input>`
-asli, dan tujuh sisanya bukan kontrol bernilai sama sekali. Angka yang dibesarkan membuat
-perbaikannya terdengar lebih mahal daripada yang sebenarnya.
-
-Yang dikirim: `data-fdy-required` pada akar kontrol membuat form `data-fdy-validate` menuntutnya,
-dan `data-value` di akar kini **cermin hidup** alih-alih seed (jalur mentah datepicker/timepicker/
-cascade sebelumnya hanya membacanya saat init; `freeday-select.js` sudah benar sejak lama). Aturan
-di enhancer tidak menyebut satu pun nama komponen: nilainya dari `data-value`, elemen yang menerima
-`aria-invalid` dan fokus ditemukan lewat `aria-haspopup`, dan re-validasinya memakai
-`MutationObserver` supaya tak perlu tahu lima nama event. Dijaga 8 uji browser, dan aturannya
-diverifikasi bisa merah dengan mutasi — termasuk satu uji yang semula LOLOS dengan aturan
-dimatikan, karena "galatnya hilang" hampa benar saat tak ada galat; uji itu sekarang menuntut
-galatnya tampak lebih dulu.
-
-**Sisanya DITUTUP di 3.18.0 (`#114`), dan setengah dari rencana di sini keliru.** `FdyAutocomplete`
-memang mengambil `required` native. `FdyCfl` tidak bisa: input-nya `readonly`, dan input readonly
-dikecualikan dari validasi bawaan, jadi "meneruskan `required` ke input-nya" akan menghasilkan
-isian yang tampak wajib tetapi tidak pernah menolak. Cfl kini lewat `data-fdy-required` seperti
-kelima kontrol berpemicu tombol. `FdyDateRange` ternyata tertinggal juga, dan tidak tercatat di
-sini.
-
-**Kegoyahan `browser/cfl-multi.mjs` DITUTUP 2026-10-27, dan tersangka yang saya catat pagi itu
-salah jenis.** Catatannya menebak "penantian berbasis waktu". Keliru: tak ada satu pun timeout di
-berkas itu. Yang salah adalah penantian yang **tidak ada**.
-
-Diukur, bukan ditebak: tepat sesudah dua klik baris, Vue dan React sama-sama melaporkan
-`aria-selected` nol dan footer masih "0 selected"; nilai benarnya mendarat 1-2ms kemudian. Uji itu
-membaca satu round-trip CDP sesudah klik, yaitu 1-5ms, jadi ia lolos karena satu latensi kebetulan
-lebih lama dari latensi lain, sementara hal yang ia klaim tak ikut menentukan. Margin itulah yang
-hilang di bawah
-`--test-concurrency=3`.
-
-Disisir ke seluruh suite, dan hasilnya memaksa dua koreksi lagi atas cara saya mencari:
-- Pemindaian pertama melaporkan 87 kandidat. Mayoritas positif palsu: enhancer vanilla memperbarui
-  DOM **sinkron** di dalam handler, jadi membaca langsung sesudah klik memang benar. Hanya fixture
-  bertipe (Vue/React) yang flush-nya asinkron.
-- Pemindaian kedua melaporkan 13. Lima di antaranya positif palsu karena regex saya peka huruf
-  besar dan melewatkan `shellUntil(`. Sisanya 4.
-
-Dari keempat itu, dua balapan nyata (`adapter.mjs` judul kalender sesudah empat klik navigasi;
-`cfl-multi.mjs` empat pembacaan keadaan terender). Dua lainnya penjaga hampa:
-`cfl-dialog-only.mjs` menuntut "nol dialog terbuka", dan `timepicker.mjs` menuntut "indeks tetap 0"
-dan "tetap tertutup". Ketiganya adalah keadaan awal, jadi ujinya lolos walau kliknya tak pernah
-sampai. Dan `adapter.mjs:401/403` ternyata tidak goyah sama sekali: `focused` dibaca dari
-`document.activeElement`, dan Tab asli memindahkan fokus sinkron.
-
-Keempatnya kini memakai bukti positif, bukan "tidak berubah": penjepitan timepicker melangkah
-MELEWATI ujungnya lalu satu langkah balik ke indeks yang hanya penjepitan dapat hasilkan, dan uji
-kontrol terkunci mengklik kontrol yang tidak terkunci sesudahnya untuk membuktikan antreannya
-terkuras. Diverifikasi bisa merah dengan mutasi ke siklik di kedua stack. Suite penuh hijau 3 dari
-3 jalanan sesudahnya.
-
-**Pola yang layak dibawa:** di suite ini, "nilainya tidak berubah" dan "belum ada apa-apa" hampir
-selalu penjaga yang tak bisa gagal, sebab keduanya juga keadaan sebelum kliknya diproses. Cari
-pengamatan positif yang hanya perilaku benar dapat menghasilkan.
-
-**Di mana floor-nya tinggal sekarang:** satu baris di `README.md` dan `README.id.md`
-(`**Chrome <versi> · Safari <versi> · Firefox <versi>.**`), dibaca `test/baseline.test.mjs`. Tabel
-fitur ke versi baseline, daftar `ALLOWED` beserta alasan tiap pengecualian, dan penjaga pasangan
-`-webkit-` ada di berkas uji itu. Fitur baru yang melewati floor harus dipagari, dipasangkan, atau
-masuk `ALLOWED` dengan alasan yang menyebut apa yang hilang; entri tanpa alasan, dan entri yang
-fiturnya sudah tak melewati floor, membuat uji itu merah.
-
-**Aturannya untuk agen berikutnya:** kalau kamu mengerjakan sebuah catatan, nomornya masuk entri
-CHANGELOG seperti biasa. Kalau catatannya tak bernomor, atau kamu memutuskan **tidak**
-mengerjakannya, barisnya masuk ke tabel di atas beserta alasannya. Keputusan "tidak dikerjakan"
-adalah yang paling mudah hilang dan paling mahal diulang: `#083` ada karena seseorang hampir
-membangun kelas yang sudah ada.
-
-## Sengaja ditunda (YAGNI, hanya kalau ada project nyata yang butuh)
-
-- **Data grid virtualisasi**, spec §7
-- ~~**Form master-detail / 2 kolom**, spec §7~~ **terkirim** di `[Unreleased]` sebagai `.fdy-page__columns` (`#065`): 35 dari 48 form di sebuah app back-office memakai rail samping, itulah demand-nya
-- **`data-style` selain `soft`/`glass`** (neumorph / clay / dst.): `glass` terkirim di 3.0.0; sisanya spec §6
-
-Ini bukan utang. Ini keputusan sadar: design system tak pernah "selesai", dia ber-versi.
-
----
-
-## Pelajaran / invariant: varian yang dijelaskan salah lebih mahal daripada varian yang hilang
-
-**Kejadian (2026-08-28, `#055` §3).** `.fdy-nav--flat` — varian nav grup statis — terkirim di
-**1.1.0**: caret hilang, `cursor:default`, pemisah antar-grup hilang, plus dukungan markup
-non-`<details>`. Satu-satunya kalimat yang menjelaskannya di `COMPONENTS.md` berbunyi *"`--flat`
-drops the surface"*, dan itu salah: `.fdy-nav` tak mengecat surface apa pun. Deskripsi yang benar
-hanya hidup di entri CHANGELOG 1.1.0, yang tak akan dibaca siapa pun yang sedang mencari cara
-membuat grup nav statis.
-
-Akibatnya **dua console independen** menulis sendiri ketiga rule itu (`cursor:default`,
-`::after{display:none}`, `border-top:0`) dan menaruhnya di `app.css` masing-masing, lalu melaporkan
-"kit tak punya bentuk untuk grup statis" — sebuah gap yang tak pernah ada.
-
-**Bedanya dengan gap sungguhan, dan ini intinya:** varian yang **hilang** menghasilkan laporan —
-seseorang menabraknya, menulis catatan, kit menjawab. Varian yang **dijelaskan salah** menghasilkan
-pekerjaan duplikat yang diam: pembacanya menyimpulkan kit tak bisa, membangun sendiri, dan tak ada
-sinyal apa pun yang sampai ke sini. Biayanya berulang di tiap consumer dan tak pernah terhitung.
-
-**Aturan saat menulis/menyentuh deskripsi modifier:** kalimatnya harus bisa dibenarkan oleh
-deklarasi CSS-nya, bukan oleh ingatan tentang niat waktu menulisnya. Kalau sebuah modifier melakukan
-tiga hal, sebut ketiganya; kalau namanya tak menjelaskan dirinya, itu justru alasan deskripsinya
-harus akurat, bukan alasan untuk meringkas. Sapuan menyeluruhnya = kandidat #15 di atas.
-
-## Pelajaran / invariant: docs jangan pernah menyalin nilai token ke prosa
-
-**Kejadian (2026-07-24).** Section "Radius" di `docs/index.html` menampilkan ramp *lama sebelum
-v1.1* (`xs 4 / sm 6 / md 8 / lg 12 / xl 16 px`) padahal token asli sudah `3/4/6/10/14px`. Pass
-"Precision" di v1.1 me-retune radius (`tokens.json`), tapi label docs ditulis tangan dan **tidak ikut
-berubah**. Kotaknya dirender pakai token asli (`var(--radius-md)`), teksnya menyebut angka lain →
-developer melihat sudut 6px berlabel "8px". Untuk kit yang seluruh nilai jualnya adalah *jadi sumber
-kebenaran token*, ini diam-diam menghancurkan kepercayaan.
-
-**Akar masalah = duplikasi**, bukan salah ketik. Nilai token hidup di dua tempat (token + label docs)
-yang bisa hanyut berpisah.
-
-**Invariant sekarang (ditegakkan di `docs/index.html`).** Setiap label nilai token adalah
-`<span data-token="--nama-token">` yang **diisi runtime dari stylesheet yang jalan** (panjang diukur
-ke px lewat elemen probe; token waktu dibaca apa adanya). Token berubah → label ikut otomatis. Sudah
-diterapkan ke **radius · spasi · motion**.
-
-**Aturan saat menyentuh docs / token:**
-- **Jangan pernah** menulis angka nilai token (px/rem/ms) langsung di prosa atau label docs. Pakai
-  `<span data-token="--x">` (di HTML docs) atau `<code>var(--x)</code>` (kalau yang dimaksud memang
-  *nama* token, bukan nilainya).
-- Nilai skala (breakpoint) yang tak bisa dibaca CSS custom-prop hidup di `tokens/breakpoints.mjs`,
-  itu satu-satunya sumber; jangan restate angkanya di tempat lain.
-- Kalau me-retune ramp token, tak perlu sentuh label docs lagi, tapi **cek**: `grep -nE "[0-9]+px"
-  docs/index.html` mestinya nyaris tak menyentuh area token (sisanya cuma nilai layout lepas yang
-  memang bukan token).
-- Audit cepat kapan pun ragu: render headless lalu bandingkan DOM ber-`[data-token]` dengan
-  `dist/freeday.tokens.css`. (Contoh perintah ada di commit `adc80dc`.)
-
-Status: tertutup untuk radius/spasi/motion. Belum dijadikan tes otomatis. Kalau mau paling aman,
-tambah satu tes yang me-render docs headless dan meng-assert tiap `[data-token]` == nilai token
-(kandidat kerja kecil, opsional).
-
-## Pelajaran / invariant: uji komponen interaktif dengan **gestur mouse asli**, bukan `.click()` sintetik
-
-**Kejadian (2026-07-24, v1.6.1).** Di live, memilih opsi combo/select dengan mouse **tidak
-mengubah nilai** (tetap "Button"). Awalnya tak terlihat karena tes memakai `element.click()`
-sintetik, yang **melewati** urutan fokus/blur asli. Akar masalah: menekan (mousedown) opsi
-mem-blur tombol combo → handler `focusout` di `freeday-select.js` memanggil `close()` yang
-menyembunyikan listbox **sebelum** event `click` opsi menjalankan `choose()`. Jadi pilihan hilang.
-Hanya kena mouse asli; keyboard tak terpengaruh. Fix: `preventDefault` pada `mousedown` listbox
-(tombol tetap fokus, `close` tak terpicu, `click` mendarat). Rilis di v1.6.1.
-
-**Aturan.** Untuk komponen yang bergantung pada **fokus/blur/pointer** (combo, dropdown, menu,
-picker), verifikasi dengan **event mouse asli** (headless Chrome via CDP `Input.dispatchMouseEvent`
-di koordinat sungguhan), bukan hanya `.click()` sintetik, karena `.click()` tak memicu `focusout`, jadi
-menyembunyikan seluruh kelas bug "listbox tertutup sebelum pilih". Harness-nya kini permanen di
-**`browser/`** (`npm run test:browser`; driver CDP nol-dependency di `browser/harness.mjs`,
-auto-skip kalau tak ada Chrome), bukan lagi skrip sekali-pakai di scratchpad. Pola tes:
-buka trigger → **pastikan** `aria-expanded="true"` → klik opsi di koordinatnya (settle dulu, hindari
-klik saat transisi/scroll) → assert nilai berubah.
-
-## Kalau nanti mau rilis lagi
-
-2.0.0 mematahkan pola "semua aditif → MINOR": default bahasa enhancer berubah, jadi setiap layar
-jalur mentah merender kata lain. Bump-nya ikut apa yang benar-benar berubah, bukan kebiasaan.
-
-Saat cut versi, **sync semua referensi versi publik**, bukan cuma `package.json`, dan itu sekarang
-**dijaga test** (`test/docs.test.mjs`, "the public version stamps match package.json"), karena
-runbook di bawah ini benar dan tetap terlewat tiga rilis berturut-turut: `docs/index.html` mengirim
-`v1.51.0` sepanjang 1.52.0–1.53.0, dan `getting-started.md` menyuruh orang memasang `^1.34.0` selama
-delapan belas rilis. Langkah runbook bergantung pada ingatan; test tidak.
-
-Jangan pakai daftar hafalan (yang lama sudah salah: menyebut `examples/*/README.md` yang tak punya
-versi, dan "getting-started 4×" padahal 1×). **Cari saja**, inilah daftar otoritatifnya:
-
-```bash
-git grep -n '<versi-lama>' -- . | grep -v CHANGELOG    # semua yang harus di-bump
-```
-
-per v1.34.0 yang kena: `package.json` · `package-lock.json` (2 field) · `README.md` +
-`README.id.md` (badge + link tag) · `docs/index.html` (eyebrow + footer) ·
-`docs/getting-started.md` (contoh `^versi`) · `HANDOFF.md` · `NEXT-UP.md`.
-
-**Jangan disentuh:** `README.md` baris "WCAG **1.4.11**" (itu nomor sukses WCAG, bukan versi) dan
-entri historis di `CHANGELOG.md`.
-
-**Yang menerbitkan adalah TAG, bukan `npm publish`.** `.github/workflows/publish.yml` memicu pada
-tag `v*`, memanggil `ci.yml` dulu (jadi tag yang gerbangnya merah tak pernah sampai ke npm), lalu
-publish lewat **OIDC trusted publishing** — tanpa token tersimpan, provenance otomatis. Jadi:
-
-```bash
-git tag -a v<versi> -m "<versi>" && git push origin main --follow-tags
-```
-
-`npm publish` dari mesin dev bukan cuma tak perlu, ia **melewati gerbang CI itu** — dan tetap akan
-berhenti di `EOTP` karena akun ini ber-2FA, yang justru desainnya: token yang bisa memintas 2FA
-sengaja tak disimpan di mana pun.
-
-Setelah push, Pages rebuild otomatis (~belasan detik). Verifikasi dengan meng-`curl` docs live dan
-memastikan install command sudah menunjukkan versi baru.
+| Kontrol native di seluruh layar ronda, 2026-10-26 | date/time 3.11.0 `#094`/`#095`; accordion, search × dan isian angka di §2 dan §7 |
+| Celah validasi kontrol kit | 3.12.0 `#096` dan 3.18.0 `#114` |
+| State machine implisit, 2026-11-26 | 3.24.0 `#123`: `useLoad` dan sembilan cacat; sisanya §1 butir 1 dan 3 |
