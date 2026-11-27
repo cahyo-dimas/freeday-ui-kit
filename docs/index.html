@@ -30,6 +30,12 @@
   .doc-type--body { font-family: var(--font-body); font-size: var(--text-base); }
   .doc-type--mono { font-family: var(--font-mono); font-size: var(--text-sm); color: var(--color-text-muted); }
   .doc-cardgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); width: 100%; }
+  .doc-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: var(--space-4); }
+  .doc-board__col { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+  .doc-board__head { display: flex; align-items: center; justify-content: space-between; margin: 0; font-weight: var(--weight-semibold); }
+  .doc-board__col > .fdy-sortable { flex: 1; min-height: calc(var(--control-h) * 3); margin: 0; }
+  .doc-board__foot { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-4); margin-top: var(--space-4); }
+  .doc-board__log { font-size: var(--text-sm); color: var(--color-text-muted); }
   .doc-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: var(--space-8); width: 100%; }
   .doc-sublabel { margin: 0 0 var(--space-3); font-size: var(--text-xs); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--weight-semibold); color: var(--color-text-subtle); }
   .doc-scale { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
@@ -1784,6 +1790,85 @@
           </li>
         </ul>
       </div>
+
+      <p class="doc-sublabel" style="margin-top:var(--space-8)">Grup: pindah antar-daftar</p>
+      <p class="doc-desc">Tiga daftar dengan <code>data-fdy-sortable="papan"</code>. Seret kartu ke kolom lain, atau fokus ke pegangannya lalu tekan <kbd class="fdy-kbd">Spasi</kbd> untuk mengangkat, panah untuk memindah tanda (<kbd class="fdy-kbd">←</kbd> <kbd class="fdy-kbd">→</kbd> antar-kolom), dan <kbd class="fdy-kbd">Spasi</kbd> lagi untuk menjatuhkan; <kbd class="fdy-kbd">Esc</kbd> membatalkan. Kolom Selesai menolak lewat <code>data-fdy-sort-refuse</code> begitu berisi 2 kartu. Ganti oli ditolak kolom Dikerjakan lewat <code>fdy-sort-check</code>.</p>
+      <div class="doc-demo doc-demo--block">
+        <div class="doc-board" id="demo-board">
+          <div class="doc-board__col">
+            <p class="doc-board__head">Antre <span class="fdy-badge" data-count="antre"></span></p>
+            <ul class="fdy-list fdy-sortable" data-fdy-sortable="papan" data-key="antre" data-label="Antre">
+              <li class="fdy-list__row" data-key="oli" data-label="Ganti oli">
+                <button type="button" class="fdy-sortable__handle"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"></path></svg></button>
+                <span class="fdy-list__main"><span class="fdy-list__title">Ganti oli</span><span class="fdy-list__meta">B 1234 KJ · menunggu suku cadang</span></span>
+              </li>
+              <li class="fdy-list__row" data-key="rem" data-label="Servis rem">
+                <button type="button" class="fdy-sortable__handle"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"></path></svg></button>
+                <span class="fdy-list__main"><span class="fdy-list__title">Servis rem</span><span class="fdy-list__meta">D 5678 AB</span></span>
+              </li>
+              <li class="fdy-list__row" data-key="spooring" data-label="Spooring">
+                <button type="button" class="fdy-sortable__handle"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"></path></svg></button>
+                <span class="fdy-list__main"><span class="fdy-list__title">Spooring</span><span class="fdy-list__meta">B 9012 XY</span></span>
+              </li>
+            </ul>
+          </div>
+          <div class="doc-board__col">
+            <p class="doc-board__head">Dikerjakan <span class="fdy-badge" data-count="dikerjakan"></span></p>
+            <ul class="fdy-list fdy-sortable" data-fdy-sortable="papan" data-key="dikerjakan" data-label="Dikerjakan">
+              <li class="fdy-list__row" data-key="tuneup" data-label="Tune up">
+                <button type="button" class="fdy-sortable__handle"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"></path></svg></button>
+                <span class="fdy-list__main"><span class="fdy-list__title">Tune up</span><span class="fdy-list__meta">F 3456 CD</span></span>
+              </li>
+            </ul>
+          </div>
+          <div class="doc-board__col">
+            <p class="doc-board__head">Selesai <span class="fdy-badge" data-count="selesai"></span></p>
+            <ul class="fdy-list fdy-sortable" data-fdy-sortable="papan" data-key="selesai" data-label="Selesai">
+              <li class="fdy-list__row" data-key="cuci" data-label="Cuci mobil">
+                <button type="button" class="fdy-sortable__handle"><svg class="fdy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 9h14M5 15h14"></path></svg></button>
+                <span class="fdy-list__main"><span class="fdy-list__title">Cuci mobil</span><span class="fdy-list__meta">B 7788 ZZ</span></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="doc-board__foot">
+          <button type="button" class="fdy-btn fdy-btn--ghost fdy-btn--sm" id="demo-board-move">Kartu teratas Antre → Selesai, lewat <code>move()</code></button>
+          <span class="doc-board__log">Event terakhir: <code id="demo-board-log">belum ada</code></span>
+        </div>
+      </div>
+      <script>
+        (function () {
+          var board = document.getElementById('demo-board');
+          var log = document.getElementById('demo-board-log');
+          var LIMIT = 2;
+          var list = function (key) { return board.querySelector('[data-fdy-sortable="papan"][data-key="' + key + '"]'); };
+          /* The column count, and the WIP limit as a declarative refusal the kit reads live. */
+          var sync = function () {
+            ['antre', 'dikerjakan', 'selesai'].forEach(function (key) {
+              board.querySelector('[data-count="' + key + '"]').textContent = String(list(key).children.length);
+            });
+            var done = list('selesai');
+            if (done.children.length >= LIMIT) done.setAttribute('data-fdy-sort-refuse', 'Selesai penuh (' + LIMIT + ' dari ' + LIMIT + '). Pindahkan satu keluar dulu.');
+            else done.removeAttribute('data-fdy-sort-refuse');
+          };
+          board.addEventListener('fdy-sort-check', function (e) {
+            if (e.detail.key === 'oli' && e.detail.toList === 'dikerjakan') e.detail.refuse('Ganti oli menunggu suku cadang, belum bisa dikerjakan.');
+          });
+          /* Not cancelled: the kit moves the element after this listener, so count after it. */
+          board.addEventListener('fdy-sort-change', function (e) {
+            var d = e.detail;
+            log.textContent = d.key + ': ' + d.fromList + ' → ' + d.toList + ' (posisi ' + (d.to + 1) + ')';
+            setTimeout(sync, 0);
+          });
+          document.getElementById('demo-board-move').addEventListener('click', function () {
+            var first = list('antre').firstElementChild;
+            if (first === null) { log.textContent = 'Antre sudah kosong'; return; }
+            var moved = window.FreedaySortable.move(first, list('selesai'), list('selesai').children.length);
+            if (!moved) log.textContent = 'move() → false (' + (list('selesai').getAttribute('data-fdy-sort-refuse') || 'tidak diizinkan') + ')';
+          });
+          sync();
+        })();
+      </script>
     </section>
 
     <section class="doc-section" id="sec-dl">
