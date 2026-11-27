@@ -144,6 +144,7 @@ test('a refused list says why while the item is held, takes nothing, and is aske
     }, 'refused while held: marked, no landing line, the reason shown and spoken, and the pill never in the way of hit testing');
     assert.equal(await p.evalJS('window.lanes()'), START, 'released there, nothing moved');
     assert.equal((await json(p, 'window.pill()')).shown, false, 'and the pill is gone');
+    assert.equal(await p.evalJS(`window.listMark('full')`), '', 'and the refused mark is cleared');
 
     const b = await p.centerXY('#hB');
     const review = await at(p, '#review > li[data-key="r"]', 0.2);
@@ -317,6 +318,20 @@ test('a drag held at the edge of a scroll container scrolls it, and lands on wha
     const order = (await p.evalJS('window.tallOrder()')).split(' ');
     assert.ok(order.indexOf('t0') >= 6, `T0 landed against a row that started out of view, got: ${order.join(' ')}`);
   });
+  /* Apps often set scroll-behavior: smooth; a per-frame step must not restart an animation each frame. */
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    await p.evalJS(`document.getElementById('scroller').style.scrollBehavior = 'smooth'`);
+    const t0 = await p.centerXY('#hT0');
+    const edge = await json(p, `(() => { const r = document.getElementById('scroller').getBoundingClientRect();
+      return { x: Math.round(r.x + r.width / 2), y: Math.round(r.bottom - 4) }; })()`);
+    let held = 0;
+    await p.dragFromTo(t0.x, t0.y, edge.x, edge.y, async () => {
+      await sleep(700);
+      held = await p.evalJS(`document.getElementById('scroller').scrollTop`);
+    });
+    assert.ok(held >= 200, `under scroll-behavior: smooth the same hold still scrolls at full speed (scrollTop ${held})`);
+  });
 });
 
 test('a list that can never take the item is not asked about it', { skip }, async () => {
@@ -344,6 +359,22 @@ test('a list that can never take the item is not asked about it', { skip }, asyn
     const checks = await json(p, 'window.allChecks');
     assert.deepEqual(checks.filter((c) => /^(tall|null|solo|off):|:top$/.test(c)), [],
       `no fdy-sort-check for a list that can never take the item, got: ${checks.join(', ')}`);
+  });
+});
+
+test('Enter during a pointer drag lifts nothing, and the drag lands as dragged', { skip }, async () => {
+  await withPage(fixture('vanilla-sortable-group.html'), async (p) => {
+    await board(p);
+    const a = await p.centerXY('#hA');
+    const to = await at(p, '#doing > li[data-key="d"]', 0.8);
+    let mid = '';
+    await p.dragFromTo(a.x, a.y, to.x, to.y, async () => {
+      await p.pressEnter();
+      mid = await p.evalJS(`window.marks('todo')`);
+    });
+    assert.doesNotMatch(mid, /~/, `no lift while the pointer holds the item, got: ${mid}`);
+    assert.equal(await p.evalJS('window.lanes()'), 'todo:bce doing:topda done: off:o full:f review:rtail solo:s');
+    assert.deepEqual(await json(p, 'window.events.map(e => [e.key, e.toList, e.to])'), [['a', 'doing', 2]], 'exactly the dragged move');
   });
 });
 

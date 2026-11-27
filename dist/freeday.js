@@ -5055,7 +5055,7 @@
         var rect = n.getBoundingClientRect();
         var v = axis === 'y' ? edgeSpeed(y, rect.top, rect.bottom) : edgeSpeed(x, rect.left, rect.right);
         if (v !== 0 && canScroll(n, axis, v)) {
-          n.scrollBy(axis === 'x' ? v : 0, axis === 'y' ? v : 0);
+          n.scrollBy({ left: axis === 'x' ? v : 0, top: axis === 'y' ? v : 0, behavior: 'instant' });
           moved = true;
           return;
         }
@@ -5063,7 +5063,7 @@
       var page = document.scrollingElement;
       var w = axis === 'y' ? edgeSpeed(y, 0, window.innerHeight) : edgeSpeed(x, 0, window.innerWidth);
       if (w !== 0 && page !== null && canScroll(page, axis, w)) {
-        window.scrollBy(axis === 'x' ? w : 0, axis === 'y' ? w : 0);
+        window.scrollBy({ left: axis === 'x' ? w : 0, top: axis === 'y' ? w : 0, behavior: 'instant' });
         moved = true;
       }
     });
@@ -5099,10 +5099,11 @@
     });
 
     /* detail 0: Space, Enter, or a screen reader's synthesized click. A real pointer click (detail
-       1+) is a press without travel, which moves nothing. */
+       1+) is a press without travel, which moves nothing. While the pointer holds an item, the
+       drag owns the gesture: a key that activates the handle starts no lift. */
     root.addEventListener('click', function (e) {
       var handle = e.target.closest ? e.target.closest(HANDLE) : null;
-      if (!handle || !root.contains(handle) || groupOf(root) === '' || e.detail !== 0) return;
+      if (!handle || !root.contains(handle) || groupOf(root) === '' || e.detail !== 0 || drag !== null) return;
       e.preventDefault();
       if (lift !== null && lift.handle === handle) liftDrop();
       else if (lift === null && !disabled(root)) startLift(root, handle);
