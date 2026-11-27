@@ -306,14 +306,18 @@
       if (li) activate(opts.indexOf(li));
     });
 
-    // Initial display: pre-selected leaf shows its full path, else placeholder.
-    var initTrail = selectedValue ? pathTo(root, selectedValue, []) : null;
-    if (initTrail) {
-      valueSpan.textContent = initTrail.map(function (n) { return n.label; }).join(sep);
-    } else {
-      valueSpan.textContent = placeholder;
-      valueSpan.classList.add('fdy-cascade__value--placeholder');
+    // The selected leaf shows its full path, else the placeholder. At init and on setValue alike.
+    function showValue() {
+      var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
+      if (trail) {
+        valueSpan.textContent = trail.map(function (n) { return n.label; }).join(sep);
+        valueSpan.classList.remove('fdy-cascade__value--placeholder');
+      } else {
+        valueSpan.textContent = placeholder;
+        valueSpan.classList.add('fdy-cascade__value--placeholder');
+      }
     }
+    showValue();
 
     applyState();
     applyInvalid();
@@ -322,7 +326,15 @@
       wrap: wrap,
       setState: setState,
       getValue: function () { return selectedValue; },
-      clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); }
+      clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); },
+      /* The host's own value, pushed in silently: no fdy-cascade-change, so a binding that set it
+         does not hear it back. A render-once host (Blazor) has no other way to change it. */
+      setValue: function (next) {
+        selectedValue = next || '';
+        wrap.setAttribute('data-value', selectedValue);
+        showValue();
+        if (!panel.hidden) render();
+      }
     };
     wrap._fdyCascade = api;
     return api;
@@ -348,6 +360,10 @@
     setState: function (root, state) {
       var api = root && root._fdyCascade ? root._fdyCascade : null;
       if (api && api.setState) api.setState(state);
+    },
+    setValue: function (root, value) {
+      var api = root && root._fdyCascade ? root._fdyCascade : null;
+      if (api) api.setValue(value);
     }
   };
 })();

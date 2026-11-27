@@ -68,6 +68,12 @@ public partial class FdyDateRange
     private ElementReference _fromEl;
     private ElementReference _toEl;
     private ElementReference _singleEl;
+    private ElementReference _splitEl;
+
+    /* What the seed shows until hydration, then what was last pushed or picked. The seed is
+       rendered once, so From and To the host changed afterwards reached nothing (#123). */
+    private string? _shownFrom;
+    private string? _shownTo;
 
     /// <summary>"from/to" (ISO 8601 interval), the one <c>data-value</c> the single field reads,
     /// or null while either end is missing: the field never shows half a range.</summary>
@@ -90,7 +96,21 @@ public partial class FdyDateRange
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!Hydrated) return;
+        if (!Hydrated)
+        {
+            _shownFrom = From;
+            _shownTo = To;
+            return;
+        }
+        if (From != _shownFrom || To != _shownTo)
+        {
+            _shownFrom = From;
+            _shownTo = To;
+            if (Layout == FdyDateRangeLayout.Single)
+                await JS.InvokeVoidAsync("FreedayDatepicker.setValue", _singleEl, SeedInterval ?? string.Empty);
+            else
+                await JS.InvokeVoidAsync("FreedayDatepicker.setRange", _splitEl, From ?? string.Empty, To ?? string.Empty);
+        }
         if (Layout == FdyDateRangeLayout.Single)
         {
             await JS.InvokeVoidAsync("FreedayDatepicker.setState", _singleEl, new { required = Required });
@@ -107,11 +127,13 @@ public partial class FdyDateRange
         if (detail.Role == "from")
         {
             From = detail.Value;
+            _shownFrom = detail.Value;
             await FromChanged.InvokeAsync(detail.Value);
         }
         else if (detail.Role == "to")
         {
             To = detail.Value;
+            _shownTo = detail.Value;
             await ToChanged.InvokeAsync(detail.Value);
         }
         if (string.IsNullOrEmpty(From) == string.IsNullOrEmpty(To))
@@ -127,6 +149,8 @@ public partial class FdyDateRange
     {
         From = detail.From;
         To = detail.To;
+        _shownFrom = detail.From;
+        _shownTo = detail.To;
         await FromChanged.InvokeAsync(detail.From);
         await ToChanged.InvokeAsync(detail.To);
         await Settled.InvokeAsync(new SettledRange(From, To));

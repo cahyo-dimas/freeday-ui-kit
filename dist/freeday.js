@@ -230,7 +230,9 @@
 /* Freeday, autocomplete enhancer (optional, zero-dependency).
  * Editable combobox (WAI-ARIA APG): a text input filters a role="listbox" of role="option"
  * items as you type; select fills the input. Auto-inits [data-fdy-autocomplete]. Options are
- * static markup filtered client-side, in an app, fetch/filter server-side and re-render options.
+ * markup filtered client-side and read from the list each time they are used, so an app that
+ * re-renders them (after a server-side search) is heard without re-initialising. A host that
+ * renders once uses FreedayAutocomplete.setOptions(root, labels).
  *
  * Markup: <div data-fdy-autocomplete class="fdy-autocomplete">
  *   <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
@@ -254,19 +256,24 @@
     root._fdyInvalid = !!input && input.getAttribute('aria-invalid') === 'true';
     var listbox = root.querySelector('[role="listbox"]');
     if (!input || !listbox) return;
-    var options = Array.prototype.slice.call(listbox.querySelectorAll('[role="option"]'));
     var emptyEl = listbox.querySelector('.fdy-autocomplete__empty');
     var active = -1;
 
-    options.forEach(function (o) {
-      if (!o.id) { seq += 1; o.id = 'fdy-ac-opt-' + seq; }
-      o.dataset.label = o.textContent.trim();
-    });
+    /* Read from the list every time, not captured once at init: options rendered later were never
+       seen, and the ready flag refused the re-init that would have found them (#123). */
+    function allOptions() {
+      return Array.prototype.slice.call(listbox.querySelectorAll('[role="option"]')).map(function (o) {
+        if (!o.id) { seq += 1; o.id = 'fdy-ac-opt-' + seq; }
+        o.dataset.label = o.textContent.trim();
+        return o;
+      });
+    }
+    allOptions();
     listbox.hidden = true;
     input.setAttribute('aria-expanded', 'false');
 
-    function visible() { return options.filter(function (o) { return !o.hidden; }); }
-    function clearHighlight() { options.forEach(function (o) { o.classList.remove('is-highlighted'); }); }
+    function visible() { return allOptions().filter(function (o) { return !o.hidden; }); }
+    function clearHighlight() { allOptions().forEach(function (o) { o.classList.remove('is-highlighted'); }); }
 
     var _pop = null;
     function popCtl() { if (_pop === null && window.FreedayPopover) _pop = window.FreedayPopover.attach(listbox, input); return _pop; }
@@ -305,6 +312,7 @@
        a saved record) is not a query, and filtering by it opened a one-item list that looked broken
        (#115). Reset on close, so the arrow keys reopen it whole as well. */
     function showAll() {
+      var options = allOptions();
       options.forEach(function (o) { o.hidden = false; });
       if (emptyEl) emptyEl.hidden = options.length !== 0;
     }
@@ -312,7 +320,7 @@
     function applyFilter() {
       var q = input.value.trim().toLowerCase();
       var shown = 0;
-      options.forEach(function (o) {
+      allOptions().forEach(function (o) {
         var match = !q || o.dataset.label.toLowerCase().indexOf(q) !== -1;
         o.hidden = !match;
         if (match) shown++;
@@ -326,7 +334,7 @@
 
     function choose(opt) {
       input.value = opt.dataset.label;
-      options.forEach(function (o) { o.setAttribute('aria-selected', o === opt ? 'true' : 'false'); });
+      allOptions().forEach(function (o) { o.setAttribute('aria-selected', o === opt ? 'true' : 'false'); });
       close();
       root.dispatchEvent(new CustomEvent('fdy-autocomplete-select', { bubbles: true, detail: { value: opt.dataset.label, option: opt } }));
     }
@@ -366,6 +374,27 @@
       var opt = e.target.closest('[role="option"]');
       if (opt && !opt.hidden) choose(opt);
     });
+
+    /* For a host that renders its markup once (Blazor): the list and the text are pushed in, silently.
+       New options are filtered by what is typed if the list is open, and shown whole otherwise. */
+    root._fdyAc = {
+      setOptions: function (labels) {
+        allOptions().forEach(function (o) { o.remove(); });
+        (labels || []).forEach(function (label) {
+          var li = document.createElement('li');
+          li.className = 'fdy-autocomplete__option';
+          li.setAttribute('role', 'option');
+          li.textContent = label;
+          listbox.insertBefore(li, emptyEl);
+        });
+        allOptions();
+        if (listbox.hidden) showAll(); else applyFilter();
+      },
+      setValue: function (text) {
+        input.value = text || '';
+        allOptions().forEach(function (o) { o.setAttribute('aria-selected', o.dataset.label === input.value ? 'true' : 'false'); });
+      }
+    };
   }
 
   function initAll(context) {
@@ -398,7 +427,10 @@
     if (state.required != null) input.required = !!state.required;
   }
 
-  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState };
+  function setValue(root, text) { if (root && root._fdyAc) root._fdyAc.setValue(text); }
+  function setOptions(root, labels) { if (root && root._fdyAc) root._fdyAc.setOptions(labels); }
+
+  window.FreedayAutocomplete = { init: initAutocomplete, initAll: initAll, setState: setState, setValue: setValue, setOptions: setOptions };
 })();
 
 /* Freeday, breakpoint provider (optional, zero-dependency).
@@ -1083,14 +1115,18 @@
       if (li) activate(opts.indexOf(li));
     });
 
-    // Initial display: pre-selected leaf shows its full path, else placeholder.
-    var initTrail = selectedValue ? pathTo(root, selectedValue, []) : null;
-    if (initTrail) {
-      valueSpan.textContent = initTrail.map(function (n) { return n.label; }).join(sep);
-    } else {
-      valueSpan.textContent = placeholder;
-      valueSpan.classList.add('fdy-cascade__value--placeholder');
+    // The selected leaf shows its full path, else the placeholder. At init and on setValue alike.
+    function showValue() {
+      var trail = selectedValue ? pathTo(root, selectedValue, []) : null;
+      if (trail) {
+        valueSpan.textContent = trail.map(function (n) { return n.label; }).join(sep);
+        valueSpan.classList.remove('fdy-cascade__value--placeholder');
+      } else {
+        valueSpan.textContent = placeholder;
+        valueSpan.classList.add('fdy-cascade__value--placeholder');
+      }
     }
+    showValue();
 
     applyState();
     applyInvalid();
@@ -1099,7 +1135,15 @@
       wrap: wrap,
       setState: setState,
       getValue: function () { return selectedValue; },
-      clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); }
+      clear: function () { selectedValue = ''; valueSpan.textContent = placeholder; valueSpan.classList.add('fdy-cascade__value--placeholder'); },
+      /* The host's own value, pushed in silently: no fdy-cascade-change, so a binding that set it
+         does not hear it back. A render-once host (Blazor) has no other way to change it. */
+      setValue: function (next) {
+        selectedValue = next || '';
+        wrap.setAttribute('data-value', selectedValue);
+        showValue();
+        if (!panel.hidden) render();
+      }
     };
     wrap._fdyCascade = api;
     return api;
@@ -1125,6 +1169,10 @@
     setState: function (root, state) {
       var api = root && root._fdyCascade ? root._fdyCascade : null;
       if (api && api.setState) api.setState(state);
+    },
+    setValue: function (root, value) {
+      var api = root && root._fdyCascade ? root._fdyCascade : null;
+      if (api) api.setValue(value);
     }
   };
 })();
@@ -2968,6 +3016,22 @@
         return selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : '';
       },
       clear: function () { selected = null; selectedEnd = null; updateDisplay(); if (!panel.hidden) render(); },
+      /* The host's own value, pushed in silently: no change event, so a binding that set it does
+         not hear it back. A render-once host (Blazor) has no other way to change the shown date.
+         The single-field range takes "start/end", the form its data-value already has. */
+      setValue: function (next) {
+        if (rangeMode) {
+          var iv = parseInterval(next);
+          selected = iv.start;
+          selectedEnd = iv.end;
+        } else {
+          selected = parseVal(next);
+        }
+        anchor = null;
+        preview = null;
+        updateDisplay();
+        if (!panel.hidden) render();
+      },
       setMin: function (iso) { minDate = parseVal(iso); if (!panel.hidden) render(); },
       setMax: function (iso) { maxDate = parseVal(iso); if (!panel.hidden) render(); },
       setRange: function (fromIso, toIso) {
@@ -3014,6 +3078,15 @@
       if ((f === '') !== (t === '')) return;
       root.dispatchEvent(new CustomEvent('fdy-daterange-settled', { bubbles: true, detail: { from: f, to: t } }));
     }
+    /* Both ends from the host at once, then the same linking a pick gets: the end's minimum and the
+       band shading. Silent, like each picker's own setValue. */
+    root._fdyDr = {
+      setRange: function (f, t) {
+        fromApi.setValue(f || '');
+        toApi.setValue(t || '');
+        sync();
+      }
+    };
     fromEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
       if (f && t && t < f) clearEnd(toEl, toApi);
@@ -3052,6 +3125,17 @@
     setState: function (root, state) {
       var api = root && root._fdyDp ? root._fdyDp : null;
       if (api && api.setState) api.setState(state);
+    },
+    /* A picker's value from the host, silently: `YYYY-MM-DD`, `YYYY-MM` in month mode, or
+       "start/end" on a single-field range. */
+    setValue: function (root, value) {
+      var api = root && root._fdyDp ? root._fdyDp : null;
+      if (api) api.setValue(value);
+    },
+    /* Both ends of a two-picker range (the `data-fdy-daterange` root), relinked as after a pick. */
+    setRange: function (root, from, to) {
+      var dr = root && root._fdyDr ? root._fdyDr : null;
+      if (dr) dr.setRange(from, to);
     }
   };
 })();
@@ -5902,7 +5986,14 @@
       wrap: wrap,
       getValue: function () { return value; },
       setState: setState,
-      clear: function () { value = ''; for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', 'false'); updateDisplay(); }
+      clear: function () { value = ''; for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', 'false'); updateDisplay(); },
+      /* The host's own value, pushed in silently: no fdy-time-select, so a binding that set it does
+         not hear it back. A render-once host (Blazor) has no other way to change the shown time. */
+      setValue: function (next) {
+        value = norm(next);
+        for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', opts[i].getAttribute('data-value') === value ? 'true' : 'false');
+        updateDisplay();
+      }
     };
     wrap._fdyTp = api;
     return api;
@@ -5928,6 +6019,10 @@
     setState: function (root, state) {
       var api = root && root._fdyTp ? root._fdyTp : null;
       if (api && api.setState) api.setState(state);
+    },
+    setValue: function (root, value) {
+      var api = root && root._fdyTp ? root._fdyTp : null;
+      if (api) api.setValue(value);
     }
   };
 })();

@@ -64,11 +64,24 @@ public partial class FdyTimepicker
     // The enhancer owns the built trigger + listbox; never let Blazor re-render the seed.
     protected override bool ShouldRender() => !Hydrated;
 
+    private string? _shownValue;
+
     /* Which is exactly why the three states are pushed rather than re-rendered: the seed above is
        written once, so a page that disables this field later would otherwise be ignored. */
     protected override async Task OnParametersSetAsync()
     {
-        if (!Hydrated) return;
+        /* What the seed shows until hydration, then what was last pushed or picked. The seed is
+           rendered once, so a Value the host changes afterwards reached nothing (#123). */
+        if (!Hydrated)
+        {
+            _shownValue = Value;
+            return;
+        }
+        if (Value != _shownValue)
+        {
+            _shownValue = Value;
+            await JS.InvokeVoidAsync("FreedayTimepicker.setValue", Root, Value ?? string.Empty);
+        }
         await JS.InvokeVoidAsync("FreedayTimepicker.setState", Root,
             new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
@@ -78,6 +91,7 @@ public partial class FdyTimepicker
     public async Task OnSelect(SelectDetail detail)
     {
         Value = detail.Value;
+        _shownValue = detail.Value;
         await ValueChanged.InvokeAsync(detail.Value);
     }
 

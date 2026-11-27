@@ -27,7 +27,7 @@
     }
     else
     {
-        <div data-fdy-daterange role="group" aria-label="@AriaLabel">
+        <div @ref="_splitEl" data-fdy-daterange role="group" aria-label="@AriaLabel">
             <div @ref="_fromEl" data-fdy-datepicker data-role="from" data-fdy-required="@(Required ? "" : null)"
                  data-value="@From" data-placeholder="@FromPlaceholder" data-min="@Min" data-max="@Max"
                  data-fdy-text-prev-month="@PrevMonthLabel"

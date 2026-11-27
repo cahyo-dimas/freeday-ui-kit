@@ -230,7 +230,14 @@
       wrap: wrap,
       getValue: function () { return value; },
       setState: setState,
-      clear: function () { value = ''; for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', 'false'); updateDisplay(); }
+      clear: function () { value = ''; for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', 'false'); updateDisplay(); },
+      /* The host's own value, pushed in silently: no fdy-time-select, so a binding that set it does
+         not hear it back. A render-once host (Blazor) has no other way to change the shown time. */
+      setValue: function (next) {
+        value = norm(next);
+        for (var i = 0; i < opts.length; i++) opts[i].setAttribute('aria-selected', opts[i].getAttribute('data-value') === value ? 'true' : 'false');
+        updateDisplay();
+      }
     };
     wrap._fdyTp = api;
     return api;
@@ -256,6 +263,10 @@
     setState: function (root, state) {
       var api = root && root._fdyTp ? root._fdyTp : null;
       if (api && api.setState) api.setState(state);
+    },
+    setValue: function (root, value) {
+      var api = root && root._fdyTp ? root._fdyTp : null;
+      if (api) api.setValue(value);
     }
   };
 })();

@@ -11,7 +11,11 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.24.0`, disiapkan dan menunggu tag** (2026-11-27). Hasil audit state machine implisit:
+**`3.25.0`, disiapkan dan menunggu tag** (2026-11-27). Nilai dari host di enam wrapper Blazor
+lewat `setValue`/`setRange`/`setOptions` yang senyap di enhancer, teks bebas autocomplete Blazor,
+dan opsi autocomplete mentah yang dibaca ulang. Sisa kelasnya: pohon `FdyCascade` (`NEXT-UP.md` §1).
+
+**`3.24.0`, terbit** (2026-11-27). Hasil audit state machine implisit:
 `useLoad` baru di Vue/React, dan sembilan cacat dari kelas yang sama (CFL tiga stack, tabel yang
 berputar me-render, modal/drawer yang menyimpang dari `<dialog>`, Escape datepicker, stepper,
 upload, reset form, Escape filter tabel). Sisanya di `NEXT-UP.md`.

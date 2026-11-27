@@ -461,6 +461,12 @@ export async function withPage(fileUrl, fn) {
       return c;
     };
 
+    /* Chrome opens the fixture as its start page, and the socket can attach while the tab is still on
+       about:blank, whose readyState is already "complete". A spec that waited only for that went on
+       to read `document.documentElement` while the fixture's document was replacing it, and got
+       null: palette-os-dark failed so in the 3.25.0 run, and six more specs wait the same way. The
+       page is handed over once the fixture itself has loaded. */
+    await waitFor(`location.href !== 'about:blank' && document.readyState === 'complete'`, { timeout: 10000 });
     return await fn({ evalJS, waitFor, clickCenter, hoverCenter, clickAt, dragFromTo, pressKey, insertText, axName, axDescription, axSubtree, pixelAt, centerXY, setViewport, setColorScheme });
   } finally {
     if (ws !== null) {

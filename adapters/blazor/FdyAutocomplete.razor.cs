@@ -66,9 +66,30 @@ public partial class FdyAutocomplete
 
     protected override bool ShouldRender() => !Hydrated;
 
+    /* What the seed shows until hydration, then what was last pushed, typed or picked. The seed is
+       rendered once, so Value and Options the host changed afterwards reached nothing (#123). */
+    private string? _shownValue;
+    private IReadOnlyList<string> _shownOptions = Array.Empty<string>();
+
     protected override async Task OnParametersSetAsync()
     {
-        if (!Hydrated) return;
+        if (!Hydrated)
+        {
+            _shownValue = Value;
+            _shownOptions = Options;
+            return;
+        }
+        /* Compared by content: a host that rebuilds the same list on every render is not a change. */
+        if (!_shownOptions.SequenceEqual(Options))
+        {
+            _shownOptions = Options;
+            await JS.InvokeVoidAsync("FreedayAutocomplete.setOptions", Root, Options);
+        }
+        if (Value != _shownValue)
+        {
+            _shownValue = Value;
+            await JS.InvokeVoidAsync("FreedayAutocomplete.setValue", Root, Value ?? string.Empty);
+        }
         await JS.InvokeVoidAsync("FreedayAutocomplete.setState", Root,
             new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
@@ -78,7 +99,19 @@ public partial class FdyAutocomplete
     public async Task OnSelect(SelectDetail detail)
     {
         Value = detail.Value;
+        _shownValue = detail.Value;
         await ValueChanged.InvokeAsync(detail.Value);
+    }
+
+    /// <summary>Free text, reported as it is typed, the same as the Vue and React components. Only a
+    /// pick used to reach <c>ValueChanged</c>, so a typed value that matched no suggestion showed in
+    /// the field while <c>Value</c> kept the old one.</summary>
+    private async Task OnInputAsync(ChangeEventArgs e)
+    {
+        string? text = e.Value?.ToString();
+        Value = text;
+        _shownValue = text;
+        await ValueChanged.InvokeAsync(text);
     }
 
     /// <summary>The (DOM-safe) detail of the enhancer's <c>fdy-autocomplete-select</c> event.</summary>

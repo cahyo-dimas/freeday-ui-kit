@@ -7,7 +7,7 @@
    hydration (ShouldRender => false); the initial value seeds the input. *@
 <div @ref="Root" data-fdy-autocomplete class="@RootClass" style="@RootStyle">
     <input @attributes="InputAttributes" class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list"
-           aria-controls="@_listId" autocomplete="off" value="@Value"
+           aria-controls="@_listId" autocomplete="off" value="@Value" @oninput="OnInputAsync"
            placeholder="@Placeholder" aria-label="@AriaLabel"
            id="@Id" aria-labelledby="@AriaLabelledby" aria-describedby="@Describedby"
            disabled="@Disabled" readonly="@Readonly" required="@Required"

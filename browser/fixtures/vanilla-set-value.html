@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-GB" data-theme="light">
+<meta charset="utf-8">
+<title>fixture: every value-bearing enhancer takes a value from its host, silently</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<script src="../../dist/freeday.js" defer></script>
+<body style="padding:40px">
+<div id="dp" data-fdy-datepicker data-value="2026-11-01" data-label="Date"></div>
+<div id="mp" data-fdy-datepicker data-mode="month" data-value="2026-10" data-label="Month"></div>
+<div id="tp" data-fdy-timepicker data-value="07:00" data-label="Time"></div>
+<div id="cc" data-fdy-cascade data-label="Place">
+  <ul><li data-value="jkt">Jakarta</li><li>West Java<ul><li data-value="bdg">Bandung</li></ul></li></ul>
+</div>
+<div id="one" data-fdy-daterange data-layout="single" data-value="2026-11-01/2026-11-30" data-label="Period"></div>
+<div id="two" class="fdy-daterange" data-fdy-daterange role="group" aria-label="Period">
+  <div data-fdy-datepicker data-role="from" data-label="From"></div>
+  <span class="fdy-daterange__sep" aria-hidden="true">–</span>
+  <div data-fdy-datepicker data-role="to" data-label="To"></div>
+</div>
+<div id="ac" data-fdy-autocomplete class="fdy-autocomplete">
+  <input class="fdy-input" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-controls="ac-list" autocomplete="off" aria-label="Unit">
+  <ul class="fdy-autocomplete__listbox" id="ac-list" role="listbox" hidden>
+    <li class="fdy-autocomplete__option" role="option">pcs</li>
+    <li class="fdy-autocomplete__empty" hidden>No results</li>
+  </ul>
+</div>
+<script>
+  // Every change event any of them raises; a value pushed by its host must raise none.
+  window.__events = [];
+  ['fdy-datepicker-change', 'fdy-daterange-settled', 'fdy-time-select', 'fdy-cascade-change', 'fdy-autocomplete-select']
+    .forEach((n) => document.addEventListener(n, () => window.__events.push(n)));
+</script>

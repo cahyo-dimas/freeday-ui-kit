@@ -9,6 +9,46 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.25.0] - 2026-11-27
+
+**Nilai dari host sampai ke layar, di setiap wrapper Blazor** (`#123`, sisa audit 3.24.0). Wrapper
+yang menyerahkan DOM-nya ke enhancer me-render seed-nya sekali. Selama ini hanya state
+(`Disabled`, `Readonly`, `Invalid`, `Required`) yang didorong sesudahnya, jadi `Value` yang diubah
+host, misalnya tombol "bulan ini" atau formulir yang dimuat ulang, tidak pernah tampil. `FdyCombo`
+satu-satunya yang benar. Diukur sebagai kelas, bukan tiga komponen yang dilaporkan: enam wrapper.
+
+### Added
+- **`setValue(root, value)`** di `FreedayDatepicker`, `FreedayTimepicker`, `FreedayCascade` dan
+  `FreedayAutocomplete`, **`FreedayDatepicker.setRange(root, from, to)`** untuk rentang dua picker,
+  dan **`FreedayAutocomplete.setOptions(root, labels)`**. Semuanya senyap: tidak ada event
+  perubahan, jadi binding yang menyetel nilai tidak mendengarnya kembali sebagai pilihan. Datepicker
+  menerima `YYYY-MM-DD`, `YYYY-MM` di mode bulan, dan `"awal/akhir"` di rentang satu kolom.
+  `setRange` menautkan ulang batas akhir seperti sesudah memilih. String kosong mengosongkan.
+
+### Fixed
+- **`FdyDatepicker`, `FdyMonthpicker`, `FdyTimepicker`, `FdyCascade`, `FdyAutocomplete` dan
+  `FdyDateRange` Blazor mendorong `Value` / `From` / `To` yang berubah sesudah render pertama.**
+  Nilai yang dipilih pengguna tidak didorong balik.
+- **`FdyAutocomplete` Blazor mendorong `Options` yang berubah**, dibandingkan menurut isi, jadi host
+  yang membuat list baru dengan isi yang sama di setiap render tidak memicu apa pun.
+- **`FdyAutocomplete` Blazor melaporkan teks bebas saat diketik**, sama seperti Vue dan React.
+  Sebelumnya hanya pilihan yang sampai ke `ValueChanged`, jadi teks yang tidak cocok dengan saran
+  tampil di isian sementara `Value` memegang nilai lama.
+- **Autocomplete jalur mentah membaca opsinya dari daftar setiap kali dipakai.** Opsi yang
+  di-render app sesudah init tidak pernah terlihat, dan flag ready menolak init ulang.
+
+### Catatan
+- **`Nodes` `FdyCascade` Blazor belum didorong.** Enhancer cascade menelan `<ul>` seed-nya dan tidak
+  punya API untuk mengganti pohonnya; dicatat di `NEXT-UP.md` §1.
+- Diuji: 9 bUnit (`FdyValuePushTests`) dan 3 uji peramban (`browser/set-value.mjs`), semuanya merah
+  pada kode lama.
+- **Harness peramban: halaman diserahkan ke uji sesudah fixture-nya termuat** (`browser/harness.mjs`).
+  Chrome dibuka dengan fixture sebagai halaman awal, dan soket CDP bisa tersambung saat tab masih
+  `about:blank`, yang `readyState`-nya sudah `complete`. `palette-os-dark` gagal begitu di jalanan
+  rilis ini: `document.documentElement` terbaca `null` saat dokumen fixture menggantikannya. Tujuh
+  spesifikasi menunggu dengan cara yang sama. Balapannya bergantung waktu, jadi tidak bisa dibuktikan
+  merah secara deterministik; yang diukur adalah ketujuhnya hijau dan suite penuh hijau sesudahnya.
+
 ## [3.24.0] - 2026-11-27
 
 **Satu keadaan, satu pintu.** Audit state machine implisit di kit (dan di app ronda yang memakainya)

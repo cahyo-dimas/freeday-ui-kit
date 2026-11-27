@@ -55,11 +55,24 @@ public partial class FdyCascade
 
     protected override bool ShouldRender() => !Hydrated;
 
+    private string? _shownValue;
+
     /* Pushed, not re-rendered: the seed's <ul> is consumed and removed by the enhancer, so this
        component can never render again. */
     protected override async Task OnParametersSetAsync()
     {
-        if (!Hydrated) return;
+        /* What the seed shows until hydration, then what was last pushed or picked. The seed is
+           rendered once, so a Value the host changes afterwards reached nothing (#123). */
+        if (!Hydrated)
+        {
+            _shownValue = Value;
+            return;
+        }
+        if (Value != _shownValue)
+        {
+            _shownValue = Value;
+            await JS.InvokeVoidAsync("FreedayCascade.setValue", Root, Value ?? string.Empty);
+        }
         await JS.InvokeVoidAsync("FreedayCascade.setState", Root,
             new { disabled = Disabled, @readonly = Readonly, invalid = Invalid, required = Required });
     }
@@ -69,6 +82,7 @@ public partial class FdyCascade
     public async Task OnChange(ChangeDetail detail)
     {
         Value = detail.Value;
+        _shownValue = detail.Value;
         await ValueChanged.InvokeAsync(detail.Value);
     }
 

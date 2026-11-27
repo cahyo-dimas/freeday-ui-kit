@@ -809,6 +809,22 @@
         return selected ? (monthOnly ? toISOMonth(selected) : toISO(selected)) : '';
       },
       clear: function () { selected = null; selectedEnd = null; updateDisplay(); if (!panel.hidden) render(); },
+      /* The host's own value, pushed in silently: no change event, so a binding that set it does
+         not hear it back. A render-once host (Blazor) has no other way to change the shown date.
+         The single-field range takes "start/end", the form its data-value already has. */
+      setValue: function (next) {
+        if (rangeMode) {
+          var iv = parseInterval(next);
+          selected = iv.start;
+          selectedEnd = iv.end;
+        } else {
+          selected = parseVal(next);
+        }
+        anchor = null;
+        preview = null;
+        updateDisplay();
+        if (!panel.hidden) render();
+      },
       setMin: function (iso) { minDate = parseVal(iso); if (!panel.hidden) render(); },
       setMax: function (iso) { maxDate = parseVal(iso); if (!panel.hidden) render(); },
       setRange: function (fromIso, toIso) {
@@ -855,6 +871,15 @@
       if ((f === '') !== (t === '')) return;
       root.dispatchEvent(new CustomEvent('fdy-daterange-settled', { bubbles: true, detail: { from: f, to: t } }));
     }
+    /* Both ends from the host at once, then the same linking a pick gets: the end's minimum and the
+       band shading. Silent, like each picker's own setValue. */
+    root._fdyDr = {
+      setRange: function (f, t) {
+        fromApi.setValue(f || '');
+        toApi.setValue(t || '');
+        sync();
+      }
+    };
     fromEl.addEventListener('fdy-datepicker-change', function () {
       var f = fromApi.getValue(), t = toApi.getValue();
       if (f && t && t < f) clearEnd(toEl, toApi);
@@ -893,6 +918,17 @@
     setState: function (root, state) {
       var api = root && root._fdyDp ? root._fdyDp : null;
       if (api && api.setState) api.setState(state);
+    },
+    /* A picker's value from the host, silently: `YYYY-MM-DD`, `YYYY-MM` in month mode, or
+       "start/end" on a single-field range. */
+    setValue: function (root, value) {
+      var api = root && root._fdyDp ? root._fdyDp : null;
+      if (api) api.setValue(value);
+    },
+    /* Both ends of a two-picker range (the `data-fdy-daterange` root), relinked as after a pick. */
+    setRange: function (root, from, to) {
+      var dr = root && root._fdyDr ? root._fdyDr : null;
+      if (dr) dr.setRange(from, to);
     }
   };
 })();
