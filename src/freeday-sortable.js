@@ -530,6 +530,15 @@
     var lo = rtl ? -max : 0, hi = rtl ? 0 : max;
     return v < 0 ? el.scrollLeft > lo + 0.5 : el.scrollLeft < hi - 0.5;
   }
+  /* Scrolls `el` by `v` on `axis` at once. behavior:'instant' is not accepted by every engine the kit
+     supports, and CSS smooth would turn each per-frame step into an animation that restarts. */
+  function scrollNow(el, axis, v) {
+    var previous = el.style.scrollBehavior;
+    el.style.scrollBehavior = 'auto';
+    if (axis === 'y') el.scrollTop += v;
+    else el.scrollLeft += v;
+    el.style.scrollBehavior = previous;
+  }
   /* One frame: per axis, the nearest scrollable ancestor of what is under the pointer that can still
      scroll toward the edge the pointer is near, else the page. Axes are independent, so a long
      column scrolls down while the wide board around it scrolls sideways. */
@@ -544,7 +553,7 @@
         var rect = n.getBoundingClientRect();
         var v = axis === 'y' ? edgeSpeed(y, rect.top, rect.bottom) : edgeSpeed(x, rect.left, rect.right);
         if (v !== 0 && canScroll(n, axis, v)) {
-          n.scrollBy({ left: axis === 'x' ? v : 0, top: axis === 'y' ? v : 0, behavior: 'instant' });
+          scrollNow(n, axis, v);
           moved = true;
           return;
         }
@@ -552,7 +561,7 @@
       var page = document.scrollingElement;
       var w = axis === 'y' ? edgeSpeed(y, 0, window.innerHeight) : edgeSpeed(x, 0, window.innerWidth);
       if (w !== 0 && page !== null && canScroll(page, axis, w)) {
-        window.scrollBy({ left: axis === 'x' ? w : 0, top: axis === 'y' ? w : 0, behavior: 'instant' });
+        scrollNow(page, axis, w);
         moved = true;
       }
     });
