@@ -7,6 +7,7 @@
  *   var token = await JS.InvokeAsync<int>("FreedayBlazor.on",
  *                 elementRef, "fdy-cascade-change", dotNetRef, "OnCascade"); // [JSInvokable]
  *   await JS.InvokeVoidAsync("FreedayBlazor.off", token);                  // on dispose
+ *   var t = await JS.InvokeAsync<int>("FreedayBlazor.sortOn", listRef, dotNetRef, "OnSortChange");
  *
  * Requires dist/freeday.js loaded first (registers window.Freeday*). The
  * enhancers stay the source of truth; this only bridges hydrate + events to .NET.
@@ -69,6 +70,21 @@
     element.addEventListener('fdy-datepicker-change', handler);
     var token = ++seq;
     subs[token] = { el: element, type: 'fdy-datepicker-change', fn: handler };
+    return token;
+  }
+
+  // Subscribe to fdy-sort-change and CANCEL it in the same turn, then forward the detail. on() cannot
+  // do this: .NET answers asynchronously, after the kit has already moved DOM that Blazor owns. The
+  // [JSInvokable] method moves the item in the app's collection, Blazor renders it, and the kit puts
+  // focus back on the moved handle by data-key. Returns a token for off().
+  function sortOn(element, dotNetRef, methodName) {
+    var handler = function (e) {
+      e.preventDefault();
+      dotNetRef.invokeMethodAsync(methodName, safeDetail(e.detail));
+    };
+    element.addEventListener('fdy-sort-change', handler);
+    var token = ++seq;
+    subs[token] = { el: element, type: 'fdy-sort-change', fn: handler };
     return token;
   }
 
@@ -206,7 +222,7 @@
   window.FreedayBlazor = {
     initAll: initAll, on: on, off: off, onOutside: onOutside, toast: toast, toggleTheme: toggleTheme,
     setTheme: setTheme, getTheme: getTheme, getResolvedTheme: getResolvedTheme,
-    comboSetValue: comboSetValue, dateRangeOn: dateRangeOn, chartUpdate: chartUpdate,
+    comboSetValue: comboSetValue, dateRangeOn: dateRangeOn, sortOn: sortOn, chartUpdate: chartUpdate,
     setIndeterminate: setIndeterminate,
     dialogInit: dialogInit, dialogShow: dialogShow, dialogClose: dialogClose, dialogDispose: dialogDispose,
   };

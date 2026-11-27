@@ -337,3 +337,19 @@ test('Vue: a cancelled move between lists moves the row between two arrays, and 
     assert.equal(await p.evalJS('window.vueLanes()'), 'todo: done:acb', 'a drag reaches the state the same way');
   });
 });
+
+test('Blazor: sortOn cancels the move in the same turn and hands the detail to .NET', { skip }, async () => {
+  await withPage(fixture('blazor-sortable.html'), async (p) => {
+    await p.waitFor('document.readyState === "complete" && typeof window.token === "number"');
+    await p.evalJS(`document.getElementById('hA').focus()`);
+    await p.pressKey('ArrowDown');
+    assert.equal(await p.evalJS('window.order()'), 'ab', 'the DOM is Blazor’s: the kit moved nothing');
+    assert.deepEqual(await json(p, 'window.calls'), [{ method: 'OnSortChange', detail: {
+      key: 'a', from: 0, to: 1, order: ['b', 'a'], fromList: null, toList: null, fromOrder: ['b', 'a'],
+    } }]);
+
+    await p.evalJS('FreedayBlazor.off(window.token)');
+    await p.pressKey('ArrowDown');
+    assert.equal(await p.evalJS('window.order()'), 'ba', 'after off(), nobody cancels, so the kit moves the row');
+  });
+});

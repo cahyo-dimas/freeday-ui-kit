@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>fixture: the Blazor bridge cancels fdy-sort-change in the same turn</title>
+<link rel="stylesheet" href="../../dist/freeday.bundle.css">
+<style>body { padding: 24px; max-width: 28rem; }</style>
+<ul class="fdy-list fdy-sortable" id="list" data-fdy-sortable>
+  <li class="fdy-list__row" data-key="a" data-label="Alpha"><button class="fdy-sortable__handle" type="button" id="hA">≡</button> Alpha</li>
+  <li class="fdy-list__row" data-key="b" data-label="Bravo"><button class="fdy-sortable__handle" type="button" id="hB">≡</button> Bravo</li>
+</ul>
+<script src="../../dist/freeday.js"></script>
+<script src="../../adapters/blazor/freeday-blazor.js"></script>
+<script>
+  window.calls = [];
+  /* A DotNetObjectReference stand-in: .NET would receive the same JSON. */
+  var ref = { invokeMethodAsync: function (method, detail) { window.calls.push({ method: method, detail: detail }); return Promise.resolve(); } };
+  window.token = FreedayBlazor.sortOn(document.getElementById('list'), ref, 'OnSortChange');
+  window.order = function () { return Array.from(document.querySelectorAll('#list > li')).map(function (li) { return li.dataset.key; }).join(''); };
+</script>
