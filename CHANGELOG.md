@@ -9,6 +9,62 @@ benar. Perubahan seperti itu ditulis di bawah `### Changed: BREAKING (types)` �
 lama → tipe baru, dan cara menyempitkannya — bukan di bawah `### Added`, betapapun aditifnya dari
 sisi kit.
 
+## [3.28.0] - 2026-11-27
+
+**Sortable bergrup: kontrak "pindah" bersama.** Fitur 0 dari empat permintaan owner (2026-11-20).
+Butir kini bisa pindah antar-daftar, dan kontrak inilah yang kelak dipakai papan kanban, kalender dan
+penjadwal. Spec: `docs/superpowers/specs/2026-11-27-sortable-groups-design.md`.
+
+### Added
+- **Grup.** `data-fdy-sortable="papan"` menggabungkan semua daftar di halaman yang bernilai sama.
+  Tiap daftar bergrup wajib punya `data-key`. Tanpa itu daftarnya tidak diinisialisasi, dan
+  `TypeError` yang menyebut nama grupnya dilaporkan lewat `reportError` tanpa menghentikan enhancer
+  lain. Daftar tanpa nilai tetap berdiri sendiri.
+- **Detail `fdy-sort-change` mendapat `fromList`, `toList` dan `fromOrder`.** Event dikirim ke daftar
+  **tujuan**, jadi satu listener di pembungkus papan menerima semua perpindahan. Menurut kebijakan
+  tipe ini aditif: tidak ada field lama yang berubah tipe.
+- **Veto sebelum dijatuhkan, dalam dua bentuk.** `data-fdy-sort-refuse="alasan"` di daftar berlaku
+  untuk semua stack. Event `fdy-sort-check` dengan `refuse(alasan)` dipakai untuk aturan per butir;
+  ia ditanya sekali per daftar per gerakan, dan hanya untuk daftar yang memang bisa menerima butir itu.
+  Daftar yang menolak diberi `is-drop-refused` dan pil `.fdy-sortable__refusal`, dan alasannya
+  diumumkan. `refuse()` langsung berlaku saat dipanggil, sebab galat di dalam listener ditelan
+  `dispatchEvent`.
+- **Angkat-lalu-jatuhkan dari papan ketik** di daftar bergrup. Spasi atau Enter mengangkat butir,
+  ↑/↓ dan ←/→ menggeser tanda (←/→ dicerminkan di RTL, dan daftar disabled dilewati), lalu Spasi atau
+  Enter menjatuhkannya. Hasilnya **satu** event, jadi kolom yang dilewati tidak ikut tersimpan.
+  Angkat dan jatuhkan dipicu aktivasi tombol (`click` dengan `detail === 0`), sebab pembaca layar
+  dalam *browse mode* tidak mengirim tombolnya. Daftar yang menolak tetap didarati dan menyebut
+  alasannya, dan begitu pula daftar yang tidak punya slot untuk butir yang datang.
+- **`FreedaySortable.move(item, toList, index)`**, jalur tanpa seret (WCAG 2.5.7) untuk menu "Pindah
+  ke…" buatan app.
+- **Gulir otomatis** saat seretan ditahan dekat tepi wadah gulir atau jendela, per sumbu dan tetap
+  instan meski halaman memakai `scroll-behavior: smooth`.
+- **`FreedayBlazor.sortOn`** membatalkan `fdy-sort-change` di giliran yang sama lalu meneruskan detailnya
+  ke .NET, dengan record `FdySortChangeDetail`. Sebelumnya app Blazor tidak bisa memakai sortable
+  dengan benar, karena `on()` menjawab sesudah kit memindahkan DOM milik Blazor.
+- Tipe `FdySortCheckDetail` di `.d.ts` Vue dan React. Ada delapan string baru di `TEXT`.
+
+### Changed
+- **Fokus sesudah langkah papan ketik menunggu render app**, paling lama 2 detik, dan tidak pernah
+  merebut fokus dari pengguna yang sudah pindah. Dulu fokus dicari sekali lewat `setTimeout 0`, yang
+  terlalu cepat untuk Blazor. Langkah baru menghentikan pengawasan langkah sebelumnya, jadi dua
+  langkah cepat tidak saling merebut fokus.
+- **Daftar tanpa grup ikut mendapat gulir otomatis.** Disengaja: 3.27.0 mencatatnya sebagai hal yang
+  belum ada di kit.
+
+### Catatan
+- Untuk ronda tidak ada yang wajib diubah. Semua daftar sortable-nya tanpa grup. Lima uji 3.27.0 di
+  `browser/sortable.mjs` tetap hijau, dan satu-satunya yang disunting adalah ekspektasi detail yang
+  mendapat tiga field baru.
+- Ada 17 uji baru di `browser/sortable-group.mjs`, masing-masing ditunjukkan merah lebih dulu: pointer,
+  daftar kosong, aturan fixed, veto, papan ketik, `move()`, gulir otomatis, Vue lintas daftar, bridge
+  Blazor, dan regresi fokus dua langkah cepat. Ada juga dua uji .NET dan spec WebKit pertama untuk
+  sortable (`webkit/sortable-group.spec.mjs`). Spec WebKit itu menguji pembatalan angkatan saat
+  pegangannya dicabut, yang di WebKit hanya ditangkap MutationObserver karena tidak ada `blur`.
+- Review akhir menemukan regresi yang dibuktikan dengan probe sebelum rilis: dua langkah papan ketik
+  dalam 2 detik di daftar Vue/React/Blazor tanpa grup melempar fokus kembali ke butir pertama.
+  Regresi itu sudah diperbaiki dan dijaga uji.
+
 ## [3.27.0] - 2026-11-27
 
 **Carousel: posisi dan autoplay** (`#123`, butir terakhir audit state machine). Ditambah perbaikan

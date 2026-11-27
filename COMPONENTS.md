@@ -2726,7 +2726,8 @@ group is page-wide; two boards on one page need two names.
 - `FreedaySortable.move(item, toList, index)` is the drag-free path (WCAG 2.5.7): build your "Move
   to…" menu or "Move up" buttons on it. `index` is the item's final position in `toList`. It returns
   `true` when a change was dispatched (even if your listener then cancels it) and `false` when the
-  move is not allowed or is refused (a refusal's reason is announced). It throws a `TypeError` for
+  move is not allowed or is refused (a refusal's reason is announced), or when the kit has not
+  initialised the list yet. It throws a `TypeError` for
   an item outside a sortable list, a `toList` that is not one, or an index that is not an integer.
 
 Strings: `data-fdy-text-handle`, `-handle-group`, `-lifted`, `-over`, `-moved`, `-moved-to`,

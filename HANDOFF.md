@@ -11,7 +11,11 @@ ada di [`docs/superpowers/specs/2026-07-21-freeday-ui-kit-design.md`](docs/super
 
 ## Di mana kita sekarang
 
-**`3.27.0`, disiapkan dan menunggu tag** (2026-11-27). Carousel: dua tekanan cepat berpindah dua
+**`3.28.0`, disiapkan dan menunggu tag** (2026-11-27). Sortable bergrup, fitur 0 dari permintaan owner:
+butir pindah antar-daftar lewat seret, papan ketik (angkat-lalu-jatuhkan) dan `move()`, dengan veto
+sebelum dijatuhkan, gulir otomatis, dan `FreedayBlazor.sortOn` untuk Blazor. Berikutnya: kanban.
+
+**`3.27.0`, terbit** (2026-11-27). Carousel: dua tekanan cepat berpindah dua
 slide, autoplay menghormati fokus dan reduced motion. Audit state machine `#123` selesai.
 
 **`3.26.0`, terbit** (2026-11-27). Pohon `FdyCascade` Blazor didorong lewat

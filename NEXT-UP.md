@@ -20,7 +20,7 @@ didahulukan dari fitur.
 
 | # | Pekerjaan | Kenapa sekarang | Selesai bila |
 |---|---|---|---|
-| 1 | **Fitur yang diminta owner (2026-11-20).** Lihat §5 | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
+| 1 | **Fitur yang diminta owner (2026-11-20).** Lihat §5. Fitur 0 terkirim di 3.28.0; berikutnya **fitur 1, papan kanban**, di atas kontrak sortable bergrup | Diminta, dan urutannya sudah disepakati | Per fitur: brainstorm, spec, rencana, lalu rilis |
 
 ---
 
@@ -71,7 +71,7 @@ memegang data dan aturan bisnis. Pembungkus Vue, React dan Blazor ikut di tiap f
 
 | # | Fitur | Isi |
 |---|---|---|
-| 0 | Kontrak "pindah" bersama | `data-fdy-sortable` diperluas ke pindah antar-daftar dan gulir otomatis di tepi (kini tertulis "not in the kit"). Event dapat dibatalkan, jalur papan ketik (WCAG 2.5.7), live region, fokus dikembalikan |
+| 0 | Kontrak "pindah" bersama | **Terkirim 3.28.0.** Grup `data-fdy-sortable="…"`, veto sebelum dijatuhkan, angkat-lalu-jatuhkan, `move()`, gulir otomatis, `FreedayBlazor.sortOn`. Kanban memakainya |
 | 1 | Papan kanban | Seret antar-kolom (status, veto app, batas WIP), urut ulang dalam kolom, klik kartu membuka drawer, tambah di kolom, angkat/pindah/jatuhkan lewat papan ketik dan menu "Move to...". Swimlane dan lipat kolom diputuskan saat brainstorm |
 | 2 | Kalender acara | Tampilan Bulan dan Agenda, acara seharian, "+N more", klik tanggal membuka hari, klik acara membuka detail |
 | 3 | Penjadwal sumber daya | Baris sumber daya berkelompok lawan kolom jam, baris kapasitas, lajur "Not assigned", strip 7 hari, klik sel kosong membuat entri (yang penuh, lampau, atau libur ditolak dengan alasan), seret untuk pindah atau ubah ukuran dengan veto app, jalur papan ketik. Ditambah mode Gantt |
